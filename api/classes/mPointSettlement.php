@@ -355,15 +355,19 @@ abstract class mPointSettlement
 
     abstract protected function _parseConfirmationReport($_OBJ_DB, $response);
 
-    private function _getSettlementInProgress($_OBJ_DB)
+    protected function _getSettlementInProgress($_OBJ_DB, $fileSequenceNumber=null)
     {
-            $settlementInProgressXML = "";
-           $sql = "SELECT record_number, file_reference_number, file_sequence_number, created, to_char(now()-created,'dd/HH') as pending_from, description
+           $settlementInProgressXML = '';
+           $additionalQuery = '';
+           if($fileSequenceNumber != null)
+           {
+               $additionalQuery = ' AND file_sequence_number=' . $fileSequenceNumber;
+           }
+           $sql = "SELECT id, record_number, file_reference_number, file_sequence_number, created, to_char(now()-created,'dd/HH') as pending_from, description
                            FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                            WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
-                           and client_id= ".$this->_objClientConfig->getID()." and
-                           psp_id = ".$this->_iPspId."
-                           ";
+                           and client_id= ".$this->_objClientConfig->getID(). ' 
+                           and psp_id = ' .$this->_iPspId. ' '. $additionalQuery .' ORDER BY created desc';
 
            $aRS = $_OBJ_DB->getAllNames($sql);
 
@@ -373,7 +377,7 @@ abstract class mPointSettlement
               foreach ($aRS as $rs)
               {
                   // pending-duration attribute describe duration of file from created date in format dd/HH
-                  $settlementInProgressXML .= '<file file-reference-number="'.$rs["FILE_REFERENCE_NUMBER"].'"  file_sequence_number="'.$rs["FILE_SEQUENCE_NUMBER"].'" description="'.$rs["DESCRIPTION"].'"  pending-duration="'.$rs["PENDING_FROM"].'" ></file>';
+                  $settlementInProgressXML .= '<file id="'. $rs['ID'].'" file-reference-number="'.$rs["FILE_REFERENCE_NUMBER"].'"  file_sequence_number="'.$rs["FILE_SEQUENCE_NUMBER"].'" description="'.$rs["DESCRIPTION"].'"  pending-duration="'.$rs["PENDING_FROM"].'" ></file>';
               }
                $settlementInProgressXML .= "</settlement-in-progress>";
            }
@@ -426,4 +430,18 @@ abstract class mPointSettlement
     }
 
     public function createBulkSettlementEntry($_OBJ_DB){}
+
+    /**
+     * @param $_OBJ_DB
+     * @param $clientId
+     * @param $settlementId
+     * @param $settlementStatus
+     */
+    public static function updateSettlementStatus($_OBJ_DB, $clientId, $settlementId, $settlementStatus)
+    {
+        $sql = 'UPDATE log' . sSCHEMA_POSTFIX . ".settlement_tbl
+            SET status = '" . $settlementStatus . "' 
+            WHERE id =" . $settlementId . ' and client_id = ' . $clientId;
+        $_OBJ_DB->query($sql);
+    }
 }
