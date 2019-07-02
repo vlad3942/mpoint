@@ -93,9 +93,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount; }
 
 					// Validate currency if explicitly passed in request, which defer from default currency of the country
-					if(intval($obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"}) > 0){
-						if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"}) ,$obj_CountryConfig, intval( $obj_DOM->{'get-payment-methods'}[$i]->{"client-id"})) != 10 ){
-							$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"}) ;
+					if((integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"} > 0){
+						if($obj_Validator->valCurrency($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"} ,$obj_CountryConfig, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{"client-id"}) != 10 ){
+							$aMsgCds[56] = "Invalid Currency:". (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"};
 						}
 					}
 
