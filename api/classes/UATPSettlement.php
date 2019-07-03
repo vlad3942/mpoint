@@ -163,9 +163,16 @@ class UATPSettlement extends mPointSettlement
                 $this->_getPSPConfiguration($_OBJ_DB);
             }
 
+            $inProgressSettlement = $this->_getSettlementInProgress($_OBJ_DB, date('Ymd'));
+            if($inProgressSettlement == '')
+            {
+                return;
+            }
+
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><bulk-settlement client-id="'.$this->_objClientConfig->getID().'">';
             $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
+            $requestBody .= $inProgressSettlement;
             $requestBody .= '</bulk-settlement></root>';
 
             $obj_ConnInfo = $this->_constConnInfo($this->_objConnectionInfo["paths"]["process-settlement"]);
@@ -186,7 +193,7 @@ class UATPSettlement extends mPointSettlement
                 }
                 else
                 {
-                    $this->_parseConfirmationReport($_OBJ_DB, $replyBody);
+                    //$this->_parseConfirmationReport($_OBJ_DB, $replyBody);
                 }
             }
         }
