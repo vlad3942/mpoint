@@ -824,7 +824,6 @@ class Home extends General
         if(empty($RS) === false && count($RS) > 0) {
             $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
             $obj_TxnInfo = TxnInfo::produceInfo($RS["ID"],  $this->getDBConn());
-
             $sTxnAdditionalDataXml = "";
             $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
             if($aTxnAdditionalData !== null)
@@ -879,6 +878,25 @@ class Home extends General
             $xml .= '</client-info>';
             $xml .= $sTxnAdditionalDataXml;
             $xml .= '</transaction>';
+
+            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer) $RS["COUNTRYID"]);
+            if ( ($obj_CountryConfig instanceof CountryConfig) === true) {
+                $iAccountID = EndUserAccount::getAccountID($this->getDBConn(), $obj_ClientConfig, $obj_CountryConfig, $RS["CUSTOMER_REF"], $RS["MOBILE"], $RS["EMAIL"]);
+
+                $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
+                             WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
+                             ORDER BY EC.created DESC LIMIT 1";
+                $resultSet = $this->getDBConn()->getName($cardsSql);
+                if (empty($resultSet) === false) {
+                    $xml .= '<stored-card>';
+                    $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
+                    $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
+                    $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
+                    $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
+                    $xml .= '</stored-card>';
+                }
+            }
+
         }
 
         return $xml;

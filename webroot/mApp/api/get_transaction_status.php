@@ -16,7 +16,8 @@ require_once("../../inc/include.php");
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
