@@ -835,7 +835,7 @@ class mConsole extends Admin
 						$RS["MODE"],
 						new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
 						$RS["IP"],
-						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+						gmdate("Y-m-d H:i:s", strtotime(substr($RS["CREATEDFINAL"], 0, strpos($RS["CREATEDFINAL"], ".") ) ) ),
 						$aObj_Messages,
 						"",
                         $paymentCurrencyConfig,
@@ -1401,7 +1401,7 @@ class mConsole extends Admin
 					$aSeriesSelector[] = 'COALESCE(Q.TRANSACTION_COUNT,0) as TRANSACTION_COUNT';
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
                     if(in_array('state', $aColumns) === false)
-                    $aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
+                    $aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_ACCEPTED_STATE.")";
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created '.$sAtTimeZone.' ) AS HOUR';
@@ -1424,7 +1424,7 @@ class mConsole extends Admin
 					$aSelector[] = 'SUM(T.amount/POWER(10,COALESCE(C.decimals,0))) AS revenue_count';//Dividing by 100 to get actual transaction amount
 					$aSeriesSelector[] = 'coalesce(Q.revenue_count,0) as revenue_count';
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
-					$aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
+					$aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_ACCEPTED_STATE.")";
 					break;
 				case 'currency_id' :
         			$aSelector[] = 'c.code AS currency_id';

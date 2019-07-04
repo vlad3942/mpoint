@@ -438,6 +438,23 @@
 													</xs:element>
 												</xs:all>
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
+											<xs:attribute name="network" use="optional">
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="amex" />
+														<xs:enumeration value="dankort" />
+														<xs:enumeration value="diners" />
+														<xs:enumeration value="dinersclub" />
+														<xs:enumeration value="jcb" />
+														<xs:enumeration value="maestro" />
+														<xs:enumeration value="mastercard" />
+														<xs:enumeration value="visa" />
+														<xs:enumeration value="visaelectron" />
+														<xs:enumeration value="discover" />
+														<xs:enumeration value="uatp" />
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
 										</xs:complexType>
 									</xs:element>
 								</xs:all>

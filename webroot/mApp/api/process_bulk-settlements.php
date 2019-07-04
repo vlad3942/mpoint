@@ -92,7 +92,7 @@ require_once(sCLASS_PATH . "/payment_processor.php");
 require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
-
+ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
@@ -327,6 +327,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                             }
                             $sMessage = '';
+                            $code=0;
                             //AS Discussion with UATP for now scope is full capture and cancel
                             if(((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) && ((int)$iDBAmount === (int)$iCRAmount)) {
 
@@ -334,12 +335,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $sMessage = "PSP returned code ".$code;
                             }
                             else if((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) {
-
+                                $code= 1000;
                                 if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE)) === false) {
                                     $code = (int)$obj_PSP->capture($iDBAmount);
+                                    $sMessage = "PSP returned code ".$code;
                                 }
-
-                                $sMessage = "PSP returned code ".$code;
+                                else
+                                {
+                                    $sMessage = "Transaction already submitted for Capture";
+                                }
                             }
 
                             elseif ((int)$obj_TxnInfo->getAmount() === (int)$iCRAmount )
@@ -349,22 +353,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             else
                             {
+                                $code = 999;
                                 $sMessage = 'Amount mismatch';
                             }
 
-                            if ($code === 1000 || $code === 1001)
+                            if ($code > 0 && ($code === 1000 || $code === 1001) )
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , '.$sMessage
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                                    . '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , '.$sMessage. '</status>';
                             }
-                            else
+                            else if($code !== 0)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed, '.$sMessage
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                                    . '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed, '.$sMessage. '</status>';
                             }
                         }
                     } catch (mPointException $e) {
@@ -375,10 +374,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         throw new mPointSimpleControllerException(HTTP::INTERNAL_SERVER_ERROR, $e->getCode(), $e->getMessage(), $e);
                     }
                 } catch (mPointControllerException $e) {
-                    $xml .= '<status id = "' . $sToken . '" code = "' . $e->getCode() . '">' . $e->getMessage()
-                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
-                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                        . '</status>';
+                    $xml .= '<status id = "' . $sToken . '" code = "' . $e->getCode() . '">' . $e->getMessage(). '</status>';
                 }
             }
             $xml .= '</bulk-capture-response>';

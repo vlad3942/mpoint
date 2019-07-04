@@ -824,7 +824,6 @@ class Home extends General
         if(empty($RS) === false && count($RS) > 0) {
             $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
             $obj_TxnInfo = TxnInfo::produceInfo($RS["ID"],  $this->getDBConn());
-
             $sTxnAdditionalDataXml = "";
             $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
             if($aTxnAdditionalData !== null)
@@ -856,6 +855,7 @@ class Home extends General
             $sessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
             $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
             $paymentCompleteMethod = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
+            $isEmbeddedHpp = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
             $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '" extid="' . $RS["EXTID"] . '" approval-code="' . $RS["APPROVAL_ACTION_CODE"] . '" walletid="' . $RS["WALLETID"] . '">';
             $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" decimals = "' . $obj_currencyConfig->getDecimals() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';
@@ -864,6 +864,9 @@ class Home extends General
             $xml .= '<logo-url>' . htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) . '</logo-url>';
             $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
             $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
+            if (empty($isEmbeddedHpp) === false) {
+                $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>';
+            }
             $xml .= '<status>' . implode("",$aStatusMessagesXML) . '</status>';
             $xml .= '<sign>' . md5($RS["CLIENTID"] . '&' . $RS["MPOINTID"] . '&' . $RS["ORDERID"] . '&' . $RS["CURRENCYID"] . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $RS["SALT"]) . '</sign>';
             //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
@@ -875,6 +878,25 @@ class Home extends General
             $xml .= '</client-info>';
             $xml .= $sTxnAdditionalDataXml;
             $xml .= '</transaction>';
+
+            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer) $RS["COUNTRYID"]);
+            if ( ($obj_CountryConfig instanceof CountryConfig) === true) {
+                $iAccountID = EndUserAccount::getAccountID($this->getDBConn(), $obj_ClientConfig, $obj_CountryConfig, $RS["CUSTOMER_REF"], $RS["MOBILE"], $RS["EMAIL"]);
+
+                $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
+                             WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
+                             ORDER BY EC.created DESC LIMIT 1";
+                $resultSet = $this->getDBConn()->getName($cardsSql);
+                if (empty($resultSet) === false) {
+                    $xml .= '<stored-card>';
+                    $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
+                    $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
+                    $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
+                    $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
+                    $xml .= '</stored-card>';
+                }
+            }
+
         }
 
         return $xml;

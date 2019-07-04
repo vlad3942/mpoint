@@ -188,6 +188,7 @@
 				</xs:complexType>
 			</xs:element>
 			<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="required">
 			<xs:annotation>

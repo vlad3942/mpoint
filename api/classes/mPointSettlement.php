@@ -85,6 +85,18 @@ abstract class mPointSettlement
 
     private function _getTransactions($_OBJ_DB, $aStateIds){
 
+        $this->_getPSPConfiguration($_OBJ_DB);
+
+        $iBatchLimit = 200;
+        $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
+        if($sSettlementBatchLimit != '')
+        {
+            $iBatchLimit = (int)$sSettlementBatchLimit;
+        }
+        if($iBatchLimit == 0)
+        {
+            $iBatchLimit=200;
+        }
         $stateIds = implode(",", $aStateIds);
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
@@ -116,7 +128,7 @@ abstract class mPointSettlement
                               AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE .")
                          ORDER BY txnid, msg.created DESC
                        ) sub
-                  WHERE stateid IN ($stateIds);";
+                  WHERE stateid IN ($stateIds)";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
@@ -145,6 +157,7 @@ abstract class mPointSettlement
         }
 
         $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+        $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
         $this->_sTransactionXML = "<transactions>";
 
         foreach ($this->_arrayTransactionIds as $transactionId)
@@ -154,7 +167,6 @@ abstract class mPointSettlement
             $this->_sTransactionXML .= $obj_TxnInfo->toXML();
             $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
         }
-
         $this->_sTransactionXML .= "</transactions>";
 
     }
@@ -343,15 +355,19 @@ abstract class mPointSettlement
 
     abstract protected function _parseConfirmationReport($_OBJ_DB, $response);
 
-    private function _getSettlementInProgress($_OBJ_DB)
+    protected function _getSettlementInProgress($_OBJ_DB, $fileSequenceNumber=null)
     {
-            $settlementInProgressXML = "";
-           $sql = "SELECT record_number, file_reference_number, file_sequence_number, created, to_char(now()-created,'dd/HH') as pending_from, description
+           $settlementInProgressXML = '';
+           $additionalQuery = '';
+           if($fileSequenceNumber != null)
+           {
+               $additionalQuery = ' AND file_sequence_number=' . $fileSequenceNumber;
+           }
+           $sql = "SELECT id, record_number, file_reference_number, file_sequence_number, created, to_char(now()-created,'dd/HH') as pending_from, description
                            FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                            WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
-                           and client_id= ".$this->_objClientConfig->getID()." and
-                           psp_id = ".$this->_iPspId."
-                           ";
+                           and client_id= ".$this->_objClientConfig->getID(). ' 
+                           and psp_id = ' .$this->_iPspId. ' '. $additionalQuery .' ORDER BY created desc';
 
            $aRS = $_OBJ_DB->getAllNames($sql);
 
@@ -361,7 +377,7 @@ abstract class mPointSettlement
               foreach ($aRS as $rs)
               {
                   // pending-duration attribute describe duration of file from created date in format dd/HH
-                  $settlementInProgressXML .= '<file file-reference-number="'.$rs["FILE_REFERENCE_NUMBER"].'"  file_sequence_number="'.$rs["FILE_SEQUENCE_NUMBER"].'" description="'.$rs["DESCRIPTION"].'"  pending-duration="'.$rs["PENDING_FROM"].'" ></file>';
+                  $settlementInProgressXML .= '<file id="'. $rs['ID'].'" file-reference-number="'.$rs["FILE_REFERENCE_NUMBER"].'"  file_sequence_number="'.$rs["FILE_SEQUENCE_NUMBER"].'" description="'.$rs["DESCRIPTION"].'"  pending-duration="'.$rs["PENDING_FROM"].'" ></file>';
               }
                $settlementInProgressXML .= "</settlement-in-progress>";
            }
@@ -414,4 +430,18 @@ abstract class mPointSettlement
     }
 
     public function createBulkSettlementEntry($_OBJ_DB){}
+
+    /**
+     * @param $_OBJ_DB
+     * @param $clientId
+     * @param $settlementId
+     * @param $settlementStatus
+     */
+    public static function updateSettlementStatus($_OBJ_DB, $clientId, $settlementId, $settlementStatus)
+    {
+        $sql = 'UPDATE log' . sSCHEMA_POSTFIX . ".settlement_tbl
+            SET status = '" . $settlementStatus . "' 
+            WHERE id =" . $settlementId . ' and client_id = ' . $clientId;
+        $_OBJ_DB->query($sql);
+    }
 }
