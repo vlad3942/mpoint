@@ -391,7 +391,7 @@ try
         {
             $responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
 
-            if ($responseCode == 1000 || $responseCode == 1002)
+            if ($responseCode == 1000 || $responseCode == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
             {
                 array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
                 //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
