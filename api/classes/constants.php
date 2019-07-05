@@ -1372,5 +1372,10 @@ abstract class Constants
 	const iInternalProperty = 0;
 	const iPrivateProperty = 1;
 	const iPublicProperty = 2;
+
+    /*
+	 * Unique Id for payment captured and callback sent
+	 */
+    const iPAYMENT_CAPTURED_AND_CALLBACK_SENT = 1002;
 }
 ?>
