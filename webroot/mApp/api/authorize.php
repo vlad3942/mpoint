@@ -45,6 +45,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the CPM GATEWAY component
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
+// Require specific Business logic for the CPM FRAUD GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_fraud_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
@@ -139,6 +141,7 @@ require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
 
+require_once(sCLASS_PATH ."/ezy.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -593,6 +596,14 @@ try
 														try
 														{
 														    if($obj_Elem["pspid"] > 0) {
+
+                                                                $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
+                                                                if(empty($iFraudCheckProcessor) === false)
+                                                                {
+                                                                    $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
+                                                                    $obj_FraudCheckPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iFraudCheckProcessor), $aHTTP_CONN_INFO);
+                                                                    $obj_FraudCheckPSP->fraudCheck($aHTTP_CONN_INFO, $obj_Elem);
+                                                                }
 
                                                                 switch (intval($obj_Elem["pspid"]) )
                                                                 {
