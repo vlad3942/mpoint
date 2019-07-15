@@ -310,6 +310,18 @@ abstract class Constants
     const iPAYMENT_TOKENIZATION_FAILURE_STATE = 2031;
 
     /**
+     * Defines the ID of the State that indicates that payment transaction accepted by fraud check
+     *
+     */
+    const iPAYMENT_FRAUD_CHECK_COMPLETE_STATE = 2040;
+
+    /**
+     * Defines the ID of the State that indicates that payment transaction rejected by fraud check
+     *
+     */
+    const iPAYMENT_FRAUD_CHECK_FAILURE_STATE = 2041;
+
+    /**
      * Defines the ID of the State that indicates that Tokenization request successfully completed
      *
      */
@@ -854,6 +866,11 @@ abstract class Constants
      */
     const iMADA_MPGS_PSP = 57;
     /**
+     * Unique ID for the Payment Service Provider: EZY
+     *
+     */
+    const iEZY_PSP = 58;
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -1351,6 +1368,7 @@ abstract class Constants
 	const iPROCESSOR_TYPE_MPI = 6;
 	const iPROCESSOR_TYPE_GATEWAY = 7;
 	const iPROCESSOR_TYPE_TOKENIZATION = 8;
+	const iPROCESSOR_TYPE_FRAUD_GATEWAY = 9;
 
 
 

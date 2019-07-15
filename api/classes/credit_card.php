@@ -108,7 +108,7 @@ class CreditCard extends EndUserAccount
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
-					AND PSP.system_type <> ".Constants::iPROCESSOR_TYPE_TOKENIZATION."
+					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY.")
 				ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -182,7 +182,7 @@ class CreditCard extends EndUserAccount
 	}
 
     /*Fetches the tokenization configuration set for a Client and card type
-    * @param	integer $iCardID 	Unqiue ID of the CardTypeUsed
+    * @param	integer $iCardID 	Unique ID of the CardTypeUsed
     * @return 	string
    */
 
@@ -197,6 +197,29 @@ class CreditCard extends EndUserAccount
 					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
 					AND CA.cardid = ".$iCardID."
 					AND CA.psp_type = ". Constants::iPROCESSOR_TYPE_TOKENIZATION;
+
+        //echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+        return $RS['PSPID'];
+    }
+
+
+    /*Fetches the fraud check configuration set for a Client and card type
+    * @param	integer $iCardID 	Unique ID of the CardTypeUsed
+    * @return 	string
+   */
+
+    public function getFraudCheckRoute($iCardID)
+    {
+        $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
+            "WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
+					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
+					AND C.enabled = '1' 
+					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
+					AND CA.cardid = ".$iCardID."
+					AND CA.psp_type = ". Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY;
 
         //echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
