@@ -44,22 +44,22 @@ insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-344
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (24, 'HKD', 't',344);
 
 
-IDR-  INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (505,<clientid>, 28, 24, 't', 1, 4 );
+INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (505,<clientid>, 28, 24, 't', 1, 4 );
 insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-360', 28, 't');
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (24, 'IDR', 't',360);
 
 
-JPY-  INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (616,<clientid>, 28, 24, 't', 1, 4 );
+INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (616,<clientid>, 28, 24, 't', 1, 4 );
 insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-392', 28, 't');
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (24, 'JPY', 't',392);
 
 
-KRW-  INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (632,<clientid>, 28, 24, 't', 1, 4 );
+INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (632,<clientid>, 28, 24, 't', 1, 4 );
 insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-410', 28, 't');
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (24, 'KRW', 't',410);
 
 
-NZD-  INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (513,<clientid>, 28, 24, 't', 1, 4 );
+INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (513,<clientid>, 28, 24, 't', 1, 4 );
 insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-554', 28, 't');
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (24, 'NZD', 't',554);
 
