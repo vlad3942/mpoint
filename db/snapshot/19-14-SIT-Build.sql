@@ -7,7 +7,13 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 SELECT 'PAYPAL_SUBJECT', 'pal_paypal_sandbox@pal.com.ph', id, 'merchant', 2 FROM client.merchantaccount_tbl WHERE pspid=24 AND clientid = 10020;
 
 
---- Enable paypal for different country / currency ---------
+/* ========== Global Configuration for Paypal : START========== */
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (24, 'PayPal',4);
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (28, 'PayPal', 23, -1, -1, -1,4);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (28, 24);
+
+
 INSERT INTO Client.CardAccess_Tbl (countryid, clientid, cardid, pspid,enabled,stateid,psp_type) values (638,<clientid>, 28, 24, 't', 1, 4 );
 insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-458', 28, 't');
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (24, 'MYR', 't',458);
@@ -93,8 +99,19 @@ insert into system.cardpricing_tbl (pricepointid, cardid, enabled) values ('-608
 insert into System.PSPCurrency_Tbl (pspid, name, enabled,currencyid) values (56, 'PHP', 't',608);
 
 
+INSERT INTO client.merchantaccount_tbl (clientid,pspid,name,username,passwd) VALUES (<clientid>,24,'Aj-KgkP9gPuP8-fV0MIkJdp5JSojAmYk5TWDRePvMtEFV1W3hZaeyfAd','cellpoint_sandbox_api1.pal.com.ph','Q2BBNZD97TYCP4WL')
 
+INSERT INTO client.merchantsubaccount_tbl (accountid,pspid,"name") VALUES (<accountid>,24,'-1')
 
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type ) SELECT 'PAYPAL_STC', 'true', id, 'merchant' FROM client.merchantaccount_tbl WHERE pspid=24 AND clientid = <clientid>;
 
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type ) SELECT 'PAYPAL_REST_ACC_ID', '897383MMQSC9W', id, 'merchant' FROM client.merchantaccount_tbl WHERE pspid=24 AND clientid = <clientid>;
 
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type ) SELECT 'PAYPAL_REST_CLIENT_ID', 'AejFqzw9vADty0xlc9oAgI0Rz0LQXYaoZyGPo0rlNiMx7taGI5C1VxqrGpT9zVjg1LMiPwfzkftO0W3U', id, 'merchant' FROM client.merchantaccount_tbl WHERE pspid=24 AND clientid = <clientid>;
+
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type ) SELECT 'PAYPAL_REST_SECRET', 'EEmWU-1Bcmfuhe0xheaAlrArpEx2uzrBcB-HVkm125max3hgtVJc4d26bWe0TuDmks-kOl7WlqoRn4-G', id, 'merchant' FROM client.merchantaccount_tbl WHERE pspid=24 AND clientid = <clientid>;
+
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) SELECT 'PAYPAL_BILLING_AGREEMENT', 'This is billing agreement with CellPoint Mobile', id, 'merchant', 2 FROM client.merchantaccount_tbl WHERE pspid=24 AND clientid = <client id>;
+
+/*=========================End===================================== */
 
