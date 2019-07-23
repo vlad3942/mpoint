@@ -7,3 +7,61 @@ INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5014, 'Initi
 INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (6100, 'Invalid Passbook Operation', 'Passbook', null, true);
 INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (6200, 'Operation Not Allowed ', 'Passbook', null, true);
 INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (6201, 'Amount is Higher', 'Passbook', null, true);
+
+create table txnpassbook_tbl
+(
+    id               serial                  not null
+        constraint txnpassbook_pk
+            primary key,
+    transactionid    integer                 not null
+        constraint txnpassbook_transaction_tbl_id_fk
+            references transaction_tbl,
+    amount           integer                 not null,
+    currencyid       integer                 not null
+        constraint txnpassbook_currency_tbl_id_fk
+            references system.currency_tbl,
+    requestedopt     integer
+        constraint txnpassbook_tbl_state_tbl_id_fk
+            references state_tbl,
+    performedopt     integer
+        constraint txnpassbook_tbl_state_tbl_id_1_fk
+            references state_tbl,
+    status           varchar(20)             not null,
+    extref           varchar(50),
+    extrefidentifier varchar(100),
+    enabled          boolean   default true,
+    created          timestamp without time zone default now(),
+    modified         timestamp without time zone default now()
+);
+
+comment on column txnpassbook_tbl.transactionid is 'Primary Key of log.transaction_tbl';
+
+comment on column txnpassbook_tbl.amount is 'Amount used for the operation';
+
+comment on column txnpassbook_tbl.currencyid is 'Current used for the operation
+primary key of system.currency_tbl';
+
+comment on column txnpassbook_tbl.requestedopt is 'Request operation
+·         Initialize
+·         Authorize
+·         Cancel
+·         Capture
+·         Refund';
+
+comment on column txnpassbook_tbl.performedopt is 'Based on requested operations which are not performed or pending, next for performing operation will decide.
+Entry will contain either requested or performed operation';
+
+comment on column txnpassbook_tbl.extref is 'Capture, refund and cancel may be related to order, line time, ticket or full txn
+This contains the primary id of repective table to fetch all necessary in the callback';
+
+comment on column txnpassbook_tbl.extrefidentifier is 'Table or entity from which external reference is used';
+
+alter table txnpassbook_tbl
+    owner to mpoint;
+
+
+CREATE TRIGGER Update_TxnPassbook
+    BEFORE UPDATE
+    ON Log.txnpassbook_tbl
+    FOR EACH ROW
+EXECUTE PROCEDURE Public.Update_Table_Proc();
