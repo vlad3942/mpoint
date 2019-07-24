@@ -1269,12 +1269,6 @@ abstract class Constants
      */
     const iFPX = 73;
 
-    /**
-     * Unique Card ID for transaction's made using FPX
-     *
-     */
-    const iMADA_MPGS = 74;
-
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
