@@ -14,7 +14,7 @@ INSERT INTO system.cardpricing_tbl (pricepointid, cardid, enabled) VALUES (-682,
 
 
 --//**********system.psp_tbl************//
-INSERT INTO system.psp_tbl (id, name, enabled, system_type, capture_method, installment) VALUES (57, 'MADA MPGS', true, 1, 0, 0);
+INSERT INTO system.psp_tbl (id, name, enabled, system_type) VALUES (57, 'MADA MPGS', true, 1);
 
 --//**********system.pspcard_tbl************//
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (71, 57, true);
