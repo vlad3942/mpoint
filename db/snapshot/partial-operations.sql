@@ -65,3 +65,41 @@ CREATE TRIGGER Update_TxnPassbook
     ON Log.txnpassbook_tbl
     FOR EACH ROW
 EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+
+alter table system.psp_tbl
+	add SupportedPartialOperations integer default 0 not null;
+
+comment on column system.psp_tbl.SupportedPartialOperations is 'Merchant''s Supported Partial Operations
+and PSP''s supported Partial Operations
+2 - Partial Capture
+3 - Partial Refund
+5 - Partial Cancel
+Possible values % (constants)
+30 % (2 || 3 || 5)   = Capture and Cancel and Refund
+15 % (3 || 5)	= Refund and Cancel
+10 % (2 || 5)	= Capture and Cancel
+6 % (2 || 3)	 = Capture and Refund
+5 % 5		= Cancel
+3 % 3		= Refund
+2 % 2		= Capture';
+
+
+
+
+alter table client.merchantaccount_tbl
+	add SupportedPartialOperations integer default 0 not null;
+
+comment on column system.psp_tbl.SupportedPartialOperations is 'Merchant''s Supported Partial Operations
+and PSP''s supported Partial Operations
+2 - Partial Capture
+3 - Partial Refund
+5 - Partial Cancel
+Possible values % (constants)
+30 % (2 || 3 || 5)   = Capture and Cancel and Refund
+15 % (3 || 5)	= Refund and Cancel
+10 % (2 || 5)	= Capture and Cancel
+6 % (2 || 3)	 = Capture and Refund
+5 % 5		= Cancel
+3 % 3		= Refund
+2 % 2		= Capture';

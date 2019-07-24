@@ -1396,6 +1396,7 @@ abstract class Constants
 	const sPassbookStatusInProgress = 'inprogress';
 	const sPassbookStatusDone = 'done';
 	const sPassbookStatusInvalid = 'invalid';
+	const sPassbookStatusError = 'error';
 
 }
 ?>

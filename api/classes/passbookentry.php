@@ -121,18 +121,27 @@ class PassbookEntry implements JsonSerializable
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getRequestedOperation()
     {
+        if($this->_requestedOperation === 0)
+        {
+            return null;
+        }
         return $this->_requestedOperation;
     }
 
+
     /**
-     * @return int
+     * @return int|null
      */
     public function getPerformedOperation()
     {
+        if($this->_performedOperation === 0)
+        {
+            return null;
+        }
         return $this->_performedOperation;
     }
 
