@@ -1377,5 +1377,31 @@ abstract class Constants
 	 * Unique Id for payment captured and callback sent
 	 */
     const iPAYMENT_CAPTURED_AND_CALLBACK_SENT = 1002;
+
+	/*
+	 * Passbook Operation Codes
+	 */
+    const iAuthorizeRequested = 5010;
+	const iCaptureRequested = 5011;
+	const iCancelRequested = 5012;
+	const iRefundRequested = 5013;
+	const iInitializeRequested = 5014;
+
+	/*
+	 * Passbook Error Code
+	 */
+	const iInvalidOperation = 6100;
+	const iOperationNotAllowed = 6200;
+	const iAmountIsHigher = 6201;
+
+	/*
+	 * Passbook Error Code
+	 */
+	const sPassbookStatusPending = 'pending';
+	const sPassbookStatusInProgress = 'inprogress';
+	const sPassbookStatusDone = 'done';
+	const sPassbookStatusInvalid = 'invalid';
+	const sPassbookStatusError = 'error';
+
 }
 ?>
