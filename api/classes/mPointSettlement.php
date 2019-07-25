@@ -164,8 +164,10 @@ abstract class mPointSettlement
         {
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
             $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-            $this->_sTransactionXML .= $obj_TxnInfo->toXML();
-            $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
+            $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($aStateIds);
+            $obj_UAProfile = null;
+            $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+            $this->_iTotalTransactionAmount += $captureAmount;
         }
         $this->_sTransactionXML .= "</transactions>";
 
