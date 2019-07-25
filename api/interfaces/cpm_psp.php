@@ -240,7 +240,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel($iStatus=null)
+	public function cancel($iStatus=null, $amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -258,11 +258,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
-		$b .= $this->_constTxnXML($this->getTxnInfo()->getAmount());
+		if($amount <= 0) {
+            $amount = $this->getTxnInfo()->getAmount();
+        }
+		$b .= $this->_constTxnXML($amount);
 		$b .= '</transactions>';
 		$b .= '</cancel>';
 		$b .= '</root>';
-
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
 		try
 		{
 			$iUpdateStatusCode = Constants::iPAYMENT_CANCELLED_STATE;
@@ -298,16 +301,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							          'transact'=>$this->getTxnInfo()->getExternalID(),
 							          'card-id'=>0);
 						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
+                        $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
 						return 1001;
 					}
 					return $iStatusCode;
 				}
-				else { throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+				else {
+				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+				    throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
 			}
-			else { throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+			else {
+			    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+			    throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
+		    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
 			trigger_error("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 			return $e->getCode();
 		}

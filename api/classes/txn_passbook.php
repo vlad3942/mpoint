@@ -515,7 +515,7 @@ final class TxnPassbook
                                 $code = $obj_PSP->capture($passbookEntry->getAmount());
                                 break;
                             case Constants::iPAYMENT_CANCELLED_STATE;
-                                $code = $obj_PSP->cancel($passbookEntry->getAmount());
+                                $code = $obj_PSP->cancel(null,$passbookEntry->getAmount());
                                 break;
                             case Constants::iPAYMENT_REFUNDED_STATE;
                                 $code = $obj_PSP->refund($passbookEntry->getAmount());

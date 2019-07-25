@@ -222,10 +222,32 @@ class ChaseSettlement extends mPointSettlement
 
 
                                         $finalDescription .= $response . "," . $rs["DESCRIPTION"];
+                                        $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
+                                        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
+                                        if ($txnPassbookObj instanceof TxnPassbook) {
+                                            $amount = 0;
+                                            $passbookState = 0;
+                                            $passbookStatus = '';
+                                            if ($recordType == "CAPTURE") {
+                                                $passbookState = Constants::iPAYMENT_CAPTURED_STATE;
+                                                $amount = $obj_TxnInfo->getFinalSettlementAmount(Constants::iPAYMENT_CAPTURED_STATE);
+                                            } else {
+                                                $passbookState = Constants::iPAYMENT_REFUNDED_STATE;
+                                                $amount=$obj_TxnInfo->getFinalSettlementAmount(Constants::iPAYMENT_REFUNDED_STATE);
+                                            }
+                                            if ($isSuccess === TRUE) {
+                                                $passbookStatus = Constants::sPassbookStatusDone;
+                                            } else {
+                                                $passbookStatus = Constants::sPassbookStatusError;
+                                            }
+
+                                            if ($passbookState !== 0) {
+                                                $txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
+                                            }
+                                        }
 
                                         if ($isSuccess === true)
                                         {
-                                            $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
                                             $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
                                             $args = [];
                                             if ($recordType == "CAPTURE") {
@@ -251,7 +273,6 @@ class ChaseSettlement extends mPointSettlement
                                             }
 
                                         }
-
                                         if ($isDescriptionUpdated === true) {
                                             $sql = "UPDATE log.settlement_record_tbl
                                             SET description = $1
