@@ -61,6 +61,8 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/eghl.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 $aMsgCds = array();
 
@@ -232,6 +234,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
 
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
+
+                            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID);
+                            $passbookEntry = new PassbookEntry
+                            (
+                                NULL,
+                                $obj_TxnInfo->getAmount(),
+                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                Constants::iInitializeRequested
+                            );
+                            if($txnPassbookObj instanceof TxnPassbook) {
+                                $txnPassbookObj->addEntry($passbookEntry);
+                                $txnPassbookObj->performPendingOperations();
+                            }
+
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="4030">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());

@@ -92,6 +92,9 @@ require_once(sCLASS_PATH . "/payment_processor.php");
 require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+require_once(sCLASS_PATH ."/amex.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");
 
@@ -175,6 +178,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
     if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'bulk-capture'}) > 0) {
         $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'bulk-capture'}["client-id"]);
+        $isConsolidate = (bool)$obj_ClientConfig->getAdditionalProperties(Constants::iPrivateProperty, 'cumulativesettlement');
+        $isCancelPriority = (bool)$obj_ClientConfig->getAdditionalProperties(Constants::iPrivateProperty, 'preferredvoidoperation');
         // Client successfully authenticated
         if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
             $xml = '<bulk-capture-response>';
@@ -192,7 +197,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $sToken = $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token'];
                             $obj_TxnInfo = TxnInfo::produceTxnInfoFromExternalRef($_OBJ_DB, $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token']);
                         }
-
+                         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
                         $isAIDAlreadyUpdated = false;
                         if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE,Constants::iPAYMENT_CANCELLED_STATE,Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REFUND_INITIATED_STATE)))
                         {
@@ -223,7 +228,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     }
                                 }
-
                             }
                             $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$txnAdditionalData,$obj_TxnInfo->getID());
                         }
@@ -256,14 +260,52 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                              }
                                              $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
                                         }
+                                        $captureAmount = 0;
+                                        $voidAmount = 0;
                                         if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
-                                                $iDBAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
-                                                $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
-                                            } elseif ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'CR') {
-                                                $iCRAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
-                                                $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
+                                            $captureAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
+                                            $iDBAmount += $captureAmount;
+                                            $iAmount += $captureAmount;
+                                        } elseif ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'CR') {
+                                            $voidAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
+                                            $iCRAmount += $voidAmount;
+                                            $iAmount += $voidAmount;
+                                        }
+
+                                        $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->xpath("//param[@name='TicketNumber']")[1];
+                                        try {
+                                            if ($txnPassbookObj instanceof TxnPassbook) {
+
+                                                if ($captureAmount > 0) {
+                                                    $passbookEntry = new PassbookEntry
+                                                    (
+                                                        NULL,
+                                                        $captureAmount,
+                                                        $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                                        Constants::iCaptureRequested,
+                                                        $ticketNumber,
+                                                        'log.additional_data_tbl  - TicketNumber'
+                                                    );
+                                                    $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                }
+                                                if ($voidAmount > 0) {
+                                                    $passbookEntry = new PassbookEntry
+                                                    (
+                                                        NULL,
+                                                        $voidAmount,
+                                                        $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                                        Constants::iVoidRequested,
+                                                        $ticketNumber,
+                                                        'log.additional_data_tbl - TicketNumber'
+                                                    );
+                                                    $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                }
                                             }
+                                        } catch (Exception $e) {
+                                            trigger_error($e, E_USER_WARNING);
+                                        }
                                     }
+
                                     if ($isAIDAlreadyUpdated === false &&  count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
                                         for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k < $kMax; $k++) {
                                             $data['flights'] = array();
@@ -329,7 +371,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $sMessage = '';
                             $code=0;
                             //AS Discussion with UATP for now scope is full capture and cancel
-                            if(((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) && ((int)$iDBAmount === (int)$iCRAmount)) {
+                         /*   if(((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) && ((int)$iDBAmount === (int)$iCRAmount)) {
 
                                 $code = $obj_PSP->refund($iCRAmount);
                                 $sMessage = "PSP returned code ".$code;
@@ -355,6 +397,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $code = 999;
                                 $sMessage = 'Amount mismatch';
+                            }*/
+
+                            try {
+                                $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate);
+                                $code = reset($codes);
+                            } catch (Exception $e) {
+                                 trigger_error($e, E_USER_WARNING);
                             }
 
                             if ($code > 0 && ($code === 1000 || $code === 1001) )
