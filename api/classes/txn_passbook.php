@@ -61,6 +61,8 @@ final class TxnPassbook
     }
 
     /**
+     * @param object
+     * @param int
      * @return mixed|TxnPassbook|null
      */
     public static function Get()
@@ -148,22 +150,75 @@ final class TxnPassbook
 
     /**
      * Validate the new passbook entry and add to passbook
+     *
      * @param PassbookEntry $passbookEntry
      *
+     * @param bool          $isCancelPriority
+     *
      * @return array|void
-     * @throws Exception
+     * @throws \Exception
      */
-    public function addEntry(PassbookEntry $passbookEntry)
+    public function addEntry(PassbookEntry $passbookEntry, $isCancelPriority = FALSE)
     {
-        $validateEntryResponse = $this->validateEntry($passbookEntry);
-        if ($validateEntryResponse['Status'] === 0) {
-            $_addEntryResponse = $this->_addEntry($passbookEntry);
-            if ($_addEntryResponse['Status'] !== 0) {
-                $validateEntryResponse = $_addEntryResponse;
+        $validateEntryResponse = null;
+        $passbookEntries = array($passbookEntry);
+        if($passbookEntry->getRequestedOperation() === Constants::iVoidRequested)
+        {
+            $passbookEntries = $this->_segregateVoidEntry($passbookEntry, $isCancelPriority);
+        }
+        foreach ($passbookEntries as $_passbookEntry) {
+            $validateEntryResponse = $this->validateEntry($_passbookEntry);
+            if ($validateEntryResponse['Status'] === 0) {
+                $_addEntryResponse = $this->_addEntry($_passbookEntry);
+                if ($_addEntryResponse['Status'] !== 0) {
+                    $validateEntryResponse = $_addEntryResponse;
+                }
             }
         }
         return $validateEntryResponse;
+    }
 
+    private function _segregateVoidEntry(PassbookEntry $passbookEntry, $isCancelPriority = FALSE)
+    {
+        $cancelAmount = 0;
+        $refundAmount = 0;
+        if ($isCancelPriority === TRUE) {
+            $cancelAmount = $this->_getCancelableAmount();
+            $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
+        } else {
+            $refundAmount = $this->_getRefundableAmount();
+            $cancelAmount = $passbookEntry->getAmount() - $this->_getRefundableAmount();
+        }
+
+        $newPassbookEntries = array();
+        if ($cancelAmount > 0) {
+            $newCancelPassbookEntry = new PassbookEntry(
+                $passbookEntry->getId(),
+                $cancelAmount,
+                $passbookEntry->getCurrencyId(),
+                Constants::iCancelRequested,
+                $passbookEntry->getExternalReference(),
+                $passbookEntry->getExternalReferenceIdentifier(),
+                $passbookEntry->getPerformedOperation(),
+                $passbookEntry->getStatus()
+            );
+            array_push($newPassbookEntries, $newCancelPassbookEntry);
+        }
+        // $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
+        if ($refundAmount > 0) {
+            $newRefundPassbookEntry = new PassbookEntry(
+                $passbookEntry->getId(),
+                $refundAmount,
+                $passbookEntry->getCurrencyId(),
+                Constants::iRefundRequested,
+                $passbookEntry->getExternalReference(),
+                $passbookEntry->getExternalReferenceIdentifier(),
+                $passbookEntry->getPerformedOperation(),
+                $passbookEntry->getStatus()
+            );
+            array_push($newPassbookEntries, $newRefundPassbookEntry);
+        }
+        return $newPassbookEntries;
     }
 
     /**
@@ -185,7 +240,7 @@ final class TxnPassbook
         } elseif ($requestedOperation === Constants::iRefundRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_refundedAmount, $passbookEntry->getAmount(), $this->_getRefundableAmount(), $this->isPartialRefundSupported());
         } elseif ($requestedOperation === Constants::iAuthorizeRequested) {
-            if ($this->_initializedAmount >= $passbookEntry->getAmount()) {
+            if ($this->_authorizedAmount === 0 && $this->_initializedAmount >= $passbookEntry->getAmount()) {
                 $validateOperationResponse['Status'] = 0;
                 $validateOperationResponse['Message'] = '';
             }
@@ -211,32 +266,32 @@ final class TxnPassbook
                         SELECT COALESCE(SUM(amount),0) as IntializedAmount
                          FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
                          WHERE performedopt = " . Constants::iINPUT_VALID_STATE . "
-                           AND status = 'done'
+                           AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                            AND transactionid = $1
                      ) As query0, 
                      
                      (  SELECT COALESCE(SUM(amount),0) as AuthorizedAmount
                          FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
                          WHERE performedopt = " . Constants::iPAYMENT_ACCEPTED_STATE . "
-                           AND status = 'done'
+                           AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                            AND transactionid = $1 ) As query1,
                 
                      (SELECT COALESCE(SUM(amount),0) as CapturedAmount
                       FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
                       WHERE performedopt = " . Constants::iPAYMENT_CAPTURE_INITIATED_STATE . "
-                        AND status = 'done'
+                        AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                         AND transactionid = $1) AS query2,
                 
                      (SELECT COALESCE(SUM(amount),0) as CancelledAmount
                       FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
                       WHERE performedopt =  " . Constants::iPAYMENT_CANCELLED_STATE . "
-                        AND status = 'done'
+                        AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                         AND transactionid = $1) AS query3,
                 
                      (SELECT COALESCE(SUM(amount),0) as RefundedAmount
                       FROM log.txnpassbook_tbl
                       WHERE performedopt =  " . Constants::iPAYMENT_REFUNDED_STATE . "
-                        AND status = 'done'
+                        AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                         AND transactionid = $1) AS query4,
                 
                      (SELECT COALESCE(SUM(amount),0) as CaptureAmount
@@ -285,7 +340,7 @@ final class TxnPassbook
      * @param $usedAmount
      * @param $requestedAmount
      * @param $allowableAmount
-     * @param $isPartialCaptureSupported
+     * @param $isMultiplePartialSupported
      *
      * @return array
      */
@@ -338,7 +393,7 @@ final class TxnPassbook
     /**
      * @return bool
      */
-    public function isPartialCaptureSupported()
+    private function isPartialCaptureSupported()
     {
         $this->getSupportedPartialOperation();
         return $this->_isPartialCaptureSupported;
@@ -385,7 +440,7 @@ final class TxnPassbook
     /**
      * @return bool
      */
-    public function isPartialCancelSupported()
+    private function isPartialCancelSupported()
     {
         $this->getSupportedPartialOperation();
         return $this->_isPartialCancelSupported;
@@ -394,7 +449,7 @@ final class TxnPassbook
     /**
      * @return bool
      */
-    public function isPartialRefundSupported()
+    private function isPartialRefundSupported()
     {
         $this->getSupportedPartialOperation();
         return $this->_isPartialRefundSupported;
@@ -403,7 +458,7 @@ final class TxnPassbook
     /**
      * @return mixed
      */
-    public function getDBConn()
+    private function getDBConn()
     {
         return $this->_obj_Db;
     }
@@ -416,9 +471,9 @@ final class TxnPassbook
      *
      * @throws \Exception
      */
-    public function performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate = FALSE, $isRetryRequest = FALSE)
+    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isRetryRequest = FALSE)
     {
-        //$this->_addEntry()
+        $codes = array();
         if ($isRetryRequest === FALSE) {
             $this->getDBConn()->query('START TRANSACTION');
             $status = $this->_createPerformingOperations($isConsolidate);
@@ -456,7 +511,6 @@ final class TxnPassbook
                         $code = -1;
                         switch ($passbookEntry->getPerformedOperation())
                         {
-
                             case Constants::iPAYMENT_CAPTURED_STATE;
                                 $code = $obj_PSP->capture($passbookEntry->getAmount());
                                 break;
@@ -467,6 +521,7 @@ final class TxnPassbook
                                 $code = $obj_PSP->refund($passbookEntry->getAmount());
                                 break;
                         }
+                        $codes[$passbookEntry->getPerformedOperation()] = $code;
                         if($code === 100 ||$code === 1000 || $code === 1001)
                         {
                             $passbookEntry->setStatus(Constants::sPassbookStatusInProgress);
@@ -480,6 +535,7 @@ final class TxnPassbook
                 }
             }
         }
+        return $codes;
     }
 
     /**
@@ -567,7 +623,7 @@ final class TxnPassbook
 
             if ($entry instanceof PassbookEntry && $entry->getStatus() === Constants::sPassbookStatusPending) {
 
-                $entry->setStatus(Constants::sPassbookStatusInProgress);
+                $entry->setStatus(Constants::sPassbookStatusDone);
                 $currency = $entry->getCurrencyId();
                 array_push($aUpdatedEntries, $entry);
 
@@ -628,7 +684,7 @@ final class TxnPassbook
                 $newEntry->amount = $capturing;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_CAPTURED_STATE;
-                $newEntry->externalId = implode(',', $captureIds);
+                $newEntry->externalId = implode(',', $captureIds) . ',' . implode(',', $refundIds);
                 array_push($aPerformingData, $newEntry);
             }
 
@@ -639,13 +695,14 @@ final class TxnPassbook
                 $newEntry->amount = $refunding;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_REFUNDED_STATE;
-                $newEntry->externalId = implode(',', $refundIds);
+                $newEntry->externalId = iimplode(',', $captureIds) . ',' .implode(',', $refundIds);
                 array_push($aPerformingData, $newEntry);
             }
 
             $cancelling = $this->_cancelAmount - ($this->_refundAmount - $refunding);
             if ($capturing === 0) {
                 $cancelling += $this->_captureAmount;
+                $cancelIds = array_merge($cancelIds, $captureIds);
             }
 
             if ($cancelling > 0) {
@@ -653,7 +710,7 @@ final class TxnPassbook
                 $newEntry->amount = $cancelling;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_CANCELLED_STATE;
-                $newEntry->externalId = implode(',', $cancelIds);
+                $newEntry->externalId = implode(',', $cancelIds). ',' .implode(',', $refundIds);
                 array_push($aPerformingData, $newEntry);
             }
         }
@@ -704,4 +761,31 @@ final class TxnPassbook
         }
         return FALSE;
     }
+
+    public function updateInProgressOperations($amount, $state, $status)
+    {
+        $amount  = (int)$amount;
+        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE transactionid = $2 and amount = $3 and performedopt = $4;';
+        if ($sqlQuery != '') {
+            $res = $this->getDBConn()->prepare($sqlQuery);
+            if (is_resource($res) === TRUE) {
+                $aParams = array(
+                    $status,
+                    $this->getTransactionId(),
+                    $amount,
+                    $state
+                );
+                $result = $this->getDBConn()->execute($res, $aParams);
+                if ($result === FALSE) {
+                    throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+                    return FALSE;
+                }
+
+            }
+        }
+        return TRUE;
+
+
+    }
+
 }
