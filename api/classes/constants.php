@@ -1386,6 +1386,7 @@ abstract class Constants
 	const iCancelRequested = 5012;
 	const iRefundRequested = 5013;
 	const iInitializeRequested = 5014;
+	const iVoidRequested = 5015;
 
 	/*
 	 * Passbook Error Code

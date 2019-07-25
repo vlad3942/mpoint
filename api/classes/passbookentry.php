@@ -81,7 +81,7 @@ class PassbookEntry implements JsonSerializable
      * @param $externalReference
      * @param $externalReferenceIdentifier
      */
-    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference, $externalReferenceIdentifier, $performedOperation, $status, $enabled, $created, $modified)
+    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL)
     {
         $this->_id = (int)$id;
         $this->_amount = (int)$amount;
@@ -162,12 +162,12 @@ class PassbookEntry implements JsonSerializable
      */
     public function setStatus($status)
     {
-        if (Constants::sPassbookStatusPending === $status || Constants::sPassbookStatusInProgress === $status || Constants::sPassbookStatusDone === $status || Constants::sPassbookStatusInvalid === $status) {
+        if (Constants::sPassbookStatusPending === $status || Constants::sPassbookStatusInProgress === $status || Constants::sPassbookStatusDone === $status || Constants::sPassbookStatusInvalid === $status || Constants::sPassbookStatusError === $status) {
             $this->_status = $status;
         }
         else
         {
-            throw new Exception('Invalid entry status  :' . $status, E_USER_ERROR);
+            throw new Exception('Invalid entry status  : ' . $status, E_USER_ERROR);
         }
 
     }
