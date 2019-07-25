@@ -251,11 +251,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                             // Single Sign-On
+                            $bIsSingleSingOnPass = false;
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
                             $authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
                             if (empty($authenticationURL) === false && empty($authToken)=== false)
                             {
-                                $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
                                 if (is_object($obj_CustomerInfo)) {
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());

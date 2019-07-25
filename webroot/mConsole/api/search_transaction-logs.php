@@ -141,17 +141,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				$obj_CustomerInfo = CustomerInfo::produceInfo($obj_DOM->{'search-transaction-logs'}->transaction->customer);
 			}
 			
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}); $j++)
-			{				
-				$aPspIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}[$j];
+			if(isset($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}) === true && count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}) > 0) {
+				for ($j = 0; $j < count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}); $j++) {
+					$aPspIDs[] = (integer)$obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}[$j];
+				}
 			}
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}); $j++)
-			{				
-				$aCardIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}[$j];
+			if(isset($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}) === true && count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}) > 0) {
+				for ($j = 0; $j < count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}); $j++) {
+					$aCardIDs[] = (integer)$obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}[$j];
+				}
 			}
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}); $j++)
-			{				
-				$aStateIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}[$j];
+			if(isset($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}) === true && count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}) > 0) {
+				for ($j = 0; $j < count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}); $j++) {
+					$aStateIDs[] = (integer)$obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}[$j];
+				}
 			}
             $sTimeZoneOffset = "0";
             if(count($obj_DOM->{'search-transaction-logs'}->UTCOffset)>0) { $sTimeZoneOffset = $obj_DOM->{'search-transaction-logs'}->UTCOffset;}

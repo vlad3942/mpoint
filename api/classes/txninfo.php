@@ -1160,6 +1160,8 @@ class TxnInfo
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
             if (array_key_exists("sessiontype", $misc) === false) { $misc["sessiontype"] = 1; }
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
+			if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 0 ; }
+			if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = 0 ; }
 
             if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;

@@ -1583,7 +1583,7 @@ msgstr @@@ Welcome to {CLIENT} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
 
-#: /api/classes/credit_card.php:128
+#: /api/classes/credit_card.php:129
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 

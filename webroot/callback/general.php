@@ -234,9 +234,9 @@ try
         foreach ($aAddtionalData as $addtionalData)
         {
             $additionalTxnDataIndex++;
-            $txnData = explode('=', $addtionalData);
-            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$txnData[0];;
-            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$txnData[1];
+            list($firstname, $lastname) = explode('=', $addtionalData);
+            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$firstname;
+            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$lastname;
             $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
         }
         if($additionalTxnDataIndex > -1)
