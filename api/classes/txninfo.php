@@ -1771,8 +1771,6 @@ class TxnInfo
 		$captureAmount = isset($messageData[0]['data'])?(int)$messageData[0]['data']:0;
 		if ($captureAmount === 0) {
 			$captureAmount = -1;
-		} else {
-			$captureAmount = $this->getAmount();
 		}
 		return $captureAmount;
 	}

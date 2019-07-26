@@ -224,16 +224,16 @@ class ChaseSettlement extends mPointSettlement
                                         $finalDescription .= $response . "," . $rs["DESCRIPTION"];
                                         $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
                                         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
+                                        $amount = 0;
                                         if ($txnPassbookObj instanceof TxnPassbook) {
-                                            $amount = 0;
                                             $passbookState = 0;
                                             $passbookStatus = '';
                                             if ($recordType == "CAPTURE") {
                                                 $passbookState = Constants::iPAYMENT_CAPTURED_STATE;
-                                                $amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE);
+                                                $amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
                                             } else {
                                                 $passbookState = Constants::iPAYMENT_REFUNDED_STATE;
-                                                $amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,Constants::iPAYMENT_REFUNDED_STATE);
+                                                $amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
                                             }
                                             if ($isSuccess === TRUE) {
                                                 $passbookStatus = Constants::sPassbookStatusDone;
@@ -251,9 +251,9 @@ class ChaseSettlement extends mPointSettlement
                                             $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
                                             $args = [];
                                             if ($recordType == "CAPTURE") {
-                                                $obj_PSP->completeCapture($obj_TxnInfo->getAmount(), $obj_TxnInfo->getFee());
+                                                $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
                                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $obj_TxnInfo->getAmount(),
+                                                    "amount" => $amount,
                                                     "fee" => $obj_TxnInfo->getFee());
                                                 if (strlen($obj_TxnInfo->getCallbackURL()) > 0) {
                                                     $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
@@ -264,7 +264,7 @@ class ChaseSettlement extends mPointSettlement
                                             {
                                                 $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
                                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $obj_TxnInfo->getAmount());
+                                                    "amount" => $amount);
 
                                                 if (strlen($obj_TxnInfo->getCallbackURL()) > 0)
                                                 {

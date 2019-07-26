@@ -353,7 +353,7 @@ final class TxnPassbook
             $response['Status'] = Constants::iAmountIsHigher;
             $response['Message'] = 'Operation Not Allowed - Invalid Amount';
         }
-        elseif ($usedAmount === 0 && $allowableAmount === $this->_authorizedAmountx) {
+        elseif ($usedAmount === 0 && $allowableAmount === $this->_authorizedAmount) {
             $response['Status'] = 0;
         }
         elseif ($usedAmount > 0 && $isMultiplePartialSupported === FALSE) {
@@ -699,7 +699,12 @@ final class TxnPassbook
                 array_push($aPerformingData, $newEntry);
             }
 
-            $cancelling = $this->_cancelAmount - ($this->_refundAmount - $refunding);
+            $cancelling = 0;
+            if(($this->_refundAmount - $refunding) >= -1)
+            {
+                $cancelling = $this->_refundAmount - $refunding;
+            }
+            $cancelling += $this->_cancelAmount;
             /*if ($capturing === 0) {
                 $cancelling += $this->_captureAmount;
                 $cancelIds = array_merge($cancelIds, $captureIds);
