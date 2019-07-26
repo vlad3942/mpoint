@@ -8,6 +8,8 @@ require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sINTERFACE_PATH . '/cpm_psp.php';
 require_once sCLASS_PATH . '/mobilepay.php';
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 class MobilePayCancelTest extends baseAPITest
 {

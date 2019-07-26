@@ -110,6 +110,8 @@ require_once(sCLASS_PATH ."/validate.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/global-payments.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 set_time_limit(120);
 $aMsgCds = array();
