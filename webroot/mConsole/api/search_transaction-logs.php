@@ -140,20 +140,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_CustomerInfo = CustomerInfo::produceInfo($obj_DOM->{'search-transaction-logs'}->transaction->customer);
 			}
-			
-			if(isset($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}) === true && count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}) > 0) {
-				for ($j = 0; $j < count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}); $j++) {
-					$aPspIDs[] = (integer)$obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}[$j];
+
+			$obj_PSP = $obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'};
+			if(isset($obj_PSP) === true && count($obj_PSP) > 0) {
+				for ($j = 0; $j < count($obj_PSP); $j++) {
+					$aPspIDs[] = (integer)$obj_PSP[$j];
 				}
 			}
-			if(isset($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}) === true && count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}) > 0) {
-				for ($j = 0; $j < count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}); $j++) {
-					$aCardIDs[] = (integer)$obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}[$j];
+
+			$obj_Card = $obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'};
+			if(isset($obj_Card) === true && count($obj_Card) > 0) {
+				for ($j = 0; $j < count($obj_Card); $j++) {
+					$aCardIDs[] = (integer)$obj_Card[$j];
 				}
 			}
-			if(isset($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}) === true && count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}) > 0) {
-				for ($j = 0; $j < count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}); $j++) {
-					$aStateIDs[] = (integer)$obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}[$j];
+
+			$obj_State = $obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'};
+			if(isset($obj_State) === true && count($obj_State) > 0) {
+				for ($j = 0; $j < count($obj_State); $j++) {
+					$aStateIDs[] = (integer)$obj_State[$j];
 				}
 			}
             $sTimeZoneOffset = "0";
