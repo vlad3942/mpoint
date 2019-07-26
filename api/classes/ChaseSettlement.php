@@ -230,10 +230,10 @@ class ChaseSettlement extends mPointSettlement
                                             $passbookStatus = '';
                                             if ($recordType == "CAPTURE") {
                                                 $passbookState = Constants::iPAYMENT_CAPTURED_STATE;
-                                                $amount = $obj_TxnInfo->getFinalSettlementAmount(Constants::iPAYMENT_CAPTURED_STATE);
+                                                $amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE);
                                             } else {
                                                 $passbookState = Constants::iPAYMENT_REFUNDED_STATE;
-                                                $amount=$obj_TxnInfo->getFinalSettlementAmount(Constants::iPAYMENT_REFUNDED_STATE);
+                                                $amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,Constants::iPAYMENT_REFUNDED_STATE);
                                             }
                                             if ($isSuccess === TRUE) {
                                                 $passbookStatus = Constants::sPassbookStatusDone;
