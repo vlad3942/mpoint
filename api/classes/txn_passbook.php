@@ -700,10 +700,10 @@ final class TxnPassbook
             }
 
             $cancelling = $this->_cancelAmount - ($this->_refundAmount - $refunding);
-            if ($capturing === 0) {
+            /*if ($capturing === 0) {
                 $cancelling += $this->_captureAmount;
                 $cancelIds = array_merge($cancelIds, $captureIds);
-            }
+            }*/
 
             if ($cancelling > 0) {
                 $newEntry = new stdClass();
