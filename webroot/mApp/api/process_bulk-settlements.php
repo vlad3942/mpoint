@@ -178,8 +178,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
     if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'bulk-capture'}) > 0) {
         $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'bulk-capture'}["client-id"]);
-        $isConsolidate = (bool)$obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement');
-        $isCancelPriority = (bool)$obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation');
+        $isConsolidate = ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement') === 'true')? true:false;
+        $isCancelPriority = ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation') === 'true')? true:false;
         // Client successfully authenticated
         if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
             $xml = '<bulk-capture-response>';

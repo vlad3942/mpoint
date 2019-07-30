@@ -71,16 +71,16 @@ final class TxnPassbook
         $aArgs = func_get_args();
         if (count($aArgs) === 2) {
             $requestedTxnId = $aArgs[1];
-            foreach (self::$instances as $txnid => $instance) {
-                if ((self::$instance instanceof self) === TRUE && $txnid === $requestedTxnId) {
-                    $txnPassbookInstance = $instance;
+            if (empty(self::$instances) === false) {
+                foreach (self::$instances as $txnid => $instance) {
+                    if (($instance instanceof self) === TRUE && $txnid === $requestedTxnId) {
+                        $txnPassbookInstance = $instance;
+                    }
                 }
-            }
-            if ($txnPassbookInstance === NULL) {
+            } else {
                 $txnPassbookInstance = new TxnPassbook(func_get_args());
                 self::$instances[$requestedTxnId] = $txnPassbookInstance;
             }
-
         }
         return $txnPassbookInstance;
     }
@@ -183,11 +183,25 @@ final class TxnPassbook
         $cancelAmount = 0;
         $refundAmount = 0;
         if ($isCancelPriority === TRUE) {
-            $cancelAmount = $this->_getCancelableAmount();
-            $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
+            if($passbookEntry->getAmount() <= $this->_getCancelableAmount()) {
+                $cancelAmount = $passbookEntry->getAmount();
+                $refundAmount = 0;
+            }
+            else
+            {
+                $cancelAmount = $this->_getCancelableAmount();
+                $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
+            }
         } else {
-            $refundAmount = $this->_getRefundableAmount();
-            $cancelAmount = $passbookEntry->getAmount() - $this->_getRefundableAmount();
+            if($passbookEntry->getAmount() <= $this->_getRefundableAmount()) {
+                $refundAmount = $passbookEntry->getAmount();
+                $cancelAmount = 0;
+            }
+            else
+            {
+                $refundAmount = $this->_getRefundableAmount();
+                $cancelAmount = $passbookEntry->getAmount() - $this->_getRefundableAmount();
+            }
         }
 
         $newPassbookEntries = array();
@@ -469,6 +483,7 @@ final class TxnPassbook
      * @param bool $isConsolidate
      * @param bool $isRetryRequest
      *
+     * @return array
      * @throws \Exception
      */
     public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isRetryRequest = FALSE)
@@ -689,6 +704,13 @@ final class TxnPassbook
             }
 
             $refunding = $this->_refundAmount - $this->_captureAmount;
+            $diff = 0;
+            if($refunding < 0)
+            {
+                $refunding = 0;
+            } else {
+                $diff = $this->_refundAmount - $refunding;
+            }
 
             if ($refunding > 0) {
                 $newEntry = new stdClass();
@@ -699,12 +721,7 @@ final class TxnPassbook
                 array_push($aPerformingData, $newEntry);
             }
 
-            $cancelling = 0;
-            if(($this->_refundAmount - $refunding) >= -1)
-            {
-                $cancelling = $this->_refundAmount - $refunding;
-            }
-            $cancelling += $this->_cancelAmount;
+            $cancelling = $diff + $this->_cancelAmount;
             /*if ($capturing === 0) {
                 $cancelling += $this->_captureAmount;
                 $cancelIds = array_merge($cancelIds, $captureIds);
