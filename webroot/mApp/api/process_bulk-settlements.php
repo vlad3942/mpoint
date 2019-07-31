@@ -198,11 +198,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $obj_TxnInfo = TxnInfo::produceTxnInfoFromExternalRef($_OBJ_DB, $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token']);
                         }
                          $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
-                        $isAIDAlreadyUpdated = false;
-                        if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE,Constants::iPAYMENT_CANCELLED_STATE,Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REFUND_INITIATED_STATE)))
-                        {
-                            $isAIDAlreadyUpdated=  true;
-                        }
 
                         if (empty($obj_TxnInfo) === false) {
                             $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID()), $aHTTP_CONN_INFO);
@@ -235,31 +230,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) === 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
                                 for ($j = 0, $jMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j < $jMax; $j++) {
                                     if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
-                                        if($isAIDAlreadyUpdated === false) {
-                                            if($obj_TxnInfo->getCurrencyConfig()->getID() !== (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id'])
-                                            {
-                                                throw new mPointException("Currency mismatch for token : ".$sToken." expected ".$obj_TxnInfo->getCurrencyConfig()->getID(), 999 );
-                                            }
-                                            $data['orders'] = array();
-                                            $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
-                                            $data['orders'][0]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
-                                            $data['orders'][0]['product-description'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->description;
-                                            $data['orders'][0]['product-image-url'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'image-url'};
-                                            $data['orders'][0]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
-                                            $data['orders'][0]['country-id'] = $obj_TxnInfo->getCountryConfig()->getID();
-                                            $data['orders'][0]['points'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->points;
-                                            $data['orders'][0]['reward'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->reward;
-                                            $data['orders'][0]['quantity'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->quantity;
 
-                                             if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'})) {
-                                                for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k < $kMax; $k++) {
-                                                    $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
-                                                    $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
-                                                    $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
-                                                }
-                                             }
-                                             $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+                                        if($obj_TxnInfo->getCurrencyConfig()->getID() !== (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id'])
+                                        {
+                                            throw new mPointException("Currency mismatch for token : ".$sToken." expected ".$obj_TxnInfo->getCurrencyConfig()->getID(), 999 );
                                         }
+                                        $data['orders'] = array();
+                                        $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
+                                        $data['orders'][0]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
+                                        $data['orders'][0]['product-description'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->description;
+                                        $data['orders'][0]['product-image-url'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'image-url'};
+                                        $data['orders'][0]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
+                                        $data['orders'][0]['country-id'] = $obj_TxnInfo->getCountryConfig()->getID();
+                                        $data['orders'][0]['points'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->points;
+                                        $data['orders'][0]['reward'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->reward;
+                                        $data['orders'][0]['quantity'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->quantity;
+
+                                         if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'})) {
+                                            for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k < $kMax; $k++) {
+                                                $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
+                                                $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
+                                                $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
+                                            }
+                                         }
+                                         $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+
                                         $captureAmount = 0;
                                         $voidAmount = 0;
                                         if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
@@ -306,7 +301,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                     }
 
-                                    if ($isAIDAlreadyUpdated === false &&  count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
+                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
                                         for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k < $kMax; $k++) {
                                             $data['flights'] = array();
                                             $data['additional'] = array();
@@ -340,7 +335,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                     }
 
-                                    if ($isAIDAlreadyUpdated === false && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0) {
+                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0) {
                                         for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k < $kMax; $k++) {
                                             $data['passenger'] = array();
                                             $data['additionalp'] = array();
@@ -370,35 +365,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $sMessage = '';
                             $code=0;
-                            //AS Discussion with UATP for now scope is full capture and cancel
-                         /*   if(((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) && ((int)$iDBAmount === (int)$iCRAmount)) {
-
-                                $code = $obj_PSP->refund($iCRAmount);
-                                $sMessage = "PSP returned code ".$code;
-                            }
-                            else if((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) {
-                                $code= 1000;
-                                if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE)) === false) {
-                                    $code = (int)$obj_PSP->capture($iDBAmount);
-                                    $sMessage = "PSP returned code ".$code;
-                                }
-                                else
-                                {
-                                    $sMessage = "Transaction already submitted for Capture";
-                                }
-                            }
-
-                            elseif ((int)$obj_TxnInfo->getAmount() === (int)$iCRAmount )
-                            {
-                                $code = (int)$obj_PSP->refund($iCRAmount);
-                                $sMessage = "PSP returned code ".$code;
-                            }
-                            else
-                            {
-                                $code = 999;
-                                $sMessage = 'Amount mismatch';
-                            }*/
-
                             try {
                                 $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate);
                                 $code = reset($codes);
@@ -408,11 +374,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             if ($code > 0 && ($code === 1000 || $code === 1001) )
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , '.$sMessage. '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , PSP returned code '.$code. '</status>';
                             }
                             else if($code !== 0)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed, '.$sMessage. '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed , PSP returned code '.$code. '</status>';
                             }
                         }
                     } catch (mPointException $e) {
