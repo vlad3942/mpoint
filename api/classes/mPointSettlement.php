@@ -87,6 +87,19 @@ abstract class mPointSettlement
 
         $this->_getPSPConfiguration($_OBJ_DB);
 
+        $aStateMapping = array(
+            Constants::iPAYMENT_CAPTURE_INITIATED_STATE => Constants::iPAYMENT_CAPTURED_STATE,
+            Constants::iPAYMENT_CANCEL_INITIATED_STATE => Constants::iPAYMENT_CANCELLED_STATE,
+            Constants::iPAYMENT_REFUND_INITIATED_STATE => Constants::iPAYMENT_REFUNDED_STATE
+        );
+
+        $aFinalStateMappings = array();
+
+        foreach ($aStateIds as $stateId)
+        {
+            array_push($aFinalStateMappings, $aStateMapping[$stateId]);
+        }
+
         $iBatchLimit = 200;
         $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
         if($sSettlementBatchLimit != '')
@@ -156,8 +169,32 @@ abstract class mPointSettlement
             }
         }
 
-        $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+        $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+
+        $arrayPartialOperations = [];
+        $sql = $sql = "SELECT DISTINCT  T.id AS ID
+                FROM log." . sSCHEMA_POSTFIX . "Transaction_Tbl T
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "txnpassbook_Tbl TP ON T.id = TP.transactionid
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_record_tbl SRT on SRT.transactionid = T.id
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                  WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
+                  AND TP.status = '".Constants::sPassbookStatusInProgress."' 
+                  AND ST.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'
+                  AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId;
+
+        $aRS = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs) {
+                $transactionId = (int)$rs["ID"];
+                array_push($arrayPartialOperations,$transactionId);
+            }
+        }
+
+        $this->_arrayTransactionIds = array_values(array_merge($this->_arrayTransactionIds, $arrayPartialOperations));
+
         $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
+
         $this->_sTransactionXML = "<transactions>";
 
         foreach ($this->_arrayTransactionIds as $transactionId)
