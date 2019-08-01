@@ -292,7 +292,7 @@ final class TxnPassbook
                 
                      (SELECT COALESCE(SUM(amount),0) as CapturedAmount
                       FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                      WHERE performedopt = " . Constants::iPAYMENT_CAPTURE_INITIATED_STATE . "
+                      WHERE performedopt = " . Constants::iPAYMENT_CAPTURED_STATE . "
                         AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                         AND transactionid = $1) AS query2,
                 
