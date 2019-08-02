@@ -162,6 +162,7 @@ final class TxnPassbook
     {
         $validateEntryResponse = null;
         $passbookEntries = array($passbookEntry);
+        $this->_getUpdatedTransactionAmounts();
         if($passbookEntry->getRequestedOperation() === Constants::iVoidRequested)
         {
             $passbookEntries = $this->_segregateVoidEntry($passbookEntry, $isCancelPriority);
@@ -245,7 +246,6 @@ final class TxnPassbook
     private function validateEntry(PassbookEntry $passbookEntry)
     {
         $requestedOperation = $passbookEntry->getRequestedOperation();
-        $this->_getUpdatedTransactionAmounts();
         $validateOperationResponse = array();
         if ($requestedOperation === Constants::iCaptureRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_capturedAmount, $passbookEntry->getAmount(), $this->_getCapturebleAmount(), $this->isPartialCaptureSupported());
@@ -717,7 +717,7 @@ final class TxnPassbook
                 $newEntry->amount = $refunding;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_REFUNDED_STATE;
-                $newEntry->externalId = iimplode(',', $captureIds) . ',' .implode(',', $refundIds);
+                $newEntry->externalId = implode(',', $captureIds) . ',' .implode(',', $refundIds);
                 array_push($aPerformingData, $newEntry);
             }
 
