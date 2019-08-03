@@ -191,7 +191,7 @@ abstract class mPointSettlement
             }
         }
 
-        $this->_arrayTransactionIds = array_values(array_merge($this->_arrayTransactionIds, $arrayPartialOperations));
+        $this->_arrayTransactionIds = array_values(array_unique(array_merge($this->_arrayTransactionIds, $arrayPartialOperations)));
 
         $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
 
