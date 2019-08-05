@@ -228,6 +228,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
 
                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) === 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
+                                $aResponse = array();
                                 for ($j = 0, $jMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j < $jMax; $j++) {
                                     if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
 
@@ -267,7 +268,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $iAmount += $voidAmount;
                                         }
 
-                                        $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->xpath("//param[@name='TicketNumber']")[1];
+                                        $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->xpath("//param[@name='TDNR']")[$j];
                                         try {
                                             if ($txnPassbookObj instanceof TxnPassbook) {
 
@@ -281,7 +282,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                         $ticketNumber,
                                                         'log.additional_data_tbl  - TicketNumber'
                                                     );
-                                                    $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                    $aResponse[$ticketNumber] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                                                 }
                                                 if ($voidAmount > 0) {
                                                     $passbookEntry = new PassbookEntry
@@ -293,7 +294,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                         $ticketNumber,
                                                         'log.additional_data_tbl - TicketNumber'
                                                     );
-                                                    $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                    $aResponse[$ticketNumber] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                                                 }
                                             }
                                         } catch (Exception $e) {
@@ -372,13 +373,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                  trigger_error($e, E_USER_WARNING);
                             }
 
+                            foreach ($aResponse as $k => $v)
+                            {
+                                $sMessage .= '<order id = "' . $k . '" status = "'.( ( $v['Status'] == 0 ) ? 1000 : 999).'"> Operation returned code ' . $v['Status'] . ' : ' . $v['Message'] . '</order>';
+                            }
+
                             if ($code > 0 && ($code === 1000 || $code === 1001) )
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , PSP returned code '.$code. '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >'.$sMessage.'</status>';
                             }
                             else if($code !== 0)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed , PSP returned code '.$code. '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >'.$sMessage.'</status>';
                             }
                         }
                     } catch (mPointException $e) {

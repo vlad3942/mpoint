@@ -588,6 +588,7 @@ final class TxnPassbook
                 throw new Exception('Fail to create passbook entry for transaction id ' . $this->_transactionId, E_USER_ERROR);
             }
         }
+        return $validateEntryResponse;
     }
 
     /**
