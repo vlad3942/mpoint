@@ -124,6 +124,20 @@ abstract class mPointSettlement
             $recordNumber = (int)$res["RECORD_NUMBER"];
         }
 
+        $extendedCondition = '';
+        if($this->_sRecordType === 'CAPTURE')
+        {
+            $extendedCondition .= Constants::iPAYMENT_REFUND_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
+        }
+        elseif($this->_sRecordType === 'REFUND')
+        {
+            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
+        }
+        else{
+            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_REFUND_INITIATED_STATE;
+        }
+
+
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
@@ -138,7 +152,7 @@ abstract class mPointSettlement
                            where clientid = $this->_iClientId
                               AND pspid = $this->_iPspId
                               AND Txn.cardid NOTNULL
-                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE .")
+                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE ."," . $extendedCondition .")
                          ORDER BY txnid, msg.created DESC
                        ) sub
                   WHERE stateid IN ($stateIds)";
@@ -172,7 +186,7 @@ abstract class mPointSettlement
         $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
 
         $arrayPartialOperations = [];
-        $sql = $sql = "SELECT DISTINCT  T.id AS ID
+        $sql = "SELECT DISTINCT  T.id AS ID
                 FROM log." . sSCHEMA_POSTFIX . "Transaction_Tbl T
                   INNER JOIN log." . sSCHEMA_POSTFIX . "txnpassbook_Tbl TP ON T.id = TP.transactionid
                   INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_record_tbl SRT on SRT.transactionid = T.id

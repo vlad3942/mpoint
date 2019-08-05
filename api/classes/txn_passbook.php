@@ -194,7 +194,7 @@ final class TxnPassbook
                 $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
             }
         } else {
-            if($passbookEntry->getAmount() <= $this->_getRefundableAmount()) {
+            if($passbookEntry->getAmount() <=  $this->_getRefundableAmount()) {
                 $refundAmount = $passbookEntry->getAmount();
                 $cancelAmount = 0;
             }
@@ -393,7 +393,7 @@ final class TxnPassbook
      */
     private function _getCancelableAmount()
     {
-        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
+        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
     }
 
     /**
@@ -401,7 +401,7 @@ final class TxnPassbook
      */
     private function _getRefundableAmount()
     {
-        return $this->_capturedAmount - ($this->_refundedAmount + $this->_refundAmount);
+        return ($this->_capturedAmount +  $this->_captureAmount) - ($this->_refundedAmount + $this->_refundAmount);
     }
 
     /**
@@ -481,17 +481,18 @@ final class TxnPassbook
      * @param      $_OBJ_TXT
      * @param      $aHTTP_CONN_INFO
      * @param bool $isConsolidate
+     * @param bool $isMutualExclusive
      * @param bool $isRetryRequest
      *
      * @return array
      * @throws \Exception
      */
-    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isRetryRequest = FALSE)
+    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE)
     {
         $codes = array();
         if ($isRetryRequest === FALSE) {
             $this->getDBConn()->query('START TRANSACTION');
-            $status = $this->_createPerformingOperations($isConsolidate);
+            $status = $this->_createPerformingOperations($isConsolidate, $isMutualExclusive);
             if ($status === TRUE) {
                 $this->getDBConn()->query('COMMIT');
             } else {
@@ -605,6 +606,7 @@ final class TxnPassbook
         $iAuthAmount = $this->_authorizedAmount;
         $iCaptureAmount = 0;
         $iCancelAmount = 0;
+        $iRefundAmount = 0;
         $iCurrency = 0;
         $sEntries = array();
         foreach ($newEntries as $entry) {
@@ -615,15 +617,21 @@ final class TxnPassbook
             elseif ($entry->state === Constants::iPAYMENT_CANCELLED_STATE)
             {
                 $iCancelAmount += $entry->amount;
-                $iCurrency = $entry->currency;
-                $sEntries = array_merge($sEntries, explode(',', $entry->externalId) );
-            }
-        }
 
-        if(($iCaptureAmount > 0) && ($iCaptureAmount === $iCancelAmount) && ($iCancelAmount === $iAuthAmount) ){
+            }
+            elseif ($entry->state === Constants::iPAYMENT_REFUNDED_STATE)
+            {
+                $iRefundAmount += $entry->amount;
+            }
+            $iCurrency = $entry->currency;
+            $sEntries = array_merge($sEntries, explode(',', $entry->externalId) );
+        }
+        $sEntries = array_unique($sEntries);
+        if(($iCaptureAmount > 0) && ((($iCaptureAmount === $iCancelAmount) && ($iCancelAmount === $iAuthAmount)) || (($iCaptureAmount === $iRefundAmount) && ($iRefundAmount === $iAuthAmount))))
+        {
             unset($newEntries);
             $newEntry = new stdClass();
-            $newEntry->amount = $iCancelAmount;
+            $newEntry->amount = $iCancelAmount + $iRefundAmount;
             $newEntry->currency = $iCurrency;
             $newEntry->state = Constants::iPAYMENT_CANCELLED_STATE;
             $newEntry->externalId = implode(',', $sEntries);
@@ -656,7 +664,7 @@ final class TxnPassbook
      * @return bool
      * @throws \Exception
      */
-    private function _createPerformingOperations($isConsolidate = FALSE)
+    private function _createPerformingOperations($isConsolidate = FALSE, $isMutualExclusive = FALSE)
     {
         $this->_getUpdatedTransactionAmounts();
         $aUpdatedEntries = array();
@@ -726,7 +734,27 @@ final class TxnPassbook
                 array_push($aPerformingData, $newEntry);
             }
 
-            $capturing = $this->_captureAmount - $this->_refundAmount;
+            if ($isMutualExclusive === TRUE) {
+                $capturing = $this->_captureAmount;
+                $refunding = $this->_refundAmount;
+                $cancelling = $this->_cancelAmount;
+            } else {
+                $capturing = $this->_captureAmount - $this->_refundAmount;
+
+                $refunding = $this->_refundAmount - $this->_captureAmount;
+                $diff = 0;
+                if ($refunding < 0) {
+                    $refunding = 0;
+                } else {
+                    $diff = $this->_refundAmount - $refunding;
+                }
+
+                $cancelling = $diff + $this->_cancelAmount;
+                /*if ($capturing === 0) {
+                    $cancelling += $this->_captureAmount;
+                    $cancelIds = array_merge($cancelIds, $captureIds);
+                }*/
+            }
 
             if ($capturing > 0) {
                 $newEntry = new stdClass();
@@ -737,14 +765,7 @@ final class TxnPassbook
                 array_push($aPerformingData, $newEntry);
             }
 
-            $refunding = $this->_refundAmount - $this->_captureAmount;
-            $diff = 0;
-            if($refunding < 0)
-            {
-                $refunding = 0;
-            } else {
-                $diff = $this->_refundAmount - $refunding;
-            }
+
 
             if ($refunding > 0) {
                 $newEntry = new stdClass();
@@ -754,12 +775,6 @@ final class TxnPassbook
                 $newEntry->externalId = implode(',', $captureIds) . ',' .implode(',', $refundIds);
                 array_push($aPerformingData, $newEntry);
             }
-
-            $cancelling = $diff + $this->_cancelAmount;
-            /*if ($capturing === 0) {
-                $cancelling += $this->_captureAmount;
-                $cancelIds = array_merge($cancelIds, $captureIds);
-            }*/
 
             if ($cancelling > 0) {
                 $newEntry = new stdClass();
