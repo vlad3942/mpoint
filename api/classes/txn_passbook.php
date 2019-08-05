@@ -597,6 +597,39 @@ final class TxnPassbook
      */
     private function _addPerformingEntries(array $newEntries)
     {
+        /*Full cancellation scenario wherein the
+        *   Auth amount = capture amount = cancel amount
+         *
+         */
+        $iAuthAmount = $this->_authorizedAmount;
+        $iCaptureAmount = 0;
+        $iCancelAmount = 0;
+        $iCurrency = 0;
+        $sEntries = array();
+        foreach ($newEntries as $entry) {
+            if($entry->state === Constants::iPAYMENT_CAPTURED_STATE)
+            {
+                $iCaptureAmount += $entry->amount;
+            }
+            elseif ($entry->state === Constants::iPAYMENT_CANCELLED_STATE)
+            {
+                $iCancelAmount += $entry->amount;
+                $iCurrency = $entry->currency;
+                $sEntries = array_merge($sEntries, explode(',', $entry->externalId) );
+            }
+        }
+
+        if(($iCaptureAmount > 0) && ($iCaptureAmount === $iCancelAmount) && ($iCancelAmount === $iAuthAmount) ){
+            unset($newEntries);
+            $newEntry = new stdClass();
+            $newEntry->amount = $iCancelAmount;
+            $newEntry->currency = $iCurrency;
+            $newEntry->state = Constants::iPAYMENT_CANCELLED_STATE;
+            $newEntry->externalId = implode(',', $sEntries);
+            $newEntries = array();
+            array_push($newEntries, $newEntry);
+
+        }
         foreach ($newEntries as $newEntry) {
             $data = new PassbookEntry(
                 NULL,
