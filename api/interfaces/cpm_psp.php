@@ -813,18 +813,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			trigger_error("Could not fetch Payment Data from ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
 		}
 		
-		return '<?xml version="1.0" encoding="UTF-8"?>
-<root>
-	<payment-data>
-		<card type-id="8">
-			<card-number>4761209400072888</card-number>
-			<expiry>12/23</expiry>
-			<info-3d-secure>
-				<cryptogram algorithm-id="id-aes256-GCM" eci="7" type="3ds">Ao4sCJkBKXAqArViLiAOMAACAAA=</cryptogram>
-			</info-3d-secure>
-		</card>
-	</payment-data>
-</root>';
+		return $obj_HTTP->getReplyBody();
 	}
 
     /**
