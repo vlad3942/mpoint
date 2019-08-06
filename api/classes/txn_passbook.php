@@ -77,7 +77,8 @@ final class TxnPassbook
                         $txnPassbookInstance = $instance;
                     }
                 }
-            } else {
+            }
+            if ($txnPassbookInstance === NULL) {
                 $txnPassbookInstance = new TxnPassbook(func_get_args());
                 self::$instances[$requestedTxnId] = $txnPassbookInstance;
             }
