@@ -293,7 +293,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						{
 							$iUpdateStatusCode = $iStatus;
 						}
-						
+						$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
 						//TODO: Move DB update and Client notification to Model layer, once this is created
 						$this->newMessage($this->getTxnInfo()->getID(),$iUpdateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 
@@ -301,7 +301,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							          'transact'=>$this->getTxnInfo()->getExternalID(),
 							          'card-id'=>0);
 						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
-                        $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
 						return 1001;
 					}
 					return $iStatusCode;
