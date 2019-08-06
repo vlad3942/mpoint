@@ -57,7 +57,7 @@ final class TxnPassbook
         $args = func_get_args();
         $aArgs = $args[0];
         $this->_obj_Db = $aArgs[0];
-        $this->_transactionId = $aArgs[1];
+        $this->_transactionId = (int)$aArgs[1];
     }
 
     /**
