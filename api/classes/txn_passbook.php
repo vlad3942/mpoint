@@ -70,7 +70,7 @@ final class TxnPassbook
         $txnPassbookInstance = NULL;
         $aArgs = func_get_args();
         if (count($aArgs) === 2) {
-            $requestedTxnId = $aArgs[1];
+            $requestedTxnId = (int)$aArgs[1];
             if (empty(self::$instances) === false) {
                 foreach (self::$instances as $txnid => $instance) {
                     if (($instance instanceof self) === TRUE && $txnid === $requestedTxnId) {
@@ -837,21 +837,19 @@ final class TxnPassbook
     {
         $amount  = (int)$amount;
         $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE transactionid = $2 and amount = $3 and performedopt = $4;';
-        if ($sqlQuery != '') {
-            $res = $this->getDBConn()->prepare($sqlQuery);
-            if (is_resource($res) === TRUE) {
-                $aParams = array(
-                    $status,
-                    $this->getTransactionId(),
-                    $amount,
-                    $state
-                );
-                $result = $this->getDBConn()->execute($res, $aParams);
-                if ($result === FALSE) {
-                    throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
-                    return FALSE;
-                }
 
+        $res = $this->getDBConn()->prepare($sqlQuery);
+        if (is_resource($res) === TRUE) {
+            $aParams = array(
+                $status,
+                $this->getTransactionId(),
+                $amount,
+                $state
+            );
+            $result = $this->getDBConn()->execute($res, $aParams);
+            if ($result === FALSE) {
+                throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+                return FALSE;
             }
         }
         return TRUE;
