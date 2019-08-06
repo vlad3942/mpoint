@@ -376,7 +376,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             foreach ($aResponse as $k => $v)
                             {
-                                $sMessage .= '<order id = "' . $k . '" status = "'.( ( $v['Status'] == 0 ) ? 1000 : 999).'"> Operation returned code ' . $v['Status'] . ' : ' . $v['Message'] . '</order>';
+                                $sMessage .= '<order id = "' . $k . '" status = "'.( ( $v['Status'] == 0 ) ? 1000 : 999).'"> Operation returned code ' . ( ( $v['Status'] == 0 ) ? 1000 : $v['Status']) . ' : ' . ( ($v['Message'] == '') ? 'Operation Successful' : $v['Message'] ) . '</order>';
                             }
 
                             if ($code > 0 && ($code === 1000 || $code === 1001) )
