@@ -108,3 +108,4 @@ Possible values % (constants)
 
 INSERT INTO client.additionalproperty_tbl (key, value, type, enabled, scope, externalid) VALUES ('preferredvoidoperation', 'false', 'client', true, 0, 10067);
 INSERT INTO client.additionalproperty_tbl (key, value, type, enabled, scope, externalid) VALUES ('cumulativesettlement', 'true', 'client', true, 0, 10067);
+INSERT INTO client.additionalproperty_tbl (key, value, type, enabled, scope, externalid) VALUES ('ismutualexclusive', 'true', 'client', true, 0, 10067);

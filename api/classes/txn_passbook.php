@@ -57,7 +57,7 @@ final class TxnPassbook
         $args = func_get_args();
         $aArgs = $args[0];
         $this->_obj_Db = $aArgs[0];
-        $this->_transactionId = $aArgs[1];
+        $this->_transactionId = (int)$aArgs[1];
     }
 
     /**
@@ -70,17 +70,17 @@ final class TxnPassbook
         $txnPassbookInstance = NULL;
         $aArgs = func_get_args();
         if (count($aArgs) === 2) {
-            $requestedTxnId = $aArgs[1];
-            foreach (self::$instances as $txnid => $instance) {
-                if ((self::$instance instanceof self) === TRUE && $txnid === $requestedTxnId) {
-                    $txnPassbookInstance = $instance;
+            $requestedTxnId = (int)$aArgs[1];
+            if (empty(self::$instances) === false) {
+                foreach (self::$instances as $txnid => $instance) {
+                    if (($instance instanceof self) === TRUE && $txnid === $requestedTxnId) {
+                        $txnPassbookInstance = $instance;
+                    }
                 }
-            }
-            if ($txnPassbookInstance === NULL) {
+            } else {
                 $txnPassbookInstance = new TxnPassbook(func_get_args());
                 self::$instances[$requestedTxnId] = $txnPassbookInstance;
             }
-
         }
         return $txnPassbookInstance;
     }
@@ -162,6 +162,7 @@ final class TxnPassbook
     {
         $validateEntryResponse = null;
         $passbookEntries = array($passbookEntry);
+        $this->_getUpdatedTransactionAmounts();
         if($passbookEntry->getRequestedOperation() === Constants::iVoidRequested)
         {
             $passbookEntries = $this->_segregateVoidEntry($passbookEntry, $isCancelPriority);
@@ -183,11 +184,25 @@ final class TxnPassbook
         $cancelAmount = 0;
         $refundAmount = 0;
         if ($isCancelPriority === TRUE) {
-            $cancelAmount = $this->_getCancelableAmount();
-            $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
+            if($passbookEntry->getAmount() <= $this->_getCancelableAmount()) {
+                $cancelAmount = $passbookEntry->getAmount();
+                $refundAmount = 0;
+            }
+            else
+            {
+                $cancelAmount = $this->_getCancelableAmount();
+                $refundAmount = $passbookEntry->getAmount() - $this->_getCancelableAmount();
+            }
         } else {
-            $refundAmount = $this->_getRefundableAmount();
-            $cancelAmount = $passbookEntry->getAmount() - $this->_getRefundableAmount();
+            if($passbookEntry->getAmount() <=  $this->_getRefundableAmount()) {
+                $refundAmount = $passbookEntry->getAmount();
+                $cancelAmount = 0;
+            }
+            else
+            {
+                $refundAmount = $this->_getRefundableAmount();
+                $cancelAmount = $passbookEntry->getAmount() - $this->_getRefundableAmount();
+            }
         }
 
         $newPassbookEntries = array();
@@ -231,7 +246,6 @@ final class TxnPassbook
     private function validateEntry(PassbookEntry $passbookEntry)
     {
         $requestedOperation = $passbookEntry->getRequestedOperation();
-        $this->_getUpdatedTransactionAmounts();
         $validateOperationResponse = array();
         if ($requestedOperation === Constants::iCaptureRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_capturedAmount, $passbookEntry->getAmount(), $this->_getCapturebleAmount(), $this->isPartialCaptureSupported());
@@ -278,7 +292,7 @@ final class TxnPassbook
                 
                      (SELECT COALESCE(SUM(amount),0) as CapturedAmount
                       FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                      WHERE performedopt = " . Constants::iPAYMENT_CAPTURE_INITIATED_STATE . "
+                      WHERE performedopt = " . Constants::iPAYMENT_CAPTURED_STATE . "
                         AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                         AND transactionid = $1) AS query2,
                 
@@ -379,7 +393,7 @@ final class TxnPassbook
      */
     private function _getCancelableAmount()
     {
-        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
+        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
     }
 
     /**
@@ -387,7 +401,7 @@ final class TxnPassbook
      */
     private function _getRefundableAmount()
     {
-        return $this->_capturedAmount - ($this->_refundedAmount + $this->_refundAmount);
+        return ($this->_capturedAmount +  $this->_captureAmount) - ($this->_refundedAmount + $this->_refundAmount);
     }
 
     /**
@@ -467,16 +481,18 @@ final class TxnPassbook
      * @param      $_OBJ_TXT
      * @param      $aHTTP_CONN_INFO
      * @param bool $isConsolidate
+     * @param bool $isMutualExclusive
      * @param bool $isRetryRequest
      *
+     * @return array
      * @throws \Exception
      */
-    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isRetryRequest = FALSE)
+    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE)
     {
         $codes = array();
         if ($isRetryRequest === FALSE) {
             $this->getDBConn()->query('START TRANSACTION');
-            $status = $this->_createPerformingOperations($isConsolidate);
+            $status = $this->_createPerformingOperations($isConsolidate, $isMutualExclusive);
             if ($status === TRUE) {
                 $this->getDBConn()->query('COMMIT');
             } else {
@@ -573,6 +589,7 @@ final class TxnPassbook
                 throw new Exception('Fail to create passbook entry for transaction id ' . $this->_transactionId, E_USER_ERROR);
             }
         }
+        return $validateEntryResponse;
     }
 
     /**
@@ -582,6 +599,46 @@ final class TxnPassbook
      */
     private function _addPerformingEntries(array $newEntries)
     {
+        /*Full cancellation scenario wherein the
+        *   Auth amount = capture amount = cancel amount
+         *
+         */
+        $iAuthAmount = $this->_authorizedAmount;
+        $iCaptureAmount = 0;
+        $iCancelAmount = 0;
+        $iRefundAmount = 0;
+        $iCurrency = 0;
+        $sEntries = array();
+        foreach ($newEntries as $entry) {
+            if($entry->state === Constants::iPAYMENT_CAPTURED_STATE)
+            {
+                $iCaptureAmount += $entry->amount;
+            }
+            elseif ($entry->state === Constants::iPAYMENT_CANCELLED_STATE)
+            {
+                $iCancelAmount += $entry->amount;
+
+            }
+            elseif ($entry->state === Constants::iPAYMENT_REFUNDED_STATE)
+            {
+                $iRefundAmount += $entry->amount;
+            }
+            $iCurrency = $entry->currency;
+            $sEntries = array_merge($sEntries, explode(',', $entry->externalId) );
+        }
+        $sEntries = array_unique($sEntries);
+        if(($iCaptureAmount > 0) && ((($iCaptureAmount === $iCancelAmount) && ($iCancelAmount === $iAuthAmount)) || (($iCaptureAmount === $iRefundAmount) && ($iRefundAmount === $iAuthAmount))))
+        {
+            unset($newEntries);
+            $newEntry = new stdClass();
+            $newEntry->amount = $iCancelAmount + $iRefundAmount;
+            $newEntry->currency = $iCurrency;
+            $newEntry->state = Constants::iPAYMENT_CANCELLED_STATE;
+            $newEntry->externalId = implode(',', $sEntries);
+            $newEntries = array();
+            array_push($newEntries, $newEntry);
+
+        }
         foreach ($newEntries as $newEntry) {
             $data = new PassbookEntry(
                 NULL,
@@ -607,7 +664,7 @@ final class TxnPassbook
      * @return bool
      * @throws \Exception
      */
-    private function _createPerformingOperations($isConsolidate = FALSE)
+    private function _createPerformingOperations($isConsolidate = FALSE, $isMutualExclusive = FALSE)
     {
         $this->_getUpdatedTransactionAmounts();
         $aUpdatedEntries = array();
@@ -677,7 +734,27 @@ final class TxnPassbook
                 array_push($aPerformingData, $newEntry);
             }
 
-            $capturing = $this->_captureAmount - $this->_refundAmount;
+            if ($isMutualExclusive === TRUE) {
+                $capturing = $this->_captureAmount;
+                $refunding = $this->_refundAmount;
+                $cancelling = $this->_cancelAmount;
+            } else {
+                $capturing = $this->_captureAmount - $this->_refundAmount;
+
+                $refunding = $this->_refundAmount - $this->_captureAmount;
+                $diff = 0;
+                if ($refunding < 0) {
+                    $refunding = 0;
+                } else {
+                    $diff = $this->_refundAmount - $refunding;
+                }
+
+                $cancelling = $diff + $this->_cancelAmount;
+                /*if ($capturing === 0) {
+                    $cancelling += $this->_captureAmount;
+                    $cancelIds = array_merge($cancelIds, $captureIds);
+                }*/
+            }
 
             if ($capturing > 0) {
                 $newEntry = new stdClass();
@@ -688,27 +765,16 @@ final class TxnPassbook
                 array_push($aPerformingData, $newEntry);
             }
 
-            $refunding = $this->_refundAmount - $this->_captureAmount;
+
 
             if ($refunding > 0) {
                 $newEntry = new stdClass();
                 $newEntry->amount = $refunding;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_REFUNDED_STATE;
-                $newEntry->externalId = iimplode(',', $captureIds) . ',' .implode(',', $refundIds);
+                $newEntry->externalId = implode(',', $captureIds) . ',' .implode(',', $refundIds);
                 array_push($aPerformingData, $newEntry);
             }
-
-            $cancelling = 0;
-            if(($this->_refundAmount - $refunding) >= -1)
-            {
-                $cancelling = $this->_refundAmount - $refunding;
-            }
-            $cancelling += $this->_cancelAmount;
-            /*if ($capturing === 0) {
-                $cancelling += $this->_captureAmount;
-                $cancelIds = array_merge($cancelIds, $captureIds);
-            }*/
 
             if ($cancelling > 0) {
                 $newEntry = new stdClass();
@@ -771,21 +837,19 @@ final class TxnPassbook
     {
         $amount  = (int)$amount;
         $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE transactionid = $2 and amount = $3 and performedopt = $4;';
-        if ($sqlQuery != '') {
-            $res = $this->getDBConn()->prepare($sqlQuery);
-            if (is_resource($res) === TRUE) {
-                $aParams = array(
-                    $status,
-                    $this->getTransactionId(),
-                    $amount,
-                    $state
-                );
-                $result = $this->getDBConn()->execute($res, $aParams);
-                if ($result === FALSE) {
-                    throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
-                    return FALSE;
-                }
 
+        $res = $this->getDBConn()->prepare($sqlQuery);
+        if (is_resource($res) === TRUE) {
+            $aParams = array(
+                $status,
+                $this->getTransactionId(),
+                $amount,
+                $state
+            );
+            $result = $this->getDBConn()->execute($res, $aParams);
+            if ($result === FALSE) {
+                throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+                return FALSE;
             }
         }
         return TRUE;

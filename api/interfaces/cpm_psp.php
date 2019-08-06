@@ -293,7 +293,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						{
 							$iUpdateStatusCode = $iStatus;
 						}
-						
+						$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
 						//TODO: Move DB update and Client notification to Model layer, once this is created
 						$this->newMessage($this->getTxnInfo()->getID(),$iUpdateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 
@@ -301,7 +301,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							          'transact'=>$this->getTxnInfo()->getExternalID(),
 							          'card-id'=>0);
 						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
-                        $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
 						return 1001;
 					}
 					return $iStatusCode;
@@ -625,7 +624,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE, $obj_HTTP->getReplyBody());
                 //Rollback transaction
                 $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
-                $obj_PaymentProcessor->refund($this->getTxnInfo()->getAmount());
+                $obj_PaymentProcessor->cancel($this->getTxnInfo()->getAmount());
                 throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
             }
         }
