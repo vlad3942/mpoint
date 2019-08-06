@@ -276,56 +276,77 @@ final class TxnPassbook
      */
     private function _getUpdatedTransactionAmounts()
     {
-        $sql = "SELECT IntializedAmount, AuthorizedAmount, CapturedAmount, CancelledAmount, RefundedAmount,CaptureAmount, CancelAmount, RefundAmount
-                FROM (
-                        SELECT COALESCE(SUM(amount),0) as IntializedAmount
-                         FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                         WHERE performedopt = " . Constants::iINPUT_VALID_STATE . "
-                           AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
-                           AND transactionid = $1
-                     ) As query0, 
-                     
-                     (  SELECT COALESCE(SUM(amount),0) as AuthorizedAmount
-                         FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                         WHERE performedopt = " . Constants::iPAYMENT_ACCEPTED_STATE . "
-                           AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
-                           AND transactionid = $1 ) As query1,
-                
-                     (SELECT COALESCE(SUM(amount),0) as CapturedAmount
-                      FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                      WHERE performedopt = " . Constants::iPAYMENT_CAPTURED_STATE . "
-                        AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
-                        AND transactionid = $1) AS query2,
-                
-                     (SELECT COALESCE(SUM(amount),0) as CancelledAmount
-                      FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                      WHERE performedopt =  " . Constants::iPAYMENT_CANCELLED_STATE . "
-                        AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
-                        AND transactionid = $1) AS query3,
-                
-                     (SELECT COALESCE(SUM(amount),0) as RefundedAmount
-                      FROM log.txnpassbook_tbl
-                      WHERE performedopt =  " . Constants::iPAYMENT_REFUNDED_STATE . "
-                        AND status in ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
-                        AND transactionid = $1) AS query4,
-                
-                     (SELECT COALESCE(SUM(amount),0) as CaptureAmount
-                      FROM log.txnpassbook_tbl
-                      WHERE requestedopt =  " . Constants::iCaptureRequested . "
-                        AND status = 'pending'
-                        AND transactionid = $1) AS query6,
-                
-                     (SELECT COALESCE(SUM(amount),0) as CancelAmount
-                      FROM log.txnpassbook_tbl
-                      WHERE requestedopt =  " . Constants::iCancelRequested . "
-                        AND status = 'pending'
-                        AND transactionid = $1) AS query7,
-                
-                     (SELECT COALESCE(SUM(amount),0) as RefundAmount
-                      FROM log.txnpassbook_tbl
-                      WHERE requestedopt = " . Constants::iRefundRequested . "
-                        AND status = 'pending'
-                        AND transactionid = $1) AS query8";
+        $sql = "WITH tp
+                    AS
+                    (
+                    SELECT 
+                        transactionid, 
+                        amount, 
+                        performedopt,
+                        requestedopt, 
+                        status
+                    FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
+                    WHERE transactionid = $1
+                    )
+                    SELECT 
+                        q1.IntializedAmount,
+                        q2.AuthorizedAmount,
+                        q3.CapturedAmount, 
+                        q4.CancelledAmount, 
+                        q5.RefundedAmount,
+                        q6.CaptureAmount, 
+                        q7.CancelAmount, 
+                        q8.RefundAmount
+                    FROM
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) AS IntializedAmount
+                                             FROM tp
+                                             WHERE tp.performedopt = " . Constants::iINPUT_VALID_STATE . "
+                                               AND tp.status IN ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
+                        ) AS q1,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) AS AuthorizedAmount
+                                             FROM tp
+                                             WHERE tp.performedopt = " . Constants::iPAYMENT_ACCEPTED_STATE . "
+                                               AND tp.status IN ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
+                        ) AS q2,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) AS CapturedAmount
+                                             FROM tp
+                                             WHERE tp.performedopt = " . Constants::iPAYMENT_CAPTURED_STATE . "
+                                               AND tp.status IN ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
+                        ) AS q3,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) as CancelledAmount
+                                             FROM tp
+                                             WHERE tp.performedopt = " . Constants::iPAYMENT_CANCELLED_STATE . "
+                                               AND tp.status IN ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
+                        ) as q4,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) as RefundedAmount
+                                             FROM tp
+                                             WHERE tp.performedopt = " . Constants::iPAYMENT_REFUNDED_STATE . "
+                                               AND tp.status IN ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
+                        ) AS q5,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) AS CaptureAmount
+                                             FROM tp
+                                             WHERE tp.requestedopt =  " . Constants::iCaptureRequested . "
+                                               AND tp.status = 'pending'
+                        ) AS q6,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) AS CancelAmount
+                                             FROM tp
+                                             WHERE tp.requestedopt =  " . Constants::iCancelRequested . "
+                                               AND tp.status = 'pending'
+                        ) AS q7,
+                        ( 
+                         SELECT COALESCE(SUM(tp.amount),0) AS RefundAmount
+                                             FROM tp
+                                             WHERE tp.requestedopt =  " . Constants::iRefundRequested . "
+                                               AND tp.status = 'pending'
+                        ) AS q8";
+
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = array(
