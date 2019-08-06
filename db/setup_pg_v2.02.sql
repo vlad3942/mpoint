@@ -3520,10 +3520,6 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd)
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 41, '-1');
 INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position,psp_type) VALUES (10007, 39, true, 41, 200, 1, null,5);
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MERCHANT_API_TOKEN', '71D149972DDC436694922B912104C5A5', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 41), 'merchant');
-
--- Update Citcon - Wechat Pay app token --
-UPDATE client.additionalproperty_tbl set value = 'CNYETHXNAR9U12N6IL0QNT39UNVHC3DM' WHERE  key = 'MERCHANT_API_TOKEN' AND externalid=<> ;
 -- END Update Citcon - Wechat Pay  app token --
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MERCHANT_VENDOR', 'wechatpay', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 41), 'merchant');

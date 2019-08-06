@@ -85,11 +85,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) && $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
 
-                    $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{'country-id'});
+					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{'country-id'});
 
                     $obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
                     $iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount; }
+
+					// Validate currency if explicitly passed in request, which defer from default currency of the country
+					if((integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"} > 0){
+						if($obj_Validator->valCurrency($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"} ,$obj_CountryConfig, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{"client-id"}) != 10 ){
+							$aMsgCds[56] = "Invalid Currency:". (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{"currency-id"};
+						}
+					}
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{

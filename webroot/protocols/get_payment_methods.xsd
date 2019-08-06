@@ -15,6 +15,7 @@
 								<xs:all>
 									<xs:element name="amount" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 									<xs:element name="country-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+									<xs:element name="currency-id" type="xs:positiveInteger"  minOccurs="0" maxOccurs="1" />
 								</xs:all>
 							</xs:complexType>
 						</xs:element>
