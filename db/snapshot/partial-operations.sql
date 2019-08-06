@@ -109,3 +109,23 @@ Possible values % (constants)
 INSERT INTO client.additionalproperty_tbl (key, value, type, enabled, scope, externalid) VALUES ('preferredvoidoperation', 'false', 'client', true, 0, 10067);
 INSERT INTO client.additionalproperty_tbl (key, value, type, enabled, scope, externalid) VALUES ('cumulativesettlement', 'true', 'client', true, 0, 10067);
 INSERT INTO client.additionalproperty_tbl (key, value, type, enabled, scope, externalid) VALUES ('ismutualexclusive', 'true', 'client', true, 0, 10067);
+
+
+
+--index on table: log.TxnPassbook_tbl --column:transactionid
+CREATE INDEX transactionid_idx ON log.TxnPassbook_tbl USING btree (transactionid);
+
+--index on table: log.TxnPassbook_tbl --column:performedopt
+CREATE INDEX performedopt_idx ON log.TxnPassbook_tbl USING btree (performedopt);
+
+--index on table: log.settlement_record_tbl --column:transactionid
+CREATE INDEX SRtransactionid_idx ON log.settlement_record_tbl USING btree (transactionid);
+
+--index on table: log.settlement_record_tbl --column:settlementid
+CREATE INDEX settlementid_idx ON log.settlement_record_tbl USING btree (settlementid);
+
+--index on table: log.settlement_tbl --column:client_id
+CREATE INDEX client_id_idx ON log.settlement_tbl USING btree (client_id);
+
+--index on table: log.settlement_tbl --column:psp_id
+CREATE INDEX psp_id_idx ON log.settlement_tbl USING btree (psp_id);
