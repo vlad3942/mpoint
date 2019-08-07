@@ -269,7 +269,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $iAmount += $voidAmount;
                                         }
 
-                                        $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->xpath("//param[@name='TDNR']")[$j];
+                                        $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->xpath("./param[@name='TDNR']");
                                         try {
                                             if ($txnPassbookObj instanceof TxnPassbook) {
 
