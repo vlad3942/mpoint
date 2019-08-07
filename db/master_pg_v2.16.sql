@@ -3,3 +3,6 @@ CREATE INDEX CONCURRENTLY additional_data_tbl_externalid_type_index on log.addit
 
 --CMP-3129
 CREATE INDEX CONCURRENTLY order_tbl_txnid_index on log.order_tbl (txnid);
+
+--CMP-3130
+CREATE INDEX CONCURRENTLY flight_tbl_orderid_index on log.flight_tbl (order_id);
