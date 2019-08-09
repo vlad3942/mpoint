@@ -810,6 +810,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($code != 200)
 		{
 			trigger_error("Could not fetch Payment Data from ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+            throw new mPointException("Could not fetch Payment Data from ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), $code);
 		}
 		
 		return $obj_HTTP->getReplyBody();
