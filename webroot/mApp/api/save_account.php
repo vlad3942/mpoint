@@ -177,10 +177,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
                                 if ($result === true) {
                                     $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                } else {
+                                    $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}));
                                 }
                             }
                             //update or create new account -- this should never be the case as we currently have no provision to update pwd from SDK or HPP
-                            $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                            if(empty($obj_DOM->{'save-account'}[$i]->password) === false) {
+                                $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                            }
                             //get the account id if new account was created
                             if ($iAccountID < 0) {
                                 $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
