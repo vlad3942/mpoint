@@ -938,6 +938,24 @@ $aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payment
 
 
 /**
+ * Connection info for connecting to Data Cash
+ */
+$aHTTP_CONN_INFO["cellulant"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cellulant"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cellulant"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cellulant"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cellulant"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cellulant"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cellulant"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["initialize"] = "/mpoint/cellulant/initialize";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["auth"] = "/mpoint/cellulant/authorize-payment";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["get-payment-options"] = "/mpoint/cellulant/GetPaymentOptions";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["status"] = "/mpoint/cellulant/status";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["refund"] = "/mpoint/cellulant/refund";
+
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

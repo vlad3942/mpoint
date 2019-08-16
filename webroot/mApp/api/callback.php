@@ -112,6 +112,8 @@ require_once(sCLASS_PATH . "/uatp.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement

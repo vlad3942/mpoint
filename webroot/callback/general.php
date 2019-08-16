@@ -108,6 +108,8 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 require_once(sCLASS_PATH ."/global-payments.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
@@ -138,7 +140,7 @@ require_once sCLASS_PATH . '/passbookentry.php';
  */
 
 
-set_time_limit(600);
+set_time_limit(6000000);
 // Standard retry strategy connecting to the database has proven inadequate
 $i = 0;
 while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
