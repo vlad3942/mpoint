@@ -1280,7 +1280,7 @@ abstract class Constants
      * Unique Card ID for transaction's made using FPX
      *
      */
-    const iCELLULANT = 75;
+    const iCELLULANT = 86;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
