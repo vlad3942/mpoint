@@ -646,7 +646,7 @@ final class TxnPassbook
                 $iRefundAmount += $entry->amount;
             }
             $iCurrency = $entry->currency;
-            $sEntries = array_merge($sEntries, explode(',', $entry->externalId) );
+            $sEntries = array_push($sEntries,$entry->externalId);
         }
         $sEntries = array_unique($sEntries);
         if(($iCaptureAmount > 0) && ((($iCaptureAmount === $iCancelAmount) && ($iCancelAmount === $iAuthAmount)) || (($iCaptureAmount === $iRefundAmount) && ($iRefundAmount === $iAuthAmount))))
@@ -769,9 +769,12 @@ final class TxnPassbook
                     $refunding = 0;
                 } else {
                     $diff = $this->_refundAmount - $refunding;
+                    array_merge($cancelIds, $refundIds);
                 }
 
                 $cancelling = $diff + $this->_cancelAmount;
+                array_merge($captureIds, $refundIds);
+                $refundIds = $captureIds;
                 /*if ($capturing === 0) {
                     $cancelling += $this->_captureAmount;
                     $cancelIds = array_merge($cancelIds, $captureIds);
@@ -783,19 +786,17 @@ final class TxnPassbook
                 $newEntry->amount = $capturing;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_CAPTURED_STATE;
-                $newEntry->externalId = implode(',', $captureIds) . ',' . implode(',', $refundIds);
-                array_push($aPerformingData, $newEntry);
+                $newEntry->externalId = implode(',', $captureIds);
+                 array_push($aPerformingData, $newEntry);
             }
-
-
 
             if ($refunding > 0) {
                 $newEntry = new stdClass();
                 $newEntry->amount = $refunding;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_REFUNDED_STATE;
-                $newEntry->externalId = implode(',', $captureIds) . ',' .implode(',', $refundIds);
-                array_push($aPerformingData, $newEntry);
+                $newEntry->externalId = implode(',', $refundIds);
+                 array_push($aPerformingData, $newEntry);
             }
 
             if ($cancelling > 0) {
@@ -803,8 +804,8 @@ final class TxnPassbook
                 $newEntry->amount = $cancelling;
                 $newEntry->currency = $currency;
                 $newEntry->state = Constants::iPAYMENT_CANCELLED_STATE;
-                $newEntry->externalId = implode(',', $cancelIds). ',' .implode(',', $refundIds);
-                array_push($aPerformingData, $newEntry);
+                $newEntry->externalId = implode(',', $cancelIds);
+                 array_push($aPerformingData, $newEntry);
             }
         }
         try {
