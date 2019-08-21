@@ -17,7 +17,7 @@ class api {
     function createRequest($data = null) {
         $this->request_xml = '<?xml version="1.0" encoding="utf-8"?>';
         $this->request_xml .= '<root>';
-        $this->request_xml .= '<save-account account="100210" client-id="10021" mvault="true">';
+        $this->request_xml .= '<save-account account="100110" client-id="10062" mvault="true">';
         $this->request_xml .= '<card type-id="8">';
         $this->request_xml .= '<name>'.$data->CardType.'</name>';
         $this->request_xml .= '<card-holder-name>'.$data->cardHolderName.'</card-holder-name>';
@@ -40,7 +40,6 @@ class api {
     function call() {
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_PORT => "10080",
             CURLOPT_URL => $this->endpoint,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -50,7 +49,7 @@ class api {
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => $this->request_xml,
             CURLOPT_HTTPHEADER => array(
-                "authorization: Basic U0dBRGVtbzpERU1PaXNOT18y",
+                "authorization: Basic ".base64_encode("miride:7!tBmpSD#"),
                 "cache-control: no-cache",
                 "content-type: text/xml"
             ),
