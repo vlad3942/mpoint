@@ -646,7 +646,7 @@ final class TxnPassbook
                 $iRefundAmount += $entry->amount;
             }
             $iCurrency = $entry->currency;
-            $sEntries = array_push($sEntries,$entry->externalId);
+            array_push($sEntries,$entry->externalId);
         }
         $sEntries = array_unique($sEntries);
         if(($iCaptureAmount > 0) && ((($iCaptureAmount === $iCancelAmount) && ($iCancelAmount === $iAuthAmount)) || (($iCaptureAmount === $iRefundAmount) && ($iRefundAmount === $iAuthAmount))))
