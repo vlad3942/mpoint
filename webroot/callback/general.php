@@ -109,7 +109,8 @@ require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/global-payments.php");
-
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 /**
  * Input XML format
  *
@@ -391,7 +392,7 @@ try
         {
             $responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
 
-            if ($responseCode == 1000)
+            if ($responseCode == 1000 || $responseCode == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
             {
                 array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
                 //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
@@ -410,7 +411,30 @@ try
 	}
 	
   }
-  
+
+
+    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id);
+    if ($txnPassbookObj instanceof TxnPassbook) {
+        foreach ($aStateId as $iStateId) {
+            $state = 0;
+            $status = '';
+            switch ((int)$iStateId) {
+                case Constants::iPAYMENT_ACCEPTED_STATE:
+                    $state = Constants::iPAYMENT_ACCEPTED_STATE;
+                    $status = Constants::sPassbookStatusDone;
+                    break;
+                case Constants::iPAYMENT_REJECTED_STATE:
+                    $state = Constants::iPAYMENT_ACCEPTED_STATE;
+                    $status = Constants::sPassbookStatusError;
+                    break;
+            }
+            if ($state !== 0) {
+                $txnPassbookObj->updateInProgressOperations($obj_XML->callback->transaction->amount, $state, $status);
+            }
+
+        }
+    }
+
   $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
