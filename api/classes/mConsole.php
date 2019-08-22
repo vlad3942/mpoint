@@ -1213,14 +1213,19 @@ class mConsole extends Admin
 
 		//Date part will have values always hence $where will not be empty
 
-		$sql = "SELECT date(Msg.created ".$sAtTimeZone.") AS createddate , Msg.stateid AS stateid, Count(Msg.id) AS stateidcount
-				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
-				".$where.
-				" AND Msg.id = (SELECT Max(id) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-								WHERE Txn.id = txnid AND stateid IN (". implode(",", $aStateIDS) ."))
-				GROUP BY createddate, Msg.stateid
-				ORDER BY createddate ASC, Msg.stateid ASC ";
+		$sql = "SELECT q.createddate AS createddate, q.stateid AS stateid, count(q.id) as stateidcount
+               FROM
+               (
+               SELECT date(Msg.created ".$sAtTimeZone.") AS createddate , Msg.stateid AS stateid ,Msg.id as id,
+               RANK() OVER(PARTITION BY Msg.txnid ORDER BY Msg.id desc) rn
+                                               FROM Log.Transaction_Tbl Txn
+                                               INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid"
+                                                .$where."
+                                                AND stateid IN (". implode(",", $aStateIDS) .")
+                ) q
+               where q.rn=1
+               GROUP BY q.createddate, q.stateid
+               ORDER BY q.createddate ASC, q.stateid asc";
 
 		//echo $sql ."\n";
 		$aRS = array();
