@@ -340,7 +340,7 @@
 			<xs:extension base="xs:token">
 				<xs:attribute name="country-id" type="countryid" use="required" />
 				<xs:attribute name="operator-id" type="operatorid" use="optional" />
-<!--				<xs:attribute name="country-code" type="countrycode" use="optional" />-->
+				<xs:attribute name="country-code" type="countrycode" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
