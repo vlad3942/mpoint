@@ -240,7 +240,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel($iStatus=null)
+	public function cancel($iStatus=null, $amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -258,11 +258,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
-		$b .= $this->_constTxnXML($this->getTxnInfo()->getAmount());
+		if($amount <= 0) {
+            $amount = $this->getTxnInfo()->getAmount();
+        }
+		$b .= $this->_constTxnXML($amount);
 		$b .= '</transactions>';
 		$b .= '</cancel>';
 		$b .= '</root>';
-
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
 		try
 		{
 			$iUpdateStatusCode = Constants::iPAYMENT_CANCELLED_STATE;
@@ -290,7 +293,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						{
 							$iUpdateStatusCode = $iStatus;
 						}
-						
+						$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
 						//TODO: Move DB update and Client notification to Model layer, once this is created
 						$this->newMessage($this->getTxnInfo()->getID(),$iUpdateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 
@@ -302,12 +305,17 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					}
 					return $iStatusCode;
 				}
-				else { throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+				else {
+				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+				    throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
 			}
-			else { throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+			else {
+			    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+			    throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
+		    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
 			trigger_error("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 			return $e->getCode();
 		}
@@ -616,7 +624,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE, $obj_HTTP->getReplyBody());
                 //Rollback transaction
                 $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
-                $obj_PaymentProcessor->refund($this->getTxnInfo()->getAmount());
+                $obj_PaymentProcessor->cancel($this->getTxnInfo()->getAmount());
                 throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
             }
         }

@@ -872,7 +872,7 @@ class TxnInfo
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
-	public function toXML(UAProfile &$oUA=null)
+	public function toXML(UAProfile &$oUA=null, $iAmount = -1)
 	{
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
@@ -892,7 +892,8 @@ class TxnInfo
 
 		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" wallet-id="'. $this->_iWalletID .'" product-type="'. $this->_iProductType .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lAmount .'</amount>';
+		if($iAmount < 0){$iAmount = $this->_lAmount; }
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 		
 		$xml .= '<amount_info>';
 		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
@@ -1761,6 +1762,17 @@ class TxnInfo
 			$aMessages[] = array_change_key_case($RS, CASE_LOWER);
 		}
 		return $aMessages;
+	}
+
+	public function getFinalSettlementAmount(RDB $obj_DB,$aStateIDs)
+	{
+		$captureAmount = 0;
+		$messageData = $this->getMessageData($obj_DB, $aStateIDs);
+		$captureAmount = isset($messageData[0]['data'])?(int)$messageData[0]['data']:0;
+		if ($captureAmount === 0) {
+			$captureAmount = -1;
+		}
+		return $captureAmount;
 	}
 }
 ?>

@@ -1,0 +1,64 @@
+﻿				MiRide Data Migration Tool User Guide
+
+
+==================================================================
+Setup
+==================================================================
+
+1. Go to path "/data_migration/conf/config.php" and set mpoint url
+   
+2. Go to path "/data_migration/resource" and put your private key into "private.asc" file
+
+
+=================================================================
+User Guide
+=================================================================
+
+Step - 1: Access data migration tool using "{base_path}/data_migration" using 	    your web browser
+          eg. http://mpoint.dev2.cellpointmobile.com/data_migration/
+
+step - 2: now you will see  following 
+
+
+Step – 3: Here go to File Upload Section and click on “Choose file” button 
+
+Step - 4: Once click on “Choose file” button system will ask you to seelct file 
+
+Step - 5: Here you need to select encrypted .csv file
+
+Step – 6: After seelction of appropriate file click on “Push into DB” button and
+          wiat until process complete
+
+Step – 7: Now you are done with data migration.
+
+
+=================================================================
+Data Migration Status 
+=================================================================
+
+Using Log File:
+
+Step – 1: Go to “Log” section and click on “Click Here” link to download log file
+
+Step – 2: Open downloaded log file to review migration status
+
+Step – 3: File will contains following information
+	sr_no, 
+	customer reference, 
+	success/failure message, 
+	mpoint card id, 
+       	status code
+
+Using Login:
+
+Step – 1: Go to “Login” section on the scrren 
+
+Steo – 2: Enter valid customer reference into given text box and click on
+          “Login” button
+
+Step – 3: Once click on “Login” button  system will get you on new tab and
+          display customer account details
+
+
+
+
