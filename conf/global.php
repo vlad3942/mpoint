@@ -54,7 +54,7 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5532;
+$aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
