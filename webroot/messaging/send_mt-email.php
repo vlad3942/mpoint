@@ -100,7 +100,7 @@ if ($response->SendMailResult->code == 200 && $response->SendMailResult->status 
 }
 else
 {
-    $xml .= '<status code="-1">Message sending failed</status>';
+    $xml .= '<status code="'.$response->SendMailResult->code.'">Message sending failed</status>';
 }
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
