@@ -170,12 +170,15 @@ final class TxnPassbook
         }
         foreach ($passbookEntries as $_passbookEntry) {
             $validateEntryResponse = $this->validateEntry($_passbookEntry);
-            if ($validateEntryResponse['Status'] === 0) {
-                $_addEntryResponse = $this->_addEntry($_passbookEntry);
-                if ($_addEntryResponse['Status'] !== 0) {
-                    $validateEntryResponse = $_addEntryResponse;
-                }
+            if($validateEntryResponse['Status'] > 0)
+            {
+                $_passbookEntry->setStatus(Constants::sPassbookStatusInvalid);
             }
+            $_addEntryResponse = $this->_addEntry($_passbookEntry);
+            if ($_addEntryResponse['Status'] !== 0) {
+                $validateEntryResponse = $_addEntryResponse;
+            }
+
         }
         return $validateEntryResponse;
     }
