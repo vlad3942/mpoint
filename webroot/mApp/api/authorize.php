@@ -884,6 +884,7 @@ try
 													// 3rd Party Wallet returned error
 													elseif ($code > 4)
 													{
+                                                        header("HTTP/1.1 403 Forbidden");
 														//The node <status> is returned along with the status code
 														$xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
 														if (empty($xml) === true) { $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>'; }
