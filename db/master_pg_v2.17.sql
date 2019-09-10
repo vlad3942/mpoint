@@ -1,5 +1,4 @@
 --CMP-3128
-alter table enduser.account_tbl
-    add mProfileId varchar(50);
+ALTER TABLE log.transaction_tbl ADD profileid varchar(50) NULL;
 
-comment on column enduser.account_tbl.mProfileId is 'mProfile id related to the enduser profile';
+comment on column log.transaction_tbl.profileid is 'mProfile id associated with the txn';

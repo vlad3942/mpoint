@@ -26,10 +26,9 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('PROFILE_TOKEN', 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MTc3MTU3NTgsImlhdCI6MTU2MjA0MjE1OCwiaXNzIjoiQ1BNIiwidHlwZSI6MiwiY2xpZW50SWQiOjEwMDIxfQ.r0ZjGNqoWkQCfUS-bCkPBbzempoeljurOwe5OPeNNQI', 10021, 'client', 0 );
 
 ----------------------------
-alter table enduser.account_tbl
-    add mProfileId varchar(50);
+ALTER TABLE log.transaction_tbl ADD profileid varchar(50) NULL;
 
-comment on column enduser.account_tbl.mProfileId is 'mProfile id related to the end-user profile';
+comment on column log.transaction_tbl.profileid is 'mProfile id associated with the txn';
 
 ---------
 
