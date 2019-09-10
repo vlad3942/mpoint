@@ -27,7 +27,7 @@ VALUES ('PROFILE_TOKEN', 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MTc3MTU3NTgsImlhdCI6M
 
 ----------------------------
 alter table enduser.account_tbl
-    add mProfileId varchar default 50;
+    add mProfileId varchar(50);
 
 comment on column enduser.account_tbl.mProfileId is 'mProfile id related to the end-user profile';
 
