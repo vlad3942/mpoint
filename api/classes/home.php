@@ -1134,19 +1134,85 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true)
+	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true, $profileID="")
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-					(id, countryid, mobile, passwd, email, externalid, pushid, enabled)
+					(id, countryid, mobile, passwd, email, externalid, pushid, mprofileid, enabled)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true").")";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL").", ". (strlen($profileID) > 0 ? "'". $this->getDBConn()->escStr($profileID) ."'" : "NULL").($enable == false ? ", false" : ", true").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
 		return $RS["ID"];
 	}
+
+
+    public function saveProfile(ClientConfig $obj_ClientConfig, $cid, $mob, $email="", $cr="", $pid="", $guestUser="true")
+    {
+        $aURLInfo = parse_url($obj_ClientConfig->getMESBURL());
+
+        $obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 120, Constants::sSaveProfileEndPoint, "POST", "text/xml", $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword() );
+
+
+        $b = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= '<root>';
+        $b .= '<save-customer-profile>';
+        $countryID = $cid > 0 ? $cid : $obj_ClientConfig->getCountryConfig()->getID();
+        if (strlen($cr) > 0) {
+            $b .= '<profile guest="' . $guestUser . '" country-id="' . $countryID . '" external-id="'.$cr.'">';
+        } else {
+            $b .= '<profile guest="' . $guestUser . '" country-id="' . $cid . '">';
+        }
+        if($guestUser=="true") {
+            if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"PROFILE_EXPIRY") > 0) {
+                $profileExpiryDays = (integer) $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"PROFILE_EXPIRY");
+            } else {
+                $profileExpiryDays = Constants::iProfileExpiry;
+            }
+            $b .= '<expiry>'.date('Y-m-d', strtotime("+$profileExpiryDays day")).'</expiry>';
+        }
+        if(floatval($mob) > 0) {
+            $b .= '<mobile country-id="' . $cid . '" validated="false">' . floatval($mob) . '</mobile>';
+        }
+        if(strlen($email) > 0) {
+            $b .= '<email validated="false">' . $email . '</email>';
+        }
+        if(strlen($pid) > 0) {
+            $b .= '<pushId>' . $pid . '</pushId>';
+        }
+        $b .= '</profile>';
+        $b .= '</save-customer-profile>';
+        $b .= '</root>';
+
+        try
+        {
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+
+            $h = trim($this->constHTTPHeaders()) .HTTPClient::CRLF;
+            $h .= "X-CPM-client-id: ". $obj_ClientConfig->getID(). HTTPClient::CRLF;
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $HTTPResponseCode = $obj_HTTP->send($h, $b);
+            $response = simpledom_load_string($obj_HTTP->getReplyBody());
+
+            if(intval($HTTPResponseCode) == 200 && count($response->{'save-customer-profile'}->{'profile'}) > 0)
+            {
+                return $response->{'save-customer-profile'}->{'profile'}["id"];
+            }
+            else
+            {
+                trigger_error("mProfile save profile response HTTP Code: ". $HTTPResponseCode. " and body: ". $obj_HTTP->getReplyBody(), E_USER_NOTICE);
+            }
+        }
+        catch (HTTPException $e)
+        {
+            trigger_error("mProfile Save Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
+        }
+    }
+
 
 	/**
 	 * Sends the provided SMS Message to GoMobile on behalf of the provided Client.

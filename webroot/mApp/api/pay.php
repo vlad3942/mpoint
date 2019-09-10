@@ -265,6 +265,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if ($code >= 10)
 							{
+                                //save guest profile per txn
+                                $iProfileID = $obj_mPoint->saveProfile($obj_ClientConfig,(integer)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"],
+                                    (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile,
+                                    trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
+                                    trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}),
+                                    $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],"true");
+
+                                $obj_TxnInfo->setProfileID($iProfileID);
+
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
                                     if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1)
                                     {
@@ -273,7 +282,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                                     }
 									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
-	
+
 									//	Create a new user as some PSP's needs our End-User Account ID for storing cards
 									if ($iAccountID < 0)
 									{
@@ -286,9 +295,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],false);
 									}
 									$obj_TxnInfo->setAccountID($iAccountID);
-									// Update Transaction Log
-									$obj_mPoint->logTransaction($obj_TxnInfo);
 								}
+                                // Update Transaction Log
+                                $obj_mPoint->logTransaction($obj_TxnInfo);
+
 								$obj_PSPConfig = null;
 								switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
 								{
