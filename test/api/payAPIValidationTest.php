@@ -72,7 +72,7 @@ class PayAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(200, $iStatus); //TODO: Correct when CMP-236 is solved
+        $this->assertEquals(400, $iStatus); //TODO: Correct when CMP-236 is solved
         //$this->assertEquals("msg=173", $sReplyBody); //TODO: Correct when CMP-236 is solved
     }
 
@@ -244,7 +244,7 @@ class PayAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		
-		$this->assertEquals(200, $iStatus);
+		$this->assertEquals(400, $iStatus);
 	}
 
     public function testInvalidTransactionAmount()

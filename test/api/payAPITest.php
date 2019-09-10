@@ -73,7 +73,7 @@ class PayAPITest extends baseAPITest
 		$this->assertTrue(is_resource($res) );
 
 		$this->assertEquals(0, pg_num_rows($res) );
-
+        $this->bIgnoreErrors = true;
 		return $sReplyBody;
 	}
 
