@@ -8137,6 +8137,6 @@ Possible values % (constants)
 2 % 2		= Capture';
 
 
-ALTER TABLE log.transaction_tbl ADD profileid varchar(50) NULL;
+ALTER TABLE log.transaction_tbl ADD profileid int8 NULL;
 
 comment on column log.transaction_tbl.profileid is 'mProfile id associated with the txn';
