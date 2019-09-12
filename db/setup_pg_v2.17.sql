@@ -36,3 +36,13 @@ VALUES ('PROFILE_EXPIRY', <value>, <client-id>, 'client', 2 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('PROFILE_EXPIRY', '180', 10018, 'client', 2 );
 --------------
+---------
+
+-- Data anonymization flag to enable/disable it for a Client
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
+VALUES ('ENABLE_PROFILE_ANONYMIZATION', <value>, <client-id>, 'client', 0 );
+
+--Sandbox Data anonymization flag enabled for a test Client
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
+VALUES ('ENABLE_PROFILE_ANONYMIZATION', 'true', 10018, 'client', 0 );
+--------------
