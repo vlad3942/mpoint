@@ -99,7 +99,7 @@ class ClientConfig extends BasicConfig
 	/**
 	 * Client's Username for GoMobile
 	 *
-	 * @var stringiBASE_ASSETS_URL
+	 * @var string
 	 */
 	private $_sUsername;
 	/**
@@ -408,7 +408,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	AccountConfig $oAC 							Configuration for the Account the Transaction will be associated with
 	 * @param 	string $un 									Client's Username for GoMobile
 	 * @param 	string $pw 									Client's Password for GoMobile
-	 * @param 	CountryConfig $oCC 							devcpConfiguration for the Country the Client can process transactions in
+	 * @param 	CountryConfig $oCC 							Configuration for the Country the Client can process transactions in
 	 * @param 	KeywordConfig $oKC 							Configuration for the Keyword the Client uses to send messages through
 	 * @param 	ClientURLConfig $oLURL 						Object that holds the URL to the Client's Logo which will be displayed on all payment pages
 	 * @param 	ClientURLConfig $oCSSURL 					Object that holds the URL to the CSS file that should be used to customising the payment pages
