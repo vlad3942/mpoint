@@ -218,6 +218,9 @@ abstract class mPointSettlement
             $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
             $obj_UAProfile = null;
             $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+            if($captureAmount === -1) {
+                $captureAmount = $obj_TxnInfo->getAmount();
+            }
             $this->_iTotalTransactionAmount += $captureAmount;
         }
         $this->_sTransactionXML .= "</transactions>";

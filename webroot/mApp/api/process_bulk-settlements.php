@@ -283,7 +283,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                         $ticketNumber,
                                                         'log.additional_data_tbl  - TicketNumber'
                                                     );
-                                                    $aResponse[$ticketNumber] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                    $aResponse[$ticketNumber]['DB'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                                                 }
                                                 if ($voidAmount > 0) {
                                                     $passbookEntry = new PassbookEntry
@@ -295,7 +295,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                         $ticketNumber,
                                                         'log.additional_data_tbl - TicketNumber'
                                                     );
-                                                    $aResponse[$ticketNumber] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                    $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                                                 }
                                             }
                                         } catch (Exception $e) {
@@ -376,7 +376,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             foreach ($aResponse as $k => $v)
                             {
-                                $sMessage .= '<order id = "' . $k . '" status = "'.( ( $v['Status'] == 0 ) ? 1000 : 999).'"> Operation returned code ' . ( ( $v['Status'] == 0 ) ? 1000 : $v['Status']) . ' : ' . ( ($v['Message'] == '') ? 'Operation Successful' : $v['Message'] ) . '</order>';
+                                foreach ($v as $op => $status)
+                                {
+                                    $sMessage .= '<order id = "' . $k . '" type = "' .$op. '" status = "'.( ( $status['Status'] == 0 ) ? 1000 : 999).'"> Operation returned code ' . ( ( $status['Status'] == 0 ) ? 1000 : $status['Status']) . ' : ' . ( ($status['Message'] == '') ? 'Operation Successful' : $status['Message'] ) . '</order>';
+                                }
                             }
 
                             if ($code > 0 && ($code === 1000 || $code === 1001) )

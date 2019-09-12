@@ -1164,6 +1164,10 @@ class ClientConfig extends BasicConfig
         if (empty($embeddedHpp) === false) {
             $xml .= '<embedded-hpp>' . $embeddedHpp . '</embedded-hpp>';
         }
+        $enableHppAuthentication = $this->getAdditionalProperties(Constants::iInternalProperty,"enableHppAuthentication");
+        if (empty($enableHppAuthentication) === false) {
+            $xml .= '<enable-hpp-authentication>' . $enableHppAuthentication . '</enable-hpp-authentication>';
+        }
         $xml .= '</client-config>';
 
         return $xml;
