@@ -115,14 +115,19 @@ class OrderInfo
      * @var array
      */
     private $_aAdditionalData;
-	
+    /**
+     * The Fees of the Order for a Customer
+     *
+     * @var long
+     */
+    private $_iFees;
 	/**
 	 * Default Constructor
 	 *
-	 
+
 	 *
 	 */
-	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata)
+	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata,$fees)
 	{		
 		$this->_iID =  (integer) $id;
 		$this->_iTransactionID = $tid;
@@ -139,6 +144,7 @@ class OrderInfo
 		$this->_PassengerConfigs =  (array) $passengerd;
 		$this->_AddressConfigs = (array) $addressd;
         $this->_aAdditionalData = $additionaldata;
+        $this->_iFees = (float) $fees;
 	}
 
 	/**
@@ -225,7 +231,12 @@ class OrderInfo
 	 * @return 	array
 	 */
 	public function getAddressConfigs() { return $this->_AddressConfigs; }
-
+	/**
+	 * Returns the Fees the customer will pay for the Order
+	 *
+	 * @return 	long
+	 */
+	public function getFees() { return $this->_iFees; }
     /**
      * Returns the Additional Data of this flight
      *
@@ -237,7 +248,7 @@ class OrderInfo
 		
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity
+		$sql = "SELECT id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity,fees
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl				
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";	
@@ -254,7 +265,7 @@ class OrderInfo
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
 			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
 			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
-								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA);
+								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA, $RS["FEES"]);
 		}
 		else { return null; }
 	}
@@ -329,6 +340,9 @@ class OrderInfo
         $xml .= '</airline-data>';
         $xml .= '</product>';
         $xml .= '<amount country-id="'. $this->getCountryID() .'">'. $this->getAmount() .'</amount>';
+        $xml .= '<fees>';
+        $xml .= '<fee country-id="'. $this->getCountryID() .'">'. $this->getFees() .'</fee>';
+        $xml .= '</fees>';
         $xml .= '<points>'. $this->getPoints() .'</points>';
         $xml .= '<reward>'. $this->getReward() .'</reward>';
         $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
@@ -341,7 +355,6 @@ class OrderInfo
             $xml .= '</additional-data>';
         }
         $xml .= '</line-item>';
-     
         return $xml;
 	}
 }

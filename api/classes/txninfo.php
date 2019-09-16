@@ -1320,13 +1320,13 @@ class TxnInfo
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Order ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Order ID", 1001); }
-	
-	
+
+				$orderFees = isset($aOrderDataObj["fees"]) ? $aOrderDataObj["fees"] : 0;
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Order_Tbl
-							(id, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward)
+							(id, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees)
 						VALUES
 							(". $RS["ID"] .", ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
-							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." )";
+							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." ,".$orderFees.")";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)

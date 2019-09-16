@@ -5,3 +5,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) V
 --  New base url for client assets
 INSERT INTO System.urltype_Tbl (id, name) VALUES (16, 'Base URL For Client Asset');
 INSERT INTO Client.url_Tbl (urltypeid, clientid, url) VALUES (16, 10018, 'https://s3-ap-southeast-1.amazonaws.com/devcpmassets');
+
+/* Ticket level transaction - Add new column fees in log.order_tbl */
+ALTER TABLE Log.order_tbl ADD COLUMN fees integer DEFAULT 0;

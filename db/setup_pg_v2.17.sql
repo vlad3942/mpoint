@@ -45,4 +45,7 @@ VALUES ('ENABLE_PROFILE_ANONYMIZATION', <value>, <client-id>, 'client', 0 );
 --Sandbox Data anonymization flag enabled for a test Client
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('ENABLE_PROFILE_ANONYMIZATION', 'true', 10018, 'client', 0 );
---------------
+
+
+/* Ticket level transaction - Add new column fees in log.order_tbl */
+ALTER TABLE Log.order_tbl ADD COLUMN fees integer DEFAULT 0;
