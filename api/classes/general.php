@@ -458,7 +458,7 @@ class General
 	public function logTransaction(TxnInfo &$oTI)
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
+				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID().", profileid = ". $oTI->getProfileID().",
 					countryid = ". $oTI->getCountryConfig()->getID() .",currencyid = ". $oTI->getCurrencyConfig()->getID().", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", points = ". ($oTI->getPoints() > 0 ? $oTI->getPoints() : "NULL") .", reward = ". ($oTI->getReward() > 0 ? $oTI->getReward() : "NULL") .",
 					orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',

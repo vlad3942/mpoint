@@ -1404,5 +1404,15 @@ abstract class Constants
 	const sPassbookStatusInvalid = 'invalid';
 	const sPassbookStatusError = 'error';
 
+    /*
+     * Default Profile Expiry (in days) for profiles created in mProfile for Velocity transactions
+     */
+    const iProfileExpiry = 365;
+
+    /*
+     * Default mProfile APIs for Velocity
+     */
+    const sSaveProfileEndPoint = "/mprofile/save-profile";
+
 }
 ?>
