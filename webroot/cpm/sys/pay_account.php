@@ -60,6 +60,9 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 require_once(sCLASS_PATH ."/payfort.php");
 require_once(sCLASS_PATH ."/maybank.php");
 
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
 
@@ -436,6 +439,25 @@ if (count($aMsgCds) == 0)
 								$xml .= '<status code="92">Authorization failed, 2C2P returned error: '. $code .'</status>'; */
 							}
 							break;
+						case (Constants::iVeriTrans4G_PSP) : // VeriTrans4G
+						    $obj_PSPConfig = PSPConfig::produceConfig ( $_OBJ_DB, $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), Constants::iVeriTrans4G_PSP );
+						    
+						    $obj_PSP = new VeriTrans4G( $_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO ["veritrans4g"] );
+						    
+						    $code = $obj_PSP->authorize ( $obj_PSPConfig, $obj_Elem );
+						    
+						    if ($code == "2000") {
+						        $xml .= '<status code="2000">Payment authorized</status>';
+						    } else if (strpos ( $code, '2005' ) !== false) { header("HTTP/1.1 303"); $xml = $code;
+						    } 						// Error: Authorization declined
+						    else {
+						        $obj_mPoint->delMessage ( $obj_TxnInfo->getID (), Constants::iPAYMENT_WITH_ACCOUNT_STATE );
+						        
+						        /* header ( "HTTP/1.1 502 Bad Gateway" );
+						        
+						        $xml .= '<status code="92">Authorization failed, VeriTrans4G returned error: ' . $code . '</status>'; */
+						    }
+						    break;
 									
 				default:	// Unkown Error
 					$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
