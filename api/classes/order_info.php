@@ -290,7 +290,7 @@ class OrderInfo
 		return $aConfigurations;		
 	}
 	
-	public function toXML()
+	public function toXML($ticketNumbers = null)
 	{
 		$xml = '';
 		foreach ($this->getAddressConfigs() as $address_Obj)
@@ -312,9 +312,19 @@ class OrderInfo
         {
         	if( ($flight_Obj instanceof FlightInfo) === true )
         	{
-        
-        	$xml .=	$flight_Obj->toXML();
-        
+        	    if($flight_Obj->getAdditionalData()) {
+        	        $ticketNumber = null;
+                    foreach ($flight_Obj->getAdditionalData() as $fAdditionalData) {
+                        if( strtolower($fAdditionalData['NAME']) === 'ticketnumber')
+                        {
+                            $ticketNumber = $fAdditionalData['VALUE'];
+                        }
+                    }
+                    if (array_key_exists($ticketNumber, $ticketNumbers))
+                    {
+                        $xml .= $flight_Obj->toXML();
+                    }
+                }
         	}
         }
         foreach ($this->getPassengerConfigs() as $passenger_Obj)

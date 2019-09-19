@@ -844,35 +844,39 @@ class TxnInfo
 	 * after it has been resized to fit the screen resolution of the customer's mobile device.
 	 *
 	 * The method will return an XML document in the following format:
-	 * 	<transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
-	 *		<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
-	 * 		<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
-	 *		<order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
-	 *		<mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
-	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
-	 * 		<email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
-	 * 		<device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
-	 *		<logo>
-	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
-	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
-	 * 			<height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
-	 *		</logo>
-	 *		<css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
-	 *		<accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
-	 *		<cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
-	 *		<callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
-	 *		<language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
-	 * 		<auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
-	 * 		<markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
-	 *	</transaction>
+	 *    <transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
+	 *        <amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
+	 *        <price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
+	 *        <order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
+	 *        <mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
+	 *        <operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
+	 *        <email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
+	 *        <device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
+	 *        <logo>
+	 *            <url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
+	 *            <width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
+	 *            <height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
+	 *        </logo>
+	 *        <css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
+	 *        <accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
+	 *        <cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
+	 *        <callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
+	 *        <language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
+	 *        <auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
+	 *        <markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
+	 *    </transaction>
 	 *
-	 * @see 	iCLIENT_LOGO_SCALE
-	 * @see 	General::formatAmount()
+	 * @param UAProfile $oUA Reference to the User Agent Profile for the Customer's Mobile Device (optional)
+	 * @param int       $iAmount
+	 * @param null      $ticketNumbers
 	 *
-	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
-	 * @return 	string
+	 * @return    string
+	 * @throws \ImageException
+	 * @see    General::formatAmount()
+	 *
+	 * @see    iCLIENT_LOGO_SCALE
 	 */
-	public function toXML(UAProfile &$oUA=null, $iAmount = -1)
+	public function toXML(UAProfile &$oUA=null, $iAmount = -1, $ticketNumbers = null)
 	{
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
@@ -972,7 +976,7 @@ class TxnInfo
         if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
-			$xml .= $this->getOrdersXML();
+			$xml .= $this->getOrdersXML($ticketNumbers);
 		}
 		if($this->getAdditionalData() != null)
         {
@@ -1082,7 +1086,7 @@ class TxnInfo
 	 * @return 	TxnInfo
 	 * @throws 	E_USER_ERROR, TxnInfoException
 	 */
-	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null)
+	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null )
 	{
 		$obj_TxnInfo = null;
 		switch (true)
@@ -1488,7 +1492,7 @@ class TxnInfo
 		
 	}
 	
-	public function getOrdersXML()
+	public function getOrdersXML($ticketNumbers = null)
 	{
 		$xml = '';
 		if( empty($this->_obj_OrderConfigs) === false )
@@ -1498,10 +1502,7 @@ class TxnInfo
 			{
 				if( ($obj_OrderInfo instanceof OrderInfo) === true )
 				{
-					
-					$xml .= $obj_OrderInfo->toXML();
-					
-					
+					$xml .= $obj_OrderInfo->toXML($ticketNumbers);
 				}
 			}
 			$xml .= '</orders>';
