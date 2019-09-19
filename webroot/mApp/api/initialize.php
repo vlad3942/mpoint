@@ -138,7 +138,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-					
 						$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 						$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
 						try
@@ -333,6 +332,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$data['orders'][$j]['product-description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->description;
 										$data['orders'][$j]['product-image-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'image-url'};
 										$data['orders'][$j]['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->amount;
+										$collectiveFees = 0;
+										if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee) > 0)
+										{
+											for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee); $k++ )
+											{
+												$collectiveFees += $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee[$k];
+											}
+										}
+										$data['orders'][$j]['fees'] = (float) $collectiveFees;
 										$data['orders'][$j]['country-id'] = $obj_CountryConfig->getID();
 										$data['orders'][$j]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
 										$data['orders'][$j]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
@@ -345,7 +353,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $data['orders'][$j]['additionaldata'][$k]['type'] = (string)'Order';
                                             }
                                         }
-
                                         $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
 									}
 
