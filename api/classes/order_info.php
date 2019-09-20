@@ -29,8 +29,14 @@ class OrderInfo
 	 *
 	 * @var integer
 	 */
-	private $_iID;	
-	/**
+	private $_iID;
+    /**
+     * Unique reference string for the Order
+     *
+     * @var string
+     */
+    private $_sOrderRef;
+    /**
 	 * Configuration for the Client who owns the Order
 	 *
 	 * @var TxnInfo
@@ -122,9 +128,10 @@ class OrderInfo
 	 
 	 *
 	 */
-	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata)
+	public function __construct($id, $orderref, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata)
 	{		
 		$this->_iID =  (integer) $id;
+		$this->_sOrderRef =  (string) $orderref;
 		$this->_iTransactionID = $tid;
 		$this->_iCountryID = $cid;
 		$this->_lAmount = (float) $amt;
@@ -146,7 +153,13 @@ class OrderInfo
 	 *
 	 * @return 	integer
 	 */
-	public function getID() { return $this->_iID; }	
+	public function getID() { return $this->_iID; }
+	/**
+	 * Returns the Unique reference string for the Order
+	 *
+	 * @return 	string
+	 */
+	public function getOrderRef() { return $this->_sOrderRef; }
 	/**
 	 * Returns the Configuration for the Country the Order was processed in
 	 *
@@ -237,7 +250,7 @@ class OrderInfo
 		
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity
+		$sql = "SELECT id, orderref, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl				
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";	
@@ -253,7 +266,7 @@ class OrderInfo
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
 			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
-			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
+			return new OrderInfo($RS["ID"], $RS['ORDERREF'],$RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
 								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA);
 		}
 		else { return null; }
@@ -303,7 +316,7 @@ class OrderInfo
 			}
 		}
 		$xml .= '<line-item>';
-        $xml .= '<product sku="'. $this->getProductSKU() .'">';
+        $xml .= '<product order-ref = "'.$this->getOrderRef().'" sku="'. $this->getProductSKU() .'">';
         $xml .= '<name>'. $this->getProductName() .'</name>';
         $xml .= '<description>'. $this->getProductDesc() .'</description>';
         $xml .= '<image-url>'. $this->getProductImageURL() .'</image-url>';
