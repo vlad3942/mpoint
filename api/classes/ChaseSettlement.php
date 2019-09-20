@@ -102,11 +102,18 @@ class ChaseSettlement extends mPointSettlement
                 {
                     $xmlRecord = $xmlFile->record[$secondIndex];
                     $recordId = (string)$xmlRecord["id"];
+                    $ticketNumbers = [];
                     if(array_key_exists($recordId, $records ) === false)
                     {
                         $records[$recordId]["error"] = "";
                         $records[$recordId]["warning"] = "";
                         $records[$recordId]["success"] = "";
+                    }
+                    else{
+                        for ($ticketNumberIndex = 0, $ticketNumberIndexMax = count($xmlRecord->ticketnumbers); $ticketNumberIndex < $ticketNumberIndexMax; $ticketNumberIndex++){
+                            $ticketNumbers[] = $xmlRecord->ticketnumbers[$ticketNumberIndex]->ticketNumber;
+                        }
+                        $records[$recordId]['ticketnumbers'] = $ticketNumbers;
                     }
 
                     if(isset($xmlRecord->error))
@@ -254,7 +261,9 @@ class ChaseSettlement extends mPointSettlement
                                                 $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
                                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                                     "amount" => $amount,
-                                                    "fee" => $obj_TxnInfo->getFee());
+                                                    "fee" => $obj_TxnInfo->getFee(),
+                                                    'additionaldata' => implode(',', $file['records'][$recordId]['ticketnumbers'])
+                                                );
                                                 if (strlen($obj_TxnInfo->getCallbackURL()) > 0) {
                                                     $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
                                                 }
@@ -264,7 +273,9 @@ class ChaseSettlement extends mPointSettlement
                                             {
                                                 $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
                                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $amount);
+                                                    "amount" => $amount,
+                                                    'additionaldata' => implode(',', $file['records'][$recordId]['ticketnumbers'])
+                                                    );
 
                                                 if (strlen($obj_TxnInfo->getCallbackURL()) > 0)
                                                 {

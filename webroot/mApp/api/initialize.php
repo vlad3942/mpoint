@@ -334,6 +334,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$data['orders'][0]['product-description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->description;
 										$data['orders'][0]['product-image-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'image-url'};
 										$data['orders'][0]['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->amount;
+										$collectiveFees = 0;
+										if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee) > 0)
+										{
+											for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee); $k++ )
+											{
+												$collectiveFees += $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee[$k];
+											}
+										}
+										$data['orders'][0]['fees'] = (float) $collectiveFees;
 										$data['orders'][0]['country-id'] = $obj_CountryConfig->getID();
 										$data['orders'][0]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
 										$data['orders'][0]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
