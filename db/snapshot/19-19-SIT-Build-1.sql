@@ -1,0 +1,1 @@
+ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
