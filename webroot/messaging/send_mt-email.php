@@ -3,11 +3,12 @@ require_once("inc/include.php");
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
-$actual_host = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-
-$xml = $h = '';
-
 $client = (integer)$obj_DOM->notify[0]["client-id"];
+
+$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $client);
+
+$base_url = $obj_ClientConfig->getBaseAssetURL();
+
 if (empty($client) === true || !file_get_contents(dirname(__FILE__).'/template/' . $client . '/email.php')) {
     $client = 'default';
 }
@@ -18,11 +19,11 @@ if (isset($obj_DOM->notify->{'body'}->{'assets'}) === true && isset($obj_DOM->no
 }
 else
 {
-    $sBannerImage =  $actual_host.'/messaging/template/'.$client.'/assets/img/banner.png';
+    $sBannerImage =  "$base_url/$client/PBL/assets/images/banner.png";
 }
 
-$sLogo = $actual_host.'/messaging/template/'.$client.'/assets/img/logo.jpg';
-$sCssUrl = $actual_host.'/messaging/template/'.$client.'/assets/css/style.css';
+$sLogo = "$base_url/$client/PBL/assets/images/logo.jpg";
+$sCssUrl = "$base_url/$client./PBL/assets/style/style.css";
 
 $sPaymentURL = (string)$obj_DOM->notify->{'body'}->{'message'};
 
@@ -54,29 +55,53 @@ $aReplaceVal = array($sCssUrl, $sLogo, $sBannerImage, $sMessageText, $sURL);
 
 // Function to replace string
 $sBody = str_replace($aSearchVal, $aReplaceVal, $sHtmlData);
+$sBody = utf8_encode(htmlspecialchars($sBody, ENT_QUOTES));
 
 $sFromEmail = (string)$obj_DOM->notify->{'from'};
-$sRecipientEmail = (string)$obj_DOM->notify->{'to'};
+$sRecipientEmail = array((string)$obj_DOM->notify->{'to'});
 $sSubject = (string)$obj_DOM->notify->{'body'}->{'subject'};
+$requestId = "PBL";
 
-$h = "Reply-To:" . $sFromEmail . SMTPClient::CRLF;
-$h .= "Content-Type: text/plain; charset=\"UTF-8\"" . SMTPClient::CRLF;
-$h .= "MIME-Version: 1.0" . SMTPClient::CRLF;
+$client =  (integer)$obj_DOM->notify[0]["client-id"];
 
-$obj_EmailMessage = new EMailMessage($sRecipientEmail, $sSubject, utf8_encode($sBody), "text/html", "UTF-8", $h);
+/* ----- Construct HTTP Header Start ----- */
+$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+$h .= "host: {HOST}" .HTTPClient::CRLF;
+$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
+$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+/* ----- Construct HTTP Header End ----- */
 
-$obj_ConnInfo = new SMTPConnInfo($sFromEmail, "CellPoint Mobile Support", "tcp", "localhost", 25, 20, "", "");
-$obj_SMTP = new SMTPClient($obj_ConnInfo);
-$code = $obj_SMTP->mail($obj_EmailMessage);
+/* ----- Construct HTTP Connection Info Start ----- */
+$url= $obj_ClientConfig->getMESBURL().'/emailservice/send-email';
+$aURL_Info = parse_url($url);
+$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
+$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+$aHTTP_CONN_INFO["mesb"]["timeout"] = '20';
+$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+$aHTTP_CONN_INFO["mesb"]["method"] = 'POST';
+$aHTTP_CONN_INFO["mesb"]["contenttype"] = 'text/xml';
+$aHTTP_CONN_INFO["mesb"]["username"] = $obj_ClientConfig->getUsername();
+$aHTTP_CONN_INFO["mesb"]["password"] = $obj_ClientConfig->getPassword();
 
+$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+/* ----- Construct HTTP Connection Info End ----- */
 
-if ($obj_EmailMessage->getCode() == SMTPClient::iMAIL_SUCCESSFULLY_SENT_STATE)
+$obj_emailService = new emailService();
+
+$obj_emailService->produceEmail($client, $sFromEmail, $sRecipientEmail, $sSubject, $sBody, $requestId);
+
+$response = $obj_emailService->sendEmail(simplexml_load_string($obj_emailService->toXML()), $obj_ConnInfo, $h);
+
+if ($response->SendMailResult->code == 200 && $response->SendMailResult->status =='ACCEPTED')
 {
-    $xml .= '<status code="' . $obj_EmailMessage->getCode() . '">Message successfully sent </status>';
+    $xml .= '<status code="' . $response->SendMailResult->code . '">Message successfully sent </status>';
 }
 else
 {
-    $xml .= '<status code="' . $obj_EmailMessage->getCode() . '">Message sending failed</status>';
+    $xml .= '<status code="'.$response->SendMailResult->code.'">Message sending failed</status>';
 }
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
