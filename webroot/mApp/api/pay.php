@@ -265,7 +265,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if ($code >= 10)
 							{
-
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
                                     if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1)
                                     {
@@ -287,21 +286,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],false);
 									}
 									$obj_TxnInfo->setAccountID($iAccountID);
+									// Update Transaction Log
+									$obj_mPoint->logTransaction($obj_TxnInfo);
 								}
-                                //save guest profile per txn if data anonymization is enabled for the client.
-                                if($obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION") == "true") {
-                                    $iProfileID = $obj_mPoint->saveProfile($obj_ClientConfig, (integer)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"],
-                                        (float)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile,
-                                        trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
-                                        trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}),
-                                        $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"], "true");
-
-                                    $obj_TxnInfo->setProfileID($iProfileID);
-                                }
-
-                                // Update Transaction Log
-                                $obj_mPoint->logTransaction($obj_TxnInfo);
-
 								$obj_PSPConfig = null;
 								switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
 								{
