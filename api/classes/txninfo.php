@@ -991,6 +991,11 @@ class TxnInfo
             $xml .= '<installment><value>'.htmlspecialchars($this->_iInstallmentValue, ENT_NOQUOTES).'</value></installment>';
 		}
 
+		if($this->getProfileID() > 0)
+		{
+			$xml .= '<profileid>'.htmlspecialchars($this->_iInstallmentValue, ENT_NOQUOTES).'</profileid>';
+		}
+
 		$xml .= '</transaction>';
 
 		return $xml;
