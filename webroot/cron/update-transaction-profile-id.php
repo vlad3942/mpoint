@@ -1,10 +1,11 @@
 <?php
 require_once("../inc/include.php");
+set_time_limit(-1);
 
 //default time interval
 $interval = '15 MINUTE ';
 if (isset($_GET["interval"])) {
-    $interval = $_GET["interval"];
+    $interval = urldecode($_GET["interval"]);
 }
 
 if (isset($_GET["clientid"])) {
@@ -41,8 +42,8 @@ while ($RS = $_OBJ_DB->fetchName($res)) {
     $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
     $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], 0, "true");
     try {
-        $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
-        $result = $_OBJ_DB->query(updateQuery);
+        $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET profileid = " . intval($profileId) . " WHERE id= " . intval($RS["ID"]);
+        $result = $_OBJ_DB->query($updateQuery);
     } catch (Exception $e) {
         trigger_error("Failed to update profile for txn id =" . $RS["ID"], E_USER_ERROR);
     }

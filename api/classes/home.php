@@ -1196,7 +1196,7 @@ class Home extends General
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $HTTPResponseCode = $obj_HTTP->send($h, $b);
-            $response = simpledom_load_string($obj_HTTP->getReplyBody());
+            $response = simplexml_load_string($obj_HTTP->getReplyBody());
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'save-customer-profile'}->{'profile'}) > 0)
             {
