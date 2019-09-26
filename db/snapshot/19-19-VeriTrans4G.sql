@@ -35,3 +35,10 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_TXN_VERSION', '2.0.0', 10018, 'client', 2 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_DUMMY_REQUEST', '1', 10018, 'client', 2 );
 
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_SERVICE_OPTION_TYPE', 'mpi-none', 10018, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_BROWSER_DEVICE_CATEGORY', '0', 10018, 'client', 2 );
+
+
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('CLIENT_3DS_ENABLE', 'true', 10018, 'client', 2 );
+
+
