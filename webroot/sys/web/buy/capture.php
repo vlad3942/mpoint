@@ -77,6 +77,10 @@ require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the Data Cash component
 require_once(sCLASS_PATH ."/mada_mpgs.php");
 
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
+
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input

@@ -110,6 +110,10 @@ require_once(sCLASS_PATH ."/validate.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/global-payments.php");
+
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
@@ -137,12 +141,16 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valUsername($_REQUEST['username']) != 10) { $aMsgCds[$obj_Validator->valUsername($_REQUEST['username']) + 20] = $_REQUEST['username']; }
 	if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[$obj_Validator->valPassword($_REQUEST['password']) + 30] = $_REQUEST['password']; }
 	$code = $obj_Validator->valmPointID($_OBJ_DB, $_REQUEST['mpointid'], $obj_ClientConfig->getID() );
+	
+	
 	if ($code != 6 && $code != 10)
 	{
 		$aMsgCds[$code + 170] = $_REQUEST['mpointid'];
 	}
 	if ($obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) + 180] = $_REQUEST['orderid']; }
 	/* ========== Input Validation End ========== */
+	
+	//echo $aMsgCds;
 	// Success: Input Valid
 	if (count($aMsgCds) == 0)
 	{
@@ -209,7 +217,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		// Error: Invalid Input
 		else
 		{
-			header("HTTP/1.0 400 Bad Request");
+			header("HTTP/1.0 400 Bad Request hai");
 			// Log Errors
 			foreach ($aMsgCds as $state => $debug)
 			{
@@ -238,7 +246,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	// Error: Invalid Input
 	else
 	{
-		header("HTTP/1.0 400 Bad Request");
+		header("HTTP/1.0 400 Bad Request second");
 		// Log Errors		
 		foreach ($aMsgCds as $state => $debug)
 		{

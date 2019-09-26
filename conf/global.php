@@ -951,7 +951,7 @@ $aHTTP_CONN_INFO["veritrans4g"]["paths"]["initialize"] = "/mpoint/veritrans4g/in
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["auth"] = "/mpoint/veritrans4g/authorize-payment";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["capture"] = "/mpoint/veritrans4g/capture";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["refund"] = "/mpoint/veritrans4g/refund";
-$aHTTP_CONN_INFO["veritrans4g"]["paths"]["status"] = "/mpoint/veritrans4g/status";
+//$aHTTP_CONN_INFO["veritrans4g"]["paths"]["status"] = "/mpoint/veritrans4g/status";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["cancel"] = "/mpoint/veritrans4g/cancel";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["callback"] = "/mpoint/veritrans4g/callback";
 

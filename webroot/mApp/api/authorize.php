@@ -138,6 +138,10 @@ require_once(sCLASS_PATH ."/wallet_processor.php");
 require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
+
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
