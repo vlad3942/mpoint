@@ -96,7 +96,7 @@
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
 												<xs:minLength value="0" />
-												<xs:maxLength value="64" />
+												<xs:maxLength value="128" />
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
@@ -261,7 +261,7 @@
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
 												<xs:minLength value="0" />
-												<xs:maxLength value="64" />
+												<xs:maxLength value="128" />
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
@@ -389,7 +389,7 @@
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
 												<xs:minLength value="0" />
-												<xs:maxLength value="64" />
+												<xs:maxLength value="128" />
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
