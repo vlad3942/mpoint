@@ -1200,7 +1200,7 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'save-customer-profile'}->{'profile'}) > 0)
             {
-                return $response->{'save-customer-profile'}->{'profile'}["id"];
+                return (int)$response->{'save-customer-profile'}->{'profile'}["id"];
             }
             else
             {
@@ -1211,6 +1211,7 @@ class Home extends General
         {
             trigger_error("mProfile Save Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
+        return -1;
     }
 
 
