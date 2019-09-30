@@ -190,10 +190,10 @@ abstract class mPointSettlement
         $sql = "SELECT DISTINCT ID FROM (
                 SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
                 RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
-                FROM log." . sSCHEMA_POSTFIX . "Transaction_Tbl T
-                INNER JOIN log." . sSCHEMA_POSTFIX . "txnpassbook_Tbl TP ON T.id = TP.transactionid
-                INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_record_tbl SRT on SRT.transactionid = T.id
-                INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                FROM log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".txnpassbook_Tbl TP ON T.id = TP.transactionid
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_record_tbl SRT on SRT.transactionid = T.id
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
                 WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
                 AND TP.status = '".Constants::sPassbookStatusInProgress."' 
                 AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId.") s 
