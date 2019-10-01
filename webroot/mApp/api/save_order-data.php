@@ -21,7 +21,80 @@ require_once(sAPI_CLASS_PATH . "simpledom.php");
  $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
  $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
- $HTTP_RAW_POST_DATA = 'Unable to update Transaction';
+ $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <save-order-data client-id="10007">
+        <transactions>
+            <transaction id="1829341">
+                <orders>
+                    <line-item>
+                        <amount country-id="200" currency-id="840" type="DB">5000</amount>
+                        <product sku="WN_7900248445">
+                            <airline-data>
+                                <flight-detail tag="1" trip-count="1">
+                                    <service-class>K</service-class>
+                                    <flight-number>1496</flight-number>
+                                    <departure-airport>TUS</departure-airport>
+                                    <arrival-airport>SAN</arrival-airport>
+                                    <airline-code>WN</airline-code>
+                                    <departure-date>2019-08-08 17:50:00</departure-date>
+                                    <additional-data>
+                                        <param name="FareBasisCode">KZBP</param>
+                                        <param name="TicketNumber">5269830961601</param>
+                                    </additional-data>
+                                </flight-detail>
+                                <flight-detail tag="1" trip-count="1">
+                                    <service-class>K</service-class>
+                                    <flight-number>1151</flight-number>
+                                    <departure-airport>SAN</departure-airport>
+                                    <arrival-airport>DEN</arrival-airport>
+                                    <airline-code>WN</airline-code>
+                                    <departure-date>2019-08-08 20:05:00</departure-date>
+                                    <additional-data>
+                                        <param name="FareBasisCode">KZBP</param>
+                                        <param name="TicketNumber">5269830961601</param>
+                                    </additional-data>
+                                </flight-detail>
+                                <passenger-detail>
+                                    <title>KENNEDY</title>
+                                    <first-name>GORDON</first-name>
+                                    <last-name>TEWELL</last-name>
+                                </passenger-detail>
+                            </airline-data>
+                        </product>
+                        <additional-data>
+                            <param name="TDNR">5269830961601</param>
+                            <param name="CCAC">165404018819131</param>
+                            <param name="CINN">5262221908</param>
+                            <param name="SQNR">00004466</param>
+                            <param name="FPAM">00000000037068</param>
+                            <param name="CUTP">USD2</param>
+                            <param name="DBCR">DB</param>
+                            <param name="PRDA">2019-05-21 17:55:00</param>
+                        </additional-data>
+                    </line-item>
+                    <line-item>
+                        <amount country-id="200" currency-id="840" type="CR">5000</amount>
+                        <product sku="WN_7900248446" />
+                        <additional-data>
+                            <param name="TDNR">5269830961601</param>
+                            <param name="CCAC">165404018819131</param>
+                            <param name="CINN">5262221908</param>
+                            <param name="SQNR">00000598</param>
+                            <param name="FPAM">00000000000870</param>
+                            <param name="CUTP">USD2</param>
+                            <param name="DBCR">CR</param>
+                            <param name="PRDA">2019-05-21 17:55:00</param>
+                        </additional-data>
+                    </line-item>
+                </orders>
+                <additional-data>
+                    <param name="booking-ref">T72JGW</param>
+                </additional-data>
+            </transaction>
+        </transactions>
+    </save-order-data>
+</root>';
  */
 
 
