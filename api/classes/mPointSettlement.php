@@ -217,7 +217,9 @@ abstract class mPointSettlement
             $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
             $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
             $obj_UAProfile = null;
-            $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+            $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
+            $ticketNumbers =  $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
+            $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount,$ticketNumbers);
             if($captureAmount === -1) {
                 $captureAmount = $obj_TxnInfo->getAmount();
             }
