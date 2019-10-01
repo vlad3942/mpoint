@@ -858,7 +858,7 @@ abstract class Constants
      * Unique ID for the Payment Service Provider: VERITRANS4G
      *
      */
-    const iVeriTrans4G_PSP = 58;
+    const iVeriTrans4G_PSP = 59;
     
     /**
 	 * Unique ID for the Electronic Payment Flow
