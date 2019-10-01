@@ -46,3 +46,8 @@ VALUES ('ENABLE_PROFILE_ANONYMIZATION', <value>, <client-id>, 'client', 0 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('ENABLE_PROFILE_ANONYMIZATION', 'true', 10018, 'client', 0 );
 --------------
+
+
+--index on table: log.TxnPassbook_tbl --column:status
+CREATE INDEX txn_status ON log.txnpassbook_tbl (status);
+
