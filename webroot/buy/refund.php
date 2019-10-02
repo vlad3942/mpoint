@@ -217,7 +217,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		// Error: Invalid Input
 		else
 		{
-			header("HTTP/1.0 400 Bad Request hai");
+			header("HTTP/1.0 400 Bad Request");
 			// Log Errors
 			foreach ($aMsgCds as $state => $debug)
 			{
@@ -246,7 +246,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	// Error: Invalid Input
 	else
 	{
-		header("HTTP/1.0 400 Bad Request second");
+		header("HTTP/1.0 400 Bad Request");
 		// Log Errors		
 		foreach ($aMsgCds as $state => $debug)
 		{
