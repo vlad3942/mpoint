@@ -87,6 +87,19 @@ abstract class mPointSettlement
 
         $this->_getPSPConfiguration($_OBJ_DB);
 
+        $aStateMapping = array(
+            Constants::iPAYMENT_CAPTURE_INITIATED_STATE => Constants::iPAYMENT_CAPTURED_STATE,
+            Constants::iPAYMENT_CANCEL_INITIATED_STATE => Constants::iPAYMENT_CANCELLED_STATE,
+            Constants::iPAYMENT_REFUND_INITIATED_STATE => Constants::iPAYMENT_REFUNDED_STATE
+        );
+
+        $aFinalStateMappings = array();
+
+        foreach ($aStateIds as $stateId)
+        {
+            array_push($aFinalStateMappings, $aStateMapping[$stateId]);
+        }
+
         $iBatchLimit = 200;
         $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
         if($sSettlementBatchLimit != '')
@@ -111,6 +124,20 @@ abstract class mPointSettlement
             $recordNumber = (int)$res["RECORD_NUMBER"];
         }
 
+        $extendedCondition = '';
+        if($this->_sRecordType === 'CAPTURE')
+        {
+            $extendedCondition .= Constants::iPAYMENT_REFUND_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
+        }
+        elseif($this->_sRecordType === 'REFUND')
+        {
+            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
+        }
+        else{
+            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_REFUND_INITIATED_STATE;
+        }
+
+
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
@@ -125,7 +152,7 @@ abstract class mPointSettlement
                            where clientid = $this->_iClientId
                               AND pspid = $this->_iPspId
                               AND Txn.cardid NOTNULL
-                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE .")
+                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE ."," . $extendedCondition .")
                          ORDER BY txnid, msg.created DESC
                        ) sub
                   WHERE stateid IN ($stateIds)";
@@ -156,16 +183,45 @@ abstract class mPointSettlement
             }
         }
 
-        $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+        $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+
+        $arrayPartialOperations = [];
+        $sql = "SELECT DISTINCT  T.id AS ID
+                FROM log." . sSCHEMA_POSTFIX . "Transaction_Tbl T
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "txnpassbook_Tbl TP ON T.id = TP.transactionid
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_record_tbl SRT on SRT.transactionid = T.id
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                  WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
+                  AND TP.status = '".Constants::sPassbookStatusInProgress."' 
+                  AND ST.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'
+                  AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId;
+
+        $aRS = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs) {
+                $transactionId = (int)$rs["ID"];
+                array_push($arrayPartialOperations,$transactionId);
+            }
+        }
+
+        $this->_arrayTransactionIds = array_values(array_unique(array_merge($this->_arrayTransactionIds, $arrayPartialOperations)));
+
         $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
+
         $this->_sTransactionXML = "<transactions>";
 
         foreach ($this->_arrayTransactionIds as $transactionId)
         {
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
             $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-            $this->_sTransactionXML .= $obj_TxnInfo->toXML();
-            $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
+            $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
+            $obj_UAProfile = null;
+            $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+            if($captureAmount === -1) {
+                $captureAmount = $obj_TxnInfo->getAmount();
+            }
+            $this->_iTotalTransactionAmount += $captureAmount;
         }
         $this->_sTransactionXML .= "</transactions>";
 

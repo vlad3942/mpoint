@@ -126,6 +126,12 @@ class PaymentProcessor
     {
         return $this->_objPSP->status();
     }
+
+    public function cancel()
+    {
+        return $this->_objPSP->cancel();
+    }
+
     public function getPaymentMethods()
     {
         return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);

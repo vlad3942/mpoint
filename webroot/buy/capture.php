@@ -90,6 +90,8 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/cielo.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 header("Content-Type: application/x-www-form-urlencoded");
 
@@ -150,13 +152,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					
 					$aMsgCds[1000] = "Success";
 					// Perform callback to Client
-					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
-					{
-						$args = array("transact" => $obj_TxnInfo->getExternalID(),
-									  "amount" => $_REQUEST['amount'],
-									  "fee" => $obj_TxnInfo->getFee() );
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
-					}
+                    if ($code != Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT) {
+                        if (strlen($obj_TxnInfo->getCallbackURL()) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true) {
+                            $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                "amount" => $_REQUEST['amount'],
+                                "fee" => $obj_TxnInfo->getFee());
+                            $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                        }
+                    }
 				}
 				else
 				{

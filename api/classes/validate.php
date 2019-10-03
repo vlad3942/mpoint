@@ -1219,8 +1219,10 @@ class Validate extends ValidateBase
 	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
 	{
 		$code = 1;
-		$chk = sha1($obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt() );
-		if ($mac == $chk)
+		
+		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+		
+		if (strtolower($mac) === strtolower($chk))
 		{
 			$code = 10;
 		}
