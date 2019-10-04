@@ -35,7 +35,7 @@ $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<capture>';
 $HTTP_RAW_POST_DATA .= '<transactions client-id="10007" account="100006">';
-$HTTP_RAW_POST_DATA .= '<transaction id="1798769" order-no="1412177706">';
+$HTTP_RAW_POST_DATA .= '<transaction id="1798769" order-no="1412177706" order-ref="1122334455">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">20</amount>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '</transactions>';
@@ -44,7 +44,6 @@ $HTTP_RAW_POST_DATA .= '</root>';
 */
 
 $xml = '';
-
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -68,7 +67,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
 		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_CAPTURE_PAYMENTS, $aClientIDs, $_SERVER['HTTP_VERSION']);
-		
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -106,7 +104,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			break;
 		}
 		/* ========== SINGLE SIGN-ON END ========== */
-		
 		if ($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
 		{				
 			/* ========== INPUT VALIDATION START ========== */
@@ -122,7 +119,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				elseif ($code < 20) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Account : ". $iAccountID ." failed"); }				
 			}		
 			/* ========== INPUT VALIDATION END ========== */
-			
 			if (count($aMsgCodes) == 0)
 			{		 
 				for ($i=0; $i<count($obj_DOM->capture->transactions); $i++)
@@ -138,7 +134,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 														  (integer) $obj_DOM->capture->transactions[$i]->transaction[$j]["id"],
 														  urlencode($obj_DOM->capture->transactions[$i]->transaction[$j]["order-no"]),
 														  (integer) $obj_DOM->capture->transactions[$i]->transaction[$j]->amount,
-                                                            $iAccountID );
+                                                            $iAccountID,
+															urlencode($obj_DOM->capture->transactions[$i]->transaction[$j]["order-ref"])
+														 );
 						foreach ($aMsgCodes as $code)
 						{
 							switch ($code)
