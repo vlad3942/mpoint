@@ -166,12 +166,17 @@ final class TxnPassbook
         $this->_getUpdatedTransactionAmounts();
         if($passbookEntry->getRequestedOperation() === Constants::iVoidRequested)
         {
-            $passbookEntries = $this->_segregateVoidEntry($passbookEntry, $isCancelPriority);
+            $validateEntryResponse = $this->validateEntry($passbookEntry);
+            if ($validateEntryResponse['Status'] === 0) {
+                $passbookEntries = $this->_segregateVoidEntry($passbookEntry, $isCancelPriority);
+            }
         }
+
         foreach ($passbookEntries as $_passbookEntry) {
-            $validateEntryResponse = $this->validateEntry($_passbookEntry);
-            if($validateEntryResponse['Status'] > 0)
-            {
+            if($validateEntryResponse === null) {
+                $validateEntryResponse = $this->validateEntry($_passbookEntry);
+            }
+            if ($validateEntryResponse['Status'] > 0) {
                 $_passbookEntry->setStatus(Constants::sPassbookStatusInvalid);
             }
             $_addEntryResponse = $this->_addEntry($_passbookEntry);
@@ -257,6 +262,8 @@ final class TxnPassbook
             $validateOperationResponse = $this->_validateOperation($this->_cancelledAmount, $passbookEntry->getAmount(), $this->_getCancelableAmount(), $this->isPartialCancelSupported());
         } elseif ($requestedOperation === Constants::iRefundRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_refundedAmount, $passbookEntry->getAmount(), $this->_getRefundableAmount(), $this->isPartialRefundSupported());
+        } elseif ($requestedOperation === Constants::iVoidRequested) {
+            $validateOperationResponse = $this->_validateOperation($this->_cancelledAmount + $this->_refundedAmount, $passbookEntry->getAmount(), $this->_getCancelableAmount() + $this->_getRefundableAmount(), $this->isPartialRefundSupported());
         } elseif ($requestedOperation === Constants::iAuthorizeRequested) {
             if ($this->_authorizedAmount === 0 && $this->_initializedAmount >= $passbookEntry->getAmount()) {
                 $validateOperationResponse['Status'] = 0;
