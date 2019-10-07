@@ -16,14 +16,14 @@ if (isset($_GET["limit"])) {
     $limit = $_GET["limit"];
 }
 
-$sql = "SELECT txn.id, txn.clientid, txn.accountid, txn.countryid, txn.mobile, txn.operatorid, txn.email, txn.customer_ref
-          FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn WHERE";
+$sql = "SELECT txn.id, txn.clientid, txn.accountid, txn.countryid, txn.mobile, txn.operatorid, txn.email, txn.customer_ref FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn WHERE";
+$sql .= " txn.clientid in (select prop.externalid from client" . sSCHEMA_POSTFIX . ".additionalproperty_tbl prop where prop.key='ENABLE_PROFILE_ANONYMIZATION' and prop.value='true'";
 if (empty($clientid) === false) {
-    $sql .= " txn.clientid = " . intval($clientid) . " and ";
+    $sql .= " and prop.externalid = " . intval($clientid) . " ) ";
 } else {
-    $sql .= " txn.clientid in (select prop.externalid from client" . sSCHEMA_POSTFIX . ".additionalproperty_tbl prop where prop.key='ENABLE_PROFILE_ANONYMIZATION' and prop.value='true') and ";
+    $sql .= " ) ";
 }
-$sql .= " txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id desc";
+$sql .= " and txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id desc";
 if (empty($limit) === false) {
     $sql .= " limit " . intval($limit);
 }
