@@ -1149,7 +1149,7 @@ class Home extends General
 	}
 
 
-    public function saveProfile(ClientConfig $obj_ClientConfig, $cid, $mob, $email="", $cr="", $pid="", $guestUser="true")
+    public function saveProfile(ClientConfig $obj_ClientConfig, $cid, $mob, $email="", $cr="", $guestUser="true")
     {
         $aURLInfo = parse_url($obj_ClientConfig->getMESBURL());
 
@@ -1178,9 +1178,6 @@ class Home extends General
         }
         if(strlen($email) > 0) {
             $b .= '<email validated="false">' . $email . '</email>';
-        }
-        if(strlen($pid) > 0) {
-            $b .= '<pushId>' . $pid . '</pushId>';
         }
         $b .= '</profile>';
         $b .= '</save-customer-profile>';

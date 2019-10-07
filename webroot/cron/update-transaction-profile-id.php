@@ -39,7 +39,7 @@ while ($RS = $_OBJ_DB->fetchName($res)) {
 // Call Save-Profile API for each transaction
     $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $RS["CLIENTID"], $RS['ACCOUNTID']);
     $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
-    $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], 0, "true");
+    $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], "true");
     if ($profileId > 0) {
         try {
             $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET EMAIL=NULL, mobile=NULL, operatorid=NULL, customer_ref=NULL, profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
