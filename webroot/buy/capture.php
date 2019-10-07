@@ -114,9 +114,6 @@ $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) == 100)
 {
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']);
-	$isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
-	$isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
-	$isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
 
 	// Set Client Defaults
 	
@@ -135,35 +132,24 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		/* ========== Input Validation Start ========== */
 		if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 		/* ========== Input Validation End ========== */
-
+		
 		// Success: Input Valid
 		if (count($aMsgCds) == 0)
 		{
 			try
 			{
-				$code=0;
-				$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
-				$passbookEntry = new PassbookEntry
-				(
-						NULL,
-						$obj_TxnInfo->getAmount(),
-						$obj_TxnInfo->getCurrencyConfig()->getID(),
-						Constants::iCaptureRequested
-				);
-				if ($txnPassbookObj instanceof TxnPassbook)
-				{
-					$txnPassbookObj->addEntry($passbookEntry);
-					try {
-						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
-						$code = reset($codes);
-					} catch (Exception $e) {
-						trigger_error($e, E_USER_WARNING);
-					}
-				}
+				$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+				$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+				$code = $obj_mPoint->capture( (integer) $_REQUEST['amount']);
+
+				// Refresh transactioninfo object once the capture is performed
+				$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
+
 				// Capture operation succeeded
 				if ($code >= 1000)
 				{
 					header("HTTP/1.0 200 OK");
+					
 					$aMsgCds[1000] = "Success";
 					// Perform callback to Client
                     if ($code != Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT) {
@@ -212,6 +198,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			catch (mPointException $e)
 			{
 				header("HTTP/1.0 500 Internal Error");
+
 				$aMsgCds[$e->getCode()] = $e->getMessage();
 				trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
 			}

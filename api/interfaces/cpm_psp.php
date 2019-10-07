@@ -139,9 +139,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 				$obj_HTTP->connect();
 				$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+				
 				$obj_HTTP->disConnect();
-				$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
-
 				if ($code == 200)
 				{
 					$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -151,11 +150,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
 					{
 						$iStatusCode = (integer)$obj_Txn->status["code"];
-						if ($iStatusCode == 1000)
-						{
-							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
-						}
+						if ($iStatusCode == 1000) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
 						else if ($iStatusCode == 1100) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
 						return $iStatusCode;
 					}
