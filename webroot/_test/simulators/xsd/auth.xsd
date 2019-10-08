@@ -132,6 +132,46 @@
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="account" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="first-name" type="xs:string"/>
+										<xs:element name="last-name" type="xs:string"/>
+										<xs:element name="mobile" type="xs:string">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="country-id" type="xs:integer"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="email" type="xs:string"/>
+										<xs:element name="password" type="xs:string">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="mask" type="xs:string"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="balance" type="xs:string">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="country-id" type="xs:integer"/>
+														<xs:attribute name="currency" type="xs:string"/>
+														<xs:attribute name="symbol" type="xs:string"/>
+														<xs:attribute name="format" type="xs:string"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+							<!--<xs:any maxOccurs="1" processContents="skip"/>-->
 							<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1"/>
 						</xs:sequence>
 						<xs:attribute type="xs:positiveInteger" name="client-id" />
