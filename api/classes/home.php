@@ -1134,14 +1134,14 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true)
+	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid=-1)
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-					(id, countryid, mobile, passwd, email, externalid, pushid, enabled)
+					(id, countryid, mobile, passwd, email, externalid, pushid, enabled, profileid)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true").")";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . (intval($profileid) > 0 ? ", ".intval($profileid) : ", NULL").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
