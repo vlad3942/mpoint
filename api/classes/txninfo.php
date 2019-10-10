@@ -976,7 +976,7 @@ class TxnInfo
         if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
-			$xml .= $this->getOrdersXML($ticketNumbers);
+			$xml .= $this->getOrdersXML();
 		}
 		if($this->getAdditionalData() != null)
         {
@@ -1484,10 +1484,10 @@ class TxnInfo
 		}
 	}
 
-	public function produceOrderConfig(RDB $obj_DB)
+	public function produceOrderConfig(RDB $obj_DB, $ticketNumbers)
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
-		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
+		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID(), $ticketNumbers);
 		
 		
 	}
@@ -1502,7 +1502,7 @@ class TxnInfo
 			{
 				if( ($obj_OrderInfo instanceof OrderInfo) === true )
 				{
-					$xml .= $obj_OrderInfo->toXML($ticketNumbers);
+					$xml .= $obj_OrderInfo->toXML();
 				}
 			}
 			$xml .= '</orders>';

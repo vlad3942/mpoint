@@ -52,7 +52,16 @@ try
     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 
     $iStateID = (integer) $obj_XML->callback->status["code"];
-    $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+    $isTicketLevelSettlement = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
+    $aTicketNumbers = [];
+    if($isTicketLevelSettlement === 'true')
+    {
+        $sAdditionalData = $obj_XML->callback->{'additional-data'};
+        $aAdditionalData = [];
+        parse_str($sAdditionalData, $aAdditionalData);
+        $aTicketNumbers = explode(',', $aAdditionalData['tickernumbers']);
+    }
+    $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
     $aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
     $createdtimestamp = null;
     foreach ($aMessages as $m) {

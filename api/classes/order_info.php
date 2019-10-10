@@ -299,11 +299,14 @@ class OrderInfo
         return $aConfigurations;
     }
 	
-	public static function produceConfigurations(RDB $oDB, $txnid)
+	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers)
 	{		
 		$sql = "SELECT id			
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
 				WHERE txnid = ". intval($txnid) ." AND enabled = '1'";
+        if(count($ticketNumbers ) > 0) {
+            $sql .= " AND orderref in   ('".implode("','", array_keys($ticketNumbers))."')";
+        }
 		//echo $sql ."\n";
 		$aConfigurations = array();
 		$res = $oDB->query($sql);
@@ -314,7 +317,7 @@ class OrderInfo
 		return $aConfigurations;		
 	}
 	
-	public function toXML($ticketNumbers = null)
+	public function toXML()
 	{
 		$xml = '';
 		foreach ($this->getAddressConfigs() as $address_Obj)
@@ -331,36 +334,22 @@ class OrderInfo
         $xml .= '<name>'. $this->getProductName() .'</name>';
         $xml .= '<description>'. $this->getProductDesc() .'</description>';
         $xml .= '<image-url>'. $this->getProductImageURL() .'</image-url>';
-        $xml .= '<airline-data>';
-        foreach ($this->getFlightConfigs() as $flight_Obj)
-        {
-        	if( ($flight_Obj instanceof FlightInfo) === true )
-        	{
-        	    if($flight_Obj->getAdditionalData()) {
-        	        $ticketNumber = null;
-                    foreach ($flight_Obj->getAdditionalData() as $fAdditionalData) {
-                        if( strtolower($fAdditionalData['NAME']) === 'ticketnumber')
-                        {
-                            $ticketNumber = $fAdditionalData['VALUE'];
-                        }
-                    }
-                    if (array_key_exists($ticketNumber, $ticketNumbers))
-                    {
-                        $xml .= $flight_Obj->toXML();
-                    }
+        if(count($this->getFlightConfigs()) > 0 ) {
+            $xml .= '<airline-data>';
+            foreach ($this->getFlightConfigs() as $flight_Obj) {
+                if (($flight_Obj instanceof FlightInfo) === TRUE) {
+                    $xml .= $flight_Obj->toXML();
                 }
-        	}
+            }
+            foreach ($this->getPassengerConfigs() as $passenger_Obj) {
+                if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
+
+                    $xml .= $passenger_Obj->toXML();
+
+                }
+            }
+            $xml .= '</airline-data>';
         }
-        foreach ($this->getPassengerConfigs() as $passenger_Obj)
-        {
-        	if( ($passenger_Obj instanceof PassengerInfo) === true )
-        	{
-        			
-        		$xml .= $passenger_Obj->toXML();
-        			
-        	}
-        }
-        $xml .= '</airline-data>';
         $xml .= '</product>';
         $xml .= '<amount country-id="'. $this->getCountryID() .'">'. $this->getAmount() .'</amount>';
         $xml .= '<fees>';
