@@ -1410,9 +1410,14 @@ abstract class Constants
     const iProfileExpiry = 365;
 
     /*
-     * Default mProfile APIs for Velocity
+     * Default mProfile APIs for Velocity to create profile
      */
     const sSaveProfileEndPoint = "/mprofile/save-profile";
+
+    /*
+     * Default mProfile APIs for Velocity to retrieve profile
+     */
+    const sGetProfileEndPoint = "/mprofile/get-profile";
 
 }
 ?>

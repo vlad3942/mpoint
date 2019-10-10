@@ -1149,7 +1149,7 @@ class Home extends General
 	}
 
 
-    public function saveProfile(ClientConfig $obj_ClientConfig, $cid, $mob, $email="", $cr="", $guestUser="true")
+    public function saveProfile(ClientConfig $obj_ClientConfig, $cid, $mob, $email="", $cr="", $guestUser="true", $validated="false")
     {
         $aURLInfo = parse_url($obj_ClientConfig->getMESBURL());
 
@@ -1174,10 +1174,10 @@ class Home extends General
             $b .= '<expiry>'.date('Y-m-d', strtotime("+$profileExpiryDays day")).'</expiry>';
         }
         if(floatval($mob) > 0) {
-            $b .= '<mobile country-id="' . $cid . '" validated="false">' . floatval($mob) . '</mobile>';
+            $b .= '<mobile country-id="' . $cid . '" validated="'.$validated.'">' . floatval($mob) . '</mobile>';
         }
         if(strlen($email) > 0) {
-            $b .= '<email validated="false">' . $email . '</email>';
+            $b .= '<email validated="'.$validated.'">' . $email . '</email>';
         }
         $b .= '</profile>';
         $b .= '</save-customer-profile>';
@@ -1207,6 +1207,60 @@ class Home extends General
         catch (HTTPException $e)
         {
             trigger_error("mProfile Save Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
+        }
+        return -1;
+    }
+
+
+    public function getProfile(ClientConfig $obj_ClientConfig, $cid, $mob, $email="", $cr="")
+    {
+        $aURLInfo = parse_url($obj_ClientConfig->getMESBURL());
+
+        $obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 120, Constants::sGetProfileEndPoint, "POST", "text/xml", $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword() );
+
+
+        $b = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= '<root>';
+        $b .= '<get-customer-profile client-id="'. $obj_ClientConfig->getID() .'"/>';
+        $b .= '</root>';
+
+        try
+        {
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+
+            $h = trim($this->constHTTPHeaders()) .HTTPClient::CRLF;
+            $h .= "X-CPM-client-id: ". $obj_ClientConfig->getID(). HTTPClient::CRLF;
+            $h .= "X-CPM-token:". $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"PROFILE_TOKEN"). HTTPClient::CRLF;
+            if(floatval($mob) > 0) {
+                $h .= "X-CPM-mobile: ". $mob. HTTPClient::CRLF;
+                $countryID = $cid > 0 ? $cid : $obj_ClientConfig->getCountryConfig()->getID();
+                $h .= "X-CPM-country-id: ". $countryID. HTTPClient::CRLF;
+            }
+            if(strlen($email) > 0) {
+                $h .= "X-CPM-email: ". $email. HTTPClient::CRLF;
+            }
+            if (strlen($cr) > 0) {
+                $h .= "X-CPM-external-id: ". $cr. HTTPClient::CRLF;
+            }
+
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $HTTPResponseCode = $obj_HTTP->send($h, $b);
+            $response = simplexml_load_string($obj_HTTP->getReplyBody());
+
+            if(intval($HTTPResponseCode) == 200 && count($response->{'get-profile'}->{'profile'}) > 0)
+            {
+                return (int)$response->{'get-profile'}->{'profile'}["id"];
+            }
+            else
+            {
+                trigger_error("mProfile get profile response HTTP Code: ". $HTTPResponseCode. " and body: ". $obj_HTTP->getReplyBody(), E_USER_NOTICE);
+            }
+        }
+        catch (HTTPException $e)
+        {
+            trigger_error("mProfile get Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
         return -1;
     }

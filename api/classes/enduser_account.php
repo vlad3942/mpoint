@@ -721,6 +721,7 @@ class EndUserAccount extends Home
 	 * @param	string $cref 		The client's customer reference for the end-user, pass empty string: "" to bypass
 	 * @param	long $mob 			End-User's mobile number, pass -1 to bypass
 	 * @param	string $email 		End-User's E-Mail address, pass empty string: "" to bypass
+     * @param	string $profile 	End-User's registered profile id
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $strict=true)
