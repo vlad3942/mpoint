@@ -141,8 +141,6 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // </editor-fold>
 
 
-
-
 $cardAccessQuery = 'SELECT clientid, pspid
                     FROM client.cardaccess_tbl ca
                              INNER JOIN system.card_tbl c ON ca.cardid = c.id
