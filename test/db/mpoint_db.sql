@@ -8168,3 +8168,8 @@ insert into system.businesstype_tbl (id,name) values
 ALTER TABLE client.account_tbl
 	ADD COLUMN businessType integer DEFAULT 0,
 	ADD CONSTRAINT businessType_pk FOREIGN KEY (businessType) REFERENCES system.businesstype_tbl (id);
+
+
+ALTER TABLE log.transaction_tbl ADD profileid int8 NULL;
+
+comment on column log.transaction_tbl.profileid is 'mProfile id associated with the txn';
