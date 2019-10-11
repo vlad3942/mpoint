@@ -43,3 +43,6 @@ insert into log.state_tbl (id,name, module,func) values
 (2010301,'Failed during Refund','Payment','Refund');
 
 ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_TICKET_LEVEL_SETTLEMENT', 'true', <merchant-table-id>, 'merchant', 0);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_TICKET_LEVEL_SETTLEMENT', 'true', <merchant-table-id>, 'merchant', 0);
