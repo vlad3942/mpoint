@@ -48,6 +48,6 @@ VALUES ('ENABLE_PROFILE_ANONYMIZATION', 'true', 10018, 'client', 0 );
 --------------
 
 
---index on table: log.TxnPassbook_tbl --column:status
-CREATE INDEX txn_status ON log.txnpassbook_tbl (status);
+--index on table: log.TxnPassbook_tbl --column:performedopt,status
+CREATE INDEX txn_status ON log.txnpassbook_tbl (performedopt, status);
 

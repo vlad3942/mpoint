@@ -1,2 +1,2 @@
---index on table: log.TxnPassbook_tbl --column:status
-CREATE INDEX txn_status ON log.txnpassbook_tbl (status);
+--index on table: log.TxnPassbook_tbl --column:performedopt,status
+CREATE INDEX txn_status ON log.txnpassbook_tbl (performedopt, status);
