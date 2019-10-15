@@ -20,7 +20,7 @@ class mProfileCustomerInfo extends CustomerInfo
 
     public function toXML()
     {
-        $xml = parent::toXML();
+        $xml = $this->_obj_Profile->getObjCustomerInfo()->toXML();
         $xml = str_replace('</customer>', '', $xml);
         $xml .= '<device-id platform-id = "'.$this->_obj_Profile->getPlatformID().'">'.$this->_obj_Profile->getDeviceID().'</device-id>';
         $xml .= '<push-id>'.$this->_obj_Profile->getPushID().'</push-id>';
