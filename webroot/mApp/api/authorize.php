@@ -612,7 +612,7 @@ try
                                                                     $txnPassbookObj->performPendingOperations();
                                                                 }
 
-                                                                $fraudCheckCode = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                                                                $fraudCheckCode = 0;
                                                                 $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
                                                                 if(empty($iFraudCheckProcessor) === false)
                                                                 {
@@ -620,7 +620,7 @@ try
                                                                     $obj_FraudCheckPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iFraudCheckProcessor), $aHTTP_CONN_INFO);
                                                                     $fraudCheckCode = $obj_FraudCheckPSP->fraudCheck($obj_Elem);
                                                                 }
-                                                                if ($fraudCheckCode == Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE)
+                                                                if ($fraudCheckCode == Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE || $fraudCheckCode = 0)
                                                                 {
                                                                     switch (intval($obj_Elem["pspid"])) {
                                                                         case (Constants::iSTRIPE_PSP):
@@ -846,6 +846,8 @@ try
                                                                     }
                                                                 }
                                                                 else {
+                                                                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
+                                                                    $obj_Processor->getPSPInfo()->initCallback($obj_Processor->getPSPConfig(), $obj_TxnInfo, Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE, "Fraud Check Failed.", intval($obj_Elem->type["id"]));
                                                                     $xml .= '<status code="2010">Payment Declined Due to Failed Fraud Check.</status>';
                                                                 }
                                                             }

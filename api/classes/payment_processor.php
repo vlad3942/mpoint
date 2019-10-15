@@ -89,7 +89,7 @@ class PaymentProcessor
 
     public function fraudCheck($obj_Elem)
     {
-        return $this->_objPSP->fraudCheck($this->_objPSPConfig,$obj_Elem);
+        return $this->_objPSP->fraudCheck($obj_Elem);
     }
 
     public function processCallback($obj_Elem)

@@ -1225,7 +1225,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $aStatisticalData;
     }
 
-    public function fraudCheck(PSPConfig $obj_PSPConfig, $obj_Card)
+    public function fraudCheck($obj_Card)
     {
         $iStateID = 0;
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -1252,25 +1252,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $obj_HTTP->disConnect();
                 if ($code == 200) {
                     $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-                    $status = "";
-                    if($obj_XML->status == "Accept") {
-                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        $status = "Fraud Check Passed";
-                    } else if($obj_XML->status == "Failed") {
-                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
-                        $status = "Fraud Check Failed";
-                    } else if($obj_XML->status == "Review") {
-                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        $status = "Fraud Check in Review";
-                    } else if($obj_XML->status == "NoCheck") {
-                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        $status = "Fraud NoCheck";
-                    } else{
-                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
-                        $status = "Fraud Check Rejected";
+                    if($obj_XML->status['code'] == 200) {
+                        if ($obj_XML->status == "Accept") {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                        } else if ($obj_XML->status == "Failed") {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                        } else if ($obj_XML->status == "Review") {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                        } else if ($obj_XML->status == "NoCheck") {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                        } else {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                        }
+                    }else {
+                        trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
                     }
-                    $this->initCallback($obj_PSPConfig, $this->getTxnInfo(), $iStateID, "Status: ". $status,$obj_Card['type-id']);
-
                 } else {
                     trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
                 }
