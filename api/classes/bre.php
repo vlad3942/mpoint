@@ -44,7 +44,7 @@ class Bre
     	$b .= '<amount country-id="' . $aPayInfo->transaction->card->amount ["country-id"] . '" currency-id="' . $aPayInfo->transaction->card->amount ["currency-id"] . '">' . $aPayInfo->transaction->card->amount . '</amount>';
     	$b .= '</card>';
     	$b .= '</transaction>';
-    	$b .=  $this->getGatewayConfigurations() ;
+    	$b .=  $this->getGatewayConfigurations($clientid) ;
     	$b .= '<client-info platform="'. $aPayInfo->{'client-info'}['platform'].'" language="'. $aPayInfo->{'client-info'}['language'].'">';
     	if(strlen($aPayInfo->{'client-info'}->mobile) > 0) {
     	$b .= '<mobile country-id="'.$aPayInfo->{'client-info'}->mobile["country-id"].'" operator-id="'.$aPayInfo->{'client-info'}->mobile["operator-id"].'">';
@@ -68,11 +68,11 @@ class Bre
     }
     
     
-    private function getGatewayConfigurations(){
+    private function getGatewayConfigurations($clientid){
     	
     	$b = "";
 		$sql = "SELECT gst.gatewayid, gst.clientid, gst.statetypeid,gst.statvalue FROM Client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl gtr JOIN Client." . sSCHEMA_POSTFIX . "gatewaystat_tbl gst 
-            ON (gtr.gatewayid = gst.gatewayid) AND (gtr.clientid = gst.clientid) AND gtr.enabled = 't' AND gst.enabled = 't'";
+            ON (gtr.gatewayid = gst.gatewayid) AND (gtr.clientid = gst.clientid) AND gtr.enabled = 't' AND gst.enabled = 't' AND gst.clientid =".$clientid;
 		
 		$aRS = $this->_obj_DB->getAllNames($sql);
 		
