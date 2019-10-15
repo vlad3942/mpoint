@@ -1225,4 +1225,64 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $aStatisticalData;
     }
 
+    public function fraudCheck(PSPConfig $obj_PSPConfig, $obj_Card)
+    {
+        $iStateID = 0;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<root>';
+        $xml .= '<check-fraud-status>';
+        $xml .= '<transaction id="'.$this->getTxnInfo()->getID().'">';
+        $xml .= '<cryptogram>'.$obj_Card->{'info-3d-secure'}->cryptogram.'</cryptogram>';
+        $xml .= '<type>'.$obj_Card->{'info-3d-secure'}->cryptogram['type'].'</type>';
+        $xml .= '<eci>'.$obj_Card->{'info-3d-secure'}->cryptogram['eci'].'</eci>';
+        $xml .= '<algorithmId>'.$obj_Card->{'info-3d-secure'}->cryptogram['algorithm-id'].'</algorithmId>';
+        $xml .= '</transaction>';
+        $xml .= '</check-fraud-status>';
+        $xml .= '</root>';
+
+        try
+        {
+            if (isset($this->aCONN_INFO["paths"]["fraud-check"])) {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["fraud-check"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+                $obj_HTTP->disConnect();
+                if ($code == 200) {
+                    $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                    $status = "";
+                    if($obj_XML->status == "Accept") {
+                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                        $status = "Fraud Check Passed";
+                    } else if($obj_XML->status == "Failed") {
+                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                        $status = "Fraud Check Failed";
+                    } else if($obj_XML->status == "Review") {
+                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                        $status = "Fraud Check in Review";
+                    } else if($obj_XML->status == "NoCheck") {
+                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
+                        $status = "Fraud NoCheck";
+                    } else{
+                        $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                        $status = "Fraud Check Rejected";
+                    }
+                    $this->initCallback($obj_PSPConfig, $this->getTxnInfo(), $iStateID, "Status: ". $status,$obj_Card['type-id']);
+
+                } else {
+                    trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
+                }
+
+            } else {
+                trigger_error("fraud-check failed - Endpoint not configured for the PSP: ".$this->getPSPConfig()->getID(), E_USER_WARNING);
+            }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("fraud-check failed for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code, E_USER_WARNING);
+        }
+        return $iStateID;
+    }
 }

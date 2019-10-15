@@ -87,9 +87,9 @@ class PaymentProcessor
         return $this->_objPSP->tokenize($aConnInfo, $this->_objPSPConfig, $obj_Elem);
     }
 
-    public function fraudCheck($aConnInfo, $obj_Elem)
+    public function fraudCheck($obj_Elem)
     {
-        return $this->_objPSP->fraudCheck($aConnInfo, $this->_objPSPConfig, $obj_Elem);
+        return $this->_objPSP->fraudCheck($this->_objPSPConfig,$obj_Elem);
     }
 
     public function processCallback($obj_Elem)
