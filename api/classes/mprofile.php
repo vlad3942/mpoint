@@ -132,30 +132,19 @@ class mProfile extends General
             if(intval($HTTPResponseCode) == 200 && count($response->{'get-profile'}->{'profile'}) > 0)
             {
 
-                if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() > 0)
-                {
-                    $obj_Customer = simplexml_load_string($this->_obj_CustomerInfo->toXML());
-                    if (empty($obj_Customer["customer-ref"]) === true) {
-                        $obj_Customer["customer-ref"] = (string) $response->{'get-profile'}->{'profile'}["external-id"];
-                    }
-                    if (empty($obj_Customer["full-name"]) === true && isset($response->{'get-profile'}->{'profile'}->{'first-name'}) === true) {
-                        $obj_Customer["full-name"] = (string) $response->{'get-profile'}->{'profile'}->{'first-name'}.' '.$response->{'get-profile'}->{'profile'}->{'last-name'};
-                    }
-                    if (empty($obj_Customer["email"]) === true && isset($response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'email'}) === true) {
-                        $obj_Customer["email"] = (string) $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'email'};
-                    }
-                    if (empty($obj_Customer["mobile"]) === true && isset($response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}) === true) {
-                        $obj_Customer["mobile"] = (string) $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'};
-                        $obj_Customer["country-id"] = (string) $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}["country-id"];
-                    }
-                    $this->setObjCustomerInfo(CustomerInfo::produceInfo($obj_Customer));
-                }
-
                 $this->_setIsGuestFlag(General::xml2bool($response->{'get-profile'}->{'profile'}["guest"]) );
                 $this->_setDeviceID(($response->{'get-profile'}->{'profile'}->{'device-id'}) );
                 $this->_setPushID(($response->{'get-profile'}->{'profile'}->{'push-id'}) );
                 $this->_setMProfileID(($response->{'get-profile'}->{'profile'}["id"]) );
                 $this->_setPlatformID(intval($response->{'get-profile'}->{'profile'}->{'device-id'}['platform-id']) );
+
+                if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() > 0)
+                {
+                    $this->setObjCustomerInfo(new CustomerInfo($this->getObjCustomerInfo()->getID(), $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}["country-id"],
+                        $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}, $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'email'},
+                        $response->{'get-profile'}->{'profile'}["external-id"], $this->getObjCustomerInfo()->getFullName(), $this->getObjCustomerInfo()->getLanguage(),
+                        $response->{'get-profile'}->{'profile'}["id"]));
+                }
                 return 1000;
             }
             else
