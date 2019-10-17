@@ -91,6 +91,7 @@
 															<xs:sequence>
 																<xs:element type="xs:string" name="name"/>
 																<xs:element type="xs:string" name="markup"/>
+																<xs:element type="xs:string" name="businessType"/>
 																<xs:element name="payment-service-providers">
 																	<xs:complexType>
 																		<xs:sequence>

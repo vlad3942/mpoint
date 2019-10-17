@@ -870,35 +870,39 @@ class TxnInfo
 	 * after it has been resized to fit the screen resolution of the customer's mobile device.
 	 *
 	 * The method will return an XML document in the following format:
-	 * 	<transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
-	 *		<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
-	 * 		<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
-	 *		<order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
-	 *		<mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
-	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
-	 * 		<email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
-	 * 		<device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
-	 *		<logo>
-	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
-	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
-	 * 			<height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
-	 *		</logo>
-	 *		<css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
-	 *		<accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
-	 *		<cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
-	 *		<callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
-	 *		<language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
-	 * 		<auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
-	 * 		<markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
-	 *	</transaction>
+	 *    <transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
+	 *        <amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
+	 *        <price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
+	 *        <order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
+	 *        <mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
+	 *        <operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
+	 *        <email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
+	 *        <device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
+	 *        <logo>
+	 *            <url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
+	 *            <width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
+	 *            <height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
+	 *        </logo>
+	 *        <css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
+	 *        <accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
+	 *        <cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
+	 *        <callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
+	 *        <language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
+	 *        <auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
+	 *        <markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
+	 *    </transaction>
 	 *
-	 * @see 	iCLIENT_LOGO_SCALE
-	 * @see 	General::formatAmount()
+	 * @param UAProfile $oUA Reference to the User Agent Profile for the Customer's Mobile Device (optional)
+	 * @param int       $iAmount
+	 * @param null      $ticketNumbers
 	 *
-	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
-	 * @return 	string
+	 * @return    string
+	 * @throws \ImageException
+	 * @see    General::formatAmount()
+	 *
+	 * @see    iCLIENT_LOGO_SCALE
 	 */
-	public function toXML(UAProfile &$oUA=null, $iAmount = -1)
+	public function toXML(UAProfile &$oUA=null, $iAmount = -1, $ticketNumbers = null)
 	{
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
@@ -1113,7 +1117,7 @@ class TxnInfo
 	 * @return 	TxnInfo
 	 * @throws 	E_USER_ERROR, TxnInfoException
 	 */
-	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null)
+	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null )
 	{
 		$obj_TxnInfo = null;
 		switch (true)
@@ -1325,13 +1329,13 @@ class TxnInfo
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Order ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Order ID", 1001); }
-	
-	
+
+				$orderFees = isset($aOrderDataObj["fees"]) ? $aOrderDataObj["fees"] : 0;
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Order_Tbl
-							(id, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward)
+							(id, orderref, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees)
 						VALUES
-							(". $RS["ID"] .", ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
-							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." )";
+							(". $RS["ID"] .", '". (string)$aOrderDataObj["orderref"] ."', ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
+							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." ,".$orderFees.")";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
@@ -1512,15 +1516,15 @@ class TxnInfo
 		}
 	}
 
-	public function produceOrderConfig(RDB $obj_DB)
+	public function produceOrderConfig(RDB $obj_DB, $ticketNumbers)
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
-		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
+		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID(), $ticketNumbers);
 		
 		
 	}
 	
-	public function getOrdersXML()
+	public function getOrdersXML($ticketNumbers = null)
 	{
 		$xml = '';
 		if( empty($this->_obj_OrderConfigs) === false )
@@ -1530,10 +1534,7 @@ class TxnInfo
 			{
 				if( ($obj_OrderInfo instanceof OrderInfo) === true )
 				{
-					
 					$xml .= $obj_OrderInfo->toXML();
-					
-					
 				}
 			}
 			$xml .= '</orders>';
