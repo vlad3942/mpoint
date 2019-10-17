@@ -13,6 +13,7 @@
 							<xs:complexType>
 								<xs:all>
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+									<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
 									<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
 									<xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 									<xs:element name="reward" minOccurs="0" maxOccurs="1">
@@ -994,6 +995,32 @@
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="save-order-data" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="transactions">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:sequence minOccurs="0" maxOccurs="unbounded">
+													<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
+													<xs:element ref="additional-data" minOccurs="0" maxOccurs="1"/>
+												</xs:sequence>
+											</xs:sequence>
+											<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+											<xs:attribute name="order-no" type="order-no" use="optional" />
+											<xs:attribute name="token" type="xs:string" use="optional" />
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="void" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
@@ -1176,6 +1203,20 @@
 			<xs:attribute name="type" type="transactionType" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="fee">
+	<xs:sequence>
+		<xs:element name="fee" maxOccurs="unbounded" minOccurs="0">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:decimal">
+						<xs:attribute name="type" use="optional" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
 </xs:complexType>
 
 <xs:group name="names">
@@ -1422,6 +1463,7 @@
 		                     </xs:complexType>
                         </xs:element>
                         <xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+						<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
                         <xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
                         <xs:element name="reward" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
                         <xs:element name="quantity" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
@@ -1438,9 +1480,8 @@
 		<xs:element ref="flight-detail"  minOccurs="1" maxOccurs="unbounded" />
 		<xs:element ref="passenger-detail" minOccurs="1" maxOccurs="unbounded" /> 
 	</xs:sequence>
-</xs:complexType>	
+</xs:complexType>
 
- 
 <xs:element name="flight-detail">
 <xs:complexType>
  <xs:sequence>
