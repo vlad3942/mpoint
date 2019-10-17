@@ -155,6 +155,153 @@ class ChaseSettlement extends mPointSettlement
                     $fileId = $res["ID"];
                     $recordType= $res["RECORD_TYPE"];
 
+                    if (isset($file["records"]))
+                    {
+                        $sql = "SELECT *
+                          FROM log" . sSCHEMA_POSTFIX . ".settlement_record_tbl
+                          WHERE settlementid = $fileId";
+
+                        $aRS = $_OBJ_DB->getAllNames($sql);
+
+                        if (is_array($aRS) === true && count($aRS) > 0)
+                        {
+                            foreach ($aRS as $rs) {
+                                $pId = $rs["ID"];
+                                $txnId = $rs["TRANSACTIONID"];
+                                $description = $rs["DESCRIPTION"];
+                                $isSuccess = true;
+                                $finalDescription = "";
+                                $isDescriptionUpdated = false;
+
+                                $recordId = $description;
+
+
+
+                                $response = "";
+                                if (strlen($file["records"][$recordId]["warning"]) > 0)
+                                {
+                                    $isDescriptionUpdated = true;
+                                    $response .= $file["records"][$recordId]["warning"] . ":";
+                                }
+
+                                if (strlen($file["records"][$recordId]["error"]) > 0)
+                                {
+                                    $isDescriptionUpdated = true;
+                                    $response .= $file["records"][$recordId]["error"] . ":";
+                                    $isSuccess = false;
+                                }
+
+                                if (strlen($file["records"][$recordId]["success"]) > 0)
+                                {
+                                    $isDescriptionUpdated = true;
+                                    $response .= $file["records"][$recordId]["success"] . ":";
+
+                                }
+
+
+                                $finalDescription .= $response . "," . $rs["DESCRIPTION"];
+                                $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
+                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
+                                $amount = 0;
+                                if ($txnPassbookObj instanceof TxnPassbook) {
+                                    $passbookState = 0;
+                                    $passbookStatus = '';
+                                    if ($recordType == "CAPTURE") {
+                                        $passbookState = Constants::iPAYMENT_CAPTURED_STATE;
+                                        $amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
+                                    } else {
+                                        $passbookState = Constants::iPAYMENT_REFUNDED_STATE;
+                                        $amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
+                                    }
+                                    if ($isSuccess === TRUE) {
+                                        $passbookStatus = Constants::sPassbookStatusDone;
+                                    } else {
+                                        $passbookStatus = Constants::sPassbookStatusError;
+                                    }
+
+                                    if ($passbookState !== 0) {
+                                        $txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
+                                    }
+                                }
+
+                                if ($isSuccess === true)
+                                {
+                                    $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
+                                    $args = [];
+                                    if ($recordType == "CAPTURE") {
+                                        $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
+                                        $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                            "amount" => $amount,
+                                            "fee" => $obj_TxnInfo->getFee(),
+                                            'additionaldata' => implode(',', $file['records'][$recordId]['ticketnumbers'])
+                                        );
+                                        if (strlen($obj_TxnInfo->getCallbackURL()) > 0) {
+                                            $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
+                                        $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                            "amount" => $amount,
+                                            'additionaldata' => implode(',', $file['records'][$recordId]['ticketnumbers'])
+                                            );
+
+                                        if (strlen($obj_TxnInfo->getCallbackURL()) > 0)
+                                        {
+                                            $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+                                        }
+                                    }
+
+                                }
+                                if ($isDescriptionUpdated === true) {
+                                    $sql = "UPDATE log.settlement_record_tbl
+                                    SET description = $1
+                                    WHERE id = $2;";
+
+                                    $resource = $_OBJ_DB->prepare($sql);
+
+                                    if (is_resource($resource) === true) {
+                                        $aParam = array(
+                                            $finalDescription,
+                                            $pId
+                                        );
+
+                                        $result = $_OBJ_DB->execute($resource, $aParam);
+
+                                        if ($result === false) {
+                                            throw new Exception("Unable to update settlement record", E_USER_ERROR);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
+                          SET description = CONCAT(description,',','".$file["desc"]."')  WHERE id = $1;";
+
+
+
+                        $resource = $_OBJ_DB->prepare($sql);
+
+                        if (is_resource($resource) === true)
+                        {
+                            $aParam = array(
+                                $fileId
+                            );
+
+                            $result = $_OBJ_DB->execute($resource, $aParam);
+                            if ($result === false)
+                            {
+                                throw new Exception("Unable to create settlement record", E_USER_ERROR);
+
+                            }
+                        }
+                    }
+
                     $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
                             SET record_tracking_number = $1, status = $2
                             WHERE id = $3;";
@@ -170,156 +317,11 @@ class ChaseSettlement extends mPointSettlement
                         );
 
                         $result = $_OBJ_DB->execute($resource, $aParam);
-
                         if ($result === false)
                         {
                             throw new Exception("Unable to create settlement record", E_USER_ERROR);
                         }
-                        else
-                        {
-                            if (isset($file["records"]))
-                            {
-                                $sql = "SELECT *
-                                  FROM log" . sSCHEMA_POSTFIX . ".settlement_record_tbl
-                                  WHERE settlementid = $fileId";
 
-                                $aRS = $_OBJ_DB->getAllNames($sql);
-
-                                if (is_array($aRS) === true && count($aRS) > 0)
-                                {
-                                    foreach ($aRS as $rs) {
-                                        $pId = $rs["ID"];
-                                        $txnId = $rs["TRANSACTIONID"];
-                                        $description = $rs["DESCRIPTION"];
-                                        $isSuccess = true;
-                                        $finalDescription = "";
-                                        $isDescriptionUpdated = false;
-
-                                        $recordId = $description;
-
-
-
-                                        $response = "";
-                                        if (strlen($file["records"][$recordId]["warning"]) > 0)
-                                        {
-                                            $isDescriptionUpdated = true;
-                                            $response .= $file["records"][$recordId]["warning"] . ":";
-                                        }
-
-                                        if (strlen($file["records"][$recordId]["error"]) > 0)
-                                        {
-                                            $isDescriptionUpdated = true;
-                                            $response .= $file["records"][$recordId]["error"] . ":";
-                                            $isSuccess = false;
-                                        }
-
-                                        if (strlen($file["records"][$recordId]["success"]) > 0)
-                                        {
-                                            $isDescriptionUpdated = true;
-                                            $response .= $file["records"][$recordId]["success"] . ":";
-
-                                        }
-
-
-                                        $finalDescription .= $response . "," . $rs["DESCRIPTION"];
-                                        $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-                                        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
-                                        $amount = 0;
-                                        if ($txnPassbookObj instanceof TxnPassbook) {
-                                            $passbookState = 0;
-                                            $passbookStatus = '';
-                                            if ($recordType == "CAPTURE") {
-                                                $passbookState = Constants::iPAYMENT_CAPTURED_STATE;
-                                                $amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
-                                            } else {
-                                                $passbookState = Constants::iPAYMENT_REFUNDED_STATE;
-                                                $amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
-                                            }
-                                            if ($isSuccess === TRUE) {
-                                                $passbookStatus = Constants::sPassbookStatusDone;
-                                            } else {
-                                                $passbookStatus = Constants::sPassbookStatusError;
-                                            }
-
-                                            if ($passbookState !== 0) {
-                                                $txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
-                                            }
-                                        }
-
-                                        if ($isSuccess === true)
-                                        {
-                                            $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
-                                            $args = [];
-                                            if ($recordType == "CAPTURE") {
-                                                $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
-                                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $amount,
-                                                    "fee" => $obj_TxnInfo->getFee());
-                                                if (strlen($obj_TxnInfo->getCallbackURL()) > 0) {
-                                                    $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
-                                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $amount);
-
-                                                if (strlen($obj_TxnInfo->getCallbackURL()) > 0)
-                                                {
-                                                    $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
-                                                }
-                                            }
-
-                                        }
-                                        if ($isDescriptionUpdated === true) {
-                                            $sql = "UPDATE log.settlement_record_tbl
-                                            SET description = $1
-                                            WHERE id = $2;";
-
-                                            $resource = $_OBJ_DB->prepare($sql);
-
-                                            if (is_resource($resource) === true) {
-                                                $aParam = array(
-                                                    $finalDescription,
-                                                    $pId
-                                                );
-
-                                                $result = $_OBJ_DB->execute($resource, $aParam);
-
-                                                if ($result === false) {
-                                                    throw new Exception("Unable to update settlement record", E_USER_ERROR);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                                  SET description = CONCAT(description,',','".$file["desc"]."')  WHERE id = $1;";
-
-
-
-                                $resource = $_OBJ_DB->prepare($sql);
-
-                                if (is_resource($resource) === true)
-                                {
-                                    $aParam = array(
-                                        $fileId
-                                    );
-
-                                    $result = $_OBJ_DB->execute($resource, $aParam);
-                                    if ($result === false)
-                                    {
-                                        throw new Exception("Unable to create settlement record", E_USER_ERROR);
-
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
