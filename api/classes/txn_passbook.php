@@ -417,7 +417,8 @@ final class TxnPassbook
      */
     private function _getCapturebleAmount()
     {
-        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount);
+        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount);
+        return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
     /**
@@ -425,7 +426,8 @@ final class TxnPassbook
      */
     private function _getCancelableAmount()
     {
-        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
+        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
+        return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
     /**
@@ -433,7 +435,8 @@ final class TxnPassbook
      */
     private function _getRefundableAmount()
     {
-        return ($this->_capturedAmount +  $this->_captureAmount) - ($this->_refundedAmount + $this->_refundAmount);
+        $finalAmount = ($this->_capturedAmount +  $this->_captureAmount) - ($this->_refundedAmount + $this->_refundAmount);
+        return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
     /**
