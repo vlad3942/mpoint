@@ -102,6 +102,7 @@ abstract class mPointSettlement
 
         $iBatchLimit = 200;
         $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
+        $isTicketLevelSettlement = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
         if($sSettlementBatchLimit != '')
         {
             $iBatchLimit = (int)$sSettlementBatchLimit;
@@ -217,7 +218,12 @@ abstract class mPointSettlement
         foreach ($this->_arrayTransactionIds as $transactionId)
         {
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-            $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+            $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
+            if($isTicketLevelSettlement === 'true') {
+                $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
+                $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
+            }
+
             $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
             $obj_UAProfile = null;
             $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);

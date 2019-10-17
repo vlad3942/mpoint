@@ -102,6 +102,7 @@ class ChaseSettlement extends mPointSettlement
                 {
                     $xmlRecord = $xmlFile->record[$secondIndex];
                     $recordId = (string)$xmlRecord["id"];
+                    $ticketNumbers = [];
                     if(array_key_exists($recordId, $records ) === false)
                     {
                         $records[$recordId]["error"] = "";
@@ -121,8 +122,19 @@ class ChaseSettlement extends mPointSettlement
                     {
                         $records[$recordId]["success"]= (string)$xmlRecord->success["id"].":".(string)$xmlRecord->success;
                     }
-
-
+                    $ticketNumberIndexMax = count($xmlRecord->{'booking-ref'});
+                    if($ticketNumberIndexMax > 1)
+                    {
+                        for ($ticketNumberIndex = 0; $ticketNumberIndex < $ticketNumberIndexMax; $ticketNumberIndex++)
+                        {
+                            $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']] = (string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['status'];
+                        }
+                    }
+                    else
+                    {
+                        $ticketNumbers[(string)$xmlRecord->{'booking-ref'}['id']] = (string)$xmlRecord->{'booking-ref'}['status'];
+                    }
+                    $records[$recordId]['ticketnumbers'] = $ticketNumbers;
                 }
 
                 if(count($records)>0)
@@ -134,7 +146,6 @@ class ChaseSettlement extends mPointSettlement
                 {
                     $files[$index]["desc"] = $xmlFile;
                 }
-
             }
 
             foreach ($files as $file)
@@ -184,12 +195,7 @@ class ChaseSettlement extends mPointSettlement
                                     $response .= $file["records"][$recordId]["warning"] . ":";
                                 }
 
-                                if (strlen($file["records"][$recordId]["error"]) > 0)
-                                {
-                                    $isDescriptionUpdated = true;
-                                    $response .= $file["records"][$recordId]["error"] . ":";
-                                    $isSuccess = false;
-                                }
+                                        $recordId = $description;
 
                                 if (strlen($file["records"][$recordId]["success"]) > 0)
                                 {
@@ -254,20 +260,42 @@ class ChaseSettlement extends mPointSettlement
                                         }
                                     }
 
-                                }
-                                if ($isDescriptionUpdated === true) {
-                                    $sql = "UPDATE log.settlement_record_tbl
-                                    SET description = $1
-                                    WHERE id = $2;";
+                                        if ($isSuccess === true)
+                                        {
+                                            $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
+                                            $isTicketLevelSettlement = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
+                                            $args = [];
+                                            $stateId = 0;
+                                            if ($recordType == "CAPTURE") {
+                                                $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
+                                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                    "amount" => $amount,
+                                                    "fee" => $obj_TxnInfo->getFee()
+                                                );
 
-                                    $resource = $_OBJ_DB->prepare($sql);
+                                                $stateId=Constants::iPAYMENT_CAPTURED_STATE;
 
-                                    if (is_resource($resource) === true) {
-                                        $aParam = array(
-                                            $finalDescription,
-                                            $pId
-                                        );
+                                            }
+                                            else
+                                            {
+                                                $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
+                                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                    "amount" => $amount
+                                                    );
+                                                $stateId = Constants::iPAYMENT_REFUNDED_STATE;
 
+                                            }
+                                            if($isTicketLevelSettlement === 'true')
+                                            {
+                                                $aTicketNumbers = array_keys($file['records'][$recordId]['ticketnumbers']);
+                                                if(count($aTicketNumbers) > 0) {
+                                                    $args['additionaldata'] = 'tickernumbers =' . implode(',', $aTicketNumbers);
+                                                }
+                                            }
+                                            if ($obj_TxnInfo->getCallbackURL() !== '')
+                                            {
+                                                $obj_PSP->notifyClient($stateId, $args);
+                                            }
                                         $result = $_OBJ_DB->execute($resource, $aParam);
 
                                         if ($result === false) {

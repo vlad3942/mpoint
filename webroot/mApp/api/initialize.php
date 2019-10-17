@@ -335,21 +335,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}) > 0)
 									{
-										$data['orders'][$j]['product-sku'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product["sku"];
-										$data['orders'][$j]['product-name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->name;
-										$data['orders'][$j]['product-description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->description;
-										$data['orders'][$j]['product-image-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'image-url'};
-										$data['orders'][$j]['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->amount;
-										$data['orders'][$j]['country-id'] = $obj_CountryConfig->getID();
-										$data['orders'][$j]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
-										$data['orders'][$j]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
-										$data['orders'][$j]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
+										$data['orders'][0]['product-sku'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product["sku"];
+                                        $data['orders'][0]['orderref'] = $obj_TxnInfo->getOrderID();
+                                        $data['orders'][0]['product-name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->name;
+										$data['orders'][0]['product-description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->description;
+										$data['orders'][0]['product-image-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'image-url'};
+										$data['orders'][0]['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->amount;
+										$collectiveFees = 0;
+										if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee) > 0)
+										{
+											for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee); $k++ )
+											{
+												$collectiveFees += $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee[$k];
+											}
+										}
+										$data['orders'][0]['fees'] = (float) $collectiveFees;
+										$data['orders'][0]['country-id'] = $obj_CountryConfig->getID();
+										$data['orders'][0]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
+										$data['orders'][0]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
+										$data['orders'][0]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
 
 										if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'})) {
                                             for ($k = 0; $k < count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
-                                                $data['orders'][$j]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
-                                                $data['orders'][$j]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
-                                                $data['orders'][$j]['additionaldata'][$k]['type'] = (string)'Order';
+                                                $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
+                                                $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
+                                                $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
                                             }
                                         }
 
