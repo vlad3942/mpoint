@@ -106,10 +106,7 @@ class CustomerInfo
 		$xml  .= '>';
 		if (strlen($this->_sFullName) > 0) { $xml .= '<full-name>'. htmlspecialchars($this->_sFullName, ENT_NOQUOTES) .'</full-name>'; }
 		if ($this->_lMobile > 0) { $xml .= '<mobile country-id="'. $this->_iCountryID .'">'. $this->_lMobile .'</mobile>'; }
-		if (strlen($this->_sEMail) > 0) { $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>'; } 
-		/*if ($this->getProfileID() > 0) {
-		    $xml .= '<profileid>'.htmlspecialchars($this->getProfileID(), ENT_NOQUOTES).'</profileid>';
-        }*/
+		if (strlen($this->_sEMail) > 0) { $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>'; }
 		$xml  .= '</customer>';
 
 		return $xml;
