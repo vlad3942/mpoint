@@ -186,15 +186,18 @@ abstract class mPointSettlement
         $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
 
         $arrayPartialOperations = [];
-        $sql = "SELECT DISTINCT  T.id AS ID
-                FROM log." . sSCHEMA_POSTFIX . "Transaction_Tbl T
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "txnpassbook_Tbl TP ON T.id = TP.transactionid
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_record_tbl SRT on SRT.transactionid = T.id
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
-                  WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
-                  AND TP.status = '".Constants::sPassbookStatusInProgress."' 
-                  AND ST.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'
-                  AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId;
+
+        $sql = "SELECT DISTINCT ID FROM (
+                SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
+                RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
+                FROM log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".txnpassbook_Tbl TP ON T.id = TP.transactionid
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_record_tbl SRT on SRT.transactionid = T.id
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
+                AND TP.status = '".Constants::sPassbookStatusInProgress."' 
+                AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId.") s 
+                WHERE rn =1 and  s.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)

@@ -30,7 +30,10 @@ class ClientPaymentMethodConfig extends BasicConfig
 	 *
 	 * @var boolean
 	 */
-	private $_bEnabled;	
+	private $_bEnabled;
+
+
+	private $_iCardType;
 
 	/**
 	 * Default Constructor
@@ -42,7 +45,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	 * @param 	integer $stateid	The unique ID of the current Payment Method (Card) state for the client
 	 * @param 	integer $pspid 		The unique ID of the Payment Service Provider (PSP) that will process payments for this Payment Method (Card) 	 	
 	 */
-	public function __construct($id, $pmid, $name, $countryid, $stateid, $pspid, $enabled)
+	public function __construct($id, $pmid, $name, $countryid, $stateid, $pspid, $enabled, $cardtype)
 	{
 		parent::__construct($id, $name);	
 		$this->_iPaymentMethodID = (integer) $pmid;
@@ -50,6 +53,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 		$this->_iStateID = (integer) $stateid;
 		$this->_iPSPID = (integer) $pspid;
 		$this->_bEnabled = (bool) $enabled;
+		$this->_iCardType = $cardtype;
 		// Set Defaults
 		if ($this->_iCountryID <= 0) { $this->_iCountryID = -1; }
 	}
@@ -59,10 +63,11 @@ class ClientPaymentMethodConfig extends BasicConfig
 	public function getPSPID() { return $this->_iPSPID; }	
 	public function getPaymentMethodID() { return $this->_iPaymentMethodID; }
 	public function isEnabled() { return $this->_bEnabled; }
-	
+	public function getCardType() { return $this->_iCardType; }
+
 	public function toXML()
 	{
-		$xml = '<payment-method id="'. $this->getID() .'" type-id="'. $this->_iPaymentMethodID .'" state-id="'. $this->_iStateID .'" country-id="'. $this->_iCountryID .'" psp-id="'. $this->_iPSPID .'" enabled="'. General::bool2xml($this->_bEnabled) .'">';
+		$xml = '<payment-method id="'. $this->getID() .'" type-id="'. $this->_iPaymentMethodID .'" state-id="'. $this->_iStateID .'" country-id="'. $this->_iCountryID .'" psp-id="'. $this->_iPSPID .'" enabled="'. General::bool2xml($this->_bEnabled) .'" payment-type= "'. $this->getCardType() .'">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES); 
 		$xml .= '</payment-method>';
 
@@ -71,7 +76,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, C.id AS cardid, C.name		
+		$sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, C.id AS cardid, C.name, C.paymenttype		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System". sSCHEMA_POSTFIX .".Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA ON MA.clientid = CA.clientid AND MA.pspid = CA.pspid AND MA.enabled = '1'
@@ -81,7 +86,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 		if (is_array($RS) === true && count($RS) > 0)
 		{		
-			return new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"], $RS["ENABLED"]);
+			return new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"], $RS["ENABLED"], $RS['PAYMENTTYPE']);
 		}
 		else { return null; }
 	}
