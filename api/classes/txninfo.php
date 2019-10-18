@@ -1516,7 +1516,7 @@ class TxnInfo
 		}
 	}
 
-	public function produceOrderConfig(RDB $obj_DB, $ticketNumbers)
+	public function produceOrderConfig(RDB $obj_DB, $ticketNumbers=null)
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
 		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID(), $ticketNumbers);
