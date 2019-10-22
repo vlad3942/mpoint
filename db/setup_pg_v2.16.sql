@@ -131,11 +131,7 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TUR
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWN');
 
 
-
-
-
-
-
-
-
+-- UATP CeptorAccessId and CeptorAccessKey
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('CeptorAccessId', 'cellpointuser', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10069 and pspid = 50), 'merchant',1);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('CeptorAccessKey', 'PhkdD7IB', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10069 and pspid = 50), 'merchant',1);
 

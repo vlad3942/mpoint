@@ -257,7 +257,7 @@ try
                                         {
                                         	$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 											$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-											$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i]) ;
+											$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"],$obj_DOM->{'authorize-payment'} [$i] ["account"] , $obj_DOM->{'authorize-payment'}[$i]) ;
 											$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
                                         }
 
@@ -886,8 +886,13 @@ try
 													{
                                                         header("HTTP/1.1 403 Forbidden");
 														//The node <status> is returned along with the status code
-														$xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
-														if (empty($xml) === true) { $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>'; }
+														if (count($obj_XML->status) > 0) {
+                                                        $xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() ); }
+                                                        if (empty($xml) === true || count($obj_XML->status) == 0)
+                                                        {
+                                                            $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>';
+                                                        }
+                                                        $xml =  str_replace('<?xml version="1.0"?>', '', $xml);
 													}
 													// Error: Card has been blocked
 													else
