@@ -21,12 +21,13 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 
 
 -- Setup for 2c2p-alc with alipay and unionpay--
-
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 67);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 40);
 
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (67, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (40, -1, -1);
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT 10055, PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 702;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 702;
@@ -128,6 +129,11 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (702,40,'SGP
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THA');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TUR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWN');
+
+
+
+
+
 
 
 
