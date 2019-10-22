@@ -170,22 +170,47 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         //If auth sso is successful
                         if ($code == 10 || $code == 11) {
                             //check if account already exists
-                            $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                            $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}["profileid"]);
+
+                            $iProfileID = -1;
+                            //If data anonymization is enabled for the client
+                            if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true") {
+                                //if request does not contain clientinfo/@profileid - registered user profile id then
+                                if (empty($obj_DOM->{'save-account'}[$i]->{'client-info'}["profileid"]) === true) {
+                                    //Get profile from mProfile based on client info details
+                                    $obj_mProfile = new Home($_OBJ_DB, $_OBJ_TXT);
+                                    $iProfileID = $obj_mProfile->getProfile($obj_ClientConfig, $obj_CountryConfig->getID(), $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'});
+                                    if ($iProfileID < 0) {
+                                        //if not found save profile as validated registered profile
+                                        $iProfileID = $obj_mProfile->saveProfile($obj_ClientConfig, $obj_CountryConfig->getID(), $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, "false");
+                                        if ($iProfileID < 0) {
+                                            header("HTTP/1.1 500 Internal Server Error");
+
+                                            $xml = '<status code="90">Unable to create new account</status>';
+                                        }
+                                    }
+                                } else {
+                                    $iProfileID = (integer)$obj_DOM->{'save-account'}[$i]->{'client-info'}["profileid"];
+                                }
+                            }
+
 
                             if ($iAccountID < 0) {
                                 //account needs to be enabled
-                                $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
                                 if ($result === true) {
-                                    $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                    $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
                                 } else {
-                                    $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}));
+                                    $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
                                 }
                             }
                             //update or create new account -- this should never be the case as we currently have no provision to update pwd from SDK or HPP
-                            $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                            if(empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION") == "false") {
+                                $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                            }
                             //get the account id if new account was created
                             if ($iAccountID < 0) {
-                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
                             }
 
 
@@ -203,13 +228,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Success: Account Information Saved
                             if ($code >= 0) {
-                                if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1) {
-                                    $obj_mPoint->saveInfo($iAccountID, (string)$obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)$obj_DOM->{'save-account'}[$i]->{'last-name'});
+                                if (empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "false") {
+                                    if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1) {
+                                        $obj_mPoint->saveInfo($iAccountID, (string)$obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)$obj_DOM->{'save-account'}[$i]->{'last-name'});
+                                    }
+                                    if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1) {
+                                        $obj_mPoint->saveEmail($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig);
+                                    }
                                 }
-                                if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1) {
-                                    $obj_mPoint->saveEmail($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig);
-                                }
-
                                 // Customer Data should be imported from Client System
                                 if ($obj_ClientConfig->getCustomerImportURL() != "") {
                                     $aURL_Info = parse_url($obj_ClientConfig->getCustomerImportURL());
