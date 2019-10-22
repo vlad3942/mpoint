@@ -134,7 +134,7 @@
 							</xs:element>
 							<xs:element name="account" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
-									<xs:all>
+									<xs:sequence>
 										<xs:element name="first-name" type="xs:string"/>
 										<xs:element name="last-name" type="xs:string"/>
 										<xs:element name="mobile">
@@ -169,7 +169,8 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-									</xs:all>
+										<xs:any maxOccurs="6" processContents="skip"/>
+									</xs:sequence>
 									<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 									<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
