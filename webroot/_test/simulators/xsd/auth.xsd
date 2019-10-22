@@ -132,9 +132,26 @@
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="address" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="first-name" type="xs:string"   minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="last-name" type="xs:string"    minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="street" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                    </xs:all>
+                                    <xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
+                                    <xs:attribute name="alpha2code" type="xs:string" use="required" />
+                                    <xs:attribute name="alpha3code" type="xs:string" use="required" />
+                                    <xs:attribute name="code" type="xs:positiveInteger" use="required" />
+                                </xs:complexType>
+                            </xs:element>
 							<xs:element name="account" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
-									<xs:all>
+									<xs:sequence>
 										<xs:element name="first-name" type="xs:string"/>
 										<xs:element name="last-name" type="xs:string"/>
 										<xs:element name="mobile">
@@ -169,7 +186,8 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-									</xs:all>
+										<xs:any maxOccurs="6" processContents="skip"/>
+									</xs:sequence>
 									<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 									<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
