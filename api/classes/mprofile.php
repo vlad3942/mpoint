@@ -58,6 +58,22 @@ class mProfile extends General
         $this->_iPlatformID = $iID;
     }
 
+    /**
+     * @return CustomerInfo
+     */
+    public function getObjCustomerInfo()
+    {
+        return $this->_obj_CustomerInfo;
+    }
+
+    /**
+     * @param CustomerInfo $obj_CustomerInfo
+     */
+    private function setObjCustomerInfo($obj_CustomerInfo)
+    {
+        $this->_obj_CustomerInfo = $obj_CustomerInfo;
+    }
+
     public function getPushID()     { return $this->_sPushID; }
     public function getDeviceID()   { return $this->_sDeviceID; }
     public function getGuestFlag()  { return $this->_bIsGuest; }
@@ -82,10 +98,17 @@ class mProfile extends General
 
     public function getProfile()
     {
-        $b = '<?xml version="1.0" encoding="UTF-8"?>
+        if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() > 0) {
+            $b = '<?xml version="1.0" encoding="UTF-8"?>
                 <root>
-                    <get-profile id = "'.$this->_obj_CustomerInfo->getCustomerRef().'" />
+                    <get-profile id = "' . $this->_obj_CustomerInfo->getProfileID() . '" />
                 </root>';
+        } else {
+            $b = '<?xml version="1.0" encoding="UTF-8"?>
+                <root>
+                    <get-profile id = "' . $this->_obj_CustomerInfo->getCustomerRef() . '" />
+                </root>';
+        }
 
         try
         {
@@ -94,9 +117,13 @@ class mProfile extends General
             $h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
             $h .= "x-cpm-Token: ". self::sX_CPM_TOKEN .HTTPClient::CRLF;
             $h .= "X-CPM-client-id: ". $this->_obj_ClientConfig->getID(). HTTPClient::CRLF;
-            $h .= "x-cpm-mobile: ". $this->_obj_CustomerInfo->getMobile() .HTTPClient::CRLF;
+            if (empty($this->_obj_CustomerInfo->getMobile()) === false and $this->_obj_CustomerInfo->getMobile() > 0) {
+                $h .= "x-cpm-mobile: " . $this->_obj_CustomerInfo->getMobile() . HTTPClient::CRLF;
+            }
             $h .= "x-cpm-country-id: ". $this->_obj_CustomerInfo->getCountryID() .HTTPClient::CRLF;
-            $h .= "x-cpm-device-id: ". $this->_sDeviceID .HTTPClient::CRLF;
+            if (empty($this->getDeviceID()) === false) {
+                $h .= "x-cpm-device-id: " . $this->_sDeviceID . HTTPClient::CRLF;
+            }
             $obj_HTTP = new HTTPClient(new Template(), $oCI);
             $obj_HTTP->connect();
             $HTTPResponseCode = $obj_HTTP->send($h, $b);
@@ -104,11 +131,20 @@ class mProfile extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'get-profile'}->{'profile'}) > 0)
             {
+
                 $this->_setIsGuestFlag(General::xml2bool($response->{'get-profile'}->{'profile'}["guest"]) );
                 $this->_setDeviceID(($response->{'get-profile'}->{'profile'}->{'device-id'}) );
                 $this->_setPushID(($response->{'get-profile'}->{'profile'}->{'push-id'}) );
                 $this->_setMProfileID(($response->{'get-profile'}->{'profile'}["id"]) );
                 $this->_setPlatformID(intval($response->{'get-profile'}->{'profile'}->{'device-id'}['platform-id']) );
+
+                if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() > 0)
+                {
+                    $this->setObjCustomerInfo(new CustomerInfo($this->getObjCustomerInfo()->getID(), $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}["country-id"],
+                        $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}, $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'email'},
+                        $response->{'get-profile'}->{'profile'}["external-id"], $this->getObjCustomerInfo()->getFullName(), $this->getObjCustomerInfo()->getLanguage(),
+                        $response->{'get-profile'}->{'profile'}["id"]));
+                }
                 return 1000;
             }
             else

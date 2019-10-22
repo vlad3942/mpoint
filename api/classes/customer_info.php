@@ -59,6 +59,12 @@ class CustomerInfo
 	 */
 	private $_sLanguage;
 
+    /**
+     * The profile id of registered or guest user associated with the transaction
+     * @var integer
+     */
+    private $_iProfileID = -1;
+
 	/**
 	 * Default constructor
 	 * 
@@ -69,8 +75,9 @@ class CustomerInfo
 	 * @param string $cr		The Client's Reference for the Customer
 	 * @param string $name		The customer's full name
 	 * @param string $lang		The language that all payment pages should be rendered in by default for the Client
+     * @param integer $profileid The profile id associated with the transaction, registered or guest user
 	 */
-	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang)
+	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid=-1)
 	{
 		$this->_iID =  (integer) $id;
 		$this->_iCountryID = (integer) $cid;
@@ -79,6 +86,7 @@ class CustomerInfo
 		$this->_sCustomerRef = trim($cr);
 		$this->_sFullName = trim($name);
 		$this->_sLanguage = trim($lang);
+        $this->_iProfileID = (integer) $profileid;
 	}
 
 	public function getID() { return $this->_iID; }
@@ -88,6 +96,7 @@ class CustomerInfo
 	public function getCustomerRef() { return $this->_sCustomerRef; }
 	public function getFullName() { return $this->_sFullName; }
 	public function getLanguage() { return $this->_sLanguage; }
+    public function getProfileID() { return $this->_iProfileID; }
 
 	public function toXML()
 	{
@@ -97,7 +106,7 @@ class CustomerInfo
 		$xml  .= '>';
 		if (strlen($this->_sFullName) > 0) { $xml .= '<full-name>'. htmlspecialchars($this->_sFullName, ENT_NOQUOTES) .'</full-name>'; }
 		if ($this->_lMobile > 0) { $xml .= '<mobile country-id="'. $this->_iCountryID .'">'. $this->_lMobile .'</mobile>'; }
-		if (strlen($this->_sEMail) > 0) { $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>'; } 
+		if (strlen($this->_sEMail) > 0) { $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>'; }
 		$xml  .= '</customer>';
 
 		return $xml;

@@ -956,6 +956,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['product-type']= $objTransaction->getProductType();
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
+					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
 					$transactionData['issuer-approval-code']= $objTransaction->getApprovalCode();
 					if (intval($objTransaction->getCardID()) > 0)
