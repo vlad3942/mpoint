@@ -620,7 +620,7 @@ try
                                                                     $obj_FraudCheckPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iFraudCheckProcessor), $aHTTP_CONN_INFO);
                                                                     $fraudCheckCode = $obj_FraudCheckPSP->fraudCheck($obj_Elem);
                                                                 }
-                                                                if ($fraudCheckCode == Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE || $fraudCheckCode = 0)
+                                                                if ($fraudCheckCode == Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE || $fraudCheckCode == 0)
                                                                 {
                                                                     switch (intval($obj_Elem["pspid"])) {
                                                                         case (Constants::iSTRIPE_PSP):
