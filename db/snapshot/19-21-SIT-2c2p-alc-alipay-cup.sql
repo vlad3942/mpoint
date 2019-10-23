@@ -83,7 +83,8 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM Sys
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 901;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 901;
 
-
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 156;
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 156;
 
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (702,40,'SGD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (784,40,'ARE');
@@ -91,6 +92,7 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,40,'USA
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (36,40,'AUD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (48,40,'BHD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (124,40,'CAN');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (156,40,'CNY');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (156,40,'CHN');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (344,40,'HKG');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (360,40,'IDN');
