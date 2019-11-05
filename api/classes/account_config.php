@@ -43,6 +43,12 @@ class AccountConfig extends BasicConfig
 	 * @var array
 	 */
 	private $_aObj_MerchantSubAccounts;
+	/**
+	 * BusinessType for accountholder
+	 *
+	 * @var integer
+	 */
+	private $_iBusinessType;
 
 	/**
 	 * Default Constructor
@@ -54,7 +60,7 @@ class AccountConfig extends BasicConfig
 	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
 	 * @param	array $aObj_MSAs	List of sub-account configurations for each Payment Service Provider
 	 */
-	public function __construct($id, $clid, $name, $mob, $mrk, $aObj_MSAs=array() )
+	public function __construct($id, $clid, $name, $mob, $mrk, $aObj_MSAs=array(),$businessType=0)
 	{
 		parent::__construct($id, $name);
 
@@ -64,6 +70,7 @@ class AccountConfig extends BasicConfig
 		$this->_sMarkupLanguage = trim($mrk);
 		
 		$this->_aObj_MerchantSubAccounts = $aObj_MSAs;
+		$this->_iBusinessType = (integer) $businessType;
 	}
 	/**
 	 * Returns the Unique ID for the Client to whom the Account belongs
@@ -88,6 +95,8 @@ class AccountConfig extends BasicConfig
 	
 	public function getMerchantSubAccounts(){ return $this->_aObj_MerchantSubAccounts; }
 	
+	public function getBusinessType(){ return $this->_iBusinessType; }
+
 	public function toXML()
 	{
 		$xml = '<account-config id="'. $this->getID() .'" client-id="'. $this->_iClientID .'">';
@@ -100,7 +109,7 @@ class AccountConfig extends BasicConfig
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT clientid, name, mobile, markup 
+		$sql = "SELECT clientid, name, mobile, markup, businesstype
 				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl				
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";	
@@ -110,7 +119,7 @@ class AccountConfig extends BasicConfig
 		{	
 			$aObj_MerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $id);
 			
-			return new AccountConfig($id, $RS["CLIENTID"], $RS["NAME"], $RS["MOBILE"], $RS["MARKUP"], $aObj_MerchantSubAccounts);
+			return new AccountConfig($id, $RS["CLIENTID"], $RS["NAME"], $RS["MOBILE"], $RS["MARKUP"], $aObj_MerchantSubAccounts, $RS["BUSINESSTYPE"]);
 		}
 		else { return null; }
 	}
@@ -136,6 +145,7 @@ class AccountConfig extends BasicConfig
 		$xml = '<account-config id = "'. $this->getID().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<markup>'. htmlspecialchars($this->getMarkupLanguage(), ENT_NOQUOTES).'</markup>';
+		$xml .= '<businessType>'. htmlspecialchars($this->getBusinessType(), ENT_NOQUOTES).'</businessType>';
 		if(count($this->_aObj_MerchantSubAccounts) > 0 )
 		{
 			$xml .= '<payment-service-providers>';		

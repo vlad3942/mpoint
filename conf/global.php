@@ -936,6 +936,17 @@ $aHTTP_CONN_INFO["global-payments"]["paths"]["initialize"] = "/mpoint/global-pay
 $aHTTP_CONN_INFO["global-payments"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
 
+/**
+ * Connection info for connecting to EZY fraud gateway
+ */
+$aHTTP_CONN_INFO["ezy"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["ezy"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["ezy"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["ezy"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["ezy"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/mpoint/fraud/ezy/check-fraud-status";
 
 /**
  * GoMobile Connection Info.
