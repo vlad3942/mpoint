@@ -1320,23 +1320,22 @@ class mConsole extends Admin
 				
 			$RS = $this->getDBConn ()->fetchName ( $res );
 			if (is_array ( $RS ) === true) {
-		
-				if($RS["GATEWAYCOUNT"] > 0){
-						
-					$result = "Gateway is already exist";
-				}else{
-		
-		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
+                if ($RS["GATEWAYCOUNT"] == 0) {
+                    $result = "Gateway is already exist";
+                } else {
+
+                    $sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = " . $objTrigger->{'aggregation-trigger'}{'unit'} . ", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'} . "
 				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
-		
-				if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
-					throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
-				}else{
-					  $result = "success";
-					}
-				}
-	        }
+
+                    if (is_resource($this->getDBConn()->query($sql)) === false) {
+                        throw new mPointException("Unable to upadte record for gatewayid : " . $pspid);
+                    } else {
+                        $result = "success";
+                    }
+                }
+            }
 		}
+            return $result;
 	}
 	
 	public function searchGatewayTrigger($clientId, $pspId) {
