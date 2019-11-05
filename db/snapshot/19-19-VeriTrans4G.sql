@@ -1,8 +1,6 @@
 /* ========== Global Configuration for VeriTrans4G = STARTS ========== */
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (59, 'VeriTrans4G',2);
 
-select * from System.PSP_Tbl
-
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (392,1,'JPY');
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (392,59,'JPY');
 
@@ -22,6 +20,7 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10009
 
 INSERT INTO Client.CardAccess_Tbl(clientid,cardid,enabled,pspid,countryid,stateid,psp_type) values (<clientid>,8,true,59,616,1,1);
 
+
 -- Route VISA Card to VeriTrans4G with country Japan
 INSERT INTO Client.CardAccess_Tbl(clientid,cardid,enabled,pspid,countryid,stateid,psp_type) values (10018,8,true,59,616,1,1);
 -- Route Master Card to VeriTrans4G with country Japan
@@ -32,14 +31,21 @@ INSERT INTO Client.CardAccess_Tbl(clientid,cardid,enabled,pspid,countryid,statei
 
 /* ========== Global Configuration for VeriTrans4G = ENDS ========== */
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES (<KeyName>, <Value>, <ClientID>, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_JPO', '10', <ClientID>, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_TXN_VERSION', '2.0.0', <ClientID>, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_DUMMY_REQUEST', '1', <ClientID>, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_SERVICE_OPTION_TYPE', 'mpi-complete', <ClientID>, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_BROWSER_DEVICE_CATEGORY', '0', <ClientID>, 'client', 2 );
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('CLIENT_3DS_ENABLE', 'true', <ClientID>, 'client', 2 );
+
+
+
+
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_JPO', '10', 10018, 'client', 2 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_TXN_VERSION', '2.0.0', 10018, 'client', 2 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_DUMMY_REQUEST', '1', 10018, 'client', 2 );
-
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_SERVICE_OPTION_TYPE', 'mpi-complete', 10018, 'client', 2 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('VeriTrans4G_BROWSER_DEVICE_CATEGORY', '0', 10018, 'client', 2 );
-
-
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES ('CLIENT_3DS_ENABLE', 'true', 10018, 'client', 2 );
 
 
