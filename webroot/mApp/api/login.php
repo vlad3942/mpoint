@@ -90,7 +90,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Input valid
 					if (count($aMsgCds) == 0)
 					{
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_DOM->login[$i]->{'client-info'}->email);
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_DOM->login[$i]->{'client-info'}->email,$obj_DOM->login[$i]->{'client-info'}["profileid"]);
 
 						if ($iAccountID > -1)
 						{

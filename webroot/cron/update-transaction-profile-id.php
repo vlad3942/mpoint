@@ -16,14 +16,14 @@ if (isset($_GET["limit"])) {
     $limit = $_GET["limit"];
 }
 
-$sql = "SELECT txn.id, txn.clientid, txn.accountid, txn.countryid, txn.mobile, txn.operatorid, txn.email, txn.customer_ref
-          FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn WHERE";
+$sql = "SELECT txn.id, txn.clientid, txn.accountid, txn.countryid, txn.mobile, txn.operatorid, txn.email, txn.customer_ref FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn WHERE";
+$sql .= " txn.clientid in (select prop.externalid from client" . sSCHEMA_POSTFIX . ".additionalproperty_tbl prop where prop.key='ENABLE_PROFILE_ANONYMIZATION' and prop.value='true'";
 if (empty($clientid) === false) {
-    $sql .= " txn.clientid = " . intval($clientid) . " and ";
+    $sql .= " and prop.externalid = " . intval($clientid) . " ) ";
 } else {
-    $sql .= " txn.clientid in (select prop.externalid from client" . sSCHEMA_POSTFIX . ".additionalproperty_tbl prop where prop.key='ENABLE_PROFILE_ANONYMIZATION' and prop.value='true') and ";
+    $sql .= " ) ";
 }
-$sql .= " txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id desc";
+$sql .= " and txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id desc";
 if (empty($limit) === false) {
     $sql .= " limit " . intval($limit);
 }
@@ -39,10 +39,10 @@ while ($RS = $_OBJ_DB->fetchName($res)) {
 // Call Save-Profile API for each transaction
     $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $RS["CLIENTID"], $RS['ACCOUNTID']);
     $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
-    $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], 0, "true");
+    $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], "true");
     if ($profileId > 0) {
         try {
-            $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
+            $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET EMAIL=NULL, mobile=NULL, operatorid=NULL, customer_ref=NULL, profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
             $result = $_OBJ_DB->query($updateQuery);
         } catch (Exception $e) {
             trigger_error("Failed to update profile for txn id =" . $RS["ID"], E_USER_ERROR);

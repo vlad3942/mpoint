@@ -19,6 +19,8 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('hppFormRedirectMethod', 'GET', 10073, 'client', true);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('hppFormRedirectMethod', 'GET', 10065, 'client', true);
 
+
 -- UATP CeptorAccessId and CeptorAccessKey
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('CeptorAccessId', 'cellpointuser', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10069 and pspid = 50), 'merchant',1);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('CeptorAccessKey', 'PhkdD7IB', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10069 and pspid = 50), 'merchant',1);
+

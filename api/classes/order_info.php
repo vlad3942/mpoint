@@ -29,8 +29,14 @@ class OrderInfo
 	 *
 	 * @var integer
 	 */
-	private $_iID;	
-	/**
+	private $_iID;
+    /**
+     * Unique reference string for the Order
+     *
+     * @var string
+     */
+    private $_sOrderRef;
+    /**
 	 * Configuration for the Client who owns the Order
 	 *
 	 * @var TxnInfo
@@ -115,16 +121,22 @@ class OrderInfo
      * @var array
      */
     private $_aAdditionalData;
-	
+    /**
+     * The Fees of the Order for a Customer
+     *
+     * @var long
+     */
+    private $_iFees;
 	/**
 	 * Default Constructor
 	 *
-	 
+
 	 *
 	 */
-	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata)
+	public function __construct($id, $orderref, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata,$fees)
 	{		
 		$this->_iID =  (integer) $id;
+		$this->_sOrderRef =  (string) $orderref;
 		$this->_iTransactionID = $tid;
 		$this->_iCountryID = $cid;
 		$this->_lAmount = (float) $amt;
@@ -139,6 +151,7 @@ class OrderInfo
 		$this->_PassengerConfigs =  (array) $passengerd;
 		$this->_AddressConfigs = (array) $addressd;
         $this->_aAdditionalData = $additionaldata;
+        $this->_iFees = (float) $fees;
 	}
 
 	/**
@@ -146,7 +159,13 @@ class OrderInfo
 	 *
 	 * @return 	integer
 	 */
-	public function getID() { return $this->_iID; }	
+	public function getID() { return $this->_iID; }
+	/**
+	 * Returns the Unique reference string for the Order
+	 *
+	 * @return 	string
+	 */
+	public function getOrderRef() { return $this->_sOrderRef; }
 	/**
 	 * Returns the Configuration for the Country the Order was processed in
 	 *
@@ -225,7 +244,12 @@ class OrderInfo
 	 * @return 	array
 	 */
 	public function getAddressConfigs() { return $this->_AddressConfigs; }
-
+	/**
+	 * Returns the Fees the customer will pay for the Order
+	 *
+	 * @return 	long
+	 */
+	public function getFees() { return $this->_iFees; }
     /**
      * Returns the Additional Data of this flight
      *
@@ -237,7 +261,7 @@ class OrderInfo
 		
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity
+		$sql = "SELECT id, orderref, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity,fees
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl				
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";	
@@ -253,8 +277,8 @@ class OrderInfo
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
 			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
-			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
-								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA);
+			return new OrderInfo($RS["ID"], $RS['ORDERREF'],$RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
+								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA, $RS["FEES"]);
 		}
 		else { return null; }
 	}
@@ -275,11 +299,14 @@ class OrderInfo
         return $aConfigurations;
     }
 	
-	public static function produceConfigurations(RDB $oDB, $txnid)
+	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers=null)
 	{		
 		$sql = "SELECT id			
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
 				WHERE txnid = ". intval($txnid) ." AND enabled = '1'";
+        if(count($ticketNumbers ) > 0) {
+            $sql .= " AND orderref in   ('".implode("','", array_keys($ticketNumbers))."')";
+        }
 		//echo $sql ."\n";
 		$aConfigurations = array();
 		$res = $oDB->query($sql);
@@ -303,32 +330,31 @@ class OrderInfo
 			}
 		}
 		$xml .= '<line-item>';
-        $xml .= '<product sku="'. $this->getProductSKU() .'">';
+        $xml .= '<product order-ref = "'.$this->getOrderRef().'" sku="'. $this->getProductSKU() .'">';
         $xml .= '<name>'. $this->getProductName() .'</name>';
         $xml .= '<description>'. $this->getProductDesc() .'</description>';
         $xml .= '<image-url>'. $this->getProductImageURL() .'</image-url>';
-        $xml .= '<airline-data>';
-        foreach ($this->getFlightConfigs() as $flight_Obj)
-        {
-        	if( ($flight_Obj instanceof FlightInfo) === true )
-        	{
-        
-        	$xml .=	$flight_Obj->toXML();
-        
-        	}
+        if(count($this->getFlightConfigs()) > 0 ) {
+            $xml .= '<airline-data>';
+            foreach ($this->getFlightConfigs() as $flight_Obj) {
+                if (($flight_Obj instanceof FlightInfo) === TRUE) {
+                    $xml .= $flight_Obj->toXML();
+                }
+            }
+            foreach ($this->getPassengerConfigs() as $passenger_Obj) {
+                if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
+
+                    $xml .= $passenger_Obj->toXML();
+
+                }
+            }
+            $xml .= '</airline-data>';
         }
-        foreach ($this->getPassengerConfigs() as $passenger_Obj)
-        {
-        	if( ($passenger_Obj instanceof PassengerInfo) === true )
-        	{
-        			
-        		$xml .= $passenger_Obj->toXML();
-        			
-        	}
-        }
-        $xml .= '</airline-data>';
         $xml .= '</product>';
         $xml .= '<amount country-id="'. $this->getCountryID() .'">'. $this->getAmount() .'</amount>';
+        $xml .= '<fees>';
+        $xml .= '<fee country-id="'. $this->getCountryID() .'">'. $this->getFees() .'</fee>';
+        $xml .= '</fees>';
         $xml .= '<points>'. $this->getPoints() .'</points>';
         $xml .= '<reward>'. $this->getReward() .'</reward>';
         $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
@@ -341,7 +367,6 @@ class OrderInfo
             $xml .= '</additional-data>';
         }
         $xml .= '</line-item>';
-     
         return $xml;
 	}
 }

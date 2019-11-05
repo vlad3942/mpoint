@@ -49,3 +49,7 @@ VALUES ('ENABLE_PROFILE_ANONYMIZATION', <value>, <client-id>, 'client', 0 );
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('ENABLE_PROFILE_ANONYMIZATION', 'true', 10018, 'client', 0 );
 --------------
+ALTER TABLE enduser.account_tbl ADD profileid int8 NULL;
+
+comment on column enduser.account_tbl.profileid is 'mProfile id associated with the registered enduser';
+----

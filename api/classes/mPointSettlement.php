@@ -102,6 +102,7 @@ abstract class mPointSettlement
 
         $iBatchLimit = 200;
         $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
+        $isTicketLevelSettlement = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
         if($sSettlementBatchLimit != '')
         {
             $iBatchLimit = (int)$sSettlementBatchLimit;
@@ -186,15 +187,18 @@ abstract class mPointSettlement
         $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
 
         $arrayPartialOperations = [];
-        $sql = "SELECT DISTINCT  T.id AS ID
-                FROM log." . sSCHEMA_POSTFIX . "Transaction_Tbl T
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "txnpassbook_Tbl TP ON T.id = TP.transactionid
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_record_tbl SRT on SRT.transactionid = T.id
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
-                  WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
-                  AND TP.status = '".Constants::sPassbookStatusInProgress."' 
-                  AND ST.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'
-                  AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId;
+
+        $sql = "SELECT DISTINCT ID FROM (
+                SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
+                RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
+                FROM log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".txnpassbook_Tbl TP ON T.id = TP.transactionid
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_record_tbl SRT on SRT.transactionid = T.id
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
+                AND TP.status = '".Constants::sPassbookStatusInProgress."' 
+                AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId.") s 
+                WHERE rn =1 and  s.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
@@ -214,7 +218,12 @@ abstract class mPointSettlement
         foreach ($this->_arrayTransactionIds as $transactionId)
         {
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-            $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+            $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
+            if($isTicketLevelSettlement === 'true') {
+                $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
+                $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
+            }
+
             $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
             $obj_UAProfile = null;
             $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
