@@ -61,6 +61,7 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/eghl.php");
+require_once(sCLASS_PATH ."/cellulant.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
