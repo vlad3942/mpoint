@@ -417,7 +417,8 @@ final class TxnPassbook
      */
     private function _getCapturebleAmount()
     {
-        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount);
+        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount);
+        return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
     /**
@@ -425,7 +426,8 @@ final class TxnPassbook
      */
     private function _getCancelableAmount()
     {
-        return $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
+        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount + $this->_refundAmount);
+        return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
     /**
@@ -433,7 +435,8 @@ final class TxnPassbook
      */
     private function _getRefundableAmount()
     {
-        return ($this->_capturedAmount +  $this->_captureAmount) - ($this->_refundedAmount + $this->_refundAmount);
+        $finalAmount = ($this->_capturedAmount +  $this->_captureAmount) - ($this->_refundedAmount + $this->_refundAmount);
+        return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
     /**
@@ -866,6 +869,14 @@ final class TxnPassbook
         return FALSE;
     }
 
+    /**
+     * @param $amount
+     * @param $state
+     * @param $status
+     *
+     * @return bool
+     * @throws \Exception
+     */
     public function updateInProgressOperations($amount, $state, $status)
     {
         $amount  = (int)$amount;
@@ -886,8 +897,33 @@ final class TxnPassbook
             }
         }
         return TRUE;
+    }
 
+    public function getExternalRefOfInprogressEntries($state)
+    {
+        $return = [];
+        $sql = 'SELECT TB2.EXTREF, TB2.EXTREFIDENTIFIER
+                FROM LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL TB1 INNER JOIN LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL TB2
+                ON TB1.EXTREF = TB2.ID::VARCHAR
+                WHERE TB1.TRANSACTIONID = $1 AND TB1.PERFORMEDOPT = $2' ;
 
+        $res = $this->getDBConn()->prepare($sql);
+        if (is_resource($res) === TRUE) {
+            $aParams = [
+                $this->getTransactionId(),
+                $state
+            ];
+
+            $result = $this->getDBConn()->execute($res, $aParams);
+
+            if ($result !== FALSE) {
+                while ($rs = $this->getDBConn()->fetchName($result))
+                {
+                    $return[$rs['EXTREF']] = $rs['EXTREFIDENTIFIER'];
+                }
+            }
+        }
+        return $return;
     }
 
 }

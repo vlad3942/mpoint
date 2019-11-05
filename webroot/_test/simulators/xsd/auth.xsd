@@ -5,7 +5,7 @@
 			<xs:all>
 				<xs:element name="authorize">
 					<xs:complexType>
-						<xs:sequence>
+						<xs:all>
 							<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="1"/>
 							<xs:element name="psp-config">
 								<xs:complexType>
@@ -132,22 +132,40 @@
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
-							<!--<xs:element name="account" minOccurs="0" maxOccurs="1">
+							<xs:element name="address" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="first-name" type="xs:string"   minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="last-name" type="xs:string"    minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="street" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                    </xs:all>
+                                    <xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
+                                    <xs:attribute name="alpha2code" type="xs:string" use="required" />
+                                    <xs:attribute name="alpha3code" type="xs:string" use="required" />
+                                    <xs:attribute name="code" type="xs:positiveInteger" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+							<xs:element name="account" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
-									<xs:all>
+									<xs:sequence>
 										<xs:element name="first-name" type="xs:string"/>
 										<xs:element name="last-name" type="xs:string"/>
-										<xs:element name="mobile" type="xs:string">
+										<xs:element name="mobile">
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
 														<xs:attribute name="country-id" type="xs:integer"/>
+														<xs:attribute name="verified" type="xs:string"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="email" type="xs:string"/>
-										<xs:element name="password" type="xs:string">
+										<xs:element name="password">
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
@@ -156,7 +174,7 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-										<xs:element name="balance" type="xs:string">
+										<xs:element name="balance">
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
@@ -168,12 +186,15 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-									</xs:all>
+										<xs:any maxOccurs="6" processContents="skip"/>
+									</xs:sequence>
+									<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+									<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
-							</xs:element>-->
-							<xs:any maxOccurs="1" processContents="skip"/>
+							</xs:element>
+							<!--<xs:any maxOccurs="1" processContents="skip"/>-->
 							<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1"/>
-						</xs:sequence>
+						</xs:all>
 						<xs:attribute type="xs:positiveInteger" name="client-id" />
 						<xs:attribute type="xs:positiveInteger" name="account" />
 						<xs:attribute type="xs:string" name="store-card" />

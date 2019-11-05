@@ -76,11 +76,17 @@ class ClientInfo
 	 */
 	private $_sLanguage;
 
+    /**
+     * The profile id of registered user
+     * @var integer
+	 */
+	private $_iProfileID = -1;
+
 	/**
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="")
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -91,6 +97,7 @@ class ClientInfo
 		$this->_sDeviceID = trim($dvc);
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
+		$this->_iProfileID = (integer) $profileid;
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -149,9 +156,22 @@ class ClientInfo
 	 * @var string
 	 */
 	public function getLanguage() { return $this->_sLanguage; }
-	
+
+    /**
+     * Returns the profile id of the registered user
+     *
+     * @return 	integer
+     */
+    public function getProfileID() { return $this->_iProfileID; }
+
 	public function toXML()
 	{
+		$xml = '<client-info app-id="'. $this->_iAppID .'" platform="'. htmlspecialchars($this->_sPlatform, ENT_NOQUOTES) .'" version="'. number_format($this->_fVersion, 2) .'" language="'. htmlspecialchars($this->_sLanguage, ENT_NOQUOTES).'"' ;
+		if ($this->getProfileID() > 0) {
+		    $xml .= ' profileid="'.$this->getProfileID().'"';
+        }
+		$xml .= '>';
+		$xml .= '<mobile country-id="'. $this->_obj_CountryConfig->getID() .'">'. $this->_sMobile .'</mobile>';
 		$xml = '<client-info app-id="'. $this->_iAppID .'" platform="'. htmlspecialchars($this->_sPlatform, ENT_NOQUOTES) .'" version="'. number_format($this->_fVersion, 2) .'" language="'. htmlspecialchars($this->_sLanguage, ENT_NOQUOTES) .'">';
         $xml .= '<mobile country-id="'. $this->_obj_CountryConfig->getID() .'" country-code="'. $this->_obj_CountryConfig->getCountryCode() .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
@@ -215,7 +235,7 @@ class ClientInfo
 	private static function _produceInfoFromXML(SimpleXMLElement &$oXML, CountryConfig $oCC, $ip)
 	{
 		if (empty($oXML["language"]) === true) { $oXML["language"] = sLANG; }
-		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], @$_SERVER['HTTP_X_FORWARDED_FOR']);
+		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], @$_SERVER['HTTP_X_FORWARDED_FOR'], $oXML["profileid"]);
 	}
 }
 ?>

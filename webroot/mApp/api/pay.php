@@ -233,7 +233,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($drEnabled) {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] , $obj_DOM->pay[$i] ) ;
+							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
 							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 							
 						}
@@ -274,7 +274,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     } else {
                                         $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                                     }
-									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
+									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email), $obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
 
 									//	Create a new user as some PSP's needs our End-User Account ID for storing cards
 									if ($iAccountID < 0)
@@ -285,7 +285,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		   "",
 																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
 																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}),
-																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],false);
+																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],false, $obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
 									}
 									$obj_TxnInfo->setAccountID($iAccountID);
 									// Update Transaction Log

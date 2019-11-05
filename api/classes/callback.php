@@ -859,6 +859,8 @@ abstract class Callback extends EndUserAccount
             return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"]);
 		case (Constants::iGlobal_Payments_PSP):
 			return new GlobalPayments($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-payments"]);
+			case (Constants::iEZY_PSP):
+			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
 		case (Constants::iCellulant_PSP):
 				return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"]);
         default:

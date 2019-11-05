@@ -211,6 +211,14 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iAccountID = -1;
+
+	/**
+	 * Unique ID for the profile created and associated with this Transaction
+	 *
+	 * @var integer
+	 */
+	private $_iProfileID = -1;
+
 	/**
 	 * The Client's Reference for the Customer
 	 *
@@ -422,7 +430,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -455,6 +463,7 @@ class TxnInfo
 		$this->_bAutoCapture = (bool) $ac;
 
 		$this->_iAccountID = (integer) $accid;
+		$this->_iProfileID = (integer) $profileid;
 		$this->_sCustomerRef = trim($cr);
 		$this->_iGoMobileID = (integer) $gmid;
 		$this->_bAutoStoreCard = (bool) $asc;
@@ -692,6 +701,14 @@ class TxnInfo
 	 * @return 	integer		Unique ID for the End-User's prepaid account or -1 if no account has been associated
 	 */
 	public function getAccountID() { return $this->_iAccountID; }
+
+	/**
+	 * Returns the profile id associated with the Transaction.
+	 *
+	 * @return 	integer		Unique Profile id or -1 if no account has been associated
+	 */
+	public function getProfileID() { return $this->_iProfileID; }
+
 	/**
 	 * Returns the txn issuer approval code
 	 *
@@ -765,6 +782,15 @@ class TxnInfo
 	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
 	 */
 	public function setAccountID($id) { $this->_iAccountID = (integer) $id; }
+
+	/**
+	 * Associates an mProfile id with the Transaction.
+	 * Set to -1 if not present for the transaction.
+	 *
+	 * @param 	integer $profileID 	Unique ID for the mProfile
+	 */
+	public function setProfileID($profileID) { $this->_iProfileID = (integer) $profileID; }
+
 	/**
 	 * Updates the issuer approaval code
 	 *
@@ -844,35 +870,39 @@ class TxnInfo
 	 * after it has been resized to fit the screen resolution of the customer's mobile device.
 	 *
 	 * The method will return an XML document in the following format:
-	 * 	<transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
-	 *		<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
-	 * 		<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
-	 *		<order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
-	 *		<mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
-	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
-	 * 		<email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
-	 * 		<device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
-	 *		<logo>
-	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
-	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
-	 * 			<height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
-	 *		</logo>
-	 *		<css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
-	 *		<accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
-	 *		<cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
-	 *		<callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
-	 *		<language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
-	 * 		<auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
-	 * 		<markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
-	 *	</transaction>
+	 *    <transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
+	 *        <amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
+	 *        <price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
+	 *        <order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
+	 *        <mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
+	 *        <operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
+	 *        <email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
+	 *        <device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
+	 *        <logo>
+	 *            <url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
+	 *            <width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
+	 *            <height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
+	 *        </logo>
+	 *        <css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
+	 *        <accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
+	 *        <cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
+	 *        <callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
+	 *        <language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
+	 *        <auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
+	 *        <markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
+	 *    </transaction>
 	 *
-	 * @see 	iCLIENT_LOGO_SCALE
-	 * @see 	General::formatAmount()
+	 * @param UAProfile $oUA Reference to the User Agent Profile for the Customer's Mobile Device (optional)
+	 * @param int       $iAmount
+	 * @param null      $ticketNumbers
 	 *
-	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
-	 * @return 	string
+	 * @return    string
+	 * @throws \ImageException
+	 * @see    General::formatAmount()
+	 *
+	 * @see    iCLIENT_LOGO_SCALE
 	 */
-	public function toXML(UAProfile &$oUA=null, $iAmount = -1)
+	public function toXML(UAProfile &$oUA=null, $iAmount = -1, $ticketNumbers = null)
 	{
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
@@ -991,6 +1021,11 @@ class TxnInfo
             $xml .= '<installment><value>'.htmlspecialchars($this->_iInstallmentValue, ENT_NOQUOTES).'</value></installment>';
 		}
 
+		if($this->getProfileID() > 0)
+		{
+			$xml .= '<profileid>'.htmlspecialchars($this->getProfileID(), ENT_NOQUOTES).'</profileid>';
+		}
+
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -1030,7 +1065,7 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value 
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid  
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -1059,7 +1094,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData);
 		}
 		return $obj_TxnInfo;
 	}
@@ -1082,7 +1117,7 @@ class TxnInfo
 	 * @return 	TxnInfo
 	 * @throws 	E_USER_ERROR, TxnInfoException
 	 */
-	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null)
+	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null )
 	{
 		$obj_TxnInfo = null;
 		switch (true)
@@ -1145,7 +1180,8 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
             if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = $obj->getInstallmentValue(); }
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"]);
+			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = $obj->getProfileID(); }
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
@@ -1173,7 +1209,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1293,13 +1329,13 @@ class TxnInfo
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Order ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Order ID", 1001); }
-	
-	
+
+				$orderFees = isset($aOrderDataObj["fees"]) ? $aOrderDataObj["fees"] : 0;
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Order_Tbl
-							(id, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward)
+							(id, orderref, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees)
 						VALUES
-							(". $RS["ID"] .", ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
-							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." )";
+							(". $RS["ID"] .", '". (string)$aOrderDataObj["orderref"] ."', ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
+							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." ,".$orderFees.")";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
@@ -1480,15 +1516,15 @@ class TxnInfo
 		}
 	}
 
-	public function produceOrderConfig(RDB $obj_DB)
+	public function produceOrderConfig(RDB $obj_DB, $ticketNumbers=null)
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
-		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
+		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID(), $ticketNumbers);
 		
 		
 	}
 	
-	public function getOrdersXML()
+	public function getOrdersXML($ticketNumbers = null)
 	{
 		$xml = '';
 		if( empty($this->_obj_OrderConfigs) === false )
@@ -1498,10 +1534,7 @@ class TxnInfo
 			{
 				if( ($obj_OrderInfo instanceof OrderInfo) === true )
 				{
-					
 					$xml .= $obj_OrderInfo->toXML();
-					
-					
 				}
 			}
 			$xml .= '</orders>';
