@@ -879,7 +879,7 @@ abstract class Constants
      * Unique ID for the Payment Service Provider: EZY
      *
      */
-    const iEZY_PSP = 58;
+    const iEZY_PSP = 60;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
