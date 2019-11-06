@@ -109,6 +109,8 @@ header("Content-Type: application/x-www-form-urlencoded");
 require_once(sCLASS_PATH ."/validate.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 require_once(sCLASS_PATH ."/global-payments.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';

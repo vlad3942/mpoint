@@ -171,7 +171,7 @@ class ClientInfo
 		    $xml .= ' profileid="'.$this->getProfileID().'"';
         }
 		$xml .= '>';
-		$xml .= '<mobile country-id="'. $this->_obj_CountryConfig->getID() .'">'. $this->_sMobile .'</mobile>';
+        $xml .= '<mobile country-id="'. $this->_obj_CountryConfig->getID() .'" country-code="'. $this->_obj_CountryConfig->getCountryCode() .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
 		$xml .= '<device-id>'. htmlspecialchars($this->_sDeviceID, ENT_NOQUOTES) .'</device-id>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';

@@ -132,6 +132,8 @@ require_once(sCLASS_PATH ."/wallet_processor.php");
 require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 // </editor-fold>
 
 ignore_user_abort(true);

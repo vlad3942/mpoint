@@ -865,6 +865,13 @@ abstract class Constants
      *
      */
     const iMADA_MPGS_PSP = 57;
+
+    /**
+     * Unique ID for the Payment Service Provider: MADA MPGS
+     *
+     */
+    const iCellulant_PSP = 58;
+
     /**
      * Unique ID for the Payment Service Provider: EZY
      *
@@ -1285,6 +1292,12 @@ abstract class Constants
      *
      */
     const iFPX = 73;
+
+    /**
+     * Unique Card ID for transaction's made using FPX
+     *
+     */
+    const iCELLULANT = 86;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
