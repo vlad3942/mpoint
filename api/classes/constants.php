@@ -865,13 +865,16 @@ abstract class Constants
      *
      */
     const iMADA_MPGS_PSP = 57;
-
+    /**
+     * Unique ID for the Payment Service Provider: VERITRANS4G
+     *
+     */
+    const iVeriTrans4G_PSP = 59;
     /**
      * Unique ID for the Payment Service Provider: MADA MPGS
      *
      */
     const iCellulant_PSP = 58;
-
     /**
      * Unique ID for the Payment Service Provider: EZY
      *

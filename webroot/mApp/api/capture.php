@@ -92,6 +92,9 @@ require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
 
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
