@@ -134,6 +134,8 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
