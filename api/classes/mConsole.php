@@ -1321,7 +1321,7 @@ class mConsole extends Admin
 			$RS = $this->getDBConn ()->fetchName ( $res );
 			if (is_array ( $RS ) === true) {
                 if ($RS["GATEWAYCOUNT"] == 0) {
-                    $result = "Gateway is already exist";
+                    $result = "Gateway does not exist";
                 } else {
 
                     $sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = " . $objTrigger->{'aggregation-trigger'}{'unit'} . ", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'} . "
