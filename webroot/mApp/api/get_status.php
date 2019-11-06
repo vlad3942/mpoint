@@ -141,7 +141,6 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the cellulant component
 require_once(sCLASS_PATH ."/cellulant.php");
 
->>>>>>> release/v2.18
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
