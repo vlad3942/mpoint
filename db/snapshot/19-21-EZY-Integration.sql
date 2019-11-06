@@ -4,7 +4,7 @@ INSERT INTO system.processortype_tbl (id, name) VALUES (9, 'Fraud Gateway');
 
 /* ========== CONFIGURE EZY START========== */
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (60, 'EZY Fraud Gateway',9);
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 60); /*With Apple-Pay*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (<cardid>, 60); /*With Apple-Pay*/
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) VALUES (<clientid>, 58, 'EZY');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>, 58, '-1');
@@ -20,6 +20,6 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Chec
 
 
 /*=================== Create a new static route for Fraud check : START =======================*/
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (<clientid>, 15, true, 60, 200, 9, 1);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (<clientid>, <cardid>, true, 60, 200, 9, 1);
 /*=================== Create a new static route for Fraud check : END =======================*/
 
