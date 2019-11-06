@@ -949,6 +949,43 @@ $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/mpoint/fraud/ezy/check-fraud-status";
 
 /**
+ * Connection info for connecting to VeriTrans4G
+ */
+$aHTTP_CONN_INFO["veritrans4g"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["veritrans4g"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["veritrans4g"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["veritrans4g"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["veritrans4g"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["veritrans4g"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["veritrans4g"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["veritrans4g"]["paths"]["initialize"] = "/mpoint/veritrans4g/initialize";
+$aHTTP_CONN_INFO["veritrans4g"]["paths"]["auth"] = "/mpoint/veritrans4g/authorize-payment";
+$aHTTP_CONN_INFO["veritrans4g"]["paths"]["capture"] = "/mpoint/veritrans4g/capture";
+$aHTTP_CONN_INFO["veritrans4g"]["paths"]["refund"] = "/mpoint/veritrans4g/refund";
+//$aHTTP_CONN_INFO["veritrans4g"]["paths"]["status"] = "/mpoint/veritrans4g/status";
+$aHTTP_CONN_INFO["veritrans4g"]["paths"]["cancel"] = "/mpoint/veritrans4g/cancel";
+$aHTTP_CONN_INFO["veritrans4g"]["paths"]["callback"] = "/mpoint/veritrans4g/callback";
+    
+/*
+ * Connection info for connecting to Data Cash
+ */
+$aHTTP_CONN_INFO["cellulant"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cellulant"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cellulant"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cellulant"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cellulant"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cellulant"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cellulant"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["initialize"] = "/mpoint/cellulant/initialize";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["auth"] = "/mpoint/cellulant/authorize-payment";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["get-payment-options"] = "/mpoint/cellulant/GetPaymentOptions";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["status"] = "/mpoint/cellulant/status";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
+$aHTTP_CONN_INFO["cellulant"]["paths"]["refund"] = "/mpoint/cellulant/refund";
+
+
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
