@@ -861,6 +861,8 @@ abstract class Callback extends EndUserAccount
 			return new GlobalPayments($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-payments"]);
 		case (Constants::iVeriTrans4G_PSP):
 		    return new VeriTrans4G($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["veritrans4g"]);
+        case (Constants::iEZY_PSP):
+			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
         default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
@@ -956,6 +958,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['product-type']= $objTransaction->getProductType();
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
+					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
 					$transactionData['issuer-approval-code']= $objTransaction->getApprovalCode();
 					if (intval($objTransaction->getCardID()) > 0)
