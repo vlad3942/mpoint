@@ -233,75 +233,62 @@ class ChaseSettlement extends mPointSettlement
                                 if ($isSuccess === true)
                                 {
                                     $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
+                                    $isTicketLevelSettlement = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
                                     $args = [];
+                                    $stateId = 0;
                                     if ($recordType == "CAPTURE") {
                                         $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
                                         $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                             "amount" => $amount,
-                                            "fee" => $obj_TxnInfo->getFee(),
-                                            'additionaldata' => implode(',', $file['records'][$recordId]['ticketnumbers'])
+                                            "fee" => $obj_TxnInfo->getFee()
                                         );
-                                        if (strlen($obj_TxnInfo->getCallbackURL()) > 0) {
-                                            $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
-                                        }
+
+                                        $stateId=Constants::iPAYMENT_CAPTURED_STATE;
 
                                     }
                                     else
                                     {
                                         $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
                                         $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                            "amount" => $amount,
-                                            'additionaldata' => implode(',', $file['records'][$recordId]['ticketnumbers'])
+                                            "amount" => $amount
                                             );
+                                        $stateId = Constants::iPAYMENT_REFUNDED_STATE;
 
-                                        if (strlen($obj_TxnInfo->getCallbackURL()) > 0)
-                                        {
-                                            $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+                                    }
+                                    if($isTicketLevelSettlement === 'true')
+                                    {
+                                        $aTicketNumbers = array_keys($file['records'][$recordId]['ticketnumbers']);
+                                        if(count($aTicketNumbers) > 0) {
+                                            $args['additionaldata'] = 'tickernumbers=' . implode(',', $aTicketNumbers);
                                         }
                                     }
+                                    if ($obj_TxnInfo->getCallbackURL() !== '')
+                                    {
+                                        $obj_PSP->notifyClient($stateId, $args);
+                                    }
 
-                                        if ($isSuccess === true)
-                                        {
-                                            $obj_PSP = new Chase($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
-                                            $isTicketLevelSettlement = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
-                                            $args = [];
-                                            $stateId = 0;
-                                            if ($recordType == "CAPTURE") {
-                                                $obj_PSP->completeCapture($amount, $obj_TxnInfo->getFee());
-                                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $amount,
-                                                    "fee" => $obj_TxnInfo->getFee()
-                                                );
 
-                                                $stateId=Constants::iPAYMENT_CAPTURED_STATE;
+                                if ($isDescriptionUpdated === true) {
+                                    $sql = "UPDATE log.settlement_record_tbl
+                                    SET description = $1
+                                    WHERE id = $2;";
 
-                                            }
-                                            else
-                                            {
-                                                $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null);
-                                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                                    "amount" => $amount
-                                                    );
-                                                $stateId = Constants::iPAYMENT_REFUNDED_STATE;
+                                    $resource = $_OBJ_DB->prepare($sql);
 
-                                            }
-                                            if($isTicketLevelSettlement === 'true')
-                                            {
-                                                $aTicketNumbers = array_keys($file['records'][$recordId]['ticketnumbers']);
-                                                if(count($aTicketNumbers) > 0) {
-                                                    $args['additionaldata'] = 'tickernumbers =' . implode(',', $aTicketNumbers);
-                                                }
-                                            }
-                                            if ($obj_TxnInfo->getCallbackURL() !== '')
-                                            {
-                                                $obj_PSP->notifyClient($stateId, $args);
-                                            }
+                                    if (is_resource($resource) === true) {
+                                        $aParam = array(
+                                            $finalDescription,
+                                            $pId
+                                        );
+
                                         $result = $_OBJ_DB->execute($resource, $aParam);
 
                                         if ($result === false) {
                                             throw new Exception("Unable to update settlement record", E_USER_ERROR);
                                         }
                                     }
+                                }
+
                                 }
                             }
                         }
@@ -310,8 +297,6 @@ class ChaseSettlement extends mPointSettlement
                     {
                         $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
                           SET description = CONCAT(description,',','".$file["desc"]."')  WHERE id = $1;";
-
-
 
                         $resource = $_OBJ_DB->prepare($sql);
 

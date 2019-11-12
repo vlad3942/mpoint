@@ -221,7 +221,7 @@ abstract class mPointSettlement
             $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
             if($isTicketLevelSettlement === 'true') {
                 $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
-                $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
+                $obj_TxnInfo->produceOrderConfig($_OBJ_DB, array_keys($ticketNumbers));
             }
 
             $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
