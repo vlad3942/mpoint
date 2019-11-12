@@ -86,9 +86,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         } else {
                             $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                         }
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'get-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'get-account'}[$i]->{'client-info'}->email);
-						
-						
+
+
+                        $iProfileID = -1;
+                        //If data anonymization is enabled for the client
+                        if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true") {
+                            //if request does not contain clientinfo/@profileid - registered user profile id then
+                            if (empty($obj_DOM->{'get-account'}[$i]->{'client-info'}["profileid"]) === true) {
+                                //Get profile from mProfile based on client info details
+                                $obj_mProfile = new Home($_OBJ_DB, $_OBJ_TXT);
+                                $iProfileID = $obj_mProfile->getProfile($obj_ClientConfig, $obj_CountryConfig->getID(), $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'});
+                            } else {
+                                $iProfileID = (integer)$obj_DOM->{'get-account'}[$i]->{'client-info'}["profileid"];
+                            }
+                        }
+
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'get-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'get-account'}[$i]->{'client-info'}->email,$iProfileID);
+
 						$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
 						$xml = '<account id="'. $obj_XML["id"] .'">';
 						$xml .= $obj_XML->{'first-name'}->asXML();

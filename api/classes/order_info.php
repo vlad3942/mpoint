@@ -299,7 +299,7 @@ class OrderInfo
         return $aConfigurations;
     }
 	
-	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers)
+	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers=null)
 	{		
 		$sql = "SELECT id			
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
