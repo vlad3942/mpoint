@@ -223,6 +223,9 @@ abstract class mPointSettlement
                 $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB, array_keys($ticketNumbers));
             }
+            else{
+                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+            }
 
             $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
             $obj_UAProfile = null;
