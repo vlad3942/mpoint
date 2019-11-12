@@ -1231,13 +1231,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<check-fraud-status>';
-        $xml .= '<transactions>';
         $xml .= $this->_constTxnXML();
-        $xml .= '</transactions>';
+        $xml .= '<card>';
         $xml .= '<cryptogram>'.$obj_Card->{'info-3d-secure'}->cryptogram.'</cryptogram>';
         $xml .= '<type>'.$obj_Card->{'info-3d-secure'}->cryptogram['type'].'</type>';
         $xml .= '<eci>'.$obj_Card->{'info-3d-secure'}->cryptogram['eci'].'</eci>';
         $xml .= '<algorithmId>'.$obj_Card->{'info-3d-secure'}->cryptogram['algorithm-id'].'</algorithmId>';
+        $xml .= '</card>';
         $xml .= '</check-fraud-status>';
         $xml .= '</root>';
 
