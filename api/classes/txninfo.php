@@ -1807,5 +1807,21 @@ class TxnInfo
 		}
 		return $captureAmount;
 	}
+
+	public function isTicketNumberIsAlreadyLogged(RDB $obj_DB, $ticketNumber)
+	{
+		$isTicketNumberIsAlreadyLogged = FALSE;
+		$sql = 'SELECT count(t.id) FROM log.order_tbl t				
+     			WHERE ORDERREF = \''.$ticketNumber.'\'
+				AND TXNID = '.$this->getID();
+
+		$RS = $obj_DB->getName($sql);
+
+		if (is_array($RS) === true && $RS['COUNT'] > 0)
+		{
+			$isTicketNumberIsAlreadyLogged = TRUE;
+		}
+		return $isTicketNumberIsAlreadyLogged;
+	}
 }
 ?>

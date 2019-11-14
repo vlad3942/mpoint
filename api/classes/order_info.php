@@ -305,7 +305,7 @@ class OrderInfo
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
 				WHERE txnid = ". intval($txnid) ." AND enabled = '1'";
         if(count($ticketNumbers ) > 0) {
-            $sql .= " AND orderref in   ('".implode("','", array_keys($ticketNumbers))."')";
+            $sql .= " AND orderref in   ('".implode("','", $ticketNumbers)."')";
         }
 		//echo $sql ."\n";
 		$aConfigurations = array();
