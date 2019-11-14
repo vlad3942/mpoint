@@ -85,6 +85,7 @@
 										<xs:element name="action-code" type="xs:string" minOccurs="0"/>
 										<xs:element name="auth-original-data" type="xs:string" minOccurs="0"/>
 										<xs:element name="language" type="xs:string"/>
+										<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 									</xs:all>
 									<xs:attribute type="xs:positiveInteger" name="id"/>
 									<xs:attribute type="xs:positiveInteger" name="type"/>
@@ -243,23 +244,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="additional-config">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 
-	<xs:element name="param">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string">
-					<xs:attribute name="name" type="xs:string" use="required" />
-				</xs:extension>
-			</xs:simpleContent>
-		</xs:complexType>
-	</xs:element>
 
 	<xs:complexType name="client-config">
 	<xs:all>
@@ -365,5 +350,31 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+
+	<xs:element name="additional-data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="additional-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="param">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="name" type="xs:string" use="required" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 
 </xs:schema>

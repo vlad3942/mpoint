@@ -6709,7 +6709,7 @@ GRANT ALL ON SEQUENCE user_tbl_id_seq TO postgres;
 -- from setup_pg_v1.88 --
 
 INSERT INTO System.PSP_Tbl (id, name) VALUES (11, 'MobilePay');
-INSERT INTO System.PSPCurrency_Tbl (id, pspid, countryid, name) SELECT 430, 11, 100, 'DKK';
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) SELECT 11, 100, 'DKK';
 
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (17, 'MobilePay', 15, -1, -1, -1);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (11, 17);
@@ -8177,3 +8177,17 @@ comment on column log.transaction_tbl.profileid is 'mProfile id associated with 
 ALTER TABLE enduser.account_tbl ADD profileid int8 NULL;
 
 comment on column enduser.account_tbl.profileid is 'mProfile id associated with the registered enduser';
+
+
+INSERT INTO system.processortype_tbl (id, name) VALUES (9, 'Fraud Gateway');
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (60, 'EZY Fraud Gateway',9);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 60); /*With Apple-Pay*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,60,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,60,'USD');
+
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2040 , 'Fraud Check Passed', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Check Failed', 'Authorization', true);
+
+
