@@ -91,6 +91,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->bIgnoreErrors = true;
         $this->assertEquals(200, $iStatus);
         $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2010">Payment Declined Due to Failed Fraud Check.</status></root>', $sReplyBody);
 
