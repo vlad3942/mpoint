@@ -135,4 +135,18 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
 
         return $xml;
     }
+
+    public function testSuccessfulAuthorize()
+    {
+
+    }
+    public function testSuccessfulAuthorizeIncludingAutoCapture()
+    {
+
+    }
+
+    public function testSuccessfulAuthorizeWithCurrency()
+    {
+
+    }
 }
