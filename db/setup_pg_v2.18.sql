@@ -112,3 +112,5 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THA
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TUR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWN');
 
+
+UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOWEDPAYMENTMETHODS';
