@@ -318,6 +318,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     );
                                                     $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                                                 }
+                                                if($captureAmount <= 0 && $voidAmount <= 0)
+                                                {
+													$aResponse[$ticketNumber]['Status'] = '999';
+													$aResponse[$ticketNumber]['Message'] = 'Invalid amount';
+                                                }
                                             }
                                         } catch (Exception $e) {
                                             trigger_error($e, E_USER_WARNING);
