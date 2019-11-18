@@ -85,6 +85,7 @@
 										<xs:element name="action-code" type="xs:string" minOccurs="0"/>
 										<xs:element name="auth-original-data" type="xs:string" minOccurs="0"/>
 										<xs:element name="language" type="xs:string"/>
+										<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 									</xs:all>
 									<xs:attribute type="xs:positiveInteger" name="id"/>
 									<xs:attribute type="xs:positiveInteger" name="type"/>
@@ -243,23 +244,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="additional-config">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 
-	<xs:element name="param">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string">
-					<xs:attribute name="name" type="xs:string" use="required" />
-				</xs:extension>
-			</xs:simpleContent>
-		</xs:complexType>
-	</xs:element>
 
 	<xs:complexType name="client-config">
 	<xs:all>
@@ -313,6 +298,13 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="countrycode">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="999" />
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="device-id">
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="40" />
@@ -354,8 +346,35 @@
 			<xs:extension base="xs:token">
 				<xs:attribute name="country-id" type="countryid" use="required" />
 				<xs:attribute name="operator-id" type="operatorid" use="optional" />
+				<xs:attribute name="country-code" type="countrycode" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+
+	<xs:element name="additional-data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="additional-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="param">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="name" type="xs:string" use="required" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 
 </xs:schema>

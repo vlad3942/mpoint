@@ -139,6 +139,10 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('ENABLE_PROFILE_ANONYMIZATION', 'true', 10018, 'client', 0 );
 --------------
 
+ALTER TABLE enduser.account_tbl ADD profileid int8 NULL;
+
+comment on column enduser.account_tbl.profileid is 'mProfile id associated with the registered enduser';
+
 
 --index on table: log.TxnPassbook_tbl --column:performedopt,status
 CREATE INDEX txn_status ON log.txnpassbook_tbl (performedopt, status);

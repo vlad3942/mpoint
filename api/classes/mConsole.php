@@ -870,10 +870,10 @@ class mConsole extends Admin
 			$sql .= "SELECT Txn.id,p2.st AS asStateid,Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, Txn.deviceid as deviceid,
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
-					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
+					Acc.id AS accountid, Acc.markup as markup, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 					CT.code AS currencycode,
-					CT.id AS paymentcurrency
+					CT.id AS paymentcurrency, Txn.profileid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
@@ -932,7 +932,7 @@ class mConsole extends Admin
 						$RS["MODE"],
 						CustomerInfoFactory::getInstance($this->getDBConn(), $this->getText(), new ClientURLConfig($RS["CLIENTID"], ClientConfig::iAUTHENTICATION_URL, $RS['AUTHURL']),
 							$RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"],
-							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'] ),
+							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'], $RS["PROFILEID"] ),
 						$RS["IP"],
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
@@ -1320,23 +1320,22 @@ class mConsole extends Admin
 				
 			$RS = $this->getDBConn ()->fetchName ( $res );
 			if (is_array ( $RS ) === true) {
-		
-				if($RS["GATEWAYCOUNT"] > 0){
-						
-					$result = "Gateway is already exist";
-				}else{
-		
-		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
+                if ($RS["GATEWAYCOUNT"] == 0) {
+                    $result = "Gateway does not exist";
+                } else {
+
+                    $sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = " . $objTrigger->{'aggregation-trigger'}{'unit'} . ", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'} . "
 				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
-		
-				if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
-					throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
-				}else{
-					  $result = "success";
-					}
-				}
-	        }
+
+                    if (is_resource($this->getDBConn()->query($sql)) === false) {
+                        throw new mPointException("Unable to upadte record for gatewayid : " . $pspid);
+                    } else {
+                        $result = "success";
+                    }
+                }
+            }
 		}
+            return $result;
 	}
 	
 	public function searchGatewayTrigger($clientId, $pspId) {

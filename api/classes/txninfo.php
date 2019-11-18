@@ -1209,7 +1209,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1806,6 +1806,22 @@ class TxnInfo
 			$captureAmount = -1;
 		}
 		return $captureAmount;
+	}
+
+	public function isTicketNumberIsAlreadyLogged(RDB $obj_DB, $ticketNumber)
+	{
+		$isTicketNumberIsAlreadyLogged = FALSE;
+		$sql = 'SELECT count(t.id) FROM log.order_tbl t				
+     			WHERE ORDERREF = \''.$ticketNumber.'\'
+				AND TXNID = '.$this->getID();
+
+		$RS = $obj_DB->getName($sql);
+
+		if (is_array($RS) === true && $RS['COUNT'] > 0)
+		{
+			$isTicketNumberIsAlreadyLogged = TRUE;
+		}
+		return $isTicketNumberIsAlreadyLogged;
 	}
 }
 ?>

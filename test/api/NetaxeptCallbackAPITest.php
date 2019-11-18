@@ -103,7 +103,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders() );
 		$sReplyBody = $this->_httpClient->getReplyBody();
-
+        $this->bIgnoreErrors = true;
 		$this->assertEquals(200, $iStatus);
 		$this->assertContains('<status code="2000">', $sReplyBody);
 
