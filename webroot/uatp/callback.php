@@ -56,10 +56,12 @@ try
     $aTicketNumbers = [];
     if($isTicketLevelSettlement === 'true')
     {
-        $sAdditionalData = $obj_XML->callback->{'additional-data'};
+        $sAdditionalData = (string)$obj_XML->callback->{'additional-data'};
         $aAdditionalData = [];
-        parse_str($sAdditionalData, $aAdditionalData);
-        $aTicketNumbers = explode(',', $aAdditionalData['tickernumbers']);
+        if($sAdditionalData !== '') {
+            parse_str($sAdditionalData, $aAdditionalData);
+            $aTicketNumbers = array_filter(explode(',', $aAdditionalData['tickernumbers']));
+        }
     }
     $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
     $aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
