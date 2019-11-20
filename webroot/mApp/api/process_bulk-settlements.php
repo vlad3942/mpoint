@@ -281,6 +281,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                         $captureAmount = 0;
                                         $voidAmount = 0;
+                                        $operationType = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'];
                                         if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
 											$captureAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
                                             $iDBAmount += $captureAmount;
@@ -317,6 +318,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                         'log.additional_data_tbl - TicketNumber'
                                                     );
                                                     $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                                                }
+                                                if($captureAmount <= 0 && $voidAmount <= 0)
+                                                {
+                                                	$aResponse[$ticketNumber][$operationType]['Status'] = '999';
+                                                	$aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
                                                 }
                                             }
                                         } catch (Exception $e) {
@@ -394,7 +400,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             } catch (Exception $e) {
                                  trigger_error($e, E_USER_WARNING);
                             }
-
                             foreach ($aResponse as $k => $v)
                             {
                                 foreach ($v as $op => $status)
