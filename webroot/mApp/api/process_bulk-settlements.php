@@ -281,6 +281,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                         $captureAmount = 0;
                                         $voidAmount = 0;
+                                        $operationType = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'];
                                         if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
 											$captureAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
                                             $iDBAmount += $captureAmount;
@@ -320,16 +321,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 }
                                                 if($captureAmount <= 0 && $voidAmount <= 0)
                                                 {
-                                                	if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB')
-                                                	{
-                                                		$aResponse[$ticketNumber]['DB']['Status'] = '999';
-                                                		$aResponse[$ticketNumber]['DB']['Message'] = 'Invalid amount';
-                                                	}
-                                                	if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'CR') 
-                                                	{
-                                                		$aResponse[$ticketNumber]['CR']['Status'] = '999';
-                                                		$aResponse[$ticketNumber]['CR']['Message'] = 'Invalid amount';
-                                                	}
+                                                	$aResponse[$ticketNumber][$operationType]['Status'] = '999';
+                                                	$aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
                                                 }
                                             }
                                         } catch (Exception $e) {
