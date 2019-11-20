@@ -1232,7 +1232,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $xml .= '<root>';
         $xml .= '<check-fraud-status>';
         $xml .= $this->_constTxnXML();
-        $xml .= '<card>';
+        $xml .= '<card type-id="'. $obj_Card['type-id'] .'">';
         $xml .= '<cryptogram>'.$obj_Card->{'info-3d-secure'}->cryptogram.'</cryptogram>';
         $xml .= '<type>'.$obj_Card->{'info-3d-secure'}->cryptogram['type'].'</type>';
         $xml .= '<eci>'.$obj_Card->{'info-3d-secure'}->cryptogram['eci'].'</eci>';
@@ -1254,16 +1254,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 if ($code == 200) {
                     $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                     if($obj_XML->status['code'] == 200) {
-                        if ($obj_XML->status == "Accept") {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        } else if ($obj_XML->status == "Failed") {
+                        if ($obj_XML->status == "Reject") {
                             $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
-                        } else if ($obj_XML->status == "Review") {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        } else if ($obj_XML->status == "NoCheck") {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
                         } else {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE; //if status is one of Accept, Failed, Review or NoCheck
                         }
                     }else {
                         trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
