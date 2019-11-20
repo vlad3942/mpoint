@@ -88,8 +88,14 @@ require_once(sCLASS_PATH ."/amex.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
+
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
@@ -135,7 +141,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		/* ========== Input Validation Start ========== */
 		if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 		/* ========== Input Validation End ========== */
-
+		
 		// Success: Input Valid
 		if (count($aMsgCds) == 0)
 		{
@@ -170,10 +176,12 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						trigger_error($e, E_USER_WARNING);
 					}
 				}
+
 				// Capture operation succeeded
 				if ($code >= 1000)
 				{
 					header("HTTP/1.0 200 OK");
+					
 					$aMsgCds[1000] = "Success";
 					// Perform callback to Client
                     if ($code != Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT) {
@@ -222,6 +230,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			catch (mPointException $e)
 			{
 				header("HTTP/1.0 500 Internal Error");
+
 				$aMsgCds[$e->getCode()] = $e->getMessage();
 				trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
 			}

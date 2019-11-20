@@ -146,9 +146,9 @@ class EndUserAccount extends Home
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true)
+	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid)
 	{
-		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable);
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable,$profileid);
 
 		// Created account should only be available to Client
 		if ($iAccountID > 0 && ($this->_obj_ClientConfig->getStoreCard()&2) == 2)
@@ -721,6 +721,7 @@ class EndUserAccount extends Home
 	 * @param	string $cref 		The client's customer reference for the end-user, pass empty string: "" to bypass
 	 * @param	long $mob 			End-User's mobile number, pass -1 to bypass
 	 * @param	string $email 		End-User's E-Mail address, pass empty string: "" to bypass
+     * @param	string $profile 	End-User's registered profile id
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $strict=true)
@@ -772,7 +773,18 @@ class EndUserAccount extends Home
 			}
 			return $iAccountID;
 			break;
-		default:
+            case (7):
+                list($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail, $iProfileID) = $aArgs;
+                $iAccountID = -1;
+                if (isset($iProfileID) === false || $iProfileID < 0)
+                {
+                    $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail);
+                } else {
+                    $iAccountID = self::getAccountIdFromProfileId($obj_DB, $iProfileID);
+                }
+                return $iAccountID;
+                break;
+			default:
 			trigger_error("Invalid number of arguments: ". count($aArgs), E_USER_ERROR);
 			return -1;
 			break;
@@ -1180,5 +1192,24 @@ class EndUserAccount extends Home
         $xml .= '</card>';
         return $xml;
     }
+
+    /**
+     * Retrieves the Ticket of the card from EndUser.Card_Tbl
+     *
+     * @param integer 	$profileid 		Profile ID of registered user
+     * @return string	$id			EUA ID, mpoint enduser account id
+     */
+    private static function getAccountIdFromProfileId(RDB &$oDB, $profileid)
+    {
+        $sql = "SELECT id
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				WHERE profileid = ". intval($profileid);
+
+//		echo $sql ."\n";
+        $RS = $oDB->getName($sql);
+
+        return is_array($RS) === true ? $RS["ID"] : -1;
+    }
+
 }
 ?>
