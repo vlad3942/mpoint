@@ -277,6 +277,13 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="countrycode">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="999" />
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="device-id">
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="40" />
@@ -318,6 +325,7 @@
 			<xs:extension base="xs:token">
 				<xs:attribute name="country-id" type="countryid" use="required" />
 				<xs:attribute name="operator-id" type="operatorid" use="optional" />
+				<xs:attribute name="country-code" type="countrycode" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
