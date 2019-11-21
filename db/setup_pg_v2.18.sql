@@ -6,7 +6,28 @@ INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 40);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (67, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (40, -1, -1);
 
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT 10055, PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '651' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '202' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '603' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '614' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '505' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '513' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '616' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '636' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '622' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '638' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '604' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '606' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '608' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '642' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '646' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '647' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '644' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+NSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '154' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '640' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '609' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '200' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+
 
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 702;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 702;
