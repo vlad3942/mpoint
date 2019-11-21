@@ -47,5 +47,5 @@ ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_TICKET_LEVEL_SETTLEMENT', 'true', <merchant-table-id>, 'merchant', 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_TICKET_LEVEL_SETTLEMENT', 'true', <merchant-table-id>, 'merchant', 0);
 
-
-
+CREATE INDEX account_tbl_businessType_index ON client.account_tbl (businessType);
+CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
