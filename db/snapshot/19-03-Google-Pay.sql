@@ -22,6 +22,9 @@ INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (<pspid>, 41);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid, psp_type) VALUES (<clientid>, 41, 18,200,1);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (18, 41);
 
-UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOWEDPAYMENTMETHODS';
+UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOWEDPAYMENTMETHODS' AND VALUES = 'CARD';
 
+
+insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope)
+select 'ALLOWEDPAYMENTMETHODS','PAN_ONLY',true, id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=44;
 /* ========== CONFIGURATION FOR GOOGLE PAY - END ========== */

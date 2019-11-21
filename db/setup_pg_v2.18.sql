@@ -112,5 +112,8 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THA
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TUR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWN');
 
+-- Gpay constant when psp support specific payment method. Use in global payment
+UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOWEDPAYMENTMETHODS' AND VALUES = 'CARD';
 
-UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOWEDPAYMENTMETHODS';
+INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope)
+SELECT 'ALLOWEDPAYMENTMETHODS','PAN_ONLY',true, id, 'merchant', 1 FROM client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=44;
