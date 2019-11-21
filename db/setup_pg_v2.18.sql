@@ -27,6 +27,7 @@ NSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 1005
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '640' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '609' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '200' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '500' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 
 
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 702;
@@ -108,28 +109,29 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM Sys
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 156;
 
 
+
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (702,40,'SGD');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (784,40,'ARE');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,40,'USA');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (784,40,'AED');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,40,'USD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (36,40,'AUD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (48,40,'BHD');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (124,40,'CAN');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (124,40,'CAD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (156,40,'CNY');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (156,40,'CHN');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (344,40,'HKG');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (360,40,'IDN');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (356,40,'IND');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (392,40,'JPN');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (414,40,'KWT');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (446,40,'MAC');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (458,40,'MYS');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (554,40,'NZL');
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (344,40,'HKD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (360,40,'IDR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (356,40,'INR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (392,40,'JPY');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (414,40,'KWD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (446,40,'MOP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (458,40,'MYR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (554,40,'NZD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (598,40,'PGK');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHL');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (634,40,'QAT');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (682,40,'SAU');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (702,40,'SGP');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THA');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TUR');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWN');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (634,40,'QAR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (682,40,'SAR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (702,40,'SGD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THB');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TRY');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWD');
 
