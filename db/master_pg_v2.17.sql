@@ -34,4 +34,7 @@ ALTER TABLE client.account_tbl
 
 
 CREATE INDEX account_tbl_businessType_index ON client.account_tbl (businessType);
-CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
+CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);comment on column enduser.account_tbl.profileid is 'mProfile id associated with the registered enduser';
+
+--CMP-3295
+CREATE INDEX eu_account_tbl_profileid_index ON enduser.account_tbl (profileid);
