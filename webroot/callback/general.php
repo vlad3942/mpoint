@@ -144,7 +144,7 @@ require_once sCLASS_PATH . '/passbookentry.php';
  */
 
 
-set_time_limit(6000000);
+set_time_limit(600);
 // Standard retry strategy connecting to the database has proven inadequate
 $i = 0;
 while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
