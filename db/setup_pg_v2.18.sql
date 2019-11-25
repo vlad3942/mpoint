@@ -110,7 +110,6 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (598,40,'PGK
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHP');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (634,40,'QAR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (682,40,'SAR');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (702,40,'SGD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THB');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TRY');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWD');
