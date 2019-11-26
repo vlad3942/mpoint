@@ -1297,17 +1297,11 @@ abstract class Constants
     const iFPX = 73;
 
     /**
-     * Unique Card ID for transaction's made using CELLULANT
+     * Unique Card ID for transaction's made using FPX
      *
      */
     const iCELLULANT = 86;
 
-
-	/**
-	 * Unique Card ID for transaction's made using OMANNET
-	 *
-	 */
-	const iOMANNET = 87;
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
