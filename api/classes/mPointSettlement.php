@@ -348,7 +348,7 @@ abstract class mPointSettlement
         $h .= "user-agent: mPoint" .HTTPClient::CRLF;
         if (isset($authUser) === true && isset($authPass) === true)
         {
-            $h .= "Authorization: Basic ". base64_encode($authUser. ":". $authPass);
+            $h .= "Authorization: Basic ". base64_encode($authUser. ":". $authPass) . HTTPClient::CRLF;
         }
         /* ----- Construct HTTP Header End ----- */
 
