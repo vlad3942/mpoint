@@ -24,6 +24,6 @@ class PPRO extends CPMGATEWAY
 
     public  function getPSPID()
     {
-        Constants::iPPRO_GATEWAY;
+        return Constants::iPPRO_GATEWAY;
     }
 }
