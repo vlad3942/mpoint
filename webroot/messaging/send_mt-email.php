@@ -1,12 +1,14 @@
 <?php
 require_once("inc/include.php");
 
-
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
-$actual_host = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-
 $client = (integer)$obj_DOM->notify[0]["client-id"];
+
+$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $client);
+
+$base_url = $obj_ClientConfig->getBaseAssetURL();
+
 if (empty($client) === true || !file_get_contents(dirname(__FILE__).'/template/' . $client . '/email.php')) {
     $client = 'default';
 }
@@ -17,11 +19,11 @@ if (isset($obj_DOM->notify->{'body'}->{'assets'}) === true && isset($obj_DOM->no
 }
 else
 {
-    $sBannerImage =  $actual_host.'/messaging/template/'.$client.'/assets/img/banner.png';
+    $sBannerImage =  "$base_url/$client/PBL/assets/images/banner.png";
 }
 
-$sLogo = $actual_host.'/messaging/template/'.$client.'/assets/img/logo.jpg';
-$sCssUrl = $actual_host.'/messaging/template/'.$client.'/assets/css/style.css';
+$sLogo = "$base_url/$client/PBL/assets/images/logo.jpg";
+$sCssUrl = "$base_url/$client./PBL/assets/style/style.css";
 
 $sPaymentURL = (string)$obj_DOM->notify->{'body'}->{'message'};
 
@@ -61,7 +63,6 @@ $sSubject = (string)$obj_DOM->notify->{'body'}->{'subject'};
 $requestId = "PBL";
 
 $client =  (integer)$obj_DOM->notify[0]["client-id"];
-$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $client);
 
 /* ----- Construct HTTP Header Start ----- */
 $h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;

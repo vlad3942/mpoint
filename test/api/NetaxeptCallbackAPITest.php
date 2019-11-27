@@ -90,7 +90,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(serialize($config) ) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '1')");
@@ -103,7 +103,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders() );
 		$sReplyBody = $this->_httpClient->getReplyBody();
-
+        $this->bIgnoreErrors = true;
 		$this->assertEquals(200, $iStatus);
 		$this->assertContains('<status code="2000">', $sReplyBody);
 

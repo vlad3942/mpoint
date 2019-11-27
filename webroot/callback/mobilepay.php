@@ -25,6 +25,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 /**
  * Input XML format

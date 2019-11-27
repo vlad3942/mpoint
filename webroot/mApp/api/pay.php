@@ -134,8 +134,14 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 // Require specific Business logic for the Global Payments component
 require_once(sCLASS_PATH ."/global-payments.php");
+
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 
 $aMsgCds = array();
 
@@ -231,7 +237,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($drEnabled) {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] , $obj_DOM->pay[$i] ) ;
+							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
 							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 							
 						}
@@ -272,8 +278,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     } else {
                                         $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                                     }
-									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
-	
+									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email), $obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
+
 									//	Create a new user as some PSP's needs our End-User Account ID for storing cards
 									if ($iAccountID < 0)
 									{
@@ -283,7 +289,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		   "",
 																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
 																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}),
-																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],false);
+																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"],false, $obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
 									}
 									$obj_TxnInfo->setAccountID($iAccountID);
 									// Update Transaction Log
@@ -882,6 +888,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             }
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
 
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iVeriTrans4G_PSP):
+                                            
+                                            $obj_PSP = new VeriTrans4G($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["veritrans4g"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
+                                                foreach ($obj_XML->children() as $obj_Elem)
+                                                {
+                                                    $xml .= trim($obj_Elem->asXML() );
+                                                }
+                                                break;
+                                        case (Constants::iCellulant_PSP):
+                                            $obj_PSP = new Cellulant($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["cellulant"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
                                             foreach ($obj_XML->children() as $obj_Elem)
                                             {
                                                 $xml .= trim($obj_Elem->asXML() );

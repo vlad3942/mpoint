@@ -476,6 +476,10 @@ class General
 		if($oTI->getInstallmentValue()>0) {
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
+        if ($oTI->getProfileID() > 0) {
+            $sql .= " , profileid = ". $oTI->getProfileID();
+        }
+
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";

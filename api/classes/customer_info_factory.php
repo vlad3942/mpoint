@@ -8,7 +8,7 @@
  */
 class CustomerInfoFactory
 {
-    public static function getInstance(RDB $oDB, TranslateText $oTxt, ClientURLConfig $obj_URLConfig, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid)
+    public static function getInstance(RDB $oDB, TranslateText $oTxt, ClientURLConfig $obj_URLConfig, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid, $profileid)
     {
 		$url= $obj_URLConfig->getURL();
         if (empty($url)  === true )
@@ -17,7 +17,7 @@ class CustomerInfoFactory
         }
         else
         {
-            return new mProfileCustomerInfo($oDB, $oTxt, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid);
+            return new mProfileCustomerInfo($oDB, $oTxt, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid, $profileid);
         }
     }
 }

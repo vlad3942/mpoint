@@ -95,6 +95,10 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/amex.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
+
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");
 
@@ -185,6 +189,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
             $xml = '<bulk-capture-response>';
             for ($i = 0, $iMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction); $i < $iMax; $i++) {
+
                 try {
                     try {
                         $sToken = '';
@@ -199,6 +204,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $obj_TxnInfo = TxnInfo::produceTxnInfoFromExternalRef($_OBJ_DB, $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token']);
                         }
                          $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+
 
                         if (empty($obj_TxnInfo) === false) {
                             $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID()), $aHTTP_CONN_INFO);
@@ -239,10 +245,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['orders'] = array();
                                         $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
+                                        $orderref = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->xpath("./param[@name='TDNR']");
+                                        $data['orders'][0]['orderref'] = $orderref;
                                         $data['orders'][0]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
                                         $data['orders'][0]['product-description'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->description;
                                         $data['orders'][0]['product-image-url'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'image-url'};
                                         $data['orders'][0]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
+                                        $collectiveFees = 0;
+										if(count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->fees->fee) > 0)
+										{
+											for ($k=0; $k<count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->fees->fee); $k++ )
+											{
+												$collectiveFees += $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->fees->fee[$k];
+											}
+										}
+                                        $data['orders'][0]['fees'] = (float) $collectiveFees;
                                         $data['orders'][0]['country-id'] = $obj_TxnInfo->getCountryConfig()->getID();
                                         $data['orders'][0]['points'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->points;
                                         $data['orders'][0]['reward'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->reward;
@@ -255,20 +272,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
                                             }
                                          }
-                                         $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+
+                                         $isTicketNumberIsAlreadyLogged = $obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB,$orderref);
+
+                                         if($isTicketNumberIsAlreadyLogged === FALSE) {
+                                             $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+                                         }
 
                                         $captureAmount = 0;
                                         $voidAmount = 0;
+                                        $operationType = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'];
                                         if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
-                                            $captureAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
+											$captureAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
                                             $iDBAmount += $captureAmount;
                                             $iAmount += $captureAmount;
                                         } elseif ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'CR') {
-                                            $voidAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
+											$voidAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
                                             $iCRAmount += $voidAmount;
                                             $iAmount += $voidAmount;
                                         }
-
                                         $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->xpath("./param[@name='TDNR']");
                                         try {
                                             if ($txnPassbookObj instanceof TxnPassbook) {
@@ -297,13 +319,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     );
                                                     $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                                                 }
+                                                if($captureAmount <= 0 && $voidAmount <= 0)
+                                                {
+                                                	$aResponse[$ticketNumber][$operationType]['Status'] = '999';
+                                                	$aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
+                                                }
                                             }
                                         } catch (Exception $e) {
                                             trigger_error($e, E_USER_WARNING);
                                         }
                                     }
 
-                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
+                                    if ($isTicketNumberIsAlreadyLogged === FALSE && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
                                         for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k < $kMax; $k++) {
                                             $data['flights'] = array();
                                             $data['additional'] = array();
@@ -337,7 +364,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                     }
 
-                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0) {
+                                    if ($isTicketNumberIsAlreadyLogged === FALSE && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0) {
                                         for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k < $kMax; $k++) {
                                             $data['passenger'] = array();
                                             $data['additionalp'] = array();
@@ -373,7 +400,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             } catch (Exception $e) {
                                  trigger_error($e, E_USER_WARNING);
                             }
-
                             foreach ($aResponse as $k => $v)
                             {
                                 foreach ($v as $op => $status)
