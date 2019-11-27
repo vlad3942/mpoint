@@ -288,29 +288,26 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					{
 						$iUpdateStatusCode = $iStatus;
 					}
+
+					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
+					$passbookState = Constants::sPassbookStatusDone;
+					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
+					$retStatusCode = $iStatusCode;
+					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							'transact'=>$this->getTxnInfo()->getExternalID(),
+							'card-id'=>0);
+
 					if ($iStatusCode == 1000)
 					{
-						$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
-						//TODO: Move DB update and Client notification to Model layer, once this is created
-						$this->newMessage($this->getTxnInfo()->getID(),$iUpdateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
-
-						$args = array('amount'=>$this->getTxnInfo()->getAmount(),
-							          'transact'=>$this->getTxnInfo()->getExternalID(),
-							          'card-id'=>0);
-						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
-						return 1001;
+						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
+						$retStatusCode = 1001;
+						$updateStatusCode = $iUpdateStatusCode;
 					}
-					else
-					{
-						$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_DECLINED_STATE, Constants::sPassbookStatusDone);
-						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 
-						$args = array('amount'=>$this->getTxnInfo()->getAmount(),
-								'transact'=>$this->getTxnInfo()->getExternalID(),
-								'card-id'=>0);
-						$this->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
-						return $iStatusCode;
-					}
+					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
+					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
+					$this->notifyClient($paymentState, $args);
+					return $retStatusCode;
 				}
 				else {
 				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
