@@ -1043,7 +1043,7 @@ abstract class Callback extends EndUserAccount
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
 				}
 
-				$sBody .= '&' .http_build_query($aTransactionData);
+				$sBody .= '&' .urlencode(http_build_query($aTransactionData));
 
 				 if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED)
 				{
