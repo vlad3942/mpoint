@@ -30,8 +30,13 @@ INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALU
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type, installment, capture_method) VALUES (<clientid>, 87, true, 38, 605, 1, null, false, 1, 0, 0);
 
 
---//**********client.additionalproperty_tbl************//
+--//**********client.additionalproperty_tbl For SIT/UAT************//
 INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, type, scope) VALUES ('OMANNET_Secret_Key', 'nJkmOlYkWDlV8YQaGbqbZU0FawETEZr2JMox7nS40e08cQiT1I51D5GOClHhl9k5VIC35v76J7eWXxQZgV0U1HIE2qVnzgsuY5x4', true, <merchant-id>, 'merchant', 2);
 INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, type, scope) VALUES ('OMANNET_MID', '10015651', true, <merchant-id>, 'merchant', 2);
+
+--//**********client.additionalproperty_tbl Place hodlers************//
+INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, type, scope) VALUES ('OMANNET_Secret_Key',<secrete_key>, true, <merchant-id>, 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, type, scope) VALUES ('OMANNET_MID', <MID>, true, <merchant-id>, 'merchant', 2);
+
 
 --//********END OF OMANNET*******************//
