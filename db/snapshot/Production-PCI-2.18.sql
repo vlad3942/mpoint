@@ -48,6 +48,16 @@ insert into log.state_tbl (id,name, module,func) values
 (2010101,'Failed during Capture','Payment','Capture'),
 (2010201,'Failed during Cancel','Payment','Cancel'),
 (2010301,'Failed during Refund','Payment','Refund');
+
+ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
+
+CREATE INDEX account_tbl_businessType_index ON client.account_tbl (businessType);
+CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
+CREATE INDEX eu_account_tbl_profileid_index ON enduser.account_tbl (profileid);
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_TICKET_LEVEL_SETTLEMENT', 'true', <merchant-table-id>, 'merchant', 0);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_TICKET_LEVEL_SETTLEMENT', 'true', <merchant-table-id>, 'merchant', 0);
+
 --Sandbox token for OD - DEV , SIT
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 VALUES ('PROFILE_TOKEN', 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ2NjEzOTU4MDEsImlhdCI6MTUwNTcyMjIwMSwiaXNzIjoiQ1BNIiwidHlwZSI6MiwiY2xpZW50aWQiOiIxMDAxOCIsInNlc3Npb25JZCI6MX0.GbnU1gTFPAY8jgJWsLJBXDxG8_0Rvazx69MP53hRL1w', 10018, 'client', 2 );
@@ -135,8 +145,3 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 /*=================== Create a new static route for Fraud check : END =======================*/
 --End of EZY
 
-
------db/snapshot/Production-PCI-2.17.02.sql
---index on table: log.TxnPassbook_tbl --column:performedopt,status
-CREATE INDEX txn_status ON log.txnpassbook_tbl (performedopt, status);
-----
