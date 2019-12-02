@@ -184,3 +184,8 @@ INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, typ
 
 
 --//********END OF OMANNET*******************//
+-- Gpay constant when psp support specific payment method. Use in global payment
+UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOWEDPAYMENTMETHODS' AND VALUES = 'CARD';
+
+INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope)
+SELECT 'ALLOWEDPAYMENTMETHODS','PAN_ONLY',true, id, 'merchant', 1 FROM client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=44;
