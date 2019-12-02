@@ -170,6 +170,7 @@
 										<xs:element name="eci" type="xs:unsignedByte" />
 										<xs:element name="algorithmId" type="xs:string" />
 									</xs:sequence>
+									<xs:attribute name="type-id" type="xs:unsignedByte" use="required" />
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>

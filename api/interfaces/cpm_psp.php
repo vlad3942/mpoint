@@ -284,26 +284,30 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
 				{
 					$iStatusCode = (integer)$obj_Txn->status["code"];
-					
+					if($iStatus != null)
+					{
+						$iUpdateStatusCode = $iStatus;
+					}
+
+					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
+					$passbookState = Constants::sPassbookStatusDone;
+					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
+					$retStatusCode = $iStatusCode;
+					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							'transact'=>$this->getTxnInfo()->getExternalID(),
+							'card-id'=>0);
+
 					if ($iStatusCode == 1000)
 					{
-						
-						
-						if($iStatus != null)
-						{
-							$iUpdateStatusCode = $iStatus;
-						}
-						$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusDone);
-						//TODO: Move DB update and Client notification to Model layer, once this is created
-						$this->newMessage($this->getTxnInfo()->getID(),$iUpdateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
-
-						$args = array('amount'=>$this->getTxnInfo()->getAmount(),
-							          'transact'=>$this->getTxnInfo()->getExternalID(),
-							          'card-id'=>0);
-						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
-						return 1001;
+						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
+						$retStatusCode = 1001;
+						$updateStatusCode = $iUpdateStatusCode;
 					}
-					return $iStatusCode;
+
+					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
+					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
+					$this->notifyClient($paymentState, $args);
+					return $retStatusCode;
 				}
 				else {
 				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
@@ -1232,7 +1236,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $xml .= '<root>';
         $xml .= '<check-fraud-status>';
         $xml .= $this->_constTxnXML();
-        $xml .= '<card>';
+        $xml .= '<card type-id="'. $obj_Card['type-id'] .'">';
         $xml .= '<cryptogram>'.$obj_Card->{'info-3d-secure'}->cryptogram.'</cryptogram>';
         $xml .= '<type>'.$obj_Card->{'info-3d-secure'}->cryptogram['type'].'</type>';
         $xml .= '<eci>'.$obj_Card->{'info-3d-secure'}->cryptogram['eci'].'</eci>';
@@ -1254,16 +1258,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 if ($code == 200) {
                     $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                     if($obj_XML->status['code'] == 200) {
-                        if ($obj_XML->status == "Accept") {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        } else if ($obj_XML->status == "Failed") {
+                        if ($obj_XML->status == "Reject") {
                             $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
-                        } else if ($obj_XML->status == "Review") {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
-                        } else if ($obj_XML->status == "NoCheck") {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE;
                         } else {
-                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE; //if status is one of Accept, Failed, Review or NoCheck
                         }
                     }else {
                         trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
