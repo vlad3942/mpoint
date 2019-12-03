@@ -189,3 +189,7 @@ UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOW
 
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope)
 SELECT 'ALLOWEDPAYMENTMETHODS','PAN_ONLY',true, id, 'merchant', 1 FROM client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=44;
+
+
+-- Hpp flag
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('isAutoRedirect', 'true', <clientid>, 'client', true, 2);
