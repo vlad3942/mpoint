@@ -20,6 +20,7 @@ DROP INDEX order_tbl_orderref_index;
 
 DROP INDEX eu_account_tbl_profileid_index;
 
+DROP INDEX txnpassbook_tbl_extref_index;
 
 
 
