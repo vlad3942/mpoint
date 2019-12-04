@@ -271,3 +271,5 @@ ALTER TABLE enduser.account_tbl ADD profileid int8 NULL;
 comment on column enduser.account_tbl.profileid is 'mProfile id associated with the registered enduser';
 
 CREATE INDEX eu_account_tbl_profileid_index ON enduser.account_tbl (profileid);
+
+CREATE INDEX txnpassbook_tbl_extref_index ON Log.TXNPASSBOOK_TBL (EXTREF);
