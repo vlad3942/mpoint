@@ -905,7 +905,7 @@ final class TxnPassbook
         $return = [];
         $sql = 'SELECT TB2.EXTREF, TB2.EXTREFIDENTIFIER
                 FROM LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL TB1 INNER JOIN LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL TB2
-                ON TB1.EXTREF = TB2.ID::VARCHAR
+                ON TB1.EXTREF::INTEGER = TB2.ID
                 WHERE TB1.TRANSACTIONID = $1 AND TB1.PERFORMEDOPT = $2' ;
 
         $res = $this->getDBConn()->prepare($sql);
