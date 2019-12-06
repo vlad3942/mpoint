@@ -259,7 +259,7 @@ class OrderInfo
         return $this->_aAdditionalData;
     }
 		
-	public static function produceConfig(RDB $oDB, $id)
+	public static function produceConfig(RDB $oDB, $id, $amount)
 	{
 		$sql = "SELECT id, orderref, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity,fees
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl				
@@ -277,7 +277,13 @@ class OrderInfo
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
 			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
-			return new OrderInfo($RS["ID"], $RS['ORDERREF'],$RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
+			$orderAmount = $RS['AMOUNT'];
+			if($amount > -1)
+            {
+                $orderAmount=$amount;
+            }
+
+			return new OrderInfo($RS["ID"], $RS['ORDERREF'],$RS["TXNID"], $RS["COUNTRYID"], $orderAmount, $RS["POINTS"],
 								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA, $RS["FEES"]);
 		}
 		else { return null; }
@@ -300,19 +306,25 @@ class OrderInfo
     }
 	
 	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers=null)
-	{		
-		$sql = "SELECT id			
+	{
+	    $ticketNumbersCount = count($ticketNumbers ) ;
+		$sql = "SELECT id, 	orderref		
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
 				WHERE txnid = ". intval($txnid) ." AND enabled = '1'";
-        if(count($ticketNumbers ) > 0) {
-            $sql .= " AND orderref in   ('".implode("','", $ticketNumbers)."')";
+        if($ticketNumbersCount > 0) {
+            $sql .= " AND orderref in   ('".implode("','", array_keys($ticketNumbers))."')";
         }
 		//echo $sql ."\n";
 		$aConfigurations = array();
 		$res = $oDB->query($sql);
 		while ($RS = $oDB->fetchName($res) )
 		{
-			$aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);	
+		    $amount = -1;
+		    if($ticketNumbersCount > 0)
+            {
+               $amount = $ticketNumbers[$RS["ORDERREF"]];
+            }
+			$aConfigurations[] = self::produceConfig($oDB, $RS["ID"], $amount);
 		}
 		return $aConfigurations;		
 	}
