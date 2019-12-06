@@ -60,7 +60,13 @@ try
         $aAdditionalData = [];
         if($sAdditionalData !== '') {
             parse_str($sAdditionalData, $aAdditionalData);
-            $aTicketNumbers = array_filter(explode(',', $aAdditionalData['tickernumbers']));
+            $aTicketNumbersStr = array_filter(explode(',', $aAdditionalData['tickernumbers']));
+            foreach ($aTicketNumbersStr as $ticketNumbersStr)
+            {
+                $temp = explode(':', $ticketNumbersStr);
+                $aTicketNumbers[$temp[0]] = $temp[1];
+            }
+
         }
     }
     $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);

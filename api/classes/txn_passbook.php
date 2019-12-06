@@ -903,16 +903,28 @@ final class TxnPassbook
     public function getExternalRefOfInprogressEntries($state)
     {
         $return = [];
-        $sql = 'SELECT TB2.EXTREF, TB2.EXTREFIDENTIFIER
-                FROM LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL TB1 INNER JOIN LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL TB2
-                ON TB1.EXTREF::INTEGER = TB2.ID
-                WHERE TB1.TRANSACTIONID = $1 AND TB1.PERFORMEDOPT = $2' ;
+        $sql = 'WITH INPROGRESS_ENTRIES AS (
+                    SELECT ID,
+                           TRANSACTIONID,
+                           EXTREF,
+                           PERFORMEDOPT
+                    FROM LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL
+                    WHERE TRANSACTIONID = $1
+                      AND PERFORMEDOPT = $2
+                      AND STATUS = $3)
+                SELECT T1.EXTREF,
+                       T1.EXTREFIDENTIFIER,
+                       T1.AMOUNT
+                FROM INPROGRESS_ENTRIES                 T2
+                         INNER JOIN LOG.' . sSCHEMA_POSTFIX ."TXNPASSBOOK_TBL T1 ON
+                        T1.ID = ANY (string_to_array(trim(T2.EXTREF, ','), ',')::BIGINT[])";
 
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = [
                 $this->getTransactionId(),
-                $state
+                $state,
+                'inprogress'
             ];
 
             $result = $this->getDBConn()->execute($res, $aParams);
@@ -920,7 +932,7 @@ final class TxnPassbook
             if ($result !== FALSE) {
                 while ($rs = $this->getDBConn()->fetchName($result))
                 {
-                    $return[$rs['EXTREF']] = $rs['EXTREFIDENTIFIER'];
+                    $return[$rs['EXTREF']] = $rs['AMOUNT'];
                 }
             }
         }
