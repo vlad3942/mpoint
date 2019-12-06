@@ -226,6 +226,11 @@ abstract class mPointSettlement
                 $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
                 if(count($ticketNumbers) > 0) {
                     $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
+                    if(count($obj_TxnInfo->getOrderConfigs()) <= 0)
+                    {
+                        array_push( $aTransactionWithError, $transactionId);
+                        $isValidTransaction = FALSE;
+                    }
                 }
                 else
                 {
@@ -502,8 +507,8 @@ abstract class mPointSettlement
                     $this->_parseConfirmationReport($_OBJ_DB, $replyBody);
                 }
             }
-        } 
-		catch (Exception $e) 
+        }
+		catch (Exception $e)
 		{
             trigger_error("Settlement Confirmation Process failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
             return $e->getCode();
