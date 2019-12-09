@@ -189,3 +189,6 @@ UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOW
 
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope)
 SELECT 'ALLOWEDPAYMENTMETHODS','PAN_ONLY',true, id, 'merchant', 1 FROM client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=44;
+
+-- Update callback url for UATP client Ref Jira : CMP-3000
+update client.client_tbl set callbackurl = 'http://mpoint.sit2.cellpointmobile.com/uatp/callback.php' where id = 10069;
