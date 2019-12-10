@@ -8190,4 +8190,5 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,60,'USD
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2040 , 'Fraud Check Passed', 'Authorization', true);
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Check Failed', 'Authorization', true);
 
-
+ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
+CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);

@@ -186,7 +186,7 @@ class ChaseSettlement extends mPointSettlement
                                 $finalDescription = "";
                                 $isDescriptionUpdated = false;
 
-                                //$recordId = $description;
+                                $recordId = $description;
 
                                 $response = "";
                                 if (strlen($file["records"][$recordId]["warning"]) > 0)
