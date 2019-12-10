@@ -1184,8 +1184,12 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_BaseImageURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_BaseImageURL->toXML(); }
         $xml .= '</urls>';
         $embeddedHpp = $this->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
+        $isAutoRedirect = $this->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
         if (empty($embeddedHpp) === false) {
             $xml .= '<embedded-hpp>' . $embeddedHpp . '</embedded-hpp>';
+        }
+        if (empty($isAutoRedirect) === false) {
+            $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>';
         }
         $enableHppAuthentication = $this->getAdditionalProperties(Constants::iInternalProperty,"enableHppAuthentication");
         if (empty($enableHppAuthentication) === false) {
