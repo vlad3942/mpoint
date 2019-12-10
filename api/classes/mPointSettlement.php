@@ -213,29 +213,47 @@ abstract class mPointSettlement
 
         $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
 
-        $this->_sTransactionXML = "<transactions>";
+        $this->_sTransactionXML = '<transactions>';
+
+        $aTransactionWithError = [];
 
         foreach ($this->_arrayTransactionIds as $transactionId)
         {
+            $isValidTransaction = TRUE;
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
             $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
             if($isTicketLevelSettlement === 'true') {
                 $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
-                $obj_TxnInfo->produceOrderConfig($_OBJ_DB, array_keys($ticketNumbers));
+                if(count($ticketNumbers) > 0) {
+                    $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
+                    if(count($obj_TxnInfo->getOrderConfigs()) <= 0)
+                    {
+                        array_push( $aTransactionWithError, $transactionId);
+                        $isValidTransaction = FALSE;
+                    }
+                }
+                else
+                {
+                    array_push( $aTransactionWithError, $transactionId);
+                    $isValidTransaction = FALSE;
+                }
             }
             else{
                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
             }
 
-            $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
-            $obj_UAProfile = null;
-            $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
-            if($captureAmount === -1) {
-                $captureAmount = $obj_TxnInfo->getAmount();
+            if($isValidTransaction === true) {
+                $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
+                $obj_UAProfile = NULL;
+                $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+                if ($captureAmount === -1) {
+                    $captureAmount = $obj_TxnInfo->getAmount();
+                }
+                $this->_iTotalTransactionAmount += $captureAmount;
             }
-            $this->_iTotalTransactionAmount += $captureAmount;
         }
-        $this->_sTransactionXML .= "</transactions>";
+        $this->_sTransactionXML .= '</transactions>';
+        $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $aTransactionWithError));
 
     }
 
@@ -489,8 +507,8 @@ abstract class mPointSettlement
                     $this->_parseConfirmationReport($_OBJ_DB, $replyBody);
                 }
             }
-        } 
-		catch (Exception $e) 
+        }
+		catch (Exception $e)
 		{
             trigger_error("Settlement Confirmation Process failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
             return $e->getCode();
