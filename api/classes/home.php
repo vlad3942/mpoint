@@ -856,6 +856,7 @@ class Home extends General
             $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
             $paymentCompleteMethod = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
             $isEmbeddedHpp = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
+            $isAutoRedirect = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
             $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '" extid="' . $RS["EXTID"] . '" approval-code="' . $RS["APPROVAL_ACTION_CODE"] . '" walletid="' . $RS["WALLETID"] . '">';
             $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" decimals = "' . $obj_currencyConfig->getDecimals() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';
@@ -866,6 +867,9 @@ class Home extends General
             $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
             if (empty($isEmbeddedHpp) === false) {
                 $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>';
+            }
+            if (empty($isAutoRedirect) === false) {
+                $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>';
             }
             $xml .= '<status>' . implode("",$aStatusMessagesXML) . '</status>';
             $xml .= '<sign>' . md5($RS["CLIENTID"] . '&' . $RS["MPOINTID"] . '&' . $RS["ORDERID"] . '&' . $RS["CURRENCYID"] . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $RS["SALT"]) . '</sign>';
