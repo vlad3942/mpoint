@@ -28,6 +28,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require Business logic for the End-User Account Factory Provider
 require_once(sCLASS_PATH ."/customer_info.php");
+require_once(sCLASS_PATH . '/txn_passbook.php');
+require_once(sCLASS_PATH . '/passbookentry.php');
 header("Content-Type: text/plain");
 set_time_limit(600);
 // Standard retry strategy connecting to the database has proven inadequate
