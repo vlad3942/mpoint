@@ -189,7 +189,7 @@ WITH (
 
 ALTER TABLE system.businesstype_tbl OWNER TO mpoint;
 GRANT ALL ON TABLE system.businesstype_tbl TO mpoint;
-GRANT ALL ON TABLE system.businesstype_tbl TO jona;
+GRANT ALL ON TABLE system.businesstype_tbl TO mpoint;
 
 -- Insert business type details
 insert into system.businesstype_tbl (id,name) values
