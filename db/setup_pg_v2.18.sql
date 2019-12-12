@@ -33,7 +33,7 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM Sys
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 949;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 901;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 156;
-
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 67, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 826;
 
 --Setup for 2c2p-alc with alipay--
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 40);
@@ -65,6 +65,7 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM Sys
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 949;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 901;
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 40, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 156;
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 32, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 826;
 
 --common queries for alipay and unionpay on UAT enviourment with client id 100200--
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10020, PC.cardid, PC.pspid, '651' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
@@ -89,6 +90,8 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 100
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10020, PC.cardid, PC.pspid, '609' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10020, PC.cardid, PC.pspid, '200' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10020, PC.cardid, PC.pspid, '500' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10020, PC.cardid, PC.pspid, '103' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,32) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10020, PC.cardid, PC.pspid, '632' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,32) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 
 
 
@@ -115,6 +118,8 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 100
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '609' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '200' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '500' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '103' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,32) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) SELECT 10055, PC.cardid, PC.pspid, '632' FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (67,32) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 
 
 
@@ -140,4 +145,6 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (682,40,'SAR
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,40,'THB');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (949,40,'TRY');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,40,'TWD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,40,'GBP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (410,40,'KRW');
 
