@@ -55,11 +55,11 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspid);
-		
+
 		$iStateID = (integer) $status;
 		$isTicketLevelSettlement = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
-		
 		$aTicketNumbers = [];
+
 		if($isTicketLevelSettlement === 'true')
 		{
 			$sAdditionalData = $ticketNumbers;
@@ -72,7 +72,6 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 				}
 			}
 		}
-		
 		$obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
 		$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
 		$createdtimestamp = null;
