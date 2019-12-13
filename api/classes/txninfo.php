@@ -1823,5 +1823,10 @@ class TxnInfo
 		}
 		return $isTicketNumberIsAlreadyLogged;
 	}
+
+	public function getOrderConfigs()
+	{
+		return $this->_obj_OrderConfigs;
+	}
 }
 ?>

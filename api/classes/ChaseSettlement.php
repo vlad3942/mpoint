@@ -23,7 +23,6 @@ class ChaseSettlement extends mPointSettlement
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 WHERE client_id = $this->_iClientId
                 AND psp_id = '$this->_iPspId'
-                AND status <> '" . Constants::sSETTLEMENT_REQUEST_FAIL . "'
                 ORDER BY id DESC LIMIT 1 ";
 
         $res = $_OBJ_DB->getName($sql);
@@ -86,7 +85,7 @@ class ChaseSettlement extends mPointSettlement
 
 
             $files = [];
-            for ($index = 0; $index < count($xmlResponse->{'settlement-report'}->file); $index++)
+            for ($index = 0, $indexMax = count($xmlResponse->{'settlement-report'}->file); $index < $indexMax; $index++)
             {
                 $xmlFile = $xmlResponse->{'settlement-report'}->file[$index];
                 $files[$index] = [];
@@ -98,7 +97,7 @@ class ChaseSettlement extends mPointSettlement
 
                 $records = [];
 
-                for ($secondIndex=0; $secondIndex < count($xmlFile->record) ; $secondIndex++)
+                for ($secondIndex=0, $secondIndexMax = count($xmlFile->record); $secondIndex < $secondIndexMax; $secondIndex++)
                 {
                     $xmlRecord = $xmlFile->record[$secondIndex];
                     $recordId = (string)$xmlRecord["id"];
@@ -127,12 +126,15 @@ class ChaseSettlement extends mPointSettlement
                     {
                         for ($ticketNumberIndex = 0; $ticketNumberIndex < $ticketNumberIndexMax; $ticketNumberIndex++)
                         {
-                            $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']] = (string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['status'];
+                            $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']]['status'] = (string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['status'];
+                            $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']]['amount'] = (string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['amount'];
                         }
                     }
                     else
                     {
-                        $ticketNumbers[(string)$xmlRecord->{'booking-ref'}['id']] = (string)$xmlRecord->{'booking-ref'}['status'];
+                        $ticketNumbers[(string)$xmlRecord->{'booking-ref'}['id']]['status'] = (string)$xmlRecord->{'booking-ref'}['status'];
+                        $ticketNumbers[(string)$xmlRecord->{'booking-ref'}['id']]['amount'] = (int)$xmlRecord->{'booking-ref'}['amount'];
+
                     }
                     $records[$recordId]['ticketnumbers'] = $ticketNumbers;
                 }
@@ -186,16 +188,12 @@ class ChaseSettlement extends mPointSettlement
 
                                 $recordId = $description;
 
-
-
                                 $response = "";
                                 if (strlen($file["records"][$recordId]["warning"]) > 0)
                                 {
                                     $isDescriptionUpdated = true;
                                     $response .= $file["records"][$recordId]["warning"] . ":";
                                 }
-
-                                        $recordId = $description;
 
                                 if (strlen($file["records"][$recordId]["success"]) > 0)
                                 {
@@ -257,7 +255,12 @@ class ChaseSettlement extends mPointSettlement
                                     }
                                     if($isTicketLevelSettlement === 'true')
                                     {
-                                        $aTicketNumbers = array_keys($file['records'][$recordId]['ticketnumbers']);
+                                        $aTicketNumbers = [];
+                                        foreach ($file['records'][$recordId]['ticketnumbers'] as $ticketnumber => $value)
+                                        {
+                                            array_push($aTicketNumbers, $ticketnumber . ':' .$value['amount']);
+                                        }
+                                        //$aTicketNumbers = array_keys($file['records'][$recordId]['ticketnumbers']);
                                         if(count($aTicketNumbers) > 0) {
                                             $args['additionaldata'] = 'tickernumbers=' . implode(',', $aTicketNumbers);
                                         }

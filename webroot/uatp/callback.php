@@ -60,7 +60,13 @@ try
         $aAdditionalData = [];
         if($sAdditionalData !== '') {
             parse_str($sAdditionalData, $aAdditionalData);
-            $aTicketNumbers = array_filter(explode(',', $aAdditionalData['tickernumbers']));
+            $aTicketNumbersStr = array_filter(explode(',', $aAdditionalData['tickernumbers']));
+            foreach ($aTicketNumbersStr as $ticketNumbersStr)
+            {
+                $temp = explode(':', $ticketNumbersStr);
+                $aTicketNumbers[$temp[0]] = $temp[1];
+            }
+
         }
     }
     $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
@@ -75,41 +81,28 @@ try
             break;
         }
     }
-    //Suppress only 4030 callback as a part of CMP-3052
-    if($iStateID !== Constants::iSESSION_COMPLETED)
-    {
-	    $obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-	    $code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, '',$obj_TxnInfo->getCardID(),$createdtimestamp);
 
-	    if($code === 1000)
-	    {
-	        header("HTTP/1.1 200 Ok");
-	        header("Content-Type: text/xml; charset=\"UTF-8\"");
-	        echo '<?xml version="1.0" encoding="UTF-8"?>';
-	        echo '<root>';
-	        echo '<status code="1000">Callback Success</status>';
-	        echo '</root>';
-	    }
-	    else
-	    {
-	        header("HTTP/1.1 400 Bad Request");
-	        header("Content-Type: text/xml; charset=\"UTF-8\"");
-	        echo '<?xml version="1.0" encoding="UTF-8"?>';
-	        echo '<root>';
-	        echo '<status code="'.$code.'">Callback Failed</status>';
-	        echo '</root>';
-	    }
+    $obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+    $code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, '',$obj_TxnInfo->getCardID(),$createdtimestamp);
+
+    if($code === 1000)
+    {
+        header("HTTP/1.1 200 Ok");
+        header("Content-Type: text/xml; charset=\"UTF-8\"");
+        echo '<?xml version="1.0" encoding="UTF-8"?>';
+        echo '<root>';
+        echo '<status code="1000">Callback Success</status>';
+        echo '</root>';
     }
     else
     {
-		header("HTTP/1.1 200 Ok");
-		header("Content-Type: text/xml; charset=\"UTF-8\"");
-		echo '<?xml version="1.0" encoding="UTF-8"?>';
-		echo '<root>';
-		echo '<status code="1000">Callback Suppressed</status>';
-		echo '</root>';
+        header("HTTP/1.1 400 Bad Request");
+        header("Content-Type: text/xml; charset=\"UTF-8\"");
+        echo '<?xml version="1.0" encoding="UTF-8"?>';
+        echo '<root>';
+        echo '<status code="'.$code.'">Callback Failed</status>';
+        echo '</root>';
     }
-
 }
 catch (TxnInfoException $e)
 {

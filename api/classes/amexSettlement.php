@@ -22,8 +22,7 @@ class AmexSettlement extends mPointSettlement
         $sql = "SELECT file_reference_number, file_sequence_number
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 WHERE client_id = $this->_iClientId 
-                AND psp_id = '$this->_iPspId'                
-                AND status <> '" . Constants::sSETTLEMENT_REQUEST_FAIL . "'                
+                AND psp_id = '$this->_iPspId'
                 ORDER BY id DESC LIMIT 1 ";
 
         $res = $_OBJ_DB->getName($sql);
