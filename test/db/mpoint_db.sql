@@ -8192,3 +8192,9 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Chec
 
 ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
 CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture DROP DEFAULT;
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE WHEN auto_capture=TRUE THEN 1 ELSE 0 END;
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 0;
+
+ALTER TABLE system.psp_tbl ADD auto_capture boolean NOT NULL DEFAULT FALSE;
