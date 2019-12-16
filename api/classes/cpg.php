@@ -97,6 +97,7 @@ class CPG extends Callback
 	public function authTicket(HTTPConnInfo &$oCI, SimpleXMLElement $obj_XML)
 	{
 		$aClientVars = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iCLIENT_VARS_STATE);
+        $this->getTxnInfo()->setAutoCaptureFlag($this->getClientConfig()->useAutoCapture(),$this->getPSPConfig()->useAutoCapture());
 
 		list($sc, $pnr, , ) = explode("/", $this->getTxnInfo()->getOrderID() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -302,6 +303,11 @@ class CPG extends Callback
 				$xml .= '</status>';
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_DOM->asXML() );
 				if ($this->getTxnInfo()->getAccountID() > 0) { $this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() ); }
+                $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+						SET auto_capture = ". $this->getTxnInfo()->useAutoCapture()."
+						WHERE id = ". $this->getTxnInfo()->getID();
+                //echo $sql ."\n";
+                $this->getDBConn()->query($sql);
 			}
 			elseif (count($obj_DOM->orderStatus->error) == 1)
 			{

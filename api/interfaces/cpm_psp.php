@@ -524,6 +524,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		try
 		{
+
+            $this->getTxnInfo()->setAutoCaptureFlag($this->getClientConfig()->useAutoCapture(),$obj_PSPConfig->useAutoCapture());
+
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
 
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -569,7 +572,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				}
 
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' 
+						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' auto_capture = ". $this->getTxnInfo()->useAutoCapture()."
 						WHERE id = ". $this->getTxnInfo()->getID();
 				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
@@ -904,7 +907,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function getPSPConfigForRoute($cardid, $countryid)
 	{
-		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
+		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, PSP.auto_capture,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, CA.countryid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
@@ -918,7 +921,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				ORDER BY CA.countryid ASC";
 
 		$RS = $this->getDBConn()->getName($sql);
-		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
+		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $RS["AUTO_CAPTURE"], array()); }
 		else { return null; }
 	}	
 	

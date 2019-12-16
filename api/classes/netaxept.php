@@ -431,7 +431,9 @@ class NetAxept extends Callback implements Captureable, Refundable
 
 		try
 		{
-	 		$obj_Std = $obj_SOAP->Register($aParams);
+            $this->getTxnInfo()->setAutoCaptureFlag($this->getClientConfig()->useAutoCapture(),$this->getPSPConfig()->useAutoCapture());
+
+            $obj_Std = $obj_SOAP->Register($aParams);
 	 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 	 		{
 	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP,
@@ -441,7 +443,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 
 	 			// save ext id in database
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '". $obj_Std->RegisterResult->TransactionId ."'
+						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '". $obj_Std->RegisterResult->TransactionId ."' auto_capture = ". $this->getTxnInfo()->useAutoCapture()."
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
