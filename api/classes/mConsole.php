@@ -978,17 +978,20 @@ class mConsole extends Admin
 	 * @param integer $accountid    he unique ID of the Account of Client on whose behalf the Capture operation is being performed
      * @return array
 	 */
-	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt, $accountid = -1)
+	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt, $accountid = -1, $oref = NULL)
 	{
 		try
 		{
 			$h = str_replace("{METHOD}", "POST", $this->constHTTPHeaders() );
 			$b = "clientid=". intval($clientid) ."&mpointid=". intval($txnid) ."&orderid=". urlencode($ono) ."&amount=". intval($amt);
+			if(empty($oref) === false)
+			{
+				$b .= "&orderref=". urlencode($oref);
+			}
 			if($accountid !== -1)
             {
                 $b .= '&account=' .$accountid;
             }
-			
 			$obj_Client = new HTTPClient(new Template, $oCI);
 			$obj_Client->connect();
 			$code = $obj_Client->send($h, $b);
@@ -1065,7 +1068,7 @@ class mConsole extends Admin
      * @param integer $accountid    he unique ID of the Account of Client on whose behalf the Capture operation is being performed
 	 * @return array
 	 */
-	public function void(HTTPConnInfo $oCI, $clientid, $username, $password, $txnid, $ono, $amt, $accountid = -1)
+	public function void(HTTPConnInfo $oCI, $clientid, $username, $password, $txnid, $ono, $amt, $accountid = -1,$oref = NULL)
 	{
 		try
 		{
@@ -1074,6 +1077,10 @@ class mConsole extends Admin
 			if($accountid !== -1)
             {
                 $b .= '&account=' .$accountid;
+            }
+            if(empty($oref) === false)
+            {
+				$b .= "&orderref=". urlencode($oref);
             }
 			$obj_Client = new HTTPClient(new Template, $oCI);
 			$obj_Client->connect();

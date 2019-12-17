@@ -205,6 +205,14 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="order-ref" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The Order Reference provided by Client's (Merchant)
+					System when the payment transaction was initialized
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="external-id" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>
@@ -636,6 +644,15 @@
 						<xs:annotation>
 							<xs:documentation>
 								The Client's (Merchant's) Order Number for the
+								transaction that should be found
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="order-ref" type="xs:string" use="optional"
+						default="0">
+						<xs:annotation>
+							<xs:documentation>
+								The Client's (Merchant's) Order Reference for the
 								transaction that should be found
 							</xs:documentation>
 						</xs:annotation>
@@ -1882,6 +1899,15 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
+								<xs:attribute name="order-ref" type="xs:string" use="optional">
+									<xs:annotation>
+										<xs:documentation>
+											The Client's (Merchant's) Order Reference for
+											the transaction that should be voided (cancelled / refunded)
+											or captured
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -1937,6 +1963,15 @@
 									<xs:annotation>
 										<xs:documentation>
 											The Client's (Merchant's) Order Number for
+											the transaction that was attempted voided (cancelled /
+											refunded) or captured
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="order-ref" type="xs:string" use="optional">
+									<xs:annotation>
+										<xs:documentation>
+											The Client's (Merchant's) Order Reference for
 											the transaction that was attempted voided (cancelled /
 											refunded) or captured
 										</xs:documentation>
