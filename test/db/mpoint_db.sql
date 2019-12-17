@@ -8198,3 +8198,5 @@ ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE W
 ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 0;
 
 ALTER TABLE system.psp_tbl ADD auto_capture boolean NOT NULL DEFAULT FALSE;
+
+ALTER TABLE Client.client_tbl ALTER COLUMN auto_capture SET DEFAULT FALSE;
