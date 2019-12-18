@@ -81,7 +81,7 @@ class AutoCaptureTest extends baseAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->bIgnoreErrors = true;
+//        $this->bIgnoreErrors = true;
         $this->assertEquals(9, count($aStates) );
         $this->assertTrue(is_int(array_search(Constants::iPAYMENT_ACCEPTED_STATE, $aStates) ) );
 		$this->assertTrue(is_int(array_search(Constants::iPAYMENT_CAPTURED_STATE, $aStates) ) );
