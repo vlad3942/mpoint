@@ -10,3 +10,12 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
  * PROD - http://mpoint.cellpointmobile.net/uatp/callback.php 
 */
 update client.client_tbl set callbackurl = 'http://mpoint.sit2.cellpointmobile.com/uatp/callback.php' where id = 10069;
+
+--ACQ Level Auto-Capture
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture DROP DEFAULT;
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE WHEN auto_capture=TRUE THEN 1 ELSE 0 END;
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 0;
+
+ALTER TABLE system.psp_tbl ADD auto_capture boolean NOT NULL DEFAULT FALSE;
+
+--End of ACQ Level Auto-Capture

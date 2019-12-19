@@ -66,7 +66,12 @@ class PSPConfig extends BasicConfig
      * @var array
      */
     private $_aAdditionalProperties=array();
-
+    /**
+     * Boolean Flag indicating whether mPoint should use Auto Capture for the Transaction.
+     *
+     * @var boolean
+     */
+    private $_bAutoCapture;
     /**
 	 * Default Constructor
 	 *
@@ -76,9 +81,11 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $msa		The name of the Client's Merchant Sub Account with the Payment Service Provider
 	 * @param 	string $un 		Client's Username for the Payment Service Provider
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
+     * @param 	boolean $ac		Boolean Flag indicating whether Auto Capture should be used for the transaction
 	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
+
 	 */
-	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array(),$aAdditionalProperties=array() )
+	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, $ac, array $aMsgs=array(),$aAdditionalProperties=array())
 	{
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
@@ -88,6 +95,7 @@ class PSPConfig extends BasicConfig
 		$this->_sPassword = trim($pw);
 		$this->_aMessages = $aMsgs;
 		$this->_aAdditionalProperties =$aAdditionalProperties;
+		$this->_bAutoCapture = (bool) $ac;
 	}
 
 	/**
@@ -132,6 +140,12 @@ class PSPConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getMessage($lang) { return @$this->_aMessages[strtolower($lang)]; }
+    /**
+     * Returns true mPoint should use Auto Capture for the Client.
+     *
+     * @return 	boolean
+     */
+    public function useAutoCapture() { return $this->_bAutoCapture; }
 
 	public function toXML($propertyScope=2, $aMerchantAccountDetails = array())
 	{
@@ -194,7 +208,7 @@ class PSPConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $clid, $accid, $pspid)
 	{
-		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
+		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, PSP.auto_capture,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, MA.id as MerchantId
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
@@ -239,7 +253,7 @@ class PSPConfig extends BasicConfig
                 }
             }
 
-			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties);
+			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $RS["AUTO_CAPTURE"], $aMessages,$aAdditionalProperties );
 		}
 		else
 		{
