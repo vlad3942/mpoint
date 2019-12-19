@@ -197,7 +197,7 @@ class TxnInfo
 	 *
 	 * @var boolean
 	 */
-	private $_eAutoCapture;
+	private $_bAutoCapture;
 	/**
 	 * GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
 	 * The ID is used for payment via Premium SMS.
@@ -460,7 +460,7 @@ class TxnInfo
 
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
-		$this->_eAutoCapture = (int) $ac;
+		$this->_bAutoCapture = (bool) $ac;
 
 		$this->_iAccountID = (integer) $accid;
 		$this->_iProfileID = (integer) $profileid;
@@ -687,7 +687,7 @@ class TxnInfo
 	 *
 	 * @return 	boolean
 	 */
-	public function useAutoCapture() { return $this->_eAutoCapture; }
+	public function useAutoCapture() { return $this->_bAutoCapture; }
 	/**
 	 * Returns the GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
 	 * The ID is used for payment via Premium SMS.
@@ -961,7 +961,7 @@ class TxnInfo
 		$xml .= '<icon-url>'. htmlspecialchars($this->_sIconURL, ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<auth-url>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</auth-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
-		$xml .= '<auto-capture>'. htmlspecialchars($this->_eAutoCapture == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';
+		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<auto-store-card>'. General::bool2xml($this->_bAutoStoreCard) .'</auto-store-card>';
 		$xml .= '<markup-language>'. $this->_sMarkupLanguage .'</markup-language>';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
@@ -1209,8 +1209,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eNoAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
-			$obj_TxnInfo->setAutoCaptureFlag($obj->useAutoCapture(),false);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1828,26 +1827,6 @@ class TxnInfo
 	public function getOrderConfigs()
 	{
 		return $this->_obj_OrderConfigs;
-	}
-
-	/**
-	 * Function to Set value of auto-capture flag
-	 *
-	 * @param $merchantAutoCapt     Merchant level auto-capture flag
-	 * @param $pspAutoCapt     PSP level auto-capture flag
-	 *
-	 */
-	public function setAutoCaptureFlag($merchantAutoCapt,$pspAutoCapt)
-	{
-		if($merchantAutoCapt == true and $pspAutoCapt == true) {
-			$this->_eAutoCapture = AutoCaptureType::eMerchantPSPLevelAutoCapt;
-		} else if($merchantAutoCapt == true and $pspAutoCapt == false) {
-			$this->_eAutoCapture = AutoCaptureType::eMerchantLevelAutoCapt;
-		} else if($merchantAutoCapt == false and $pspAutoCapt == true) {
-			$this->_eAutoCapture = AutoCaptureType::ePSPLevelAutoCapt;
-		} else {
-			$this->_eAutoCapture = AutoCaptureType::eNoAutoCapt;
-		}
 	}
 }
 ?>
