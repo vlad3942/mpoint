@@ -28,7 +28,7 @@ INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (32, 'POLi', 4);
 -- CardPricing_Tbl for Australia
 INSERT INTO System.PSPCurrency_Tbl (pspid, name, currencyid) VALUES (32,'AUD', 36);
 -- CardPricing_Tbl for New Zealand
-INSERT INTO System.PSPCurrency_Tbl (pspid, name, currencyid) VALUES (32,'AUD', 554);
+INSERT INTO System.PSPCurrency_Tbl (pspid, name, currencyid) VALUES (32,'NZD', 554);
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (34, 32);
 /* ========== Global Configuration for POLi = PSP ========== */
 
