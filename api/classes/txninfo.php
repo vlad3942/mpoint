@@ -961,7 +961,7 @@ class TxnInfo
 		$xml .= '<icon-url>'. htmlspecialchars($this->_sIconURL, ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<auth-url>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</auth-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
-		$xml .= '<auto-capture>'. htmlspecialchars($this->_eAutoCapture == AutoCaptureType::ePSPLevelAutoCapt ? "1" : "0") .'</auto-capture>';
+		$xml .= '<auto-capture>'. htmlspecialchars($this->_eAutoCapture == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';
 		$xml .= '<auto-store-card>'. General::bool2xml($this->_bAutoStoreCard) .'</auto-store-card>';
 		$xml .= '<markup-language>'. $this->_sMarkupLanguage .'</markup-language>';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
