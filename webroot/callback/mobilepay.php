@@ -92,7 +92,7 @@ try
 			else
 			{
 				// Transaction uses Auto Capture and Authorization was accepted
-				if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+				if ($obj_TxnInfo->useAutoCapture() === AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 				{
 					// Perform capture
 					$code = $obj_PSP->capture();
