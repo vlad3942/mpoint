@@ -75,7 +75,7 @@ class Stripe_PSP extends Callback
 													   $cardID, Constants::iPAYMENT_ACCEPTED_STATE,
 													   $this->getTxnInfo()->getFee(),
 													   array('0' => var_export($charge, true) ) );
-				if ($this->getTxnInfo()->useAutoCapture() === true)
+				if ($this->getTxnInfo()->useAutoCapture() === AutoCaptureType::eMerchantLevelAutoCapt)
 				{
 					return	$this->capture($charge->id, $apiKey);
 				}

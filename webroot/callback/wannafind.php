@@ -121,7 +121,7 @@ try
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
 		// Transaction uses Auto Capture and Authorization was accepted
-		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+		if ($obj_TxnInfo->useAutoCapture() === AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			// Capture automatically performed by WannaFind or invocation of capture operation with WannaFind succeeded
 			if ($obj_mPoint->capture() == 0)

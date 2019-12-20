@@ -49,7 +49,7 @@ class Mpi
      * @return  Object                      Object of PSPConfig class
      */
     private function createPSPConfig(RDB  $objDb, $clientId, $countryId, $cardId){
-        $sql = "SELECT DISTINCT PSP.id, PSP.name,
+        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.auto_capture,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, CA.countryid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
@@ -64,7 +64,7 @@ class Mpi
 //		echo $sql ."\n";
         $RS = $objDb->getName($sql);
 
-        if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], "6", $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array(),array()); }
+        if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], "6", $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $RS["AUTO_CAPTURE"], array(),array() ); }
         else { return null; }
     }
 }

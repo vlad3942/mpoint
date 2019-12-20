@@ -1460,4 +1460,24 @@ abstract class Constants
     const sGetProfileEndPoint = "/mprofile/get-profile";
 
 }
+
+abstract class AutoCaptureType
+{
+	/*
+   * Auto-Capture flag for mPoint to do not perform auto-capture
+   */
+	const eNoAutoCapt = 0;
+	/*
+   * Auto-Capture flag for mPoint to perform Merchant level auto-capture
+   */
+	const eMerchantLevelAutoCapt = 1;
+	/*
+   * Auto-Capture flag for mPoint to perform PSP level auto-capture
+   */
+	const ePSPLevelAutoCapt = 2;
+	/*
+   * Auto-Capture flag for mPoint to perform Merchant and PSP level auto-capture
+   */
+	const eMerchantPSPLevelAutoCapt = 3;
+}
 ?>
