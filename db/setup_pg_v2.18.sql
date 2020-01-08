@@ -198,4 +198,4 @@ SELECT 'ALLOWEDPAYMENTMETHODS','PAN_ONLY',true, id, 'merchant', 1 FROM client.me
  * UATAWS - http://mpoint.uat-01.cellpointmobile.net/uatp/callback.php
  * PROD - http://mpoint.cellpointmobile.net/uatp/callback.php 
 */
-update client.client_tbl set callbackurl = 'http://mpoint.sit2.cellpointmobile.com/uatp/callback.php' where id = 10069;
+update client.client_tbl set callbackurl = 'http://<mpoint-host>/uatp/callback.php' where id = 10069;
