@@ -155,7 +155,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				$passbookEntry = new PassbookEntry
 				(
 						NULL,
-						$obj_TxnInfo->getAmount(),
+						$_REQUEST['amount'],
 						$obj_TxnInfo->getCurrencyConfig()->getID(),
 						Constants::iCaptureRequested
 				);
