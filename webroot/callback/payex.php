@@ -52,7 +52,7 @@ try
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
 		// Transaction uses Auto Capture and Authorization was accepted
-		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+		if ($obj_TxnInfo->useAutoCapture() === AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			// Capture automatically performed by PayEx or invocation of capture operation with PayEx succeeded
 			if (intval($obj_XML->transactionStatus) == 6 || $obj_mPoint->capture($obj_ConnInfo, $obj_mPointConfig->getMerchantAccount(), $_POST['transact']) == 0)
