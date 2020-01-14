@@ -573,7 +573,7 @@ final class TxnPassbook
                                 break;
                         }
                         $codes[$passbookEntry->getPerformedOperation()] = $code;
-                        if($code === 100 ||$code === 1000 || $code === 1001)
+                        if($code === 100 ||$code === 1000 || $code === 1001 || $code === 1002)
                         {
                             $passbookEntry->setStatus(Constants::sPassbookStatusInProgress);
                         }
