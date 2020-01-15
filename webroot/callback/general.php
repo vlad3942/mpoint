@@ -449,6 +449,10 @@ try
 					$state = Constants::iPAYMENT_ACCEPTED_STATE;
 					$status = Constants::sPassbookStatusError;
 					break;
+				case Constants::iPAYMENT_CAPTURED_STATE:
+					$state = Constants::iPAYMENT_CAPTURED_STATE;
+					$status = Constants::sPassbookStatusDone;
+					break;
 			}
 			if ($state !== 0) {
 				$txnPassbookObj->updateInProgressOperations($obj_XML->callback->transaction->amount, $state, $status);

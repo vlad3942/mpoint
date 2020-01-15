@@ -172,13 +172,13 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-
+					$txnAmount = $_REQUEST['amount'];
 					$code=0;
 					$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
 					$passbookEntry = new PassbookEntry
 					(
 							NULL,
-							$_REQUEST['amount'],
+							$txnAmount,
 							$obj_TxnInfo->getCurrencyConfig()->getID(),
 							Constants::iVoidRequested
 					);
