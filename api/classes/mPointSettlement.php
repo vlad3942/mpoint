@@ -480,10 +480,14 @@ abstract class mPointSettlement
             if ($this->_objPspConfig == NULL) {
                 $this->_getPSPConfiguration($_OBJ_DB);
             }
+
+            $fileExpireThreshold = $this->_objPspConfig->getAdditionalProperties(Constants::iPrivateProperty, Constants::sFileExpireThreshold);
+
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><process-settlement>';
             $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_getSettlementInProgress($_OBJ_DB);
+            $requestBody .= $this->_getSettlementInAccepted($_OBJ_DB, $fileExpireThreshold);
             $requestBody .= '</process-settlement></root>';
 
             $obj_ConnInfo = $this->_constConnInfo($this->_objConnectionInfo["paths"]["process-settlement"]);
@@ -529,5 +533,31 @@ abstract class mPointSettlement
             SET status = '" . $settlementStatus . "' 
             WHERE id =" . $settlementId . ' and client_id = ' . $clientId;
         $_OBJ_DB->query($sql);
+    }
+
+    protected function _getSettlementInAccepted($_OBJ_DB, $fileExpireThreshold=1)
+    {
+		$settlementInAcceptedXML = '';
+
+		$sql = "SELECT id, file_sequence_number, record_tracking_number, record_type, status
+                           FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
+                           WHERE status IN ('".Constants::sSETTLEMENT_REQUEST_ACCEPETED."')
+                           and client_id= ".$this->_objClientConfig->getID(). '
+                           and psp_id = ' .$this->_iPspId.'
+						   and created >= now()-INTERVAL '.'\''.$fileExpireThreshold.' DAY'.'\' 
+						   ORDER BY created desc';
+
+		$aRS = $_OBJ_DB->getAllNames($sql);
+
+		if (is_array($aRS) === true && count($aRS) > 0)
+		{
+			$settlementInAcceptedXML .= '<settlement-in-accepted>';
+			foreach ($aRS as $rs)
+			{
+				$settlementInAcceptedXML .= '<settlement id="'. $rs['ID'].'" file-id="'.$rs["FILE_SEQUENCE_NUMBER"].'"  record-id="'.$rs["FILE_SEQUENCE_NUMBER"].'" type="'.$rs["RECORD_TYPE"].'"  status="'.$rs["STATUS"].'" ></settlement>';
+			}
+			$settlementInAcceptedXML .= "</settlement-in-accepted>";
+		}
+		return $settlementInAcceptedXML;
     }
 }

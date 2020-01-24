@@ -1405,6 +1405,8 @@ abstract class Constants
 	const sSETTLEMENT_REQUEST_WAITING = "waiting";
 	const sSETTLEMENT_REQUEST_ERROR = "error";
 	const sSETTLEMENT_REQUEST_FAIL = "fail";
+	const sSETTLEMENT_REQUEST_ACCEPETED = "accepted";
+	const sFileExpireThreshold = 'FILE_EXPIRY';
 
 	/*
 	 * Additional Property Scope
