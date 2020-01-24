@@ -40,13 +40,3 @@ SELECT 'password.USD', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant', 2 fro
 INSERT INTO system.pspcurrency_tbl (pspid, name, currencyid, enabled) VALUES (17, 'USD', 840, true);
 
 
---ACQ Level Auto-Capture
-ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture DROP DEFAULT;
-ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE WHEN auto_capture=TRUE THEN 1 ELSE 0 END;
-ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 0;
-
-ALTER TABLE system.psp_tbl ADD auto_capture boolean NOT NULL DEFAULT FALSE;
-
---End of ACQ Level Auto-Capture
-
-

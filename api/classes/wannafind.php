@@ -61,8 +61,7 @@ class WannaFind extends Callback implements Captureable
 		$b = "?batchlist=". $ticket;
 		$b .= ";". $this->getTxnInfo()->getAmount();
 		$b .= ";". $this->getTxnInfo()->getID();
-        $this->getTxnInfo()->setAutoCaptureFlag($this->getClientConfig()->useAutoCapture(),$this->getPSPConfig()->useAutoCapture());
-        $aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWANNAFIND_PSP);
+		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWANNAFIND_PSP);
 		
 		$obj_HTTP = parent::send("https://betaling.wannafind.dk/authsubscribe.php". $b, $this->constHTTPHeaders(), "", $aLogin["username"], $aLogin["password"]);
 		
@@ -72,11 +71,6 @@ class WannaFind extends Callback implements Captureable
 		if ($aStatus[0] == "APPROVED")
 		{
 			$id = $aStatus[2];
-            $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET auto_capture = ". $this->getTxnInfo()->useAutoCapture()."
-						WHERE id = ". $this->getTxnInfo()->getID();
-            //echo $sql ."\n";
-            $this->getDBConn()->query($sql);
 		}
 		else { trigger_error("Authorisation declined by WannaFind for Ticket: ". $ticket .", ". trim($obj_HTTP->getReplyBody() ), E_USER_WARNING); }
 

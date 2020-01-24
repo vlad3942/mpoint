@@ -147,10 +147,8 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
-
-        $this->getTxnInfo()->setAutoCaptureFlag($this->getClientConfig()->useAutoCapture(),$this->getPSPConfig()->useAutoCapture());
-
-        $aConnInfo = $this->aCONN_INFO;
+	
+		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth-ticket"];
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
@@ -165,12 +163,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		}
 	
 		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
-
-        $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET auto_capture = ". $this->getTxnInfo()->useAutoCapture()."
-						WHERE id = ". $this->getTxnInfo()->getID();
-        //echo $sql ."\n";
-        $this->getDBConn()->query($sql);
+		
 		return $aStatus["transact"];
 	}
 	
@@ -214,8 +207,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		{
 			$b .= "&preauth=true";
 		}
-
-        $this->getTxnInfo()->setAutoCaptureFlag($this->getClientConfig()->useAutoCapture(),$this->getPSPConfig()->useAutoCapture());
+		
 
 		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth-new-card"];
@@ -231,11 +223,6 @@ class DIBS extends Callback implements Captureable, Refundable
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
 		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
-        $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET auto_capture = ". $this->getTxnInfo()->useAutoCapture()."
-						WHERE id = ". $this->getTxnInfo()->getID();
-        //echo $sql ."\n";
-        $this->getDBConn()->query($sql);
 		return $aStatus["transact"];
 	}
 
@@ -597,7 +584,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();
 		$b .= "&store_card=". $this->getTxnInfo()->getClientConfig()->getStoreCard();
 		$b .= "&auto_store_card=". parent::bool2xml($this->getTxnInfo()->autoStoreCard() );
-
+		
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
