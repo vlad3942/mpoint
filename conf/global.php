@@ -965,6 +965,27 @@ $aHTTP_CONN_INFO["veritrans4g"]["paths"]["refund"] = "/mpoint/veritrans4g/refund
 //$aHTTP_CONN_INFO["veritrans4g"]["paths"]["status"] = "/mpoint/veritrans4g/status";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["cancel"] = "/mpoint/veritrans4g/cancel";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["callback"] = "/mpoint/veritrans4g/callback";
+
+
+/**
+ * Connection info for connecting to DragonPay
+ */
+$aHTTP_CONN_INFO["dragonpay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["dragonpay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["dragonpay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["dragonpay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["dragonpay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["dragonpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["dragonpay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["initialize"] = "/mpoint/dragonpay/initialize";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["auth"] = "/mpoint/dragonpay/authorize-payment";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["capture"] = "/mpoint/dragonpay/capture";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["refund"] = "/mpoint/dragonpay/refund";
+//$aHTTP_CONN_INFO["dragonpay"]["paths"]["status"] = "/mpoint/dragonpay/status";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["cancel"] = "/mpoint/dragonpay/cancel";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["callback"] = "/mpoint/dragonpay/callback";
+
+
     
 /*
  * Connection info for connecting to Data Cash

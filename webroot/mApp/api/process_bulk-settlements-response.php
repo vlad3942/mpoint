@@ -95,6 +95,8 @@ require_once(sCLASS_PATH ."/cielo.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 

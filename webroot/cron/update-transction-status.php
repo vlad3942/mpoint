@@ -136,6 +136,8 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the cellulant component
 require_once(sCLASS_PATH ."/cellulant.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 // </editor-fold>
 
 ignore_user_abort(true);

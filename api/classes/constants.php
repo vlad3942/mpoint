@@ -881,6 +881,11 @@ abstract class Constants
      */
     const iEZY_PSP = 60;
     /**
+     * Unique ID for the Payment aggregator: DRAGONPAY
+     *
+     */
+	const iDragonPay_AGGREGATOR = 61;
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
