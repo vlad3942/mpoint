@@ -535,8 +535,11 @@ abstract class mPointSettlement
         $_OBJ_DB->query($sql);
     }
 
-    protected function _getSettlementInAccepted($_OBJ_DB, $fileExpireThreshold=1)
+    protected function _getSettlementInAccepted($_OBJ_DB, $fileExpireThreshold)
     {
+		if($fileExpireThreshold == null){
+			$fileExpireThreshold = 1;
+		}
 		$settlementInAcceptedXML = '';
 
 		$sql = "SELECT id, file_sequence_number, record_tracking_number, record_type, status
