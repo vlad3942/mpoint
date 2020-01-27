@@ -220,7 +220,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['currency-config']= $obj_CurrencyConfig ;
 
                              //Set attempt value based on the previous attempts using the same orderid
-                            $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($data['orderid']);
+                            $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid']);
                            /* if($iAttemptNumber > 0 )
                             {
                                 $data['attempt'] = ++$iAttemptNumber;
