@@ -541,7 +541,7 @@ abstract class mPointSettlement
 
 		$sql = "SELECT id, file_sequence_number, record_tracking_number, record_type, status
                            FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                           WHERE status IN ('".Constants::sSETTLEMENT_REQUEST_ACCEPETED."')
+                           WHERE status IN ('".Constants::sSETTLEMENT_REQUEST_ACCEPETED."','".Constants::sSETTLEMENT_REQUEST_OK."')
                            and client_id= ".$this->_objClientConfig->getID(). '
                            and psp_id = ' .$this->_iPspId.'
 						   and created >= now()-INTERVAL '.'\''.$fileExpireThreshold.' DAY'.'\' 
@@ -551,12 +551,12 @@ abstract class mPointSettlement
 
 		if (is_array($aRS) === true && count($aRS) > 0)
 		{
-			$settlementInAcceptedXML .= '<settlement-in-accepted>';
+			$settlementInAcceptedXML .= '<settlements>';
 			foreach ($aRS as $rs)
 			{
 				$settlementInAcceptedXML .= '<settlement id="'. $rs['ID'].'" file-id="'.$rs["FILE_SEQUENCE_NUMBER"].'"  record-id="'.$rs["FILE_SEQUENCE_NUMBER"].'" type="'.$rs["RECORD_TYPE"].'"  status="'.$rs["STATUS"].'" ></settlement>';
 			}
-			$settlementInAcceptedXML .= "</settlement-in-accepted>";
+			$settlementInAcceptedXML .= "</settlements>";
 		}
 		return $settlementInAcceptedXML;
     }
