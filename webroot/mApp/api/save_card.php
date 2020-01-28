@@ -27,6 +27,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+// Require data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
