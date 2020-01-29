@@ -8193,3 +8193,4 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Chec
 ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
 CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
 ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;
+ALTER TABLE log.session_tbl DROP CONSTRAINT constraint_name;
