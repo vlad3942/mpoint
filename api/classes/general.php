@@ -1293,7 +1293,7 @@ class General
         $RS = $this->getDBConn()->getName($sql);
 
         if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
-        else { $code = -1; }    // Transaction not found
+        else { $code = 0; }    // Transaction not found
 
         return $code;
     }

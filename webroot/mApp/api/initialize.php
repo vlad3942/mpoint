@@ -221,6 +221,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                              //Set attempt value based on the previous attempts using the same orderid
                             $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid']);
+                            $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
                            /* if($iAttemptNumber > 0 )
                             {
                                 $data['attempt'] = ++$iAttemptNumber;
