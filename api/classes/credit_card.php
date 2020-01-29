@@ -99,7 +99,8 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment 
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment,
+					CA.dcc 
 				FROM ". $this->_constDataSourceQuery() ."
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
@@ -153,7 +154,7 @@ class CreditCard extends EndUserAccount
                 $enabled = true;
 				if(in_array($RS['ID'], $aDiabledPMs) === true ) { $enabled = false; }
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'.$pspId.'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'"'. ' processor-type = "'. $RS['PSP_TYPE'].'" installment = "'. $RS['INSTALLMENT'].'" >';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'.$pspId.'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'"'. ' processor-type = "'. $RS['PSP_TYPE'].'" installment = "'. $RS['INSTALLMENT'].'"  dcc="'. var_export($RS["DCC"], true).'" >';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
