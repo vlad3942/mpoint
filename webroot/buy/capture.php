@@ -96,8 +96,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 
-require_once(sCLASS_PATH . '/txn_passbook.php');
-require_once(sCLASS_PATH . '/passbookentry.php');
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 header("Content-Type: application/x-www-form-urlencoded");
 
@@ -147,18 +147,25 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		{
 			try
 			{
-				$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-				$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-
 				$code=0;
 				$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+				$ticketNumber = '';
+				$ticketReferenceIdentifier = '';
+				if(isset($_REQUEST['orderref']) && empty($_REQUEST['orderref']) === false)
+				{
+					$ticketNumber = $_REQUEST['orderref'];
+					$ticketReferenceIdentifier = 'log.additional_data_tbl - TicketNumber';
+				}
 				$passbookEntry = new PassbookEntry
 				(
 						NULL,
 						$obj_TxnInfo->getAmount(),
 						$obj_TxnInfo->getCurrencyConfig()->getID(),
-						Constants::iCaptureRequested
+						Constants::iCaptureRequested,
+						$ticketNumber,
+						$ticketReferenceIdentifier
 				);
+
 				if ($txnPassbookObj instanceof TxnPassbook)
 				{
 					$txnPassbookObj->addEntry($passbookEntry);
@@ -169,9 +176,6 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						trigger_error($e, E_USER_WARNING);
 					}
 				}
-
-				// Refresh transactioninfo object once the capture is performed
-				$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpointid'], $_OBJ_DB);
 
 				// Capture operation succeeded
 				if ($code >= 1000)
