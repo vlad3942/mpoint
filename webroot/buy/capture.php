@@ -149,23 +149,13 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			{
 				$code=0;
 				$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
-				$ticketNumber = '';
-				$ticketReferenceIdentifier = '';
-				if(isset($_REQUEST['orderref']) && empty($_REQUEST['orderref']) === false)
-				{
-					$ticketNumber = $_REQUEST['orderref'];
-					$ticketReferenceIdentifier = 'log.additional_data_tbl - TicketNumber';
-				}
 				$passbookEntry = new PassbookEntry
 				(
 						NULL,
 						$obj_TxnInfo->getAmount(),
 						$obj_TxnInfo->getCurrencyConfig()->getID(),
-						Constants::iCaptureRequested,
-						$ticketNumber,
-						$ticketReferenceIdentifier
+						Constants::iCaptureRequested
 				);
-
 				if ($txnPassbookObj instanceof TxnPassbook)
 				{
 					$txnPassbookObj->addEntry($passbookEntry);
