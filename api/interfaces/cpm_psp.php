@@ -154,7 +154,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						if ($iStatusCode == 1000)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
 						}
 						else if ($iStatusCode == 1100) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
 						return $iStatusCode;
