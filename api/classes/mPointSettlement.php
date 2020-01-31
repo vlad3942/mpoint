@@ -527,10 +527,12 @@ abstract class mPointSettlement
      * @param $settlementId
      * @param $settlementStatus
      */
-    public static function updateSettlementStatus($_OBJ_DB, $clientId, $settlementId, $settlementStatus)
+    public static function updateSettlementStatus($_OBJ_DB, $clientId, $settlementId, $settlementStatus, $settlementDesciption, $settlementRecordTrackingNumber)
     {
         $sql = 'UPDATE log' . sSCHEMA_POSTFIX . ".settlement_tbl
-            SET status = '" . $settlementStatus . "' 
+            SET status = '" . $settlementStatus . "',
+				description = '" . $settlementDesciption . "',
+				record_tracking_number = '" . $settlementRecordTrackingNumber . "'
             WHERE id =" . $settlementId . ' and client_id = ' . $clientId;
         $_OBJ_DB->query($sql);
     }
