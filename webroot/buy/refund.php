@@ -116,8 +116,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 
-require_once sCLASS_PATH . '/txn_passbook.php';
-require_once sCLASS_PATH . '/passbookentry.php';
+require_once(sCLASS_PATH . '/txn_passbook.php');
+require_once(sCLASS_PATH . '/passbookentry.php');
 
 set_time_limit(120);
 $aMsgCds = array();
@@ -149,7 +149,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	}
 	if ($obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) + 180] = $_REQUEST['orderid']; }
 	/* ========== Input Validation End ========== */
-	//echo $aMsgCds;
+
 	// Success: Input Valid
 	if (count($aMsgCds) == 0)
 	{

@@ -25,6 +25,9 @@ class CallbackAPITest extends baseAPITest
     {
         switch ($iTransStatus)
         {
+            case Constants::iPAYMENT_ACCEPTED_STATE:
+                $status = '<status code="2000">Transaction is Authorized.</status>';
+                break;
             case Constants::iPAYMENT_CAPTURED_STATE:
                 $status = '<status code="2001">Transaction is Captured.</status>';
                 break;
@@ -40,7 +43,7 @@ class CallbackAPITest extends baseAPITest
         return $status;
     }
 
-    private function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus)
+    private function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
@@ -52,7 +55,9 @@ class CallbackAPITest extends baseAPITest
         $xml .= '<amount country-id="100" currency="DKK">10000</amount>';
         $xml .= '<card type-id="8">';
         $xml .= '<card-number>401200******6002</card-number>';
-        $xml .= '<token>4819253888096002</token>';
+        if($bSendToken == true) {
+            $xml .= '<token>4819253888096002</token>';
+        }
         $xml .= '<expiry>';
         $xml .= '<month>01</month>';
         $xml .= '<year>20</year>';
@@ -107,5 +112,4 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(4, count($aStates));
         $this->assertTrue(is_int(array_search($iTransStatus, $aStates) ) );
     }
-
 }

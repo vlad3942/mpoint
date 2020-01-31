@@ -224,7 +224,7 @@ abstract class Callback extends EndUserAccount
 				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-	
+
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
