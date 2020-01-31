@@ -557,7 +557,7 @@ abstract class mPointSettlement
 			$settlementInAcceptedXML .= '<settlements>';
 			foreach ($aRS as $rs)
 			{
-				$settlementInAcceptedXML .= '<settlement id="'. $rs['ID'].'" file-id="'.$rs["FILE_SEQUENCE_NUMBER"].'"  record-id="'.$rs["FILE_SEQUENCE_NUMBER"].'" type="'.$rs["RECORD_TYPE"].'"  status="'.$rs["STATUS"].'" ></settlement>';
+				$settlementInAcceptedXML .= '<settlement id="'. $rs['ID'].'" file-id="'.$rs["FILE_SEQUENCE_NUMBER"].'"  record-id="'.$rs["RECORD_TRACKING_NUMBER"].'" type="'.$rs["RECORD_TYPE"].'"  status="'.$rs["STATUS"].'" ></settlement>';
 			}
 			$settlementInAcceptedXML .= "</settlements>";
 		}
