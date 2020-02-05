@@ -71,6 +71,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     {
                         $iStatusCode = (integer)$obj_Txn->status["code"];
                         if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
+                        else if ($iStatusCode == 1100)
+                        {
+                            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+                            $iStatusCode = 1000;
+                        }
                         return $iStatusCode;
                     }
                     else { throw new CaptureException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
