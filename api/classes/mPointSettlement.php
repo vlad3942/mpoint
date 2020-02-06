@@ -107,11 +107,10 @@ abstract class mPointSettlement
         {
             $iBatchLimit = (int)$sSettlementBatchLimit;
         }
-        if($iBatchLimit == 0)
+        if($iBatchLimit === 0)
         {
             $iBatchLimit=200;
         }
-        $stateIds = implode(",", $aStateIds);
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 WHERE client_id = $this->_iClientId 
@@ -125,38 +124,21 @@ abstract class mPointSettlement
             $recordNumber = (int)$res["RECORD_NUMBER"];
         }
 
-        $extendedCondition = '';
-        if($this->_sRecordType === 'CAPTURE')
-        {
-            $extendedCondition .= Constants::iPAYMENT_REFUND_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
-        }
-        elseif($this->_sRecordType === 'REFUND')
-        {
-            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
-        }
-        else{
-            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_REFUND_INITIATED_STATE;
-        }
-
-
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
-        $sql = " SELECT txnid as id
-                  FROM (
-                         SELECT DISTINCT ON (txnid)
-                           txnid,
-                           stateid
-                         FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
-                         INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn
-                           ON txn.id = msg.txnid
-                           where clientid = $this->_iClientId
-                              AND pspid = $this->_iPspId
-                              AND Txn.cardid NOTNULL
-                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE ."," . $extendedCondition .")
-                         ORDER BY txnid, msg.created DESC
-                       ) sub
-                  WHERE stateid IN ($stateIds)";
+
+        $sql = 'SELECT DISTINCT ID FROM (
+                SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
+                RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
+                FROM log' . sSCHEMA_POSTFIX . '.Transaction_Tbl T
+                INNER JOIN log' . sSCHEMA_POSTFIX . '.txnpassbook_Tbl TP ON T.id = TP.transactionid
+                INNER JOIN log' . sSCHEMA_POSTFIX . '.settlement_record_tbl SRT on SRT.transactionid = T.id
+                INNER JOIN log' . sSCHEMA_POSTFIX . '.settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                WHERE TP.performedopt IN ( ' . implode(',', $aFinalStateMappings) . ") 
+                AND TP.status = '".Constants::sPassbookStatusInProgress."' 
+                AND ST.client_id = ".$this->_iClientId. ' AND ST.psp_id = ' .$this->_iPspId.") s 
+                WHERE rn =1 and  s.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
@@ -166,50 +148,6 @@ abstract class mPointSettlement
                 array_push($this->_arrayTransactionIds,$transactionId);
             }
         }
-
-        $arrayTempTransactionIds=[];
-        $sql = "SELECT transactionid
-                FROM log." . sSCHEMA_POSTFIX . "settlement_record_tbl settlent_record
-                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl settlement
-                    ON settlement.status NOT IN ('reject', 'fail') AND settlement.id = settlent_record.settlementid
-                WHERE settlement.record_type = '$this->_sRecordType'    
-                GROUP BY transactionid";
-
-        $aRS = $_OBJ_DB->getAllNames($sql);
-        if (is_array($aRS) === true && count($aRS) > 0)
-        {
-            foreach ($aRS as $rs) {
-                $transactionId = (int)$rs["TRANSACTIONID"];
-                array_push($arrayTempTransactionIds,$transactionId);
-            }
-        }
-
-        $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
-
-        $arrayPartialOperations = [];
-
-        $sql = "SELECT DISTINCT ID FROM (
-                SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
-                RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
-                FROM log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
-                INNER JOIN log" . sSCHEMA_POSTFIX . ".txnpassbook_Tbl TP ON T.id = TP.transactionid
-                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_record_tbl SRT on SRT.transactionid = T.id
-                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
-                WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
-                AND TP.status = '".Constants::sPassbookStatusInProgress."' 
-                AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId.") s 
-                WHERE rn =1 and  s.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'";
-
-        $aRS = $_OBJ_DB->getAllNames($sql);
-        if (is_array($aRS) === true && count($aRS) > 0)
-        {
-            foreach ($aRS as $rs) {
-                $transactionId = (int)$rs["ID"];
-                array_push($arrayPartialOperations,$transactionId);
-            }
-        }
-
-        $this->_arrayTransactionIds = array_values(array_unique(array_merge($this->_arrayTransactionIds, $arrayPartialOperations)));
 
         $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
 
@@ -222,8 +160,9 @@ abstract class mPointSettlement
             $isValidTransaction = TRUE;
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
             $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
+            $captureAmount  = -1;
             if($isTicketLevelSettlement === 'true') {
-                $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
+                $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0], $captureAmount);
                 if(count($ticketNumbers) > 0) {
                     $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
                     if(count($obj_TxnInfo->getOrderConfigs()) <= 0)
@@ -243,7 +182,6 @@ abstract class mPointSettlement
             }
 
             if($isValidTransaction === true) {
-                $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
                 $obj_UAProfile = NULL;
                 $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
                 if ($captureAmount === -1) {
