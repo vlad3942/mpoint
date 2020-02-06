@@ -224,7 +224,8 @@ abstract class Callback extends EndUserAccount
 				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-	
+		$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->_obj_TxnInfo->getID());
+
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
@@ -232,6 +233,7 @@ abstract class Callback extends EndUserAccount
 		    if($iIsPaymentCapturedStateLogged != 1) {
                 $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
             }
+            $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CAPTURED_STATE, Constants::sPassbookStatusDone);
 			return true;
 		}
 		else { return false; }
@@ -1043,7 +1045,7 @@ abstract class Callback extends EndUserAccount
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
 				}
 
-				$sBody .= '&' .urlencode(http_build_query($aTransactionData));
+				$sBody .= '&' .http_build_query($aTransactionData);
 
 				 if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED)
 				{
