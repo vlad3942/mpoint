@@ -146,7 +146,7 @@ class EndUserAccount extends Home
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid)
+	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid=-1)
 	{
 		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable,$profileid);
 

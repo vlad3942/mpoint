@@ -76,7 +76,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		for ($i=0; $i<count($obj_DOM->{'save-card'}); $i++)
 		{
 			// Set Global Defaults
-			if (empty($obj_DOM->{'save-card'}[$i]["account"]) === true || intval($obj_DOM->{'save-card'}[$i]["account"]) < 1) { $obj_DOM->{'save-card'}[$i]["account"] = -1; }
+			if (empty($obj_DOM->{'save-card'}[$i]["account"]) === true || (int)($obj_DOM->{'save-card'}[$i]["account"]) < 1) { $obj_DOM->{'save-card'}[$i]["account"] = -1; }
 
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]["client-id"], (integer) $obj_DOM->{'save-card'}[$i]["account"]);
@@ -97,11 +97,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$aMsgCds = array();
 
 						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->name) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 50; }
-						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) == 0 && intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) == 0)
+						if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) == 0 && (int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) == 0)
 						{
 							$aMsgCds[] = 31;
 						}
-						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) > 0)
+						if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) > 0)
 						{
 							if ($obj_Validator->valCardTypeID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"])  != 10) { $aMsgCds[] = $obj_Validator->valCardTypeId($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) + 40; }
 						}
@@ -109,7 +109,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email);
 						
 						// Modifying an existing Stored Card
-						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
+						if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 						{
 							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 20; }
 						}
@@ -133,7 +133,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						    //get enduseraccount
                                 $iProfileID = -1;
                                 if ($iAccountID < 0) {
-                                    if (empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "false") {
+                                    if (empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") === "false") {
                                         if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) {
                                             $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3));
                                         }
@@ -177,7 +177,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // New End-User - For backward compatibility
                             if ($iAccountID < 0)
                             {
-                                $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'},$obj_DOM->{'save-card'}[$i]->{'client-info'}["pushid"], $iProfileID);
+                                $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'},$obj_DOM->{'save-card'}[$i]->{'client-info'}["pushid"], true, $iProfileID);
                             }
 
                                 // Single Sign-On
@@ -199,7 +199,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
 
                                         $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                        $auth_val_code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, trim($obj_DOM->{'save-card'}[$i]->{'auth-token'}) , intval($obj_DOM->{'save-card'}[$i]["client-id"]));
+                                        $auth_val_code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, trim($obj_DOM->{'save-card'}[$i]->{'auth-token'}) , (int)($obj_DOM->{'save-card'}[$i]["client-id"]));
                                     }
                                     else { $auth_val_code = 8; }
                                 }
@@ -211,7 +211,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     // Start Transaction
                                     $_OBJ_DB->query("START TRANSACTION");
                                     // Modifying an existing Stored Card
-                                    if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
+                                    if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
                                     {
                                         if(count($obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}) == 1)
                                         {
@@ -226,7 +226,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     // Saving Masked Card Details
                                     if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
                                     {
-                                        if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
+                                        if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". (int)($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
 
                                         // The preferred attribute could be omitted as it is optional.
                                         $bPreferred = NULL;
@@ -252,12 +252,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                                     // Save Address if passed and cards successfuly saved
-                                    if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code > 0)
+                                    if ($code > 0 && count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1)
                                     {
                                         //update or insert address for stored card
-                                        if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
+                                        if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
                                         {
-                                            $id = intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]);
+                                            $id = (int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]);
                                         }
                                         //Saving a new card with address details
                                         else
@@ -338,7 +338,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                             (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'},
                                                             (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
                                                             (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token ); }
-                                                        $xml = '<status code="'. ($code+99) .'" card-id="'. intval($id) .'">Card successfully saved and CRM system notified</status>';
+                                                        $xml = '<status code="'. ($code+99) .'" card-id="'. (int)($id) .'">Card successfully saved and CRM system notified</status>';
                                                     }
                                                     else { $xml = '<status code="'. ($code+99) .'">Card successfully saved and CRM system notified</status>'; }
                                                     break;
@@ -389,7 +389,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'},
                                                     (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
                                                     (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token); }
-                                            $xml = '<status code="'. ($code+99) .'" card-id="'. intval($id) .'">Card successfully saved</status>';
+                                            $xml = '<status code="'. ($code+99) .'" card-id="'. (int)($id) .'">Card successfully saved</status>';
                                         }
                                         else { $xml = '<status code="'. ($code+99) .'">Card successfully saved</status>'; }
                                     }

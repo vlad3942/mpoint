@@ -8192,3 +8192,8 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Chec
 
 ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
 CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
+
+
+
+ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
+ALTER TABLE enduser.address_tbl Alter column state type VARCHAR(200);
