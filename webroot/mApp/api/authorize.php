@@ -605,7 +605,7 @@ try
 														{
 														    if($obj_Elem["pspid"] > 0) {
 
-                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
                                                                 $passbookEntry = new PassbookEntry
                                                                 (
                                                                     NULL,

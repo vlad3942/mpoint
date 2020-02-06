@@ -221,7 +221,7 @@ abstract class mPointSettlement
         {
             $isValidTransaction = TRUE;
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-            $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
+            $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId, $this->_iClientId);
             if($isTicketLevelSettlement === 'true') {
                 $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
                 if(count($ticketNumbers) > 0) {

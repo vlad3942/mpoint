@@ -400,7 +400,7 @@ try
 							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
 
 		$code=0;
-		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 		$passbookEntry = new PassbookEntry
 		(
 				NULL,
@@ -435,7 +435,7 @@ try
 	}
   }
 
-	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id);
+	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
 	if ($txnPassbookObj instanceof TxnPassbook) {
 		foreach ($aStateId as $iStateId) {
 			$state = 0;
