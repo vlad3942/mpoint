@@ -206,22 +206,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else { $code = 10; }
 
-						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 ){
-						    $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
-						    if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
-                            {
-                                $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
-                            }
-                            else{
-                                $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
-                            }
-                        }else {
-                            $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
-                            if ($iValResult != 10) {
-                                $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
-                            }
-                        }
-						
+
 						
 						// Validate currency if explicitly passed in request, which defer from default currency of the country
 						if(intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) > 0){
@@ -262,10 +247,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $_SERVER['HTTP_X_FORWARDED_FOR']);
-                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
+                        if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
+						|| (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()) )
+                        //made hmac mandatory for dcc
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
+
+						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 ){
+							$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+							if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
+							{
+								$aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
+							}
+							else{
+								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
+							}
+						}
+						else if(filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === false ||
+							intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) == $obj_TxnInfo->getCurrencyConfig()->getID())
+						//Allowed to pass price validation in case of dcc opt
+						{
+							$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+							if ($iValResult != 10) {
+								$aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+							}
+						}
+
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
@@ -333,6 +341,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									try
 									{
+										if(empty($obj_DOM->pay[$i]->transaction["foreign-exchange-id"]) === false)
+										$obj_TxnInfo->setExternalReference($_OBJ_DB,$obj_PSPConfig->getID(),Constants::iForeignExchange,$obj_DOM->pay[$i]->transaction["foreign-exchange-id"]);
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 										$data['client-config'] = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(),(integer) $obj_DOM->pay[$i]['account']);
@@ -342,6 +352,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
+										if(empty($obj_DOM->pay[$i]->transaction["foreign-exchange-id"]) === false)
+										{
+											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);
+											$data['externalref'] = array(Constants::iForeignExchange =>array((integer)$obj_PSPConfig->getID() => (string)$obj_DOM->pay[$i]->transaction["foreign-exchange-id"] ));
+											$data['converted-currency-config'] = $obj_CurrencyConfig;
+											$data['converted-amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
+											unset($data['amount']);
+										}
+
+
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID

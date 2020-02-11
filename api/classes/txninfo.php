@@ -62,6 +62,12 @@ class TxnInfo
 	 */
 	private $_obj_CurrencyConfig;
 	/**
+	 * Configuration for the Currency the transactions was processed in for DCC transaction
+	 *
+	 * @var Converted CurrencyConfig
+	 */
+	private $_obj_ConvertedCurrencyConfig;
+	/**
 	 * Configuration for the Orders in the cart of the user send as part of the transaction.
 	 *
 	 * @var OrderInfo
@@ -85,6 +91,13 @@ class TxnInfo
 	 * @var long
 	 */
 	private $_lAmount;
+	/**
+	 * Total amount the customer will pay for the Transaction without fee for DCC converted transaction
+	 *
+	 * @var long
+	 */
+	private $_lConvertedAmount;
+
 	/**
 	 * Total number of points the customer will pay for the Transaction
 	 *
@@ -391,6 +404,13 @@ class TxnInfo
     private $_iInstallmentValue;
 
     /**
+     * Exchange reference ids
+     *
+     * @var array
+     */
+    private $_aExternalRef;
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
@@ -428,9 +448,10 @@ class TxnInfo
 	 * @param 	integer $pspid		Unique ID for the The PSP used for the transaction Defaults to -1.
 	 * @param 	integer $fee		The amount the customer will pay in fee´s for the Transaction.
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
+	 * @param	array $aExternalRef	 External Refence Ids
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$oAmt = -1,CurrencyConfig &$oFCR = null)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -500,7 +521,11 @@ class TxnInfo
         $this->_createdTimestamp =$createdTimestamp;
         $this->_aAdditionalData = $additionalData;
         $this->_iInstallmentValue = $installmentValue;
-	}
+        $this->_aExternalRef = $aExternalRef;
+        $this->_lConvertedAmount = (float) $oAmt;
+        $this->_obj_ConvertedCurrencyConfig = $oFCR;
+
+        }
 
 	/**
 	 * Returns the Unique ID for the Transaction
@@ -542,12 +567,44 @@ class TxnInfo
 		if(is_null($this->_obj_CurrencyConfig) === false  && strlen($this->_obj_CurrencyConfig->getCode()) > 0)	{return $this->_obj_CurrencyConfig ;}
 		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
 	}
+
+	/**
+	 * Returns the actual Configuration for the Currency the transactions was processed in
+	 *
+	 * @return 	CurrencyConfig
+	 */
+	public function getPaymentCurrencyConfig()
+	{
+		if($this->_obj_ConvertedCurrencyConfig != null) return $this->_obj_ConvertedCurrencyConfig;
+		else if(is_null($this->_obj_CurrencyConfig) === false  && strlen($this->_obj_CurrencyConfig->getCode()) > 0)	{return $this->_obj_CurrencyConfig ;}
+		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
+	}
+	/**
+	 * Returns the Configuration for the Currency the DCC transactions was processed in for
+	 *
+	 * @return 	CurrencyConfig
+	 */
+	public function getConvertedCurrencyConfig() { return $this->_obj_ConvertedCurrencyConfig; }
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction without fee
 	 *
 	 * @return 	long
 	 */
 	public function getAmount() { return $this->_lAmount; }
+
+	/**
+	 * Returns the Actual Payment Total amount the customer will pay for the Transaction without fee
+	 *
+	 * @return 	long
+	 */
+	public function getPaymentAmount() { return ($this->_lConvertedAmount > 0 ? $this->_lConvertedAmount : $this->_lAmount); }
+
+	/**
+	 * Returns the Total offered amount the customer will pay for the Transaction without fee for DCC Transaction
+	 *
+	 * @return 	long
+	 */
+	public function getConvertedAmount() { return $this->_lConvertedAmount; }
 	/**
 	 * Returns the amount the customer will pay in fee´s for the Transaction
 	 *
@@ -856,6 +913,45 @@ class TxnInfo
         return null;
     }
 
+
+	/*
+     * Returns the Transactions's External Reference data
+	 * if param is sent returns value of property
+     *
+	 * @param type   external ref type 1=SUVTP,2=Foreign Exchange etc
+     * @return 	string
+     * */
+	public function getExternalRef($type = 0,$pspid = 0)
+	{
+		try
+		{
+			if ($type === 0 && $pspid == 0 )
+			{
+				if (count($this->_aExternalRef) > 0)
+				{
+					return $this->_aExternalRef;
+				}
+				return null;
+			}
+			if ($this->_aExternalRef != null && array_key_exists($type, $this->_aExternalRef) === true)
+			{
+				$aExternalRef = $this->_aExternalRef[$type];
+				if($pspid === 0)	return $aExternalRef;
+				else if (array_key_exists($pspid, $aExternalRef) === true)
+				{
+					return $this->_aExternalRef[$type][$pspid];
+				}
+
+			}
+
+		}
+		catch (Exception $e)
+		{
+
+		}
+		return null;
+	}
+
     /**
      * @return int
      */
@@ -904,6 +1000,8 @@ class TxnInfo
 	 */
 	public function toXML(UAProfile &$oUA=null, $iAmount = -1, $ticketNumbers = null)
 	{
+		$obj_CurrencyConfig = $this->getPaymentCurrencyConfig();
+
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
 			$obj_Image = new Image($this->_sLogoURL);
@@ -920,25 +1018,29 @@ class TxnInfo
 			$iHeight = iCLIENT_LOGO_SCALE ."%";
 		}
 
-		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" wallet-id="'. $this->_iWalletID .'" product-type="'. $this->_iProductType .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
-		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
-		if($iAmount < 0){$iAmount = $this->_lAmount; }
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
+		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" wallet-id="'. $this->_iWalletID .'" product-type="'. $this->_iProductType .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'" >';
+		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
+		if($iAmount < 0)
+		{
+			if($this->getConvertedAmount() > 0) $iAmount = $this->getConvertedAmount();
+			else $iAmount = $this->_lAmount;
+		}
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 		
 		$xml .= '<amount_info>';
 		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
-		$xml .= '<currency-id>'. $this->getCurrencyConfig()->getID() .'</currency-id>';
-		$xml .= '<currency>'. $this->getCurrencyConfig()->getCode() .'</currency>';
-		$xml .= '<decimals>'. $this->getCurrencyConfig()->getDecimals() .'</decimals>';
+		$xml .= '<currency-id>'. $obj_CurrencyConfig->getID() .'</currency-id>';
+		$xml .= '<currency>'. $obj_CurrencyConfig->getCode() .'</currency>';
+		$xml .= '<decimals>'. $obj_CurrencyConfig->getDecimals() .'</decimals>';
 		$xml .= '<symbol>'. $this->_obj_CountryConfig->getSymbol() .'</symbol>';
 		$xml .= '<format>'. $this->_obj_CountryConfig->getPriceFormat() .'</format>';
 		$xml .= '<alpha2code>'. $this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
 		$xml .= '<alpha3code>'. $this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
-		$xml .= '<code>'. $this->_obj_CountryConfig->getNumericCode() .'</code>';
+		$xml .= '<code>'. $obj_CurrencyConfig->getID() .'</code>';
 		$xml .= '<amount>'. $this->_lAmount .'</amount>';
 		$xml .= '</amount_info>';
 		
-		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
+		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $this->_lAmount) .'</price>';
 		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iPoints .'</points>';
 		$xml .= '<reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iReward .'</reward>';
@@ -1065,7 +1167,8 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid  
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid,
+						convetredcurrencyid,convertedamount  
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -1085,8 +1188,11 @@ class TxnInfo
 			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
+			$obj_ConvertedCurrencyConfig = null;
+			if(intval($RS["CONVERTEDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVERTEDCURRENCYID"]);
             $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
-            $paymentSession = null;
+            $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
+			$paymentSession = null;
             if($RS["SESSIONID"] == -1){
                 $paymentSession = PaymentSession::Get($obj, $obj_ClientConfig,$obj_CountryConfig,$obj_CurrencyConfig,$RS["AMOUNT"], $RS["ORDERID"],"",$RS["MOBILE"], $RS["EMAIL"], $RS["EXTID"],$RS["DEVICEID"], $RS["IP"]);
             }
@@ -1094,7 +1200,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig);
 		}
 		return $obj_TxnInfo;
 	}
@@ -1172,6 +1278,10 @@ class TxnInfo
             if (array_key_exists("approval_action_code", $misc) === false) { $misc["approval_action_code"] = $obj->getApprovalActionCode(); }
             if (array_key_exists("created", $misc) === false) { $misc["created"] = $obj->getCreatedTimestamp(); }
             if (array_key_exists("additionaldata", $misc) === false) { $misc["additionaldata"] = $obj->getAdditionalData(); }
+            if (array_key_exists("externalref", $misc) === false) { $misc["externalref"] = $obj->getExternalRef(); }
+            if (array_key_exists("converted-currency-config", $misc) === false) { $misc["converted-currency-config"] = $obj->getConvertedCurrencyConfig(); }
+            if (array_key_exists("converted-amount", $misc) === false) { $misc["converted-amount"] = $obj->getConvertedAmount(); }
+
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
                 $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],$misc["sessiontype"],$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
@@ -1181,7 +1291,12 @@ class TxnInfo
             }
             if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = $obj->getInstallmentValue(); }
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = $obj->getProfileID(); }
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"]);
+
+
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
+				$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"]);
+
+
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
@@ -1265,19 +1380,23 @@ class TxnInfo
         return $additionalData;
     }
 
-    function  _produceExternalReference($_OBJ_DB, $txnId)
+    static function  _produceExternalReference($_OBJ_DB, $txnId)
     {
-        $additionalData = [];
-        $sqlA = "SELECT externalid, pspid FROM Log" . sSCHEMA_POSTFIX . ".Externalreference_Tbl WHERE txnid=" . $txnId;
+        $externalRefTypeData = [];
+        $sqlA = "SELECT externalid, pspid,type FROM Log" . sSCHEMA_POSTFIX . ".Externalreference_Tbl WHERE txnid=" . $txnId ;
+
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
             foreach ($rsa as $rs)
             {
-                $additionalData[$rs["PSPID"] ] = $rs ["EXTERNALID"];
+                $externaltypeData = [];
+                $externaltypeData[$rs["PSPID"] ] = $rs ["EXTERNALID"];
+                $externalRefTypeData[$rs["TYPE"] ] = $externaltypeData;
             }
         }
-        return $additionalData;
+
+        return $externalRefTypeData;
     }
 
 	public function getMessageHistory(RDB $obj_DB,$testingRequset = false)
@@ -1434,6 +1553,48 @@ class TxnInfo
 				}
 			}	
 			return $additional_id;	
+		}
+	}
+
+	/**
+	 * Function to insert new records in the externalreference_tbl
+	 *
+	 * @param 	Array $aExternalReference	Data object with the External Reference Data details
+	 *
+	 */
+	public function setExternalReference(RDB $obj_DB, $iPSPId,$iExternalRefType,$sReference)
+	{
+		$aExternalRef[$iExternalRefType] = array($iPSPId => $sReference);
+		self::setExternalReferences($obj_DB,$aExternalRef);
+	}
+
+	/**
+	 * Function to insert new records in the externalreference_tbl
+	 *
+	 * @param Array $aExternalReferences Data object with the External Reference Data details
+	 *
+	 * @throws mPointException
+	 */
+	public function setExternalReferences(RDB $obj_DB, $aExternalReferences)
+	{
+		if( is_array($aExternalReferences) === true )
+		{
+			foreach ($aExternalReferences as $refTypekey => $aExternalRefObj)
+			{
+				if (is_array($aExternalRefObj))
+				{
+					foreach ($aExternalRefObj as $pspidKey => $externalRef)
+					{
+						$sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".ExternalReference_Tbl
+					        (type,txnid, externalid, pspid) VALUES (" . $refTypekey . "," . $this->getID() . ", " . $externalRef . ", " . $pspidKey . ")";
+
+						if (is_resource($obj_DB->query($sql)) === false)
+						{
+							throw new mPointException("Unable to insert new record for External Reference Table: for external reference id " . $refTypekey . " and pspid id " . $pspidKey, 1002);
+						}
+					}
+				}
+			}
 		}
 	}
 	

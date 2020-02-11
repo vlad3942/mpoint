@@ -21,17 +21,24 @@ class PayAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
 	}
 
-	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false)
+	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false,$currencyid=-1,$amount=100,$hmac=null,$cfxid=null)
 	{
 		$sStore = $store ? 'true' : 'false';
 
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<pay client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'">';
+		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'"';
+		if(isset($cfxid) === true)
+            $xml .= ' foreign-exchange-id="'.$cfxid.'"';
+		$xml .='>';
 		$xml .= '<card type-id="'. $card .'">';
-		$xml .= '<amount country-id="100">200</amount>';
+        $xml .= '<amount country-id="100"';
+        if(isset($currencyid) === true)
+            $xml .= ' currency-id="'.$currencyid.'"';
+        $xml .= '>'.$amount.'</amount>';
 		$xml .= '</card>';
+        if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
 		$xml .= '</transaction>';
 		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
 		$xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';

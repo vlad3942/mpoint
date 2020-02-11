@@ -123,6 +123,7 @@
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
+								<xs:attribute name="foreign-exchange-id" type="xs:positiveInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
@@ -277,6 +278,7 @@
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
+								<xs:attribute name="foreign-exchange-id" type="xs:positiveInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>

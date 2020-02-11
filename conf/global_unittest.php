@@ -97,7 +97,8 @@ $aHTTP_CONN_INFO["wire-card"]["timeout"] = 120;
 $aHTTP_CONN_INFO["wire-card"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["wire-card"]["method"] = "POST";
 $aHTTP_CONN_INFO["wire-card"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-card/pay.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["pay"] = "/_test/simulators/wire-card/pay.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
 
 /**

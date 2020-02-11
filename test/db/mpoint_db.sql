@@ -8192,3 +8192,26 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Chec
 
 ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
 CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
+
+
+ALTER TABLE log.transaction_tbl ADD convetredcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
+ALTER TABLE log.transaction_tbl ADD convertedamount int8 NULL;
+ALTER TABLE client.cardaccess_tbl ADD dcc bool NULL DEFAULT false;
+
+CREATE TABLE log.externalreferencetype_tbl (
+	id serial NOT NULL,
+	"name" text NOT NULL,
+	created timestamp NULL DEFAULT now(),
+	modified timestamp NULL DEFAULT now(),
+	enabled bool NULL DEFAULT true,
+	CONSTRAINT externalreferencetype_pk PRIMARY KEY (id)
+);
+ALTER TABLE log.externalreference_tbl ADD type int4 CONSTRAINT externalreferencetype_fk REFERENCES log.externalreferencetype_tbl(id);
+
+
+
+INSERT INTO "system".cardpricing_tbl( pricepointid, cardid)VALUES( -840, 8);
+
+INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(1, 'UATP');
+INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(2, 'CellPoint Foreign Exchange');
+

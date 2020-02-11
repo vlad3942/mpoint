@@ -1444,6 +1444,12 @@ abstract class Constants
 	const sPassbookStatusInvalid = 'invalid';
 	const sPassbookStatusError = 'error';
 
+	/*
+	 * External Systems ENUM
+	 */
+	const iSUVTP = 1;
+	const iForeignExchange = 2;
+
     /*
      * Default Profile Expiry (in days) for profiles created in mProfile for Velocity transactions
      */
