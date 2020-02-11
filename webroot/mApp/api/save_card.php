@@ -96,7 +96,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Validator = new Validate($obj_CountryConfig);
 						$aMsgCds = array();
 
-						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->name) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 50; }
+						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]->name) === false && $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 50; }
 						if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) == 0 && (int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) == 0)
 						{
 							$aMsgCds[] = 31;
@@ -114,7 +114,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 20; }
 						}
 						// Saving Masked Card Details
-						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
+						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]->token) === false)
 						{
 							if ($obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10) { $aMsgCds[] = $obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; }
 							if ($obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"] ) != 10) { $aMsgCds[] = $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"]) + 70; }
@@ -134,13 +134,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $iProfileID = -1;
                                 if ($iAccountID < 0) {
                                     if (empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") === "false") {
-                                        if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) {
+                                        if (empty($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) === false) {
                                             $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3));
                                         }
-                                        if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) {
+                                        if ($iAccountID < 0 && empty($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) === false) {
                                             $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3));
                                         }
-                                        if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) {
+                                        if ($iAccountID < 0 && empty($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) === false) {
                                             $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3));
                                         }
                                         if ($iAccountID < 0) {
@@ -181,11 +181,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
 
                                 // Single Sign-On
-                                if (count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 1
-                                    && (count($obj_DOM->{'save-card'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
+                                if (empty($obj_DOM->{'save-card'}[$i]->{'auth-token'}) === false
+                                    && (empty($obj_DOM->{'save-card'}[$i]->{'auth-url'}) === false || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
                                 {
                                     $url = $obj_ClientConfig->getAuthenticationURL();
-                                    if (count($obj_DOM->{'save-card'}[$i]->{'auth-url'}) == 1)
+                                    if (empty($obj_DOM->{'save-card'}[$i]->{'auth-url'}) === false)
                                     {
                                         $url = (string) $obj_DOM->{'save-card'}[$i]->{'auth-url'};
                                     }
@@ -194,7 +194,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $iAccountID);
                                         $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
                                         //for existing accounts
-                                        if (empty($obj_Customer["customer-ref"]) === true && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) > 0) {
+                                        if (empty($obj_Customer["customer-ref"]) === true && empty($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) === false) {
                                             $obj_Customer["customer-ref"] = (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'};
                                         }
 
@@ -213,7 +213,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     // Modifying an existing Stored Card
                                     if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
                                     {
-                                        if(count($obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}) == 1)
+                                        if(empty($obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}) === false)
                                         {
                                             $code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]),(string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'} );
                                         }
@@ -224,7 +224,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     }
 
                                     // Saving Masked Card Details
-                                    if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
+                                    if (empty($obj_DOM->{'save-card'}[$i]->card[$j]->token) === false)
                                     {
                                         if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". (int)($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
 
@@ -252,7 +252,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                                     // Save Address if passed and cards successfuly saved
-                                    if ($code > 0 && count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1)
+                                    if ($code > 0 && empty($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) === false)
                                     {
                                         //update or insert address for stored card
                                         if ((int)($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
@@ -274,7 +274,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city,(string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'full-name'});
                                         //if saveAddress is successful or not commit changes
                                         // Commit Saved Card
-                                        if ($obj_ClientConfig->getNotificationURL() == "" || count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+                                        if ($obj_ClientConfig->getNotificationURL() == "" || empty($obj_DOM->{'save-card'}[$i]->{'auth-token'}) === true)
                                         {
                                             $_OBJ_DB->query("COMMIT");
                                         }
@@ -283,7 +283,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     elseif ($code > 0)
                                     {
                                         // Commit Saved Card
-                                        if ($obj_ClientConfig->getNotificationURL() == "" || count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+                                        if ($obj_ClientConfig->getNotificationURL() == "" || empty($obj_DOM->{'save-card'}[$i]->{'auth-token'}) === true)
                                         {
                                             $_OBJ_DB->query("COMMIT");
                                         }
@@ -294,7 +294,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $_OBJ_DB->query("ROLLBACK");
                                     }
                                     // Success: Card saved
-                                    if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 1)
+                                    if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "" && empty($obj_DOM->{'save-card'}[$i]->{'auth-token'}) === false)
                                     {
                                         try
                                         {
@@ -331,7 +331,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     // Commit Saved Card
                                                     $_OBJ_DB->query("COMMIT");
 
-                                                    if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
+                                                    if (empty($obj_DOM->{'save-card'}[$i]->card[$j]->token) === false)
                                                     {
                                                         if (isset($id) === false) { $id = $obj_mPoint->getCardIDFromCardDetails($iAccountID,
                                                             $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"],
@@ -379,7 +379,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     // Success: Card successfully saved
                                     elseif ($code > 0)
                                     {
-                                        if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
+                                        if (empty($obj_DOM->{'save-card'}[$i]->card[$j]->token) === false)
                                         {
                                             if (isset($id) === false)
                                             {
@@ -449,7 +449,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->{'save-card'}) == 0)
+	elseif (empty($obj_DOM->{'save-card'}) === true)
 	{
 		header("HTTP/1.1 400 Bad Request");
 
