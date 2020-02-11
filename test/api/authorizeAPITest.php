@@ -21,13 +21,16 @@ abstract class AuthorizeAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO));
 	}
 
-	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $currecyid = null)
+	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $currecyid = null,$hmac=null,$cfxid=null,$cardid=2)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<authorize-payment client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction id="'. $txn .'">';
-		$xml .= '<card id="61775" type-id="2">';
+		$xml .= '<transaction id="'. $txn .'"';
+        if(isset($cfxid) === true)
+            $xml .= ' foreign-exchange-id="'.$cfxid.'"';
+        $xml .='>';
+		$xml .= '<card id="61775" type-id="'.$cardid.'">';
 		$xml .= '<amount country-id="100"';
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
@@ -36,6 +39,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 //		$xml .= '<expiry>03/31</expiry>';
 //		$xml .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
 		$xml .= '</card>';
+        if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
 		$xml .= '</transaction>';
 		if ($intAccountId > 0)
 		{
