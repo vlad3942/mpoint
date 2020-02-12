@@ -8196,7 +8196,7 @@ CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
 
 ALTER TABLE log.transaction_tbl ADD convetredcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
 ALTER TABLE log.transaction_tbl ADD convertedamount int8 NULL;
-ALTER TABLE client.cardaccess_tbl ADD dcc bool NULL DEFAULT false;
+ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
 
 CREATE TABLE log.externalreferencetype_tbl (
 	id serial NOT NULL,

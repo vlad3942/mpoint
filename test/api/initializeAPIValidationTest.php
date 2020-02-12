@@ -22,7 +22,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200)
+	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200,$hmac=null)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -33,6 +33,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'.$amount.'</amount>';
 		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+		if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
 		$xml .= '</transaction>';
 		if(isset($token) === true)
         {
