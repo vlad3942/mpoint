@@ -252,12 +252,6 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_bEnableCVV;
 	/**
-	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
-	 *
-	 * @var boolean
-	 */
-	private $_bAutoCapture;
-	/**
 	 * Boolean Flag indicating whether mPoint should include the PSP's ID for the Payment in the Callback to the Client.
 	 *
 	 * @var boolean
@@ -443,7 +437,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey=null, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=null)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey=null, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=null)
 	{
 		parent::__construct($id, $name);
 
@@ -476,7 +470,7 @@ class ClientConfig extends BasicConfig
 
 		$this->_sTerms = trim($terms);
 		$this->_iMode = (integer) $m;
-		$this->_bAutoCapture = (bool) $ac;
+
 		$this->_bEnableCVV = (bool) $ecvv;
 		$this->_bSendPSPID = (bool) $sp;
 		$this->_iStoreCard = (integer) $sc;
@@ -869,12 +863,6 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getCVVenabled() { return $this->_bEnableCVV; }
 	/**
-	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
-	 *
-	 * @return 	boolean
-	 */
-	public function useAutoCapture() { return $this->_bAutoCapture; }
-	/**
 	 * Boolean Flag indicating whether mPoint should include the PSP's ID for the Payment in the Callback to the Client.
 	 *
 	 * @return 	boolean
@@ -1074,7 +1062,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<notification-url>'. htmlspecialchars($this->getNotificationURL(), ENT_NOQUOTES) .'</notification-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
-		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
+
 		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
@@ -1098,7 +1086,7 @@ class ClientConfig extends BasicConfig
 	
 	public function toFullXML($propertyScope=2)
 	{
-		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
+		$xml = '<client-config id="'. $this->getID() .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
@@ -1162,7 +1150,7 @@ class ClientConfig extends BasicConfig
 	}
 
 	function toCompactXML(){
-        $xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
+        $xml = '<client-config id="'. $this->getID() .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
         $xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
         $xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
         $xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
@@ -1216,7 +1204,7 @@ class ClientConfig extends BasicConfig
 					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.declineurl, CL.callbackurl, CL.iconurl,
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
-					CL.\"mode\", CL.auto_capture, CL.enable_cvv, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
+					CL.\"mode\", CL.enable_cvv, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
 					CL.identification, CL.transaction_ttl, CL.num_masked_digits, CL.salt,CL.secretkey,CL.communicationchannels AS channels, CL.installment, CL.max_installments, CL.installment_frequency,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
@@ -1252,7 +1240,7 @@ class ClientConfig extends BasicConfig
 					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.declineurl, CL.callbackurl, CL.iconurl,
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
-					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
+					CL.\"mode\", CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
 					CL.identification, CL.transaction_ttl,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
@@ -1392,7 +1380,7 @@ class ClientConfig extends BasicConfig
             	}
             }
             
-            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts,$aDRGateways,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL);
+            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts,$aDRGateways,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }

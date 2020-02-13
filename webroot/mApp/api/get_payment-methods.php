@@ -125,7 +125,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						    $obj_XML = simplexml_load_string($obj_TxnInfo->toXML(), "SimpleXMLElement", LIBXML_COMPACT);
                             $xml .= '';
-                            $xml .= '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
+                            $xml .= '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" mode="'. $obj_ClientConfig->getMode() .'">';
                             $xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
                             $xml .= '<callback-url>'. htmlspecialchars($obj_ClientConfig->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
                             $xml .= '<accept-url>'. htmlspecialchars($obj_ClientConfig->getAcceptURL(), ENT_NOQUOTES) .'</accept-url>';
@@ -147,7 +147,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $xml .= '</accounts>'; 
                             $xml .= '</client-config>';
-                            $xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
+                            $xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
                             $xml .= $obj_XML->amount->asXML();
                             if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
                             if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }

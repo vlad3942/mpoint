@@ -489,7 +489,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $aFailedPMArray = $obj_mPoint->getPreviousFailedAttempts($obj_TxnInfo->getOrderID(), (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                             }
-							$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" max-stored-cards="'. $obj_ClientConfig->getMaxCards() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" enable-cvv="'. General::bool2xml($obj_ClientConfig->getCVVenabled() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
+							$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" max-stored-cards="'. $obj_ClientConfig->getMaxCards() .'" enable-cvv="'. General::bool2xml($obj_ClientConfig->getCVVenabled() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
                             if($obj_ClientConfig->getInstallment()>0)
                             {
                                 $xml .= '<installment type="' . htmlspecialchars($obj_ClientConfig->getInstallment(), ENT_NOQUOTES) . '" max-installments="' . htmlspecialchars($obj_ClientConfig->getMaxInstallments(), ENT_NOQUOTES) . '" frequency="' . htmlspecialchars($obj_ClientConfig->getInstallmentFrequency(), ENT_NOQUOTES) . '" />';
@@ -520,7 +520,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $euaId = $obj_TxnInfo->getAccountID();
                             }
-							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
+							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
 							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
 							if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
