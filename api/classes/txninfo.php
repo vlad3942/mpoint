@@ -1189,7 +1189,7 @@ class TxnInfo
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
 			$obj_ConvertedCurrencyConfig = null;
-			if(intval($RS["CONVERTEDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVERTEDCURRENCYID"]);
+			if(intval($RS["CONVETREDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVETREDCURRENCYID"]);
             $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
             $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
 			$paymentSession = null;
