@@ -396,7 +396,7 @@ try
 		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
 		$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
-							   "amount" => $obj_TxnInfo->getAmount(),
+							   "amount" => $obj_TxnInfo->getPaymentAmount(),
 							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
 
 		$code=0;
@@ -404,8 +404,8 @@ try
 		$passbookEntry = new PassbookEntry
 		(
 				NULL,
-				$obj_TxnInfo->getAmount(),
-				$obj_TxnInfo->getCurrencyConfig()->getID(),
+				$obj_TxnInfo->getPaymentAmount(),
+				$obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
 				Constants::iCaptureRequested
 		);
 		if ($txnPassbookObj instanceof TxnPassbook)
@@ -507,6 +507,8 @@ try
       echo '</root>';
       $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
   }
+
+  if(empty($obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID())) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO["foreign-exchange"]); }
 }
 catch (TxnInfoException $e)
 {

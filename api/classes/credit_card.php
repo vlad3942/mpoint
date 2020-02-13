@@ -104,8 +104,8 @@ class CreditCard extends EndUserAccount
 				FROM ". $this->_constDataSourceQuery() ."
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
-					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
-					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getPaymentCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getPaymentCurrencyConfig()->getID()."
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
@@ -192,8 +192,8 @@ class CreditCard extends EndUserAccount
         $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
 				"WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
-					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
-					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getPaymentCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getPaymentCurrencyConfig()->getID()."					
 					AND C.enabled = '1' 
 					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
 					AND CA.cardid = ".$iCardID."
@@ -215,8 +215,8 @@ class CreditCard extends EndUserAccount
         $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
             "WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
-					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
-					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getPaymentCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getPaymentCurrencyConfig()->getID()."					
 					AND C.enabled = '1' 
 					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
 					AND CA.cardid = ".$iCardID."

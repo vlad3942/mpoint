@@ -189,4 +189,17 @@ $aHTTP_CONN_INFO["ezy"]["method"] = "POST";
 $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
 
+
+/*
+ * Connection info for connecting to Foreign Exchange
+ */
+$aHTTP_CONN_INFO["foreign-exchange"]["protocol"] = "http";
+$aHTTP_CONN_INFO["foreign-exchange"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["foreign-exchange"]["port"] = 80;
+$aHTTP_CONN_INFO["foreign-exchange"]["timeout"] = 120;
+$aHTTP_CONN_INFO["foreign-exchange"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["foreign-exchange"]["method"] = "POST";
+$aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/_test/simulators/dcc/callback.php";
+
 ?>

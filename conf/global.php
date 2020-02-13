@@ -983,6 +983,17 @@ $aHTTP_CONN_INFO["cellulant"]["paths"]["status"] = "/mpoint/cellulant/status";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["refund"] = "/mpoint/cellulant/refund";
 
+/*
+ * Connection info for connecting to Foreign Exchange
+ */
+$aHTTP_CONN_INFO["foreign-exchange"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["foreign-exchange"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["foreign-exchange"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["foreign-exchange"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["foreign-exchange"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["foreign-exchange"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/mpoint/foreign-exchange/notify";
 
 
 /**

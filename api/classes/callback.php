@@ -474,6 +474,71 @@ abstract class Callback extends EndUserAccount
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
 
+	/**
+	 * Function used to make a callback to the foreign Exchange instance for updating it with the transaction status.
+	 * @param array $aStateId Transaction state array
+	 * @param array $aCI Connection Information Array
+	 */
+	public function notifyForeignExchange(array $aStateId,array $aCI)
+	{
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<callback client-id="'. $this->_obj_TxnInfo->getClientConfig()->getID(). '" account="'. $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(). '">';
+		$b .= '<client-config>';
+		$b .= '<additional-config>';
+		foreach ($this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
+		{
+			$b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+		}
+
+		$b .= '</additional-config>';
+		$b .= '</client-config>';
+		$b .= $this->_obj_PSPConfig->toXML(Constants::iPrivateProperty);
+		$s = '<status>';
+		foreach ($aStateId as $iStateId)
+		{
+			$s .= '<status-message code="'.$iStateId.'" />';
+		}
+
+		$s .= '</status>';
+		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toXML());
+		$b .= '</callback>';
+		$b .= '</root>';
+		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_CONSTRUCTED_STATE, $b);
+
+        $aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
+ 	    $obj_ConnInfo = new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"],  $aCI["paths"]["callback"], $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
+	    try
+		{
+			$obj_HTTP = $this->send($obj_ConnInfo,$this->constHTTPHeaders(),$b);
+			$iCode = $obj_HTTP->getReturnCode();
+			if(intval($iCode) === 200 || intval($iCode) === 202)
+			{
+				trigger_error("mPoint Callback request to Foreign Exchange succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+				$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iCBFX_ACCEPTED_STATE, $obj_HTTP->getReplyHeader () );
+
+			}
+			else
+			{
+				trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_REJECTED_STATE, $obj_HTTP->getReplyHeader() );
+			}
+
+		}
+		// Error: Unable to establish Connection to Client
+		catch (HTTPConnectionException $e)
+		{
+			trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_CONN_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
+		}
+			// Error: Unable to send Callback to Client
+		catch (HTTPSendException $e)
+		{
+			trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_SEND_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
+		}
+	}
+
 	/*
 	 * Function to verify if the transaction has a failure state
 	 *

@@ -8207,6 +8207,11 @@ CREATE TABLE log.externalreferencetype_tbl (
 	CONSTRAINT externalreferencetype_pk PRIMARY KEY (id)
 );
 ALTER TABLE log.externalreference_tbl ADD type int4 CONSTRAINT externalreferencetype_fk REFERENCES log.externalreferencetype_tbl(id);
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(19901, 'Foreign Exchange  Callback Accepted', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(19911, 'Foreign Exchange  Callback Constructed', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(19931, 'Foreign Exchange  Callback Connection Failed', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(19941, 'Foreign Exchange  Callback Transmission Failed', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(19951, 'Foreign Exchange  Callback Rejected', 'Callback', 'send');
 
 
 
