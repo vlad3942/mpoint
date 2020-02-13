@@ -112,10 +112,7 @@ class AutoTest
             {
                 $aMsgs[] = "Client wasn't save properly - password mismatch";
             }
-            if ($obj_ClientConfig->useAutoCapture() != General::xml2bool($obj_XML->{'save-client-configuration'}->{'client-config'}[$iClient]['auto-capture']))
-            {
-                $aMsgs[] = "Client wasn't save properly - auto-capture mismatch: ". print_r($obj_ClientConfig->useAutoCapture(), TRUE) .' VS '. print_r(General::xml2bool($obj_XML->{'save-client-configuration'}->{'client-config'}[$iClient]['auto-capture']), TRUE);
-            }
+
             if ($obj_ClientConfig->getCountryConfig()->getID() != intval($obj_XML->{'save-client-configuration'}->{'client-config'}[$iClient]['country-id']))
             {
                 $aMsgs[] = "Client wasn't save properly - country-id mismatch";
@@ -380,7 +377,7 @@ class AutoTest
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .=  '<save-client-configuration>';
-        $b .=    '<client-config store-card="3" auto-capture="true" country-id="100">';
+        $b .=    '<client-config store-card="3" country-id="100">';
         $b .=    '<name>Emirates - IBE</name>';
         $b .=    '<username>user</username>';
         $b .=    '<password>pass</password>';
@@ -487,7 +484,7 @@ class AutoTest
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .=  '<save-client-configuration>';
-        $b .=   '<client-config id="10025" store-card="3" auto-capture="true" country-id="100">';
+        $b .=   '<client-config id="10025" store-card="3" country-id="100">';
         $b .=    '<name>Emirates - IBE</name>';
         $b .=    '<username>10000000</username>';
         $b .=    '<password>99999999</password>';

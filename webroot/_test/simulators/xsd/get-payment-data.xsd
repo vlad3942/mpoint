@@ -136,7 +136,7 @@
 										<xs:element type="xs:string" name="additional-config"/>
 									</xs:sequence>
 									<xs:attribute type="xs:byte" name="id"/>
-									<xs:attribute type="xs:string" name="auto-capture"/>
+<!--									<xs:attribute type="xs:string" name="auto-capture"/>-->
 									<xs:attribute type="xs:string" name="enable-cvv"/>
 									<xs:attribute type="xs:byte" name="country-id"/>
 									<xs:attribute type="xs:string" name="language"/>
