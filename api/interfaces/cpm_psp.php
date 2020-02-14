@@ -1016,13 +1016,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $b;
 	}
 	
-	protected function _constOrderDetails($obj_txnInfo)
+	protected function _constOrderDetails(TxnInfo $obj_txnInfo)
 	{
 		
-		$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
+		//$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
 		//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-		$xml = '<order-attempt>'.$RS["COUNT"].'</order-attempt>' ;
+		//$RS = $this->getDBConn()->getName($sql);
+		$xml = '<order-attempt>'.$obj_txnInfo->getAttemptNumber().'</order-attempt>' ;
 		return $xml ;
 	}
 	
