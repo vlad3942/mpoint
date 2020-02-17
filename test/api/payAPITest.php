@@ -34,8 +34,7 @@ class PayAPITest extends baseAPITest
 		$xml .='>';
 		$xml .= '<card type-id="'. $card .'">';
         $xml .= '<amount country-id="100"';
-        if(isset($currencyid) === true)
-            $xml .= ' currency-id="'.$currencyid.'"';
+        if($currencyid>0) $xml .= ' currency-id="'.$currencyid.'"';
         $xml .= '>'.$amount.'</amount>';
 		$xml .= '</card>';
         if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';

@@ -7,7 +7,7 @@ require_once __DIR__. '/authorizeAPITest.php';
 
 class DCCAuthorizeAPITest extends AuthorizeAPITest
 {
-    public function testSuccessfulDCCAuth()
+    public function testSuccessfulAuthorize()
     {
         $pspID = Constants::iWIRE_CARD_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
@@ -40,4 +40,13 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
     }
 
+    public function testSuccessfulAuthorizeWithCurrency()
+    {
+
+    }
+
+    public function testSuccessfulAuthorizeIncludingAutoCapture()
+    {
+
+    }
 }

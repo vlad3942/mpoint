@@ -9,7 +9,7 @@ require_once __DIR__. '/payAPITest.php';
 
 class DCCPayAPITest extends PayAPITest
 {
-    public function testSuccessfulDCCPay()
+    public function testSuccessfulPay()
     {
         $pspID = Constants::iWIRE_CARD_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
@@ -34,7 +34,7 @@ class DCCPayAPITest extends PayAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="1">', $sReplyBody);
         $res =  $this->queryDB("SELECT externalid FROM log.externalreference_tbl where txnid=1001011 and type=".Constants::iForeignExchange);
-        var_dump($res);
+
         $this->assertTrue(is_resource($res) );
         $res =  $this->queryDB("SELECT convetredcurrencyid FROM Log.Transaction_Tbl where id=1001011 and convetredcurrencyid = 208 and currencyid=840 and convertedamount=20000");
         $this->assertTrue(is_resource($res)&& pg_num_rows($res) == 1 );
