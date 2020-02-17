@@ -706,7 +706,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$xml .= '<callback>';
 		$xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
-		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '" currency="'.$obj_TxnInfo->getPaymentCurrencyConfig()->getCurrency().'">'. $obj_TxnInfo->getPaymentAmount(). '</amount>';
+		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '" currency="'.$obj_TxnInfo->getCountryConfig()->getCurrency().'">'. $obj_TxnInfo->getPaymentAmount(). '</amount>';
 		$xml .= '		<card type-id="'.$iCardid.'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
 		$xml .= '		</card>';
 		$xml .= '		<description>'. $obj_TxnInfo->getDescription() .'</description>';
