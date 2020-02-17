@@ -1222,7 +1222,7 @@ class Validate extends ValidateBase
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
 
-		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $email . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
 		
 		if (strtolower($mac) === strtolower($chk))
 		{
