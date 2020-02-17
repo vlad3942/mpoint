@@ -377,7 +377,7 @@ class AutoTest
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .=  '<save-client-configuration>';
-        $b .=    '<client-config store-card="3" country-id="100">';
+        $b .=    '<client-config store-card="3" auto-capture="false" country-id="100">';
         $b .=    '<name>Emirates - IBE</name>';
         $b .=    '<username>user</username>';
         $b .=    '<password>pass</password>';
@@ -484,7 +484,7 @@ class AutoTest
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .=  '<save-client-configuration>';
-        $b .=   '<client-config id="10025" store-card="3" country-id="100">';
+        $b .=   '<client-config id="10025" store-card="3" auto-capture="false" country-id="100">';
         $b .=    '<name>Emirates - IBE</name>';
         $b .=    '<username>10000000</username>';
         $b .=    '<password>99999999</password>';
