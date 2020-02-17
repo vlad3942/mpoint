@@ -262,6 +262,7 @@ class InitializeAPIValidationTest extends baseAPITest
     public function testSSOFailForStoredCard()
 	{
 		$pspID = 2;
+		$this->bIgnoreErrors = true; //User Warning Expected
 
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
 
@@ -298,7 +299,7 @@ class InitializeAPIValidationTest extends baseAPITest
 	public function testSSOTimeoutForStoredCard()
 	{
 		$pspID = 2;
-
+        $this->bIgnoreErrors = true; //User Warning Expected
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -334,7 +335,7 @@ class InitializeAPIValidationTest extends baseAPITest
 	public function testSSOSuccessForStoredCard()
 	{
 		$pspID = 2;
-
+        $this->bIgnoreErrors = true; //User Warning Expected
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -370,7 +371,7 @@ class InitializeAPIValidationTest extends baseAPITest
 	public function testSSOMissingAuthToken()
 	{
 		$pspID = 2;
-
+        $this->bIgnoreErrors = true; //User Warning Expected
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
