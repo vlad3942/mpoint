@@ -1475,7 +1475,7 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-<!--		<xs:attribute name="auto-capture" type="xs:boolean" use="required" />-->
+		<xs:attribute name="auto-capture" type="xs:boolean" use="required" />
 	</xs:complexType>
 	<xs:complexType name="client-psp-config">
 		<xs:annotation>

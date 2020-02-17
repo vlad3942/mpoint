@@ -252,6 +252,12 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_bEnableCVV;
 	/**
+	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
+	 *
+	 * @var boolean
+	 */
+	private $_bAutoCapture;
+	/**
 	 * Boolean Flag indicating whether mPoint should include the PSP's ID for the Payment in the Callback to the Client.
 	 *
 	 * @var boolean
@@ -470,7 +476,7 @@ class ClientConfig extends BasicConfig
 
 		$this->_sTerms = trim($terms);
 		$this->_iMode = (integer) $m;
-
+		$this->_bAutoCapture = false;
 		$this->_bEnableCVV = (bool) $ecvv;
 		$this->_bSendPSPID = (bool) $sp;
 		$this->_iStoreCard = (integer) $sc;
@@ -863,6 +869,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getCVVenabled() { return $this->_bEnableCVV; }
 	/**
+	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
+	 *
+	 * @return 	boolean
+	 */
+	public function useAutoCapture() { return $this->_bAutoCapture; }
+	/**
 	 * Boolean Flag indicating whether mPoint should include the PSP's ID for the Payment in the Callback to the Client.
 	 *
 	 * @return 	boolean
@@ -1062,7 +1074,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<notification-url>'. htmlspecialchars($this->getNotificationURL(), ENT_NOQUOTES) .'</notification-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
-
+		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
@@ -1086,7 +1098,7 @@ class ClientConfig extends BasicConfig
 	
 	public function toFullXML($propertyScope=2)
 	{
-		$xml = '<client-config id="'. $this->getID() .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
+		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
@@ -1150,7 +1162,7 @@ class ClientConfig extends BasicConfig
 	}
 
 	function toCompactXML(){
-        $xml = '<client-config id="'. $this->getID() .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
+        $xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
         $xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
         $xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
         $xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
