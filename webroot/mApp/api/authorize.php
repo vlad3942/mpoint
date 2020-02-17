@@ -312,7 +312,7 @@ try
                                                 $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }
                                         }
-                                       else if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN)  && $obj_TxnInfo->getConvertedAmount() > (float)0 &&
+                                       else if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN)  && $obj_TxnInfo->getConvertedAmount() <= (float)0 &&
                                            intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"])  !=$obj_TxnInfo->getCurrencyConfig()  &&
                                            empty($obj_DOM->{'authorize-payment'}[$i]->transaction["foreign-exchange-id"]) === false)
                                            //Allowed to pass price validation in case of dcc opt
