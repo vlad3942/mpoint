@@ -1133,6 +1133,254 @@ class TxnInfo
 		return $xml;
 	}
 
+	/**
+	 * Converts the data object into Attribute Less XML.
+	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
+	 * after it has been resized to fit the screen resolution of the customer's mobile device.
+	 * @param array $aExcludeNodes node to exclude
+	 * @param int       $iAmount
+	 * @param UAProfile $oUA Reference to the User Agent Profile for the Customer's Mobile Device (optional)
+	 * @param null      $ticketNumbers
+	 *
+	 * @return    string
+	 * @throws \ImageException
+	 * @see    General::formatAmount()
+	 *
+	 * @see    iCLIENT_LOGO_SCALE
+	 */
+	public function toAttributeLessXML($aExcludeNodes = array(),$iAmount = -1,UAProfile &$oUA=null,$ticketNumbers = null)
+	{
+		$obj_CurrencyConfig = $this->getPaymentCurrencyConfig();
+
+		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
+		{
+			$obj_Image = new Image($this->_sLogoURL);
+			if ($oUA->getHeight() * iCLIENT_LOGO_SCALE / 100 < $obj_Image->getSrcHeight() ) { $iHeight = $oUA->getHeight() * iCLIENT_LOGO_SCALE / 100; }
+			else { $iHeight = $obj_Image->getSrcHeight(); }
+			$obj_Image->resize($oUA->getWidth(), $iHeight);
+
+			$iWidth = $obj_Image->getTgtWidth();
+			$iHeight = $obj_Image->getTgtHeight();
+		}
+		else
+		{
+			$iWidth = "100%";
+			$iHeight = iCLIENT_LOGO_SCALE ."%";
+		}
+
+
+		$xml  = '<transaction>';
+		$xml .= '<id>'.$this->_iID.'</id>';
+		$xml .= '<type>'.$this->_iTypeID.'</type>';
+		$xml .= '<gmid>'.$this->_iGoMobileID.'</gmid>';
+		$xml .= '<mode>'.$this->_iMode.'</mode>';
+		$xml .= '<attempt>'.$this->_iAttempt.'</attempt>';
+		$xml .= '<pspId>'.$this->_iPSPID.'</pspId>';
+		$xml .= '<cardId>'.$this->_iCardID.'</cardId>';
+		$xml .= '<walletId>'.$this->_iWalletID.'</walletId>';
+		$xml .= '<productType>'.$this->_iProductType.'</productType>';
+		$xml .= '<externalId>'.htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'</externalId>';
+
+		if(in_array("capturedAmount", $aExcludeNodes) === false)
+		{
+			$xml .= '<capturedAmount>';
+			$xml .= '<countryId>'.$this->_obj_CountryConfig->getID() .'</countryId>';
+			$xml .= '<currency>'.$obj_CurrencyConfig->getCode() .'</currency>';
+			$xml .= '<symbol>'.$this->_obj_CountryConfig->getSymbol() .'</symbol>';
+			$xml .= '<format>'.$this->_obj_CountryConfig->getPriceFormat()  .'</format>';
+			$xml .= '<alpha2code>'.$this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
+			$xml .= '<alpha3code>'.$this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
+			$xml .= '<code>'.$this->_obj_CountryConfig->getNumericCode().'</code>';
+			$xml .= '<amount>'.$this->_lCapturedAmount .'</amount>';
+			$xml .= '</capturedAmount>';
+		}
+
+		if($iAmount < 0)
+		{
+			if($this->getConvertedAmount() > 0) $iAmount = $this->getConvertedAmount();
+			else $iAmount = $this->_lAmount;
+		}
+		if(in_array("amount", $aExcludeNodes) === false)
+		{
+			$xml .= '<amount>';
+			$xml .= '<countryId>'.$this->_obj_CountryConfig->getID().'</countryId>';
+			$xml .= '<currencyId>'.$obj_CurrencyConfig->getID().'</currencyId>';
+			$xml .= '<currency>'.$obj_CurrencyConfig->getCode().'</currency>';
+			$xml .= '<decimals>'.$obj_CurrencyConfig->getDecimals().'</decimals>';
+			$xml .= '<symbol>'.$this->_obj_CountryConfig->getSymbol().'</symbol>';
+			$xml .= '<format>'.$this->_obj_CountryConfig->getPriceFormat().'</format>';
+			$xml .= '<alpha2code>'.$this->_obj_CountryConfig->getAlpha2code().'</alpha2code>';
+			$xml .= '<alpha3code>'.$this->_obj_CountryConfig->getAlpha3code().'</alpha3code>';
+			$xml .= '<code>'.$this->_obj_CountryConfig->getNumericCode().'</code>';
+			$xml .= '<value>'.$iAmount.'</value>';
+			$xml .= '</amount>';
+		}
+		if(in_array("amountInfo", $aExcludeNodes) === false)
+		{
+			$xml .= '<amountInfo>';
+			$xml .= '<countryId>'. $this->_obj_CountryConfig->getID() .'</countryId>';
+			$xml .= '<currencyId>'. $obj_CurrencyConfig->getID() .'</currencyId>';
+			$xml .= '<currency>'. $obj_CurrencyConfig->getCode() .'</currency>';
+			$xml .= '<decimals>'. $obj_CurrencyConfig->getDecimals() .'</decimals>';
+			$xml .= '<symbol>'. $this->_obj_CountryConfig->getSymbol() .'</symbol>';
+			$xml .= '<format>'. $this->_obj_CountryConfig->getPriceFormat() .'</format>';
+			$xml .= '<alpha2code>'. $this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
+			$xml .= '<alpha3code>'. $this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
+			$xml .= '<code>'. $obj_CurrencyConfig->getID() .'</code>';
+			$xml .= '<amount>'. $this->_lAmount .'</amount>';
+			$xml .= '</amountInfo>';
+		}
+
+
+		if(in_array("fee", $aExcludeNodes) === false)
+		{
+			$xml .= '<fee>';
+			$xml .= '<countryId>'.$this->_obj_CountryConfig->getID().'</countryId>';
+			$xml .= '<currency>'.$obj_CurrencyConfig->getCode().'</currency>';
+			$xml .= '<symbol>'.$this->_obj_CountryConfig->getSymbol().'</symbol>';
+			$xml .= '<format>'.$this->_obj_CountryConfig->getPriceFormat().'</format>';
+			$xml .= '<value>'.$this->_iFee.'</value>';
+			$xml .= '</fee>';
+		}
+
+		if(in_array("price", $aExcludeNodes) === false)
+		{
+			$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $this->_lAmount) .'</price>';
+		}
+		if(in_array("points", $aExcludeNodes) === false)
+		{
+			$xml .= '<points>';
+			$xml .= '<countryId>0</countryId>';
+			$xml .= '<currency>points</currency>';
+			$xml .= '<symbol>points</symbol>';
+			$xml .= '<format>{PRICE} {CURRENCY}</format>';
+			$xml .= '<value>'.$this->_iPoints.'</value>';
+			$xml .= '</points>';
+		}
+
+		if(in_array("reward", $aExcludeNodes) === false)
+		{
+			$xml .= '<reward>';
+			$xml .= '<countryId>0</countryId>';
+			$xml .= '<currency>points</currency>';
+			$xml .= '<symbol>points</symbol>';
+			$xml .= '<format>{PRICE} {CURRENCY}</format>';
+			$xml .= '<value>'.$this->_iReward.'</value>';
+			$xml .= '</reward>';
+		}
+
+		if(in_array("refund", $aExcludeNodes) === false)
+		{
+			$xml .= '<refund>';
+			$xml .= '<countryId>'.$this->_obj_CountryConfig->getID().'</countryId>';
+			$xml .= '<currency>'.$obj_CurrencyConfig->getCode().'</currency>';
+			$xml .= '<symbol>'.$this->_obj_CountryConfig->getSymbol().'</symbol>';
+			$xml .= '<format>'.$this->_obj_CountryConfig->getPriceFormat().'</format>';
+			$xml .= '<amount>'.$this->_iRefund.'</amount>';
+			$xml .= '</refund>';
+		}
+
+		$xml .= '<orderid>'. $this->_sOrderID .'</orderid>';
+		if(in_array("mobile", $aExcludeNodes) === false)
+		{
+			$xml .= '<mobile>';
+			$xml .= '<countryId>'.intval($this->_iOperatorID/100).'</countryId>';
+			$xml .= '<countryCode>'.$this->_obj_CountryConfig->getCountryCode().'</countryCode>';
+			$xml .= '<value>'.$this->_sMobile.'</value>';
+			$xml .= '</mobile>';
+		}
+
+		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
+		$xml .= '<email>'. $this->_sEMail .'</email>';
+		$xml .= '<deviceId>'. $this->_sDeviceID .'</deviceId>';
+		$xml .= '<logo>';
+		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
+		$xml .= '<width>'. $iWidth .'</width>';
+		$xml .= '<height>'. $iHeight .'</height>';
+		$xml .= '</logo>';
+		$xml .= '<cssUrl>'. htmlspecialchars($this->_sCSSURL, ENT_NOQUOTES) .'</cssUrl>';
+		$xml .= '<acceptUrl>'. htmlspecialchars($this->_sAcceptURL, ENT_NOQUOTES) .'</acceptUrl>';
+		$xml .= '<cancelUrl>'. htmlspecialchars($this->_sCancelURL, ENT_NOQUOTES) .'</cancelUrl>';
+		$xml .= '<declineUrl>'. htmlspecialchars($this->_sDeclineURL, ENT_NOQUOTES) .'</declineUrl>';
+		$xml .= '<callbackUrl>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callbackUrl>';
+		$xml .= '<iconUrl>'. htmlspecialchars($this->_sIconURL, ENT_NOQUOTES) .'</iconUrl>';
+		$xml .= '<authUrl>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</authUrl>';
+		$xml .= '<language>'. $this->_sLanguage .'</language>';
+		$xml .= '<autoCapture>'. General::bool2xml($this->_bAutoCapture) .'</autoCapture>';
+		$xml .= '<autoStoreCard>'. General::bool2xml($this->_bAutoStoreCard) .'</autoStoreCard>';
+		$xml .= '<markupLanguage>'. $this->_sMarkupLanguage .'</markupLanguage>';
+		$xml .= '<customerRef>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customerRef>';
+		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
+		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
+		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
+		$xml .= '<createdDate>'. htmlspecialchars(date("Ymd", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //CCYYMMDD
+		$xml .= '<createdTime>'. htmlspecialchars(date("His", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
+
+		if($this->getAdditionalData("booking-ref") != null)
+		{
+			$xml .= '<bookingRef>'. htmlspecialchars($this->getAdditionalData("booking-ref"), ENT_NOQUOTES) .'</bookingRef>';
+		}
+
+		if($this->getAdditionalData('invoiceid') !== null)
+		{
+			$xml .= '<invoiceid>'. htmlspecialchars($this->getAdditionalData("invoiceid"), ENT_NOQUOTES) .'</invoiceid>';
+		}
+
+		if(!empty($this->_token))
+			$xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
+
+		if(!empty($this->_mask))
+			$xml .= '<cardMask>'.htmlspecialchars($this->_mask, ENT_NOQUOTES).'</cardMask>';
+
+		if(!empty($this->_expiry))
+			$xml .= '<expiry>'.htmlspecialchars($this->_expiry, ENT_NOQUOTES).'</expiry>';
+
+		if(!empty($this->_approvalCode))
+			$xml .= '<approvalCode>'.htmlspecialchars($this->_approvalCode, ENT_NOQUOTES).'</approvalCode>';
+
+		if(!empty($this->_actionCode))
+			$xml .= '<actionCode>'.htmlspecialchars($this->_actionCode, ENT_NOQUOTES).'</actionCode>';
+
+		if(!empty($this->_authOriginalData))
+			$xml .= '<authOriginalData>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</authOriginalData>';
+
+		if( empty($this->_obj_OrderConfigs) === false && in_array("orders", $aExcludeNodes) === false)
+		{
+
+			$xml .= $this->getAttributeLessOrdersXML();
+		}
+		if($this->getAdditionalData() != null && in_array("additionalData", $aExcludeNodes) === false)
+		{
+			$xml .= "<additionalData>";
+			foreach ($this->getAdditionalData() as $key=>$value)
+			{
+				if (strpos($key, 'rule') === false)
+				{
+					$xml .= '<param>';
+					$xml .=  '<name>'. $key . '</name>';
+					$xml .=  '<value>'. $value . '</name>';
+					$xml .= '</param>';
+				}
+			}
+			$xml .="</additionalData>";
+		}
+
+		if(!empty($this->_iInstallmentValue) && $this->getInstallmentValue() > 0)
+		{
+			$xml .= '<installment><value>'.htmlspecialchars($this->_iInstallmentValue, ENT_NOQUOTES).'</value></installment>';
+		}
+
+		if($this->getProfileID() > 0)
+		{
+			$xml .= '<profileid>'.htmlspecialchars($this->getProfileID(), ENT_NOQUOTES).'</profileid>';
+		}
+
+		$xml .= '</transaction>';
+
+		return $xml;
+	}
+
+
 	public static function produceInfoFromOrderNoAndMerchant(RDB $obj, $orderNo, $merchant = '', array $data = array() )
 	{
 		$sql  = self::_constProduceQuery();
@@ -1701,6 +1949,25 @@ class TxnInfo
 			$xml .= '</orders>';
 		}
 		
+		return $xml;
+	}
+
+	public function getAttributeLessOrdersXML($ticketNumbers = null)
+	{
+		$xml = '';
+		if( empty($this->_obj_OrderConfigs) === false )
+		{
+			$xml .= '<orders>';
+			foreach ($this->_obj_OrderConfigs as $obj_OrderInfo)
+			{
+				if( ($obj_OrderInfo instanceof OrderInfo) === true )
+				{
+					$xml .= $obj_OrderInfo->toAttributeLessXML();
+				}
+			}
+			$xml .= '</orders>';
+		}
+
 		return $xml;
 	}
 

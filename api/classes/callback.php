@@ -481,27 +481,39 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyForeignExchange(array $aStateId,array $aCI)
 	{
+		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<callback client-id="'. $this->_obj_TxnInfo->getClientConfig()->getID(). '" account="'. $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= '<client-config>';
-		$b .= '<additional-config>';
+		$b .= '<callback>';
+		$b .=  '<clientId>'.$this->_obj_TxnInfo->getClientConfig()->getID().'</clientId>';
+		$b .=  '<account>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account>';
+		$b .= '<clientConfig>';
+		$b .= '<additionalConfig>';
 		foreach ($this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
 		{
-			$b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+			$b .= '<property>';
+			$b .=  '<name>'.$aAdditionalProperty['key'].'</name>';
+			$b .=  '<value>'.$aAdditionalProperty['value'].'</value>';
+			$b .= '</property>';
 		}
-
-		$b .= '</additional-config>';
-		$b .= '</client-config>';
-		$b .= $this->_obj_PSPConfig->toXML(Constants::iPrivateProperty);
+		$b .= '</additionalConfig>';
+		$b .= '</clientConfig>';
+		$b .= $this->_obj_PSPConfig->toAttributeLessXML(Constants::iPrivateProperty);
 		$s = '<status>';
 		foreach ($aStateId as $iStateId)
 		{
-			$s .= '<status-message code="'.$iStateId.'" />';
+			$s .= '<code>'.$iStateId.'</code>';
 		}
 
 		$s .= '</status>';
-		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toXML());
+		$aExcludeNode = array();
+		array_push($aExcludeNode,'fee');
+		array_push($aExcludeNode,'price');
+		array_push($aExcludeNode,'points');
+		array_push($aExcludeNode,'reward');
+		array_push($aExcludeNode,'mobile');
+		
+		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toAttributeLessXML($aExcludeNode));
 		$b .= '</callback>';
 		$b .= '</root>';
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_CONSTRUCTED_STATE, $b);
