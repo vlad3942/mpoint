@@ -475,7 +475,13 @@ class TxnInfo
 		$this->_iFee = (integer) $fee;
 		$this->_lCapturedAmount = (float) $cptamt;
 		$this->_iCardID = (integer) $cardid;
-		$this->_iWalletID = (integer) $walletid;
+		if($walletid === null)
+		{
+			$this->_iWalletID = -1;
+		}
+		else {
+			$this->_iWalletID = (integer)$walletid;
+		}
 		$this->_sDeviceID = trim($devid);
 
 		$this->_mask = trim($mask);
