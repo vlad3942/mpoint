@@ -1148,26 +1148,9 @@ class TxnInfo
 	 *
 	 * @see    iCLIENT_LOGO_SCALE
 	 */
-	public function toAttributeLessXML($aExcludeNodes = array(),$iAmount = -1,UAProfile &$oUA=null,$ticketNumbers = null)
+	public function toAttributeLessXML($aExcludeNodes = array(),$iAmount = -1,$ticketNumbers = null)
 	{
 		$obj_CurrencyConfig = $this->getPaymentCurrencyConfig();
-
-		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
-		{
-			$obj_Image = new Image($this->_sLogoURL);
-			if ($oUA->getHeight() * iCLIENT_LOGO_SCALE / 100 < $obj_Image->getSrcHeight() ) { $iHeight = $oUA->getHeight() * iCLIENT_LOGO_SCALE / 100; }
-			else { $iHeight = $obj_Image->getSrcHeight(); }
-			$obj_Image->resize($oUA->getWidth(), $iHeight);
-
-			$iWidth = $obj_Image->getTgtWidth();
-			$iHeight = $obj_Image->getTgtHeight();
-		}
-		else
-		{
-			$iWidth = "100%";
-			$iHeight = iCLIENT_LOGO_SCALE ."%";
-		}
-
 
 		$xml  = '<transaction>';
 		$xml .= '<id>'.$this->_iID.'</id>';
@@ -1197,8 +1180,8 @@ class TxnInfo
 
 		if($iAmount < 0)
 		{
-			if($this->getConvertedAmount() > 0) $iAmount = $this->getConvertedAmount();
-			else $iAmount = $this->_lAmount;
+			if($this->getConvertedAmount() > 0) { $iAmount = $this->getConvertedAmount(); }
+			else { $iAmount = $this->_lAmount; }
 		}
 		if(in_array("amount", $aExcludeNodes) === false)
 		{
@@ -1295,8 +1278,6 @@ class TxnInfo
 		$xml .= '<deviceId>'. $this->_sDeviceID .'</deviceId>';
 		$xml .= '<logo>';
 		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
-		$xml .= '<width>'. $iWidth .'</width>';
-		$xml .= '<height>'. $iHeight .'</height>';
 		$xml .= '</logo>';
 		$xml .= '<cssUrl>'. htmlspecialchars($this->_sCSSURL, ENT_NOQUOTES) .'</cssUrl>';
 		$xml .= '<acceptUrl>'. htmlspecialchars($this->_sAcceptURL, ENT_NOQUOTES) .'</acceptUrl>';

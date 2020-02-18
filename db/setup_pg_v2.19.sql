@@ -59,9 +59,9 @@ INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(0, 'System');
 INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(1, 'UATP');
 INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(2, 'CellPoint Foreign Exchange');
 
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(19801, 'Foreign Exchange  Callback Accepted', 'Callback', 'send');
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1981, 'Foreign Exchange  Callback Constructed', 'Callback', 'send');
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1983, 'Foreign Exchange  Callback Connection Failed', 'Callback', 'send');
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1984, 'Foreign Exchange  Callback Transmission Failed', 'Callback', 'send');
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1985, 'Foreign Exchange  Callback Rejected', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1980, 'Foreign Exchange  Acknowledgement Accepted', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1981, 'Foreign Exchange  Acknowledgement Constructed', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1983, 'Foreign Exchange  Acknowledgement Connection Failed', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1984, 'Foreign Exchange  Acknowledgement Transmission Failed', 'Callback', 'send');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1985, 'Foreign Exchange  Acknowledgement Rejected', 'Callback', 'send');
 
