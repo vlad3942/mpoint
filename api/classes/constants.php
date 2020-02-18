@@ -166,27 +166,27 @@ abstract class Constants
 	 * Defines the ID of the State that indicates that mPoint's Callback to Foreign Exchange request has been accepted
 	 *
 	 */
-	const iCBFX_ACCEPTED_STATE = 19901;
+	const iCBFX_ACCEPTED_STATE = 19801;
 	/**
 	 * Defines the ID of the State that indicates that the callback to Foreign Exchange  request to the Client has been constructed
 	 *
 	 */
-	const iCBFX_CONSTRUCTED_STATE = 19911;
+	const iCBFX_CONSTRUCTED_STATE = 1981;
 	/**
 	 * Defines the ID of the State that indicates that the connection to the Client's server failed while mPoint was doing a Callback
 	 *
 	 */
-	const iCBFX_CONN_FAILED_STATE = 19931;
+	const iCBFX_CONN_FAILED_STATE = 1983;
 	/**
 	 * Defines the ID of the State that indicates that the Callback to Foreign Exchange request to the Client while mPoint was transmitting the data
 	 *
 	 */
-	const iCBFX_SEND_FAILED_STATE = 19941;
+	const iCBFX_SEND_FAILED_STATE = 1984;
 	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback to Foreign Exchange request has been rejected
 	 *
 	 */
-	const iCBFX_REJECTED_STATE = 19951;
+	const iCBFX_REJECTED_STATE = 1985;
 	/**
 	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and authorisation was successful.
 	 *
