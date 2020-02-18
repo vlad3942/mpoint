@@ -534,7 +534,7 @@ class General
 		}
 		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
 	}
-	
+
 	/**
 	 * Create a new transaction with same session id as the original transaction,
 	 * and authorize the new transaction using secondary PSP as part of Dynamic Routing
@@ -1281,16 +1281,19 @@ class General
 	 * @return string
 	 * */
 
-    public function getTxnAttemptsFromOrderID($orderid)
+    public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
     {
         $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-					WHERE orderid = '" . trim($orderid) . "' AND enabled = true 
+					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
+					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
+					AND countryid = '.$countryConfig->getID()."
+					AND created > NOW() - interval '15 days' 
 					ORDER BY created DESC LIMIT 1";
 //			echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
         if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
-        else { $code = -1; }    // Transaction not found
+        else { $code = 0; }    // Transaction not found
 
         return $code;
     }
