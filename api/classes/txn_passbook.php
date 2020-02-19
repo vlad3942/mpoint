@@ -522,7 +522,7 @@ final class TxnPassbook
      * @return array
      * @throws \Exception
      */
-    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE)
+    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE, $isPSPCallRequired = TRUE)
     {
         $codes = array();
         if ($isRetryRequest === FALSE) {
@@ -557,21 +557,28 @@ final class TxnPassbook
                     }
                     else
                     {
-                        $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
-                        $obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
-                        $code = -1;
-                        switch ($passbookEntry->getPerformedOperation())
-                        {
-                            case Constants::iPAYMENT_CAPTURED_STATE;
-                                $code = $obj_PSP->capture($passbookEntry->getAmount());
-                                break;
-                            case Constants::iPAYMENT_CANCELLED_STATE;
-                                $code = $obj_PSP->cancel(null,$passbookEntry->getAmount());
-                                break;
-                            case Constants::iPAYMENT_REFUNDED_STATE;
-                                $code = $obj_PSP->refund($passbookEntry->getAmount());
-                                break;
-                        }
+						$code = -1;
+						if($isPSPCallRequired === TRUE)
+						{
+							$txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
+							$obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
+							switch ($passbookEntry->getPerformedOperation())
+							{
+								case Constants::iPAYMENT_CAPTURED_STATE;
+									$code = $obj_PSP->capture($passbookEntry->getAmount());
+									break;
+								case Constants::iPAYMENT_CANCELLED_STATE;
+									$code = $obj_PSP->cancel(null,$passbookEntry->getAmount());
+									break;
+								case Constants::iPAYMENT_REFUNDED_STATE;
+									$code = $obj_PSP->refund($passbookEntry->getAmount());
+									break;
+							}
+						}
+						if($isPSPCallRequired === FALSE)
+						{
+							$code = 1000;
+						}
                         $codes[$passbookEntry->getPerformedOperation()] = $code;
                         if($code === 100 ||$code === 1000 || $code === 1001 || $code === 1002)
                         {
@@ -938,5 +945,4 @@ final class TxnPassbook
         }
         return $return;
     }
-
 }
