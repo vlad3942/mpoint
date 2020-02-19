@@ -93,6 +93,9 @@ require_once(sCLASS_PATH ."/eghl.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
 
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true) {

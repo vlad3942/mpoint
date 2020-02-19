@@ -14,9 +14,6 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) VALUES (<clientid
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>, 41, <MERCHANTTOKEN>); -- For Android and iOS merchant accounts.
 INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position,psp_type) VALUES (<clientid>, 39, true, 41, <CountryId>, 1, null,5);
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MERCHANT_API_TOKEN', <WEB-MERCHANT-TOKEN>, (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 41), 'merchant');
-
-
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MERCHANT_VENDOR', 'wechatpay', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 41), 'merchant');
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('ALLOW_DUPLICATES', 'no', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 41), 'merchant');

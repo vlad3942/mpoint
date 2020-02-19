@@ -25,6 +25,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 
 /**
  * Input XML format
@@ -90,7 +92,7 @@ try
 			else
 			{
 				// Transaction uses Auto Capture and Authorization was accepted
-				if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+				if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 				{
 					// Perform capture
 					$code = $obj_PSP->capture();

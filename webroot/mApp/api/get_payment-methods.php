@@ -44,8 +44,15 @@ require_once(sCLASS_PATH ."/account_config.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 // Require Data class for Wallet processor
 require_once(sCLASS_PATH ."/wallet_processor.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Apple Pay component
+require_once(sCLASS_PATH ."/applepay.php");
 // Require specific Business logic for the Google Pay component
 require_once(sCLASS_PATH ."/googlepay.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
+
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -140,7 +147,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $xml .= '</accounts>'; 
                             $xml .= '</client-config>';
-                            $xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
+                            $xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
                             $xml .= $obj_XML->amount->asXML();
                             if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
                             if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }

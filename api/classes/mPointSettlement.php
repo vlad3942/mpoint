@@ -87,8 +87,22 @@ abstract class mPointSettlement
 
         $this->_getPSPConfiguration($_OBJ_DB);
 
+        $aStateMapping = array(
+            Constants::iPAYMENT_CAPTURE_INITIATED_STATE => Constants::iPAYMENT_CAPTURED_STATE,
+            Constants::iPAYMENT_CANCEL_INITIATED_STATE => Constants::iPAYMENT_CANCELLED_STATE,
+            Constants::iPAYMENT_REFUND_INITIATED_STATE => Constants::iPAYMENT_REFUNDED_STATE
+        );
+
+        $aFinalStateMappings = array();
+
+        foreach ($aStateIds as $stateId)
+        {
+            array_push($aFinalStateMappings, $aStateMapping[$stateId]);
+        }
+
         $iBatchLimit = 200;
         $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
+        $isTicketLevelSettlement = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
         if($sSettlementBatchLimit != '')
         {
             $iBatchLimit = (int)$sSettlementBatchLimit;
@@ -111,6 +125,20 @@ abstract class mPointSettlement
             $recordNumber = (int)$res["RECORD_NUMBER"];
         }
 
+        $extendedCondition = '';
+        if($this->_sRecordType === 'CAPTURE')
+        {
+            $extendedCondition .= Constants::iPAYMENT_REFUND_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
+        }
+        elseif($this->_sRecordType === 'REFUND')
+        {
+            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_CANCEL_INITIATED_STATE;
+        }
+        else{
+            $extendedCondition .= Constants::iPAYMENT_CAPTURE_INITIATED_STATE . ', ' . Constants::iPAYMENT_REFUND_INITIATED_STATE;
+        }
+
+
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
@@ -125,7 +153,7 @@ abstract class mPointSettlement
                            where clientid = $this->_iClientId
                               AND pspid = $this->_iPspId
                               AND Txn.cardid NOTNULL
-                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE .")
+                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE ."," . $extendedCondition .")
                          ORDER BY txnid, msg.created DESC
                        ) sub
                   WHERE stateid IN ($stateIds)";
@@ -156,18 +184,76 @@ abstract class mPointSettlement
             }
         }
 
-        $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+        $this->_arrayTransactionIds = (array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+
+        $arrayPartialOperations = [];
+
+        $sql = "SELECT DISTINCT ID FROM (
+                SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
+                RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
+                FROM log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".txnpassbook_Tbl TP ON T.id = TP.transactionid
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_record_tbl SRT on SRT.transactionid = T.id
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
+                WHERE TP.performedopt IN ( " . implode(',', $aFinalStateMappings) . ") 
+                AND TP.status = '".Constants::sPassbookStatusInProgress."' 
+                AND ST.client_id = ".$this->_iClientId." AND ST.psp_id = ".$this->_iPspId.") s 
+                WHERE rn =1 and  s.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'";
+
+        $aRS = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs) {
+                $transactionId = (int)$rs["ID"];
+                array_push($arrayPartialOperations,$transactionId);
+            }
+        }
+
+        $this->_arrayTransactionIds = array_values(array_unique(array_merge($this->_arrayTransactionIds, $arrayPartialOperations)));
+
         $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
-        $this->_sTransactionXML = "<transactions>";
+
+        $this->_sTransactionXML = '<transactions>';
+
+        $aTransactionWithError = [];
 
         foreach ($this->_arrayTransactionIds as $transactionId)
         {
+            $isValidTransaction = TRUE;
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-            $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-            $this->_sTransactionXML .= $obj_TxnInfo->toXML();
-            $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
+            $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId);
+            if($isTicketLevelSettlement === 'true') {
+                $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0]);
+                if(count($ticketNumbers) > 0) {
+                    $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
+                    if(count($obj_TxnInfo->getOrderConfigs()) <= 0)
+                    {
+                        array_push( $aTransactionWithError, $transactionId);
+                        $isValidTransaction = FALSE;
+                    }
+                }
+                else
+                {
+                    array_push( $aTransactionWithError, $transactionId);
+                    $isValidTransaction = FALSE;
+                }
+            }
+            else{
+                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+            }
+
+            if($isValidTransaction === true) {
+                $captureAmount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB, $aStateIds);
+                $obj_UAProfile = NULL;
+                $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+                if ($captureAmount === -1) {
+                    $captureAmount = $obj_TxnInfo->getAmount();
+                }
+                $this->_iTotalTransactionAmount += $captureAmount;
+            }
         }
-        $this->_sTransactionXML .= "</transactions>";
+        $this->_sTransactionXML .= '</transactions>';
+        $this->_arrayTransactionIds = array_values((array_diff($this->_arrayTransactionIds, $aTransactionWithError)));
 
     }
 
@@ -280,7 +366,7 @@ abstract class mPointSettlement
         $h .= "user-agent: mPoint" .HTTPClient::CRLF;
         if (isset($authUser) === true && isset($authPass) === true)
         {
-            $h .= "Authorization: Basic ". base64_encode($authUser. ":". $authPass);
+            $h .= "Authorization: Basic ". base64_encode($authUser. ":". $authPass) . HTTPClient::CRLF;
         }
         /* ----- Construct HTTP Header End ----- */
 
@@ -421,8 +507,8 @@ abstract class mPointSettlement
                     $this->_parseConfirmationReport($_OBJ_DB, $replyBody);
                 }
             }
-        } 
-		catch (Exception $e) 
+        }
+		catch (Exception $e)
 		{
             trigger_error("Settlement Confirmation Process failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
             return $e->getCode();

@@ -92,6 +92,9 @@ require_once(sGOMOBILE_API_PATH ."/gomobile.php");
 // Require the PHP API for handling the connection to SMTP server
 require_once(sAPI_CLASS_PATH ."/smtp.php");
 
+// Require the PHP API for communication with the emailService System
+require_once(sAPI_CLASS_PATH ."/emailService.php");
+
 // Require global configuration file
 require_once(sGOMOBILE_CONF_PATH ."/gomobile.php");
 

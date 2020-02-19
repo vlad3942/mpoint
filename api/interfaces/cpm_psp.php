@@ -76,6 +76,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     {
                         $iStatusCode = (integer)$obj_Txn->status["code"];
                         if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
+                        else if ($iStatusCode == 1100)
+                        {
+                            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+                            $iStatusCode = 1000;
+                        }
                         return $iStatusCode;
                     }
                     else { throw new CaptureException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
@@ -144,8 +149,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 				$obj_HTTP->connect();
 				$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-				
 				$obj_HTTP->disConnect();
+				$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
+
 				if ($code == 200)
 				{
 					$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -155,7 +161,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
 					{
 						$iStatusCode = (integer)$obj_Txn->status["code"];
-						if ($iStatusCode == 1000) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
+						if ($iStatusCode == 1000)
+						{
+							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
+						}
 						else if ($iStatusCode == 1100) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
 						return $iStatusCode;
 					}
@@ -245,7 +255,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel($iStatus=null)
+	public function cancel($iStatus=null, $amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -263,11 +273,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
-		$b .= $this->_constTxnXML($this->getTxnInfo()->getAmount());
+		if($amount <= 0) {
+            $amount = $this->getTxnInfo()->getAmount();
+        }
+		$b .= $this->_constTxnXML($amount);
 		$b .= '</transactions>';
 		$b .= '</cancel>';
 		$b .= '</root>';
-
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
 		try
 		{
 			$iUpdateStatusCode = Constants::iPAYMENT_CANCELLED_STATE;
@@ -286,33 +299,42 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
 				{
 					$iStatusCode = (integer)$obj_Txn->status["code"];
-					
+					if($iStatus != null)
+					{
+						$iUpdateStatusCode = $iStatus;
+					}
+
+					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
+					$passbookState = Constants::sPassbookStatusDone;
+					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
+					$retStatusCode = $iStatusCode;
+					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							'transact'=>$this->getTxnInfo()->getExternalID(),
+							'card-id'=>0);
+
 					if ($iStatusCode == 1000)
 					{
-						
-						
-						if($iStatus != null)
-						{
-							$iUpdateStatusCode = $iStatus;
-						}
-						
-						//TODO: Move DB update and Client notification to Model layer, once this is created
-						$this->newMessage($this->getTxnInfo()->getID(),$iUpdateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
-
-						$args = array('amount'=>$this->getTxnInfo()->getAmount(),
-							          'transact'=>$this->getTxnInfo()->getExternalID(),
-							          'card-id'=>0);
-						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
-						return 1001;
+						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
+						$retStatusCode = 1001;
+						$updateStatusCode = $iUpdateStatusCode;
 					}
-					return $iStatusCode;
+
+					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
+					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
+					$this->notifyClient($paymentState, $args);
+					return $retStatusCode;
 				}
-				else { throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+				else {
+				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+				    throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
 			}
-			else { throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+			else {
+			    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+			    throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
+		    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
 			trigger_error("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 			return $e->getCode();
 		}
@@ -621,7 +643,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE, $obj_HTTP->getReplyBody());
                 //Rollback transaction
                 $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
-                $obj_PaymentProcessor->refund($this->getTxnInfo()->getAmount());
+                $obj_PaymentProcessor->cancel($this->getTxnInfo()->getAmount());
                 throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
             }
         }
@@ -808,7 +830,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			trigger_error("Could not fetch Payment Data from ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
 		}
-		
+
 		return $obj_HTTP->getReplyBody();
 	}
 
@@ -999,13 +1021,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $b;
 	}
 	
-	protected function _constOrderDetails($obj_txnInfo)
+	protected function _constOrderDetails(TxnInfo $obj_txnInfo)
 	{
 		
-		$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
+		//$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
 		//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-		$xml = '<order-attempt>'.$RS["COUNT"].'</order-attempt>' ;
+		//$RS = $this->getDBConn()->getName($sql);
+		$xml = '<order-attempt>'.$obj_txnInfo->getAttemptNumber().'</order-attempt>' ;
 		return $xml ;
 	}
 	
@@ -1222,4 +1244,55 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $aStatisticalData;
     }
 
+    public function fraudCheck($obj_Card)
+    {
+        $iStateID = 0;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<root>';
+        $xml .= '<check-fraud-status>';
+        $xml .= $this->_constTxnXML();
+        $xml .= '<card type-id="'. $obj_Card['type-id'] .'">';
+        $xml .= '<cryptogram>'.$obj_Card->{'info-3d-secure'}->cryptogram.'</cryptogram>';
+        $xml .= '<type>'.$obj_Card->{'info-3d-secure'}->cryptogram['type'].'</type>';
+        $xml .= '<eci>'.$obj_Card->{'info-3d-secure'}->cryptogram['eci'].'</eci>';
+        $xml .= '<algorithmId>'.$obj_Card->{'info-3d-secure'}->cryptogram['algorithm-id'].'</algorithmId>';
+        $xml .= '</card>';
+        $xml .= '</check-fraud-status>';
+        $xml .= '</root>';
+
+        try
+        {
+            if (isset($this->aCONN_INFO["paths"]["fraud-check"])) {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["fraud-check"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+                $obj_HTTP->disConnect();
+                if ($code == 200) {
+                    $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                    if($obj_XML->status['code'] == 200) {
+                        if ($obj_XML->status == "Reject") {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE;
+                        } else {
+                            $iStateID = Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE; //if status is one of Accept, Failed, Review or NoCheck
+                        }
+                    }else {
+                        trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
+                    }
+                } else {
+                    trigger_error("fraud-check failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
+                }
+
+            } else {
+                trigger_error("fraud-check failed - Endpoint not configured for the PSP: ".$this->getPSPConfig()->getID(), E_USER_WARNING);
+            }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("fraud-check failed for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code, E_USER_WARNING);
+        }
+        return $iStateID;
+    }
 }

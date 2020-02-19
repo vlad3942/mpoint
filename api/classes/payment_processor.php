@@ -87,6 +87,11 @@ class PaymentProcessor
         return $this->_objPSP->tokenize($aConnInfo, $this->_objPSPConfig, $obj_Elem);
     }
 
+    public function fraudCheck($obj_Elem)
+    {
+        return $this->_objPSP->fraudCheck($obj_Elem);
+    }
+
     public function processCallback($obj_Elem)
     {
         return $this->_objPSP->processCallback($this->_objPSPConfig, $obj_Elem);
@@ -121,6 +126,12 @@ class PaymentProcessor
     {
         return $this->_objPSP->status();
     }
+
+    public function cancel()
+    {
+        return $this->_objPSP->cancel();
+    }
+
     public function getPaymentMethods()
     {
         return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);

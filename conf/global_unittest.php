@@ -99,6 +99,7 @@ $aHTTP_CONN_INFO["wire-card"]["method"] = "POST";
 $aHTTP_CONN_INFO["wire-card"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/_test/simulators/wire-card/capture.php";
 
 /**
  * Connection info for connecting to DataCash
@@ -175,5 +176,17 @@ $aHTTP_CONN_INFO["uatp"]["port"] = 80;
 $aHTTP_CONN_INFO["uatp"]["timeout"] = 120;
 $aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/_test/simulators/uatp/generate-suvtp.php";
+
+/**
+ * Connection info for connecting to EZY-fraud check
+ */
+$aHTTP_CONN_INFO["ezy"]["protocol"] = "http";
+$aHTTP_CONN_INFO["ezy"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["ezy"]["port"] = 80;
+$aHTTP_CONN_INFO["ezy"]["timeout"] = 120;
+$aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["ezy"]["method"] = "POST";
+$aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
 
 ?>

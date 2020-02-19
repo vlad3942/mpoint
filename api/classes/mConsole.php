@@ -63,12 +63,12 @@ class mConsole extends Admin
     const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.payment.dashboard.x";
 
 	
-	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
+	public function saveClient($cc, $storecard, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
 	{
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
-					SET store_card = ". intval($storecard) .", auto_capture = '". intval($autocapture) ."', name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
+					SET store_card = ". intval($storecard) .", name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
 						maxamount = ". intval($maxamt) .", lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
 						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = '". $this->getDBConn()->escStr($salt) ."', communicationchannels = ". intval($channels) ."
 					WHERE id = ". intval($id);
@@ -82,7 +82,7 @@ class mConsole extends Admin
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".Client_Tbl
 						(id, store_card, auto_capture, name, username, passwd, countryid, flowid, maxamount, lang, smsrcpt, emailrcpt, mode, method, send_pspid, identification, transaction_ttl, salt)
 					VALUES
-						(". $id .", ". intval($storecard) .",'". intval($autocapture) ."', '". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
+						(". $id .", ". intval($storecard) .",'". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
 						 ". intval($maxamt) .", '". $this->getDBConn()->escStr($lang) ."', '". intval($smsrcpt) ."', '". intval($emailrcpt) ."' ,". intval($mode) .",'". $this->getDBConn()->escStr($method) ."','". intval($send_pspid) ."',". intval($identification) .",". intval($transaction_ttl) .", ". $this->getDBConn()->escStr($salt) .")";
 		}
 //		echo $sql ."\n";
@@ -870,10 +870,10 @@ class mConsole extends Admin
 			$sql .= "SELECT Txn.id,p2.st AS asStateid,Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, Txn.deviceid as deviceid,
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
-					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
+					Acc.id AS accountid, Acc.markup as markup, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 					CT.code AS currencycode,
-					CT.id AS paymentcurrency
+					CT.id AS paymentcurrency, Txn.profileid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
@@ -932,7 +932,7 @@ class mConsole extends Admin
 						$RS["MODE"],
 						CustomerInfoFactory::getInstance($this->getDBConn(), $this->getText(), new ClientURLConfig($RS["CLIENTID"], ClientConfig::iAUTHENTICATION_URL, $RS['AUTHURL']),
 							$RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"],
-							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'] ),
+							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'], $RS["PROFILEID"] ),
 						$RS["IP"],
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
@@ -1213,14 +1213,19 @@ class mConsole extends Admin
 
 		//Date part will have values always hence $where will not be empty
 
-		$sql = "SELECT date(Msg.created ".$sAtTimeZone.") AS createddate , Msg.stateid AS stateid, Count(Msg.id) AS stateidcount
-				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
-				".$where.
-				" AND Msg.id = (SELECT Max(id) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-								WHERE Txn.id = txnid AND stateid IN (". implode(",", $aStateIDS) ."))
-				GROUP BY createddate, Msg.stateid
-				ORDER BY createddate ASC, Msg.stateid ASC ";
+		$sql = "SELECT q.createddate AS createddate, q.stateid AS stateid, count(q.id) as stateidcount
+               FROM
+               (
+               SELECT date(Msg.created ".$sAtTimeZone.") AS createddate , Msg.stateid AS stateid ,Msg.id as id,
+               RANK() OVER(PARTITION BY Msg.txnid ORDER BY Msg.id desc) rn
+                                               FROM Log.Transaction_Tbl Txn
+                                               INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid"
+                                                .$where."
+                                                AND stateid IN (". implode(",", $aStateIDS) .")
+                ) q
+               where q.rn=1
+               GROUP BY q.createddate, q.stateid
+               ORDER BY q.createddate ASC, q.stateid asc";
 
 		//echo $sql ."\n";
 		$aRS = array();
@@ -1315,23 +1320,22 @@ class mConsole extends Admin
 				
 			$RS = $this->getDBConn ()->fetchName ( $res );
 			if (is_array ( $RS ) === true) {
-		
-				if($RS["GATEWAYCOUNT"] > 0){
-						
-					$result = "Gateway is already exist";
-				}else{
-		
-		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
+                if ($RS["GATEWAYCOUNT"] == 0) {
+                    $result = "Gateway does not exist";
+                } else {
+
+                    $sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = " . $objTrigger->{'aggregation-trigger'}{'unit'} . ", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'} . "
 				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
-		
-				if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
-					throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
-				}else{
-					  $result = "success";
-					}
-				}
-	        }
+
+                    if (is_resource($this->getDBConn()->query($sql)) === false) {
+                        throw new mPointException("Unable to upadte record for gatewayid : " . $pspid);
+                    } else {
+                        $result = "success";
+                    }
+                }
+            }
 		}
+            return $result;
 	}
 	
 	public function searchGatewayTrigger($clientId, $pspId) {

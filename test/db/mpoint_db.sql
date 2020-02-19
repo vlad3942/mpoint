@@ -6709,7 +6709,7 @@ GRANT ALL ON SEQUENCE user_tbl_id_seq TO postgres;
 -- from setup_pg_v1.88 --
 
 INSERT INTO System.PSP_Tbl (id, name) VALUES (11, 'MobilePay');
-INSERT INTO System.PSPCurrency_Tbl (id, pspid, countryid, name) SELECT 430, 11, 100, 'DKK';
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) SELECT 11, 100, 'DKK';
 
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (17, 'MobilePay', 15, -1, -1, -1);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (11, 17);
@@ -8034,3 +8034,193 @@ UPDATE client.cardaccess_tbl ca SET capture_method = p.capture_method FROM syste
 alter table system.psp_tbl drop column capture_method;
 
 ALTER TABLE client.client_tbl ADD COLUMN enable_cvv boolean DEFAULT true;
+
+
+
+-- State for passbook functionality -
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5010, 'Authorize Operation Requested', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5012, 'Cancel Operation Requested', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5013, 'Refund Operation Requested', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5011, 'Capture Operation Requested', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5014, 'Initialize Operation Requested', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (5015, 'Void Operation Requested', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (6100, 'Invalid Passbook Operation', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (6200, 'Operation Not Allowed ', 'Passbook', null, true);
+INSERT INTO log.state_tbl (id, name, module, func, enabled) VALUES (6201, 'Amount is Higher', 'Passbook', null, true);
+
+create table log.txnpassbook_tbl
+(
+    id               serial                  not null
+        constraint txnpassbook_pk
+            primary key,
+    transactionid    integer                 not null
+        constraint txnpassbook_transaction_tbl_id_fk
+            references log.transaction_tbl,
+    amount           integer                 not null,
+    currencyid       integer                 not null
+        constraint txnpassbook_currency_tbl_id_fk
+            references system.currency_tbl,
+    requestedopt     integer
+        constraint txnpassbook_tbl_state_tbl_id_fk
+            references log.state_tbl,
+    performedopt     integer
+        constraint txnpassbook_tbl_state_tbl_id_1_fk
+            references log.state_tbl,
+    status           varchar(20)             not null,
+    extref           varchar(50),
+    extrefidentifier varchar(100),
+    enabled          boolean   default true,
+    created          timestamp without time zone default now(),
+    modified         timestamp without time zone default now()
+);
+
+comment on column log.txnpassbook_tbl.transactionid is 'Primary Key of log.transaction_tbl';
+
+comment on column log.txnpassbook_tbl.amount is 'Amount used for the operation';
+
+comment on column log.txnpassbook_tbl.currencyid is 'Current used for the operation
+primary key of system.currency_tbl';
+
+comment on column log.txnpassbook_tbl.requestedopt is 'Request operation
+·         Initialize
+·         Authorize
+·         Cancel
+·         Capture
+·         Refund';
+
+comment on column log.txnpassbook_tbl.performedopt is 'Based on requested operations which are not performed or pending, next for performing operation will decide.
+Entry will contain either requested or performed operation';
+
+comment on column log.txnpassbook_tbl.extref is 'Capture, refund and cancel may be related to order, line time, ticket or full txn
+This contains the primary id of repective table to fetch all necessary in the callback';
+
+comment on column log.txnpassbook_tbl.extrefidentifier is 'Table or entity from which external reference is used';
+
+alter table log.txnpassbook_tbl
+    owner to postgres;
+
+alter table system.psp_tbl
+	add SupportedPartialOperations integer default 0 not null;
+
+comment on column system.psp_tbl.SupportedPartialOperations is 'Merchant''s Supported Partial Operations
+and PSP''s supported Partial Operations
+2 - Partial Capture
+3 - Partial Refund
+5 - Partial Cancel
+Possible values % (constants)
+30 % (2 || 3 || 5)   = Capture and Cancel and Refund
+15 % (3 || 5)	= Refund and Cancel
+10 % (2 || 5)	= Capture and Cancel
+6 % (2 || 3)	 = Capture and Refund
+5 % 5		= Cancel
+3 % 3		= Refund
+2 % 2		= Capture';
+
+
+
+
+alter table client.merchantaccount_tbl
+	add SupportedPartialOperations integer default 0 not null;
+
+comment on column system.psp_tbl.SupportedPartialOperations is 'Merchant''s Supported Partial Operations
+and PSP''s supported Partial Operations
+2 - Partial Capture
+3 - Partial Refund
+5 - Partial Cancel
+Possible values % (constants)
+30 % (2 || 3 || 5)   = Capture and Cancel and Refund
+15 % (3 || 5)	= Refund and Cancel
+10 % (2 || 5)	= Capture and Cancel
+6 % (2 || 3)	 = Capture and Refund
+5 % 5		= Cancel
+3 % 3		= Refund
+2 % 2		= Capture';
+
+/* Ticket level transaction - Add new column fees in log.order_tbl */
+ALTER TABLE Log.order_tbl ADD COLUMN fees integer DEFAULT 0;
+
+-- Create new table system.businesstype_tbl to store businesstype for each client
+CREATE TABLE system.businesstype_tbl
+(
+  id serial NOT NULL,
+  name character varying(50),
+  enabled boolean DEFAULT true,
+  CONSTRAINT businesstype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+ALTER TABLE system.businesstype_tbl OWNER TO postgres;
+
+-- Insert business type details
+insert into system.businesstype_tbl (id,name) values
+(0,'None'),
+(1,'Non-Industry-Specific'),
+(2,'Airline Industry'),
+(3,'Auto Rental Industry'),
+(4,'Cruise Industry'),
+(5,'Hospitality Industry'),
+(6,'Entertainment/Ticketing Industry'),
+(7,'e-commerce Industry');
+
+-- Added new column and foreign key constraint
+ALTER TABLE client.account_tbl
+	ADD COLUMN businessType integer DEFAULT 0,
+	ADD CONSTRAINT businessType_pk FOREIGN KEY (businessType) REFERENCES system.businesstype_tbl (id);
+
+
+ALTER TABLE log.transaction_tbl ADD profileid int8 NULL;
+
+comment on column log.transaction_tbl.profileid is 'mProfile id associated with the txn';
+
+ALTER TABLE enduser.account_tbl ADD profileid int8 NULL;
+
+comment on column enduser.account_tbl.profileid is 'mProfile id associated with the registered enduser';
+
+
+INSERT INTO system.processortype_tbl (id, name) VALUES (9, 'Fraud Gateway');
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (60, 'EZY Fraud Gateway',9);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 60); /*With Apple-Pay*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,60,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,60,'USD');
+
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2040 , 'Fraud Check Passed', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2041 , 'Fraud Check Failed', 'Authorization', true);
+
+ALTER TABLE Log.Order_Tbl ADD COLUMN orderref character varying(40);
+CREATE INDEX order_tbl_orderref_index ON Log.Order_Tbl (orderref);
+ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;
+ALTER TABLE log.session_tbl DROP CONSTRAINT constraint_name;
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture DROP DEFAULT;
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE WHEN auto_capture=TRUE THEN 3 ELSE 1 END;
+ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 1;
+
+create table system.capturetype_tbl
+(
+    id serial not null
+        constraint capturetype_pk
+            primary key,
+    name varchar(50),
+    created timestamp default now(),
+    modified timestamp default now(),
+    enabled boolean default true
+);
+
+alter table system.capturetype_tbl owner to postgres;
+
+
+INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (1, 'Manual Capture', true);
+INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (2, 'PSP Level Auto Capture ', true);
+INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (3, 'Merchant Level Auto Capture', true);
+INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (4, 'Batch Capture', true);
+
+ALTER TABLE client.cardaccess_tbl
+    ADD COLUMN capture_type int2
+        CONSTRAINT cardaccess2capturetype_fk
+            REFERENCES system.capturetype_tbl DEFAULT (1) ;
+
+ALTER TABLE client.client_tbl DROP COLUMN auto_capture;

@@ -88,6 +88,10 @@ require_once(sCLASS_PATH ."/amex.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 /**
  * Input XML format
  *
@@ -172,6 +176,10 @@ try
             $card_obj = $card_obj->{'payment-data'};
             $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()) );
             $card_obj->card['type-id'] = $obj_XML->{'threed-redirect'}->transaction->card["type-id"];
+            if (!isset($card_obj->card->{'info-3d-secure'}))
+            {
+                $card_obj->card->addChild('info-3d-secure','');
+            }
             $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
             $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
             $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);

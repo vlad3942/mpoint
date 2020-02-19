@@ -179,8 +179,7 @@ final class PaymentSession
 
     public static function Get()
     {
-        if ((self::$instance instanceof PaymentSession) === false) {
-            //self::$instance = call_user_func("__construct", func_get_args());
+        if (empty(self::$instance) === true) {
             self::$instance = new PaymentSession(func_get_args());
         }
 

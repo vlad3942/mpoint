@@ -28,6 +28,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require Business logic for the End-User Account Factory Provider
 require_once(sCLASS_PATH ."/customer_info.php");
+require_once(sCLASS_PATH . '/txn_passbook.php');
+require_once(sCLASS_PATH . '/passbookentry.php');
 header("Content-Type: text/plain");
 set_time_limit(600);
 // Standard retry strategy connecting to the database has proven inadequate
@@ -171,7 +173,7 @@ try
 	{
 		$obj_mPoint->notifyClient($iStateID, $_POST);
 		// Transaction uses Auto Capture and Authorization was accepted
-		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
 			if (array_key_exists("capturenow", $_POST) === true || $obj_mPoint->capture() == 1000)

@@ -108,8 +108,15 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the cellulant component
+require_once(sCLASS_PATH ."/cellulant.php");
 require_once(sCLASS_PATH ."/global-payments.php");
 
+// Require specific Business logic for the VeriTrans4G component
+require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 /**
  * Input XML format
  *
@@ -377,7 +384,7 @@ try
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
 	// Transaction uses Auto Capture and Authorization was accepted
-	if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
 		// Reload so we have the newest version of the TxnInfo
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
@@ -410,7 +417,30 @@ try
 	}
 	
   }
-  
+
+
+    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id);
+    if ($txnPassbookObj instanceof TxnPassbook) {
+        foreach ($aStateId as $iStateId) {
+            $state = 0;
+            $status = '';
+            switch ((int)$iStateId) {
+                case Constants::iPAYMENT_ACCEPTED_STATE:
+                    $state = Constants::iPAYMENT_ACCEPTED_STATE;
+                    $status = Constants::sPassbookStatusDone;
+                    break;
+                case Constants::iPAYMENT_REJECTED_STATE:
+                    $state = Constants::iPAYMENT_ACCEPTED_STATE;
+                    $status = Constants::sPassbookStatusError;
+                    break;
+            }
+            if ($state !== 0) {
+                $txnPassbookObj->updateInProgressOperations($obj_XML->callback->transaction->amount, $state, $status);
+            }
+
+        }
+    }
+
   $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")

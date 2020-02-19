@@ -310,6 +310,18 @@ abstract class Constants
     const iPAYMENT_TOKENIZATION_FAILURE_STATE = 2031;
 
     /**
+     * Defines the ID of the State that indicates that payment transaction accepted by fraud check
+     *
+     */
+    const iPAYMENT_FRAUD_CHECK_COMPLETE_STATE = 2040;
+
+    /**
+     * Defines the ID of the State that indicates that payment transaction rejected by fraud check
+     *
+     */
+    const iPAYMENT_FRAUD_CHECK_FAILURE_STATE = 2041;
+
+    /**
      * Defines the ID of the State that indicates that Tokenization request successfully completed
      *
      */
@@ -854,6 +866,21 @@ abstract class Constants
      */
     const iMADA_MPGS_PSP = 57;
     /**
+     * Unique ID for the Payment Service Provider: VERITRANS4G
+     *
+     */
+    const iVeriTrans4G_PSP = 59;
+    /**
+     * Unique ID for the Payment Service Provider: MADA MPGS
+     *
+     */
+    const iCellulant_PSP = 58;
+    /**
+     * Unique ID for the Payment Service Provider: EZY
+     *
+     */
+    const iEZY_PSP = 60;
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -1269,6 +1296,18 @@ abstract class Constants
      */
     const iFPX = 73;
 
+    /**
+     * Unique Card ID for transaction's made using CELLULANT
+     *
+     */
+    const iCELLULANT = 86;
+
+	/**
+	 * Unique Card ID for transaction's made using OMANNET
+	 *
+	 */
+	const iOMANNET = 87;
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
@@ -1351,6 +1390,7 @@ abstract class Constants
 	const iPROCESSOR_TYPE_MPI = 6;
 	const iPROCESSOR_TYPE_GATEWAY = 7;
 	const iPROCESSOR_TYPE_TOKENIZATION = 8;
+	const iPROCESSOR_TYPE_FRAUD_GATEWAY = 9;
 
 
 
@@ -1377,5 +1417,67 @@ abstract class Constants
 	 * Unique Id for payment captured and callback sent
 	 */
     const iPAYMENT_CAPTURED_AND_CALLBACK_SENT = 1002;
+
+	/*
+	 * Passbook Operation Codes
+	 */
+    const iAuthorizeRequested = 5010;
+	const iCaptureRequested = 5011;
+	const iCancelRequested = 5012;
+	const iRefundRequested = 5013;
+	const iInitializeRequested = 5014;
+	const iVoidRequested = 5015;
+
+	/*
+	 * Passbook Error Code
+	 */
+	const iInvalidOperation = 6100;
+	const iOperationNotAllowed = 6200;
+	const iAmountIsHigher = 6201;
+
+	/*
+	 * Passbook Error Code
+	 */
+	const sPassbookStatusPending = 'pending';
+	const sPassbookStatusInProgress = 'inprogress';
+	const sPassbookStatusDone = 'done';
+	const sPassbookStatusInvalid = 'invalid';
+	const sPassbookStatusError = 'error';
+
+    /*
+     * Default Profile Expiry (in days) for profiles created in mProfile for Velocity transactions
+     */
+    const iProfileExpiry = 365;
+
+    /*
+     * Default mProfile APIs for Velocity to create profile
+     */
+    const sSaveProfileEndPoint = "/mprofile/save-profile";
+
+    /*
+     * Default mProfile APIs for Velocity to retrieve profile
+     */
+    const sGetProfileEndPoint = "/mprofile/get-profile";
+
+}
+
+abstract class AutoCaptureType
+{
+	/*
+   * Auto-Capture flag for mPoint to do not perform auto-capture
+   */
+	const eRunTimeAutoCapt = 1;
+	/*
+   * Auto-Capture flag for mPoint to perform PSP level auto-capture
+   */
+	const ePSPLevelAutoCapt = 2;
+	/*
+   * Auto-Capture flag for mPoint to perform Merchant level auto-capture
+   */
+	const eMerchantLevelAutoCapt = 3;
+	/*
+   * Auto-Capture flag for mPoint to perform batch-capture
+   */
+	const eBatchCapt = 4;
 }
 ?>
