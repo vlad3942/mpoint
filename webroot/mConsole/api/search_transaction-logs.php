@@ -150,15 +150,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			}
 
 			$obj_Card = $obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'};
-			if(isset($obj_Card) === true && count($obj_Card) > 0) {
-				for ($j = 0; $j < count($obj_Card); $j++) {
+			$iCountObjCard = count($obj_Card);
+			if(isset($obj_Card) === true && $iCountObjCard > 0) {
+				for ($j = 0; $j < $iCountObjCard; $j++) {
 					$aCardIDs[] = (integer)$obj_Card[$j];
 				}
 			}
 
 			$obj_State = $obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'};
-			if(isset($obj_State) === true && count($obj_State) > 0) {
-				for ($j = 0; $j < count($obj_State); $j++) {
+			$iCountObjState = count($obj_State);
+			if(isset($obj_State) === true && $iCountObjState > 0) {
+				for ($j = 0; $j < $iCountObjState; $j++) {
 					$aStateIDs[] = (integer)$obj_State[$j];
 				}
 			}
