@@ -350,6 +350,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+											$data['wallet-id'] = $obj_PSPConfig->getID();
+										}
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID

@@ -479,7 +479,9 @@ class General
         if ($oTI->getProfileID() > 0) {
             $sql .= " , profileid = ". $oTI->getProfileID();
         }
-
+        if ($oTI->getWalletID() !== -1) {
+            $sql .= ", walletid = ". $oTI->getWalletID();
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
