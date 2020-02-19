@@ -142,8 +142,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			}
 
 			$obj_PSP = $obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'};
-			if(isset($obj_PSP) === true && count($obj_PSP) > 0) {
-				for ($j = 0; $j < count($obj_PSP); $j++) {
+			$iCountObjPSP = count($obj_PSP);
+			if(isset($obj_PSP) === true && $iCountObjPSP > 0) {
+				for ($j = 0; $j < count($iCountObjPSP); $j++) {
 					$aPspIDs[] = (integer)$obj_PSP[$j];
 				}
 			}
