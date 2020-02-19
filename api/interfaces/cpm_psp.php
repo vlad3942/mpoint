@@ -71,6 +71,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     {
                         $iStatusCode = (integer)$obj_Txn->status["code"];
                         if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
+                        else if ($iStatusCode == 1100)
+                        {
+                            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+                            $iStatusCode = 1000;
+                        }
                         return $iStatusCode;
                     }
                     else { throw new CaptureException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
@@ -1011,13 +1016,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $b;
 	}
 	
-	protected function _constOrderDetails($obj_txnInfo)
+	protected function _constOrderDetails(TxnInfo $obj_txnInfo)
 	{
 		
-		$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
+		//$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
 		//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-		$xml = '<order-attempt>'.$RS["COUNT"].'</order-attempt>' ;
+		//$RS = $this->getDBConn()->getName($sql);
+		$xml = '<order-attempt>'.$obj_txnInfo->getAttemptNumber().'</order-attempt>' ;
 		return $xml ;
 	}
 	
