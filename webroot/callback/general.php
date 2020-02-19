@@ -421,10 +421,6 @@ try
 	// Transaction uses Auto Capture and Authorization was accepted
 	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
-		// Reload so we have the newest version of the TxnInfo
-		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-
 		$code=0;
 		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
 		$passbookEntry = new PassbookEntry
@@ -463,10 +459,6 @@ try
 	// Transaction uses one step authorization then no need of PSP call
 	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
-		// Reload so we have the newest version of the TxnInfo
-		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-
 		$code=0;
 		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
 		$passbookEntry = new PassbookEntry

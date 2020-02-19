@@ -180,7 +180,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				}
 
 				// Refresh transactioninfo object once the capture is performed
-				$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpointid'], $_OBJ_DB);
+				$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
 				// Capture operation succeeded
 				if ($code >= 1000)
