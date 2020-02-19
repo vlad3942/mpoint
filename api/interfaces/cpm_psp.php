@@ -136,6 +136,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b .= '</transactions>';
 			$b .= '</refund>';
 			$b .= '</root>';
+			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
 
 			try
 			{
@@ -145,7 +146,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_HTTP->connect();
 				$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 				$obj_HTTP->disConnect();
-				$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
 
 				if ($code == 200)
 				{
@@ -161,15 +161,28 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
 						}
-						else if ($iStatusCode == 1100) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
+						else if ($iStatusCode == 1100)
+						{
+							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+						}
 						return $iStatusCode;
 					}
-					else { throw new RefundException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+					else
+					{
+						$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+						throw new RefundException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); 
+					}
 				}
-				else { throw new RefundException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+				else
+				{
+					$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+					throw new RefundException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); 
+				}
 			}
 			catch (RefundException $e)
 			{
+				$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
 				trigger_error("Refund of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 				return $e->getCode();
 			}
