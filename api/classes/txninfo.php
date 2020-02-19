@@ -430,7 +430,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -475,7 +475,13 @@ class TxnInfo
 		$this->_iFee = (integer) $fee;
 		$this->_lCapturedAmount = (float) $cptamt;
 		$this->_iCardID = (integer) $cardid;
-		$this->_iWalletID = (integer) $walletid;
+		if($walletid === null)
+		{
+			$this->_iWalletID = -1;
+		}
+		else {
+			$this->_iWalletID = (integer)$walletid;
+		}
 		$this->_sDeviceID = trim($devid);
 
 		$this->_mask = trim($mask);
@@ -1209,8 +1215,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eNoAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
-			$obj_TxnInfo->setAutoCaptureFlag($obj->useAutoCapture(),false);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1828,26 +1833,6 @@ class TxnInfo
 	public function getOrderConfigs()
 	{
 		return $this->_obj_OrderConfigs;
-	}
-
-	/**
-	 * Function to Set value of auto-capture flag
-	 *
-	 * @param $merchantAutoCapt     Merchant level auto-capture flag
-	 * @param $pspAutoCapt     PSP level auto-capture flag
-	 *
-	 */
-	public function setAutoCaptureFlag($merchantAutoCapt,$pspAutoCapt)
-	{
-		if($merchantAutoCapt == true and $pspAutoCapt == true) {
-			$this->_eAutoCapture = AutoCaptureType::eMerchantPSPLevelAutoCapt;
-		} else if($merchantAutoCapt == true and $pspAutoCapt == false) {
-			$this->_eAutoCapture = AutoCaptureType::eMerchantLevelAutoCapt;
-		} else if($merchantAutoCapt == false and $pspAutoCapt == true) {
-			$this->_eAutoCapture = AutoCaptureType::ePSPLevelAutoCapt;
-		} else {
-			$this->_eAutoCapture = AutoCaptureType::eNoAutoCapt;
-		}
 	}
 }
 ?>

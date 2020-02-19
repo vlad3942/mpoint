@@ -268,6 +268,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
+
+						if (count($obj_Elem->capture_type) > 0)
+						{
+							$data['auto-capture'] = intval($obj_Elem->capture_type);
+							$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
+							$obj_mPoint->logTransaction($obj_TxnInfo);
+						}
+
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
@@ -344,8 +352,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+											$data['wallet-id'] = $obj_PSPConfig->getID();
+										}
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
-										$oTI->setAutoCaptureFlag($obj_ClientConfig->useAutoCapture(),$obj_PSPConfig->useAutoCapture());
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);

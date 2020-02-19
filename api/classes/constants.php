@@ -1471,18 +1471,18 @@ abstract class AutoCaptureType
 	/*
    * Auto-Capture flag for mPoint to do not perform auto-capture
    */
-	const eNoAutoCapt = 0;
-	/*
-   * Auto-Capture flag for mPoint to perform Merchant level auto-capture
-   */
-	const eMerchantLevelAutoCapt = 1;
+	const eRunTimeAutoCapt = 1;
 	/*
    * Auto-Capture flag for mPoint to perform PSP level auto-capture
    */
 	const ePSPLevelAutoCapt = 2;
 	/*
-   * Auto-Capture flag for mPoint to perform Merchant and PSP level auto-capture
+   * Auto-Capture flag for mPoint to perform Merchant level auto-capture
    */
-	const eMerchantPSPLevelAutoCapt = 3;
+	const eMerchantLevelAutoCapt = 3;
+	/*
+   * Auto-Capture flag for mPoint to perform batch-capture
+   */
+	const eBatchCapt = 4;
 }
 ?>

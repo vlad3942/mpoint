@@ -415,4 +415,49 @@ class InitializeAPIValidationTest extends baseAPITest
        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'.</status></root>', $sReplyBody);
     }
 
+    public function testAttemptNumber()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+
+		$xml = $this->getInitDoc(113, 1100);
+
+		$this->_httpClient->connect();
+		// First Attempt
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><client-config id="113" account="1100" store-card="0" max-stored-cards="-1" auto-capture="false" enable-cvv="true" mode="0"><name>Test Client</name><callback-url></callback-url><accept-url></accept-url><cancel-url></cancel-url><app-url></app-url><css-url></css-url><logo-url></logo-url><base-image-url></base-image-url><additional-config></additional-config><accounts><account id= "1100" markup= "" /></accounts></client-config><transaction id="1" order-no="1234abc" type-id="0" eua-id="-1" language="da" auto-capture="false" mode="0"><amount country-id="100" currency-id="208" currency="DKK" decimals="2" symbol="" format="{PRICE} {CURRENCY}" alpha2code="DK" alpha3code="DNK" code="208">200</amount><mobile country-id="100" operator-id="10000">288828610</mobile><email>jona@oismail.com</email><callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url><accept-url/></transaction><session id=\'1\' type=\'1\' total-amount=\'200\'><amount country-id="100" currency-id="208" currency="DKK" symbol="" format="{PRICE} {CURRENCY}" alpha2code="DK" alpha3code="DNK" code="208">200</amount></session><cards></cards><wallets></wallets></root>', $sReplyBody);
+		$res =  $this->queryDB('SELECT attempt from Log.Transaction_Tbl WHERE id = 1');
+		$this->assertTrue(is_resource($res) );
+
+		$attempt = 0;
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$attempt = (int)$row["attempt"];
+		}
+		$this->assertEquals(1, $attempt);
+
+
+		// Second Attempt
+        $this->constHTTPClient();
+        $this->_httpClient->connect();
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><client-config id="113" account="1100" store-card="0" max-stored-cards="-1" auto-capture="false" enable-cvv="true" mode="0"><name>Test Client</name><callback-url></callback-url><accept-url></accept-url><cancel-url></cancel-url><app-url></app-url><css-url></css-url><logo-url></logo-url><base-image-url></base-image-url><additional-config></additional-config><accounts><account id= "1100" markup= "" /></accounts></client-config><transaction id="2" order-no="1234abc" type-id="0" eua-id="-1" language="da" auto-capture="false" mode="0"><amount country-id="100" currency-id="208" currency="DKK" decimals="2" symbol="" format="{PRICE} {CURRENCY}" alpha2code="DK" alpha3code="DNK" code="208">200</amount><mobile country-id="100" operator-id="10000">288828610</mobile><email>jona@oismail.com</email><callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url><accept-url/></transaction><session id=\'2\' type=\'1\' total-amount=\'200\'><amount country-id="100" currency-id="208" currency="DKK" symbol="" format="{PRICE} {CURRENCY}" alpha2code="DK" alpha3code="DNK" code="208">200</amount></session><cards></cards><wallets></wallets></root>', $sReplyBody);
+		$res =  $this->queryDB('SELECT attempt from Log.Transaction_Tbl WHERE id = 2');
+		$this->assertTrue(is_resource($res) );
+
+		$attempt = 0;
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$attempt = (int)$row["attempt"];
+		}
+		$this->assertEquals(2, $attempt);
+    }
+
 }

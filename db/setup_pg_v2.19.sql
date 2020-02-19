@@ -11,16 +11,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 */
 update client.client_tbl set callbackurl = 'http://mpoint.sit2.cellpointmobile.com/uatp/callback.php' where id = 10069;
 
---ACQ Level Auto-Capture
-ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture DROP DEFAULT;
-ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE WHEN auto_capture=TRUE THEN 1 ELSE 0 END;
-ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 0;
-
-ALTER TABLE system.psp_tbl ADD auto_capture boolean NOT NULL DEFAULT FALSE;
-
---End of ACQ Level Auto-Capture
-
-
 /* ========== Global Configuration for POLi - Card========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (34, 'POLi', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (34, 0, 0);
@@ -64,3 +54,5 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 midpath ::= "MID."(@country-id)
 password ::= (property[@name=''<authpath>''])
 authpath ::= "AUTHCODE."(@country-id)', true, (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 32), 'merchant', 0);
+
+ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;

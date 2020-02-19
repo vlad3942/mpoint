@@ -54,7 +54,7 @@ if ($_POST['status'] == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
 		$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
 		// Transaction uses Auto Capture
-		if ($obj_mPoint->getTxnInfo()->useAutoCapture() != AutoCaptureType::eNoAutoCapt) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST); }
+		if ($obj_mPoint->getTxnInfo()->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST); }
 	}
 }
 ?>

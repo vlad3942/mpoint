@@ -333,7 +333,14 @@ try
                                         		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
                                         	}
                                         }
-                                        
+
+                                        if (count($obj_Elem->capture_type) > 0)
+                                        {
+                                            $data['auto-capture'] = intval($obj_Elem->capture_type);
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                        }
+
 										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                         CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
