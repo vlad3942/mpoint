@@ -899,8 +899,9 @@ final class TxnPassbook
                 $state
             );
             $result = $this->getDBConn()->execute($res, $aParams);
-            if ($result === FALSE) {
-                throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            {
+                throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
                 return FALSE;
             }
         }
