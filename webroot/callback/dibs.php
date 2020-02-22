@@ -168,6 +168,11 @@ try
 		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
 	}
 
+	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID());
+	$isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
+	$isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+	$isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
+
 	// Callback URL has been defined for Client and transaction hasn't been duplicated
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
@@ -175,8 +180,28 @@ try
 		// Transaction uses Auto Capture and Authorization was accepted
 		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
+			$code=0;
+			$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+			$passbookEntry = new PassbookEntry
+			(
+					NULL,
+					$obj_TxnInfo->getAmount(),
+					$obj_TxnInfo->getCurrencyConfig()->getID(),
+					Constants::iCaptureRequested
+			);
+			if ($txnPassbookObj instanceof TxnPassbook)
+			{
+				$txnPassbookObj->addEntry($passbookEntry);
+				try {
+					$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+					$code = reset($codes);
+				} catch (Exception $e) {
+					trigger_error($e, E_USER_WARNING);
+				}
+			}
+
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
-			if (array_key_exists("capturenow", $_POST) === true || $obj_mPoint->capture() == 1000)
+			if (array_key_exists("capturenow", $_POST) === true || $code == 1000)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST);
 				if (array_key_exists("capturenow", $_POST) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }
