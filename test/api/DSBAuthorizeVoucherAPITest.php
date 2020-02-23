@@ -66,8 +66,6 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status) VALUES (100,1001001, 2,208,". Constants::iInitializeRequested. ",NULL,'done')");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref) VALUES (101,1001001, 2,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100)");
-        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status) VALUES (102,1001001, 2,208,". Constants::iAuthorizeRequested. ",NULL,'done')");
-        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref) VALUES (103,1001001, 2,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'inprogress',102)");
 
 		$xml = $this->getAuthDoc(113, 1100, 1001001, 100);
 
@@ -130,8 +128,6 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status) VALUES (100,1001001, 11,208,". Constants::iInitializeRequested. ",NULL,'done')");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref) VALUES (101,1001001,11,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100)");
-        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status) VALUES (102,1001001,11,208,". Constants::iAuthorizeRequested. ",NULL,'done')");
-        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref) VALUES (103,1001001,11,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'inprogress',102)");
 
 		$xml = $this->getAuthDoc(113, 1100, 1001001, 100);
 
