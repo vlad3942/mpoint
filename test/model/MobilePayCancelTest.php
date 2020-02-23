@@ -24,6 +24,7 @@ class MobilePayCancelTest extends baseAPITest
 
 	public function setUp()
 	{
+		$this->bIgnoreErrors = true;
 		parent::setUp();
 		global $aHTTP_CONN_INFO;
 		global $aMPOINT_CONN_INFO;
