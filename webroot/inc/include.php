@@ -126,8 +126,6 @@ require_once(sCLASS_PATH ."/passenger_info.php");
 require_once(sCLASS_PATH ."/address_info.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
-// Require data class for Client routes config
-require_once(sCLASS_PATH ."/client_routes_config.php");
 // Require PSP functionality interfaces
 require_once(sINTERFACE_PATH ."/captureable.php");
 require_once(sINTERFACE_PATH ."/refundable.php");

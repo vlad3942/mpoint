@@ -9,14 +9,14 @@
  * File Name:get_routes_config.php
  */
 
-class clientRoutesConfig extends BasicConfig
+class ClientRoutesConfig extends BasicConfig
 {
     /**
      * The unique ID of the contry the configuration is valid in or -1 for "ALL"
      *
      * @var integer
      */
-    private $_iCountryID;
+    private $_iCountryId;
     /**
      * The unique ID of the current Payment Method (Card) state for the client
      *
@@ -67,11 +67,11 @@ class clientRoutesConfig extends BasicConfig
      * @param 	integer $cardtype 	The unique ID for the Payment type
      * @param 	integer $currencyid The unique ID of the currency for Payment
      */
-    public function __construct($id, $pmid, $name, $countryid = -1, $stateid, $pspid, $enabled, $cardtype, $currencyid=null)
+    public function __construct($id, $pmid, $name, $countryid, $stateid, $pspid, $enabled, $cardtype, $currencyid)
     {
         parent::__construct($id, $name);
         $this->_iPaymentMethodID = (integer) $pmid;
-        $this->_iCountryID = (integer) $countryid;
+        $this->_iCountryId = (integer) $countryid;
         $this->_iStateID = (integer) $stateid;
         $this->_iPSPID = (integer) $pspid;
         $this->_bEnabled = (bool) $enabled;
@@ -120,7 +120,7 @@ class clientRoutesConfig extends BasicConfig
 
         if (is_array($RS) === true && count($RS) > 0)
         {
-            return new clientRoutesConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"], $RS["ENABLED"], $RS['PAYMENTTYPE'], $RS['CURRENCYID']);
+            return new ClientRoutesConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"], $RS["ENABLED"], $RS['PAYMENTTYPE'], $RS['CURRENCYID']);
         }
         else { return null; }
     }
@@ -136,7 +136,6 @@ class clientRoutesConfig extends BasicConfig
     {
         $sql = "SELECT DISTINCT CA.id
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
-				INNER JOIN System". sSCHEMA_POSTFIX .".Card_Tbl C ON CA.cardid = C.id
 				WHERE CA.clientid = ". intval($clientid);
 
         $aObj_Configurations = array();

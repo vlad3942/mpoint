@@ -11,6 +11,8 @@
 
 // Require Global Include File
 require_once("../../inc/include.php");
+// Require data class for Client routes config
+require_once(sCLASS_PATH ."/client_routes_config.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH . "/validate.php");
 
@@ -20,22 +22,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     $clientId = (integer)$_REQUEST['client_id'];
 
     $code = Validate::valClient($_OBJ_DB, $clientId);
-    if ($code == 100)
+    if ($code === 100)
     {
         $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientId);
         if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
         {
-            $obj_RoutesConfig = clientRoutesConfig::produceConfigurations($_OBJ_DB, $clientId);
-            if(empty($obj_RoutesConfig) === false)
+            $obj_RoutesConfig = ClientRoutesConfig::produceConfigurations($_OBJ_DB, $clientId);
+            $routesCount = count($obj_RoutesConfig);
+            $xml = '';
+            $xml .= '<routes>';
+            for($i=0; $routesCount > $i; $i++)
             {
-                $xml = '';
-                $xml .= '<routes>';
-                for($i=0;count($obj_RoutesConfig)>$i; $i++)
+                if(($obj_RoutesConfig[$i] instanceof ClientRoutesConfig) === true )
                 {
                     $xml .= $obj_RoutesConfig[$i]->toXML();
                 }
-                $xml .= '</routes>';
             }
+            $xml .= '</routes>';
         }
         else
         {
@@ -45,19 +48,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         }
 
     }
-    elseif ($code == 2)
+    elseif ($code === 2)
     {
         header("HTTP/1.1 400 Bad Request");
 
         $xml = '<status code="' . $code . '">Invalid Client ID</status>';
     }
-    elseif ($code == 3)
+    elseif ($code === 3)
     {
         header("HTTP/1.1 400 Bad Request");
 
         $xml = '<status code="' . $code . '">Unknown Client ID</status>';
     }
-    elseif ($code == 4)
+    elseif ($code === 4)
     {
         header("HTTP/1.1 400 Bad Request");
 
