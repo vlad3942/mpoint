@@ -79,7 +79,7 @@ class ClientRoutesConfig extends BasicConfig
         $this->_iCurrencyId = $currencyid;
     }
 
-    public function getCountryID() { return $this->_iCountryID; }
+    public function getCountryID() { return $this->_iCountryId; }
     public function getCurrencyID() { return $this->_iCurrencyId; }
     public function getStateID() { return $this->_iStateID; }
     public function getPSPID() { return $this->_iPSPID; }
