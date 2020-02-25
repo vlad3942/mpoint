@@ -77,7 +77,7 @@ class SaveAccountAPITest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertContains('Account information successfully saved', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100");
+        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100 and enabled=true");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
     }

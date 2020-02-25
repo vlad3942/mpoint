@@ -196,13 +196,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                             if ($iAccountID < 0) {
-                                //account needs to be enabled
-                                $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
-                                if ($result === true) {
-                                    $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
-                                } else {
-                                    $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
-                                }
+                                $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
                             }
                             //update or create new account -- this should never be the case as we currently have no provision to update pwd from SDK or HPP
                             if(count($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION")) == 0 || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION") == "false") {
