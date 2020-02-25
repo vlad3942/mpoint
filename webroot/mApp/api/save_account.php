@@ -228,7 +228,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Success: Account Information Saved
                             if ($code >= 0) {
-                                if (empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "false") {
+                                if (count($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) == 0 || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "false") {
                                     if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1) {
                                         $obj_mPoint->saveInfo($iAccountID, (string)$obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)$obj_DOM->{'save-account'}[$i]->{'last-name'});
                                     }

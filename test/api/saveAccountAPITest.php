@@ -90,7 +90,7 @@ class SaveAccountAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'profilePass', 'testinvalidsaveAcc', 'test',null);
+        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'profilePass', null, 'test',null);
 
         $this->_httpClient->connect();
 
