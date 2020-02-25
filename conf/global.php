@@ -977,13 +977,13 @@ $aHTTP_CONN_INFO["dragonpay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["dragonpay"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["dragonpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["dragonpay"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["dragonpay"]["paths"]["initialize"] = "/mpoint/dragonpay/initialize";
-$aHTTP_CONN_INFO["dragonpay"]["paths"]["auth"] = "/mpoint/dragonpay/authorize-payment";
-$aHTTP_CONN_INFO["dragonpay"]["paths"]["capture"] = "/mpoint/dragonpay/capture";
-$aHTTP_CONN_INFO["dragonpay"]["paths"]["refund"] = "/mpoint/dragonpay/refund";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["status"] = "/mpoint/dragonpay/status";
-$aHTTP_CONN_INFO["dragonpay"]["paths"]["cancel"] = "/mpoint/dragonpay/cancel";
-$aHTTP_CONN_INFO["dragonpay"]["paths"]["callback"] = "/mpoint/dragonpay/callback";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["initialize"] = "/mpoint/aggregator/dragonpay/initialize";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["auth"] = "/mpoint/aggregator/dragonpay/authorize-payment";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["capture"] = "/mpoint/aggregator/dragonpay/capture";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["refund"] = "/mpoint/aggregator/dragonpay/refund";
+//$aHTTP_CONN_INFO["dragonpay"]["paths"]["status"] = "/mpoint/aggregator/dragonpay/status";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["cancel"] = "/mpoint/aggregator/dragonpay/cancel";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["callback"] = "/mpoint/aggregator/dragonpay/callback";
 
 
     
