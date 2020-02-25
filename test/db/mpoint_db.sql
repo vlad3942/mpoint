@@ -8224,3 +8224,25 @@ ALTER TABLE client.cardaccess_tbl
             REFERENCES system.capturetype_tbl DEFAULT (1) ;
 
 ALTER TABLE client.client_tbl DROP COLUMN auto_capture;
+
+
+
+create table client.StaticRouteLevelConfiguration
+(
+	id             serial
+		constraint StaticRouteLevelConfiguration_pk
+			primary key,
+	cardaccessid int not null,
+	cvcmandatory BOOLEAN default TRUE not null,
+	enabled BOOLEAN default true not null,
+	created TIMESTAMP default now() not null,
+	modified TIMESTAMP default now() not null
+);
+
+create unique index staticroutelevelconfiguration_cardaccessid_uindex
+	on client.staticroutelevelconfiguration (cardaccessid);
+
+comment on table client.StaticRouteLevelConfiguration is 'This table will contain the configuration based on '
+    'card schema, Provider and Country';
+
+comment on column client.StaticRouteLevelConfiguration.cardaccessid is 'Primary key of client.cardaccess_tbl';

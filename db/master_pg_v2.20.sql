@@ -1,0 +1,28 @@
+CREATE TABLE CLIENT.STATICROUTELEVELCONFIGURATION
+(
+    ID           SERIAL
+        CONSTRAINT STATICROUTELEVELCONFIGURATION_PK
+            PRIMARY KEY,
+    CARDACCESSID INT                     NOT NULL,
+    CVCMANDATORY BOOLEAN   DEFAULT TRUE  NOT NULL,
+    ENABLED      BOOLEAN   DEFAULT TRUE  NOT NULL,
+    CREATED      TIMESTAMP DEFAULT now() NOT NULL,
+    MODIFIED     TIMESTAMP DEFAULT now() NOT NULL
+);
+
+COMMENT ON TABLE CLIENT.STATICROUTELEVELCONFIGURATION IS 'This table will contain the configuration based on '
+    'card schema, Provider and Country';
+
+COMMENT ON COLUMN CLIENT.STATICROUTELEVELCONFIGURATION.CARDACCESSID IS 'Primary key of client.cardaccess_tbl';
+
+create unique index staticroutelevelconfiguration_cardaccessid_uindex
+	on client.staticroutelevelconfiguration (cardaccessid);
+
+CREATE TRIGGER UPDATE_STATICROUTELEVELCONFIGURATION
+    BEFORE UPDATE
+    ON CLIENT.STATICROUTELEVELCONFIGURATION
+    FOR EACH ROW
+EXECUTE PROCEDURE PUBLIC.Update_Table_Proc();
+
+
+

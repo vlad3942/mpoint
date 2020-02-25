@@ -150,6 +150,8 @@ require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
 require_once(sCLASS_PATH ."/ezy.php");
+require_once(sCLASS_PATH ."/core/card.php");
+require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -243,7 +245,8 @@ try
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-										
+										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
+										$obj_CardValidator = new CardValidator($obj_card);
 										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
 										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE))
 										{
@@ -299,8 +302,17 @@ try
 										
 										if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) > 0 && 
 											intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
-											$obj_Validator->valCardNumber($_OBJ_DB,(int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) !== 10)
+											$obj_CardValidator->valCardNumber() !== 720)
 										{$aMsgCds[21] = "Invalid Card Number: ".$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}; }
+
+										if((bool)$obj_Elem['CVCMANDATORY'] === TRUE)
+                                        {
+                                            $cvcValidationCode = $obj_CardValidator->validateCVC();
+                                            if($cvcValidationCode !== 710)
+                                            {
+                                                $aMsgCds[22] = 'Invalid CVC';
+                                            }
+                                        }
 
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
                                             $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
@@ -318,8 +330,8 @@ try
                                         }
 
                                         if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{"card-holder-name"}) > 0){
-                                            $chkName = $obj_Validator->valCardFullname((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{"card-holder-name"});
-                                            if($chkName != 10){
+                                            $chkName = $obj_CardValidator->valCardFullname();
+                                            if($chkName !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
                                             }
                                         }
