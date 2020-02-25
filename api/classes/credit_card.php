@@ -99,7 +99,7 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment 
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type 
 				FROM ". $this->_constDataSourceQuery() ."
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
@@ -160,6 +160,7 @@ class CreditCard extends EndUserAccount
 				$xml .= '<account>'. $RS["ACCOUNT"] .'</account>';
 				$xml .= '<subaccount>'. $RS["SUBACCOUNT"] .'</subaccount>';
 				$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
+				$xml .= '<capture_type>'. $RS["CAPTURE_TYPE"] .'</capture_type>';
 				if (is_array($aRS) === true && count($aRS) > 0)
 				{
 					$xml .= '<prefixes>';
