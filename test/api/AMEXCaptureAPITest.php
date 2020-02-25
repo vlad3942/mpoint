@@ -9,6 +9,11 @@ require_once __DIR__. '/captureAPITest.php';
 
 class AMEXCaptureAPITest extends CaptureAPITest
 {
+	public function testSuccessfulCapture()
+	{
+
+	}
+
 	public function testSuccessfulCaptureInitiated()
     {
         parent::testSuccessfulCaptureInitiated(Constants::iAMEX_ACQUIRER);
