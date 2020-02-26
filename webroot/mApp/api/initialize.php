@@ -368,6 +368,40 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
 									}
 
+									if($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'}){
+										$billingSummary = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'};
+										for ($k=0; $k<count($billingSummary->{'journey-item'}); $k++ )
+										{
+											$journeyId = (string) $billingSummary->{'journey-item'}[$k]->id;
+											$fareDetail = $billingSummary->{'journey-item'}[$k]->{'fare-detail'};
+											for ($fd=0; $fd<count($fareDetail->fare); $fd++ )
+											{
+												$fareArr = array();
+												$fareArr['journey_ref'] = (string) $journeyId;
+												$fareArr['order_id'] = $order_id;
+												$fareArr['bill_type'] = (string) 'Fare';
+												$fareArr['type_id'] = (string) $fareDetail->fare[$fd]->{'type-id'};
+												$fareArr['description'] = (string) $fareDetail->fare[$fd]->{'description'};
+												$fareArr['currency'] = (string) $fareDetail->fare[$fd]->{'currency'};
+												$fareArr['amount'] = (string) $fareDetail->fare[$fd]->{'amount'};
+												$obj_TxnInfo->setBillingSummary($_OBJ_DB, $fareArr);
+											}
+											$addOns = $billingSummary->{'journey-item'}[$k]->{'add-ons'};
+											for ($ad=0; $ad<count($addOns->{'add-on'}); $ad++ )
+											{
+												$addOnArr = array();
+												$addOnArr['journey_ref'] = (string) $journeyId;
+												$addOnArr['order_id'] = $order_id;
+												$addOnArr['bill_type'] = (string) 'Add-on';
+												$addOnArr['type_id'] = (string) $addOns->{'add-on'}[$ad]->{'type-id'};
+												$addOnArr['description'] = (string) $addOns->{'add-on'}[$ad]->{'description'};
+												$addOnArr['currency'] = (string) $addOns->{'add-on'}[$ad]->{'currency'};
+												$addOnArr['amount'] = (string) $addOns->{'add-on'}[$ad]->{'amount'};
+												$obj_TxnInfo->setBillingSummary($_OBJ_DB, $addOnArr);
+											}
+										}
+									}
+
 									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0)
 									{
 										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k++ )

@@ -1361,6 +1361,41 @@ class TxnInfo
 	}
 	
 	/**
+	 * Function to insert new records in the Billing Summary Related to that Order in table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $aBillingSummary	Data object with the Billing summary Data details
+	 *
+	 */
+	public function setBillingSummary(RDB $obj_DB, $aBillingSummary)
+	{
+		if( is_array($aBillingSummary) === true )
+		{
+			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl_id_seq') AS id FROM DUAL";
+			$RS = $obj_DB->getName($sql);
+
+			// Error: Unable to generate new Billing Summary ID
+			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Billing Summary ID", 1001); }
+
+			$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl
+						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified)
+					VALUES
+						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now())";
+			// echo $sql ."\n";exit;
+			
+			// Error: Unable to insert a new order record in the Order Table
+			if (is_resource($obj_DB->query($sql) ) === false)
+			{
+				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for billing summary: ". $RS["ID"], 1002); }
+			}
+			else
+			{
+				$Billing_Summary_iD = $RS["ID"];
+			}
+			return $Billing_Summary_iD;
+		}
+	}
+	
+	/**
 	 * Function to insert new records in the Shipping Address Related to that Order in table that are send as part of the transaction cart details
 	 *
 	 * @param 	Array $aShippingData	Data object with the Shipping Address Data details
