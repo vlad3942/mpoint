@@ -300,10 +300,11 @@ try
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 										
-										if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) > 0 && 
-											intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
+										if(((int)$obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
 											$obj_CardValidator->valCardNumber() !== 720)
-										{$aMsgCds[21] = "Invalid Card Number: ".$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}; }
+										{
+										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
+										}
 
 										if((bool)$obj_Elem['CVCMANDATORY'] === TRUE)
                                         {
@@ -329,11 +330,8 @@ try
                                             }
                                         }
 
-                                        if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{"card-holder-name"}) > 0){
-                                            $chkName = $obj_CardValidator->valCardFullname();
-                                            if($chkName !== 730){
+                                        if($obj_card !== '' && $obj_CardValidator->valCardFullName() !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
-                                            }
                                         }
 
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country

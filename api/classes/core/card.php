@@ -11,7 +11,7 @@
 
 class Card
 {
-    private $sCvc = -1;
+    private $sCvc = '';
     private $sCardNumber = '';
     private $sExpiry = '';
     private $sValidFrom = '';
