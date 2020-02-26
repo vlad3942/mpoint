@@ -8238,7 +8238,7 @@ create table client.StaticRouteLevelConfiguration
 	created TIMESTAMP default now() not null,
 	modified TIMESTAMP default now() not null
 );
-
+ALTER TABLE client.StaticRouteLevelConfiguration OWNER TO postgres;
 create unique index staticroutelevelconfiguration_cardaccessid_uindex
 	on client.staticroutelevelconfiguration (cardaccessid);
 
