@@ -1,17 +1,3 @@
-/* PASSBOOK IMPROVEMENT - START*/
-
-alter table log.txnpassbook_tbl
-	add clientid int;
-
-alter table log.txnpassbook_tbl
-	add constraint txnpassbook_tbl_client_tbl_id_fk
-		foreign key (clientid) references client.client_tbl;
-
-/* Run migrate script before adding not null constraint */
-alter table log.txnpassbook_tbl alter column clientid set not null;
-
-/* PASSBOOK IMPROVEMENT - END */
-
 --Aquirer level auto-capture--
 create table system.capturetype_tbl
 (
@@ -42,3 +28,13 @@ ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture SET DEFAULT 1;
 
 ALTER TABLE client.client_tbl DROP COLUMN auto_capture;
 ---End---
+
+/* ========== batch-size for the chase connector:: CMP-3457 ========== */
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('MVAULT_BATCH_SIZE', '1', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <client id> and pspid =  <pspid>), 'merchant',1);
+
+ ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;
+
+
+
+
