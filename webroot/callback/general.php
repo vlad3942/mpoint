@@ -384,7 +384,7 @@ try
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
 
-	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id);
+	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
 	if ($txnPassbookObj instanceof TxnPassbook) {
 		foreach ($aStateId as $iStateId) {
 			$state = 0;
