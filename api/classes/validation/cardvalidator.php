@@ -65,7 +65,6 @@ class CardValidator extends ValidateBase
      *     724 - number is not valid card
      *
      *
-     * @param string    $number Card number
      * @param \RDB|null $oDB
      *
      * @return integer
@@ -73,12 +72,12 @@ class CardValidator extends ValidateBase
     public function valCardNumber(RDB &$oDB = NULL)
     {
         $code = 0;
+        $number = $this->getCard()->getCardNumber();
 
-        if (empty($this->getCard()->getCardNumber()) === TRUE) {
+        if (empty($number) === TRUE) {
             $code = 721;
         } else {
-
-            $number = preg_replace('/[^0-9]/', '', $this->getCard()->getCardNumber());
+            $number = preg_replace('/[^0-9]/', '', $number);
             $cardNumberLength = strlen($number);
             if ($cardNumberLength < $this->getCard()->getMinCardLength($oDB)) {
                 $code = 722;

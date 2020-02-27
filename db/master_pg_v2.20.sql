@@ -18,6 +18,8 @@ COMMENT ON COLUMN CLIENT.STATICROUTELEVELCONFIGURATION.CARDACCESSID IS 'Primary 
 create unique index staticroutelevelconfiguration_cardaccessid_uindex
 	on client.staticroutelevelconfiguration (cardaccessid);
 
+ALTER TABLE client.StaticRouteLevelConfiguration OWNER TO mpoint;
+
 CREATE TRIGGER UPDATE_STATICROUTELEVELCONFIGURATION
     BEFORE UPDATE
     ON CLIENT.STATICROUTELEVELCONFIGURATION

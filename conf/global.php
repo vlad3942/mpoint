@@ -20,7 +20,7 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  *	6 - Output to screen and send remote server
  *	7 - Output to file & screen and send remote server
  */
-define("iOUTPUT_METHOD", 3);
+define("iOUTPUT_METHOD", 1);
 /**
  * General debug level for the error handler
  *	0 - Output error
