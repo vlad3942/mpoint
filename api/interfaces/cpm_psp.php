@@ -136,7 +136,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b .= '</transactions>';
 			$b .= '</refund>';
 			$b .= '</root>';
-			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID(), $this->getTxnInfo()->getClientConfig()->getID());
 
 			try
 			{
@@ -146,7 +145,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_HTTP->connect();
 				$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 				$obj_HTTP->disConnect();
-				$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
+				$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID(), $this->getTxnInfo()->getClientConfig()->getID());
 
 				if ($code == 200)
 				{
