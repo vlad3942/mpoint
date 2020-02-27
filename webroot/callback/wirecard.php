@@ -111,7 +111,7 @@ try
 	}
 	
 	// Transaction uses Auto Capture and Authorization was accepted
-	if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
 		// Reload so we have the newest version of the TxnInfo
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
