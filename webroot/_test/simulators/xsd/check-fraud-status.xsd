@@ -166,6 +166,7 @@
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="cryptogram" type="xs:string" />
+										<xs:element name="card-number" type="xs:string" />
 										<xs:element name="type" type="xs:string" />
 										<xs:element name="eci" type="xs:unsignedByte" />
 										<xs:element name="algorithmId" type="xs:string" />
