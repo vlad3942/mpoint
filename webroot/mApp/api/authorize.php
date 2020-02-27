@@ -330,7 +330,7 @@ try
                                             }
                                         }
 
-                                        if($obj_card !== '' && $obj_CardValidator->valCardFullName() !== 730){
+                                        if($obj_card->getCardHolderName() !== '' && $obj_CardValidator->valCardFullName() !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
                                         }
 
