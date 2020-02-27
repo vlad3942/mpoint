@@ -209,7 +209,7 @@ class ChaseSettlement extends mPointSettlement
 
                                 $finalDescription .= $response . "," . $rs["DESCRIPTION"];
                                 $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
+                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId, $this->_iClientId);
                                 $amount = $file['records'][$recordId]['totalsettlementamount'];
                                 if ($txnPassbookObj instanceof TxnPassbook) {
                                     $passbookState = 0;
