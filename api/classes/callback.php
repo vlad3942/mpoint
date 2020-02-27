@@ -233,7 +233,6 @@ abstract class Callback extends EndUserAccount
 		    if($iIsPaymentCapturedStateLogged != 1) {
                 $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
             }
-            $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CAPTURED_STATE, Constants::sPassbookStatusDone);
 			return true;
 		}
 		else { return false; }
