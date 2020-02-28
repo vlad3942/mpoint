@@ -241,7 +241,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
 
-                            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID);
+                            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());
                             $passbookEntry = new PassbookEntry
                             (
                                 NULL,
