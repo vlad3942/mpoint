@@ -385,6 +385,7 @@ try
 	}
 
 	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+
 	if ($txnPassbookObj instanceof TxnPassbook) {
 		foreach ($aStateId as $iStateId) {
 			$state = 0;
