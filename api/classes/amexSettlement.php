@@ -209,7 +209,7 @@ class AmexSettlement extends mPointSettlement
 
                                     $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
                                     $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId, $this->_iClientId);
-                                    $amount = $file['records'][$recordId]['totalsettlementamount'];;
+                                    $amount = $file['records'][$recordId]['totalsettlementamount'];
                                     if ($txnPassbookObj instanceof TxnPassbook) {
 										$passbookState = 0;
 										$passbookStatus = '';
