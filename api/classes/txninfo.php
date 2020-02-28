@@ -941,7 +941,7 @@ class TxnInfo
 		$xml .= '<alpha2code>'. $this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
 		$xml .= '<alpha3code>'. $this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
 		$xml .= '<code>'. $this->_obj_CountryConfig->getNumericCode() .'</code>';
-		$xml .= '<amount>'. $this->_lAmount .'</amount>';
+		$xml .= '<amount>'. $iAmount .'</amount>';
 		$xml .= '</amount_info>';
 		
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
