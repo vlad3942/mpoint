@@ -1373,16 +1373,13 @@ class TxnInfo
 			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl_id_seq') AS id FROM DUAL";
 			$RS = $obj_DB->getName($sql);
 
-			// Error: Unable to generate new Billing Summary ID
 			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Billing Summary ID", 1001); }
 
 			$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl
 						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified)
 					VALUES
 						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now())";
-			// echo $sql ."\n";exit;
 			
-			// Error: Unable to insert a new order record in the Order Table
 			if (is_resource($obj_DB->query($sql) ) === false)
 			{
 				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for billing summary: ". $RS["ID"], 1002); }
