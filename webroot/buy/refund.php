@@ -174,7 +174,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 					$txnAmount = $_REQUEST['amount'];
 					$code=0;
-					$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+					$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
 					$ticketNumber = '';
 					$ticketReferenceIdentifier = '';
 					if(isset($_REQUEST['orderref']) && empty($_REQUEST['orderref']) === false)
