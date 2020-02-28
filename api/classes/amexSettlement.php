@@ -98,6 +98,9 @@ class AmexSettlement extends mPointSettlement
                 {
                     $xmlRecord = $xmlFile->record[$secondIndex];
                     $recordId = (string)$xmlRecord["id"];
+                    $totalSettlementAmount = 0;
+                    $totalSettlementAmount =  (int)$xmlRecord->{'booking-ref'}['amount'];
+                    $records[$recordId]['totalsettlementamount'] = $totalSettlementAmount;
                     if(array_key_exists($recordId, $records ) === false)
                     {
                         $records[$recordId]["error"] = [];
@@ -205,17 +208,17 @@ class AmexSettlement extends mPointSettlement
                                     }
 
                                     $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-                                    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
-                                    $amount = 0;
+                                    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId, $this->_iClientId);
+                                    $amount = $file['records'][$recordId]['totalsettlementamount'];;
                                     if ($txnPassbookObj instanceof TxnPassbook) {
 										$passbookState = 0;
 										$passbookStatus = '';
 										if ($recordType == "CAPTURE") {
 											$passbookState = Constants::iPAYMENT_CAPTURED_STATE;
-											$amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
+											//$amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
 										} else {
 											$passbookState = Constants::iPAYMENT_REFUNDED_STATE;
-											$amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
+											//$amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
 										}
 										if ($isSuccess === TRUE) {
 											$passbookStatus = Constants::sPassbookStatusDone;
