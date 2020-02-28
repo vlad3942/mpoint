@@ -37,4 +37,8 @@ class NetAxeptCaptureAPITest extends CaptureAPITest
 		$this->assertTrue($bContainsCorrectFee);
 	}
 
+	public function testSuccessfulCaptureInitiated()
+	{
+
+	}
 }
