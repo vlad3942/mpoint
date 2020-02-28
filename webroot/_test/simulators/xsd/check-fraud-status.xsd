@@ -165,6 +165,7 @@
 							<xs:element name="card">
 								<xs:complexType>
 									<xs:sequence>
+										<xs:element name="card-number" type="xs:string" />
 										<xs:element name="cryptogram" type="xs:string" />
 										<xs:element name="type" type="xs:string" />
 										<xs:element name="eci" type="xs:unsignedByte" />

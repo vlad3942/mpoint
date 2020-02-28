@@ -1260,6 +1260,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $xml .= '<check-fraud-status>';
         $xml .= $this->_constTxnXML();
         $xml .= '<card type-id="'. $obj_Card['type-id'] .'">';
+        $xml .= '<card-number>'.$obj_Card->{'card-number'}.'</card-number>';
         $xml .= '<cryptogram>'.$obj_Card->{'info-3d-secure'}->cryptogram.'</cryptogram>';
         $xml .= '<type>'.$obj_Card->{'info-3d-secure'}->cryptogram['type'].'</type>';
         $xml .= '<eci>'.$obj_Card->{'info-3d-secure'}->cryptogram['eci'].'</eci>';
