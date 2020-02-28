@@ -966,6 +966,20 @@ try
 											$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
 											$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 											$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+
+											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
+											$passbookEntry = new PassbookEntry
+											(
+													NULL,
+													$obj_TxnInfo->getAmount(),
+													$obj_TxnInfo->getCurrencyConfig()->getID(),
+													Constants::iAuthorizeRequested
+											);
+											if ($txnPassbookObj instanceof TxnPassbook) {
+												$txnPassbookObj->addEntry($passbookEntry);
+												$txnPassbookObj->performPendingOperations();
+											}
+
 											$code = $obj_Authorize->redeemVoucher(intval($voucher["id"]) );
 											if ($code == 100) { $xml .= '<status code="100">Payment authorized using Voucher</status>'; }
 											else if ($code == 43)
