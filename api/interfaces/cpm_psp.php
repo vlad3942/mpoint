@@ -136,7 +136,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b .= '</transactions>';
 			$b .= '</refund>';
 			$b .= '</root>';
-			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
+			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID(), $this->getTxnInfo()->getClientConfig()->getID());
 
 			try
 			{
@@ -288,7 +288,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '</transactions>';
 		$b .= '</cancel>';
 		$b .= '</root>';
-        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID());
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID(), $this->getTxnInfo()->getClientConfig()->getID());
 		try
 		{
 			$iUpdateStatusCode = Constants::iPAYMENT_CANCELLED_STATE;
