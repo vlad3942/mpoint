@@ -747,15 +747,6 @@ try
 
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 
-                                                                            /**
-                                                                             * Here on the basis of cvc we will be overriding
-                                                                             * auth request with authcompelete request defined
-                                                                             * in global.php.
-                                                                             */
-                                                                            if (count($obj_Elem->cvc) !== 1) {
-                                                                                $obj_PSP->setAuthPath(true);
-                                                                            }
-
                                                                             $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
 
                                                                             // Authorization succeeded
