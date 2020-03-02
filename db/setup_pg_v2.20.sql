@@ -11,3 +11,6 @@ WHERE PASSBOOK.TRANSACTIONID = TRANSACTION.ID;
 
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('MVAULT_BATCH_SIZE', '1', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <client id> and pspid =  <pspid>), 'merchant',1);
+
+
+INSERT INTO CLIENT.STATICROUTELEVELCONFIGURATION (CARDACCESSID) SELECT id FROM CLIENT.CARDACCESS_TBL WHERE PSP_TYPE = 1;
