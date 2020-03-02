@@ -122,21 +122,25 @@ class ChaseSettlement extends mPointSettlement
                         $records[$recordId]["success"]= (string)$xmlRecord->success["id"].":".(string)$xmlRecord->success;
                     }
                     $ticketNumberIndexMax = count($xmlRecord->{'booking-ref'});
+                    $totalSettlementAmount = 0;
                     if($ticketNumberIndexMax > 1)
                     {
                         for ($ticketNumberIndex = 0; $ticketNumberIndex < $ticketNumberIndexMax; $ticketNumberIndex++)
                         {
                             $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']]['status'] = (string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['status'];
-                            $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']]['amount'] = (string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['amount'];
+                            $ticketNumbers[(string)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['id']]['amount'] = (int)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['amount'];
+                            $totalSettlementAmount +=  (int)$xmlRecord->{'booking-ref'}[$ticketNumberIndex]['amount'];
                         }
                     }
                     else
                     {
                         $ticketNumbers[(string)$xmlRecord->{'booking-ref'}['id']]['status'] = (string)$xmlRecord->{'booking-ref'}['status'];
                         $ticketNumbers[(string)$xmlRecord->{'booking-ref'}['id']]['amount'] = (int)$xmlRecord->{'booking-ref'}['amount'];
+                        $totalSettlementAmount =  (int)$xmlRecord->{'booking-ref'}['amount'];
 
                     }
                     $records[$recordId]['ticketnumbers'] = $ticketNumbers;
+                    $records[$recordId]['totalsettlementamount'] = $totalSettlementAmount;
                 }
 
                 if(count($records)>0)
@@ -205,17 +209,17 @@ class ChaseSettlement extends mPointSettlement
 
                                 $finalDescription .= $response . "," . $rs["DESCRIPTION"];
                                 $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId);
-                                $amount = 0;
+                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $txnId, $this->_iClientId);
+                                $amount = $file['records'][$recordId]['totalsettlementamount'];
                                 if ($txnPassbookObj instanceof TxnPassbook) {
                                     $passbookState = 0;
                                     $passbookStatus = '';
                                     if ($recordType == "CAPTURE") {
                                         $passbookState = Constants::iPAYMENT_CAPTURED_STATE;
-                                        $amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
+                                        //$amount = $obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
                                     } else {
                                         $passbookState = Constants::iPAYMENT_REFUNDED_STATE;
-                                        $amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
+                                        //$amount=$obj_TxnInfo->getFinalSettlementAmount($_OBJ_DB,array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
                                     }
                                     if ($isSuccess === TRUE) {
                                         $passbookStatus = Constants::sPassbookStatusDone;
