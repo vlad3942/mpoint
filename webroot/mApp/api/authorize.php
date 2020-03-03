@@ -551,7 +551,7 @@ try
 																	if ($iPrimaryRoute > 0) {
 																		$obj_Elem ["pspid"] = $iPrimaryRoute;
 																	} else {
-																		$obj_Elem ["pspid"] = intval ($obj_XML["pspid"]);
+																		$obj_Elem ["pspid"] = (int) $obj_XML["pspid"];
 																	}
 																	$obj_Elem ["wallet-type-id"] = intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] );
 																}
