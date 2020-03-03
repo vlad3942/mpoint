@@ -128,17 +128,24 @@ abstract class mPointSettlement
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
 
-        $sql = 'SELECT DISTINCT ID FROM (
-                SELECT  SRT.transactionid AS ID,SRT.settlementid,ST.status as status,
-                RANK() OVER(PARTITION BY SRT.transactionid ORDER BY SRT.settlementid desc) rn
-                FROM log' . sSCHEMA_POSTFIX . '.Transaction_Tbl T
-                INNER JOIN log' . sSCHEMA_POSTFIX . '.txnpassbook_Tbl TP ON T.id = TP.transactionid
-                INNER JOIN log' . sSCHEMA_POSTFIX . '.settlement_record_tbl SRT on SRT.transactionid = T.id
-                INNER JOIN log' . sSCHEMA_POSTFIX . '.settlement_tbl ST on ST.id = SRT.settlementid AND T.pspid = ST.psp_id AND T.clientid = ST.client_id
-                WHERE TP.performedopt IN ( ' . implode(',', $aFinalStateMappings) . ") 
-                AND TP.status = '".Constants::sPassbookStatusInProgress."' 
-                AND ST.client_id = ".$this->_iClientId. ' AND ST.psp_id = ' .$this->_iPspId.") s 
-                WHERE rn =1 and  s.status <> '".Constants::sSETTLEMENT_REQUEST_WAITING."'";
+        $sql = "SELECT DISTINCT TRANSACTION.ID
+                FROM LOG.TRANSACTION_TBL                TRANSACTION
+                         INNER JOIN LOG.TXNPASSBOOK_TBL PASSBOOK
+                                    ON TRANSACTION.ID = PASSBOOK.TRANSACTIONID AND PASSBOOK.PERFORMEDOPT IN (2001) AND
+                                       PASSBOOK.STATUS = '".Constants::sPassbookStatusInProgress."' AND PASSBOOK.CLIENTID = $this->_iClientId
+                WHERE TRANSACTION.CLIENTID = $this->_iClientId
+                  AND TRANSACTION.PSPID = $this->_iPspId
+                  AND TRANSACTION.CARDID IS NOT NULL
+                  AND NOT EXISTS(SELECT SETTLEMENT_RECORD.ID
+                                 FROM LOG.SETTLEMENT_RECORD_TBL         SETTLEMENT_RECORD
+                                          INNER JOIN LOG.SETTLEMENT_TBL SETTLEMENT
+                                                     ON SETTLEMENT_RECORD.SETTLEMENTID = SETTLEMENT.ID AND
+                                                        SETTLEMENT.CLIENT_ID = TRANSACTION.CLIENTID AND
+                                                        SETTLEMENT.PSP_ID = TRANSACTION.PSPID
+                                 WHERE SETTLEMENT.RECORD_TYPE = '".$this->_sRecordType."'
+                                   AND SETTLEMENT.STATUS = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
+                                   AND SETTLEMENT_RECORD.TRANSACTIONID = TRANSACTION.ID)
+                ORDER BY TRANSACTION.ID ASC;";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
