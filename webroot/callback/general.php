@@ -383,63 +383,107 @@ try
 	{
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
+
+	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+
+	if ($txnPassbookObj instanceof TxnPassbook) {
+		foreach ($aStateId as $iStateId) {
+			$state = 0;
+			$status = '';
+			switch ((int)$iStateId) {
+				case Constants::iPAYMENT_ACCEPTED_STATE:
+					$state = Constants::iPAYMENT_ACCEPTED_STATE;
+					$status = Constants::sPassbookStatusDone;
+					break;
+				case Constants::iPAYMENT_REJECTED_STATE:
+					$state = Constants::iPAYMENT_ACCEPTED_STATE;
+					$status = Constants::sPassbookStatusError;
+					break;
+				case Constants::iPAYMENT_CAPTURED_STATE:
+					$state = Constants::iPAYMENT_CAPTURED_STATE;
+					$status = Constants::sPassbookStatusDone;
+					break;
+			}
+			if ($state !== 0) {
+				$txnPassbookObj->updateInProgressOperations($obj_XML->callback->transaction->amount, $state, $status);
+			}
+		}
+	}
+
+	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID());
+	$isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
+	$isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+	$isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
+
+	$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
+			"amount" => $obj_TxnInfo->getAmount(),
+			"card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
+
 	// Transaction uses Auto Capture and Authorization was accepted
 	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
-		// Reload so we have the newest version of the TxnInfo
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-		
-		$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
-							   "amount" => $obj_TxnInfo->getAmount(),
-							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
 
-        try
-        {
-            $responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+		$code=0;
+		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+		$passbookEntry = new PassbookEntry
+		(
+				NULL,
+				$obj_TxnInfo->getAmount(),
+				$obj_TxnInfo->getCurrencyConfig()->getID(),
+				Constants::iCaptureRequested
+		);
+		if ($txnPassbookObj instanceof TxnPassbook)
+		{
+			$txnPassbookObj->addEntry($passbookEntry);
+			try {
+				$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+				$code = reset($codes);
+			} catch (Exception $e) {
+				trigger_error($e, E_USER_WARNING);
+			}
+		}
 
-            if ($responseCode == 1000 || $responseCode == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
-            {
-                array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
-                //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
-            }
-            else
-            {
-                array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
-                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
-            }
-        }
-        catch (CallbackException $e)
-        {
-            //If capture is not supported for a PSP - log and continue
-            trigger_error($e->getMessage(), E_USER_WARNING);
-        }
+		// Refresh transactioninfo object once the capture is performed
+		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+
+		if ($code == 1000 || $code == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
+		{
+			array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
+			//$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+		}
+		else
+		{
+			array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+		}
 	}
-	
+
+	// Transaction uses one step authorization then no need of PSP call
+	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	{
+		$code=0;
+		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+		$passbookEntry = new PassbookEntry
+		(
+				NULL,
+				$obj_TxnInfo->getAmount(),
+				$obj_TxnInfo->getCurrencyConfig()->getID(),
+				Constants::iCaptureRequested
+				);
+		if ($txnPassbookObj instanceof TxnPassbook)
+		{
+			$txnPassbookObj->addEntry($passbookEntry);
+			try {
+				$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, FALSE);
+				$code = reset($codes);
+			} catch (Exception $e) {
+				trigger_error($e, E_USER_WARNING);
+			}
+		}
+	}
   }
-
-
-    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id);
-    if ($txnPassbookObj instanceof TxnPassbook) {
-        foreach ($aStateId as $iStateId) {
-            $state = 0;
-            $status = '';
-            switch ((int)$iStateId) {
-                case Constants::iPAYMENT_ACCEPTED_STATE:
-                    $state = Constants::iPAYMENT_ACCEPTED_STATE;
-                    $status = Constants::sPassbookStatusDone;
-                    break;
-                case Constants::iPAYMENT_REJECTED_STATE:
-                    $state = Constants::iPAYMENT_ACCEPTED_STATE;
-                    $status = Constants::sPassbookStatusError;
-                    break;
-            }
-            if ($state !== 0) {
-                $txnPassbookObj->updateInProgressOperations($obj_XML->callback->transaction->amount, $state, $status);
-            }
-
-        }
-    }
 
   $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
   // Callback URL has been defined for Client

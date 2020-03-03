@@ -14,4 +14,8 @@ class MobilePayCaptureAPITest extends CaptureAPITest
         parent::testSuccessfulCapture(Constants::iMOBILEPAY_PSP);
     }
 
+    public function testSuccessfulCaptureInitiated()
+    {
+
+    }
 }
