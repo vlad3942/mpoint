@@ -556,8 +556,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							for ($j=0; $j<count($obj_XML->item); $j++)
 							{
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
-								if ($obj_XML->item[$j]["type-id"] != 11
-									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
+								if (($obj_XML->item[$j]["type-id"] != 11
+									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) )) && empty($obj_XML->item[$j]["walletid"]) === true )
 								{
 									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
 									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'" processor-type="'. $obj_XML->item[$j]["processor-type"].'" installment="'. $obj_XML->item[$j]["installment"].'">';
