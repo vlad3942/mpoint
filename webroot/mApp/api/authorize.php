@@ -306,15 +306,6 @@ try
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
 
-										if((bool)$obj_Elem['CVCMANDATORY'] === TRUE)
-                                        {
-                                            $cvcValidationCode = $obj_CardValidator->validateCVC();
-                                            if($cvcValidationCode !== 710)
-                                            {
-                                                $aMsgCds[22] = 'Invalid CVC';
-                                            }
-                                        }
-
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
                                             $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
                                             if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
@@ -615,6 +606,17 @@ try
 														if (count($obj_Elem->mask) == 1 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) != 28 )  { $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) ); }
 														else { $code = 10; }
 													}
+
+													//In case of Wallet payment card node will update so, Refresh the card and validator object
+                                                    $obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
+										            $obj_CardValidator = new CardValidator($obj_card);
+
+                                                    if ((bool)$obj_Elem['CVCMANDATORY'] === TRUE) {
+                                                        $cvcValidationCode = $obj_CardValidator->validateCVC();
+                                                        if ($cvcValidationCode !== 710) {
+                                                            $aMsgCds[22] = 'Invalid CVC';
+                                                        }
+                                                    }
 
 													if ($code >= 10)
 													{
