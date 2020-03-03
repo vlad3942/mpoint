@@ -129,16 +129,16 @@ abstract class mPointSettlement
         $this->_iTotalTransactionAmount = 0;
 
         $sql = "SELECT DISTINCT TRANSACTION.ID
-                FROM LOG.TRANSACTION_TBL                TRANSACTION
-                         INNER JOIN LOG.TXNPASSBOOK_TBL PASSBOOK
+                FROM LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL                TRANSACTION
+                INNER JOIN LOG" . sSCHEMA_POSTFIX . ".TXNPASSBOOK_TBL PASSBOOK
                                     ON TRANSACTION.ID = PASSBOOK.TRANSACTIONID AND PASSBOOK.PERFORMEDOPT IN (2001) AND
                                        PASSBOOK.STATUS = '".Constants::sPassbookStatusInProgress."' AND PASSBOOK.CLIENTID = $this->_iClientId
                 WHERE TRANSACTION.CLIENTID = $this->_iClientId
                   AND TRANSACTION.PSPID = $this->_iPspId
                   AND TRANSACTION.CARDID IS NOT NULL
                   AND NOT EXISTS(SELECT SETTLEMENT_RECORD.ID
-                                 FROM LOG.SETTLEMENT_RECORD_TBL         SETTLEMENT_RECORD
-                                          INNER JOIN LOG.SETTLEMENT_TBL SETTLEMENT
+                                 FROM LOG" . sSCHEMA_POSTFIX . ".SETTLEMENT_RECORD_TBL         SETTLEMENT_RECORD
+                                          INNER JOIN LOG" . sSCHEMA_POSTFIX . ".SETTLEMENT_TBL SETTLEMENT
                                                      ON SETTLEMENT_RECORD.SETTLEMENTID = SETTLEMENT.ID AND
                                                         SETTLEMENT.CLIENT_ID = TRANSACTION.CLIENTID AND
                                                         SETTLEMENT.PSP_ID = TRANSACTION.PSPID
