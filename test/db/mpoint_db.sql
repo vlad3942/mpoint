@@ -8257,3 +8257,5 @@ alter table log.txnpassbook_tbl
 
 /* Run migrate script before adding not null constraint */
 alter table log.txnpassbook_tbl alter column clientid set not null;
+
+ALTER TABLE client.cardaccess_tbl ADD walletid int4;
