@@ -7050,6 +7050,7 @@ ALTER TABLE system.psp_tbl ADD COLUMN system_type integer;
   INSERT INTO system.processortype_tbl(id, name) VALUES (2, 'Bank');
   INSERT INTO system.processortype_tbl(id, name) VALUES (3, 'Wallet');
   INSERT INTO system.processortype_tbl(id, name) VALUES (4, 'APM');
+  INSERT INTO system.processortype_tbl(id, name) VALUES (7, 'gateway');
 
    -- Insert data : system.psp_tbl
    -- Value : system_type;
@@ -7711,10 +7712,17 @@ INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (16, 'VISA 
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
 
+INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (32, 'Alipay', 16, 4);
 INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (30, 'Alipay', 1);
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 30, 'DKK';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 30;
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 30;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 32, 30;
+INSERT INTO system.paymenttype_tbl (id, name) VALUES (7, 'Aggregator');
+INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (73, 'FPX', 16, 7);
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (51, 'FPX', 7);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 51, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 73, 51;
 
 
 INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (14, 'Apple Pay', 3);
