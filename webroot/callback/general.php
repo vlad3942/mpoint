@@ -418,12 +418,11 @@ try
 	$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
 			"amount" => $obj_TxnInfo->getAmount(),
 			"card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
-
+    $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+    $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 	// Transaction uses Auto Capture and Authorization was accepted
 	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
-		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
 		$code=0;
 		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
