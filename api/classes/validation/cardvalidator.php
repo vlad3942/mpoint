@@ -74,8 +74,8 @@ class CardValidator extends ValidateBase
         $code = 0;
         $number = $this->getCard()->getCardNumber();
 
-        if (empty($number) === TRUE) {
-            $code = 721;
+        if (empty($number) === TRUE) { //Validation is valid if card number is present
+            $code = 720;
         } else {
             $number = preg_replace('/[^0-9]/', '', $number);
             $cardNumberLength = strlen($number);
