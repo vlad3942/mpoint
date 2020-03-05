@@ -225,12 +225,15 @@ abstract class Callback extends EndUserAccount
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
+		$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo->getClientConfig()->getID());
+
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-            $iIsPaymentCapturedStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),Constants::iPAYMENT_CAPTURED_STATE);
-		    if($iIsPaymentCapturedStateLogged != 1) {
-                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            $retStatus = $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CAPTURED_STATE, Constants::sPassbookStatusDone);
+            if($retStatus === TRUE)
+            {
+            	$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
             }
 			return true;
 		}

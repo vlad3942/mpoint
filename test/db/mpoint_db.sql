@@ -8227,5 +8227,37 @@ ALTER TABLE client.client_tbl DROP COLUMN auto_capture;
 
 
 
+create table client.StaticRouteLevelConfiguration
+(
+	id             serial
+		constraint StaticRouteLevelConfiguration_pk
+			primary key,
+	cardaccessid int not null,
+	cvcmandatory BOOLEAN default TRUE not null,
+	enabled BOOLEAN default true not null,
+	created TIMESTAMP default now() not null,
+	modified TIMESTAMP default now() not null
+);
+ALTER TABLE client.StaticRouteLevelConfiguration OWNER TO postgres;
+create unique index staticroutelevelconfiguration_cardaccessid_uindex
+	on client.staticroutelevelconfiguration (cardaccessid);
+
+comment on table client.StaticRouteLevelConfiguration is 'This table will contain the configuration based on '
+    'card schema, Provider and Country';
+
+comment on column client.StaticRouteLevelConfiguration.cardaccessid is 'Primary key of client.cardaccess_tbl';
+
+
+alter table log.txnpassbook_tbl
+	add clientid int;
+
+alter table log.txnpassbook_tbl
+	add constraint txnpassbook_tbl_client_tbl_id_fk
+		foreign key (clientid) references client.client_tbl;
+
+/* Run migrate script before adding not null constraint */
+alter table log.txnpassbook_tbl alter column clientid set not null;
+
+
 ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
 ALTER TABLE enduser.address_tbl Alter column state type VARCHAR(200);
