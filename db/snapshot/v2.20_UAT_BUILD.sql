@@ -71,6 +71,13 @@ EXECUTE PROCEDURE PUBLIC.Update_Table_Proc();
 alter table log.txnpassbook_tbl
 	add clientid int;
 
+/* If required add range check to avoid high peak in RDS CPU */
+UPDATE LOG.TXNPASSBOOK_TBL PASSBOOK
+
+SET CLIENTID = TRANSACTION.CLIENTID
+FROM LOG.TRANSACTION_TBL TRANSACTION
+WHERE PASSBOOK.TRANSACTIONID = TRANSACTION.ID;
+
 alter table log.txnpassbook_tbl
 	add constraint txnpassbook_tbl_client_tbl_id_fk
 		foreign key (clientid) references client.client_tbl;
@@ -80,16 +87,6 @@ alter table log.txnpassbook_tbl alter column clientid set not null;
 
 /* PASSBOOK IMPROVEMENT - END */
 
-
-/* PASSBOOK IMPROVEMENT - START*/
-
-/* If required add range check to avoid high peak in RDS CPU */
-UPDATE LOG.TXNPASSBOOK_TBL PASSBOOK
-SET CLIENTID = TRANSACTION.CLIENTID
-FROM LOG.TRANSACTION_TBL TRANSACTION
-WHERE PASSBOOK.TRANSACTIONID = TRANSACTION.ID;
-
-/* PASSBOOK IMPROVEMENT - END */
 /* ========== batch-size for the chase connector:: CMP-3457 ========== */
 
 
