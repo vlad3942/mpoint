@@ -14,4 +14,8 @@ class DIBSCaptureAPITest extends CaptureAPITest
         parent::testSuccessfulCapture(Constants::iDIBS_PSP);
     }
 
+    public function testSuccessfulCaptureInitiated()
+    {
+
+    }
 }
