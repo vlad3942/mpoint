@@ -276,7 +276,7 @@ class mConsole extends Admin
 	 * @param integer $id			The unique ID of the existing routing configuration that should be changed, pass -1 to create a new routing configuration
 	 * @return integer
 	 */
-	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $enabled='true')
+	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $capturetype = 1,$enabled='true')
 	{
 		$clientid = (integer) $clientid;
 		$pmid = (integer) $pmid;
@@ -309,7 +309,7 @@ class mConsole extends Admin
 			
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
 					SET countryid = ". $countryid .", cardid = ". $pmid .", pspid = ". $pspid .", 
-						stateid = ". intval($stateid) .", enabled = '".$enabled."'
+						stateid = ". intval($stateid) .", enabled = '".$enabled."', capture_type = ". intval($capturetype) ."
 					WHERE id = ". $id;				
 		}
 		else
@@ -319,9 +319,9 @@ class mConsole extends Admin
 			$id = $RS["ID"];
 			
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
-						(id, clientid, cardid, pspid, countryid, stateid)
+						(id, clientid, cardid, pspid, countryid, stateid, capture_type)
 				    VALUES
-						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .")";
+						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .", ". intval($capturetype).")";
 		}		
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
