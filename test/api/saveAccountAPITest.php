@@ -203,7 +203,6 @@ class SaveAccountAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
         $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', null, 'testvalidsaveAcc', 'test',null);
-        print_r($xml);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
