@@ -352,6 +352,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+											$data['wallet-id'] = $obj_PSPConfig->getID();
+										}
+										$data['auto-capture'] = (int)$obj_Elem->capture_type;
 										if(empty($obj_DOM->pay[$i]->transaction["foreign-exchange-id"]) === false)
 										{
 											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);

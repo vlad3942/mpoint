@@ -67,11 +67,17 @@ class PassbookEntry implements JsonSerializable
     private $_externalReferenceIdentifier;
 
     /**
+     * @var int
+     */
+    private $_clientId;
+
+    /**
      * PassbookEntry constructor.
      *
      * @param $id
      * @param $amount
      * @param $currencyId
+     * @param $clientId
      * @param $requestedOperation
      * @param $performedOperation
      * @param $status
@@ -81,7 +87,7 @@ class PassbookEntry implements JsonSerializable
      * @param $externalReference
      * @param $externalReferenceIdentifier
      */
-    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL)
+    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL, $clientId = -1)
     {
         $this->_id = (int)$id;
         $this->_amount = (int)$amount;
@@ -94,6 +100,7 @@ class PassbookEntry implements JsonSerializable
         $this->_modified = $modified;
         $this->_externalReference = (string)$externalReference;
         $this->_externalReferenceIdentifier = (string)$externalReferenceIdentifier;
+        $this->_clientId = (int)$clientId;
     }
 
     /**

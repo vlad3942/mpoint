@@ -44,6 +44,7 @@ $HTTP_RAW_POST_DATA .= '</root>';
 */
 
 $xml = '';
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -67,6 +68,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
 		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_CAPTURE_PAYMENTS, $aClientIDs, $_SERVER['HTTP_VERSION']);
+		
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -104,6 +106,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			break;
 		}
 		/* ========== SINGLE SIGN-ON END ========== */
+		
 		if ($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
 		{				
 			/* ========== INPUT VALIDATION START ========== */
@@ -119,6 +122,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				elseif ($code < 20) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Account : ". $iAccountID ." failed"); }				
 			}		
 			/* ========== INPUT VALIDATION END ========== */
+			
 			if (count($aMsgCodes) == 0)
 			{		 
 				for ($i=0; $i<count($obj_DOM->capture->transactions); $i++)

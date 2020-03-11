@@ -55,6 +55,9 @@ midpath ::= "MID."(@country-id)
 password ::= (property[@name=''<authpath>''])
 authpath ::= "AUTHCODE."(@country-id)', true, (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 32), 'merchant', 0);
 
+ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;
+authpath ::= "AUTHCODE."(@country-id)', true, (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 32), 'merchant', 0);
+
 INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(0, 'System');
 INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(1, 'UATP');
 INSERT INTO log.externalreferencetype_tbl (id, "name") VALUES(2, 'CellPoint Foreign Exchange');

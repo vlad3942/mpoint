@@ -174,13 +174,22 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 					$txnAmount = $_REQUEST['amount'];
 					$code=0;
-					$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+					$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
+					$ticketNumber = '';
+					$ticketReferenceIdentifier = '';
+					if(isset($_REQUEST['orderref']) && empty($_REQUEST['orderref']) === false)
+					{
+						$ticketNumber = $_REQUEST['orderref'];
+						$ticketReferenceIdentifier = 'log.additional_data_tbl - TicketNumber';
+					}
 					$passbookEntry = new PassbookEntry
 					(
 							NULL,
 							$txnAmount,
 							$obj_TxnInfo->getCurrencyConfig()->getID(),
-							Constants::iVoidRequested
+							Constants::iVoidRequested,
+							$ticketNumber,
+							$ticketReferenceIdentifier
 					);
 					if ($txnPassbookObj instanceof TxnPassbook)
 					{
@@ -194,7 +203,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					}
 
 					// Refresh transactioninfo object once the capture is performed
-					$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpointid'], $_OBJ_DB);
+					$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
 					// Refund operation succeeded
 					if ($code == 1000 || $code == 1001)

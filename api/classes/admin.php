@@ -234,16 +234,16 @@ class Admin extends General
 		if ($clientid > 0)
 		{
 			$sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-					SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
+					SET store_card = ".intval($storecard) .", name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
 					WHERE id = ". intval($clientid)."";
 			$res = $this->getDBConn()->query($sql);
 		}
 		else
 		{
 			$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
-						(store_card, auto_capture, name, username, passwd, countryid, flowid)
+						(store_card, name, username, passwd, countryid, flowid)
 					VALUES
-						(". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
+						(". intval($storecard).",'". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
 //			echo $sql ."\n";		
 			$res = $this->getDBConn()->query($sql);
 			if (is_resource($res))

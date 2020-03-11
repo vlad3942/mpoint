@@ -1531,6 +1531,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
+			<xs:element name="businessType" type="xs:positiveInteger" minOccurs="0" />
 			<xs:element name="payment-service-providers" minOccurs="0"
 				maxOccurs="1">
 				<xs:complexType>

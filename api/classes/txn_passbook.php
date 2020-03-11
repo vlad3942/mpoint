@@ -17,6 +17,8 @@ final class TxnPassbook
 
     private $_transactionId;
 
+    private $_clientId;
+
     private $_passbookEntries = array();
 
     private $_isPartialCaptureSupported = FALSE;
@@ -58,6 +60,7 @@ final class TxnPassbook
         $aArgs = $args[0];
         $this->_obj_Db = $aArgs[0];
         $this->_transactionId = (int)$aArgs[1];
+        $this->_clientId = (int)$aArgs[2];
     }
 
     /**
@@ -69,7 +72,7 @@ final class TxnPassbook
     {
         $txnPassbookInstance = NULL;
         $aArgs = func_get_args();
-        if (count($aArgs) === 2) {
+        if (count($aArgs) === 3) {
             $requestedTxnId = (int)$aArgs[1];
             if (empty(self::$instances) === false) {
                 foreach (self::$instances as $txnid => $instance) {
@@ -133,7 +136,8 @@ final class TxnPassbook
                         $RS['STATUS'],
                         $RS['ENABLED'],
                         $RS['CREATED'],
-                        $RS['MODIFIED']
+                        $RS['MODIFIED'],
+                        $RS['CLIENTID']
                     );
                     array_push($this->_passbookEntries, $passbookEntry);
                 }
@@ -522,7 +526,7 @@ final class TxnPassbook
      * @return array
      * @throws \Exception
      */
-    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE)
+    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE, $isPSPCallRequired = TRUE)
     {
         $codes = array();
         if ($isRetryRequest === FALSE) {
@@ -557,21 +561,28 @@ final class TxnPassbook
                     }
                     else
                     {
-                        $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
-                        $obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
-                        $code = -1;
-                        switch ($passbookEntry->getPerformedOperation())
-                        {
-                            case Constants::iPAYMENT_CAPTURED_STATE;
-                                $code = $obj_PSP->capture($passbookEntry->getAmount());
-                                break;
-                            case Constants::iPAYMENT_CANCELLED_STATE;
-                                $code = $obj_PSP->cancel(null,$passbookEntry->getAmount());
-                                break;
-                            case Constants::iPAYMENT_REFUNDED_STATE;
-                                $code = $obj_PSP->refund($passbookEntry->getAmount());
-                                break;
-                        }
+						$code = -1;
+						if($isPSPCallRequired === TRUE)
+						{
+							$txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
+							$obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
+							switch ($passbookEntry->getPerformedOperation())
+							{
+								case Constants::iPAYMENT_CAPTURED_STATE;
+									$code = $obj_PSP->capture($passbookEntry->getAmount());
+									break;
+								case Constants::iPAYMENT_CANCELLED_STATE;
+									$code = $obj_PSP->cancel(null,$passbookEntry->getAmount());
+									break;
+								case Constants::iPAYMENT_REFUNDED_STATE;
+									$code = $obj_PSP->refund($passbookEntry->getAmount());
+									break;
+							}
+						}
+						if($isPSPCallRequired === FALSE)
+						{
+							$code = 1000;
+						}
                         $codes[$passbookEntry->getPerformedOperation()] = $code;
                         if($code === 100 ||$code === 1000 || $code === 1001 || $code === 1002)
                         {
@@ -599,9 +610,9 @@ final class TxnPassbook
         $validateEntryResponse['Status'] = 0;
 
         $sql = 'INSERT INTO Log' . sSCHEMA_POSTFIX . '.TxnPassbook_tbl 
-                    (transactionid, amount, currencyid, requestedopt, performedopt , status, ExtRef, ExtRefIdentifier)                                                         
+                    (transactionid, amount, currencyid, requestedopt, performedopt , status, ExtRef, ExtRefIdentifier, clientId)                                                         
                 VALUES 
-                    ($1, $2, $3, $4, $5, $6, $7, $8)';
+                    ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
 
         $res = $this->_obj_Db->prepare($sql);
         if (is_resource($res) === TRUE) {
@@ -613,7 +624,8 @@ final class TxnPassbook
                 $passbookEntry->getPerformedOperation(),
                 $passbookEntry->getStatus(),
                 $passbookEntry->getExternalReference(),
-                $passbookEntry->getExternalReferenceIdentifier()
+                $passbookEntry->getExternalReferenceIdentifier(),
+                $this->getClientId()
             );
 
             $result = $this->getDBConn()->execute($res, $aParams);
@@ -892,29 +904,32 @@ final class TxnPassbook
                 $state
             );
             $result = $this->getDBConn()->execute($res, $aParams);
-            if ($result === FALSE) {
-                throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            {
+                throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
                 return FALSE;
             }
         }
         return TRUE;
     }
 
-    public function getExternalRefOfInprogressEntries($state)
+    public function getExternalRefOfInprogressEntries($state, &$performedOptAmount)
     {
         $return = [];
         $sql = 'WITH INPROGRESS_ENTRIES AS (
                     SELECT ID,
                            TRANSACTIONID,
                            EXTREF,
-                           PERFORMEDOPT
+                           PERFORMEDOPT,
+                           AMOUNT AS PERFORMEDOPTAMOUNT
                     FROM LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL
                     WHERE TRANSACTIONID = $1
                       AND PERFORMEDOPT = $2
                       AND STATUS = $3)
                 SELECT T1.EXTREF,
                        T1.EXTREFIDENTIFIER,
-                       T1.AMOUNT
+                       T1.AMOUNT,
+                       T2.PERFORMEDOPTAMOUNT
                 FROM INPROGRESS_ENTRIES                 T2
                          INNER JOIN LOG.' . sSCHEMA_POSTFIX ."TXNPASSBOOK_TBL T1 ON
                         T1.ID = ANY (string_to_array(trim(T2.EXTREF, ','), ',')::BIGINT[])";
@@ -932,11 +947,20 @@ final class TxnPassbook
             if ($result !== FALSE) {
                 while ($rs = $this->getDBConn()->fetchName($result))
                 {
+                    $performedOptAmount = $rs['PERFORMEDOPTAMOUNT'];
                     $return[$rs['EXTREF']] = $rs['AMOUNT'];
                 }
             }
         }
         return $return;
+    }
+
+    /**
+     * @return int
+     */
+    public function getClientId()
+    {
+        return $this->_clientId;
     }
 
 }
