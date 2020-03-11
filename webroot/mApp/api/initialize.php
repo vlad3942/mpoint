@@ -277,7 +277,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Single Sign-On
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
-                            $authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
+							$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
+							$bIsSingleSingOnPass = false;
                             if (empty($authenticationURL) === false && empty($authToken)=== false)
                             {
                                 $bIsSingleSingOnPass = false;
@@ -517,10 +518,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $xml .= '</accounts>';
 							$xml .= '</client-config>';
 							$euaId = -1;
-							if ($bIsSingleSingOnPass === true)
-                            {
-                                $euaId = $obj_TxnInfo->getAccountID();
-                            }
+                            $euaId = $obj_TxnInfo->getAccountID();
 							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
 							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
