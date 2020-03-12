@@ -353,6 +353,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
+
+										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_APM || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_GATEWAY)
+										{
+											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+											$passbookEntry = new PassbookEntry
+											(
+													NULL,
+													$obj_TxnInfo->getAmount(),
+													$obj_TxnInfo->getCurrencyConfig()->getID(),
+													Constants::iAuthorizeRequested
+											);
+											if ($txnPassbookObj instanceof TxnPassbook)
+											{
+												$txnPassbookObj->addEntry($passbookEntry);
+												$txnPassbookObj->performPendingOperations();
+											}
+										}
+
 										// Initialize payment with Payment Service Provider
 										$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_PSPConfig->getProcessorType().'">';
 										switch ($obj_PSPConfig->getID() )
