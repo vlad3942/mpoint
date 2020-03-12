@@ -168,8 +168,8 @@ abstract class mPointSettlement
             $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
             $passbook = TxnPassbook::Get($_OBJ_DB,$transactionId, $this->_iClientId);
             $captureAmount  = -1;
+            $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0], $captureAmount);
             if($isTicketLevelSettlement === 'true') {
-                $ticketNumbers = $passbook->getExternalRefOfInprogressEntries($aFinalStateMappings[0], $captureAmount);
                 if(count($ticketNumbers) > 0) {
                     $obj_TxnInfo->produceOrderConfig($_OBJ_DB, $ticketNumbers);
                     if(count($obj_TxnInfo->getOrderConfigs()) <= 0)
