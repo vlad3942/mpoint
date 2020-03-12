@@ -625,7 +625,7 @@ try
 														    if($obj_Elem["pspid"] > 0) {
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
 																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
-																if($obj_PSPConfig->getProcessorType() != Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() != Constants::iPROCESSOR_TYPE_GATEWAY)
+																if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
 																{
 																	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 																	$passbookEntry = new PassbookEntry
