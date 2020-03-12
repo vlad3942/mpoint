@@ -469,8 +469,26 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
                 } */
-				
+
                 $obj_XML->name = 'card_holderName';
+
+				//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
+                if($obj_PSPConfig->getProcessorType() == Constants::iPROCESSOR_TYPE_APM || $obj_PSPConfig->getProcessorType() == Constants::iPROCESSOR_TYPE_GATEWAY)
+                {
+					$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID(), $this->getTxnInfo()->getClientConfig()->getID());
+					$passbookEntry = new PassbookEntry
+					(
+						NULL,
+						$this->getTxnInfo()->getAmount(),
+						$this->getTxnInfo()->getCurrencyConfig()->getID(),
+						Constants::iAuthorizeRequested
+					);
+					if ($txnPassbookObj instanceof TxnPassbook)
+					{
+						$txnPassbookObj->addEntry($passbookEntry);
+						$txnPassbookObj->performPendingOperations();
+					}
+                }
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
