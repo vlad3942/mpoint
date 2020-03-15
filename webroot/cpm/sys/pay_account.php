@@ -285,6 +285,29 @@ if (count($aMsgCds) == 0)
                         $aMsgCds[] = 51;
                     }
                     break;
+                case (Constants::iFirstData_PSP): // MadaMpgs
+                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iFirstData_PSP);
+
+                        $obj_PSP = new MadaMpgs($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["first-data"]);
+
+                        $code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                        // Authorization succeeded
+                        if ($code == "100")
+                        {
+                            $aMsgCds[] = 100;
+                            //$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+                        }
+                        // Error: Authorization declined
+                        else
+                        {
+                            $obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                            //header("HTTP/1.1 502 Bad Gateway");
+
+                            //$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
+                            $aMsgCds[] = 51;
+                        }
+                        break;
 				case (Constants::iGLOBAL_COLLECT_PSP): //GlobalCollect
 					
 							$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);

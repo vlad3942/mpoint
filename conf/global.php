@@ -983,7 +983,22 @@ $aHTTP_CONN_INFO["cellulant"]["paths"]["status"] = "/mpoint/cellulant/status";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["refund"] = "/mpoint/cellulant/refund";
 
-
+/**
+ * Connection info for connecting to FirstData
+ */
+$aHTTP_CONN_INFO["first-data"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["first-data"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["first-data"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["first-data"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["first-data"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["first-data"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["first-data"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["first-data"]["paths"]["auth"] = "/mpoint/first-data/authorize-payment";
+$aHTTP_CONN_INFO["first-data"]["paths"]["authenticate"] = "/mpoint/authenticate";
+$aHTTP_CONN_INFO["first-data"]["paths"]["capture"] = "/mpoint/first-data/capture";
+$aHTTP_CONN_INFO["first-data"]["paths"]["initialize"] = "/mpoint/first-data/initialize";
+$aHTTP_CONN_INFO["first-data"]["paths"]["refund"] = "/mpoint/first-data/refund";
+$aHTTP_CONN_INFO["first-data"]["paths"]["cancel"] = "/mpoint/first-data/cancel";
 
 /**
  * GoMobile Connection Info.
