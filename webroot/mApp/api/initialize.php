@@ -277,10 +277,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Single Sign-On
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
-                            $authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
+							$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
+							$bIsSingleSingOnPass = false;
                             if (empty($authenticationURL) === false && empty($authToken)=== false)
                             {
-                                $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
                                 if (is_object($obj_CustomerInfo)) {
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
@@ -517,7 +517,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $xml .= '</accounts>';
 							$xml .= '</client-config>';
 							$euaId = -1;
-							if ($bIsSingleSingOnPass === true)
+							if ($bIsSingleSingOnPass === true || (empty($authenticationURL) === true && empty($authToken)=== true))
                             {
                                 $euaId = $obj_TxnInfo->getAccountID();
                             }
