@@ -189,4 +189,7 @@ $aHTTP_CONN_INFO["ezy"]["method"] = "POST";
 $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
 
+
+unset($aHTTP_CONN_INFO["eghl"]["paths"]["get-payment-methods"]);
+
 ?>
