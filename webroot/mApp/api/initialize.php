@@ -550,43 +550,101 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
 							}
 							else { $aObj_XML = array(); }
-							
+
+							$isnewcardconfig =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"isnewcardconfig");
 							$aPSPs = array();
 							$cardsXML = '<cards>';
-							for ($j=0; $j<count($obj_XML->item); $j++)
+							$walletsXML = '<wallets>';
+							$apmsXML = '<apms>';
+							$gatewaysXML = '<gateways>';
+							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
-								if ($obj_XML->item[$j]["type-id"] != 11
-									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
-								{
-									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
-									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'" processor-type="'. $obj_XML->item[$j]["processor-type"].'" installment="'. $obj_XML->item[$j]["installment"].'">';
-									$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
-									$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
+                                if ((int)$obj_XML->item[$j]['type-id'] !== 11
+                                    || ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() === 2)))
+                                {
+                                    if (in_array((integer)$obj_XML->item[$j]["pspid"], $aPSPs) === FALSE)
+                                    {
+                                        $aPSPs[] = intval($obj_XML->item[$j]["pspid"]);
+                                    }
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '">';
+                                    $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
+                                    $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
-                                    if(((int)$obj_XML->item[$j]["payment-type"]) === Constants::iPROCESSOR_TYPE_GATEWAY)
-                                    {
-                                        try
-                                    {
-                                        $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_XML->item[$j]["pspid"]), $aHTTP_CONN_INFO);
-                                        if($obj_Processor !== false)
-                                        {
-                                            $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
-                                            if($activePaymentMenthodsResponseXML !== null)
-                                            {
-                                                $cardsXML .= $activePaymentMenthodsResponseXML->{'active-payment-menthods'}->asXML();
+                                    if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
+                                        try {
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]["pspid"], $aHTTP_CONN_INFO);
+                                            if ($obj_Processor !== FALSE) {
+                                                $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
+                                                if ($activePaymentMenthodsResponseXML !== NULL) {
+                                                    $cardXML .= $activePaymentMenthodsResponseXML->{'active-payment-menthods'}->asXML();
+                                                }
                                             }
                                         }
+                                        catch (Exception $e) {}
                                     }
-                                    catch (Exception $e){}
+                                    elseif ((int)$obj_XML->item[$j]["processor-type"] === Constants::iPROCESSOR_TYPE_WALLET)
+                                    {
+                                        try
+                                        {
+                                            $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]['id'], $aHTTP_CONN_INFO);
+                                            if ($obj_Processor !== FALSE)
+                                            {
+                                                $initResponseXML = $obj_Processor->initialize();
+                                                foreach ($initResponseXML->children() as $obj_Elem)
+                                                {
+                                                    if ($obj_Elem->getName() !== 'name')
+                                                    {
+                                                        $cardXML .= trim($obj_Elem->asXML());
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        catch (Exception $e){}
                                     }
-									$cardsXML .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
-									$cardsXML .= '</card>';
-								}
+
+                                    $cardXML .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);    // Backward compatibility
+                                    $cardXML .= '</card>';
+                                }
+
+                                if($isnewcardconfig === 'true')
+                                {
+                                    switch ((int)$obj_XML->item[$j]["processor-type"]) {
+                                        case Constants::iPROCESSOR_TYPE_WALLET;
+                                            $walletsXML .= $cardXML;
+                                            break;
+                                        case Constants::iPROCESSOR_TYPE_APM;
+                                            $apmsXML .= $cardXML;
+                                            break;
+                                        case Constants::iPROCESSOR_TYPE_GATEWAY;
+                                            $gatewaysXML .= $cardXML;
+                                            break;
+                                        default:
+                                            $cardsXML .= $cardXML;
+                                    }
+                                }
+                                else {
+                                    if((int)$obj_XML->item[$j]["processor-type"] === Constants::iPROCESSOR_TYPE_WALLET)
+                                    {
+                                        $walletsXML .= $cardXML;
+                                    }
+                                    $cardsXML .= $cardXML;
+                                }
+
 							}
-							$cardsXML .= '</cards>';
-							
-							for ($j=0; $j<count($aPSPs); $j++)
+                            $cardsXML .= '</cards>';
+                            $walletsXML .= '</wallets>';
+                            $apmsXML .= '</apms>';
+                            $gatewaysXML .= '</gateways>';
+
+                            $xml .= $cardsXML;
+                            $xml .= $walletsXML;
+                            if ($isnewcardconfig === 'true') {
+                                $xml .= $apmsXML;
+                                $xml .= $gatewaysXML;
+                            }
+
+							for ($j=0, $jMax = count($aPSPs); $j< $jMax; $j++)
 							{
 								switch ($aPSPs[$j])
 								{
@@ -599,13 +657,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									break;
 								}
 							}
-							$xml .= $cardsXML;
 								
 							// End-User has Stored Cards available
 							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 							{
 								$xml .= '<stored-cards>';
-								for ($j=0; $j<count($aObj_XML); $j++)
+								for ($j=0, $jMax = count($aObj_XML); $j< $jMax; $j++)
 								{
 									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
@@ -617,37 +674,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 								$xml .= '</stored-cards>';
 							}
-
-							$walletsXML = '<wallets>';
-							for ($j=0; $j<count($obj_XML->item); $j++)
-							{
-                                if ($obj_XML->item[$j]["processor-type"] == Constants::iPROCESSOR_TYPE_WALLET)
-								{
-									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
-									$walletsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'" processor-type="'. $obj_XML->item[$j]["processor-type"].'">';
-									$walletsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
-									$walletsXML .= $obj_XML->item[$j]->prefixes->asXML();
-									try
-                                    {
-                                        $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_XML->item[$j]["id"]), $aHTTP_CONN_INFO);
-                                        if($obj_Processor !== false)
-                                        {
-                                            $initResponseXML = $obj_Processor->initialize();
-                                            foreach ($initResponseXML->children() as $obj_Elem)
-                                            {
-                                                if($obj_Elem->getName() !== "name")
-                                                {
-                                                    $walletsXML .= trim($obj_Elem->asXML());
-                                                }
-                                            }
-                                        }
-                                    }
-                                    catch (Exception $e){}
-                                    $walletsXML .= '</card>';
-								}
-							}
-							$walletsXML .= '</wallets>';
-                            $xml .=$walletsXML;
 
 							if ($obj_TxnInfo->getAccountID() > 0 && $obj_ClientConfig->getStoreCard() == 2)
 							{
