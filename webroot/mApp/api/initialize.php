@@ -281,7 +281,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$bIsSingleSingOnPass = false;
                             if (empty($authenticationURL) === false && empty($authToken)=== false)
                             {
-                                $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
                                 if (is_object($obj_CustomerInfo)) {
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
@@ -518,7 +517,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $xml .= '</accounts>';
 							$xml .= '</client-config>';
 							$euaId = -1;
-                            $euaId = $obj_TxnInfo->getAccountID();
+							if ($bIsSingleSingOnPass === true || (empty($authenticationURL) === true && empty($authToken)=== true))
+                            {
+                                $euaId = $obj_TxnInfo->getAccountID();
+                            }
 							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
 							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
