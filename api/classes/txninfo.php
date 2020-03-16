@@ -1761,21 +1761,31 @@ class TxnInfo
         {
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
         }
-        switch ($this->_iPaymentType)
-        {
-            case 1:
-                return 'CD';
-            case 2:
-                return 'CASH';
-            case 3:
-                return 'eWallet';
-            case 4:
-                return 'CASH';
-            case 7:
-                return 'DD';
-            default:
-                return 'CASH';
-        }
+		$paymentMethod = 'CASH';
+		switch ($this->_iPaymentType) {
+			case 1:
+				$paymentMethod = 'CD';
+				break;
+			case 2:
+				$paymentMethod = 'CASH';
+				break;
+			case 3:
+				$paymentMethod = 'eWallet';
+				break;
+			case 4:
+				$paymentMethod = 'CASH';
+				break;
+			case 7:
+				$paymentMethod = 'DD';
+				break;
+			default:
+				$paymentMethod = 'CASH';
+		}
+
+		$stdClassObj=new stdClass();
+		$stdClassObj->PaymentType = $this->_iPaymentType;
+		$stdClassObj->PaymentMethod = $paymentMethod;
+		return $stdClassObj;
     }
 
     public function getLatestPaymentState(RDB $obj_DB)
