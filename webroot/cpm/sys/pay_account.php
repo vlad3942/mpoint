@@ -477,7 +477,7 @@ if (count($aMsgCds) == 0)
 						        
 						        /* header ( "HTTP/1.1 502 Bad Gateway" );
 						        
-						        $xml .= '<status code="92">Authorization failed, VeriTrans4G returned error: ' . $code . '</status>'; */
+						        $xml .= '<status code="92">Authorization failed, DragonPay returned error: ' . $code . '</status>'; */
 						    }
 						    break;
 									
