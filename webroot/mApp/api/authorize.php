@@ -145,6 +145,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
@@ -623,19 +625,24 @@ try
 														try
 														{
 														    if($obj_Elem["pspid"] > 0) {
-
-                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
-                                                                $passbookEntry = new PassbookEntry
-                                                                (
-                                                                    NULL,
-                                                                    $obj_TxnInfo->getAmount(),
-                                                                    $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                                                    Constants::iAuthorizeRequested
-                                                                );
-                                                                if ($txnPassbookObj instanceof TxnPassbook) {
-                                                                    $txnPassbookObj->addEntry($passbookEntry);
-                                                                    $txnPassbookObj->performPendingOperations();
-                                                                }
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
+																if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
+																{
+																	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+																	$passbookEntry = new PassbookEntry
+																	(
+																		NULL,
+																		$obj_TxnInfo->getAmount(),
+																		$obj_TxnInfo->getCurrencyConfig()->getID(),
+																		Constants::iAuthorizeRequested
+																	);
+																	if ($txnPassbookObj instanceof TxnPassbook)
+																	{
+																		$txnPassbookObj->addEntry($passbookEntry);
+																		$txnPassbookObj->performPendingOperations();
+																	}
+																}
 
                                                                 $fraudCheckCode = 0;
                                                                 $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
