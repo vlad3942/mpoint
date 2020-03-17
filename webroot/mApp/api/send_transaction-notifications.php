@@ -155,7 +155,7 @@ if(isset($_REQUEST['cut-off-time']))
 $query = "SELECT tt.id, tp.extref, tp.status, tp.performedopt
 			FROM log.transaction_tbl tt
 			INNER JOIN log.txnpassbook_tbl tp
-			ON tt.id = tp.transactionid
+			ON tp.clientid= tt.clientid and tt.id = tp.transactionid
 			WHERE tt.pspid = ".$pspid."
 			AND tt.clientid = ".$clientid."
 			AND tp.performedopt IN ('".Constants::iPAYMENT_CAPTURED_STATE."','".Constants::iPAYMENT_CANCELLED_STATE."','".Constants::iPAYMENT_REFUNDED_STATE."')
