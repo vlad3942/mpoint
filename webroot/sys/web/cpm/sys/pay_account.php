@@ -70,6 +70,8 @@ require_once(sCLASS_PATH ."/mada_mpgs.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
@@ -463,6 +465,27 @@ if (count($aMsgCds) == 0)
 						        $xml .= '<status code="92">Authorization failed, VeriTrans4G returned error: ' . $code . '</status>'; */
 						    }
 						    break;
+						    
+						case (Constants::iDragonPay_AGGREGATOR) : // DragonPay
+						    $obj_PSPConfig = PSPConfig::produceConfig ( $_OBJ_DB, $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), Constants::iDragonPay_AGGREGATOR );
+						    
+						    $obj_PSP = new DragonPay( $_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO ["dragonpay"] );
+						    
+						    $code = $obj_PSP->authorize ( $obj_PSPConfig, $obj_Elem );
+						    
+						    if ($code == "2000") {
+						        $xml .= '<status code="2000">Payment authorized</status>';
+						    } else if (strpos ( $code, '2005' ) !== false) { header("HTTP/1.1 303"); $xml = $code;
+						    } 						// Error: Authorization declined
+						    else {
+						        $obj_mPoint->delMessage ( $obj_TxnInfo->getID (), Constants::iPAYMENT_WITH_ACCOUNT_STATE );
+						        
+						        /* header ( "HTTP/1.1 502 Bad Gateway" );
+						        
+						        $xml .= '<status code="92">Authorization failed, DragonPay returned error: ' . $code . '</status>'; */
+						    }
+						    break;
+						    
 				default:	// Unkown Error
 					$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 					$aMsgCds[] = 59;
