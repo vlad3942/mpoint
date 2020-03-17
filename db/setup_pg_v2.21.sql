@@ -29,3 +29,8 @@ INSERT INTO Client.CardAccess_Tbl(clientid,cardid,enabled,pspid,countryid,statei
 
 /* ========== Global Configuration for DragonPay = ENDS ========== */
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope ) VALUES (<KeyName>, <Value>, <ClientID>, 'client', 2 );
+
+
+
+/* ========== Alter address field size  ========== */
+ALTER TABLE enduser.address_tbl ALTER COLUMN street TYPE character varying(100)
