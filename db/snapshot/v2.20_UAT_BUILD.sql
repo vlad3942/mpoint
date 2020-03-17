@@ -13,7 +13,7 @@ create table system.capturetype_tbl
 alter table system.capturetype_tbl owner to postgres;
 
 INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (1, 'Manual Capture', true);
-INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (2, 'PSP Level Auto Capture ', true);
+INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (2, 'PSP Level Auto Capture', true);
 INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (3, 'Merchant Level Auto Capture', true);
 INSERT INTO system.capturetype_tbl (id, name, enabled) VALUES (4, 'Batch Capture', true);
 
@@ -21,6 +21,10 @@ ALTER TABLE client.cardaccess_tbl
     ADD COLUMN capture_type int2
         CONSTRAINT cardaccess2capturetype_fk
             REFERENCES system.capturetype_tbl DEFAULT (1) ;
+
+-- every psp other than chase payment is set to Psp auto capture
+update client.cardaccess_tbl set capture_type = 2 where pspid != 52;
+
 
 ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture DROP DEFAULT;
 ALTER TABLE log.transaction_tbl ALTER COLUMN auto_capture TYPE int2 USING CASE WHEN auto_capture=TRUE THEN 3 ELSE 1 END;
