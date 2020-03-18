@@ -64,6 +64,7 @@ require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/cellulant.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
+require_once sCLASS_PATH . '/routing_service.php';
 
 $aMsgCds = array();
 
@@ -539,7 +540,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= $obj_XML->{'accept-url'}->asXML();
 							$xml .= '</transaction>';
 							$xml .= $obj_TxnInfo->getPaymentSessionXML();
-							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+
+                            // Call routing service to get eligible payment methods if the client is configured to use it.
+                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
+                            if ($drEnabled) {
+                                $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+                                $obj_RS= new RoutingService($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+                                $obj_XML = simplexml_load_string($obj_RS->getCards($obj_DOM->{'initialize-payment'}[$i] ), "SimpleXMLElement", LIBXML_COMPACT);
+                                // Fallback machanisam if routing service fails to return eligible payment methods
+                                if(empty($obj_XML) === true )
+                                {
+                                    $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+                                }
+                            }
+                            else
+                            {
+                                $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+                            }
 
 							// End-User already has an account and payment with Account enabled
 							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1 && $bIsSingleSingOnPass === true)
