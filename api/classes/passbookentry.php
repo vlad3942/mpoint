@@ -72,6 +72,10 @@ class PassbookEntry implements JsonSerializable
     private $_clientId;
 
     /**
+     * @var float
+     */
+    private $_conversionRate;
+    /**
      * PassbookEntry constructor.
      *
      * @param $id
@@ -86,8 +90,9 @@ class PassbookEntry implements JsonSerializable
      * @param $modified
      * @param $externalReference
      * @param $externalReferenceIdentifier
+     * @param $conversionrate
      */
-    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL, $clientId = -1)
+    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL, $clientId = -1,$conversionRate = 1)
     {
         $this->_id = (int)$id;
         $this->_amount = (int)$amount;
@@ -101,6 +106,7 @@ class PassbookEntry implements JsonSerializable
         $this->_externalReference = (string)$externalReference;
         $this->_externalReferenceIdentifier = (string)$externalReferenceIdentifier;
         $this->_clientId = (int)$clientId;
+        $this->_conversionRate = (float)$conversionRate;
     }
 
     /**
@@ -228,5 +234,13 @@ class PassbookEntry implements JsonSerializable
     public function jsonSerialize()
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function getConversationRate()
+    {
+        return $this->_conversionRate;
     }
 }

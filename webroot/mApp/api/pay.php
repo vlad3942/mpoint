@@ -264,14 +264,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
 							}
 						}
-						else if(filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === false ||
-							intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) == $obj_TxnInfo->getCurrencyConfig()->getID())
-						//Allowed to pass price validation in case of dcc opt
+						else
 						{
-							$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
-							if ($iValResult != 10) {
-								$aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
-							}
+						    if(filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false
+							   && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
+                            {
+                                if(((float)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) !==  (float)$obj_DOM->pay[$i]->transaction->card->amount)
+                                {
+                                    $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                }
+                            }
+						    else
+						    {
+                                $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                                if ($iValResult != 10) {
+                                    $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                }
+                            }
+
 						}
 
 						// Success: Input Valid
@@ -341,8 +351,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									try
 									{
-										if(empty($obj_DOM->pay[$i]->transaction["foreign-exchange-id"]) === false)
-										$obj_TxnInfo->setExternalReference($_OBJ_DB,$obj_PSPConfig->getID(),Constants::iForeignExchange,$obj_DOM->pay[$i]->transaction["foreign-exchange-id"]);
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === false)
+										$obj_TxnInfo->setExternalReference($_OBJ_DB,$obj_PSPConfig->getID(),Constants::iForeignExchange,$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'});
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 										$data['client-config'] = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(),(integer) $obj_DOM->pay[$i]['account']);
@@ -356,12 +366,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['wallet-id'] = $obj_PSPConfig->getID();
 										}
 										$data['auto-capture'] = (int)$obj_Elem->capture_type;
-										if(empty($obj_DOM->pay[$i]->transaction["foreign-exchange-id"]) === false)
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false)
 										{
 											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);
-											$data['externalref'] = array(Constants::iForeignExchange =>array((integer)$obj_PSPConfig->getID() => (string)$obj_DOM->pay[$i]->transaction["foreign-exchange-id"] ));
+											$data['externalref'] = array(Constants::iForeignExchange =>array((integer)$obj_PSPConfig->getID() => (string)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'} ));
 											$data['converted-currency-config'] = $obj_CurrencyConfig;
 											$data['converted-amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
+											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
 											unset($data['amount']);
 										}
 

@@ -316,20 +316,22 @@ try
                                                 $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }
                                         }
-                                       else if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN)  && $obj_TxnInfo->getConvertedAmount() <= (float)0 &&
-                                           intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"])  !=$obj_TxnInfo->getCurrencyConfig()  &&
-                                           empty($obj_DOM->{'authorize-payment'}[$i]->transaction["foreign-exchange-id"]) === false)
-                                           //Allowed to pass price validation in case of dcc opt
+                                       else
                                        {
-                                           $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction["foreign-exchange-id"]);
-                                           $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
-                                           $data['converted-currency-config'] = $obj_CurrencyConfig;
-                                           $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
-                                           $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
-                                           $obj_mPoint->logTransaction($obj_TxnInfo);
-                                       }
-                                        else {
-                                            if ($obj_TxnInfo->getPaymentAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
+                                           if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN)  && $obj_TxnInfo->getConvertedAmount() <= (float)0 &&
+                                               intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"])  !=$obj_TxnInfo->getCurrencyConfig()  &&
+                                               empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false
+                                               && ((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)
+                                               {
+                                                   $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+                                                   $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
+                                                   $data['converted-currency-config'] = $obj_CurrencyConfig;
+                                                   $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
+                                                   $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
+                                                   $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
+                                                   $obj_mPoint->logTransaction($obj_TxnInfo);
+                                               }
+                                             else if ($obj_TxnInfo->getPaymentAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
                                                 $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                             }
                                         }
@@ -645,7 +647,16 @@ try
                                                                     NULL,
                                                                     $obj_TxnInfo->getPaymentAmount(),
                                                                     $obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
-                                                                    Constants::iAuthorizeRequested
+                                                                    Constants::iAuthorizeRequested,
+                                                                    '',
+                                                                    '',
+                                                                    0,
+                                                                    '',
+                                                                    TRUE,
+                                                                    NULL,
+                                                                    NULL,
+                                                                    -1,
+                                                                    $obj_TxnInfo->getConversationRate()
                                                                 );
                                                                 if ($txnPassbookObj instanceof TxnPassbook) {
                                                                     $txnPassbookObj->addEntry($passbookEntry);
