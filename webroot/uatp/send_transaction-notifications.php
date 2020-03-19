@@ -14,7 +14,7 @@
  */
 
 // Require Global Include File
-require_once("../../inc/include.php");
+require_once("../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require API for txnpassbook
@@ -144,9 +144,9 @@ set_time_limit(120);
 
 $interval = '1 Day ';
 $cutofftime = '00:00';
-$pspid = $_REQUEST['pspid'];
+$inputPSPID = $_REQUEST['pspid'];
+$pspid = 50;
 $clientid = $_REQUEST['clientid'];
-
 if(isset($_REQUEST['cut-off-time']))
 {
 	$cutofftime = $_REQUEST['cut-off-time'];
@@ -155,14 +155,15 @@ if(isset($_REQUEST['cut-off-time']))
 $query = "SELECT tt.id, tp.extref, tp.status, tp.performedopt
 			FROM log.transaction_tbl tt
 			INNER JOIN log.txnpassbook_tbl tp
-			ON tp.clientid= tt.clientid and tt.id = tp.transactionid
-			WHERE tt.pspid = ".$pspid."
+			ON tp.clientid = tt.clientid 
+			AND tt.id = tp.transactionid
+			WHERE tt.pspid = ".$inputPSPID."
 			AND tt.clientid = ".$clientid."
 			AND tp.performedopt IN ('".Constants::iPAYMENT_CAPTURED_STATE."','".Constants::iPAYMENT_CANCELLED_STATE."','".Constants::iPAYMENT_REFUNDED_STATE."')
 			AND tp.status NOT IN ('".Constants::sPassbookStatusDone."')
 			AND tp.created <= '".date('Y-m-d').' '.$cutofftime."'
 			AND tp.created >= (now() - INTERVAL '". $interval ."')
-			GROUP BY tt.id, tp.extref, tp.status, tp.performedopt
+			GROUP BY tt.id, tp.extref, tp.status, tp.performedopt,tp.extref
 			ORDER BY tt.id ASC";
 
 //echo $query;die;
@@ -171,24 +172,42 @@ $xml = '';
 
 while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 {
-	$id = $RESULTSET['ID'];
-	$ticketNumbers = $RESULTSET['EXTREF'];
+	$aTicketNumbers = array();
+	$txnid = $RESULTSET['ID'];
 	$txnStateName = $RESULTSET['STATUS'];
-	$iStateID = $RESULTSET['PERFORMEDOPT'];
-	$aTicketNumbers = explode(',',$ticketNumbers);
+	$iStateID = intval($RESULTSET['PERFORMEDOPT']);
+	$exteRef = $RESULTSET['EXTREF'];
+	
+	$subQuery = "SELECT tp.extref, tp.amount
+			FROM log.txnpassbook_tbl tp
+			WHERE tp.clientid = ".$clientid."
+			AND tp.transactionid = ".$txnid."
+			AND tp.id IN (".$exteRef.")
+			ORDER BY tp.id ASC";
+
+	//echo $subQuery;die;
+	$queryResultObj = $_OBJ_DB->query($subQuery);
+	while ($SUBRESULTSET = $_OBJ_DB->fetchName($queryResultObj))
+	{
+		$ticketNumbers = $SUBRESULTSET['EXTREF'];
+		$iAmount = intval($SUBRESULTSET['AMOUNT']);
+		$aTicketNumbers[$ticketNumbers] = $iAmount;
+	}
+
 	try
 	{
-		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+		$obj_TxnInfo = TxnInfo::produceInfo($txnid, $_OBJ_DB);
 		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($pspid));
-
+		
 		$obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
 		$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
 		$createdtimestamp = null;
 		foreach ($aMessages as $m) {
 			$iMessageID = (integer)$m["id"];
 			$iStateId = (integer)$m["stateid"];
-			if($iStateId === $iStateID)
+			//To satisfy partial operations i.e. message table will have 20012 and passbook will have 2001
+			if(intval(substr($iStateId,0,4)) === $iStateID)
 			{
 				$createdtimestamp = $m["created"];
 				break;
@@ -199,11 +218,11 @@ while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 
 		if($code === 1000)
 		{
-			$xml .= '<transaction id="'.$id.'"><status code="1000">Callback Success</status></transaction>';
+			$xml .= '<transaction id="'.$txnid.'"><status code="1000">Callback Success</status></transaction>';
 		}
 		else
 		{
-			$xml .= '<transaction id="'.$id.'"><status code="'.$code.'">Callback Failed</status></transaction>';
+			$xml .= '<transaction id="'.$txnid.'"><status code="'.$code.'">Callback Failed</status></transaction>';
 		}
 	}
 	catch (TxnInfoException $e)
