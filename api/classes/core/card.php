@@ -145,10 +145,7 @@ class Card
      */
     public function getMinCardLength(RDB $oRDB = NULL)
     {
-        if(empty($this->iMinCardLength) == true)
-        {
-            $this->getAdditionalCardDetails($oRDB);
-        }
+        $this->getAdditionalCardDetails($oRDB);
         return $this->iMinCardLength;
     }
 
@@ -192,10 +189,7 @@ class Card
      */
     public function getMaxCardLength(RDB $oRDB = NULL)
     {
-        if(empty($this->iMaxCardLength) === true)
-        {
-            $this->getAdditionalCardDetails($oRDB);
-        }
+        $this->getAdditionalCardDetails($oRDB);
         return $this->iMaxCardLength;
     }
 
@@ -214,10 +208,7 @@ class Card
      */
     public function getCvcLength(RDB $oRDB = NULL)
     {
-        if(empty($this->iCvcLength) === true)
-        {
-            $this->getAdditionalCardDetails($oRDB);
-        }
+        $this->getAdditionalCardDetails($oRDB);
         return $this->iCvcLength;
     }
 
