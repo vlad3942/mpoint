@@ -36,7 +36,7 @@ class Card
 
     private $objDB;
 
-    public function __construct(SimpleDOMElement $obj_Card, RDB &$oDB = NULL)
+    public function __construct(SimpleDOMElement $obj_Card, RDB &$oDB = NULL, array $prefixes = NULL)
     {
         if ( ($obj_Card instanceof SimpleDOMElement) === true)
         {
@@ -47,6 +47,7 @@ class Card
             $this->initializePropFromArray($obj_Card);
         }
         $this->objDB = $oDB;
+        $this->aBinRange = $prefixes;
     }
 
     /**

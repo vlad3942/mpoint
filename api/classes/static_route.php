@@ -3,7 +3,6 @@
 class StaticRoute extends Card
 {
     private $_obj_TxnInfo = '';
-    private $_aPrefixes = array();
     private $iProcessorType = '';
     private $iWidth = 180; // Default logo width
     private $iHeight = 115; // Default logo height
@@ -12,15 +11,14 @@ class StaticRoute extends Card
      * Default Constructor
      *
      * @param	TxnInfo $oTI 		Reference to the Data object with the Transaction Information
-     * @param	array $prefixes 	List of bin range for the card
+     * @param	CardPrefixConfig    $prefixes 	List of bin range for the card
      * @param 	array $aCard 	    Hold card configuration details
-     * @param   integer $pspType    Unique psp type id
+     * @param   integer $processorType    Unique psp type id
      */
-    public function __construct(TxnInfo $oTI, $prefixes, $aCard, $processorType)
+    public function __construct(TxnInfo $oTI, RDB $oDB, array $prefixes, array $aCard, $processorType)
     {
-        parent::__construct($aCard);
+        parent::__construct($aCard,$oDB, $prefixes);
         $this->_obj_TxnInfo = $oTI;
-        $this->_aPrefixes = $prefixes;
         $this->iProcessorType = $processorType;
     }
 
@@ -35,12 +33,15 @@ class StaticRoute extends Card
         $xml .= '<logo-width>' . $this->getLogoWidth() . '</logo-width>';
         $xml .= '<logo-height>' . $this->getLogoHeight() . '</logo-height>';
         $xml .= '<currency>' . $this->_obj_TxnInfo->getCurrencyConfig()->getID() . '</currency>';
-        if (count($this->_aPrefixes) > 0)
+        if (count($this->getBinRange()) > 0)
         {
             $xml .= '<prefixes>';
-            foreach ($this->_aPrefixes as $obj_Prefix)
+            foreach ($this->getBinRange() as $obj_Prefix)
             {
-                $xml .= $obj_Prefix->toXML();
+                if(($obj_Prefix instanceof CardPrefixConfig) === true )
+                {
+                    $xml .= $obj_Prefix->toXML();
+                }
             }
             $xml .= '</prefixes>';
         }
@@ -86,7 +87,7 @@ class StaticRoute extends Card
 
                 $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
 
-                return new StaticRoute($oTI, $aPrefixes, $aRS, $aRS['PROCESSORTYPE']);
+                return new StaticRoute($oTI, RDB &$oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE']);
             }
         }
         return null;
