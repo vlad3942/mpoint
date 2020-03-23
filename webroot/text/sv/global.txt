@@ -1508,3 +1508,11 @@ msgstr @@@ mPoint - New Account E-Mail Body @@@
 msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ mPoint - Confirmation Code @@@
 
+#: /api/classes/static_route.php:81
+msgid @@@ Stored Cards @@@
+msgstr @@@ Use Stored Card @@@
+
+#: /api/classes/static_route.php:83
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+

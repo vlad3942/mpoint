@@ -1616,3 +1616,11 @@ msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Please enter the confirmation code: {CODE} on the website to authenticate your transfer.
 The code will automatically expire in an hour. @@@
 
+#: /api/classes/static_route.php:81
+msgid @@@ Stored Cards @@@
+msgstr @@@ Use Stored Card @@@
+
+#: /api/classes/static_route.php:83
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
