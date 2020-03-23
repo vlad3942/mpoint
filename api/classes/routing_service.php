@@ -24,11 +24,32 @@ class RoutingService extends General
     protected $aCONN_INFO;
 
     /**
-     * Data object with the Payment Methods Information
+     * Hold Unique client ID
      *
-     * @var TxnInfo
+     * @var integer
      */
-    private $_obj_TxnInfo;
+    private $_iClientId;
+
+    /**
+     * Hold Unique country ID
+     *
+     * @var integer
+     */
+    private $_iCountryId;
+
+    /**
+     * Hold currency ID for respective country
+     *
+     * @var integer
+     */
+    private $_iCurrencyId;
+
+    /**
+     * Hold transaction amount
+     *
+     * @var integer
+     */
+    private $_iAmount;
 
     /**
      * Default Constructor
@@ -38,12 +59,15 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(ClientConfig $clientConfig, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, SimpleDOMElement $obj_TxnInfo)
+    public function __construct(ClientConfig $clientConfig, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL)
     {
         $this->_obj_ClientConfig = $clientConfig;
         $this->_obj_ClientInfo = $obj_ClientInfo;
         $this->aCONN_INFO = $obj_ConnInfo;
-        $this->_obj_TxnInfo = $obj_TxnInfo;
+        $this->_iClientId = $clientId;
+        $this->_iCountryId = $countryId;
+        $this->_iCurrencyId = $currencyId;
+        $this->_iAmount = $amount;
     }
 
     /**
@@ -57,30 +81,22 @@ class RoutingService extends General
         $b .= '<payment_method_search_criteria>';
         $b .= '<transaction>';
         $b .= '<amount>';
-        if(empty($this->_obj_TxnInfo->transaction->amount)===false)
+        if(empty($this->_iAmount)===false)
         {
-            $b .= '<value>'.$this->_obj_TxnInfo->transaction->amount.'</value>';
+            $b .= '<value>'.$this->_iAmount.'</value>';
         }
-        $b .= '<country_id>'.$this->_obj_TxnInfo->transaction->amount["country-id"].'</country_id>';
-        if(empty($this->_obj_TxnInfo->transaction->amount["currency-id"])===false)
+        $b .= '<country_id>'.$this->_iCountryId.'</country_id>';
+        if(empty($this->_iCurrencyId)===false)
         {
-            $b .= '<currency_id>'.$this->_obj_TxnInfo->transaction->amount["currency-id"].'</currency_id>';
+            $b .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
         }
         $b .= '</amount>';
-        if(empty($this->_obj_TxnInfo->transaction["type-id"])===false)
-        {
-            $b .= '<type_id>'.$this->_obj_TxnInfo->transaction["type-id"].'</type_id>';
-        }
-        if(empty($this->_obj_TxnInfo->transaction["order-no"])===false)
-        {
-            $b .= '<order_no>'.$this->_obj_TxnInfo->transaction["order-no"].'</order_no>';
-        }
         $b .= '</transaction>';
         $b .= '<client_info>';
         $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
-        $b .= '<client_id>'.$this->_obj_TxnInfo["client-id"].'</client_id>';
+        $b .= '<client_id>'.$this->_iClientId.'</client_id>';
         $b .= '</client_info>';
-        $b .= '</payment_method_search_criteria>';
+        echo $b .= '</payment_method_search_criteria>';
         $obj_XML = null;
 
         try
