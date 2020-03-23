@@ -179,6 +179,49 @@ class ClientInfo
 		
 		return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        if(empty($this->getAppID())===false)
+        {
+            $xml .= '<app_id>'.$this->getAppID().'</app_id>';
+        }
+        if(empty($this->getPlatform())===false)
+        {
+            $xml .= '<platform>'.htmlspecialchars($this->getPlatform(), ENT_NOQUOTES).'</platform>';
+        }
+        if(empty($this->getLanguage())===false)
+        {
+            $xml .= '<language>'.htmlspecialchars($this->getLanguage(), ENT_NOQUOTES).'</language>';
+        }
+        if(empty($this->getVersion())===false)
+        {
+            $xml .= '<version>'.number_format($this->getVersion(), 2).'</version>';
+        }
+        if(empty($this->getMobile())===false)
+        {
+            $xml .= '<mobile>'.$this->getMobile().'</mobile>';
+        }
+        if(empty($this->_obj_CountryConfig->getID())===false)
+        {
+            $xml .= '<country_id>'.$this->_obj_CountryConfig->getID().'</country_id>';
+        }
+        if(empty($this->getEMail())===false)
+        {
+            $xml .= '<email>'. htmlspecialchars($this->getEMail(), ENT_NOQUOTES) .'</email>';
+        }
+        if(empty($this->getDeviceID())===false)
+        {
+            $xml .= '<device_id>'.htmlspecialchars($this->getDeviceID(), ENT_NOQUOTES).'</device_id>';
+        }
+        if(empty($this->getIP())===false)
+        {
+            $xml .= '<ip>'. htmlspecialchars($this->getIP(), ENT_NOQUOTES) .'</ip>';
+        }
+
+        return $xml;
+    }
 	
 	public static function produceInfo()
 	{

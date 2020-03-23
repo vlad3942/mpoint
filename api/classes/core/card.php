@@ -30,46 +30,21 @@ class Card
     private $iCvcLength = -1;
     private $aBinRange = [];
 
+    private $sCardName = '';
+    private $iPaymentType = '';
+    private $iPosition = '';
+
     private $objDB;
 
     public function __construct(SimpleDOMElement $obj_Card, RDB &$oDB = NULL)
     {
-
-        if (empty($obj_Card->{'expiry'}) === FALSE) {
-            $this->sExpiry = (string)$obj_Card->{'expiry'};
+        if ( ($obj_Card instanceof SimpleDOMElement) === true)
+        {
+            $this->initializePropFromXML($obj_Card);
         }
-        if (empty($obj_Card->{'card-holder-name'}) === FALSE) {
-            $this->sCardHolderName = (string)$obj_Card->{'card-holder-name'};
-        }
-        if (empty($obj_Card->{'card-number'}) === FALSE) {
-            $this->sCardNumber = (string)$obj_Card->{'card-number'};
-        }
-        if (empty($obj_Card->{'valid-from'}) === FALSE) {
-            $this->sValidFrom = (string)$obj_Card->{'valid-from'};
-        }
-        if (empty($obj_Card->{'cvc'}) === FALSE) {
-            $this->sCvc = (string)$obj_Card->{'cvc'};
-        }
-        if (empty($obj_Card->{'token'}) === FALSE) {
-            $this->sToken = (string)$obj_Card->{'token'};
-        }
-        if (empty($obj_Card->{'info-3d-secure'}->{'cryptogram'}) === FALSE) {
-            $this->sCryptogram = (string)$obj_Card->{'info-3d-secure'}->{'cryptogram'};
-        }
-        if (empty($obj_Card->{'info-3d-secure'}->{'cryptogram'}["type"]) === FALSE) {
-            $this->sCryptogramType = (string)$obj_Card->{'info-3d-secure'}->{'cryptogram'}["type"];
-        }
-        if (empty($obj_Card->{'info-3d-secure'}->{'cryptogram'}["eci"]) === FALSE) {
-            $this->iEci = (int)$obj_Card->{'info-3d-secure'}->{'cryptogram'}["eci"];
-        }
-        if (empty($obj_Card->{'info-3d-secure'}->cryptogram["xid"]) === FALSE) {
-            $this->sXid = (string)$obj_Card->{'info-3d-secure'}->cryptogram["xid"];
-        }
-        if (empty($obj_Card["network"]) === FALSE) {
-            $this->sNetwork = (string)$obj_Card["network"];
-        }
-        if (empty($obj_Card["type-id"]) === FALSE) {
-            $this->iCardTypeId = $obj_Card["type-id"];
+        else
+        {
+            $this->initializePropFromArray($obj_Card);
         }
         $this->objDB = $oDB;
     }
@@ -169,7 +144,10 @@ class Card
      */
     public function getMinCardLength(RDB $oRDB = NULL)
     {
-        $this->getAdditionalCardDetails($oRDB);
+        if(empty($this->iMinCardLength) == true)
+        {
+            $this->getAdditionalCardDetails($oRDB);
+        }
         return $this->iMinCardLength;
     }
 
@@ -213,7 +191,10 @@ class Card
      */
     public function getMaxCardLength(RDB $oRDB = NULL)
     {
-        $this->getAdditionalCardDetails($oRDB);
+        if(empty($this->iMaxCardLength) === true)
+        {
+            $this->getAdditionalCardDetails($oRDB);
+        }
         return $this->iMaxCardLength;
     }
 
@@ -232,7 +213,10 @@ class Card
      */
     public function getCvcLength(RDB $oRDB = NULL)
     {
-        $this->getAdditionalCardDetails($oRDB);
+        if(empty($this->iCvcLength) === true)
+        {
+            $this->getAdditionalCardDetails($oRDB);
+        }
         return $this->iCvcLength;
     }
 
@@ -242,6 +226,30 @@ class Card
     private function setCvcLength($iCvcLength)
     {
         $this->iCvcLength = $iCvcLength;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCardTypeId()
+    {
+        return $this->iCardTypeId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCardName()
+    {
+        return $this->sCardName;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getPaymentType()
+    {
+        return $this->iPaymentType;
     }
 
     /**
@@ -265,6 +273,78 @@ class Card
             }
         }
         return $this->aBinRange;
+    }
+
+    private function initializePropFromXML($obj_Card)
+    {
+        if (empty($obj_Card->{'expiry'}) === FALSE) {
+            $this->sExpiry = (string)$obj_Card->{'expiry'};
+        }
+        if (empty($obj_Card->{'card-holder-name'}) === FALSE) {
+            $this->sCardHolderName = (string)$obj_Card->{'card-holder-name'};
+        }
+        if (empty($obj_Card->{'card-number'}) === FALSE) {
+            $this->sCardNumber = (string)$obj_Card->{'card-number'};
+        }
+        if (empty($obj_Card->{'valid-from'}) === FALSE) {
+            $this->sValidFrom = (string)$obj_Card->{'valid-from'};
+        }
+        if (empty($obj_Card->{'cvc'}) === FALSE) {
+            $this->sCvc = (string)$obj_Card->{'cvc'};
+        }
+        if (empty($obj_Card->{'token'}) === FALSE) {
+            $this->sToken = (string)$obj_Card->{'token'};
+        }
+        if (empty($obj_Card->{'info-3d-secure'}->{'cryptogram'}) === FALSE) {
+            $this->sCryptogram = (string)$obj_Card->{'info-3d-secure'}->{'cryptogram'};
+        }
+        if (empty($obj_Card->{'info-3d-secure'}->{'cryptogram'}["type"]) === FALSE) {
+            $this->sCryptogramType = (string)$obj_Card->{'info-3d-secure'}->{'cryptogram'}["type"];
+        }
+        if (empty($obj_Card->{'info-3d-secure'}->{'cryptogram'}["eci"]) === FALSE) {
+            $this->iEci = (int)$obj_Card->{'info-3d-secure'}->{'cryptogram'}["eci"];
+        }
+        if (empty($obj_Card->{'info-3d-secure'}->cryptogram["xid"]) === FALSE) {
+            $this->sXid = (string)$obj_Card->{'info-3d-secure'}->cryptogram["xid"];
+        }
+        if (empty($obj_Card["network"]) === FALSE) {
+            $this->sNetwork = (string)$obj_Card["network"];
+        }
+        if (empty($obj_Card["type-id"]) === FALSE) {
+            $this->iCardTypeId = $obj_Card["type-id"];
+        }
+    }
+
+    private function initializePropFromArray($aCard)
+    {
+        if(empty($aCard['ID']) === FALSE)
+        {
+            $this->iCardTypeId = $aCard['ID'];
+        }
+        if(empty($aCard['NAME']) === FALSE)
+        {
+            $this->sCardName = $aCard['NAME'];
+        }
+        if(empty($aCard['POSITION']) === FALSE)
+        {
+            $this->iPosition = $aCard['POSITION'];
+        }
+        if(empty($aCard['MINLENGTH']) === FALSE)
+        {
+            $this->iMinCardLength = $aCard['MINLENGTH'];
+        }
+        if(empty($aCard['MAXLENGTH']) === FALSE)
+        {
+            $this->iMaxCardLength = $aCard['MAXLENGTH'];
+        }
+        if(empty($aCard['CVCLENGTH']) === FALSE)
+        {
+            $this->iCvcLength = $aCard['CVCLENGTH'];
+        }
+        if(empty($aCard['PAYMENTTYPE']) === FALSE)
+        {
+            $this->iPaymentType = $aCard['PAYMENTTYPE'];
+        }
     }
 
 }
