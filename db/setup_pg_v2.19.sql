@@ -54,3 +54,5 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 midpath ::= "MID."(@country-id)
 password ::= (property[@name=''<authpath>''])
 authpath ::= "AUTHCODE."(@country-id)', true, (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <clientid> and pspid = 32), 'merchant', 0);
+
+ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;

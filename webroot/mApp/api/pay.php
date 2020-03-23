@@ -141,6 +141,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+require_once(sCLASS_PATH . '/txn_passbook.php');
+require_once(sCLASS_PATH . '/passbookentry.php');
 
 
 $aMsgCds = array();
@@ -266,6 +268,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
+
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
@@ -342,10 +345,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+											$data['wallet-id'] = $obj_PSPConfig->getID();
+										}
+										$data['auto-capture'] = (int)$obj_Elem->capture_type;
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
+
+										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_APM || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_GATEWAY)
+										{
+											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+											$passbookEntry = new PassbookEntry
+											(
+													NULL,
+													$obj_TxnInfo->getAmount(),
+													$obj_TxnInfo->getCurrencyConfig()->getID(),
+													Constants::iAuthorizeRequested
+											);
+											if ($txnPassbookObj instanceof TxnPassbook)
+											{
+												$txnPassbookObj->addEntry($passbookEntry);
+												$txnPassbookObj->performPendingOperations();
+											}
+										}
+
 										// Initialize payment with Payment Service Provider
 										$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_PSPConfig->getProcessorType().'">';
 										switch ($obj_PSPConfig->getID() )
