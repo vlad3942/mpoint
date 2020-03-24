@@ -87,7 +87,7 @@ class StaticRoute extends Card
 
                 $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
 
-                return new StaticRoute($oTI, RDB &$oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE']);
+                return new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE']);
             }
         }
         return null;
