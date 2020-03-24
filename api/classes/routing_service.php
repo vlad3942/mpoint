@@ -96,7 +96,7 @@ class RoutingService extends General
         $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
         $b .= '<client_id>'.$this->_iClientId.'</client_id>';
         $b .= '</client_info>';
-        echo $b .= '</payment_method_search_criteria>';
+        $b .= '</payment_method_search_criteria>';
         $obj_XML = null;
 
         try
