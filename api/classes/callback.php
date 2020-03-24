@@ -517,7 +517,7 @@ abstract class Callback extends EndUserAccount
 		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toAttributeLessXML($aExcludeNode));
 		$b .= '</callback>';
 		$b .= '</root>';
-		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_CONSTRUCTED_STATE, $b);
+		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_CONSTRUCTED_STATE, $b);
 
         $aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
  	    $obj_ConnInfo = new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"],  $aCI["paths"]["callback"], $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
@@ -528,13 +528,13 @@ abstract class Callback extends EndUserAccount
 			if(intval($iCode) === 200 || intval($iCode) === 202)
 			{
 				trigger_error("mPoint Callback request to Foreign Exchange succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
-				$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iCBFX_ACCEPTED_STATE, $obj_HTTP->getReplyHeader () );
+				$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iACKFX_ACCEPTED_STATE, $obj_HTTP->getReplyHeader () );
 
 			}
 			else
 			{
 				trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
-				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_REJECTED_STATE, $obj_HTTP->getReplyHeader() );
+				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_REJECTED_STATE, $obj_HTTP->getReplyHeader() );
 			}
 
 		}
@@ -542,13 +542,13 @@ abstract class Callback extends EndUserAccount
 		catch (HTTPConnectionException $e)
 		{
 			trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_CONN_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_CONN_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
 		}
 			// Error: Unable to send Callback to Client
 		catch (HTTPSendException $e)
 		{
 			trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCBFX_SEND_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_SEND_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
 		}
 	}
 

@@ -26,6 +26,10 @@ class DCCCallbackAPITest extends CallbackAPITest
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (100, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convetredcurrencyid,convertedamount) VALUES (1001014, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 100,208,840,1000)");
         $this->queryDB("INSERT INTO Log.externalreference_tbl (txnid,externalid,pspid,type) VALUES (1001014, 100, $pspID,$externalRefId)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001014, 100,208,". Constants::iInitializeRequested. ",NULL,'done',10018)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001014, 100,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10018)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001014, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10018)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (103,1001014, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'inprogress',102,10018)");
 
         $xml = $this->getCallbackDoc(1001014, '900-55150298', $pspID, Constants::iPAYMENT_ACCEPTED_STATE,false);
         $this->_httpClient->connect();
@@ -33,19 +37,21 @@ class DCCCallbackAPITest extends CallbackAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iCBFX_CONSTRUCTED_STATE);
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_ACCEPTED_STATE);
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iCBFX_ACCEPTED_STATE);
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_CONSTRUCTED_STATE);
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1 );
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (104,1001014, 5000,208,". Constants::iCaptureRequested. ",NULL,'done',10018)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (105,1001014, 5000,208,NULL,". Constants::iPAYMENT_CAPTURED_STATE. ",'inprogress',104,10018)");
 
         $xml = $this->getCallbackDoc(1001014, '900-55150298', $pspID, Constants::iPAYMENT_CAPTURED_STATE,false);
         $this->constHTTPClient();
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iCBFX_CONSTRUCTED_STATE);
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_ACCEPTED_STATE);
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 2);
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iCBFX_ACCEPTED_STATE);
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_CONSTRUCTED_STATE);
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 2 );
 
     }

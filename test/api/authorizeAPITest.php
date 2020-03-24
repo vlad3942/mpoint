@@ -21,14 +21,12 @@ abstract class AuthorizeAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO));
 	}
 
-	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $currecyid = null,$hmac=null,$cfxid=null,$cardid=2)
+	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $currecyid = null,$hmac=null,$cardid=2,$aDccParams=null)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<authorize-payment client-id="'. $client .'" account="'. $account .'">';
 		$xml .= '<transaction id="'. $txn .'"';
-        if(isset($cfxid) === true)
-            $xml .= ' foreign-exchange-id="'.$cfxid.'"';
         $xml .='>';
 		$xml .= '<card id="61775" type-id="'.$cardid.'">';
 		$xml .= '<amount country-id="100"';
@@ -40,6 +38,19 @@ abstract class AuthorizeAPITest extends baseAPITest
 //		$xml .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
 		$xml .= '</card>';
         if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
+        if(isset($aDccParams))
+        {
+            $xml .= '<foreign-exchange-info>';
+            if(empty($aDccParams[0]) === false)
+            {
+                $xml .= '<id>'.$aDccParams[0].'</id>';
+            }
+            if(empty($aDccParams[1]) === false)
+            {
+                $xml .= '<conversation-rate>'.$aDccParams[1].'</conversation-rate>';
+            }
+            $xml .= '</foreign-exchange-info>';
+        }
 		$xml .= '</transaction>';
 		if ($intAccountId > 0)
 		{

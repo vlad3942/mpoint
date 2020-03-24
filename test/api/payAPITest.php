@@ -21,7 +21,7 @@ class PayAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
 	}
 
-	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false,$currencyid=-1,$amount=100,$hmac=null,$cfxid=null)
+	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false,$currencyid=-1,$amount=100,$hmac=null,$aDccParams=null)
 	{
 		$sStore = $store ? 'true' : 'false';
 
@@ -29,8 +29,6 @@ class PayAPITest extends baseAPITest
 		$xml .= '<root>';
 		$xml .= '<pay client-id="'. $client .'" account="'. $account .'">';
 		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'"';
-		if(isset($cfxid) === true)
-            $xml .= ' foreign-exchange-id="'.$cfxid.'"';
 		$xml .='>';
 		$xml .= '<card type-id="'. $card .'">';
         $xml .= '<amount country-id="100"';
@@ -38,6 +36,19 @@ class PayAPITest extends baseAPITest
         $xml .= '>'.$amount.'</amount>';
 		$xml .= '</card>';
         if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
+        if(isset($aDccParams))
+        {
+            $xml .= '<foreign-exchange-info>';
+            if(empty($aDccParams[0]) === false)
+            {
+                $xml .= '<id>'.$aDccParams[0].'</id>';
+            }
+            if(empty($aDccParams[1]) === false)
+            {
+                $xml .= '<conversation-rate>'.$aDccParams[1].'</conversation-rate>';
+            }
+            $xml .= '</foreign-exchange-info>';
+        }
 		$xml .= '</transaction>';
 		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
 		$xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';

@@ -25,9 +25,14 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10018,100,840, true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,euaid) VALUES (1001012, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,50011)");
+        $this->queryDB("INSERT INTO log.txnpassbook_tbl(id, transactionid, amount, currencyid, requestedopt, performedopt, status,clientid) VALUES(102291, 1001012, 5000, 840, 5014, NULL, 'done', 10018)");
+        $this->queryDB("INSERT INTO log.txnpassbook_tbl(transactionid, amount, currencyid,  performedopt, status, extref, extrefidentifier, clientid) VALUES ( 1001012, 5000, 840,  1001, 'done', '102291', 'log.txnpassbook_tbl', 10018)");
 
-
-        $xml = $this->getAuthDoc(10018, 1100, 1001012,20000, 'profilePass', 0,null,208,'235fe8c3d8f1afb990c91e997d09cef8aca15549f0c71d7930e20e95691eb1c9d41c8f3ad91fa06be9c9b3f94afa71687b8c66a9a9095e9e9047afdc0907aee1','345654',8);
+        $aDccParams = array(
+            "12345",
+            "4"
+        );
+        $xml = $this->getAuthDoc(10018, 1100, 1001012,20000, 'profilePass', 0,null,208,'235fe8c3d8f1afb990c91e997d09cef8aca15549f0c71d7930e20e95691eb1c9d41c8f3ad91fa06be9c9b3f94afa71687b8c66a9a9095e9e9047afdc0907aee1',8,$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -38,6 +43,8 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
         $res =  $this->queryDB("SELECT convetredcurrencyid FROM Log.Transaction_Tbl where id=1001012 and convetredcurrencyid = 208 and currencyid=840 and convertedamount=20000");
         $this->assertTrue(is_resource($res) );
+        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid=1001012 and performedopt = 2000");
+        $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
     }
 
     public function testSuccessfulAuthorizeWithCurrency()
