@@ -211,10 +211,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="fetch all transaction which is authorized">
+
+        $xml = '<settlement-info>';
         foreach ($arrayClients as $clientid => &$client)
         {
             foreach ($client as $pspid)
             {
+                $xml .= '<settlemnets>';
                 $obj_Settlement = SettlementFactory::create($_OBJ_TXT, $clientid, $pspid, $aHTTP_CONN_INFO);
                 if($obj_Settlement != NULL)
                 {
@@ -223,10 +226,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $obj_Settlement->refund($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
                     $obj_Settlement->createBulkSettlementEntry($_OBJ_DB);
+                    $xml .= '<settlement-id>'.$obj_Settlement->getFileSequenceNumber().'</settlement-id>';
+                    $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
+                    $xml .= '<created-time>'.$obj_Settlement->geFileCreatedDate().'</created-time>';
+                    $xml .= '<psp-id>'.$pspid.'</psp-id>';
+                    $xml .= '<file-status>'.$obj_Settlement->geFileStatus().'</file-status>';
                 }
+                $xml .= '</settlemnets>';
             }
-
         }
+        $xml .= '</settlement-info>';
     }
 
     // Error: Invalid XML Document
@@ -257,3 +266,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     header("HTTP/1.1 401 Unauthorized");
 }
 header("HTTP/1.1 200 Ok");
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<root>';
+echo $xml;
+echo '</root>';
