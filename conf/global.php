@@ -983,6 +983,18 @@ $aHTTP_CONN_INFO["cellulant"]["paths"]["status"] = "/mpoint/cellulant/status";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["refund"] = "/mpoint/cellulant/refund";
 
+/*
+ * Connection info for connecting to Routing Service
+ */
+$aHTTP_CONN_INFO["routing-service"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["routing-service"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["routing-service"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["routing-service"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["routing-service"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["routing-service"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["routing-service"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["routing-service"]["paths"]["get-payment-methods"] = "/routingservice/get-payment-methods";
+
 
 
 /**
