@@ -179,6 +179,35 @@ class ClientInfo
 		
 		return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        $xml .= '<platform>'.htmlspecialchars($this->_sPlatform, ENT_NOQUOTES).'</platform>';
+        $xml .= '<language>'.htmlspecialchars($this->_sLanguage, ENT_NOQUOTES).'</language>';
+        $xml .= '<version>'.number_format($this->_fVersion, 2).'</version>';
+        if(empty($this->_iAppID) == false)
+        {
+            $xml .= '<app_id>'.$this->_iAppID.'</app_id>';
+        }
+        if(empty($this->_sMobile) === false)
+        {
+            $xml .= '<mobile>'.$this->_sMobile.'</mobile>';
+            $xml .= '<country_id>'.$this->_obj_CountryConfig->getID().'</country_id>';
+        }
+        if(empty($this->_sEMail) === false)
+        {
+            $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
+        }
+        if(empty($this->_sDeviceID) === false)
+        {
+            $xml .= '<device_id>'. htmlspecialchars($this->_sDeviceID, ENT_NOQUOTES) .'</device_id>';
+        }
+        if(empty($this->_sIP) === false){
+            $xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
+        }
+        return $xml;
+    }
 	
 	public static function produceInfo()
 	{
