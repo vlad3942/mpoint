@@ -34,3 +34,7 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 
 /* ========== Alter address field size  ========== */
 ALTER TABLE enduser.address_tbl ALTER COLUMN street TYPE character varying(100)
+
+
+-- UATP batch cut-off-time for CMP-3527 --
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('BATCH-CUT-OFF-TIME', '02:00', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = <ClientID> and pspid = 50), 'merchant',1);
