@@ -9,8 +9,8 @@
  * File Name:send_transaction-notifications.php
  * x-www-form-urlencoded params :
 	clientid:10069
- 	pspid:50
- 	cut-off-time:23:59 [HH:MM]
+ 	pspid:52
+ 	cut-off-time:02:00
  */
 
 // Require Global Include File
