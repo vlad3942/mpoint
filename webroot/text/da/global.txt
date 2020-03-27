@@ -1419,11 +1419,11 @@ Pris: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tak fordi du brugte mPoint, vi har trukket {PRICE} fra din mobilregning. @@@
 
-#: /api/classes/credit_card.php:128
+#: /api/classes/credit_card.php:117
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte kort @@@
 
-#: /api/classes/credit_card.php:131
+#: /api/classes/credit_card.php:119
 msgid @@@ My Account @@@
 msgstr @@@ Min konto @@@
 

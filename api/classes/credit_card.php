@@ -199,7 +199,6 @@ class CreditCard extends EndUserAccount
 
     }
 
-
     public function getCardObject($amount, $typeid = null, $stateid = null)
     {
         $result = $this->getCardsQuery($amount, $typeid, $stateid );
