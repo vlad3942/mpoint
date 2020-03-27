@@ -145,6 +145,8 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+require_once(sCLASS_PATH . '/payment_processor.php');
+require_once(sCLASS_PATH . '/wallet_processor.php');
 
 $aMsgCds = array();
 
@@ -179,31 +181,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
-		for ($i=0; $i<count($obj_DOM->pay); $i++)
+		for ($i=0, $iMax = count($obj_DOM->pay); $i< $iMax; $i++)
 		{
 			// Set Global Defaults
-			if (empty($obj_DOM->pay[$i]["account"]) === true || intval($obj_DOM->pay[$i]["account"]) < 1) { $obj_DOM->pay[$i]["account"] = -1; }
+			if (empty($obj_DOM->pay[$i]["account"]) === true || (int)$obj_DOM->pay[$i]["account"] < 1) { $obj_DOM->pay[$i]["account"] = -1; }
 
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-			if ($code == 100)
+			if ($code === 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
+ 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
+					)
 				{
 					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 					$aObj_PSPConfigs = array();
-					for ($j=0; $j<count($obj_DOM->pay[$i]->transaction->card); $j++)
+					for ($j=0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j< $jMax; $j++)
 					{
 						$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 //						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"]);
 //						if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 
-						if (count($obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}) == 1)
+						if (count($obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}) === 1)
 						{
 							$code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), (integer) $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'});
 						}
@@ -220,63 +222,58 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                         }else {
                             $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
-                            if ($iValResult != 10) {
+                            if ($iValResult !== 10) {
                                 $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
                             }
                         }
 						
 						
 						// Validate currency if explicitly passed in request, which defer from default currency of the country
-						if(intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) > 0){
-							$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->pay[$i]->transaction->card->amount["country-id"])) ;
-							if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->pay[$i]["client-id"])) != 10 ){
-								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
+						if((int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"] > 0){
+							$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, (int)$obj_DOM->pay[$i]->transaction->card->amount["country-id"]) ;
+							if($obj_Validator->valCurrency($_OBJ_DB, (int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"], $obj_TransacionCountryConfig, (int)$obj_DOM->pay[$i]["client-id"]) !== 10 ){
+								$aMsgCds[56] = "Invalid Currency:". (int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"];
 							}
 						}
 						
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-						
-						if ($drEnabled) {
+						if ($drService === 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
 							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
 							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 							
 						}
-						$obj_CardXML = '';
-						if (count ( $aRoutes ) == 0) {
-							$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount ) );
-						} else {
-							foreach ( $aRoutes as $oRoute ) {
-								if ($oRoute {'type-id'} == 1) {
-									$empty = array();
-									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute ) );
-								    break;
-								}
+
+						$obj_ResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1);
+
+						foreach ( $aRoutes as $oRoute ) {
+							if ($oRoute {'type-id'} === 1) {
+								$empty = array();
+								$obj_ResultSet['PSPID'] = $oRoute;
+								break;
 							}
 						}
-						
-						//Check if card or payment method is enabled or disabled by merchant
-						//Same check is  also implemented at app side.
-						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
-						
-						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
+
+						$pspId = (int)$obj_ResultSet['PSPID'];
+
+						if ($obj_ResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $_SERVER['HTTP_X_FORWARDED_FOR']);
-                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
+                        if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'sessiontype') !== 2 && empty($obj_ClientConfig->getSalt() ) === false)
                         {
-                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
+                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
 
 						// Success: Input Valid
-						if (count($aMsgCds) == 0)
+						if (count($aMsgCds) === 0)
 						{
 							if ($code >= 10)
 							{
-								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
-                                    if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1)
+								if ($obj_TxnInfo->getAccountID() === -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
+                                    if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)=== 1)
                                     {
                                         $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"]);
                                     } else {
@@ -297,43 +294,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
 									$obj_TxnInfo->setAccountID($iAccountID);
 									// Update Transaction Log
-									$obj_mPoint->logTransaction($obj_TxnInfo);
-								}
-								$obj_PSPConfig = null;
-								switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
-								{
-								case (Constants::iAPPLE_PAY):	// 3rd Party Wallet: Apple Pay
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
-									break;
-								case (Constants::iVISA_CHECKOUT_WALLET):	// 3rd Party Wallet: VISA Checkout
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
-									break;
-								case (Constants::iMASTER_PASS_WALLET):	// 3rd Party Wallet: Master Pass
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
-									break;
-								case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):	// 3rd Party Wallet: AMEX Express Checkout
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
-									break;
-								case (Constants::iANDROID_PAY_WALLET):				// 3rd Party Wallet: Android Pay
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
-									break;
-								case (Constants::iGOOGLE_PAY_WALLET):				// 3rd Party Wallet: Google Pay
-                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iGOOGLE_PAY_PSP);
-                                    break;
-								default:	// Standard Payment Service Provider
-									if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
-									{
-										if (intval($obj_Elem["pspid"]) > 0)
-										{
-											$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]);
-										}
+									try {
+										$obj_mPoint->logTransaction($obj_TxnInfo);
+									} catch (mPointException $e) {
+										trigger_error('Error in updating log.transaction table in pay call. Transaction id : ' . $obj_TxnInfo->getID());
 									}
-									$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
-									break;
 								}
-	    
+								$obj_paymentProcessor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $aHTTP_CONN_INFO);
+
+                                // Standard Payment Service Provider
+								if((($obj_paymentProcessor instanceof WalletProcessor) === FALSE) || ($obj_paymentProcessor->getPSPConfig() instanceof PSPConfig) === FALSE)
+								{
+                                    if ((array_key_exists($pspId, $aObj_PSPConfigs) === false) && $pspId > 0 )
+									{
+										$aObj_PSPConfigs[$pspId] = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
+									}
+									$obj_paymentProcessor = $aObj_PSPConfigs[$pspId];
+								}
+
 								// Success: Payment Service Provider Configuration found
-								if ( ($obj_PSPConfig instanceof PSPConfig) === true)
+								if (($obj_paymentProcessor instanceof WalletProcessor || $obj_paymentProcessor instanceof PaymentProcessor ) && ($obj_paymentProcessor->getPSPConfig() instanceof PSPConfig) === true)
 								{
 									try
 									{
@@ -346,17 +326,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
-										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
-											$data['wallet-id'] = $obj_PSPConfig->getID();
+										if($obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
-										$data['auto-capture'] = (int)$obj_Elem->capture_type;
+										$data['auto-capture'] = (int)$obj_ResultSet['CAPTURE_TYPE'];
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
 
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
-										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_APM || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_GATEWAY)
+										$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType() ;
+										if($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
 										{
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
@@ -374,580 +355,153 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 
 										// Initialize payment with Payment Service Provider
-										$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_PSPConfig->getProcessorType().'">';
-										switch ($obj_PSPConfig->getID() )
-										{
-										case (Constants::iDIBS_PSP):
-											$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO['dibs']);
-	
-											$aHTTP_CONN_INFO["dibs"]["path"] = str_replace("{account}", $obj_PSPConfig->getMerchantAccount(), $aHTTP_CONN_INFO["dibs"]["path"]);
-											$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["dibs"]);
-											$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												// Hidden Fields
-												if (count($obj_XMLElem->children() ) > 0)
-												{
-													$xml .= '<'. $obj_XMLElem->getName() .'>';
-													foreach ($obj_XMLElem->children() as $obj_Child)
-													{
-														$xml .= $obj_Child->asXML();
-													}
-													$xml .= '</'. $obj_XMLElem->getName() .'>';
-												}
-												else { $xml .= $obj_XMLElem->asXML(); }
-											}
-											
-											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-											
-											break;
-										case (Constants::iWORLDPAY_PSP):
-											
-											$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+										$xml = '<psp-info id="'. $obj_paymentProcessor->getPSPConfig()->getID() .'" merchant-account="'. htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_paymentProcessor->getPSPConfig()->getProcessorType().'">';
 
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-										case (Constants::iPAYEX_PSP):
-											$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payex"]);
-	
-											if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
-											$aHTTP_CONN_INFO["payex"]["username"] = $obj_PSPConfig->getUsername();
-											$aHTTP_CONN_INFO["payex"]["password"] = $obj_PSPConfig->getPassword();
-											$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
-											$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), (string) $obj_Elem->currency);
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												// Hidden Fields
-												if (count($obj_XMLElem->children() ) > 0)
-												{
-													$xml .= '<'. $obj_XMLElem->getName() .'>';
-													foreach ($obj_XMLElem->children() as $obj_Child)
-													{
-														$xml .= $obj_Child->asXML();
+										switch ($obj_paymentProcessor->getPSPConfig()->getID()) {
+											case (Constants::iDIBS_PSP):
+												$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO['dibs']);
+
+												$aHTTP_CONN_INFO["dibs"]["path"] = str_replace("{account}", $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), $aHTTP_CONN_INFO["dibs"]["path"]);
+												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["dibs"]);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), $obj_paymentProcessor->getPSPConfig()->getMerchantSubAccount(), (string)$obj_ResultSet['CURRENCY'], (integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
+												foreach ($obj_XML->children() as $obj_XMLElem) {
+													// Hidden Fields
+													if (count($obj_XMLElem->children()) > 0) {
+														$xml .= '<' . $obj_XMLElem->getName() . '>';
+														foreach ($obj_XMLElem->children() as $obj_Child) {
+															$xml .= $obj_Child->asXML();
+														}
+														$xml .= '</' . $obj_XMLElem->getName() . '>';
+													} else {
+														$xml .= $obj_XMLElem->asXML();
 													}
-													$xml .= '</'. $obj_XMLElem->getName() .'>';
 												}
-												else { $xml .= $obj_XMLElem->asXML(); }
-											}
-											break;
-										case (Constants::iWANNAFIND_PSP):
-											break;
-										case (Constants::iNETAXEPT_PSP):
-											$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["netaxept"], $obj_PSPConfig);
-	
-											if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
-											$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
-											$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
-	
-											$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-											// get boolean value of store card.
-											$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
-											$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
-																			$obj_PSPConfig->getMerchantAccount(),
-																			$obj_PSPConfig->getMerchantSubAccount(),
-																			(string) $obj_Elem->currency,
-																			(integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"],
-																			$storecard);
-	
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												$xml .= trim($obj_XMLElem->asXML() );
-											}
-											break;
-										case (Constants::iSTRIPE_PSP):
-											$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, array() );
-											$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, false);
-											$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
-											$code =	$obj_PSP->auth( $obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
-											if ($code >= 2000)
-											{
-												if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="'. $code .'">Payment Authorized using Apple Pay</status>'; }
-												else { $xml .= '<status code="'. $code .'">Payment Authorized</status>'; }
-											}
-											// Error: Authorization declined
-											else
-											{
-												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-	
-												header("HTTP/1.1 502 Bad Gateway");
-												$xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
-											}
-											break;
-										case (Constants::iMOBILEPAY_PSP):
-	
-											$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig);
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												$xml .= trim($obj_XMLElem->asXML() );
-											}
-											break;
-										case (Constants::iCPG_PSP):
-											if (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) === Constants::iAPPLE_PAY)
-											{
+
+												if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === TRUE) {
+													$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "");
+												}
+
+												break;
+											case (Constants::iPAYEX_PSP):
+												$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payex"]);
+
+												if ($obj_TxnInfo->getMode() > 0) {
+													$aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]);
+												}
+												$aHTTP_CONN_INFO["payex"]["username"] = $obj_paymentProcessor->getPSPConfig()->getUsername();
+												$aHTTP_CONN_INFO["payex"]["password"] = $obj_paymentProcessor->getPSPConfig()->getPassword();
+												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), (string)$obj_ResultSet['CURRENCY']);
+												foreach ($obj_XML->children() as $obj_XMLElem) {
+													// Hidden Fields
+													if (count($obj_XMLElem->children()) > 0) {
+														$xml .= '<' . $obj_XMLElem->getName() . '>';
+														foreach ($obj_XMLElem->children() as $obj_Child) {
+															$xml .= $obj_Child->asXML();
+														}
+														$xml .= '</' . $obj_XMLElem->getName() . '>';
+													} else {
+														$xml .= $obj_XMLElem->asXML();
+													}
+												}
+												break;
+											case (Constants::iWANNAFIND_PSP):
+												break;
+											case (Constants::iNETAXEPT_PSP):
+												$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["netaxept"], $obj_paymentProcessor->getPSPConfig());
+
+												if ($obj_TxnInfo->getMode() > 0) {
+													$aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]);
+												}
+												$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_paymentProcessor->getPSPConfig()->getUsername();
+												$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_paymentProcessor->getPSPConfig()->getPassword();
+
+												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+												// get boolean value of store card.
+												$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
+																				$obj_paymentProcessor->getPSPConfig()->getMerchantAccount(),
+																				$obj_paymentProcessor->getPSPConfig()->getMerchantSubAccount(),
+																				(string)$obj_ResultSet['currency'],
+																				(integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"],
+																				$storecard);
+
+												foreach ($obj_XML->children() as $obj_XMLElem) {
+													$xml .= trim($obj_XMLElem->asXML());
+												}
+												break;
+											case (Constants::iSTRIPE_PSP):
+												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, []);
+												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, FALSE);
+												$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0);
+												$code = $obj_PSP->auth($obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
+												if ($code >= 2000) {
+													if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) {
+														$xml .= '<status code="' . $code . '">Payment Authorized using Apple Pay</status>';
+													} else {
+														$xml .= '<status code="' . $code . '">Payment Authorized</status>';
+													}
+												} // Error: Authorization declined
+												else {
+													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+													header("HTTP/1.1 502 Bad Gateway");
+													$xml .= '<status code="92">Authorization failed, Stripe returned error: ' . $code . '</status>';
+												}
+												break;
+											case (Constants::iMOBILEPAY_PSP):
+
+												$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
+												$obj_XML = $obj_PSP->initialize($obj_paymentProcessor->getPSPConfig());
+												foreach ($obj_XML->children() as $obj_XMLElem) {
+													$xml .= trim($obj_XMLElem->asXML());
+												}
+												break;
+											case (Constants::iCPG_PSP):
+												if ((int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) {
+													$xml .= '<url method="app" />';
+												}
+												break;
+											case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
+												$xml .= '<url method="overlay" />';
+												$obj_PSP = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex-express-checkout"]);
+
+												$obj_XML = $obj_PSP->initialize($obj_paymentProcessor->getPSPConfig(), $obj_TxnInfo->getAccountID(), FALSE);
+
+												foreach ($obj_XML->children() as $obj_Elem) {
+													$xml .= trim($obj_Elem->asXML());
+												}
+												break;
+											case (Constants::iANDROID_PAY_PSP):
 												$xml .= '<url method="app" />';
-											}
-											break;
-										case (Constants::iADYEN_PSP):
-											$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["adyen"]);
-	
-											
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) , $obj_DOM->pay[$i]->transaction->card["type-id"], '',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-	
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												$xml .= trim($obj_XMLElem->asXML() );
-											}
-											break;
-										case (Constants::iVISA_CHECKOUT_PSP):
-											$obj_PSP = new VISACheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["visa-checkout"]);
-	
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-	
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												$xml .= trim($obj_XMLElem->asXML() );
-											}
-											break;
-										case (Constants::iMASTER_PASS_PSP):
-											$obj_PSP = new MasterPass($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["masterpass"]);
-	
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-	
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
-											$xml .= '<url method="overlay" />';
-											$obj_PSP = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex-express-checkout"]);
-	
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);
-	
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iAPPLE_PAY_PSP):
-											$obj_PSP = new ApplePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["apple-pay"]);
-
-											$token = '';
-                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                            {
-                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                            }
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false, $obj_DOM->pay[$i]->transaction->card["type-id"],$token);
-
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												$xml .= trim($obj_XMLElem->asXML() );
-											}
-											break;
-										case (Constants::iANDROID_PAY_PSP):
-											$xml .= '<url method="app" />';
-											break;
-										case (Constants::iGOOGLE_PAY_PSP):
-                                            $obj_PSP = new GooglePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["google-pay"]);
-
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);
-
-                                            foreach ($obj_XML->children() as $obj_XMLElem)
-                                            {
-                                                $xml .= trim($obj_XMLElem->asXML() );
-                                            }
-                                            break;
-										case (Constants::iDATA_CASH_PSP):
-											$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["data-cash"]);
-												
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]),$obj_DOM->pay[$i]->transaction->card["type-id"],'',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo );
-	//										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-										
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-                                        case (Constants::iMADA_MPGS_PSP):
-                                            $obj_PSP = new MadaMpgs($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mada-mpgs"]);
-
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]),$obj_DOM->pay[$i]->transaction->card["type-id"],'',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo );
-                                            //										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-										case (Constants::iWIRE_CARD_PSP):
-											$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["wire-card"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"] );
-	//										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-										
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iGLOBAL_COLLECT_PSP):
-												$obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["global-collect"]);
-												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], '',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-											
-												foreach ($obj_XML->children() as $obj_Elem)
-												{
-													$xml .= trim($obj_Elem->asXML() );
-												}
 												break;
-										case (Constants::iSECURE_TRADING_PSP):
-											$obj_PSP = new SecureTrading($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["secure-trading"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"],'', NULL,$obj_ClientInfo);
-												
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iPAYPAL_PSP):
-											$obj_PSP = new PayPal($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["paypal"]);
-	
-											
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) , $obj_DOM->pay[$i]->transaction->card["type-id"], '',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo );
-											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-	
-											foreach ($obj_XML->children() as $obj_XMLElem)
-											{
-												$xml .= trim($obj_XMLElem->asXML() );
-											}
-											break;
-										case (Constants::iCCAVENUE_PSP):
-												$obj_PSP = new CCAvenue($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["ccavenue"]);
-												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], '',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo );
-											
-												foreach ($obj_XML->children() as $obj_Elem)
-												{
-													$xml .= trim($obj_Elem->asXML() );
-												}
-												break;
-										case (Constants::iPAYFORT_PSP):
-											$obj_PSP = new PayFort($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payfort"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-												
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::i2C2P_PSP):
-											$obj_PSP = new CCPP($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["2c2p"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-											
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iMAYBANK_PSP):
-											
-											$obj_PSP = new MayBank($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["maybank"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-												
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iPUBLIC_BANK_PSP):
 
-											$obj_PSP = new PublicBank($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["public-bank"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-												
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iALIPAY_PSP):
-											$obj_PSP = new AliPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["alipay"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-												
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iPOLI_PSP):
-											$obj_PSP = new Poli($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["poli"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-											
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;											
-										case (Constants::iQIWI_PSP):
-											$obj_PSP = new Qiwi($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["qiwi"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-											
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iKLARNA_PSP):
-											$obj_PSP = new Klarna($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["klarna"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-												
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-										case (Constants::iPAY_TABS_PSP):
-												$obj_PSP = new PayTabs($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["paytabs"]);
+											default:
+
+												if($obj_paymentProcessor instanceof WalletProcessor)
+												{
+													$obj_paymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_paymentProcessor->getPSPConfig()->getID(), $aHTTP_CONN_INFO);
+												}
 
 												$token = '';
-												if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                                {
-                                                    $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                                }
-
-                                                $billingAddress = null;
-												if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
-                                                {
-                                                    $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
-                                                }
-
-												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"],$token, $billingAddress);
-											
-												foreach ($obj_XML->children() as $obj_Elem)
-												{
-													$xml .= trim($obj_Elem->asXML() );
+												if (count($obj_DOM->pay[$i]->transaction->card->token) === 1) {
+													$token = $obj_DOM->pay[$i]->transaction->card->token;
 												}
-												break;
-										case (Constants::i2C2P_ALC_PSP):
-													$obj_PSP = new CCPPALC($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["2c2p-alc"]);
-													$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], '', $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'});
-														
-													foreach ($obj_XML->children() as $obj_Elem)
-													{
-														$xml .= trim($obj_Elem->asXML() );
-													}
-													break;
-										case (Constants::iMOBILEPAY_ONLINE_PSP):
-											$obj_PSP = new MobilePayOnline($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay-online"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
-													
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												$xml .= trim($obj_Elem->asXML() );
-											}
-											break;
-                                        case (Constants::iNETS_ACQUIRER):
-                                            $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["nets"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
 
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iCITCON_PSP):
-                                                $obj_PSP = new Citcon($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["citcon"]);
-                                                $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
+												$billingAddress = NULL;
+												if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) === 1) {
+													$billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
+												}
+												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']));
+												if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === TRUE) {
+													$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "");
+												}
+												foreach ($obj_XML->children() as $obj_Elem) {
+													$xml .= trim($obj_Elem->asXML());
+												}
 
-                                                foreach ($obj_XML->children() as $obj_Elem)
-                                                {
-                                                    $xml .= trim($obj_Elem->asXML() );
-                                                }
-                                            break;
-                                        case (Constants::iTRUSTLY_PSP):
-                                           	$obj_PSP = new Trustly($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["trustly"]);
-                                           	$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-                                            
-                                           	foreach ($obj_XML->children() as $obj_Elem)
-                                           	{
-                                           		$xml .= trim($obj_Elem->asXML() );
-                                           	}
-                                           	break;
-                                        case (Constants::iALIPAY_CHINESE_PSP):
-                                            $obj_PSP = new AliPayChinese($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["alipay-chinese"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iPPRO_GATEWAY):
-                                            $obj_PSP = new PPRO($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["ppro"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iAMEX_ACQUIRER):
-                                            $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex"]);
-                                            $token = '';
-                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                            {
-                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                            }
-
-                                            $billingAddress = null;
-                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
-                                            {
-                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
-                                            }
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress,$obj_ClientInfo);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iCHUBB_PSP):
-
-                                            $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["chubb"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iUATP_ACQUIRER):
-                                            $obj_PSP = new UATP($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["uatp"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                               $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iEGHL_PSP):
-                                            $obj_PSP = new EGHL($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["eghl"]);
-                                            $token = '';
-                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                            {
-                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                            }
-
-                                            $billingAddress = null;
-                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
-                                            {
-                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
-                                            }
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iCHASE_ACQUIRER):
-                                            $obj_PSP = new Chase($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["chase"]);
-                                             $token = '';
-                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                            {
-                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                            }
-
-                                            $billingAddress = null;
-                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
-                                            {
-                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
-                                            }
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                              $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iPAYU_PSP):
-                                            $obj_PSP = new PayU($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payu"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iCielo_ACQUIRER):
-                                            $obj_PSP = new Cielo($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["cielo"]);
-                                            $token = '';
-                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                            {
-                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                            }
-
-                                            $billingAddress = null;
-                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
-                                            {
-                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
-                                            }
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iGlobal_Payments_PSP):
-                                            $obj_PSP = new GlobalPayments($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["global-payments"]);
-                                            $token = '';
-                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
-                                            {
-                                              $token = $obj_DOM->pay[$i]->transaction->card->token;
-                                            }
-
-                                            $billingAddress = null;
-                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
-                                            {
-                                               $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
-                                            }
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
-
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iVeriTrans4G_PSP):
-                                            
-                                            $obj_PSP = new VeriTrans4G($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["veritrans4g"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-                                                foreach ($obj_XML->children() as $obj_Elem)
-                                                {
-                                                    $xml .= trim($obj_Elem->asXML() );
-                                                }
-                                                break;
-                                        case (Constants::iDragonPay_AGGREGATOR):
-                                            
-                                            $obj_PSP = new DragonPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["dragonpay"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        case (Constants::iCellulant_PSP):
-                                            $obj_PSP = new Cellulant($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["cellulant"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
-                                            foreach ($obj_XML->children() as $obj_Elem)
-                                            {
-                                                $xml .= trim($obj_Elem->asXML() );
-                                            }
-                                            break;
-                                        }
-										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
+										}
+										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
 									}
 									catch (mPointException $e)
@@ -1032,7 +586,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$aObj_Errs = libxml_get_errors();
 
 		$xml = '';
-		for ($i=0; $i<count($aObj_Errs); $i++)
+		for ($i=0, $iMax = count($aObj_Errs); $i< $iMax; $i++)
 		{
 			$xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
 		}
