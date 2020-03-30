@@ -1312,6 +1312,13 @@ abstract class Constants
 	 *
 	 */
 	const iOMANNET = 87;
+	
+	/**
+	 * Unique Card ID for transaction's made using DRAGONPAY OFFLINE
+	 *
+	 */
+	const iDRAGONPAYOFFLINE = 88;
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
