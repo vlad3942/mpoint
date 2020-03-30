@@ -232,7 +232,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $xml .= '<psp-id>'.$pspid.'</psp-id>';
                     $xml .= '<file-status>'.$obj_Settlement->geFileStatus().'</file-status>';
                 }
-                $xml .= '</settlemnets>';
+                $xml .= '</settlements>';
             }
         }
         $xml .= '</settlement-info>';
