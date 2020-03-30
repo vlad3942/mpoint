@@ -320,7 +320,7 @@ try
                                        {
                                            if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN)  && $obj_TxnInfo->getConvertedAmount() <= (float)0 &&
                                                ((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount &&
-                                               intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()  &&
+                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()  &&
                                                empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false )
                                                {
                                                    $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});

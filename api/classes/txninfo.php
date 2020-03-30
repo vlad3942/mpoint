@@ -592,8 +592,9 @@ class TxnInfo
 	 */
 	public function getPaymentCurrencyConfig()
 	{
+        $ccCOde = $this->_obj_CurrencyConfig->getCode();
 		if($this->_obj_ConvertedCurrencyConfig !== null) { return $this->_obj_ConvertedCurrencyConfig; }
-		else if(is_null($this->_obj_CurrencyConfig) === false  && empty ($this->_obj_CurrencyConfig->getCode()) === false)	{return $this->_obj_CurrencyConfig ;}
+		else if(is_null($this->_obj_CurrencyConfig) === false  && empty ($ccCOde) === false)	{return $this->_obj_CurrencyConfig ;}
 		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
 	}
 	/**
