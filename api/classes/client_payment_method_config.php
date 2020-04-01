@@ -35,6 +35,8 @@ class ClientPaymentMethodConfig extends BasicConfig
 
 	private $_iCardType;
 
+	private $_iCaptureType;
+
 	/**
 	 * wallet id for wallet static route
      * @var integer
@@ -54,8 +56,9 @@ class ClientPaymentMethodConfig extends BasicConfig
 	 * @param 	integer $enabled 	The Enabled status of Payment Method
 	 * @param 	integer $cardtype 	The Payment type of card
 	 * @param 	integer $_iWalletId	The unique ID of the Wallet that will process payments for this Payment Method (Card)
+	 * @param 	integer $capturetype The capture type of the Payment Service Provider (PSP)
 	 */
-	public function __construct($id, $pmid, $name, $countryid, $stateid, $pspid, $enabled, $cardtype,$iWalletId)
+	public function __construct($id, $pmid, $name, $countryid, $stateid, $pspid, $enabled, $cardtype, $capturetype, $iWalletId)
 	{
 		parent::__construct($id, $name);	
 		$this->_iPaymentMethodID = (integer) $pmid;
@@ -64,6 +67,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 		$this->_iPSPID = (integer) $pspid;
 		$this->_bEnabled = (bool) $enabled;
 		$this->_iCardType = $cardtype;
+        $this->_iCaptureType = $capturetype;
         $this->_iWalletId = $iWalletId;
 		// Set Defaults
 		if ($this->_iCountryID <= 0) { $this->_iCountryID = -1; }
@@ -75,11 +79,12 @@ class ClientPaymentMethodConfig extends BasicConfig
 	public function getPaymentMethodID() { return $this->_iPaymentMethodID; }
 	public function isEnabled() { return $this->_bEnabled; }
 	public function getCardType() { return $this->_iCardType; }
+	public function getCaptureType() { return $this->_iCaptureType; }
 	public function getWalletId() { return $this->_iWalletId; }
 
 	public function toXML()
 	{
-		$xml = '<payment-method id="'. $this->getID() .'" type-id="'. $this->_iPaymentMethodID .'" state-id="'. $this->_iStateID .'" country-id="'. $this->_iCountryID .'" psp-id="'. $this->_iPSPID .'" enabled="'. General::bool2xml($this->_bEnabled) .'" payment-type= "'. $this->getCardType() .'" walletid = "'. $this->getWalletId() .'" >';
+		$xml = '<payment-method id="'. $this->getID() .'" type-id="'. $this->_iPaymentMethodID .'" state-id="'. $this->_iStateID .'" country-id="'. $this->_iCountryID .'" psp-id="'. $this->_iPSPID .'" enabled="'. General::bool2xml($this->_bEnabled) .'" payment-type= "'. $this->getCardType() .'" capture-type= "'. $this->getCaptureType() .'" walletid = "'. $this->getWalletId() .'">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES); 
 		$xml .= '</payment-method>';
 
@@ -88,7 +93,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, C.id AS cardid, C.name, C.paymenttype,CA.walletid		
+		$sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled,CA.capture_type, C.id AS cardid, C.name, C.paymenttype,CA.walletid		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System". sSCHEMA_POSTFIX .".Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA ON MA.clientid = CA.clientid AND MA.pspid = CA.pspid AND MA.enabled = '1'
@@ -98,7 +103,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 		if (is_array($RS) === true && count($RS) > 0)
 		{		
-			return new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"], $RS["ENABLED"], $RS['PAYMENTTYPE'],$RS['WALLETID']);
+			return new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"], $RS["ENABLED"], $RS['PAYMENTTYPE'], $RS['CAPTURE_TYPE'],$RS['WALLETID']);
 		}
 		else { return null; }
 	}

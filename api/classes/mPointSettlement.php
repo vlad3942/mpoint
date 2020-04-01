@@ -43,6 +43,8 @@ abstract class mPointSettlement
 
     protected $_objTXT;
 
+    protected $_sFileStatus = NULL;
+
     public function __construct($_OBJ_TXT, $clientId, $pspId, $connectionInfo)
     {
         $this->_iClientId = $clientId;
@@ -122,6 +124,7 @@ abstract class mPointSettlement
         $recordNumber = 0;
         if (is_array($res) === true && count($res) > 0) {
             $recordNumber = (int)$res["RECORD_NUMBER"];
+            $this->_sFileStatus = (String)$res["STATUS"];
         }
 
         $this->_iRecordNumber = $recordNumber + 1 ;
@@ -131,8 +134,8 @@ abstract class mPointSettlement
         $sql = "SELECT DISTINCT TRANSACTION.ID
                 FROM LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL                TRANSACTION
                 INNER JOIN LOG" . sSCHEMA_POSTFIX . ".TXNPASSBOOK_TBL PASSBOOK
-                                    ON TRANSACTION.ID = PASSBOOK.TRANSACTIONID AND PASSBOOK.PERFORMEDOPT IN (" . implode(',', $aFinalStateMappings) . ") AND
-                                       PASSBOOK.STATUS = '".Constants::sPassbookStatusInProgress."' AND PASSBOOK.CLIENTID = $this->_iClientId
+                                    ON PASSBOOK.CLIENTID = $this->_iClientId AND TRANSACTION.ID = PASSBOOK.TRANSACTIONID AND PASSBOOK.PERFORMEDOPT IN (" . implode(',', $aFinalStateMappings) . ") AND
+                                       PASSBOOK.STATUS = '".Constants::sPassbookStatusInProgress."'
                 WHERE TRANSACTION.CLIENTID = $this->_iClientId
                   AND TRANSACTION.PSPID = $this->_iPspId
                   AND TRANSACTION.CARDID IS NOT NULL
@@ -474,5 +477,34 @@ abstract class mPointSettlement
             SET status = '" . $settlementStatus . "' 
             WHERE id =" . $settlementId . ' and client_id = ' . $clientId;
         $_OBJ_DB->query($sql);
+    }
+
+    /**
+     * @return getter method to access file sequence number
+     */
+    public function getFileSequenceNumber(){
+        return $this->_iFileSequenceNumber;
+    }
+
+    /**
+     * @return getter method to access record number
+     */
+
+    public function getRecordType(){
+        return $this->_sRecordType;
+    }
+
+    /**
+     * @return getter method to access file created date
+     */
+    public function geFileCreatedDate(){
+        return $this->_sFileCreatedDate;
+    }
+
+    /**
+     * @return getter method to access file status
+     */
+    public function geFileStatus(){
+        return $this->_sFileStatus;
     }
 }
