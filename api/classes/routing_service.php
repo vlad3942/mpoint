@@ -52,6 +52,27 @@ class RoutingService extends General
     private $_iAmount;
 
     /**
+     * Unique ID for the Transaction
+     *
+     * @var integer
+     */
+    private $_iTransactionId;
+
+    /**
+     * Product Type of transaction
+     *
+     * @var integer
+     */
+    private $_iProductType;
+
+    /**
+     * Unique Card Type Id used for the payment
+     *
+     * @var integer
+     */
+    private $_iCardTypeId;
+
+    /**
      * Default Constructor
      *
      * @param	ClientConfig $clientConfig 		Reference to the Data object with the client information
@@ -59,7 +80,7 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(ClientConfig $clientConfig, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL)
+    public function __construct(ClientConfig $clientConfig, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $transactionId = NULL, $cardTypeId = NULL, $productType = NULL)
     {
         $this->_obj_ClientConfig = $clientConfig;
         $this->_obj_ClientInfo = $obj_ClientInfo;
@@ -68,6 +89,9 @@ class RoutingService extends General
         $this->_iCountryId = $countryId;
         $this->_iCurrencyId = $currencyId;
         $this->_iAmount = $amount;
+        $this->_iTransactionId = $transactionId;
+        $this->_iProductType = $productType;
+        $this->_iCardTypeId = $cardTypeId;
     }
 
     /**
@@ -120,6 +144,63 @@ class RoutingService extends General
         }
 
         return $obj_XML;
+    }
+
+    /**
+     * Produces a list of the psp/accquirer which are best suited for the current payment transaction
+     *
+     * @return 	SimpleDOMElement $obj_XML  List of the psp/accquirer
+     */
+    public function getRoute()
+    {
+        $b = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= '<payment_route_search_criteria>';
+        $b .= '<transaction>';
+        $b .= '<id>'.$this->_iTransactionId.'</id>';
+        $b .= '<product_type>'.$this->_iProductType.'</product_type>';
+        $b .= '<card>';
+        $b .= '<type_id></type_id>';
+        $b .= '<amount>';
+        if(empty($this->_iAmount)===false)
+        {
+            $b .= '<value>'.$this->_iAmount.'</value>';
+        }
+        $b .= '<country_id>'.$this->_iCountryId.'</country_id>';
+        if(empty($this->_iCurrencyId)===false)
+        {
+            $b .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
+        }
+        $b .= '</amount>';
+        $b .= '</card>';
+        $b .= '</transaction>';
+        $b .= '<client_info>';
+        $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
+        $b .= '<client_id>'.$this->_iClientId.'</client_id>';
+        $b .= '</client_info>';
+        $b .= '</payment_route_search_criteria>';
+        $obj_XML = null;
+
+        try
+        {
+            $path = $this->aCONN_INFO["paths"]["get-routes"];
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $this->aCONN_INFO["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+            $obj_HTTP->disConnect();
+            if ($code == 200)
+            {
+                $obj_XML = $obj_HTTP->getReplyBody();
+            }
+            else { throw new mPointException("Could not fetch dynamic route responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("construct XML failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+        }
+
+        return $obj_XML;
+
     }
 
 }

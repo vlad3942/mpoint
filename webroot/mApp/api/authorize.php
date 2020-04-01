@@ -152,6 +152,8 @@ require_once sCLASS_PATH . '/passbookentry.php';
 require_once(sCLASS_PATH ."/ezy.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
+require_once sCLASS_PATH . '/routing_service.php';
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -263,38 +265,37 @@ try
 										
 										$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
+                                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 										$aRoutes = array();
-										
 										$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
                                         if ($drService == 'true')
                                         {
                                         	$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-											$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-											$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"],$obj_DOM->{'authorize-payment'} [$i] ["account"] , $obj_DOM->{'authorize-payment'}[$i]) ;
-											$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
+                                            $obj_RS = new RoutingService($obj_ClientConfig, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_TxnInfo->getProductType());
+                                            $aObj_XML = $obj_RS->getRoute();
+                                            $aRoutes = $aObj_XML->psps;
                                         }
 
-										
 										$obj_CardXML = '';
 										$iSecondaryRoute = 0 ;
                                         $iPrimaryRoute = 0 ;
-										
+										$cnt = 0;
 										if (count ( $aRoutes ) == 0) {
 											$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 										} else {
 											foreach ( $aRoutes as $oRoute ) {
-												if ($oRoute {'type-id'} == 1) {
+												if ($oRoute->psp->preference == 1) { $cnt++;
 													$empty = array();
-													$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount,$empty,$oRoute) );
-                                                    $iPrimaryRoute = $oRoute ;
+													$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount,$empty,$oRoute->psp->id) );
+                                                    $iPrimaryRoute = $oRoute->psp->id ;
 												}
-												else{
-													$iSecondaryRoute = $oRoute ;
+												else{ $cnt++;
+													$iSecondaryRoute = $oRoute->psp->id ;
 												}
 											}
 										}
-										
-										
+
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
@@ -339,10 +340,6 @@ try
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
-
-										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
-                                        CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-                                        $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2)

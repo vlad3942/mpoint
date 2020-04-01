@@ -143,6 +143,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+require_once(sCLASS_PATH ."/core/card.php");
+require_once sCLASS_PATH . '/routing_service.php';
 
 
 $aMsgCds = array();
@@ -232,38 +234,37 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
 							}
 						}
-						
+
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
 						
-						if ($drEnabled) {
+						if (strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
-							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
-							
+                            $obj_RS = new RoutingService($obj_ClientConfig, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction["id"], $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_TxnInfo->getProductType());
+                            $obj_XML = simplexml_load_string ($obj_RS->getRoute() );
+                            $aRoutes = $obj_XML->psps;
 						}
 						$obj_CardXML = '';
 						if (count ( $aRoutes ) == 0) {
 							$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount ) );
 						} else {
 							foreach ( $aRoutes as $oRoute ) {
-								if ($oRoute {'type-id'} == 1) {
+								if ($oRoute->psp->preference == 1) {
 									$empty = array();
-									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute ) );
+									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->psp->id ) );
 								    break;
 								}
 							}
 						}
-						
+
 						//Check if card or payment method is enabled or disabled by merchant
 						//Same check is  also implemented at app side.
 						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
-                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
-                                CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
-                                $_SERVER['HTTP_X_FORWARDED_FOR']);
+
                         if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
