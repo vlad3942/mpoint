@@ -134,8 +134,8 @@ abstract class mPointSettlement
         $sql = "SELECT DISTINCT TRANSACTION.ID
                 FROM LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL                TRANSACTION
                 INNER JOIN LOG" . sSCHEMA_POSTFIX . ".TXNPASSBOOK_TBL PASSBOOK
-                                    ON TRANSACTION.ID = PASSBOOK.TRANSACTIONID AND PASSBOOK.PERFORMEDOPT IN (" . implode(',', $aFinalStateMappings) . ") AND
-                                       PASSBOOK.STATUS = '".Constants::sPassbookStatusInProgress."' AND PASSBOOK.CLIENTID = $this->_iClientId
+                                    ON PASSBOOK.CLIENTID = $this->_iClientId AND TRANSACTION.ID = PASSBOOK.TRANSACTIONID AND PASSBOOK.PERFORMEDOPT IN (" . implode(',', $aFinalStateMappings) . ") AND
+                                       PASSBOOK.STATUS = '".Constants::sPassbookStatusInProgress."'
                 WHERE TRANSACTION.CLIENTID = $this->_iClientId
                   AND TRANSACTION.PSPID = $this->_iPspId
                   AND TRANSACTION.CARDID IS NOT NULL
