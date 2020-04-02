@@ -539,7 +539,7 @@ try
                                                                     if (count($obj_XML) == 0)
                                                                     {
                                                                         $code = 5;
-                                                                        $xml = '<status code="24">The selected payment card is not available<status>';
+                                                                        $xml = '<status code="24">The selected payment card is not available</status>';
                                                                     } // Card disabled
 																	if ($iPrimaryRoute > 0) {
 																		$obj_Elem ["pspid"] = $iPrimaryRoute;
