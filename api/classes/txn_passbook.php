@@ -424,7 +424,7 @@ final class TxnPassbook
      */
     private function _getCapturebleAmount()
     {
-        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount);
+        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount );
         return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
