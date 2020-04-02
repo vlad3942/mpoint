@@ -1,0 +1,1 @@
+ALTER TABLE client.cardaccess_tbl ADD walletid int4;
