@@ -594,8 +594,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
-                                if ((int)$obj_XML->item[$j]['type-id'] !== 11
-                                    || ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() === 2)))
+                                if (((int)$obj_XML->item[$j]['type-id'] !== 11
+                                    || ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() === 2)))  && empty($obj_XML->item[$j]["walletid"]) === true )
                                 {
                                     if (in_array((integer)$obj_XML->item[$j]["pspid"], $aPSPs) === FALSE)
                                     {
