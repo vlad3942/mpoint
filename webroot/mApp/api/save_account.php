@@ -135,8 +135,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         } else {
                             $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                         }
+                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                        $ips = array_map('trim', $ips);
+                        $ip = $ips[0];
                         // Construct Client Info
-                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, $ip);
 
                         //Auth SSO
                         $url = $obj_ClientConfig->getAuthenticationURL();

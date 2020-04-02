@@ -233,7 +233,11 @@ class ClientInfo
 	private static function _produceInfoFromXML(SimpleXMLElement &$oXML, CountryConfig $oCC, $ip)
 	{
 		if (empty($oXML["language"]) === true) { $oXML["language"] = sLANG; }
-		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], @$_SERVER['HTTP_X_FORWARDED_FOR'], $oXML["profileid"]);
+		$httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
+        $httpXForwardedForIp = $httpXForwardedForIps[0];
+
+		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"]);
 	}
 }
 ?>
