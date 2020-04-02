@@ -276,6 +276,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_mPoint->logTransaction($obj_TxnInfo);
 
                             // Single Sign-On
+                            $bIsSingleSingOnPass = false;
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 							$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
 							$bIsSingleSingOnPass = false;
