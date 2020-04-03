@@ -102,8 +102,8 @@ class RoutingService extends General
         try
         {
             $path = $this->aCONN_INFO["paths"]["get-payment-methods"];
-            //$aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
-            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $this->aCONN_INFO["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
