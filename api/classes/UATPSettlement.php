@@ -169,10 +169,14 @@ class UATPSettlement extends mPointSettlement
                 return;
             }
 
+            $fileExpireThreshold = $this->_objPspConfig->getAdditionalProperties(Constants::iPrivateProperty, Constants::sFileExpireThreshold);
+            $inAcceptedSettlement = $this->_getSettlementInAccepted($_OBJ_DB, $fileExpireThreshold);
+
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><bulk-settlement client-id="'.$this->_objClientConfig->getID().'">';
             $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $inProgressSettlement;
+            $requestBody .= $inAcceptedSettlement;
             $requestBody .= '</bulk-settlement></root>';
 
             $obj_ConnInfo = $this->_constConnInfo($this->_objConnectionInfo["paths"]["process-settlement"]);
