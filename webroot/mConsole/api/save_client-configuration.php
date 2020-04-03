@@ -218,7 +218,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					{
 						$iClientID = $obj_mPoint->saveClient( (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["country-id"],
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["store-card"],
-															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["auto-capture"]),
 															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->name),
 															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->username),
 															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->password),
@@ -336,6 +335,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["state-id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["country-id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"],
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["capture-type"],
 																			 $enabled);
 										// Error: Break out of loop
 										if ($iPMID < 0) { throw new mConsoleSaveCardAccessFailedException("Error during save card access: ". $iPMID ." for client: ". $iClientID); }

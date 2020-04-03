@@ -467,7 +467,7 @@ class General
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', declineurl = '". $this->getDBConn()->escStr($oTI->getDeclineURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
-					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
+					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". $oTI->useAutoCapture() .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
 					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType());
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
@@ -479,7 +479,9 @@ class General
         if ($oTI->getProfileID() > 0) {
             $sql .= " , profileid = ". $oTI->getProfileID();
         }
-
+        if ($oTI->getWalletID() !== -1) {
+            $sql .= ", walletid = ". $oTI->getWalletID();
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
@@ -534,7 +536,7 @@ class General
 		}
 		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
 	}
-	
+
 	/**
 	 * Create a new transaction with same session id as the original transaction,
 	 * and authorize the new transaction using secondary PSP as part of Dynamic Routing
@@ -798,7 +800,7 @@ class General
 		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
 		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 		$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-		$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+		$h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
 		/* ----- Construct HTTP Header End ----- */
 
 		return $h;
@@ -1281,16 +1283,19 @@ class General
 	 * @return string
 	 * */
 
-    public function getTxnAttemptsFromOrderID($orderid)
+    public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
     {
         $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-					WHERE orderid = '" . trim($orderid) . "' AND enabled = true 
+					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
+					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
+					AND countryid = '.$countryConfig->getID()."
+					AND created > NOW() - interval '15 days' 
 					ORDER BY created DESC LIMIT 1";
 //			echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
         if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
-        else { $code = -1; }    // Transaction not found
+        else { $code = 0; }    // Transaction not found
 
         return $code;
     }

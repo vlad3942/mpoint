@@ -1219,8 +1219,10 @@ class Validate extends ValidateBase
 	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
 	{
 		$code = 1;
-		
-		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
+		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
+
+		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
 		
 		if (strtolower($mac) === strtolower($chk))
 		{
@@ -1450,82 +1452,6 @@ class Validate extends ValidateBase
             else { $code = 3; }
         }
         return $code;
-    }
-
-    /**
-     * Performs validation of the Card number to determine whether it is valid.
-     * This validation is developed on https://en.wikipedia.org/wiki/Luhn_algorithm.
-     * The method will return the following status codes:
-     *     1. number is undefied
-     *     2. number is too small
-     *     3. number is too large
-     *     4. number is not valid card
-     *    10. given number is valid card number
-     *
-     * @param    integer $number       Card number
-     * @return   integer
-     */
-    public function valCardNumber(RDB &$oDB, $typeId, $number)
-    {
-    	
-    	$code = 0;
-    	
-    	if (empty($number) === true) { $code = 1; }    	
-    	else
-        {
-            $number = (string)$number;
-
-            $minLength = 13;
-            $maxLength = 16;
-
-            try
-            {
-                $sql = 'SELECT minlength, maxlength
-                        FROM System' . sSCHEMA_POSTFIX . '.Card_Tbl
-                        WHERE id = ' . (int)$typeId;
-                $RS = $oDB->getName($sql);
-
-                if (is_array($RS) === true)
-                {
-                    $minLength = (int)$RS['MINLENGTH'];
-                    $maxLength = (int)$RS['MAXLENGTH'];
-                }
-            }
-            catch (Exception $exception)
-            {
-
-            }
-
-            $number = preg_replace("/[^0-9]/", "", $number);
-            $cardLength = strlen($number);
-            if(strlen($number) < $minLength) { $code = 2; }
-            else if(strlen($number) > $maxLength) { $code = 3; }
-            else
-            {
-                $checksum = 0;
-                for ($i=(2-(strlen($number) % 2)); $i<=$cardLength; $i+=2)
-                {
-                    $checksum += (int) ($number{$i-1});
-                }
-
-                for ($i=(strlen($number)% 2) + 1; $i<$cardLength; $i+=2)
-                {
-                    $digit = (int) ($number{$i-1}) * 2;
-                    if ($digit < 10)
-                    {
-                        $checksum += $digit;
-                    }
-                    else { $checksum += ($digit-9); }
-                }
-
-                if (($checksum % 10) == 0)
-                {
-                    $code = 10;
-                } else { $code = 4; }
-            }
-        }
-   	
-    	return $code;
     }
 
 	/**

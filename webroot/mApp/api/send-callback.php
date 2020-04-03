@@ -95,6 +95,8 @@ require_once(sCLASS_PATH ."/chase.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 

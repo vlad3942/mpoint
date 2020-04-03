@@ -197,7 +197,7 @@ class TxnInfo
 	 *
 	 * @var boolean
 	 */
-	private $_bAutoCapture;
+	private $_eAutoCapture;
 	/**
 	 * GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
 	 * The ID is used for payment via Premium SMS.
@@ -430,7 +430,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -460,7 +460,7 @@ class TxnInfo
 
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
-		$this->_bAutoCapture = (bool) $ac;
+		$this->_eAutoCapture = (int) $ac;
 
 		$this->_iAccountID = (integer) $accid;
 		$this->_iProfileID = (integer) $profileid;
@@ -475,7 +475,13 @@ class TxnInfo
 		$this->_iFee = (integer) $fee;
 		$this->_lCapturedAmount = (float) $cptamt;
 		$this->_iCardID = (integer) $cardid;
-		$this->_iWalletID = (integer) $walletid;
+		if($walletid === null)
+		{
+			$this->_iWalletID = -1;
+		}
+		else {
+			$this->_iWalletID = (integer)$walletid;
+		}
 		$this->_sDeviceID = trim($devid);
 
 		$this->_mask = trim($mask);
@@ -687,7 +693,7 @@ class TxnInfo
 	 *
 	 * @return 	boolean
 	 */
-	public function useAutoCapture() { return $this->_bAutoCapture; }
+	public function useAutoCapture() { return $this->_eAutoCapture; }
 	/**
 	 * Returns the GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
 	 * The ID is used for payment via Premium SMS.
@@ -935,7 +941,7 @@ class TxnInfo
 		$xml .= '<alpha2code>'. $this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
 		$xml .= '<alpha3code>'. $this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
 		$xml .= '<code>'. $this->_obj_CountryConfig->getNumericCode() .'</code>';
-		$xml .= '<amount>'. $this->_lAmount .'</amount>';
+		$xml .= '<amount>'. $iAmount .'</amount>';
 		$xml .= '</amount_info>';
 		
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
@@ -961,7 +967,7 @@ class TxnInfo
 		$xml .= '<icon-url>'. htmlspecialchars($this->_sIconURL, ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<auth-url>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</auth-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
-		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
+		$xml .= '<auto-capture>'. htmlspecialchars($this->_eAutoCapture == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';
 		$xml .= '<auto-store-card>'. General::bool2xml($this->_bAutoStoreCard) .'</auto-store-card>';
 		$xml .= '<markup-language>'. $this->_sMarkupLanguage .'</markup-language>';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
@@ -1197,6 +1203,8 @@ class TxnInfo
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
             if (array_key_exists("sessiontype", $misc) === false) { $misc["sessiontype"] = 1; }
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
+			if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 0 ; }
+			if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = 0 ; }
 
             if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
@@ -1209,7 +1217,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1351,6 +1359,38 @@ class TxnInfo
 			}
 				
 			return $order_iD;
+		}
+	}
+	
+	/**
+	 * Function to insert new records in the Billing Summary Related to that Order in table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $aBillingSummary	Data object with the Billing summary Data details
+	 *
+	 */
+	public function setBillingSummary(RDB $obj_DB, $aBillingSummary)
+	{
+		if( is_array($aBillingSummary) === true )
+		{
+			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl_id_seq') AS id FROM DUAL";
+			$RS = $obj_DB->getName($sql);
+
+			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Billing Summary ID", 1001); }
+
+			$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl
+						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified)
+					VALUES
+						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now())";
+			
+			if (is_resource($obj_DB->query($sql) ) === false)
+			{
+				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for billing summary: ". $RS["ID"], 1002); }
+			}
+			else
+			{
+				$Billing_Summary_iD = $RS["ID"];
+			}
+			return $Billing_Summary_iD;
 		}
 	}
 	
@@ -1723,21 +1763,31 @@ class TxnInfo
         {
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
         }
-        switch ($this->_iPaymentType)
-        {
-            case 1:
-                return 'CD';
-            case 2:
-                return 'CASH';
-            case 3:
-                return 'eWallet';
-            case 4:
-                return 'CASH';
-            case 7:
-                return 'DD';
-            default:
-                return 'CASH';
-        }
+		$paymentMethod = 'CASH';
+		switch ($this->_iPaymentType) {
+			case 1:
+				$paymentMethod = 'CD';
+				break;
+			case 2:
+				$paymentMethod = 'CASH';
+				break;
+			case 3:
+				$paymentMethod = 'eWallet';
+				break;
+			case 4:
+				$paymentMethod = 'CASH';
+				break;
+			case 7:
+				$paymentMethod = 'DD';
+				break;
+			default:
+				$paymentMethod = 'CASH';
+		}
+
+		$stdClassObj=new stdClass();
+		$stdClassObj->PaymentType = $this->_iPaymentType;
+		$stdClassObj->PaymentMethod = $paymentMethod;
+		return $stdClassObj;
     }
 
     public function getLatestPaymentState(RDB $obj_DB)

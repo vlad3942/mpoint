@@ -98,6 +98,8 @@ require_once sCLASS_PATH . '/passbookentry.php';
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");
@@ -203,7 +205,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $sToken = $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token'];
                             $obj_TxnInfo = TxnInfo::produceTxnInfoFromExternalRef($_OBJ_DB, $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token']);
                         }
-                         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
+                         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
 
                         if (empty($obj_TxnInfo) === false) {

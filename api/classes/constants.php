@@ -881,6 +881,11 @@ abstract class Constants
      */
     const iEZY_PSP = 60;
     /**
+     * Unique ID for the Payment aggregator: DRAGONPAY
+     *
+     */
+	const iDragonPay_AGGREGATOR = 61;
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -1462,5 +1467,25 @@ abstract class Constants
      */
     const sGetProfileEndPoint = "/mprofile/get-profile";
 
+}
+
+abstract class AutoCaptureType
+{
+	/*
+   * Auto-Capture flag for mPoint to do not perform auto-capture
+   */
+	const eRunTimeAutoCapt = 1;
+	/*
+   * Auto-Capture flag for mPoint to perform PSP level auto-capture
+   */
+	const ePSPLevelAutoCapt = 2;
+	/*
+   * Auto-Capture flag for mPoint to perform Merchant level auto-capture
+   */
+	const eMerchantLevelAutoCapt = 3;
+	/*
+   * Auto-Capture flag for mPoint to perform batch-capture
+   */
+	const eBatchCapt = 4;
 }
 ?>

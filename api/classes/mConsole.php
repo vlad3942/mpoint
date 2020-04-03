@@ -63,12 +63,12 @@ class mConsole extends Admin
     const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.payment.dashboard.x";
 
 	
-	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
+	public function saveClient($cc, $storecard, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
 	{
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
-					SET store_card = ". intval($storecard) .", auto_capture = '". intval($autocapture) ."', name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
+					SET store_card = ". intval($storecard) .", name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
 						maxamount = ". intval($maxamt) .", lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
 						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = '". $this->getDBConn()->escStr($salt) ."', communicationchannels = ". intval($channels) ."
 					WHERE id = ". intval($id);
@@ -82,7 +82,7 @@ class mConsole extends Admin
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".Client_Tbl
 						(id, store_card, auto_capture, name, username, passwd, countryid, flowid, maxamount, lang, smsrcpt, emailrcpt, mode, method, send_pspid, identification, transaction_ttl, salt)
 					VALUES
-						(". $id .", ". intval($storecard) .",'". intval($autocapture) ."', '". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
+						(". $id .", ". intval($storecard) .",'". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
 						 ". intval($maxamt) .", '". $this->getDBConn()->escStr($lang) ."', '". intval($smsrcpt) ."', '". intval($emailrcpt) ."' ,". intval($mode) .",'". $this->getDBConn()->escStr($method) ."','". intval($send_pspid) ."',". intval($identification) .",". intval($transaction_ttl) .", ". $this->getDBConn()->escStr($salt) .")";
 		}
 //		echo $sql ."\n";
@@ -276,7 +276,7 @@ class mConsole extends Admin
 	 * @param integer $id			The unique ID of the existing routing configuration that should be changed, pass -1 to create a new routing configuration
 	 * @return integer
 	 */
-	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $enabled='true')
+	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $capturetype = 1,$enabled='true')
 	{
 		$clientid = (integer) $clientid;
 		$pmid = (integer) $pmid;
@@ -309,7 +309,7 @@ class mConsole extends Admin
 			
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
 					SET countryid = ". $countryid .", cardid = ". $pmid .", pspid = ". $pspid .", 
-						stateid = ". intval($stateid) .", enabled = '".$enabled."'
+						stateid = ". intval($stateid) .", enabled = '".$enabled."', capture_type = ". intval($capturetype) ."
 					WHERE id = ". $id;				
 		}
 		else
@@ -319,9 +319,9 @@ class mConsole extends Admin
 			$id = $RS["ID"];
 			
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
-						(id, clientid, cardid, pspid, countryid, stateid)
+						(id, clientid, cardid, pspid, countryid, stateid, capture_type)
 				    VALUES
-						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .")";
+						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .", ". intval($capturetype).")";
 		}		
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -978,12 +978,16 @@ class mConsole extends Admin
 	 * @param integer $accountid    he unique ID of the Account of Client on whose behalf the Capture operation is being performed
      * @return array
 	 */
-	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt, $accountid = -1)
+	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt, $accountid = -1, $oref = NULL)
 	{
 		try
 		{
 			$h = str_replace("{METHOD}", "POST", $this->constHTTPHeaders() );
 			$b = "clientid=". intval($clientid) ."&mpointid=". intval($txnid) ."&orderid=". urlencode($ono) ."&amount=". intval($amt);
+			if(empty($oref) === false)
+			{
+				$b .= "&orderref=". urlencode($oref);
+			}
 			if($accountid !== -1)
             {
                 $b .= '&account=' .$accountid;
@@ -1065,7 +1069,7 @@ class mConsole extends Admin
      * @param integer $accountid    he unique ID of the Account of Client on whose behalf the Capture operation is being performed
 	 * @return array
 	 */
-	public function void(HTTPConnInfo $oCI, $clientid, $username, $password, $txnid, $ono, $amt, $accountid = -1)
+	public function void(HTTPConnInfo $oCI, $clientid, $username, $password, $txnid, $ono, $amt, $accountid = -1,$oref = NULL)
 	{
 		try
 		{
@@ -1074,6 +1078,10 @@ class mConsole extends Admin
 			if($accountid !== -1)
             {
                 $b .= '&account=' .$accountid;
+            }
+            if(empty($oref) === false)
+            {
+				$b .= "&orderref=". urlencode($oref);
             }
 			$obj_Client = new HTTPClient(new Template, $oCI);
 			$obj_Client->connect();

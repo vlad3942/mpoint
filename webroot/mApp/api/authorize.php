@@ -145,11 +145,15 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
 require_once(sCLASS_PATH ."/ezy.php");
+require_once(sCLASS_PATH ."/core/card.php");
+require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -243,7 +247,8 @@ try
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-										
+										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
+										$obj_CardValidator = new CardValidator($obj_card);
 										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
 										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE))
 										{
@@ -297,10 +302,11 @@ try
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 										
-										if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) > 0 && 
-											intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
-											$obj_Validator->valCardNumber($_OBJ_DB,(int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) !== 10)
-										{$aMsgCds[21] = "Invalid Card Number: ".$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}; }
+										if(((int)$obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
+											$obj_CardValidator->valCardNumber() !== 720)
+										{
+										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
+										}
 
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
                                             $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
@@ -317,11 +323,8 @@ try
                                             }
                                         }
 
-                                        if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{"card-holder-name"}) > 0){
-                                            $chkName = $obj_Validator->valCardFullname((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{"card-holder-name"});
-                                            if($chkName != 10){
+                                        if($obj_card->getCardHolderName() !== '' && $obj_CardValidator->valCardFullName() !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
-                                            }
                                         }
 
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country
@@ -331,7 +334,14 @@ try
                                         		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
                                         	}
                                         }
-                                        
+
+                                        if (count($obj_Elem->capture_type) > 0)
+                                        {
+                                            $data['auto-capture'] = intval($obj_Elem->capture_type);
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                        }
+
 										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                         CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -524,13 +534,17 @@ try
 																{
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
-																															
-																$obj_PSPConfig = $wallet_Processor->getPSPConfigForRoute ( intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] ), intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j]->amount ["country-id"] ) );
-																	
+
+                                                                    $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$wallet_Processor->getPSPConfig()->getID()."]");
+                                                                    if (count($obj_XML) == 0)
+                                                                    {
+                                                                        $code = 5;
+                                                                        $xml = '<status code="24">The selected payment card is not available</status>';
+                                                                    } // Card disabled
 																	if ($iPrimaryRoute > 0) {
 																		$obj_Elem ["pspid"] = $iPrimaryRoute;
 																	} else {
-																		$obj_Elem ["pspid"] = $obj_PSPConfig->getID ();
+																		$obj_Elem ["pspid"] = (int) $obj_XML["pspid"];
 																	}
 																	$obj_Elem ["wallet-type-id"] = intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] );
 																}
@@ -599,24 +613,40 @@ try
 														else { $code = 10; }
 													}
 
+													//In case of Wallet payment card node will update so, Refresh the card and validator object
+                                                    $obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
+										            $obj_CardValidator = new CardValidator($obj_card);
+
+                                                    if ((bool)$obj_Elem['CVCMANDATORY'] === TRUE) {
+                                                        $cvcValidationCode = $obj_CardValidator->validateCVC();
+                                                        if ($cvcValidationCode !== 710) {
+                                                            $aMsgCds[22] = 'Invalid CVC';
+                                                        }
+                                                    }
+
 													if ($code >= 10)
 													{
 														try
 														{
 														    if($obj_Elem["pspid"] > 0) {
-
-                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID());
-                                                                $passbookEntry = new PassbookEntry
-                                                                (
-                                                                    NULL,
-                                                                    $obj_TxnInfo->getAmount(),
-                                                                    $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                                                    Constants::iAuthorizeRequested
-                                                                );
-                                                                if ($txnPassbookObj instanceof TxnPassbook) {
-                                                                    $txnPassbookObj->addEntry($passbookEntry);
-                                                                    $txnPassbookObj->performPendingOperations();
-                                                                }
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
+																if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
+																{
+																	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+																	$passbookEntry = new PassbookEntry
+																	(
+																		NULL,
+																		$obj_TxnInfo->getAmount(),
+																		$obj_TxnInfo->getCurrencyConfig()->getID(),
+																		Constants::iAuthorizeRequested
+																	);
+																	if ($txnPassbookObj instanceof TxnPassbook)
+																	{
+																		$txnPassbookObj->addEntry($passbookEntry);
+																		$txnPassbookObj->performPendingOperations();
+																	}
+																}
 
                                                                 $fraudCheckCode = 0;
                                                                 $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
@@ -739,15 +769,6 @@ try
                                                                             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
 
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
-
-                                                                            /**
-                                                                             * Here on the basis of cvc we will be overriding
-                                                                             * auth request with authcompelete request defined
-                                                                             * in global.php.
-                                                                             */
-                                                                            if (count($obj_Elem->cvc) !== 1) {
-                                                                                $obj_PSP->setAuthPath(true);
-                                                                            }
 
                                                                             $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
 
@@ -894,9 +915,8 @@ try
 													{
                                                         header("HTTP/1.1 403 Forbidden");
 														//The node <status> is returned along with the status code
-														if (count($obj_XML->status) > 0) {
-                                                        $xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() ); }
-                                                        if (empty($xml) === true || count($obj_XML->status) == 0)
+														if (count($obj_XML->status) > 0) { $xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() ); }
+														if (empty($xml) === true && count($obj_XML->status) == 0)
                                                         {
                                                             $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>';
                                                         }
@@ -968,6 +988,20 @@ try
 											$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
 											$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 											$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+
+											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
+											$passbookEntry = new PassbookEntry
+											(
+													NULL,
+													$obj_TxnInfo->getAmount(),
+													$obj_TxnInfo->getCurrencyConfig()->getID(),
+													Constants::iAuthorizeRequested
+											);
+											if ($txnPassbookObj instanceof TxnPassbook) {
+												$txnPassbookObj->addEntry($passbookEntry);
+												$txnPassbookObj->performPendingOperations();
+											}
+
 											$code = $obj_Authorize->redeemVoucher(intval($voucher["id"]) );
 											if ($code == 100) { $xml .= '<status code="100">Payment authorized using Voucher</status>'; }
 											else if ($code == 43)
