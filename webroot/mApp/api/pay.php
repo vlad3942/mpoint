@@ -145,6 +145,7 @@ require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
 require_once(sCLASS_PATH ."/core/card.php");
 require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 
 
 $aMsgCds = array();
@@ -243,17 +244,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if (strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
                             $obj_RS = new RoutingService($obj_ClientConfig, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction["id"], $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_TxnInfo->getProductType());
-                            $obj_XML = simplexml_load_string ($obj_RS->getRoute() );
-                            $aRoutes = $obj_XML->psps;
+                            if($obj_RS instanceof RoutingService)
+							{
+                                $obj_RoutingServiceResponse = $obj_RS->getRoute();
+                                if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+                                {
+                                    $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+                                    $aRoutes = $aObj_Route->psps->psp;
+                                }
+							}
+
 						}
+
 						$obj_CardXML = '';
 						if (count ( $aRoutes ) == 0) {
 							$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount ) );
 						} else {
 							foreach ( $aRoutes as $oRoute ) {
-								if ($oRoute->psp->preference == 1) {
+								if ($oRoute->preference == 1) {
 									$empty = array();
-									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->psp->id ) );
+									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->id ) );
 								    break;
 								}
 							}

@@ -20,7 +20,7 @@ if(empty($obj_DOM->client_info->client_id) === false && empty($obj_DOM->transact
     $xml .= '</psp>';
     $xml .= '<psp>';
     $xml .= '<id>17</id>';
-    $xml .= '<preference>1</preference>';
+    $xml .= '<preference>2</preference>';
     $xml .= '</psp>';
     $xml .= '</psps>';
     $xml .= '</payment_route_search_response>';

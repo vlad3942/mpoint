@@ -153,6 +153,7 @@ require_once(sCLASS_PATH ."/ezy.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 
 
 ignore_user_abort(true);
@@ -273,25 +274,31 @@ try
                                         {
                                         	$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
                                             $obj_RS = new RoutingService($obj_ClientConfig, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_TxnInfo->getProductType());
-                                            $aObj_XML = $obj_RS->getRoute();
-                                            $aRoutes = $aObj_XML->psps;
+                                            if($obj_RS instanceof RoutingService)
+                                            {
+                                                $obj_RoutingServiceResponse = $obj_RS->getRoute();
+                                                if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+                                                {
+                                                    $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+                                                    $aRoutes = $aObj_Route->psps->psp;
+                                                }
+                                            }
                                         }
 
 										$obj_CardXML = '';
 										$iSecondaryRoute = 0 ;
                                         $iPrimaryRoute = 0 ;
-										$cnt = 0;
 										if (count ( $aRoutes ) == 0) {
 											$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 										} else {
 											foreach ( $aRoutes as $oRoute ) {
-												if ($oRoute->psp->preference == 1) { $cnt++;
+												if ($oRoute->preference == 1) {
 													$empty = array();
-													$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount,$empty,$oRoute->psp->id) );
-                                                    $iPrimaryRoute = $oRoute->psp->id ;
+													$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount,$empty,$oRoute->id) );
+                                                    $iPrimaryRoute = $oRoute->id ;
 												}
-												else{ $cnt++;
-													$iSecondaryRoute = $oRoute->psp->id ;
+												else{
+													$iSecondaryRoute = $oRoute->id ;
 												}
 											}
 										}

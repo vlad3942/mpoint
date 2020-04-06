@@ -121,29 +121,24 @@ class RoutingService extends General
         $b .= '<client_id>'.$this->_iClientId.'</client_id>';
         $b .= '</client_info>';
         $b .= '</payment_method_search_criteria>';
-        $obj_XML = null;
-
+        $obj_XML = '';
         try
         {
             $path = $this->aCONN_INFO["paths"]["get-payment-methods"];
-            //$aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
-            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $this->aCONN_INFO["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
             $obj_HTTP->disConnect();
-            if ($code == 200)
-            {
-                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-            }
-            else { throw new mPointException("Could not fetch payment card list responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+            $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+            return RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
         }
-        catch (mPointException $e)
+        catch (Exception $e)
         {
             trigger_error("construct XML failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+            return $obj_XML;
         }
-
-        return $obj_XML;
     }
 
     /**
@@ -178,29 +173,24 @@ class RoutingService extends General
         $b .= '<client_id>'.$this->_iClientId.'</client_id>';
         $b .= '</client_info>';
         $b .= '</payment_route_search_criteria>';
-        $obj_XML = null;
-
+        $obj_XML = '';
         try
         {
             $path = $this->aCONN_INFO["paths"]["get-routes"];
-            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $this->aCONN_INFO["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
             $obj_HTTP->disConnect();
-            if ($code == 200)
-            {
-                $obj_XML = $obj_HTTP->getReplyBody();
-            }
-            else { throw new mPointException("Could not fetch dynamic route responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+            $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+            return RoutingServiceResponse::produceGetRouteResponse($obj_XML);
         }
-        catch (mPointException $e)
+        catch (Exception $e)
         {
             trigger_error("construct XML failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+            return $obj_XML;
         }
-
-        return $obj_XML;
-
     }
 
 }
