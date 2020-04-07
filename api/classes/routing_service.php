@@ -3,11 +3,11 @@
 class RoutingService extends General
 {
     /**
-     * Data object with the Client Configuration
+     * Data object with the Transaction Information
      *
      * @var TxnInfo
      */
-    private $_obj_ClientConfig;
+    private $_obj_TxnInfo;
 
     /**
      * Data object with the ClientInfo Configuration
@@ -59,9 +59,9 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(ClientConfig $clientConfig, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL)
     {
-        $this->_obj_ClientConfig = $clientConfig;
+        $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
         $this->aCONN_INFO = $obj_ConnInfo;
         $this->_iClientId = $clientId;
@@ -79,6 +79,7 @@ class RoutingService extends General
     {
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<payment_method_search_criteria>';
+        $b .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
         $b .= '<transaction>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
@@ -102,8 +103,8 @@ class RoutingService extends General
         try
         {
             $path = $this->aCONN_INFO["paths"]["get-payment-methods"];
-            $aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
-            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $aURLInfo = parse_url($this->_obj_TxnInfo->getClientConfig()->getMESBURL() );
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_TxnInfo->getClientConfig()->getUsername(), $this->_obj_TxnInfo->getClientConfig()->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
