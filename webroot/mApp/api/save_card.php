@@ -206,7 +206,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 else { $auth_val_code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'save-card'}[$i]->password); }
 
                                 // Authentication succeeded
-                                if ($auth_val_code == 10 OR $auth_val_code == 11)
+                                if ($auth_val_code === 10 OR $auth_val_code === 11)
                                 {
                                     // Start Transaction
                                     $_OBJ_DB->query("START TRANSACTION");
