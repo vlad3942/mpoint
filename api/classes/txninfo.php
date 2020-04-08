@@ -929,7 +929,7 @@ class TxnInfo
 		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" wallet-id="'. $this->_iWalletID .'" product-type="'. $this->_iProductType .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
 		if($iAmount < 0){$iAmount = $this->_lAmount; }
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->getCurrencySymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 		
 		$xml .= '<amount_info>';
 		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
@@ -1203,6 +1203,8 @@ class TxnInfo
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
             if (array_key_exists("sessiontype", $misc) === false) { $misc["sessiontype"] = 1; }
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
+			if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 0 ; }
+			if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = 0 ; }
 
             if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
@@ -1357,6 +1359,38 @@ class TxnInfo
 			}
 				
 			return $order_iD;
+		}
+	}
+	
+	/**
+	 * Function to insert new records in the Billing Summary Related to that Order in table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $aBillingSummary	Data object with the Billing summary Data details
+	 *
+	 */
+	public function setBillingSummary(RDB $obj_DB, $aBillingSummary)
+	{
+		if( is_array($aBillingSummary) === true )
+		{
+			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl_id_seq') AS id FROM DUAL";
+			$RS = $obj_DB->getName($sql);
+
+			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Billing Summary ID", 1001); }
+
+			$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl
+						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified)
+					VALUES
+						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now())";
+			
+			if (is_resource($obj_DB->query($sql) ) === false)
+			{
+				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for billing summary: ". $RS["ID"], 1002); }
+			}
+			else
+			{
+				$Billing_Summary_iD = $RS["ID"];
+			}
+			return $Billing_Summary_iD;
 		}
 	}
 	
@@ -1564,6 +1598,21 @@ class TxnInfo
     }
 
     /**
+     * Returns Currency Symbol
+     *
+     * @return string
+     *
+     */
+    function getCurrencySymbol(){
+        $symbol = '';
+        if($this->_obj_PaymentSession instanceof PaymentSession)
+        {
+            $symbol = html_entity_decode($this->_obj_PaymentSession->getCurrencySymbol(), ENT_COMPAT, 'UTF-8');
+        }
+        return $symbol;
+    }
+
+    /**
      * Returns Payment Session information in XML format
      *
      * @return string
@@ -1729,21 +1778,31 @@ class TxnInfo
         {
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
         }
-        switch ($this->_iPaymentType)
-        {
-            case 1:
-                return 'CD';
-            case 2:
-                return 'CASH';
-            case 3:
-                return 'eWallet';
-            case 4:
-                return 'CASH';
-            case 7:
-                return 'DD';
-            default:
-                return 'CASH';
-        }
+		$paymentMethod = 'CASH';
+		switch ($this->_iPaymentType) {
+			case 1:
+				$paymentMethod = 'CD';
+				break;
+			case 2:
+				$paymentMethod = 'CASH';
+				break;
+			case 3:
+				$paymentMethod = 'eWallet';
+				break;
+			case 4:
+				$paymentMethod = 'CASH';
+				break;
+			case 7:
+				$paymentMethod = 'DD';
+				break;
+			default:
+				$paymentMethod = 'CASH';
+		}
+
+		$stdClassObj=new stdClass();
+		$stdClassObj->PaymentType = $this->_iPaymentType;
+		$stdClassObj->PaymentMethod = $paymentMethod;
+		return $stdClassObj;
     }
 
     public function getLatestPaymentState(RDB $obj_DB)

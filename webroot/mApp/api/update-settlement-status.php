@@ -51,7 +51,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             for ($settlementFileIndex = 0; $settlementFileIndex < $sizeOfSettlementFile ; $settlementFileIndex++) {
                 $settlementId = (int)$obj_DOM->updateSettlementStatus->settlementFile[$settlementFileIndex]->id;
                 $settlementStatus = (string)$obj_DOM->updateSettlementStatus->settlementFile[$settlementFileIndex]->status;
-                mPointSettlement::updateSettlementStatus($_OBJ_DB, $clientId, $settlementId, $settlementStatus);
+                $settlementDesciption = (string)$obj_DOM->updateSettlementStatus->settlementFile[$settlementFileIndex]->description;
+                $settlementRecordTrackingNumber = (string)$obj_DOM->updateSettlementStatus->settlementFile[$settlementFileIndex]->record_tracking_number;
+                mPointSettlement::updateSettlementStatus($_OBJ_DB, $clientId, $settlementId, $settlementStatus, $settlementDesciption, $settlementRecordTrackingNumber);
             }
             header('HTTP/1.1 200 Ok');
         } catch (Exception $e) {
