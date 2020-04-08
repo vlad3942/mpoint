@@ -196,7 +196,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                             if ($iAccountID < 0) {
-                                $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
+                                $passwordStr = isset($obj_DOM->{'save-account'}[$i]->password)?((string)$obj_DOM->{'save-account'}[$i]->password):"";
+                                $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), $passwordStr, trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
                             }
                             //update or create new account -- this should never be the case as we currently have no provision to update pwd from SDK or HPP
                             if(count($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION")) == 0 || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION") == "false") {
