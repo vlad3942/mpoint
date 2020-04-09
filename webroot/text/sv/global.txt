@@ -752,11 +752,11 @@ msgstr @@@ Balance @@@
 msgid @@@ Stored Card @@@
 msgstr @@@ Stored Card @@@
 
-#: /webroot/cpm/payment.php:137
+#: /webroot/cpm/payment.php:117
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /webroot/cpm/payment.php:138
+#: /webroot/cpm/payment.php:119
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
