@@ -174,7 +174,7 @@ class CreditCard extends EndUserAccount
     {
         	$sql = 'SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory 
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid
 				FROM ' . $this->_constDataSourceQuery() . '
 				WHERE CA.clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . '
 					AND A.id = ' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
