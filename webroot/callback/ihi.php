@@ -52,9 +52,9 @@ if ($_POST['status'] == Constants::iPAYMENT_ACCEPTED_STATE)
 	// Callback URL has been defined for Client
 	if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
 	{
-		$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
+		$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST,  $obj_mPoint->getTxnInfo()->getClientConfig()->getSurePayConfig($_OBJ_DB));
 		// Transaction uses Auto Capture
-		if ($obj_mPoint->getTxnInfo()->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST); }
+		if ($obj_mPoint->getTxnInfo()->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST,  $obj_mPoint->getTxnInfo()->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 	}
 }
 ?>

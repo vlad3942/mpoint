@@ -126,12 +126,12 @@ try
 			// Capture automatically performed by WannaFind or invocation of capture operation with WannaFind succeeded
 			if ($obj_mPoint->capture() == 0)
 			{
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_REQUEST);
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_REQUEST);
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 			}
-			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST); }
+			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 		}
-		else { $obj_mPoint->notifyClient($iStateID, $_REQUEST); }
+		else { $obj_mPoint->notifyClient($iStateID, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 	}
 }
 catch (TxnInfoException $e)

@@ -83,7 +83,6 @@ class ChaseSettlement extends mPointSettlement
         {
             $xmlResponse =  simpledom_load_string($response);
 
-
             $files = [];
             for ($index = 0, $indexMax = count($xmlResponse->{'settlement-report'}->file); $index < $indexMax; $index++)
             {
@@ -271,7 +270,7 @@ class ChaseSettlement extends mPointSettlement
                                     }
                                     if ($obj_TxnInfo->getCallbackURL() !== '')
                                     {
-                                        $obj_PSP->notifyClient($stateId, $args);
+                                        $obj_PSP->notifyClient($stateId, $args,$this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                     }
 
 
