@@ -994,11 +994,11 @@ $aHTTP_CONN_INFO["first-data"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["first-data"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["first-data"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["first-data"]["paths"]["auth"] = "/mpoint/first-data/authorize-payment";
-$aHTTP_CONN_INFO["first-data"]["paths"]["authenticate"] = "/mpoint/authenticate";
 $aHTTP_CONN_INFO["first-data"]["paths"]["capture"] = "/mpoint/first-data/capture";
 $aHTTP_CONN_INFO["first-data"]["paths"]["initialize"] = "/mpoint/first-data/initialize";
 $aHTTP_CONN_INFO["first-data"]["paths"]["refund"] = "/mpoint/first-data/refund";
 $aHTTP_CONN_INFO["first-data"]["paths"]["cancel"] = "/mpoint/first-data/cancel";
+$aHTTP_CONN_INFO["first-data"]["paths"]["status"] = "/mpoint/first-data/status";
 
 /**
  * GoMobile Connection Info.

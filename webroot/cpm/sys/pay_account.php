@@ -285,7 +285,7 @@ if (count($aMsgCds) == 0)
                         $aMsgCds[] = 51;
                     }
                     break;
-                case (Constants::iFirstData_PSP): // MadaMpgs
+                case (Constants::iFirstData_PSP): // First-Data
                         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iFirstData_PSP);
 
                         $obj_PSP = new MadaMpgs($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["first-data"]);

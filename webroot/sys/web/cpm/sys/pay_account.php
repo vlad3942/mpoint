@@ -463,7 +463,7 @@ if (count($aMsgCds) == 0)
 						        $xml .= '<status code="92">Authorization failed, VeriTrans4G returned error: ' . $code . '</status>'; */
 						    }
 						    break;
-                        case (Constants::iFirstData_PSP): // Mada Mpgs
+                        case (Constants::iFirstData_PSP): // First-Data
                             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iFirstData_PSP);
 
                             $obj_PSP = new FirstData($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["first-data"]);
