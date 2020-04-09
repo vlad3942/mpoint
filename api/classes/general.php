@@ -426,9 +426,11 @@ class General
 		if(php_sapi_name() == "cli")
 		{
 			$ip = gethostbyname(gethostname());
-		}  else if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true)
+		}  else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true)
 		{
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $ips = array_map('trim', $ips);
+            $ip = $ips[0];
 		}else if(isset($_SERVER['REMOTE_ADDR']) == true)
         {
             $ip = $_SERVER['REMOTE_ADDR'];
