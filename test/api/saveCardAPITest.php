@@ -246,4 +246,92 @@ class SaveCardAPITest extends baseAPITest
 
     }
 
+    /**
+     * Test scenario - During save card with password, a new enduser account is created if not present in mPoint
+     * @throws ErrorException
+     * @throws HTTPConnectionException
+     * @throws HTTPSendException
+     */
+   public function testSaveCardForUnknownAccountPwdFlow()
+   {
+       $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+       $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+       $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+       
+       $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', '123456','',-1);
+       $this->_httpClient->connect();
+
+       $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+       $sReplyBody = $this->_httpClient->getReplyBody();
+
+       $this->assertEquals(200, $iStatus);
+       $this->assertContains('Card successfully saved', $sReplyBody);
+
+       $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE enabled = '1' and email='jona@oismail.com' and mobile='28882861'");
+       $this->assertTrue(is_resource($res));
+       $this->assertTrue(pg_num_rows($res) == 1);
+   }
+
+   /**
+     * Test scenario - SSO with password is successful and card is saved for a existing enduser account.
+     * @throws ErrorException
+     * @throws HTTPConnectionException
+     * @throws HTTPSendException
+     */
+    public function testSuccessfulSaveCardPwdFlow()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', '123456', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
+
+        $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', '123456','',-1);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="109" card-id="1">Card successfully saved</status></root>', $sReplyBody);
+
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE accountid = 5001 and enabled = '1'");
+        $this->assertTrue(is_resource($res));
+        $this->assertTrue(pg_num_rows($res) == 1);
+    }
+
+    /**
+     * Test scenario - SSO with password is unsuccessful and card is NOT saved for a existing enduser account with one card.
+     * @throws ErrorException
+     * @throws HTTPConnectionException
+     * @throws HTTPSendException
+     */
+    public function testEUASSOFailureWithPwd()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', '1234567', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+
+        $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', '123456','',-1);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(403, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="31">Authentication failed</status></root>', $sReplyBody);
+
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE accountid = 5001 and enabled = '1'");
+        $this->assertTrue(is_resource($res));
+        $this->assertTrue(pg_num_rows($res) == 1);
+    }
+
 }
