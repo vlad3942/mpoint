@@ -246,19 +246,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							
 						}
 
-						$obj_ResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1);
+						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1);
 
 						foreach ( $aRoutes as $oRoute ) {
 							if ($oRoute {'type-id'} === 1) {
 								$empty = array();
-								$obj_ResultSet['PSPID'] = $oRoute;
+								$obj_CardResultSet['PSPID'] = $oRoute;
 								break;
 							}
 						}
 
-						$pspId = (int)$obj_ResultSet['PSPID'];
+						$pspId = (int)$obj_CardResultSet['PSPID'];
 
-						if ($obj_ResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
+						if ($obj_CardResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -329,7 +329,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										if($obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
-										$data['auto-capture'] = (int)$obj_ResultSet['CAPTURE_TYPE'];
+										$data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE'];
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
@@ -363,7 +363,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 												$aHTTP_CONN_INFO["dibs"]["path"] = str_replace("{account}", $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), $aHTTP_CONN_INFO["dibs"]["path"]);
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["dibs"]);
-												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), $obj_paymentProcessor->getPSPConfig()->getMerchantSubAccount(), (string)$obj_ResultSet['CURRENCY'], (integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), $obj_paymentProcessor->getPSPConfig()->getMerchantSubAccount(), (string)$obj_CardResultSet['CURRENCY'], (integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
 												foreach ($obj_XML->children() as $obj_XMLElem) {
 													// Hidden Fields
 													if (count($obj_XMLElem->children()) > 0) {
@@ -391,7 +391,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$aHTTP_CONN_INFO["payex"]["username"] = $obj_paymentProcessor->getPSPConfig()->getUsername();
 												$aHTTP_CONN_INFO["payex"]["password"] = $obj_paymentProcessor->getPSPConfig()->getPassword();
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
-												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), (string)$obj_ResultSet['CURRENCY']);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), (string)$obj_CardResultSet['CURRENCY']);
 												foreach ($obj_XML->children() as $obj_XMLElem) {
 													// Hidden Fields
 													if (count($obj_XMLElem->children()) > 0) {
@@ -422,7 +422,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
 																				$obj_paymentProcessor->getPSPConfig()->getMerchantAccount(),
 																				$obj_paymentProcessor->getPSPConfig()->getMerchantSubAccount(),
-																				(string)$obj_ResultSet['currency'],
+																				(string)$obj_CardResultSet['currency'],
 																				(integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"],
 																				$storecard);
 
