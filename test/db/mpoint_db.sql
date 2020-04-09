@@ -8272,3 +8272,5 @@ ALTER TABLE enduser.address_tbl Alter column state type VARCHAR(200);
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
 ALTER TABLE client.cardaccess_tbl ADD walletid int4;
+
+ALTER TABLE CLIENT.SUREPAY_TBL ADD MAX INT4 DEFAULT 1;

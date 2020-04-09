@@ -1494,7 +1494,7 @@ class ClientConfig extends BasicConfig
     {
         if(isset($this->_objSurePayConfig) === FALSE)
         {
-            $this->_objSurePayConfig = SurePay::produceSurePays( $oDB, $this->getID());
+            $this->_objSurePayConfig = SurePayConfig::produceConfig( $oDB, $this->getID());
         }
         return $this->_objSurePayConfig;
     }
