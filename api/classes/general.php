@@ -836,7 +836,7 @@ class General
 		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
 		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 		$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-		$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+		$h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
 		/* ----- Construct HTTP Header End ----- */
 
 		return $h;

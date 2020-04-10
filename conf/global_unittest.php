@@ -202,4 +202,6 @@ $aHTTP_CONN_INFO["routing-service"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-payment-methods"] = "/_test/simulators/routingservice/get-payment-methods.php";
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-routes"] = "/_test/simulators/routingservice/get-routes.php";
 
+unset($aHTTP_CONN_INFO["eghl"]["paths"]["get-payment-methods"]);
+
 ?>

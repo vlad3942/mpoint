@@ -491,8 +491,10 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1" />
-						<xs:group ref="single-sign-on" minOccurs="0" maxOccurs="1" />
+						<xs:choice>
+							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
+						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
@@ -1477,9 +1479,47 @@
 
 <xs:complexType name="airline-data">
 	<xs:sequence>
+	    <xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
 		<xs:element ref="flight-detail"  minOccurs="1" maxOccurs="unbounded" />
 		<xs:element ref="passenger-detail" minOccurs="1" maxOccurs="unbounded" /> 
 	</xs:sequence>
+</xs:complexType>
+
+<xs:element name="billing-summary">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="journey-item" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+						<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+								<xs:element name="fare" type="fare-addon-detail" minOccurs="1" maxOccurs="unbounded" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="add-ons" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+								<xs:element name="add-on" type="fare-addon-detail" minOccurs="1" maxOccurs="unbounded" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="fare-addon-detail">
+    <xs:all>
+        <xs:element name="type-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+        <xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
+        <xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
+        <xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+    </xs:all>
 </xs:complexType>
 
 <xs:element name="flight-detail">

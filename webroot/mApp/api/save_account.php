@@ -196,16 +196,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                             if ($iAccountID < 0) {
-                                //account needs to be enabled
-                                $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
-                                if ($result === true) {
-                                    $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
-                                } else {
-                                    $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), "", trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
-                                }
+                                $passwordStr = isset($obj_DOM->{'save-account'}[$i]->password)?((string)$obj_DOM->{'save-account'}[$i]->password):"";
+                                $iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile), $passwordStr, trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->email), trim($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}),"",true, $iProfileID);
                             }
                             //update or create new account -- this should never be the case as we currently have no provision to update pwd from SDK or HPP
-                            if(empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION") == "false") {
+                            if(count($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION")) == 0 || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"ENABLE_PROFILE_ANONYMIZATION") == "false") {
                                 $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
                             }
                             //get the account id if new account was created
@@ -228,7 +223,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Success: Account Information Saved
                             if ($code >= 0) {
-                                if (empty($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) === true || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "false") {
+                                if (count($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) == 0 || $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "false") {
                                     if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1) {
                                         $obj_mPoint->saveInfo($iAccountID, (string)$obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)$obj_DOM->{'save-account'}[$i]->{'last-name'});
                                     }
