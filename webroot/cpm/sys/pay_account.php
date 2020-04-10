@@ -288,7 +288,7 @@ if (count($aMsgCds) == 0)
                 case (Constants::iFirstData_PSP): // First-Data
                         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iFirstData_PSP);
 
-                        $obj_PSP = new MadaMpgs($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["first-data"]);
+                        $obj_PSP = new FirstData($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["first-data"]);
 
                         $code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
                         // Authorization succeeded
