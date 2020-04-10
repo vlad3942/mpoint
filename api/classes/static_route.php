@@ -102,9 +102,9 @@ class StaticRoute extends Card
      * @param 	SimpleDOMElement $aObj_XML 	 List of payment methods
      * @return 	array $aObj_Configurations   Static Routes Configuration object
      */
-    public static function produceConfigurations(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, SimpleDOMElement $aObj_XML)
+    public static function produceConfigurations(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aObj_PaymentMethods)
     {
-        $paymentMethods = $aObj_XML->payment_methods->payment_method;
+        $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aObj_Configurations = array();
         for ($i = 0; $i < count($paymentMethods); $i++) {
             $aObj_Configurations[] = self::produceConfig($oDB, $oTxt, $oTI, $paymentMethods[$i]->id, $paymentMethods[$i]->psp_type);
