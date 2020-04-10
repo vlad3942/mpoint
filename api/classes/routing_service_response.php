@@ -60,7 +60,9 @@ class RoutingServiceResponse
                 $aObjRoute->psps->psp[$i]->preference = (int)$aObj_XML->psps->psp[$i]->preference;
 
             }
-            return new RoutingServiceResponse($aObjRoute);
+            if(empty(get_object_vars($aObjRoute)) === false){
+                return new RoutingServiceResponse($aObjRoute);
+            }
         }
         return null;
     }
@@ -84,7 +86,9 @@ class RoutingServiceResponse
                 $aObjPaymentMethod->payment_methods->payment_method[$i]->preference = (int)$aObj_XML->payment_methods->payment_method[$i]->preference;
 
             }
-            return new RoutingServiceResponse($aObjPaymentMethod);
+            if(empty(get_object_vars($aObjPaymentMethod)) === false){
+                return new RoutingServiceResponse($aObjPaymentMethod);
+            }
         }
         return null;
     }

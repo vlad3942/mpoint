@@ -3,11 +3,11 @@
 class RoutingService extends General
 {
     /**
-     * Data object with the Client Configuration
+     * Data object with the Transaction Information
      *
      * @var TxnInfo
      */
-    private $_obj_ClientConfig;
+    private $_obj_TxnInfo;
 
     /**
      * Data object with the ClientInfo Configuration
@@ -52,25 +52,18 @@ class RoutingService extends General
     private $_iAmount;
 
     /**
-     * Unique ID for the Transaction
-     *
-     * @var integer
-     */
-    private $_iTransactionId;
-
-    /**
-     * Product Type of transaction
-     *
-     * @var integer
-     */
-    private $_iProductType;
-
-    /**
      * Unique Card Type Id used for the payment
      *
      * @var integer
      */
     private $_iCardTypeId;
+
+    /**
+     * Unique Card issuer identification-number
+     *
+     * @var integer
+     */
+    private $_iIssuerIdentificationNumber;
 
     /**
      * Default Constructor
@@ -80,18 +73,17 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(ClientConfig $clientConfig, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $transactionId = NULL, $cardTypeId = NULL, $productType = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL)
     {
-        $this->_obj_ClientConfig = $clientConfig;
+        $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
         $this->aCONN_INFO = $obj_ConnInfo;
         $this->_iClientId = $clientId;
         $this->_iCountryId = $countryId;
         $this->_iCurrencyId = $currencyId;
         $this->_iAmount = $amount;
-        $this->_iTransactionId = $transactionId;
-        $this->_iProductType = $productType;
         $this->_iCardTypeId = $cardTypeId;
+        $this->_iIssuerIdentificationNumber = $issuerIdentificationNumber;
     }
 
     /**
@@ -103,7 +95,9 @@ class RoutingService extends General
     {
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<payment_method_search_criteria>';
+        $b .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
         $b .= '<transaction>';
+        $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -113,6 +107,8 @@ class RoutingService extends General
         if(empty($this->_iCurrencyId)===false)
         {
             $b .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
+        }else{
+            $b .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
         }
         $b .= '</amount>';
         $b .= '</transaction>';
@@ -125,8 +121,8 @@ class RoutingService extends General
         try
         {
             $path = $this->aCONN_INFO["paths"]["get-payment-methods"];
-            $aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
-            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $aURLInfo = parse_url($this->_obj_TxnInfo->getClientConfig()->getMESBURL() );
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_TxnInfo->getClientConfig()->getUsername(), $this->_obj_TxnInfo->getClientConfig()->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -151,10 +147,8 @@ class RoutingService extends General
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<payment_route_search_criteria>';
         $b .= '<transaction>';
-        $b .= '<id>'.$this->_iTransactionId.'</id>';
-        $b .= '<product_type>'.$this->_iProductType.'</product_type>';
-        $b .= '<card>';
-        $b .= '<type_id></type_id>';
+        $b .= '<id>'.$this->_obj_TxnInfo->getID().'</id>';
+        $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -164,8 +158,27 @@ class RoutingService extends General
         if(empty($this->_iCurrencyId)===false)
         {
             $b .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
+        }else{
+            $b .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
         }
         $b .= '</amount>';
+        $b .= '<card>';
+        $b .= '<id>'.$this->_iCardTypeId.'</id>';
+        $b .= '<type_id>VISA</type_id>';
+        $b .= '<amount>';
+        if(empty($this->_iAmount)===false)
+        {
+            $b .= '<value>'.$this->_iAmount.'</value>';
+        }
+        $b .= '<country_id>'.$this->_iCountryId.'</country_id>';
+        if(empty($this->_iCurrencyId)===false)
+        {
+            $b .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
+        }else{
+            $b .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
+        }
+        $b .= '</amount>';
+        $b .= '<issuer_identification_number>'.$this->_iIssuerIdentificationNumber.'</issuer_identification_number>';
         $b .= '</card>';
         $b .= '</transaction>';
         $b .= '<client_info>';
@@ -177,8 +190,8 @@ class RoutingService extends General
         try
         {
             $path = $this->aCONN_INFO["paths"]["get-routes"];
-            $aURLInfo = parse_url($this->_obj_ClientConfig->getMESBURL() );
-            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_ClientConfig->getUsername(), $this->_obj_ClientConfig->getPassword() );
+            $aURLInfo = parse_url($this->_obj_TxnInfo->getClientConfig()->getMESBURL() );
+            $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_TxnInfo->getClientConfig()->getUsername(), $this->_obj_TxnInfo->getClientConfig()->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);

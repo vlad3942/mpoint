@@ -68,6 +68,7 @@ require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/card_prefix_config.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/static_route.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 
 $aMsgCds = array();
 
@@ -549,22 +550,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (strtolower($drService) == 'true') {
                                 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
                                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-                                $obj_RS = new RoutingService($obj_ClientConfig, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
-                                $aObj_XML = $obj_RS->getPaymentMethods();
-                                $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aObj_XML);
-                                $paymentMethodCount = count($obj_SR);
-                                $obj_XML = '<cards>';
-                                for($i=0; $paymentMethodCount > $i; $i++)
+                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
+                                $obj_PaymentMethodResponse = null;
+                                if($obj_RS instanceof RoutingService)
                                 {
-                                    if(($obj_SR[$i] instanceof StaticRoute) === true )
+                                    $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
+
+                                    if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
                                     {
-                                        $obj_XML .= $obj_SR[$i]->toXML();
+                                        $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
+                                        $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+                                        $paymentMethodCount = count($obj_SR);
+                                        $obj_XML = '<cards>';
+                                        for($i=0; $paymentMethodCount > $i; $i++)
+                                        {
+                                            if(($obj_SR[$i] instanceof StaticRoute) === true )
+                                            {
+                                                $obj_XML .= $obj_SR[$i]->toXML();
+                                            }
+                                        }
+                                        $obj_XML .= '</cards>';
+                                        $obj_XML = simplexml_load_string($obj_XML, "SimpleXMLElement", LIBXML_COMPACT);
                                     }
                                 }
-                                $obj_XML .= '</cards>';
-                                $obj_XML = simplexml_load_string($obj_XML, "SimpleXMLElement", LIBXML_COMPACT);
                                 // Fallback machanisam if routing service fails to return eligible payment methods
-                                if(empty($obj_XML) === true )
+                                if(empty($obj_PaymentMethodResponse) === true )
                                 {
                                     $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
                                 }
@@ -583,7 +593,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
 							}
 							else { $aObj_XML = array(); }
-							
+
 							$aPSPs = array();
 							$cardsXML = '<cards>';
 							for ($j=0; $j<count($obj_XML->item); $j++)
@@ -618,7 +628,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 							}
 							$cardsXML .= '</cards>';
-							
+
 							for ($j=0; $j<count($aPSPs); $j++)
 							{
 								switch ($aPSPs[$j])
@@ -633,7 +643,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 							}
 							$xml .= $cardsXML;
-								
+
 							// End-User has Stored Cards available
 							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 							{

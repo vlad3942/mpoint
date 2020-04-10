@@ -240,10 +240,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-						
+
 						if (strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-                            $obj_RS = new RoutingService($obj_ClientConfig, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction["id"], $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_TxnInfo->getProductType());
+                            $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'});
                             if($obj_RS instanceof RoutingService)
 							{
                                 $obj_RoutingServiceResponse = $obj_RS->getRoute();
@@ -259,7 +259,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_CardXML = '';
 						if (count ( $aRoutes ) == 0) {
 							$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount ) );
-						} else {
+						}elseif (count ( $aRoutes ) == 1)
+						{
+                            foreach ( $aRoutes as $oRoute ) {
+								$empty = array();
+								$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->id ) );
+                            }
+						}	
+						else {
 							foreach ( $aRoutes as $oRoute ) {
 								if ($oRoute->preference == 1) {
 									$empty = array();
@@ -267,6 +274,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								    break;
 								}
 							}
+                            // Store dynamic route to use it again during Auth if require
+                            $additionalData = array();
+                            $additionalData[0]['name']  = (string)'psps';
+                            $additionalData[0]['value'] = json_encode($aRoutes);
+                            $additionalData[0]['type']  = (string)'Transaction';
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
+
 						}
 
 						//Check if card or payment method is enabled or disabled by merchant
