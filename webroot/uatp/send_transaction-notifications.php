@@ -66,7 +66,7 @@ $query = "SELECT tt.id, tp.extref, tp.status, tp.performedopt
 			WHERE tt.pspid = ".$inputPSPID."
 			AND tt.clientid = ".$clientid."
 			AND tp.performedopt IN ('".Constants::iPAYMENT_CAPTURED_STATE."','".Constants::iPAYMENT_CANCELLED_STATE."','".Constants::iPAYMENT_REFUNDED_STATE."')
-			AND tp.status NOT IN ('".Constants::sPassbookStatusDone."')
+			AND tp.status NOT IN ('".Constants::sPassbookStatusDone."','".Constants::sPassbookStatusInvalid."')
 			AND tp.created <= '".date('Y-m-d').' '.$cutofftime."'
 			AND tp.created >= (now() - INTERVAL '". $interval ."')
 			GROUP BY tt.id, tp.extref, tp.status, tp.performedopt,tp.extref
