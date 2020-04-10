@@ -581,6 +581,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$xml .= $obj_XML->{'callback-url'}->asXML();
 							$xml .= $obj_XML->{'accept-url'}->asXML();
+							$xml .= $obj_XML->{'cancel-url'}->asXML();
 							$xml .= '</transaction>';
 							$xml .= $obj_TxnInfo->getPaymentSessionXML();
 							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
