@@ -50,19 +50,17 @@ class RoutingServiceResponse
      */
     public static function produceGetRouteResponse(SimpleXMLElement $aObj_XML)
     {
-        if (($aObj_XML instanceof SimpleXMLElement) === true && empty($aObj_XML) === false)
+        if (($aObj_XML instanceof SimpleXMLElement) === true)
         {
             $iRouteCount = count($aObj_XML->psps->psp);
-            $aObjRoute = new stdClass;
+            $aObjRoute = new stdClass();
             for ($i = 0; $i < $iRouteCount; $i++)
             {
                 $aObjRoute->psps->psp[$i]->id = (int)$aObj_XML->psps->psp[$i]->id;
                 $aObjRoute->psps->psp[$i]->preference = (int)$aObj_XML->psps->psp[$i]->preference;
 
             }
-            if(empty(get_object_vars($aObjRoute)) === false){
-                return new RoutingServiceResponse($aObjRoute);
-            }
+            return new RoutingServiceResponse($aObjRoute);
         }
         return null;
     }
@@ -75,10 +73,10 @@ class RoutingServiceResponse
      */
     public static function produceGetPaymentMethodResponse(SimpleXMLElement $aObj_XML)
     {
-        if (($aObj_XML instanceof SimpleXMLElement) === true && empty($aObj_XML) === false)
+        if (($aObj_XML instanceof SimpleXMLElement) === true)
         {
             $iPaymentMethodCount = count($aObj_XML->payment_methods->payment_method);
-            $aObjPaymentMethod = new stdClass;
+            $aObjPaymentMethod = new stdClass();
             for ($i = 0; $i < $iPaymentMethodCount; $i++)
             {
                 $aObjPaymentMethod->payment_methods->payment_method[$i]->id = (int)$aObj_XML->payment_methods->payment_method[$i]->id;
@@ -86,9 +84,7 @@ class RoutingServiceResponse
                 $aObjPaymentMethod->payment_methods->payment_method[$i]->preference = (int)$aObj_XML->payment_methods->payment_method[$i]->preference;
 
             }
-            if(empty(get_object_vars($aObjPaymentMethod)) === false){
-                return new RoutingServiceResponse($aObjPaymentMethod);
-            }
+            return new RoutingServiceResponse($aObjPaymentMethod);
         }
         return null;
     }
