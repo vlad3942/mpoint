@@ -192,12 +192,21 @@ class ClientInfo
         }
         if(empty($this->_sMobile) === false)
         {
+            $xml .= '<mobile>';
             $xml .= '<mobile>'.$this->_sMobile.'</mobile>';
+            $xml .= '<mobile_type>MobileEnriched</mobile_type>';
             $xml .= '<country_id>'.$this->_obj_CountryConfig->getID().'</country_id>';
+            $xml .= '<validated>true</validated>';
+            $xml .= '</mobile>';
+
         }
         if(empty($this->_sEMail) === false)
         {
+            $xml .= '<email>';
             $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
+            $xml .= '<email_type>EmailEnriched</email_type>';
+            $xml .= '<validated>true</validated>';
+            $xml .= '</email>';
         }
         if(empty($this->_sDeviceID) === false)
         {
