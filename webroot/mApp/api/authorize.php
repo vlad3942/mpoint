@@ -145,6 +145,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
@@ -355,9 +357,12 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
+                                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                        $ips = array_map('trim', $ips);
+                                        $ip = $ips[0];
 										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                         CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-                                        $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                        $ip);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
@@ -549,13 +554,17 @@ try
 																{
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
-																															
-																$obj_PSPConfig = $wallet_Processor->getPSPConfigForRoute ( intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] ), intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j]->amount ["country-id"] ) );
-																	
+
+                                                                    $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$wallet_Processor->getPSPConfig()->getID()."]");
+                                                                    if (count($obj_XML) == 0)
+                                                                    {
+                                                                        $code = 5;
+                                                                        $xml = '<status code="24">The selected payment card is not available</status>';
+                                                                    } // Card disabled
 																	if ($iPrimaryRoute > 0) {
 																		$obj_Elem ["pspid"] = $iPrimaryRoute;
 																	} else {
-																		$obj_Elem ["pspid"] = $obj_PSPConfig->getID ();
+																		$obj_Elem ["pspid"] = (int) $obj_XML["pspid"];
 																	}
 																	$obj_Elem ["wallet-type-id"] = intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] );
 																}
@@ -640,6 +649,24 @@ try
 														try
 														{
 														    if($obj_Elem["pspid"] > 0) {
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
+																if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
+																{
+																	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+																	$passbookEntry = new PassbookEntry
+																	(
+																		NULL,
+																		$obj_TxnInfo->getAmount(),
+																		$obj_TxnInfo->getCurrencyConfig()->getID(),
+																		Constants::iAuthorizeRequested
+																	);
+																	if ($txnPassbookObj instanceof TxnPassbook)
+																	{
+																		$txnPassbookObj->addEntry($passbookEntry);
+																		$txnPassbookObj->performPendingOperations();
+																	}
+																}
 
                                                                 $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
                                                                 $passbookEntry = new PassbookEntry
@@ -930,9 +957,8 @@ try
 													{
                                                         header("HTTP/1.1 403 Forbidden");
 														//The node <status> is returned along with the status code
-														if (count($obj_XML->status) > 0) {
-                                                        $xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() ); }
-                                                        if (empty($xml) === true || count($obj_XML->status) == 0)
+														if (count($obj_XML->status) > 0) { $xml =  str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() ); }
+														if (empty($xml) === true && count($obj_XML->status) == 0)
                                                         {
                                                             $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>';
                                                         }

@@ -54,10 +54,10 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5435;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["password"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -965,6 +965,27 @@ $aHTTP_CONN_INFO["veritrans4g"]["paths"]["refund"] = "/mpoint/veritrans4g/refund
 //$aHTTP_CONN_INFO["veritrans4g"]["paths"]["status"] = "/mpoint/veritrans4g/status";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["cancel"] = "/mpoint/veritrans4g/cancel";
 $aHTTP_CONN_INFO["veritrans4g"]["paths"]["callback"] = "/mpoint/veritrans4g/callback";
+
+
+/**
+ * Connection info for connecting to DragonPay
+ */
+$aHTTP_CONN_INFO["dragonpay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["dragonpay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["dragonpay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["dragonpay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["dragonpay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["dragonpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["dragonpay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["initialize"] = "/mpoint/aggregator/dragonpay/initialize";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["auth"] = "/mpoint/aggregator/dragonpay/authorize-payment";
+//$aHTTP_CONN_INFO["dragonpay"]["paths"]["capture"] = "/mpoint/aggregator/dragonpay/capture";
+//$aHTTP_CONN_INFO["dragonpay"]["paths"]["refund"] = "/mpoint/aggregator/dragonpay/refund";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["status"] = "/mpoint/aggregator/dragonpay/status";
+//$aHTTP_CONN_INFO["dragonpay"]["paths"]["cancel"] = "/mpoint/aggregator/dragonpay/cancel";
+$aHTTP_CONN_INFO["dragonpay"]["paths"]["callback"] = "/mpoint/aggregator/dragonpay/callback";
+
+
     
 /*
  * Connection info for connecting to Data Cash

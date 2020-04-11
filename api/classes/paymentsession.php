@@ -306,9 +306,38 @@ final class PaymentSession
         return $this->_obj_CurrencyConfig;
     }
 
+
+    /**
+     * Fetch the Currency Symbol.
+     *
+     * @return 	string
+     */
+    public function getCurrencySymbol() {
+        try {
+            $currencyId = $this->getCurrencyConfig()->getID();
+            $symbol = '';
+            if (empty($currencyId) === false) {
+                $sql = "SELECT symbol 
+              FROM system" . sSCHEMA_POSTFIX . ".country_tbl
+              WHERE symbol != '' and currencyid = " . $currencyId . " LIMIT 1";
+
+                $res = $this->_obj_Db->query($sql);
+                while ($RS = $this->_obj_Db->fetchName($res)) {
+                    $symbol = $RS['SYMBOL'];
+                }
+            } else {
+                $symbol = $this->getCountryConfig()->getSymbol();
+            }
+            return $symbol;
+        }
+        catch (Exception $e){
+            trigger_error ( "Currency id is invalid- ." . $e->getMessage(), E_USER_ERROR );
+        }
+    }
+
     public function toXML(){
         $xml = "<session id='".$this->getId()."' type='".$this->getSessionType()."' total-amount='".$this->_amount."'>";
-        $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
+        $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCurrencySymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
         $xml .= "</session>";
         return $xml;
     }

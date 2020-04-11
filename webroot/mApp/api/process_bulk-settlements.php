@@ -98,6 +98,8 @@ require_once sCLASS_PATH . '/passbookentry.php';
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");

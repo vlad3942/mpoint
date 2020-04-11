@@ -117,6 +117,8 @@ require_once(sCLASS_PATH ."/cellulant.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement

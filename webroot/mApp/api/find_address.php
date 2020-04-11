@@ -36,7 +36,7 @@ $HTTP_RAW_POST_DATA .= '<full-name>Jonatan Buus</full-name>';
 $HTTP_RAW_POST_DATA .= '<company>Buus</company>';
 $HTTP_RAW_POST_DATA .= '<street>Dexter Gordons Vej 3, 6.th</street>';
 $HTTP_RAW_POST_DATA .= '<postal-code>2450</postal-code>';
-$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("København SV") .'</city>';
+$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("Kï¿½benhavn SV") .'</city>';
 //$HTTP_RAW_POST_DATA .= '<state>N/A</state>';
 $HTTP_RAW_POST_DATA .= '<client-info app-id="3" platform="iOS" version="2.10" language="gb">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
@@ -78,8 +78,11 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 		// Success: Input valid
 		if (count($aErrCd) == 0)
 		{
+		    $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $ips = array_map('trim', $ips);
+            $ip = $ips[0];
 			// Construct Client Info
-			$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'find-address'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+			$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'find-address'}[$i]->{'client-info'}, $obj_CountryConfig, $ip);
 		}
 		// Error: Invalid Input
 		else
