@@ -124,7 +124,7 @@
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
-
+							<xs:element name="client-info"  minOccurs="0" maxOccurs="1"/>
 						</xs:all>
 						<xs:attribute type="xs:positiveInteger" name="client-id" />
 						<xs:attribute type="xs:positiveInteger" name="account" />
