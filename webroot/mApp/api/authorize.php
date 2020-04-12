@@ -657,9 +657,18 @@ try
 																	$passbookEntry = new PassbookEntry
 																	(
 																		NULL,
-																		$obj_TxnInfo->getAmount(),
-																		$obj_TxnInfo->getCurrencyConfig()->getID(),
-																		Constants::iAuthorizeRequested
+																		$obj_TxnInfo->getPaymentAmount(),
+																		$obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
+                                                                        Constants::iAuthorizeRequested,
+                                                                        '',
+                                                                        0,
+                                                                        '',
+                                                                        '',
+                                                                        TRUE,
+                                                                        NULL,
+                                                                        NULL,
+                                                                        $obj_TxnInfo->getClientConfig()->getID(),
+                                                                        $obj_TxnInfo->getConversationRate()
 																	);
 																	if ($txnPassbookObj instanceof TxnPassbook)
 																	{
@@ -667,28 +676,6 @@ try
 																		$txnPassbookObj->performPendingOperations();
 																	}
 																}
-
-                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
-                                                                $passbookEntry = new PassbookEntry
-                                                                (
-                                                                    NULL,
-                                                                    $obj_TxnInfo->getPaymentAmount(),
-                                                                    $obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
-                                                                    Constants::iAuthorizeRequested,
-                                                                    '',
-                                                                    '',
-                                                                    0,
-                                                                    '',
-                                                                    TRUE,
-                                                                    NULL,
-                                                                    NULL,
-                                                                    -1,
-                                                                    $obj_TxnInfo->getConversationRate()
-                                                                );
-                                                                if ($txnPassbookObj instanceof TxnPassbook) {
-                                                                    $txnPassbookObj->addEntry($passbookEntry);
-                                                                    $txnPassbookObj->performPendingOperations();
-                                                                }
 
                                                                 $fraudCheckCode = 0;
                                                                 $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
