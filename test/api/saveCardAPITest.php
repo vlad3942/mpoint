@@ -225,6 +225,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 
         $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', null,'profilePass',12345);//,'testemail@test.com',123456677);
+        //printf($xml);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
