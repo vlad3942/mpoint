@@ -170,7 +170,7 @@ class CreditCard extends EndUserAccount
 		return $xml;
 	}
 
-	public function getCardsQuery($amount, $typeid = null, $stateid = null)
+	public function getCardsQuery($amount, $typeid = null, $stateid = null, $walletid = null)
     {
         	$sql = 'SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
@@ -192,6 +192,10 @@ class CreditCard extends EndUserAccount
 					{
 					    $sql .= ' AND stateid = ' . $stateid ;
 					}
+					if($walletid !== null)
+					{
+                        $sql .= ' AND coalesce(walletid,-1) = '. $walletid;
+                    }
 				$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC';
 
 		$res = $this->getDBConn()->query($sql);
@@ -199,9 +203,9 @@ class CreditCard extends EndUserAccount
 
     }
 
-    public function getCardObject($amount, $typeid = null, $stateid = null)
+    public function getCardObject($amount, $typeid = null, $stateid = null, $walletid = null)
     {
-        $result = $this->getCardsQuery($amount, $typeid, $stateid );
+        $result = $this->getCardsQuery($amount, $typeid, $stateid, $walletid );
         $resultSet = $this->getDBConn()->fetchName($result);
         return $resultSet;
     }
