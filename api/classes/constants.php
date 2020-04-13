@@ -1472,6 +1472,17 @@ abstract class Constants
      */
     const sGetProfileEndPoint = "/mprofile/get-profile";
 
+    /*
+	 * Card payment types in mPoint
+	 * */
+    const iPAYMENT_TYPE_CARD = 1;
+    const iPAYMENT_TYPE_VOUCHER = 2;
+    const iPAYMENT_TYPE_WALLET = 3;
+    const iPAYMENT_TYPE_APM = 4;
+    const iPAYMENT_TYPE_CARD_TOKEN = 5;
+    const iPAYMENT_TYPE_VIRTUAL = 6;
+    const iPAYMENT_TYPE_ONLINE_BANKING = 7;
+
 }
 
 abstract class AutoCaptureType
