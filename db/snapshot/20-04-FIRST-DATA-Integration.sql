@@ -17,7 +17,7 @@ INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (7, 62, true);
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 62, true);
 
 --//**********system.pspcurrency_tbl************//
-INSERT INTO system.pspcurrency_tbl (pspid, name, enabled, currencyid) VALUES (61, 'PHL', true, 608);
+INSERT INTO system.pspcurrency_tbl (pspid, name, enabled, currencyid) VALUES (62, 'PHL', true, 608);
 
 --//**********client.merchantaccount_tbl************//
 INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, enabled, username, passwd, stored_card) VALUES (<clientid>, 62, '6160800000',  true, 'WS6160800000._.1', 'tester01$', null);
