@@ -141,6 +141,9 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
@@ -266,7 +269,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$empty = array();
 								$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->id ) );
                             }
-						}	
+						}
 						else {
 							foreach ( $aRoutes as $oRoute ) {
 								if ($oRoute->preference == 1) {
@@ -955,7 +958,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 }
                                                 break;
                                         case (Constants::iDragonPay_AGGREGATOR):
-                                            
+
                                             $obj_PSP = new DragonPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["dragonpay"]);
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
                                             foreach ($obj_XML->children() as $obj_Elem)
@@ -971,6 +974,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $xml .= trim($obj_Elem->asXML() );
                                             }
                                             break;
+										case (Constants::iFirstData_PSP):
+											$obj_PSP = new FirstData($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["first-data"]);
+
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]),$obj_DOM->pay[$i]->transaction->card["type-id"],'',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo );
+											//										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
+
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;
                                         }
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
