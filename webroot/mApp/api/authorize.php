@@ -538,13 +538,7 @@ try
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
 
-																    $walletid = '';
-															        if($wallet_Processor->getPSPConfig()->getID() !== Constants::iMVAULT_WALLET)
-                                                                    {
-                                                                        $walletid = $wallet_Processor->getPSPConfig()->getID();
-                                                                    }
-
-                                                                    $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$walletid."]");
+                                                                    $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$wallet_Processor->getPSPConfig()->getID()."]");
                                                                     if (count($obj_XML) == 0)
                                                                     {
                                                                         $code = 5;
