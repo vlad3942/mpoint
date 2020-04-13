@@ -7,7 +7,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Callback
- * @subpackage MADA PPGS
+ * @subpackage FirstData
  * @version 1.00
  */
 
@@ -22,9 +22,7 @@ class FirstDataException extends CallbackException { }
  * Model Class containing all the Business Logic for the Payment Service Provider: FirstData
  *
  */
-class FirstData extends CPMACQUIRER
+class FirstData extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new FirstDataException("Method: getPaymentData is not supported by FirstData"); }
-
 	public function getPSPID() { return Constants::iFirstData_PSP; }
 }
