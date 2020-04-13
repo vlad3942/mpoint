@@ -114,6 +114,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
@@ -245,8 +247,8 @@ try
         {
             $additionalTxnDataIndex++;
             $txnData = explode('=', $addtionalData);
-            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$txnData[0];;
-            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$txnData[1];
+            $additionalTxnData[$additionalTxnDataIndex]['name'] = (isset($txnData[0]) === true)?(string)$txnData[0]:'';
+            $additionalTxnData[$additionalTxnDataIndex]['value'] = (isset($txnData[1]) === true)?(string)$txnData[1]:'';
             $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
         }
         if($additionalTxnDataIndex > -1)
@@ -421,12 +423,11 @@ try
 	$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
 			"amount" => $obj_TxnInfo->getAmount(),
 			"card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
-
+    $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+    $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 	// Transaction uses Auto Capture and Authorization was accepted
 	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
-		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
 		$code=0;
 		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());

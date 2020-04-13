@@ -445,8 +445,10 @@ abstract class Callback extends EndUserAccount
         	$sBody .= "&wallet-id=". $this->_obj_TxnInfo->getWalletID();
         }
 
-        $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
-		$sBody .= '&payment-type=' . $this->_obj_TxnInfo->getPSPType($this->getDBConn());
+		$objb_getPaymentMethod =  $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
+        $sBody .= '&payment-method=' . $objb_getPaymentMethod->PaymentMethod;
+		$sBody .= '&payment-type=' . $objb_getPaymentMethod->PaymentType;
+		$sBody .= '&payment-provider-id=' . $this->_obj_TxnInfo->getPSPID();
 
         $shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
         if($shortCode !== false)
@@ -867,8 +869,10 @@ abstract class Callback extends EndUserAccount
         case (Constants::iEZY_PSP):
 			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
 		case (Constants::iCellulant_PSP):
-			return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"]);
-		case (Constants::iFirstData_PSP):
+				return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"]);
+		case (Constants::iDragonPay_AGGREGATOR):
+		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"]);
+        case (Constants::iFirstData_PSP):
 			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"]);
         default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
@@ -1015,8 +1019,10 @@ abstract class Callback extends EndUserAccount
         				$transactionData['wallet-id']= $objTransaction->getWalletID();
         			}
 
-        			$transactionData['payment-method'] = $objTransaction->getPaymentMethod($this->getDBConn());
-					$transactionData['payment-type'] = $objTransaction->getPSPType($this->getDBConn());
+					$objb_getPaymentMethod = $objTransaction->getPaymentMethod($this->getDBConn());
+					$transactionData['payment-method'] = $objb_getPaymentMethod->PaymentMethod;
+					$transactionData['payment-type'] = $objb_getPaymentMethod->PaymentType;
+					$transactionData['payment-provider-id'] = $objTransaction->getPSPID();
 
 					$shortCode = $this->getAdditionalPropertyFromDB('SHORT-CODE', $objTransaction->getClientConfig()->getID(),$objTransaction->getPSPID());
         			if($shortCode !== false)

@@ -144,6 +144,13 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
+// Require specific Business logic for the DragonPay component
+require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+require_once(sCLASS_PATH . '/txn_passbook.php');
+require_once(sCLASS_PATH . '/passbookentry.php');
+require_once(sCLASS_PATH ."/core/card.php");
+require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 
 $aMsgCds = array();
 
@@ -232,38 +239,60 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
 							}
 						}
-						
+
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-						
-						if ($drEnabled) {
+
+						if (strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
-							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
-							
+                            $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'});
+                            if($obj_RS instanceof RoutingService)
+							{
+                                $obj_RoutingServiceResponse = $obj_RS->getRoute();
+                                if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+                                {
+                                    $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+                                    $aRoutes = $aObj_Route->psps->psp;
+                                }
+							}
+
 						}
+
 						$obj_CardXML = '';
 						if (count ( $aRoutes ) == 0) {
 							$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount ) );
-						} else {
+						}elseif (count ( $aRoutes ) == 1)
+						{
+                            foreach ( $aRoutes as $oRoute ) {
+								$empty = array();
+								$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->id ) );
+                            }
+						}
+						else {
 							foreach ( $aRoutes as $oRoute ) {
-								if ($oRoute {'type-id'} == 1) {
+								if ($oRoute->preference == 1) {
 									$empty = array();
-									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute ) );
+									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty,$oRoute->id ) );
 								    break;
 								}
 							}
+                            // Store dynamic route to use it again during Auth if require
+                            $additionalData = array();
+                            $additionalData[0]['name']  = (string)'psps';
+                            $additionalData[0]['value'] = json_encode($aRoutes);
+                            $additionalData[0]['type']  = (string)'Transaction';
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
+
 						}
-						
+
 						//Check if card or payment method is enabled or disabled by merchant
 						//Same check is  also implemented at app side.
-						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
+						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1 and @walletid='']");
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
-                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
-                                CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
-                                $_SERVER['HTTP_X_FORWARDED_FOR']);
+
                         if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
@@ -353,6 +382,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
+
+										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
+										if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_APM || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_GATEWAY)
+										{
+											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+											$passbookEntry = new PassbookEntry
+											(
+													NULL,
+													$obj_TxnInfo->getAmount(),
+													$obj_TxnInfo->getCurrencyConfig()->getID(),
+													Constants::iAuthorizeRequested
+											);
+											if ($txnPassbookObj instanceof TxnPassbook)
+											{
+												$txnPassbookObj->addEntry($passbookEntry);
+												$txnPassbookObj->performPendingOperations();
+											}
+										}
+
 										// Initialize payment with Payment Service Provider
 										$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_PSPConfig->getProcessorType().'">';
 										switch ($obj_PSPConfig->getID() )
@@ -909,6 +957,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     $xml .= trim($obj_Elem->asXML() );
                                                 }
                                                 break;
+                                        case (Constants::iDragonPay_AGGREGATOR):
+
+                                            $obj_PSP = new DragonPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["dragonpay"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
                                         case (Constants::iCellulant_PSP):
                                             $obj_PSP = new Cellulant($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["cellulant"]);
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_ClientInfo);

@@ -95,7 +95,7 @@ class ClientRoutesConfig extends BasicConfig
 	    $xml .= '<currency_id>'.$this->getCurrencyID().'</currency_id>';
 	    $xml .= '<psp_id>'.$this->getPSPID().'</psp_id>';
 	    $xml .= '<enabled>'.General::bool2xml($this->isEnabled()).'</enabled>';
-	    $xml .= '<payment_type>'.$this->getCardType().'</payment_type>';
+	    $xml .= '<psp_type>'.$this->getCardType().'</psp_type>';
         $xml .= '</route>';
 
         return $xml;

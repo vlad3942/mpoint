@@ -140,18 +140,29 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_CustomerInfo = CustomerInfo::produceInfo($obj_DOM->{'search-transaction-logs'}->transaction->customer);
 			}
-			
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}); $j++)
-			{				
-				$aPspIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}[$j];
+
+			$obj_PSP = $obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'};
+			$iCountObjPSP = count($obj_PSP);
+			if(isset($obj_PSP) === true && $iCountObjPSP > 0) {
+				for ($j = 0; $j < count($iCountObjPSP); $j++) {
+					$aPspIDs[] = (integer)$obj_PSP[$j];
+				}
 			}
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}); $j++)
-			{				
-				$aCardIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}[$j];
+
+			$obj_Card = $obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'};
+			$iCountObjCard = count($obj_Card);
+			if(isset($obj_Card) === true && $iCountObjCard > 0) {
+				for ($j = 0; $j < $iCountObjCard; $j++) {
+					$aCardIDs[] = (integer)$obj_Card[$j];
+				}
 			}
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}); $j++)
-			{				
-				$aStateIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}[$j];
+
+			$obj_State = $obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'};
+			$iCountObjState = count($obj_State);
+			if(isset($obj_State) === true && $iCountObjState > 0) {
+				for ($j = 0; $j < $iCountObjState; $j++) {
+					$aStateIDs[] = (integer)$obj_State[$j];
+				}
 			}
             $sTimeZoneOffset = "0";
             if(count($obj_DOM->{'search-transaction-logs'}->UTCOffset)>0) { $sTimeZoneOffset = $obj_DOM->{'search-transaction-logs'}->UTCOffset;}

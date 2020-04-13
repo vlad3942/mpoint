@@ -1583,7 +1583,7 @@ msgstr @@@ Welcome to {CLIENT} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
 
-#: /api/classes/credit_card.php:128
+#: /api/classes/credit_card.php:129
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
@@ -1615,4 +1615,12 @@ mPoint @@@
 msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Please enter the confirmation code: {CODE} on the website to authenticate your transfer.
 The code will automatically expire in an hour. @@@
+
+#: /api/classes/static_route.php:81
+msgid @@@ Stored Cards @@@
+msgstr @@@ Use Stored Card @@@
+
+#: /api/classes/static_route.php:83
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
 
