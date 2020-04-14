@@ -434,8 +434,8 @@ try
 		$passbookEntry = new PassbookEntry
 		(
 				NULL,
-				$obj_TxnInfo->getAmount(),
-				$obj_TxnInfo->getCurrencyConfig()->getID(),
+				$obj_TxnInfo->getPaymentAmount(),
+				$obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
 				Constants::iCaptureRequested
 		);
 		if ($txnPassbookObj instanceof TxnPassbook)
@@ -536,6 +536,9 @@ try
       echo '</root>';
       $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
   }
+
+  $iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID());
+  if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO["foreign-exchange"]); }
 }
 catch (TxnInfoException $e)
 {

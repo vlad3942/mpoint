@@ -43,7 +43,7 @@ class CallbackAPITest extends baseAPITest
         return $status;
     }
 
-    private function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true)
+    public function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';

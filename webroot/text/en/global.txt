@@ -1518,11 +1518,11 @@ msgstr @@@ Welcome to {CLIENT} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
 
-#: /api/classes/credit_card.php:129
+#: /api/classes/credit_card.php:117
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
-#: /api/classes/credit_card.php:131
+#: /api/classes/credit_card.php:119
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 

@@ -118,19 +118,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
+				    $httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                    $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
+                    $httpXForwardedForIp = $httpXForwardedForIps[0];
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
-					
+
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 					if (strlen($obj_ClientConfig->getSalt() ) > 0)
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
 																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-																  $_SERVER['HTTP_X_FORWARDED_FOR']);
+																  $httpXForwardedForIp);
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 
@@ -179,12 +182,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['customer-ref'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'};
 							$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
 							$data['operator'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["operator-id"];
-							if (intval($data['operator']) == 0) { $data['operator'] = intval($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]) * 100; }
+							if ($data['operator'] === 0) { $data['operator'] = (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"] * 100; }
 							$data['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email;
 							$data['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'};
-							if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
-							elseif (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR']; }
-							else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
+
+                            if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) === 1) {
+                                $data['ip'] = (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip;
+                            } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) === TRUE) {
+                                $data['ip'] = $httpXForwardedForIp;
+                            } else {
+                                $data['ip'] = $_SERVER['REMOTE_ADDR'];
+                            }
+
 							$data['logo-url'] = $obj_ClientConfig->getLogoURL();
 							$data['css-url'] = $obj_ClientConfig->getCSSURL();
 							/*
@@ -647,7 +656,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     {
                                         $aPSPs[] = intval($obj_XML->item[$j]["pspid"]);
                                     }
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '">';
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 

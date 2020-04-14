@@ -183,6 +183,66 @@ class PSPConfig extends BasicConfig
 		return $xml;
 	}
 
+    public function toAttributeLessXML($propertyScope=2, $aMerchantAccountDetails = array())
+    {
+        $xml  = '<pspConfig>';
+        $xml .= '<id>'.$this->getID().'</id>';
+        $xml .= '<type>'.$this->getProcessorType().'</type>';
+        $xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+        if (count($aMerchantAccountDetails) > 0)
+        {
+            $merchantaccount = $aMerchantAccountDetails['merchantaccount'];
+            $username = $aMerchantAccountDetails['username'];
+            $password = $aMerchantAccountDetails['password'];
+            if (isset($merchantaccount) === false || $merchantaccount === false || $merchantaccount === '' ) {
+                $merchantaccount = $this->_sMerchantAccount;
+            }
+
+            if (isset($username) === false || $username === false || $username === '') {
+                $username = $this->_sUsername;
+            }
+
+            if (isset($password) === false || $password === false || $password === '') {
+                $password = $this->_sPassword;
+            }
+
+            $xml .= '<merchantAccount>' . htmlspecialchars($merchantaccount, ENT_NOQUOTES) . '</merchantAccount>';
+            $xml .= '<merchantSubAccount>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchantSubAccount>';
+            $xml .= '<username>' . htmlspecialchars($username, ENT_NOQUOTES) . '</username>';
+            $xml .= '<password>' . htmlspecialchars($password, ENT_NOQUOTES) . '</password>';
+        }
+        else
+         {
+            $xml .= '<merchantAccount>' . htmlspecialchars($this->_sMerchantAccount, ENT_NOQUOTES) . '</merchantAccount>';
+            $xml .= '<merchantSubAccount>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchantSubAccount>';
+            $xml .= '<username>' . htmlspecialchars($this->_sUsername, ENT_NOQUOTES) . '</username>';
+            $xml .= '<password>' . htmlspecialchars($this->_sPassword, ENT_NOQUOTES) . '</password>';
+        }
+        $xml .= '<messages>';
+        foreach ($this->_aMessages as $lang => $msg)
+        {
+            $xml .= '<message >';
+            $xml .= '<language>'.htmlspecialchars($lang, ENT_NOQUOTES).'</language>';
+            $xml .= '</message>';
+        }
+        $xml .= '</messages>';
+        $xml .= '<additionalConfig>';
+        foreach ($this->getAdditionalProperties($propertyScope) as $aAdditionalProperty)
+        {
+            if (strpos($aAdditionalProperty['key'], 'rule') === false)
+            {
+                $xml .= '<property>';
+                $xml .=  '<name>'.$aAdditionalProperty['key'].'</name>';
+                $xml .=  '<value>'.$aAdditionalProperty['value'].'</value>';
+                $xml .= '</property>';
+            }
+        }
+        $xml .= '</additionalConfig>';
+        $xml .= '</pspConfig>';
+
+        return $xml;
+    }
+
 	/**
 	 * Produces a new instance of a Payment Service Provider Configuration Object.
 	 *

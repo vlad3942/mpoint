@@ -97,7 +97,8 @@ $aHTTP_CONN_INFO["wire-card"]["timeout"] = 120;
 $aHTTP_CONN_INFO["wire-card"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["wire-card"]["method"] = "POST";
 $aHTTP_CONN_INFO["wire-card"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-card/pay.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["pay"] = "/_test/simulators/wire-card/pay.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/_test/simulators/wire-card/capture.php";
 
@@ -203,5 +204,18 @@ $aHTTP_CONN_INFO["routing-service"]["paths"]["get-payment-methods"] = "/_test/si
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-routes"] = "/_test/simulators/routingservice/get-routes.php";
 
 unset($aHTTP_CONN_INFO["eghl"]["paths"]["get-payment-methods"]);
+
+
+/*
+ * Connection info for connecting to Foreign Exchange
+ */
+$aHTTP_CONN_INFO["foreign-exchange"]["protocol"] = "http";
+$aHTTP_CONN_INFO["foreign-exchange"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["foreign-exchange"]["port"] = 80;
+$aHTTP_CONN_INFO["foreign-exchange"]["timeout"] = 120;
+$aHTTP_CONN_INFO["foreign-exchange"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["foreign-exchange"]["method"] = "POST";
+$aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/_test/simulators/dcc/callback.php";
 
 ?>

@@ -287,7 +287,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
 		if($amount <= 0) {
-            $amount = $this->getTxnInfo()->getAmount();
+            $amount = $this->getTxnInfo()->getPaymentAmount();
         }
 		$b .= $this->_constTxnXML($amount);
 		$b .= '</transactions>';
@@ -321,7 +321,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$passbookState = Constants::sPassbookStatusDone;
 					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
 					$retStatusCode = $iStatusCode;
-					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
+					$args = array('amount'=>$this->getTxnInfo()->getPaymentAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
 							'card-id'=>0);
 
@@ -656,7 +656,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE, $obj_HTTP->getReplyBody());
                 //Rollback transaction
                 $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
-                $obj_PaymentProcessor->cancel($this->getTxnInfo()->getAmount());
+                $obj_PaymentProcessor->cancel($this->getTxnInfo()->getPaymentAmount());
                 throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
             }
         }
@@ -716,7 +716,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$xml .= '<callback>';
 		$xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
-		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '" currency="'.$obj_TxnInfo->getCountryConfig()->getCurrency().'">'. $obj_TxnInfo->getAmount(). '</amount>';
+		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '" currency="'.$obj_TxnInfo->getCountryConfig()->getCurrency().'">'. $obj_TxnInfo->getPaymentAmount(). '</amount>';
 		$xml .= '		<card type-id="'.$iCardid.'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
 		$xml .= '		</card>';
 		$xml .= '		<description>'. $obj_TxnInfo->getDescription() .'</description>';
