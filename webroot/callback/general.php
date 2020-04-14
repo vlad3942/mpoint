@@ -434,8 +434,8 @@ try
 		$passbookEntry = new PassbookEntry
 		(
 				NULL,
-				$obj_TxnInfo->getPaymentAmount(),
-				$obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
+				$obj_TxnInfo->getAmount(),
+				$obj_TxnInfo->getCurrencyConfig()->getID(),
 				Constants::iCaptureRequested
 		);
 		if ($txnPassbookObj instanceof TxnPassbook)

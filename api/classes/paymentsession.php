@@ -262,8 +262,9 @@ final class PaymentSession
     {
         try {
             $amount = 0;
+            $fconversionRate = 1;
             if (empty($this->_id) === false) {
-                $sql = "SELECT  DISTINCT txn.id,  txn.amount 
+                $sql = "SELECT  DISTINCT txn.id,  ROUND(txn.amount * txn.conversionrate) as amount ,txn.conversionrate
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
@@ -273,9 +274,10 @@ final class PaymentSession
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
                     $amount = ($amount + intval($RS['AMOUNT']));
+                    $fconversionRate =  (float) $RS["CONVERSIONRATE"];
                 }
             }
-            return $this->_amount - $amount;
+            return round($this->_amount * $fconversionRate) - $amount;
         }
         catch (Exception $e){
             trigger_error ( "Session - ." . $e->getMessage(), E_USER_ERROR );

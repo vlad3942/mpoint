@@ -159,6 +159,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 							$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+							$data['converted-amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->points) == 1)
 							{
@@ -234,6 +235,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							
 							$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
 							$data['currency-config']= $obj_CurrencyConfig ;
+							$data['converted-currency-config']= $obj_CurrencyConfig ;
+							$data['conversion-rate']= 1 ;
 
                              //Set attempt value based on the previous attempts using the same orderid
                             $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid']);

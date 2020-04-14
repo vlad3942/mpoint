@@ -1042,7 +1042,7 @@ $aHTTP_CONN_INFO["foreign-exchange"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["time
 $aHTTP_CONN_INFO["foreign-exchange"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["foreign-exchange"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/mpoint/foreign-exchange/notify";
+$aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/foreignexchange/notify";
 
 
 /**

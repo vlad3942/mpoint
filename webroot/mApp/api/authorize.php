@@ -311,9 +311,9 @@ try
                                         }
                                        else
                                        {
-                                           if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN)  && $obj_TxnInfo->getConvertedAmount() <= (float)0 &&
-                                               ((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount &&
-                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()  &&
+                                           if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true &&
+                                               round((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount &&
+                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID()  &&
                                                empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false )
                                                {
                                                    $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
@@ -324,7 +324,7 @@ try
                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
                                                }
-                                             else if ($obj_TxnInfo->getPaymentAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
+                                             else if ($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
                                                 $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                             }
                                         }
@@ -399,7 +399,7 @@ try
 												case (Constants::iPURCHASE_USING_EMONEY):	// Authorize Purchase using Stored Value Account
 												case (Constants::iPURCHASE_USING_POINTS):
 													$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );
-													if ($iTypeID == Constants::iPURCHASE_USING_EMONEY && intval($obj_XML->balance) < $obj_TxnInfo->getPaymentAmount() )
+													if ($iTypeID == Constants::iPURCHASE_USING_EMONEY && intval($obj_XML->balance) < $obj_TxnInfo->getAmount() )
 													{
 														$code = 1;
 														$xml .= '<status code="'. ($code+50) .'">Insufficient balance on e-money account</status>';
@@ -648,8 +648,8 @@ try
 																	$passbookEntry = new PassbookEntry
 																	(
 																		NULL,
-																		$obj_TxnInfo->getPaymentAmount(),
-																		$obj_TxnInfo->getPaymentCurrencyConfig()->getID(),
+																		$obj_TxnInfo->getAmount(),
+																		$obj_TxnInfo->getCurrencyConfig()->getID(),
                                                                         Constants::iAuthorizeRequested,
                                                                         '',
                                                                         0,

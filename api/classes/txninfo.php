@@ -577,26 +577,29 @@ class TxnInfo
 	public function getCountryConfig() { return $this->_obj_CountryConfig; }
 	/**
 	 * Returns the Configuration for the Currency the transactions was processed in
-	 *
+	 * if dcc opt converted currency return and for normal payment _lConvertedAmount has Originally initialized currency
 	 * @return 	CurrencyConfig
 	 */
-	public function getCurrencyConfig() {
-		if(is_null($this->_obj_CurrencyConfig) === false  && strlen($this->_obj_CurrencyConfig->getCode()) > 0)	{return $this->_obj_CurrencyConfig ;}
-		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
+	public function getCurrencyConfig()
+	{
+		$ccCOde = $this->_obj_ConvertedCurrencyConfig->getCode();
+		if(is_null($this->_obj_ConvertedCurrencyConfig) === false  && empty ($ccCOde) === false)	{return $this->_obj_ConvertedCurrencyConfig ;}
+		else {return $this->_obj_ConvertedCurrencyConfig->getCurrencyConfig();}
 	}
 
 	/**
-	 * Returns the actual Configuration for the Currency the transactions was processed in
+	 * Returns the  Configuration for the Currency the transactions was Originally initialized in
 	 *
 	 * @return 	CurrencyConfig
 	 */
-	public function getPaymentCurrencyConfig()
+	public function getInitializedCurrencyConfig()
 	{
-        $ccCOde = $this->_obj_CurrencyConfig->getCode();
-		if($this->_obj_ConvertedCurrencyConfig !== null) { return $this->_obj_ConvertedCurrencyConfig; }
-		else if(is_null($this->_obj_CurrencyConfig) === false  && empty ($ccCOde) === false)	{return $this->_obj_CurrencyConfig ;}
-		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
+		$ccCOde = $this->_obj_CurrencyConfig->getCode();
+		if(is_null($this->_obj_CurrencyConfig) === false  && empty ($ccCOde) === false)	{return $this->_obj_CurrencyConfig ;}
+		else {return $this->_obj_ConvertedCurrencyConfig->getCurrencyConfig();}
 	}
+
+
 	/**
 	 * Returns the Configuration for the Currency the DCC transactions was processed in for
 	 *
@@ -605,17 +608,18 @@ class TxnInfo
 	public function getConvertedCurrencyConfig() { return $this->_obj_ConvertedCurrencyConfig; }
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction without fee
+	 * if dcc opt converted amount return and for normal payment _lConvertedAmount has Originally initialized amount
 	 *
 	 * @return 	long
 	 */
-	public function getAmount() { return $this->_lAmount; }
+	public function getAmount() { return $this->_lConvertedAmount; }
 
 	/**
-	 * Returns the Actual Payment Total amount the customer will pay for the Transaction without fee
+	 * Returns the Original initialized  Total amount the customer will pay for the Transaction without fee
 	 *
 	 * @return 	long
 	 */
-	public function getPaymentAmount() { return ($this->_lConvertedAmount > 0 ? $this->_lConvertedAmount : $this->_lAmount); }
+	public function getInitializedAmount() { return $this->_lAmount; }
 
 	/**
 	 * Returns the Total offered amount the customer will pay for the Transaction without fee for DCC Transaction
@@ -1028,7 +1032,7 @@ class TxnInfo
 	 */
 	public function toXML(UAProfile &$oUA=null, $iAmount = -1, $ticketNumbers = null)
 	{
-		$obj_CurrencyConfig = $this->getPaymentCurrencyConfig();
+		$obj_CurrencyConfig = $this->getCurrencyConfig();
 
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
@@ -1050,8 +1054,7 @@ class TxnInfo
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
 		if($iAmount < 0)
 		{
-			if($this->getConvertedAmount() > 0) $iAmount = $this->getConvertedAmount();
-			else $iAmount = $this->_lAmount;
+			 $iAmount = $this->getAmount();
 		}
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 		
@@ -1178,7 +1181,7 @@ class TxnInfo
 	 */
 	public function toAttributeLessXML($aExcludeNodes = array(),$iAmount = -1,$ticketNumbers = null)
 	{
-		$obj_CurrencyConfig = $this->getPaymentCurrencyConfig();
+		$obj_CurrencyConfig = $this->getCurrencyConfig();
 
 		$xml  = '<transaction>';
 		$xml .= '<id>'.$this->_iID.'</id>';
@@ -1208,8 +1211,7 @@ class TxnInfo
 
 		if($iAmount < 0)
 		{
-			if($this->getConvertedAmount() > 0) { $iAmount = $this->getConvertedAmount(); }
-			else { $iAmount = $this->_lAmount; }
+			 $iAmount = $this->getAmount();
 		}
 		if(in_array("amount", $aExcludeNodes) === false)
 		{
@@ -1490,10 +1492,10 @@ class TxnInfo
 			if (array_key_exists("typeid", $misc) === false) { $misc["typeid"] = $obj->getTypeID(); }
 			if (array_key_exists("client-config", $misc) === false) { $misc["client-config"] = $obj->getClientConfig(); }
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
-			if (array_key_exists("currency-config", $misc) === false) { $misc["currency-config"] = $obj->getCurrencyConfig(); }
+			if (array_key_exists("currency-config", $misc) === false) { $misc["currency-config"] = $obj->getInitializedCurrencyConfig(); }
 			if (array_key_exists("card-id", $misc) === false) { $misc["card-id"] = $obj->getCardID(); }
 			if (array_key_exists("wallet-id", $misc) === false) { $misc["wallet-id"] = $obj->getWalletID(); }
-			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
+			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getInitializedAmount();}
 			if (array_key_exists("points", $misc) === false) { $misc["points"] = $obj->getPoints(); }
 			if (array_key_exists("reward", $misc) === false) { $misc["reward"] = $obj->getReward(); }
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
@@ -1572,8 +1574,12 @@ class TxnInfo
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
 			if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 0 ; }
 			if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = 0 ; }
+			if (array_key_exists("converted-currency-config", $misc) === false) { $misc["converted-currency-config"] = $obj->getConvertedCurrencyConfig(); }
+			if (array_key_exists("converted-amount", $misc) === false) { $misc["converted-amount"] = $obj->getConvertedAmount(); }
+			if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
 
-            if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
+
+			if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
 
             $paymentSession = null;
@@ -1584,7 +1590,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,0,0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
