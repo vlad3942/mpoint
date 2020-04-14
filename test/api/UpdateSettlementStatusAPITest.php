@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
-class UpdateSettlementStatusAPITest extends baseAPITest
+abstract class UpdateSettlementStatusAPITest extends baseAPITest
 {
 	/**
 	 * @var RDB
@@ -58,7 +58,7 @@ class UpdateSettlementStatusAPITest extends baseAPITest
 		return $xml;
 	}
 
-	public function testSettlementIsAlreadyProcessed($pspID)
+	protected function testSettlementIsAlreadyProcessed($pspID)
     {
 		$alreadyProcessedSettlementId = 1;
 		$currentProcessingSettlementId = 2;
