@@ -54,10 +54,10 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5435;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["password"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -74,7 +74,7 @@ $aDB_CONN_INFO["mpoint"]["method"] = 1;
  * Database settings for Session database
  */
 $aDB_CONN_INFO["session"]["host"] = "localhost";
-$aDB_CONN_INFO["session"]["port"] = 5432;
+$aDB_CONN_INFO["session"]["port"] = 5435;
 $aDB_CONN_INFO["session"]["path"] = "session";
 $aDB_CONN_INFO["session"]["username"] = "session";
 $aDB_CONN_INFO["session"]["password"] = "2a2ac8447e";
