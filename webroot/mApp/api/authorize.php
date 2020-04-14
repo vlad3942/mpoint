@@ -148,6 +148,9 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
+
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
@@ -679,7 +682,6 @@ try
                                                                         case (Constants::iSTRIPE_PSP):
                                                                             $obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array());
                                                                             $aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
-
                                                                             $code = $obj_PSP->authTicket((integer)$obj_Elem->ticket, $aLogin["password"]);
                                                                             if ($code == "OK") {
                                                                                 if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) {

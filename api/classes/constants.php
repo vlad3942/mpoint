@@ -905,6 +905,11 @@ abstract class Constants
      *
      */
     const iEZY_PSP = 60;
+	/**
+	 * Unique ID for the Payment Service Provider: First-Data
+	 *
+	 */
+	const iFirstData_PSP = 62;
     /**
      * Unique ID for the Payment aggregator: DRAGONPAY
      *
