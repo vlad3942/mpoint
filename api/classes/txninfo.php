@@ -605,7 +605,12 @@ class TxnInfo
 	 *
 	 * @return 	CurrencyConfig
 	 */
-	public function getConvertedCurrencyConfig() { return $this->_obj_ConvertedCurrencyConfig; }
+	public function getConvertedCurrencyConfig()
+	{
+		$ccCOde = is_null($this->_obj_ConvertedCurrencyConfig) === false ? $this->_obj_ConvertedCurrencyConfig->getCode() : "";
+		if(empty ($ccCOde) === false) {	return $this->_obj_ConvertedCurrencyConfig ; }
+		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
+	}
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction without fee
 	 * if dcc opt converted amount return and for normal payment _lConvertedAmount has Originally initialized amount
