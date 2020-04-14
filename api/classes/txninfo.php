@@ -582,9 +582,9 @@ class TxnInfo
 	 */
 	public function getCurrencyConfig()
 	{
-		$ccCOde = $this->_obj_ConvertedCurrencyConfig->getCode();
-		if(is_null($this->_obj_ConvertedCurrencyConfig) === false  && empty ($ccCOde) === false)	{return $this->_obj_ConvertedCurrencyConfig ;}
-		else {return $this->_obj_ConvertedCurrencyConfig->getCurrencyConfig();}
+		$ccCOde = is_null($this->_obj_ConvertedCurrencyConfig) === false ? $this->_obj_ConvertedCurrencyConfig->getCode() : "";
+		if(empty ($ccCOde) === false) {	return $this->_obj_ConvertedCurrencyConfig ; }
+		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
 	}
 
 	/**
@@ -594,9 +594,9 @@ class TxnInfo
 	 */
 	public function getInitializedCurrencyConfig()
 	{
-		$ccCOde = $this->_obj_CurrencyConfig->getCode();
-		if(is_null($this->_obj_CurrencyConfig) === false  && empty ($ccCOde) === false)	{return $this->_obj_CurrencyConfig ;}
-		else {return $this->_obj_ConvertedCurrencyConfig->getCurrencyConfig();}
+		$ccCOde = is_null($this->_obj_CurrencyConfig) === false ? $this->_obj_CurrencyConfig->getCode() : "";
+		if(empty ($ccCOde) === false)	{return $this->_obj_CurrencyConfig ;}
+		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
 	}
 
 
