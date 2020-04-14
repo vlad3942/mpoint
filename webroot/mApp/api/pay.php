@@ -246,20 +246,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1);
 
-						foreach ( $aRoutes as $oRoute ) {
-							if ($oRoute {'type-id'} === 1) {
-								$empty = array();
-								$obj_CardResultSet['PSPID'] = $oRoute;
-								break;
-							}
+                        if (count ( $aRoutes ) > 0) {
+                            foreach ($aRoutes as $oRoute) {
+                                if ($oRoute->preference === 1) {
+                                    $obj_CardResultSet['PSPID'] = $oRoute->id;
+                                    break;
+                                }
+                            }
                             // Store dynamic route to use it again during Auth if require
                             $additionalData = array();
                             $additionalData[0]['name']  = (string)'psps';
                             $additionalData[0]['value'] = json_encode($aRoutes);
                             $additionalData[0]['type']  = (string)'Transaction';
                             $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
-
-						}
+                        }
 
 						$pspId = (int)$obj_CardResultSet['PSPID'];
 
