@@ -145,6 +145,9 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+require_once(sCLASS_PATH ."/core/card.php");
+require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
 
@@ -220,15 +223,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[56] = "Invalid Currency:". (int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"];
 							}
 						}
-						
+
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-						if ($drService === 'true') {
+
+						if (strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
-							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
-							
+                            $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'});
+                            if($obj_RS instanceof RoutingService)
+							{
+                                $obj_RoutingServiceResponse = $obj_RS->getRoute();
+                                if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+                                {
+                                    $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+                                    $aRoutes = $aObj_Route->psps->psp;
+                                }
+							}
+
 						}
 
 						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1);
@@ -239,6 +252,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_CardResultSet['PSPID'] = $oRoute;
 								break;
 							}
+                            // Store dynamic route to use it again during Auth if require
+                            $additionalData = array();
+                            $additionalData[0]['name']  = (string)'psps';
+                            $additionalData[0]['value'] = json_encode($aRoutes);
+                            $additionalData[0]['type']  = (string)'Transaction';
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
+
 						}
 
 						$pspId = (int)$obj_CardResultSet['PSPID'];

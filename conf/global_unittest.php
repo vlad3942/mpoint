@@ -190,6 +190,18 @@ $aHTTP_CONN_INFO["ezy"]["method"] = "POST";
 $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
 
+/**
+ * Connection info for connecting to routing service
+ */
+$aHTTP_CONN_INFO["routing-service"]["protocol"] = "http";
+$aHTTP_CONN_INFO["routing-service"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["routing-service"]["port"] = 80;
+$aHTTP_CONN_INFO["routing-service"]["timeout"] = 120;
+$aHTTP_CONN_INFO["routing-service"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["routing-service"]["method"] = "POST";
+$aHTTP_CONN_INFO["routing-service"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["routing-service"]["paths"]["get-payment-methods"] = "/_test/simulators/routingservice/get-payment-methods.php";
+$aHTTP_CONN_INFO["routing-service"]["paths"]["get-routes"] = "/_test/simulators/routingservice/get-routes.php";
 
 unset($aHTTP_CONN_INFO["eghl"]["paths"]["get-payment-methods"]);
 

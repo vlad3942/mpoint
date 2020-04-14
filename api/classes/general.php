@@ -550,7 +550,7 @@ class General
 	 * @param unknown $iSecondaryRoute
 	 * @return string
 	 */
-	public function authWithSecondaryPSP(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
+	public function authWithAlternateRoute(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
 	{
 		$xml = "" ;
 		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
@@ -570,9 +570,45 @@ class General
 	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
 	    
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
-		
-		$obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
-		
+        $this->logTransaction($obj_AssociatedTxnInfo);
+
+        // Add entry into Passbook
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
+        $passbookEntry = new PassbookEntry
+        (
+            NULL,
+            $obj_TxnInfo->getAmount(),
+            $obj_TxnInfo->getCurrencyConfig()->getID(),
+            Constants::iInitializeRequested
+        );
+        if($txnPassbookObj instanceof TxnPassbook) {
+            $txnPassbookObj->addEntry($passbookEntry);
+            $txnPassbookObj->performPendingOperations();
+        }
+
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
+        $passbookEntry = new PassbookEntry
+        (
+            NULL,
+            $obj_TxnInfo->getAmount(),
+            $obj_TxnInfo->getCurrencyConfig()->getID(),
+            Constants::iAuthorizeRequested
+        );
+        if($txnPassbookObj instanceof TxnPassbook) {
+            $txnPassbookObj->addEntry($passbookEntry);
+            $txnPassbookObj->performPendingOperations();
+        }
+
+
+        $txnPassbookObj->updateInProgressOperations($obj_TxnInfo->getAmount(), Constants::iPAYMENT_ACCEPTED_STATE, Constants::sPassbookStatusError);
+
+        $this->newMessage($iAssociatedTxnId, Constants::iINPUT_VALID_STATE, "Payment retried using dynamic routing ");
+        $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_REJECTED_STATE, "Payment Rejected");
+
+
+
+        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
 		if ($code == "100") {
 			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
