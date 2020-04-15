@@ -1041,7 +1041,7 @@ $aHTTP_CONN_INFO["foreign-exchange"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO["foreign-exchange"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["foreign-exchange"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["foreign-exchange"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "application/xml";
 $aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/foreignexchange/notify";
 
 

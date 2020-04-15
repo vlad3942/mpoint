@@ -509,6 +509,8 @@ abstract class Callback extends EndUserAccount
 		}
 
 		$s .= '</status>';
+		$iForeignExchangeId = $this->_obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$this->_obj_TxnInfo->getPSPID());
+		$s .= '<cfxId>'.$iForeignExchangeId.'</cfxId>';
 		$aExcludeNode = array();
 		array_push($aExcludeNode,'fee');
 		array_push($aExcludeNode,'price');

@@ -1485,8 +1485,7 @@ abstract class Constants
 	/*
 	 * External Systems ENUM
 	 */
-	const iSUVTP = 1;
-	const iForeignExchange = 2;
+	const iForeignExchange = 1;
 
     /*
      * Default Profile Expiry (in days) for profiles created in mProfile for Velocity transactions
