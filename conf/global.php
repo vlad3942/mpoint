@@ -1004,6 +1004,22 @@ $aHTTP_CONN_INFO["cellulant"]["paths"]["status"] = "/mpoint/cellulant/status";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
 $aHTTP_CONN_INFO["cellulant"]["paths"]["refund"] = "/mpoint/cellulant/refund";
 
+/**
+ * Connection info for connecting to CYBS
+ */
+$aHTTP_CONN_INFO["cybersource"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cybersource"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cybersource"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cybersource"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cybersource"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cybersource"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cybersource"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["auth"] = "/mpoint/global-payments/authorize-payment";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["capture"] = "/mpoint/global-payments/capture";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["refund"] = "/mpoint/global-payments/refund";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
+
 
 
 /**
