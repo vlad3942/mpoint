@@ -10,11 +10,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars)
+	public function notifyClient($iStateId, array $vars, SurePay $surePay)
     {
         if(isset($vars["expiry"]) === false ){$vars["expiry"] = null; }
         if(isset($vars["additionaldata"]) === false ){$vars["additionaldata"] = ""; }
-        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"]);
+        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"], $surePay);
     }
 
 	/**
@@ -334,7 +334,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
-					$this->notifyClient($paymentState, $args);
+					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
 					return $retStatusCode;
 				}
 				else {
