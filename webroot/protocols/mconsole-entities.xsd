@@ -1454,7 +1454,7 @@
 				maxOccurs="1" />
 			<xs:element name="secret-key" type="secret-key" minOccurs="0"
 				maxOccurs="1" />
-			<xs:element name="decimal" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="decimal" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="country-id" type="countryid" use="required" />
