@@ -8302,8 +8302,6 @@ INSERT INTO system.externalreferencetype_tbl (id, "name") VALUES(0, 'System');
 INSERT INTO system.externalreferencetype_tbl (id, "name") VALUES(50, 'UATP');
 INSERT INTO system.externalreferencetype_tbl (id, "name") VALUES(1, 'CellPoint Foreign Exchange');
 
-ALTER TABLE client.cardaccess_tbl ADD walletid int4;
-
 ALTER TABLE CLIENT.SUREPAY_TBL ADD MAX INT4 DEFAULT 1;
 
 INSERT INTO CLIENT.SUREPAY_TBL (CLIENTID, RESEND, MAX)
