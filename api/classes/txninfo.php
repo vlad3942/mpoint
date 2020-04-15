@@ -1072,7 +1072,7 @@ class TxnInfo
 		$xml .= '<format>'. $this->_obj_CountryConfig->getPriceFormat() .'</format>';
 		$xml .= '<alpha2code>'. $this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
 		$xml .= '<alpha3code>'. $this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
-		$xml .= '<code>'. $obj_CurrencyConfig->getID() .'</code>';
+		$xml .= '<code>'. $this->_obj_CountryConfig->getNumericCode() .'</code>';
 		$xml .= '<amount>'. $iAmount .'</amount>';
 		$xml .= '</amount_info>';
 		
