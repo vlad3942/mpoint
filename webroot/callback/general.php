@@ -117,6 +117,9 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
+
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 /**
@@ -533,6 +536,9 @@ try
       echo '</root>';
       $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
   }
+
+  $iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID());
+  if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO["foreign-exchange"]); }
 }
 catch (TxnInfoException $e)
 {

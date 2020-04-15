@@ -62,8 +62,15 @@ require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/cellulant.php");
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
+require_once(sCLASS_PATH ."/core/card.php");
+require_once(sCLASS_PATH ."/card_prefix_config.php");
+require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/static_route.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 
 $aMsgCds = array();
 
@@ -116,7 +123,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $httpXForwardedForIp = $httpXForwardedForIps[0];
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-					
+
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
@@ -129,7 +136,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																  $httpXForwardedForIp);
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
-					
+
 					// Validate currency if explicitly passed in request, which defer from default currency of the country
 					if(intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) > 0){
 					$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"])) ;
@@ -152,6 +159,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 							$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+							$data['converted-amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->points) == 1)
 							{
@@ -227,6 +235,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							
 							$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
 							$data['currency-config']= $obj_CurrencyConfig ;
+							$data['converted-currency-config']= $obj_CurrencyConfig ;
+							$data['conversion-rate']= 1 ;
 
                              //Set attempt value based on the previous attempts using the same orderid
                             $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid']);
@@ -583,7 +593,45 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= $obj_XML->{'accept-url'}->asXML();
 							$xml .= '</transaction>';
 							$xml .= $obj_TxnInfo->getPaymentSessionXML();
-							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+
+                            // Call routing service to get eligible payment methods if the client is configured to use it.
+                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'BRE_SERVICE');
+                            if (strtolower($drService) == 'true') {
+                                $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
+                                $obj_PaymentMethodResponse = null;
+                                if($obj_RS instanceof RoutingService)
+                                {
+                                    $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
+
+                                    if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
+                                    {
+                                        $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
+                                        $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+                                        $paymentMethodCount = count($obj_SR);
+                                        $obj_XML = '<cards>';
+                                        for($i=0; $paymentMethodCount > $i; $i++)
+                                        {
+                                            if(($obj_SR[$i] instanceof StaticRoute) === true )
+                                            {
+                                                $obj_XML .= $obj_SR[$i]->toXML();
+                                            }
+                                        }
+                                        $obj_XML .= '</cards>';
+                                        $obj_XML = simplexml_load_string($obj_XML, "SimpleXMLElement", LIBXML_COMPACT);
+                                    }
+                                }
+                                // Fallback machanisam if routing service fails to return eligible payment methods
+                                if(empty($obj_PaymentMethodResponse) === true )
+                                {
+                                    $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+                                }
+                            }
+                            else
+                            {
+                                $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+                            }
 
 							// End-User already has an account and payment with Account enabled
 							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1 && $bIsSingleSingOnPass === true)
@@ -611,7 +659,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     {
                                         $aPSPs[] = intval($obj_XML->item[$j]["pspid"]);
                                     }
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '">';
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
@@ -676,6 +724,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
 
 							}
+
                             $cardsXML .= '</cards>';
                             $walletsXML .= '</wallets>';
                             $apmsXML .= '</apms>';
@@ -701,7 +750,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									break;
 								}
 							}
-								
+
 							// End-User has Stored Cards available
 							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 							{

@@ -641,9 +641,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 {
                     $sToken = $obj_XML->status->card->{'card-number'};
                     $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl
-					        (txnid, externalid, pspid)
+					        (txnid, externalid, pspid,type)
 				                VALUES
-					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().")";
+					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().",".$obj_PSPConfig->getID().")";
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());
