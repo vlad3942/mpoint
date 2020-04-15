@@ -8269,3 +8269,6 @@ alter table log.txnpassbook_tbl alter column clientid set not null;
 
 ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
 ALTER TABLE enduser.address_tbl Alter column state type VARCHAR(200);
+alter table log.txnpassbook_tbl alter column clientid set not null;
+
+ALTER TABLE client.cardaccess_tbl ADD walletid int4;

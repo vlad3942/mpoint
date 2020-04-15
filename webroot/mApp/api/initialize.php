@@ -111,19 +111,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
+				    $httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                    $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
+                    $httpXForwardedForIp = $httpXForwardedForIps[0];
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
-					
+
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 					if (strlen($obj_ClientConfig->getSalt() ) > 0)
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
 																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-																  $_SERVER['HTTP_X_FORWARDED_FOR']);
+																  $httpXForwardedForIp);
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 					
@@ -172,12 +175,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['customer-ref'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'};
 							$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
 							$data['operator'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["operator-id"];
-							if (intval($data['operator']) == 0) { $data['operator'] = intval($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]) * 100; }
+							if ($data['operator'] === 0) { $data['operator'] = (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"] * 100; }
 							$data['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email;
 							$data['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'};
-							if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
-							elseif (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR']; }
-							else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
+
+                            if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) === 1) {
+                                $data['ip'] = (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip;
+                            } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) === TRUE) {
+                                $data['ip'] = $httpXForwardedForIp;
+                            } else {
+                                $data['ip'] = $_SERVER['REMOTE_ADDR'];
+                            }
+
 							$data['logo-url'] = $obj_ClientConfig->getLogoURL();
 							$data['css-url'] = $obj_ClientConfig->getCSSURL();
 							/*
@@ -276,6 +285,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_mPoint->logTransaction($obj_TxnInfo);
 
                             // Single Sign-On
+                            $bIsSingleSingOnPass = false;
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 							$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
 							$bIsSingleSingOnPass = false;
@@ -594,8 +604,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
-                                if ((int)$obj_XML->item[$j]['type-id'] !== 11
-                                    || ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() === 2)))
+                                if (((int)$obj_XML->item[$j]['type-id'] !== 11
+                                    || ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() === 2)))  && empty($obj_XML->item[$j]["walletid"]) === true )
                                 {
                                     if (in_array((integer)$obj_XML->item[$j]["pspid"], $aPSPs) === FALSE)
                                     {

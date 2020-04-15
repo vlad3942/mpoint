@@ -244,8 +244,8 @@ try
         {
             $additionalTxnDataIndex++;
             $txnData = explode('=', $addtionalData);
-            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$txnData[0];;
-            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$txnData[1];
+            $additionalTxnData[$additionalTxnDataIndex]['name'] = (isset($txnData[0]) === true)?(string)$txnData[0]:'';
+            $additionalTxnData[$additionalTxnDataIndex]['value'] = (isset($txnData[1]) === true)?(string)$txnData[1]:'';
             $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
         }
         if($additionalTxnDataIndex > -1)
