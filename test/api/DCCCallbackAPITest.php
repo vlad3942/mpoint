@@ -55,7 +55,7 @@ class DCCCallbackAPITest extends CallbackAPITest
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 2 );
     }
 
-    public function testCallbackAttempt($pspID, $iTransStatus)
+    public function testCallbackAttempt()
     {
     }
 
