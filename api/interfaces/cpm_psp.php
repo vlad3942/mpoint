@@ -172,6 +172,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
 						}
 						//Update Refund amount in txn table
+						if((int)$iAmount === -1)
+						{
+							//get auth amount
+							$iAmount = $this->getTxnInfo()->getAmount();
+						}
 						$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 						return $iStatusCode;
 					}
