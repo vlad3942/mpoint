@@ -2336,5 +2336,28 @@ class TxnInfo
 	{
 		return $this->_obj_OrderConfigs;
 	}
+
+	public function updateRefundedAmount(RDB $obj_DB, $iAmount)
+	{
+		$retStatus = FALSE;
+		if (($obj_DB instanceof RDB) === false && $obj_DB != null) {  throw new Exception("Failed to connect to database"); }
+
+		try
+		{
+			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+						SET refund = refund + ". (int)$iAmount ."
+						WHERE id = ". $this->getID();
+			//			echo $sql ."\n";die;
+			$res = $obj_DB->query($sql);
+
+			// Refund amount updated successfully
+			if(is_resource($res) === true && $obj_DB->countAffectedRows($res) === 1){ $retStatus = TRUE; }
+		}
+		catch (mPointException $mPointException)
+		{
+			trigger_error("Failed to update refund amount (log.transaction_tbl)", E_USER_ERROR);
+		}
+		return $retStatus;
+	}
 }
 ?>
