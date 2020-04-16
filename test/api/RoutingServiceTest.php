@@ -148,7 +148,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            $this->assertEquals(1, count($obj_PaymentMethodResponse));
+            $this->assertEquals(0, count($obj_PaymentMethodResponse));
         }
 
     }
@@ -254,7 +254,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_RouteResponse = $obj_RS->getRoute();
-            $this->assertEquals(1, count($obj_RouteResponse));
+            $this->assertEquals(0, count($obj_RouteResponse));
         }
     }
 
