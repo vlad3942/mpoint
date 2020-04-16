@@ -110,7 +110,7 @@ class ClientRoutesConfig extends BasicConfig
      */
     public static function produceConfig(RDB $oDB, $id)
     {
-        $sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, CA.cardid, C.name, CA.psp_type AS paymenttype, CC.currencyid		
+        $sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, 0) AS countryid, CA.stateid, CA.pspid, CA.enabled, CA.cardid, C.name, CA.psp_type AS paymenttype, CC.currencyid		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System". sSCHEMA_POSTFIX .".Card_Tbl C ON CA.cardid = C.id
 				LEFT JOIN Client". sSCHEMA_POSTFIX .".countrycurrency_tbl CC ON CA.countryid = CC.countryid
