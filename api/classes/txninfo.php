@@ -2336,5 +2336,17 @@ class TxnInfo
 	{
 		return $this->_obj_OrderConfigs;
 	}
+
+	public function updateRefundedAmount(RDB $obj_DB, $iAmount)
+	{
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+					SET refund = refund + ". (int)$iAmount ."
+					WHERE id = ". $this->getID();
+		//			echo $sql ."\n";
+		$res = $obj_DB->query($sql);
+
+		// Refund amount updated successfully
+		return is_resource($res) === true && $obj_DB->countAffectedRows($res) == 1;
+	}
 }
 ?>

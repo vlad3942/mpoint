@@ -64,6 +64,20 @@ abstract class RefundAPITest extends baseAPITest
         }
 
         $this->assertTrue(is_int(array_search(Constants::iPAYMENT_REFUNDED_STATE, $aStates) ) );
+
+        //Check refund amount got updated for MobilePay PSP as it triggers refund method from cpm_psp.php
+        if($pspID === Constants::iMOBILEPAY_PSP)
+        {
+			$res =  $this->queryDB("SELECT refund FROM Log.transaction_Tbl WHERE id = 1001001");
+			$this->assertTrue(is_resource($res) );
+
+			$aRefundAmount = array();
+			while ($row = pg_fetch_assoc($res) )
+			{
+				$aRefundAmount[] = $row["refund"];
+			}
+			$this->assertEquals(5000, $aRefundAmount[0]);
+        }
     }
 
 	protected function testSuccessfulCancelTriggeredByRefund($pspID)
