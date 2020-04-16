@@ -199,7 +199,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                 "amount" => $_REQUEST['amount'],
                                 "fee" => $obj_TxnInfo->getFee());
-                            $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                            $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                         }
                     }
 				}
@@ -218,7 +218,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{
 						$args = array("transact" => $obj_TxnInfo->getExternalID(),
 									  "amount" => $_REQUEST['amount']);
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 					}
 				}
 			}

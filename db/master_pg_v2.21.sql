@@ -21,3 +21,6 @@ ALTER TABLE log.transaction_tbl ADD convertedamount int8 NULL;
 ALTER TABLE log.transaction_tbl ADD conversionrate decimal DEFAULT 1;
 ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
 ---DCC---
+DROP TABLE IF EXISTS CLIENT.RETRIAL_TBL;
+
+DROP TABLE IF EXISTS SYSTEM.RETRIALTYPE_TBL;

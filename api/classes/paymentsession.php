@@ -273,11 +273,11 @@ final class PaymentSession
 
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
-                    $amount = ($amount + intval($RS['AMOUNT']));
+                    $amount += (int)$RS['AMOUNT'];
                     $fconversionRate =  (float) $RS["CONVERSIONRATE"];
                 }
             }
-            return round($this->_amount * $fconversionRate) - $amount;
+            return (int)round($this->_amount * $fconversionRate) - $amount;
         }
         catch (Exception $e){
             trigger_error ( "Session - ." . $e->getMessage(), E_USER_ERROR );

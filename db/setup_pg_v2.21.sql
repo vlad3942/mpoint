@@ -58,4 +58,5 @@ INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1981, 'Foreign Excha
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1983, 'Foreign Exchange  Ack Connection Failed', 'Callback', 'send');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1984, 'Foreign Exchange  Ack Transmission Failed', 'Callback', 'send');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1985, 'Foreign Exchange  Ack Rejected', 'Callback', 'send');
---DCC--
+--DCC--ALTER TABLE CLIENT.SUREPAY_TBL ADD MAX INT4 DEFAULT 1;
+

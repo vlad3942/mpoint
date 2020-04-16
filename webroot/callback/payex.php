@@ -57,13 +57,13 @@ try
 			// Capture automatically performed by PayEx or invocation of capture operation with PayEx succeeded
 			if (intval($obj_XML->transactionStatus) == 6 || $obj_mPoint->capture($obj_ConnInfo, $obj_mPointConfig->getMerchantAccount(), $_POST['transact']) == 0)
 			{
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST);
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 				if (intval($obj_XML->transactionStatus) == 6) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }
 			}
-			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST); }
+			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 		}
-		elseif ($iStateID != Constants::iPAYMENT_CAPTURED_STATE) { $obj_mPoint->notifyClient($iStateID, $_POST); }
+		elseif ($iStateID != Constants::iPAYMENT_CAPTURED_STATE) { $obj_mPoint->notifyClient($iStateID, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB) ); }
 	}
 
 	// Client has SMS Receipt enabled and payment has been authorized
