@@ -207,5 +207,20 @@ class AddressInfo
 		$xml .= '</shipping-address>';
 		return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        $xml .= '<shippingAddress>';
+        $xml .= '<name>'. $this->getName() .'</name>';
+        $xml .= '<street>'. $this->getStreet() .'</street>';
+        $xml .= '<street2>'. $this->getStreet2() .'</street2>';
+        $xml .= '<city>'. $this->getCity() .'</city>';
+        $xml .= '<state>'. $this->getState() .'</state>';
+        $xml .= '<zip>'. $this->getZip() .'</zip>';
+        $xml .= '<country>'. $this->getCountry() .'</country>';
+        $xml .= '</shippingAddress>';
+        return $xml;
+    }
 }
 ?>

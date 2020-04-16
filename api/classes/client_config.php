@@ -398,7 +398,15 @@ class ClientConfig extends BasicConfig
      * @var integer
      */
     private $_iInstallmentFrequency;
-	
+
+
+    /**
+     * SurePay Configuration
+     *
+     * @var object
+     */
+    private $_objSurePayConfig;
+
 	/**
 	 * Default Constructor
 	 *
@@ -1477,6 +1485,18 @@ class ClientConfig extends BasicConfig
         }
 
         return false;
+    }
+
+    /**
+     * @return object
+     */
+    public function getSurePayConfig(RDB $oDB)
+    {
+        if(isset($this->_objSurePayConfig) === FALSE)
+        {
+            $this->_objSurePayConfig = SurePayConfig::produceConfig( $oDB, $this->getID());
+        }
+        return $this->_objSurePayConfig;
     }
 }
 ?>

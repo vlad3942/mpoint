@@ -34,7 +34,7 @@ class DIBSCallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '900-55150298', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, currencyid, sessionid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 208,1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 208,1,5000,208)");
 
 		trigger_error("mRetail expect external transaction id: 15469928");
 
@@ -71,7 +71,7 @@ class DIBSCallbackAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, capture_type) VALUES (113, 17, $pspID, 3)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '900-55150298', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, auto_capture, currencyid, sessionid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 3, 208, 1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, auto_capture, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 3, 208, 1,5000,208)");
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',113)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,113)");

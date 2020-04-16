@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:element name="root">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="callback">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="clientId" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="account" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="pspConfig" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="clientConfig"  minOccurs="1" maxOccurs="1"/>
+							<xs:element name="transaction" minOccurs="1" maxOccurs="1"/>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

@@ -112,13 +112,13 @@ try
 		$aCallbackArgs = array('amount' => $iAmount,
 							   'card-id' => (integer)$obj_TxnData["card-id"],
 							   'transact' => $obj_TxnData["external-id"] );
-		$obj_PSP->notifyClient($iStateID, $aCallbackArgs);
+		$obj_PSP->notifyClient($iStateID, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 
 		// Notify client about, and log, possible Captured state
 		if ($bPaymentIsCaptured)
 		{
 			$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) );
-			$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs);
+			$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 			$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
 		}
 
