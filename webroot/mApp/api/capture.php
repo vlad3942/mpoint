@@ -221,7 +221,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
 													"fee" => $obj_TxnInfo->getFee() );
-											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
 									}
                                     elseif ($code == 1002)
@@ -242,7 +242,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										{
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount);
-											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
 									}
 								}

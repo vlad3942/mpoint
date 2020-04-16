@@ -106,6 +106,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
@@ -251,7 +253,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													{
 														$args = array("transact" => $obj_TxnInfo->getExternalID(),
 																	  "amount" => $amount);
-														$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+														$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 													}
 												}
 												//Request send for refund the transaction,

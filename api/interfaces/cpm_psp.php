@@ -10,7 +10,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"]); }
+	public function notifyClient($iStateId, array $vars, SurePay $surePay)
+    {
+        if(isset($vars["expiry"]) === false ){$vars["expiry"] = null; }
+        if(isset($vars["additionaldata"]) === false ){$vars["additionaldata"] = ""; }
+        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"], $surePay);
+    }
 
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
@@ -329,7 +334,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
-					$this->notifyClient($paymentState, $args);
+					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
 					return $retStatusCode;
 				}
 				else {
@@ -636,9 +641,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 {
                     $sToken = $obj_XML->status->card->{'card-number'};
                     $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl
-					        (txnid, externalid, pspid)
+					        (txnid, externalid, pspid,type)
 				                VALUES
-					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().")";
+					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().",".$obj_PSPConfig->getID().")";
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());

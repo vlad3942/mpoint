@@ -110,10 +110,11 @@ final class TxnPassbook
      */
     private function _getUpdatedPassbookEntries()
     {
-        $sql = 'SELECT * FROM log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl WHERE transactionid = $1 ORDER BY id ASC';
+        $sql = 'SELECT * FROM log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl WHERE clientid = $1 and transactionid = $2 ORDER BY id ASC';
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = array(
+                $this->getClientId(),
                 $this->getTransactionId()
             );
 
@@ -269,7 +270,7 @@ final class TxnPassbook
         } elseif ($requestedOperation === Constants::iVoidRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_cancelledAmount + $this->_refundedAmount, $passbookEntry->getAmount(), $this->_getCancelableAmount() + $this->_getRefundableAmount(), $this->isPartialRefundSupported());
         } elseif ($requestedOperation === Constants::iAuthorizeRequested) {
-            if ($this->_authorizedAmount === 0 && $this->_initializedAmount >= $passbookEntry->getAmount()) {
+            if ($this->_authorizedAmount === 0 && round($this->_initializedAmount * $passbookEntry->getConversationRate()) >= $passbookEntry->getAmount()) {
                 $validateOperationResponse['Status'] = 0;
                 $validateOperationResponse['Message'] = '';
             }
@@ -300,7 +301,7 @@ final class TxnPassbook
                         requestedopt, 
                         status
                     FROM log." . sSCHEMA_POSTFIX . "TxnPassbook_tbl
-                    WHERE transactionid = $1
+                    WHERE clientid = $1 and transactionid = $2
                     )
                     SELECT 
                         q1.IntializedAmount,
@@ -315,7 +316,8 @@ final class TxnPassbook
                         ( 
                          SELECT COALESCE(SUM(tp.amount),0) AS IntializedAmount
                                              FROM tp
-                                             WHERE tp.performedopt = " . Constants::iINPUT_VALID_STATE . "
+                                             WHERE 
+                                             tp.performedopt = " . Constants::iINPUT_VALID_STATE . "
                                                AND tp.status IN ('". Constants::sPassbookStatusDone ."', '". Constants::sPassbookStatusInProgress ."')
                         ) AS q1,
                         ( 
@@ -364,6 +366,7 @@ final class TxnPassbook
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = array(
+                $this->getClientId(),
                 $this->getTransactionId()
             );
 
@@ -421,7 +424,7 @@ final class TxnPassbook
      */
     private function _getCapturebleAmount()
     {
-        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount + $this->_refundedAmount);
+        $finalAmount = $this->_authorizedAmount - ($this->_capturedAmount + $this->_captureAmount + $this->_cancelledAmount + $this->_cancelAmount );
         return $finalAmount >= 0 ? $finalAmount : 0;
     }
 
@@ -854,7 +857,7 @@ final class TxnPassbook
     {
         $aParams = array($this->getTransactionId());
         $queryResult = FALSE;
-        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $2 WHERE id = $3 and transactionid = $1 and status <> $4;';
+        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $2 WHERE clientid = $5 and transactionid = $1 and id = $3 and status <> $4;';
 
         if ($sqlQuery != '') {
             $res = $this->getDBConn()->prepare($sqlQuery);
@@ -865,7 +868,8 @@ final class TxnPassbook
                             $this->getTransactionId(),
                             $entry->getStatus(),
                             $entry->getId(),
-							Constants::sPassbookStatusDone
+							Constants::sPassbookStatusDone,
+                            $this->getClientId()
                         );
                         $result = $this->getDBConn()->execute($res, $aParams);
                         $queryResult = (bool)$result;
@@ -893,7 +897,7 @@ final class TxnPassbook
     public function updateInProgressOperations($amount, $state, $status)
     {
         $amount  = (int)$amount;
-        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE transactionid = $2 and amount = $3 and performedopt = $4;';
+        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE clientid = $5 and transactionid = $2 and amount = $3 and performedopt = $4;';
 
         $res = $this->getDBConn()->prepare($sqlQuery);
         if (is_resource($res) === TRUE) {
@@ -901,7 +905,8 @@ final class TxnPassbook
                 $status,
                 $this->getTransactionId(),
                 $amount,
-                $state
+                $state,
+                $this->getClientId()
             );
             $result = $this->getDBConn()->execute($res, $aParams);
             if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
@@ -923,7 +928,8 @@ final class TxnPassbook
                            PERFORMEDOPT,
                            AMOUNT AS PERFORMEDOPTAMOUNT
                     FROM LOG.' . sSCHEMA_POSTFIX . 'TXNPASSBOOK_TBL
-                    WHERE TRANSACTIONID = $1
+                    WHERE CLIENTID = $4
+                      AND TRANSACTIONID = $1
                       AND PERFORMEDOPT = $2
                       AND STATUS = $3)
                 SELECT T1.EXTREF,
@@ -931,7 +937,7 @@ final class TxnPassbook
                        T1.AMOUNT,
                        T2.PERFORMEDOPTAMOUNT
                 FROM INPROGRESS_ENTRIES                 T2
-                         INNER JOIN LOG.' . sSCHEMA_POSTFIX ."TXNPASSBOOK_TBL T1 ON
+                         INNER JOIN LOG.' . sSCHEMA_POSTFIX ."TXNPASSBOOK_TBL T1 ON CLIENTID=$5 and
                         T1.ID = ANY (string_to_array(trim(T2.EXTREF, ','), ',')::BIGINT[])";
 
         $res = $this->getDBConn()->prepare($sql);
@@ -939,7 +945,9 @@ final class TxnPassbook
             $aParams = [
                 $this->getTransactionId(),
                 $state,
-                'inprogress'
+                'inprogress',
+                $this->getClientId(),
+                $this->getClientId()
             ];
 
             $result = $this->getDBConn()->execute($res, $aParams);

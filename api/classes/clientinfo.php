@@ -179,6 +179,44 @@ class ClientInfo
 		
 		return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        $xml .= '<platform>'.htmlspecialchars($this->_sPlatform, ENT_NOQUOTES).'</platform>';
+        $xml .= '<language>'.htmlspecialchars($this->_sLanguage, ENT_NOQUOTES).'</language>';
+        $xml .= '<version>'.number_format($this->_fVersion, 2).'</version>';
+        if(empty($this->_iAppID) == false)
+        {
+            $xml .= '<app_id>'.$this->_iAppID.'</app_id>';
+        }
+        if(empty($this->_sMobile) === false)
+        {
+            $xml .= '<mobile>';
+            $xml .= '<mobile>'.$this->_sMobile.'</mobile>';
+            $xml .= '<mobile_type>MobileEnriched</mobile_type>';
+            $xml .= '<country_id>'.$this->_obj_CountryConfig->getID().'</country_id>';
+            $xml .= '<validated>true</validated>';
+            $xml .= '</mobile>';
+
+        }
+        if(empty($this->_sEMail) === false)
+        {
+            $xml .= '<email>';
+            $xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
+            $xml .= '<email_type>EmailEnriched</email_type>';
+            $xml .= '<validated>true</validated>';
+            $xml .= '</email>';
+        }
+        if(empty($this->_sDeviceID) === false)
+        {
+            $xml .= '<device_id>'. htmlspecialchars($this->_sDeviceID, ENT_NOQUOTES) .'</device_id>';
+        }
+        if(empty($this->_sIP) === false){
+            $xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
+        }
+        return $xml;
+    }
 	
 	public static function produceInfo()
 	{
@@ -233,7 +271,11 @@ class ClientInfo
 	private static function _produceInfoFromXML(SimpleXMLElement &$oXML, CountryConfig $oCC, $ip)
 	{
 		if (empty($oXML["language"]) === true) { $oXML["language"] = sLANG; }
-		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], @$_SERVER['HTTP_X_FORWARDED_FOR'], $oXML["profileid"]);
+		$httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
+        $httpXForwardedForIp = $httpXForwardedForIps[0];
+
+		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"]);
 	}
 }
 ?>
