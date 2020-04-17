@@ -137,6 +137,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 
+					// Validate email address format
+					if ($obj_Validator->valEMail( (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email) != 1 && $obj_Validator->valEMail( (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email) != 10) { $aMsgCds[$obj_Validator->valEMail( (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email) + 140] = "Invalid email :" . (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email; }
+
 					// Validate currency if explicitly passed in request, which defer from default currency of the country
 					if(intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) > 0){
 					$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"])) ;
