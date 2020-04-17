@@ -381,5 +381,74 @@ class OrderInfo
         $xml .= '</line-item>';
         return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        foreach ($this->getAddressConfigs() as $address_Obj)
+        {
+            if( ($address_Obj instanceof AddressInfo) === true )
+            {
+                $xml .= $address_Obj->toAttributeLessXML();
+            }
+        }
+        $xml .= '<lineItem>';
+        $xml .= '<product>';
+        $xml .= '<orderRef>'. $this->getOrderRef() .'</orderRef>';
+        $xml .= '<sku>'. $this->getProductSKU() .'</sku>';
+        $xml .= '<name>'. $this->getProductName() .'</name>';
+        $xml .= '<description>'. $this->getProductDesc() .'</description>';
+        $xml .= '<imageUrl>'. $this->getProductImageURL() .'</imageUrl>';
+        if(count($this->getFlightConfigs()) > 0 )
+        {
+            $xml .= '<airlineData>';
+            foreach ($this->getFlightConfigs() as $flight_Obj)
+            {
+                if (($flight_Obj instanceof FlightInfo) === TRUE)
+                {
+                    $xml .= $flight_Obj->toAttributeLessXML();
+                }
+            }
+            foreach ($this->getPassengerConfigs() as $passenger_Obj)
+            {
+                if (($passenger_Obj instanceof PassengerInfo) === TRUE)
+                {
+                    $xml .= $passenger_Obj->toAttributeLessXML();
+                }
+            }
+            $xml .= '</airlineData>';
+        }
+        $xml .= '</product>';
+
+        $xml .= '<amount>';
+        $xml .=     '<countryId>'.$this->getCountryID().'</countryId>';
+        $xml .=     '<value>'.$this->getAmount().'</value>';
+        $xml .= '</amount>';
+
+
+        $xml .= '<fees>';
+        $xml .= '<fee>';
+        $xml .=  '<countryId>'.$this->getCountryID().'</countryId>';
+        $xml .=  '<value>'.$this->getFees().'</value>';
+        $xml .= '</fee>';
+        $xml .= '</fees>';
+        $xml .= '<points>'. $this->getPoints() .'</points>';
+        $xml .= '<reward>'. $this->getReward() .'</reward>';
+        $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
+        $additionalData = $this->getAdditionalData();
+        if (empty($additionalData) === false ) {
+            $xml .= '<additionalData>';
+            foreach ($additionalData as $fAdditionalData)
+            {
+                $xml .= '<param>';
+                $xml .=  '<name>'. $fAdditionalData ["NAME"] . '</name>';
+                $xml .=  '<value>'. $fAdditionalData ["VALUE"] . '</value>';
+                $xml .= '</param>';
+            }
+            $xml .= '</additionalData>';
+        }
+        $xml .= '</lineItem>';
+        return $xml;
+    }
 }
 ?>

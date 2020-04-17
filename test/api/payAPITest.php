@@ -21,17 +21,34 @@ class PayAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
 	}
 
-	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false)
+	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false,$currencyid=-1,$amount=100,$hmac=null,$aDccParams=null)
 	{
 		$sStore = $store ? 'true' : 'false';
 
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<pay client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'">';
+		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'"';
+		$xml .='>';
 		$xml .= '<card type-id="'. $card .'">';
-		$xml .= '<amount country-id="100">200</amount>';
+        $xml .= '<amount country-id="100"';
+        if($currencyid>0) $xml .= ' currency-id="'.$currencyid.'"';
+        $xml .= '>'.$amount.'</amount>';
 		$xml .= '</card>';
+        if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
+        if(isset($aDccParams))
+        {
+            $xml .= '<foreign-exchange-info>';
+            if(empty($aDccParams[0]) === false)
+            {
+                $xml .= '<id>'.$aDccParams[0].'</id>';
+            }
+            if(empty($aDccParams[1]) === false)
+            {
+                $xml .= '<conversation-rate>'.$aDccParams[1].'</conversation-rate>';
+            }
+            $xml .= '</foreign-exchange-info>';
+        }
 		$xml .= '</transaction>';
 		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
 		$xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
@@ -57,7 +74,7 @@ class PayAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,psp_type) VALUES (113, $cardID, $pspID, $pspType)");
 		$this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.currencyid * -1 AS pricepointid, $cardID FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
 
 		$xml = $this->getPayDoc(113, 1100, 1001001, $cardID);
 

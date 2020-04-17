@@ -8,9 +8,9 @@
  * @package API
  * File Name:send_transaction-notifications.php
  * x-www-form-urlencoded params :
-	clientid:10069
- 	pspid:52
- 	cut-off-time:02:00
+ clientid:10069
+ pspid:52
+ cut-off-time:02:00
  */
 
 // Require Global Include File
@@ -61,14 +61,14 @@ if(isset($_REQUEST['cut-off-time']))
 $query = "SELECT tt.id, tp.extref, tp.status, tp.performedopt
 			FROM log.transaction_tbl tt
 			INNER JOIN log.txnpassbook_tbl tp
-			ON tp.clientid = tt.clientid 
+			ON tp.clientid = tt.clientid
 			AND tt.id = tp.transactionid
 			WHERE tt.pspid = ".$inputPSPID."
 			AND tt.clientid = ".$clientid."
 			AND tp.performedopt IN ('".Constants::iPAYMENT_CAPTURED_STATE."','".Constants::iPAYMENT_CANCELLED_STATE."','".Constants::iPAYMENT_REFUNDED_STATE."')
-			AND tp.status NOT IN ('".Constants::sPassbookStatusDone."')
-			AND tp.created <= '".date('Y-m-d').' '.$cutofftime."'
-			AND tp.created >= (now() - INTERVAL '". $interval ."')
+			AND tp.status NOT IN ('".Constants::sPassbookStatusDone."','".Constants::sPassbookStatusInvalid."')
+			AND tp.modified <= '".date('Y-m-d').' '.$cutofftime."'
+			AND tp.modified >= (now() - INTERVAL '". $interval ."')
 			GROUP BY tt.id, tp.extref, tp.status, tp.performedopt,tp.extref
 			ORDER BY tt.id ASC";
 

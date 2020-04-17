@@ -417,6 +417,7 @@ class DIBS extends Callback implements Captureable, Refundable
 					else
 					{
 						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+						$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 						return 1000;
 					}
 				}
