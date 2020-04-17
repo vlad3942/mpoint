@@ -95,7 +95,7 @@ class ClientRoutesConfig extends BasicConfig
 	    $xml .= '<currency_id>'.$this->getCurrencyID().'</currency_id>';
 	    $xml .= '<psp_id>'.$this->getPSPID().'</psp_id>';
 	    $xml .= '<enabled>'.General::bool2xml($this->isEnabled()).'</enabled>';
-	    $xml .= '<payment_type>'.$this->getCardType().'</payment_type>';
+	    $xml .= '<psp_type>'.$this->getCardType().'</psp_type>';
         $xml .= '</route>';
 
         return $xml;
@@ -110,7 +110,7 @@ class ClientRoutesConfig extends BasicConfig
      */
     public static function produceConfig(RDB $oDB, $id)
     {
-        $sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, C.id AS cardid, C.name, C.paymenttype, CC.currencyid		
+        $sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, 0) AS countryid, CA.stateid, CA.pspid, CA.enabled, CA.cardid, C.name, CA.psp_type AS paymenttype, CC.currencyid		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System". sSCHEMA_POSTFIX .".Card_Tbl C ON CA.cardid = C.id
 				LEFT JOIN Client". sSCHEMA_POSTFIX .".countrycurrency_tbl CC ON CA.countryid = CC.countryid

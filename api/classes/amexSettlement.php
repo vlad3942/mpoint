@@ -241,7 +241,7 @@ class AmexSettlement extends mPointSettlement
                                                     "fee" => $obj_TxnInfo->getFee() );
                                             if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
                                             {
-                                                $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                                                $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                             }
                                         }
                                         else
@@ -251,7 +251,7 @@ class AmexSettlement extends mPointSettlement
 													"amount" => $amount);
                                             if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
                                             {
-                                                $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+                                                $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                             }
                                         }
 

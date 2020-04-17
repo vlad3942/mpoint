@@ -266,6 +266,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     header("HTTP/1.1 401 Unauthorized");
 }
 header("HTTP/1.1 200 Ok");
+header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;

@@ -126,6 +126,8 @@ require_once(sCLASS_PATH ."/passenger_info.php");
 require_once(sCLASS_PATH ."/address_info.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
+// Require general Business logic for the SurePay module
+require_once(sCLASS_PATH ."/surepayconfig.php");
 // Require PSP functionality interfaces
 require_once(sINTERFACE_PATH ."/captureable.php");
 require_once(sINTERFACE_PATH ."/refundable.php");

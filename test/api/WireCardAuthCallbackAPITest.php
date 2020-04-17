@@ -9,7 +9,12 @@ class WireCardAuthCallbackAPITest extends CallbackAPITest
         parent::successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CAPTURED_STATE);
     }
 
-   public function testSuccessfulCancel()
+    public function testCallbackAttempt()
+    {
+        parent::testCallbackAttempt(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
+    }
+
+    public function testSuccessfulCancel()
     {
         parent::successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CANCELLED_STATE);
     }
