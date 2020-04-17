@@ -445,6 +445,9 @@ abstract class Callback extends EndUserAccount
 			$dateTime->setTimezone(new DateTimeZone($timeZone));
 			$sBody .= '&local-date-time=' . $dateTime->format('c');
 		}
+		if (strlen($this->_obj_TxnInfo->getIssuingBankName()) >0){
+			$sBody .= "&issuing-bank=". $this->_obj_TxnInfo->getIssuingBankName();
+		}
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
@@ -1004,6 +1007,11 @@ abstract class Callback extends EndUserAccount
 					$sBody .= "&customer-country-id=" . $obj_CustomerInfo->getCountryID();
 				}
 
+				if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+				{
+					$sBody .= "&issuing-bank=" . urlencode($this->_obj_TxnInfo->getIssuingBankName());
+				}
+
 
 				$aTransaction = $this->_obj_TxnInfo->getPaymentSession()->getTransactions();
 
@@ -1100,6 +1108,11 @@ abstract class Callback extends EndUserAccount
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
 						$transactionData['local-date-time'] = $dateTime->format('c');
+					}
+
+					if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+					{
+						$transactionData['issuing-bank'] =  $this->_obj_TxnInfo->getIssuingBankName();
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
