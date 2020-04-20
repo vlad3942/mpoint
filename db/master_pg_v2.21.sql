@@ -24,3 +24,6 @@ ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
 DROP TABLE IF EXISTS CLIENT.RETRIAL_TBL;
 
 DROP TABLE IF EXISTS SYSTEM.RETRIALTYPE_TBL;
+
+--pspcurrency UNIQUE CONSTRAINT
+CREATE UNIQUE INDEX pspcurrency_psp_currency_uq ON system.pspcurrency_tbl USING btree (pspid, currencyid) WHERE (enabled = true);
