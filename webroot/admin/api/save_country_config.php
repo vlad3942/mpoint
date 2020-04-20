@@ -38,7 +38,6 @@ $HTTP_RAW_POST_DATA .= '<name>Denmark</name>';
 $HTTP_RAW_POST_DATA .= '<min-mobile>10000000</min-mobile>';
 $HTTP_RAW_POST_DATA .= '<max-mobile>99999999</max-mobile>';
 $HTTP_RAW_POST_DATA .= '<currency>DKK</currency>';
-$HTTP_RAW_POST_DATA .= '<symbol>kr</symbol>';
 $HTTP_RAW_POST_DATA .= '<price-format>{PRICE} {CURRENCY}</price-format>';
 $HTTP_RAW_POST_DATA .= '</country>';
 
@@ -97,7 +96,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										, (integer) $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id']
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->name
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->currency
-										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->symbol
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'price-format'}
 										, General::xml2bool($obj_DOM->{'save-country-configuration'}->countries->country[$i]['address-lookup'])
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'min-mobile'}

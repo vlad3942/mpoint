@@ -1061,7 +1061,8 @@ class TxnInfo
 		{
 			 $iAmount = $this->getAmount();
 		}
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
+
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $obj_CurrencyConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 		
 		$xml .= '<amount_info>';
 		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
@@ -2038,21 +2039,6 @@ class TxnInfo
             return $this->_obj_PaymentSession->getId();
         }
         return -1;
-    }
-
-    /**
-     * Returns Currency Symbol
-     *
-     * @return string
-     *
-     */
-    function getCurrencySymbol(){
-        $symbol = '';
-        if($this->_obj_PaymentSession instanceof PaymentSession)
-        {
-            $symbol = html_entity_decode($this->_obj_PaymentSession->getCurrencySymbol(), ENT_COMPAT, 'UTF-8');
-        }
-        return $symbol;
     }
 
     /**
