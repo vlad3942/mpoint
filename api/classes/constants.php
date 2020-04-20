@@ -163,6 +163,31 @@ abstract class Constants
 	 */
 	const iCB_REJECTED_STATE = 1995;
 	/**
+	 * Defines the ID of the State that indicates that mPoint's Acknowledgement to Foreign Exchange request has been accepted
+	 *
+	 */
+	const iACKFX_ACCEPTED_STATE = 1980;
+	/**
+	 * Defines the ID of the State that indicates that the Acknowledgement to Foreign Exchange  request to the Client has been constructed
+	 *
+	 */
+	const iACKFX_CONSTRUCTED_STATE = 1981;
+	/**
+	 * Defines the ID of the State that indicates that the connection to the Client's server failed while mPoint was doing a Acknowledgement
+	 *
+	 */
+	const iACKFX_CONN_FAILED_STATE = 1983;
+	/**
+	 * Defines the ID of the State that indicates that the Acknowledgement to Foreign Exchange request to the Client while mPoint was transmitting the data
+	 *
+	 */
+	const iACKFX_SEND_FAILED_STATE = 1984;
+	/**
+	 * Defines the ID of the State that indicates that mPoint's Acknowledgement to Foreign Exchange request has been rejected
+	 *
+	 */
+	const iACKFX_REJECTED_STATE = 1985;
+	/**
 	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and authorisation was successful.
 	 *
 	 */
@@ -1457,6 +1482,11 @@ abstract class Constants
 	const sPassbookStatusInvalid = 'invalid';
 	const sPassbookStatusError = 'error';
 
+	/*
+	 * External Systems ENUM
+	 */
+	const iForeignExchange = 1;
+
     /*
      * Default Profile Expiry (in days) for profiles created in mProfile for Velocity transactions
      */
@@ -1471,6 +1501,17 @@ abstract class Constants
      * Default mProfile APIs for Velocity to retrieve profile
      */
     const sGetProfileEndPoint = "/mprofile/get-profile";
+
+    /*
+	 * Card payment types in mPoint
+	 * */
+    const iPAYMENT_TYPE_CARD = 1;
+    const iPAYMENT_TYPE_VOUCHER = 2;
+    const iPAYMENT_TYPE_WALLET = 3;
+    const iPAYMENT_TYPE_APM = 4;
+    const iPAYMENT_TYPE_CARD_TOKEN = 5;
+    const iPAYMENT_TYPE_VIRTUAL = 6;
+    const iPAYMENT_TYPE_ONLINE_BANKING = 7;
 
 }
 

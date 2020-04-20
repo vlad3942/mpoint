@@ -196,6 +196,14 @@ class PassengerInfo {
 		$Axml = '<param name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</param>';
 		return $Axml;
 	}
+
+    public function getAdditionalDataAttributeLess($aDataArr) {
+        $Axml = '<param>';
+        $Axml .=  '<name>'. $aDataArr ["NAME"] . '</name>';
+        $Axml .=  '<value>'. $aDataArr ["VALUE"] . '</value>';
+        $Axml .= '</param>';
+        return $Axml;
+    }
 	
 	public function toXML() {
 		$xml = '';
@@ -222,5 +230,36 @@ class PassengerInfo {
 		$xml .= '</passenger-detail>';
 		return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        $xml .= '<passengerDetail>';
+        $xml .= '<title>' . $this->getTitle() . '</title>';
+        $xml .= '<firstName>' . $this->getFirstName () . '</firstName>';
+        $xml .= '<lastName>' . $this->getLastName () . '</lastName>';
+        $xml .= '<type>' . $this->getType () . '</type>';
+        if ($this->getEmail() || $this->getMobile())
+        {
+            $xml .= '<contactInfo>';
+            $xml .= '<email>' . $this->getEmail() .'</email>';
+            $xml .= '<mobile country-id="' . $this->getCountryId() .'">';
+            $xml .=  '<countryId>'.$this->getCountryId().'</countryId>';
+            $xml .=  '<value>'.$this->getMobile().'</value>';
+            $xml .= '</mobile>';
+            $xml .= '</contactInfo>';
+        }
+        if ($this->getAdditionalData ()) {
+            $xml .= '<additionalData>';
+            foreach ( $this->getAdditionalData () as $pAdditionalData )
+            {
+                $xml .= $this->getAdditionalDataAttributeLess ( $pAdditionalData );
+            }
+            $xml .= '</additionalData>';
+        } else {
+        }
+        $xml .= '</passengerDetail>';
+        return $xml;
+    }
 }
 ?>

@@ -176,7 +176,7 @@ try
 	// Callback URL has been defined for Client and transaction hasn't been duplicated
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
-		$obj_mPoint->notifyClient($iStateID, $_POST);
+		$obj_mPoint->notifyClient($iStateID, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 		// Transaction uses Auto Capture and Authorization was accepted
 		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
@@ -203,10 +203,10 @@ try
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
 			if (array_key_exists("capturenow", $_POST) === true || $code == 1000)
 			{
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST);
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 				if (array_key_exists("capturenow", $_POST) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }
 			}
-			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_POST); }
+			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 		}
 	}
 

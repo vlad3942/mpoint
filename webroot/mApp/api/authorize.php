@@ -160,7 +160,6 @@ require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 
-
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -291,7 +290,7 @@ try
 
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
-										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
+										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1 and @walletid = '']");
 										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 										
 										if(((int)$obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
@@ -309,8 +308,23 @@ try
                                             else{
                                                 $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }
-                                        }else {
-                                            if ($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
+                                        }
+                                       else
+                                       {
+                                           if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true &&
+                                               round((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount &&
+                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID()  &&
+                                               empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false )
+                                               {
+                                                   $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+                                                   $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
+                                                   $data['converted-currency-config'] = $obj_CurrencyConfig;
+                                                   $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
+                                                   $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
+                                                   $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
+                                                   $obj_mPoint->logTransaction($obj_TxnInfo);
+                                               }
+                                             else if ($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
                                                 $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                             }
                                         }
@@ -334,8 +348,17 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
+                                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                        $ips = array_map('trim', $ips);
+                                        $ip = $ips[0];
+										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
+                                        CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+                                        $ip);
+
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2)
+										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
+                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
+                                            //made hmac mandatory for dcc
 										{
 
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
@@ -627,7 +650,16 @@ try
 																		NULL,
 																		$obj_TxnInfo->getAmount(),
 																		$obj_TxnInfo->getCurrencyConfig()->getID(),
-																		Constants::iAuthorizeRequested
+                                                                        Constants::iAuthorizeRequested,
+                                                                        '',
+                                                                        0,
+                                                                        '',
+                                                                        '',
+                                                                        TRUE,
+                                                                        NULL,
+                                                                        NULL,
+                                                                        $obj_TxnInfo->getClientConfig()->getID(),
+                                                                        $obj_TxnInfo->getConversationRate()
 																	);
 																	if ($txnPassbookObj instanceof TxnPassbook)
 																	{

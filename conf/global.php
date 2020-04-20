@@ -1032,6 +1032,17 @@ $aHTTP_CONN_INFO["routing-service"]["method"] = $aHTTP_CONN_INFO["mesb"]["method
 $aHTTP_CONN_INFO["routing-service"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-payment-methods"] = "/crs/routingservice/get-payment-methods";
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-routes"] = "/crs/routingservice/get-routes";
+/*
+ * Connection info for connecting to Foreign Exchange
+ */
+$aHTTP_CONN_INFO["foreign-exchange"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["foreign-exchange"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["foreign-exchange"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["foreign-exchange"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["foreign-exchange"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["foreign-exchange"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "application/xml";
+$aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/foreignexchange/notify";
 
 
 /**
