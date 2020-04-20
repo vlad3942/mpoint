@@ -36,7 +36,7 @@ class EGHL extends CPMPSP
         $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
         $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
         $sortable = array();
-        if(is_array($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'})) {
+        if(count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) > 1){
             foreach ($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
                 $issuingBank = strtolower($node->issuingBank);
                 $usageCount = (int)$aStatisticalData['issuing_bank_' . $issuingBank];
