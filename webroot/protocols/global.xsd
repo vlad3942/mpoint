@@ -43,7 +43,7 @@
 
 <xs:simpleType name="email"> 
 	<xs:restriction base="xs:string"> 
-		<xs:pattern value="[^@]+@[^\.]+\..+" /> 
+		<xs:pattern value="(\w+([-+.']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
 	</xs:restriction> 
 </xs:simpleType> 
 
