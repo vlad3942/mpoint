@@ -96,6 +96,7 @@ class RoutingService extends General
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<payment_method_search_criteria>';
         $b .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
+        $b .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $b .= '<transaction>';
         $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
         $b .= '<amount>';
@@ -146,6 +147,7 @@ class RoutingService extends General
     {
         $b = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<payment_route_search_criteria>';
+        $b .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $b .= '<transaction>';
         $b .= '<id>'.$this->_obj_TxnInfo->getID().'</id>';
         $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
