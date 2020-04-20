@@ -6,10 +6,6 @@ INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (61, 'DragonPay',7);
 
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (608,61,'PHP');
 
-INSERT INTO system.cardpricing_tbl (pricepointid, cardid, enabled) VALUES (-608, 88, true);
-
-
-
 /*
 * Dragon pay cad with Dragon Pay aggregator 
 */

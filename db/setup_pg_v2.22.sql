@@ -7,6 +7,9 @@ INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (61, 'DragonPay',1);
 
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (608,61,'PHP');
 
+
+INSERT INTO system.cardpricing_tbl (pricepointid, cardid, enabled) VALUES (-608, 88, true);
+
 /*
 * Dragon pay offline card with Dragon Pay aggregator 
 */
