@@ -780,22 +780,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else { unset($obj_XML->amount); }
 
-		$obj_XML->orderid = $this->_getFullOrderID();
+		$obj_XML->orderid = $this->getTxnInfo()->getOrderID();
 		
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
-
-	protected function _getFullOrderID()
-    {
-        if(intval($this->getTxnInfo()->getAttemptNumber()) == 0)
-        {
-            return $this->getTxnInfo()->getOrderID();
-        }
-        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 0)
-        {
-            return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
-        }
-    }
 
 	protected function _constConnInfo($path)
 	{
