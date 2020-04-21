@@ -11,6 +11,10 @@ class UATPUpdateSettlementStatusAPITest extends UpdateSettlementStatusAPITest
 {
 	public function testSettlementIsAlreadyProcessed()
     {
-    	parent::testSettlementIsAlreadyProcessed(Constants::iUATP_CARD_ACCOUNT);
+		parent::testSettlementIsAlreadyProcessed(Constants::iUATP_CARD_ACCOUNT);
+    }
+    public function testSettlementIsNotAlreadyProcessed()
+    {
+		parent::testSettlementIsNotAlreadyProcessed(Constants::iUATP_CARD_ACCOUNT);
     }
 }
