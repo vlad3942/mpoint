@@ -96,23 +96,38 @@ abstract class CPMFRAUD
                 throw new CallbackException("Unknown Fraud Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
         }
     }
-
+    /**
+     * Handles fraud check
+     *
+     * @param	SimpleDOMElement $obj_Card	Card Information
+     * @param	RDB $obj_DB	Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
+     * @param	TranslateText $obj_Txt 	Text Translation Object for translating any text into a specific language
+     * @param 	TxnInfo $obj_TxnInfo 			Data object with the Transaction Information
+     * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
+     * @param 	array $aConnInfo 	Connection Information
+     * @param 	CreditCard $obj_mCard	CreditCard obj used to fetch routes
+     * @param 	integer $cardTypeId	Card Type
+     * @param 	integer $iFraudType	Fraud Check Type
+     * @return FraudResult
+     */
     public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB,ClientInfo &$clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
-        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId) ;
+        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId,$iFraudType) ;
         $aFSPStatus = array();
-
+        $fraudCheckResponse = new FraudResult();
         while ($RS = $obj_DB->fetchName($iFSPRoutes) )
         {
             if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
             {
                 $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
                 $iFSPCode = $obj_FSP->initiateFraudCheck($obj_Card,$clientInfo,$iFraudType);
+                $fraudCheckResponse->setFraudCheckAttempted(true);
                 array_push($aFSPStatus, $iFSPCode);
             }
         }
-
-        return CPMFRAUD::hasFraudPassed($aFSPStatus);
+        $fraudCheckResponse->setFraudCheckResult(CPMFRAUD::hasFraudPassed($aFSPStatus));
+        return $fraudCheckResponse;
     }
 
 

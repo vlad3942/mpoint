@@ -1,12 +1,12 @@
 <?php
 /**
  * Created by IntelliJ IDEA.
- * User: Anna Lagad
+ * User: Sagar Badave
  * Copyright: Cellpoint Mobile
  * Link: http://www.cellpointmobile.com
  * Project: mPoint
  * Package:
- * File Name:routing_service_response.php
+ * File Name:fraud_response.php
  */
 
 class FraudResponse
