@@ -10,12 +10,17 @@ $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 if ($obj_XML->validate(dirname(__FILE__). '/xsd/check-fraud-status.xsd') )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
-    if(intval($obj_XML->{'check-fraud-status'}->{'transaction'}->{'additional-data'}->param) == 243001) {
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-<root><status code="200">Accept</status></root>';
+    if(intval($obj_XML->{'fraudCheck'}->{'transaction'}->{'additionalData'}->param->value) == 243001)
+    {
+        echo ' <root>
+                    <externalId>5771721129086953203010</externalId>
+                    <status code="11">Accepted</status>
+                </root>';
     } else {
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-<root><status code="200">Reject</status></root>';
+        echo '<root>
+                    <externalId>5771721129086953203010</externalId>
+                    <status code="15">Rejected</status>
+                </root>';
     }
 }
 else
