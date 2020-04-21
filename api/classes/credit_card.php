@@ -183,7 +183,7 @@ class CreditCard extends EndUserAccount
 					AND PP.amount IN (-1, ' . (int)$amount .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
-					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
+					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.')';
 					if($typeid !== null)
 					{
 					    $sql .= ' AND C.ID =' . $typeid ;
@@ -239,21 +239,21 @@ class CreditCard extends EndUserAccount
     * @return 	string
    */
 
-    public function getFraudCheckRoute($iCardID)
+    public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
-        $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
+        $sql = "SELECT DISTINCT PSP.id AS pspid,CA.POSITION FROM ". $this->_constDataSourceQuery() .
             "WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
 					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
 					AND C.enabled = '1' 
 					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
-					AND CA.cardid = ".$iCardID."
-					AND CA.psp_type = ". Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY;
+					AND (CA.cardid = ".$iCardID." OR CA.cardid IS NULL)
+					AND CA.psp_type = ". $iFraudType." order by CA.POSITION" ;
 
         //echo $sql ."\n";
-        $RS = $this->getDBConn()->getName($sql);
-        return $RS['PSPID'];
+        $res = $this->getDBConn()->query($sql);
+        return $res;
     }
 
     private function _constDataSourceQuery()

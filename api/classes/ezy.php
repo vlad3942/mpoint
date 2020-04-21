@@ -22,9 +22,7 @@ class EZYException extends CallbackException { }
  * Model Class containing all the Business Logic for the Payment Service Provider: EZY
  *
  */
-class EZY extends CPMPSP
+class EZY extends CPMFRAUD
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new DataCashException("Method: getPaymentData is not supported by EZY"); }
-
-	public function getPSPID() { return Constants::iEZY_PSP; }
+    public function getFPSID() { return Constants::iEZY_PSP; }
 }
