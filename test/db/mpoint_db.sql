@@ -8316,4 +8316,5 @@ ALTER TABLE system.currency_tbl ADD COLUMN symbol VARCHAR(5);
 UPDATE system.currency_tbl SET symbol = '$' WHERE id = 840;
 ALTER TABLE system.country_tbl DROP COLUMN symbol;
 
+alter table log.transaction_tbl add issuing_bank varchar(100);
 
