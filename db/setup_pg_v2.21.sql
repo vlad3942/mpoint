@@ -62,3 +62,8 @@ INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1984, 'Foreign Excha
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(1985, 'Foreign Exchange  Ack Rejected', 'Callback', 'send');
 --DCC--ALTER TABLE CLIENT.SUREPAY_TBL ADD MAX INT4 DEFAULT 1;
 
+
+---Wallet based routing  CPM-3484
+-- Note - Required to create extra routes for wallet and stored card
+INSERT INTO client.cardaccess_tbl ( clientid, cardid, pspid, countryid, , psp_type, installment, capture_method, capture_type, walletid, dccenabled)
+VALUES( <clientid>, <cardid>,  <pspid>, <countryid>, 1, 0, 0, 1, <walletid>, false);
