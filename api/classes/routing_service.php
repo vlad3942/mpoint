@@ -70,7 +70,7 @@ class RoutingService extends General
      *
      * @var string
      */
-    private $sCardName = '';
+    private $_sCardName = '';
 
     /**
      * Default Constructor
@@ -91,7 +91,7 @@ class RoutingService extends General
         $this->_iAmount = $amount;
         $this->_iCardTypeId = $cardTypeId;
         $this->_iIssuerIdentificationNumber = $issuerIdentificationNumber;
-        $this->sCardName = $cardName;
+        $this->_sCardName = $cardName;
     }
 
     /**
@@ -172,7 +172,7 @@ class RoutingService extends General
         $b .= '</amount>';
         $b .= '<card>';
         $b .= '<id>'.$this->_iCardTypeId.'</id>';
-        $b .= '<type_id>'.$this->sCardName.'</type_id>';
+        $b .= '<type_id>'.$this->_sCardName.'</type_id>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
