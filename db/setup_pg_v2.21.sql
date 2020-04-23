@@ -83,3 +83,41 @@ INSERT INTO "system".processortype_tbl (id, "name") VALUES(10, 'Post Auth Fraud 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, "type","scope" ) VALUES('ISROLLBACK_ON_FRAUD_FAIL', 'true', <ClientID>, 'client', 0);
 
 
+
+/* ========== CONFIGURE Cyber Fraud GateWay START========== */
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (62, 'CyberSource Fraud Gateway',9);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (<cardid>, 62); /*With Apple-Pay*/
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (<clientid>, 62, 'Cyber Source', 'cellpoint_mobile', 'i+85bPV1v3AVY6MMwNq98EvWOxmfyLxYtkaENHS+b3zAc5RRCCzYGKNKw0w76m87hfT6dAtMPSr+LS4wyZVlgZEH4FiqzdVZ5FP00saqTGitlzhidR1Il1nSkmK1Yqht0xKTuFRYNhzTDwSt7TLfmFzom6xWmS4YHjT4kp1yOCe2h2xYszSKPPrrGKjpD2GWzhNEVj3UcmglJnQwa4pbVi4Omn2q6tTFNbqqkdxRRVeMbk7tnSTMkW5iTReq4VDpUa4gXjxUZST3GqzfVNwPfe1C7I78POYb6FeaEL4xKGKyag01chtNBKEHLs9Jx8/TZmb947/w6/5MmsfNuDji8w==');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>>, 62, '-1');
+
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (5, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (7, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (22, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (0, 62, true);
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,62,'USD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (124,62,'CAD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (36,56,'AUD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (344,62,'HKD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (392,62,'JPY');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (710,62,'ZAR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,62,'GBP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (978,62,'EUR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (554,62,'NZD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (752,62,'SEK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,62,'TWD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (643,62,'RUB');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (356,62,'INR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (360,62,'IDR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,62,'PHP');
+
+insert into system.cardpricing_tbl (pricepointid ,cardid ) select pricepointid,0 from system.cardpricing_tbl where cardid = 8
+ ON conflict ON CONSTRAINT cardpricing_uq DO NOTHING;
+ UPDATE SYSTEM.CARD_TBL set enabled=true where id=0;
+
+
+
+

@@ -92,6 +92,8 @@ abstract class CPMFRAUD
         {
              case (Constants::iEZY_PSP):
                 return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
+            case (Constants::iCYBER_SOURCE_FSP):
+                return new CyberSourceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
             default:
                 throw new CallbackException("Unknown Fraud Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
         }
@@ -146,6 +148,8 @@ abstract class CPMFRAUD
                 case Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE:
                 case Constants::iPRE_FRAUD_CHECK_REVIEW_STATE:
                 case Constants::iPOST_FRAUD_CHECK_REVIEW_STATE:
+                case Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE:
+                case Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE:
                  $bFraudPass = true;
                  break;
                 case Constants::iPRE_FRAUD_CHECK_REJECTED_STATE:
@@ -220,7 +224,7 @@ abstract class CPMFRAUD
             {
                 if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) { $iStatusCode = Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE; }
                 else { $iStatusCode = Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE; }
-                $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), Constants::iPRE_FRAUD_CHECK_INITIATED_STATE, '');
+                $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $iStatusCode, "Fraud Check failed with FPS: ". $this->getPSPConfig()->getID()." responded with HTTP status code: ". $code. " and header: ". utf8_encode($obj_HTTP->getReplyHeader() ));
 
             }
 
@@ -235,7 +239,9 @@ abstract class CPMFRAUD
 
             if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) { $iStatusCode = Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE; }
             else { $iStatusCode = Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE; }
-            $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), Constants::iPRE_FRAUD_CHECK_INITIATED_STATE, '');
+
+            trigger_error("Fraud request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+            $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $iStatusCode, $e->getMessage() ."(". $e->getCode() .")");
 
         }
 

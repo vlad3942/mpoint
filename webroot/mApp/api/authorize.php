@@ -154,7 +154,8 @@ require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
-require_once(sCLASS_PATH ."/ezy.php");
+require_once(sCLASS_PATH ."/fraud/fsp/ezy.php");
+require_once(sCLASS_PATH ."/fraud/fsp/cyberSourceFsp.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
