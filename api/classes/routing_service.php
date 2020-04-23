@@ -66,6 +66,13 @@ class RoutingService extends General
     private $_iIssuerIdentificationNumber;
 
     /**
+     * Unique Card name used for the payment
+     *
+     * @var string
+     */
+    private $sCardName = '';
+
+    /**
      * Default Constructor
      *
      * @param	ClientConfig $clientConfig 		Reference to the Data object with the client information
@@ -73,7 +80,7 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL)
     {
         $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
@@ -84,6 +91,7 @@ class RoutingService extends General
         $this->_iAmount = $amount;
         $this->_iCardTypeId = $cardTypeId;
         $this->_iIssuerIdentificationNumber = $issuerIdentificationNumber;
+        $this->sCardName = $cardName;
     }
 
     /**
@@ -164,7 +172,7 @@ class RoutingService extends General
         $b .= '</amount>';
         $b .= '<card>';
         $b .= '<id>'.$this->_iCardTypeId.'</id>';
-        $b .= '<type_id>VISA</type_id>';
+        $b .= '<type_id>'.$this->sCardName.'</type_id>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
