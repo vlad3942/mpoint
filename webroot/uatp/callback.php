@@ -47,6 +47,9 @@ $status = $_REQUEST['status'];
 
 $aStateId = array();
 
+$sPassbookStatus = 'done';
+if($status == Constants::iPAYMENT_DECLINED_STATE) { $sPassbookStatus = 'error'; }
+
 //Suppress 4030,2010,2000 callback as a part of CMP-3052,CMP-3000
 if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_REJECTED_STATE && $status != Constants::iPAYMENT_ACCEPTED_STATE)
 {
@@ -86,7 +89,7 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 		}
 		
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, '',$obj_TxnInfo->getCardID(),$createdtimestamp);
+		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $sPassbookStatus ,$obj_TxnInfo->getCardID(),$createdtimestamp);
 		
 		if($code === 1000)
 		{

@@ -34,12 +34,6 @@ class CountryConfig extends BasicConfig
 	 */
 	private $_sCurrency;
 	/**
-	 * Symbol used to represent the country's currency
-	 *
-	 * @var string
-	 */
-	private $_sSymbol;
-	/**
 	 * Max balance, in country's smallest currency, that a prepaid end-user account may contain in order to comply with the local regulations
 	 *
 	 * @var integer
@@ -152,7 +146,6 @@ class CountryConfig extends BasicConfig
 	 * @param 	integer $id 		Unique ID for the Country, this MUST match the GoMobile's ID for the Country
 	 * @param 	string $name 		mPoint's Name for the Country
 	 * @param 	string $currency 	3 digit ISO-4217 code for the currency used in the Country.
-	 * @param 	string $sym 		Symbol used to represent the country's currency
 	 * @param 	integer $maxbal 	Max balance, in country's smallest currency, that a prepaid end-user account may contain 
 	 * @param 	integer $mt 		Min amount which may be transferred between End-User Accounts in country's smallest currency
 	 * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
@@ -170,13 +163,12 @@ class CountryConfig extends BasicConfig
 	 * @param	string $a3code		The 3 Digit alphabetic code as per the ISO 3166 standards
 	 * @param	integer $a3code		The 3 Digit numeric code as per the ISO 3166 standards
 	 */
-	public function __construct($id, $name, $currency, CurrencyConfig &$oCC, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca, $mpsms, $mpwd, $m2fa, $a2code, $a3code, $numcode, $countrycode)
+	public function __construct($id, $name, $currency, CurrencyConfig &$oCC, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca, $mpsms, $mpwd, $m2fa, $a2code, $a3code, $numcode, $countrycode)
 	{
 		parent::__construct($id, $name);
 		
 		$this->_obj_CurrencyConfig = $oCC;
 		$this->_sCurrency = trim($currency);
-		$this->_sSymbol = trim($sym);
 		$this->_iMaxBalance = (integer) $maxbal;
 		$this->_iMinTransfer = (integer) $mt;
 		$this->_sMinMobile = trim($minmob);
@@ -214,7 +206,7 @@ class CountryConfig extends BasicConfig
 	 *
 	 * @return 	string
 	 */
-	public function getSymbol() { return $this->_sSymbol; }
+	public function getSymbol() { return $this->_obj_CurrencyConfig->getSymbol(); }
 	/**
 	 * Returns the Max balance, in the country's smallest currency, that a prepaid end-user account may contain in order to comply with the local regulations
 	 *
@@ -329,7 +321,7 @@ class CountryConfig extends BasicConfig
 	{
 		$xml = '<country-config id="'. $this->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
-		$xml .= '<currency symbol="'. $this->_sSymbol .'">'. $this->_sCurrency .'</currency>';
+		$xml .= '<currency symbol="'. $this->getSymbol() .'">'. $this->_sCurrency .'</currency>';
 		$xml .= '<max-balance>'. $this->_iMaxBalance .'</max-balance>';
 		$xml .= '<min-transfer>'. $this->_iMinTransfer .'</min-transfer>';
 		$xml .= '<min-mobile>'. $this->_sMinMobile .'</min-mobile>';
@@ -361,7 +353,7 @@ class CountryConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-		$sql = "SELECT CT.id, CT.name, CUT.code AS currency, CT.symbol, CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
+		$sql = "SELECT CT.id, CT.name, CUT.code AS currency, CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
                 CT.channel, CT.priceformat, CUT.decimals,
 					CT.addr_lookup, CT.doi, CT.add_card_amount, CT.max_psms_amount, CT.min_pwd_amount, CT.min_2fa_amount, 
 					CT.alpha2code, CT.alpha3code, CT.code,CUT.id AS currencyid, CT.country_calling_code
@@ -373,7 +365,7 @@ class CountryConfig extends BasicConfig
 		
 		$obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
 		
-		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
+		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
 	}
 	
 	/**
@@ -382,7 +374,6 @@ class CountryConfig extends BasicConfig
      * @param 	int    $id          unique identifier of the Country
 	 * @param 	string $name 		mPoint's Name for the Country
 	 * @param 	string $currency 	3 digit ISO-4217 code for the currency used in the Country.
-	 * @param 	string $sym 		Symbol used to represent the country's currency
 	 * @param 	string $pf 			Price Format used in the Country
      * @param   bool   $al          address lookup
      * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
@@ -390,7 +381,7 @@ class CountryConfig extends BasicConfig
      * 
      * @return bool Boolean A boolean value indicates if the operation was successful or not
 	 */
-	public static function updateConfig(RDB &$oDB, $id, $name, $currencyid, $sym, $pf, $al, $minmob, $maxmob)
+	public static function updateConfig(RDB &$oDB, $id, $name, $currencyid, $pf, $al, $minmob, $maxmob)
 	{
         if ($al === TRUE) { $addr_lookup = 'TRUE'; }
         else { $addr_lookup = 'FALSE'; }
@@ -398,7 +389,6 @@ class CountryConfig extends BasicConfig
 		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl "
                 . "SET name = '". $oDB->escStr($name) ."'"
                 . ", currencyid = '" . $oDB->escStr($currencyid) ."'"
-                . ", symbol = '". $oDB->escStr($sym) ."'"
                 . ", priceformat = '". $oDB->escStr($pf) ."'"
                 . ", addr_lookup = ". $addr_lookup
                 . ", minmob = '" . $oDB->escStr($minmob)."', maxmob = '". $oDB->escStr($maxmob) ."'"
