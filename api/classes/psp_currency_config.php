@@ -94,7 +94,7 @@ class PSPCurrencyConfig extends BasicConfig
 	{
 		$sql = "SELECT PC.id, PC.currencyid, PC.name, C.decimals
 				FROM System". sSCHEMA_POSTFIX .".PSPCurrency_Tbl PC
-				INNER JOIN System". sSCHEMA_POSTFIX .".Currency_Tbl C ON PC.currencyid = C.id
+				INNER JOIN System". sSCHEMA_POSTFIX .".Currency_Tbl C ON PC.currencyid = C.id AND C.enabled = '1' 
 				WHERE PC.pspid = ". intval($pspid) ." AND PC.enabled = '1' 
 				ORDER BY id ASC";
 //		echo $sql ."\n";
