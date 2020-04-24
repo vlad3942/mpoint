@@ -10,11 +10,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars)
+	public function notifyClient($iStateId, array $vars, SurePay $surePay)
     {
         if(isset($vars["expiry"]) === false ){$vars["expiry"] = null; }
         if(isset($vars["additionaldata"]) === false ){$vars["additionaldata"] = ""; }
-        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"]);
+        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"], $surePay);
     }
 
 	/**
@@ -171,6 +171,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
 						}
+						//Update Refund amount in txn table
+						if((int)$iAmount === -1)
+						{
+							//get auth amount
+							$iAmount = $this->getTxnInfo()->getAmount();
+						}
+						$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 						return $iStatusCode;
 					}
 					else
@@ -334,7 +341,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
-					$this->notifyClient($paymentState, $args);
+					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
 					return $retStatusCode;
 				}
 				else {
@@ -641,9 +648,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 {
                     $sToken = $obj_XML->status->card->{'card-number'};
                     $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl
-					        (txnid, externalid, pspid)
+					        (txnid, externalid, pspid,type)
 				                VALUES
-					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().")";
+					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().",".$obj_PSPConfig->getID().")";
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());
@@ -773,22 +780,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else { unset($obj_XML->amount); }
 
-		$obj_XML->orderid = $this->_getFullOrderID();
-		
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
-
-	protected function _getFullOrderID()
-    {
-        if(intval($this->getTxnInfo()->getAttemptNumber()) == 0)
-        {
-            return $this->getTxnInfo()->getOrderID();
-        }
-        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 0)
-        {
-            return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
-        }
-    }
 
 	protected function _constConnInfo($path)
 	{

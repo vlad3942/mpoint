@@ -246,6 +246,14 @@ class FlightInfo {
 		$Axml = '<param name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</param>';
 		return $Axml;
 	}
+    public function getAdditionalDataAttributeLess($aDataArr)
+    {
+        $Axml = '<param>';
+        $Axml .=  '<name>'. $aDataArr ["NAME"] . '</name>';
+        $Axml .=  '<value>'. $aDataArr ["VALUE"] . '</value>';
+        $Axml .= '</param>';
+        return $Axml;
+    }
 	public function toXML() {
 		$xml = '';
 		$xml .= '<flight-detail tag="'. $this->getATag() .'" trip-count="' . $this->getATripCount() . '" service-level="'. $this->getAServiceLevel() .'">';
@@ -267,5 +275,34 @@ class FlightInfo {
 		$xml .= '</flight-detail>';
 		return $xml;
 	}
+
+    public function toAttributeLessXML()
+    {
+        $xml = '';
+        $xml .= '<flightDetail>';
+        $xml .= '<tag>'.$this->getATag().'</tag>';
+        $xml .= '<tripCount>'.$this->getATripCount().'</tripCount>';
+        $xml .= '<serviceLevel>'.$this->getAServiceLevel().'</serviceLevel>';
+
+        $xml .= '<serviceClass>' . $this->getServiceClass () . '</serviceClass>';
+        $xml .= '<flightNumber>' . $this->getFlightNumber () . '</flightNumber>';
+        $xml .= '<departureAirport>' . $this->getDepartureAirport () . '</departureAirport>';
+        $xml .= '<arrivalAirport>' . $this->getArrivalAirport () . '</arrivalAirport>';
+        $xml .= '<airlineCode>' . $this->getAirline () . '</airlineCode>';
+        $xml .= '<departureDate>' . $this->getDepartureDate () . '</departureDate>';
+        $xml .= '<arrivalDate>' . $this->getArrivalDate () . '</arrivalDate>';
+        if ($this->getAdditionalData ())
+        {
+            $xml .= '<additionalData>';
+            foreach ($this->getAdditionalData () as $fAdditionalData)
+            {
+                $xml .= $this->getAdditionalDataAttributeLess ( $fAdditionalData);
+            }
+            $xml .= '</additionalData>';
+        }
+        else { }
+        $xml .= '</flightDetail>';
+        return $xml;
+    }
 }
 ?>

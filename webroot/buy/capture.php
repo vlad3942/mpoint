@@ -99,6 +99,9 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
+
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
 
@@ -197,7 +200,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                 "amount" => $_REQUEST['amount'],
                                 "fee" => $obj_TxnInfo->getFee());
-                            $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                            $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                         }
                     }
 				}
@@ -216,7 +219,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{
 						$args = array("transact" => $obj_TxnInfo->getExternalID(),
 									  "amount" => $_REQUEST['amount']);
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 					}
 				}
 			}

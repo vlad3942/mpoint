@@ -262,8 +262,9 @@ final class PaymentSession
     {
         try {
             $amount = 0;
+            $fconversionRate = 1;
             if (empty($this->_id) === false) {
-                $sql = "SELECT  DISTINCT txn.id,  txn.amount 
+                $sql = "SELECT  DISTINCT txn.id,  ROUND(txn.amount * txn.conversionrate) as amount ,txn.conversionrate
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
@@ -272,10 +273,11 @@ final class PaymentSession
 
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
-                    $amount = ($amount + intval($RS['AMOUNT']));
+                    $amount += (int)$RS['AMOUNT'];
+                    $fconversionRate =  (float) $RS["CONVERSIONRATE"];
                 }
             }
-            return $this->_amount - $amount;
+            return (int)round($this->_amount * $fconversionRate) - $amount;
         }
         catch (Exception $e){
             trigger_error ( "Session - ." . $e->getMessage(), E_USER_ERROR );
@@ -306,38 +308,9 @@ final class PaymentSession
         return $this->_obj_CurrencyConfig;
     }
 
-
-    /**
-     * Fetch the Currency Symbol.
-     *
-     * @return 	string
-     */
-    public function getCurrencySymbol() {
-        try {
-            $currencyId = $this->getCurrencyConfig()->getID();
-            $symbol = '';
-            if (empty($currencyId) === false) {
-                $sql = "SELECT symbol 
-              FROM system" . sSCHEMA_POSTFIX . ".country_tbl
-              WHERE symbol != '' and currencyid = " . $currencyId . " LIMIT 1";
-
-                $res = $this->_obj_Db->query($sql);
-                while ($RS = $this->_obj_Db->fetchName($res)) {
-                    $symbol = $RS['SYMBOL'];
-                }
-            } else {
-                $symbol = $this->getCountryConfig()->getSymbol();
-            }
-            return $symbol;
-        }
-        catch (Exception $e){
-            trigger_error ( "Currency id is invalid- ." . $e->getMessage(), E_USER_ERROR );
-        }
-    }
-
     public function toXML(){
         $xml = "<session id='".$this->getId()."' type='".$this->getSessionType()."' total-amount='".$this->_amount."'>";
-        $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCurrencySymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
+        $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCurrencyConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
         $xml .= "</session>";
         return $xml;
     }
