@@ -283,7 +283,7 @@ try
                                         $obj_CardXML = '';
                                         if($iPrimaryRoute > 0 ){
                                             $empty = array();
-                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $empty, $iPrimaryRoute) );
+                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardsForDR( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $empty, $iPrimaryRoute, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }

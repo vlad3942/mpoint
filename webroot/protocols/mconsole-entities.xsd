@@ -1214,6 +1214,15 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="decimals" type="xs:nonNegativeInteger"
+							  use="required">
+					<xs:annotation>
+						<xs:documentation>
+							Deciaml number for currency that the
+							Payment Service Provider uses in
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -1454,6 +1463,7 @@
 				maxOccurs="1" />
 			<xs:element name="secret-key" type="secret-key" minOccurs="0"
 				maxOccurs="1" />
+			<xs:element name="decimal" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="country-id" type="countryid" use="required" />
