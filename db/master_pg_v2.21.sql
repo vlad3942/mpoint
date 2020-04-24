@@ -24,3 +24,8 @@ ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
 DROP TABLE IF EXISTS CLIENT.RETRIAL_TBL;
 
 DROP TABLE IF EXISTS SYSTEM.RETRIALTYPE_TBL;
+
+
+-- passenger tbl --
+ALTER TABLE log.passenger_tbl alter column first_name type varchar(50);
+ALTER TABLE log.passenger_tbl alter column last_name type varchar(50);
