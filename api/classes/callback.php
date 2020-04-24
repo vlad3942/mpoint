@@ -492,7 +492,7 @@ abstract class Callback extends EndUserAccount
 		array_push($aExcludeNode,'points');
 		array_push($aExcludeNode,'reward');
 		array_push($aExcludeNode,'mobile');
-		
+
 		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toAttributeLessXML($aExcludeNode));
 		$b .= '</callback>';
 		$b .= '</root>';
@@ -928,7 +928,9 @@ abstract class Callback extends EndUserAccount
 		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"]);
         case (Constants::iFirstData_PSP):
 			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"]);
-        default:
+        case (Constants::iCyberSource_PSP):
+			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
+		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}

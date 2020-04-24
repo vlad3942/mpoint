@@ -915,6 +915,13 @@ abstract class Constants
      *
      */
 	const iDragonPay_AGGREGATOR = 61;
+
+	/**
+	 * Unique ID for the Payment aggregator: Cybersource
+	 *
+	 */
+	const iCyberSource_PSP = 63;
+
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
