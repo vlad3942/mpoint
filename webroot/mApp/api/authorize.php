@@ -284,7 +284,7 @@ try
                                         $obj_CardXML = '';
                                         if($iPrimaryRoute > 0 ){
                                             $empty = array();
-                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $empty, $iPrimaryRoute) );
+                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardsForDR( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $empty, $iPrimaryRoute, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }
@@ -358,7 +358,7 @@ try
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
-                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
+                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
                                             //made hmac mandatory for dcc
 										{
 

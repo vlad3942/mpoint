@@ -25,6 +25,10 @@ DROP TABLE IF EXISTS CLIENT.RETRIAL_TBL;
 
 DROP TABLE IF EXISTS SYSTEM.RETRIALTYPE_TBL;
 
+--pspcurrency UNIQUE CONSTRAINT
+CREATE UNIQUE INDEX pspcurrency_psp_currency_uq ON system.pspcurrency_tbl USING btree (pspid, currencyid) WHERE (enabled = true);
+
+
 
 -- passenger tbl --
 ALTER TABLE log.passenger_tbl alter column first_name type varchar(50);
