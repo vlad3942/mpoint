@@ -46,7 +46,7 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the CPM GATEWAY component
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the CPM FRAUD GATEWAY component
-require_once(sINTERFACE_PATH ."/cpm_fraud_gateway.php");
+require_once(sINTERFACE_PATH ."/cpm_fraud.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
@@ -154,11 +154,14 @@ require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
-require_once(sCLASS_PATH ."/ezy.php");
+require_once(sCLASS_PATH ."/fraud/fsp/ezy.php");
+require_once(sCLASS_PATH ."/fraud/fsp/cyberSourceFsp.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
+require_once sCLASS_PATH . '/fraud/fraud_response.php';
+require_once sCLASS_PATH . '/fraud/fraudResult.php';
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -642,9 +645,10 @@ try
 														    if($obj_Elem["pspid"] > 0) {
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
 																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
-																if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
+                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                                                                if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
 																{
-																	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 																	$passbookEntry = new PassbookEntry
 																	(
 																		NULL,
@@ -668,15 +672,8 @@ try
 																	}
 																}
 
-                                                                $fraudCheckCode = 0;
-                                                                $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
-                                                                if(empty($iFraudCheckProcessor) === false)
-                                                                {
-                                                                    $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
-                                                                    $obj_FraudCheckPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iFraudCheckProcessor), $aHTTP_CONN_INFO);
-                                                                    $fraudCheckCode = $obj_FraudCheckPSP->fraudCheck($obj_Elem);
-                                                                }
-                                                                if ($fraudCheckCode == Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE || $fraudCheckCode == 0)
+                                                                $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+                                                                if ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)
                                                                 {
                                                                     switch (intval($obj_Elem["pspid"])) {
                                                                         case (Constants::iSTRIPE_PSP):
@@ -902,6 +899,51 @@ try
 
                                                                                     $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                                                                                 }
+
+                                                                                switch ((int)$code)
+                                                                                {
+                                                                                    case 100:
+                                                                                    case 2000:
+                                                                                    case 2009:
+                                                                                    $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY);
+                                                                                    $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_FRAUD_FAIL"));
+                                                                                    //ISROLLBACK_ON_FRAUD_FAIL Property defines whether to rollback transaction on fraud rejected
+                                                                                    if($fraudCheckResponse->isFraudCheckAccepted() === false && $fraudCheckResponse->isFraudCheckAttempted() === true )
+                                                                                    {
+                                                                                        //Rollback transaction When fraud failed if property is false manually action required
+                                                                                        if($bisRollBack === true)
+                                                                                        {
+                                                                                            $passbookEntry = new PassbookEntry
+                                                                                            (
+                                                                                                NULL,
+                                                                                                $obj_TxnInfo->getAmount(),
+                                                                                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                                                                                Constants::iVoidRequested
+                                                                                            );
+                                                                                            if ($txnPassbookObj instanceof TxnPassbook)
+                                                                                            {
+                                                                                                $txnPassbookObj->addEntry($passbookEntry);
+                                                                                                try {
+                                                                                                    $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+                                                                                                    $code = reset($codes);
+                                                                                                } catch (Exception $e) {
+                                                                                                    $code = 99;
+                                                                                                    trigger_error($e, E_USER_WARNING);
+                                                                                                }
+                                                                                            }
+
+                                                                                            if ($code == 1000 || $code == 1001)
+                                                                                            {
+                                                                                                $xml = '<status code="2002">Authorization is reversed Due to Fraud Check Failed.</status>';
+                                                                                            }
+                                                                                            else
+                                                                                            {
+
+                                                                                                $xml = '<status code="'.$code.'">Fraud Check Failed and Failed to reverse transaction with status code '.$code.'</status>';
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
@@ -913,10 +955,16 @@ try
 
                                                                     }
                                                                 }
-                                                                else {
-                                                                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-                                                                    $obj_Processor->getPSPInfo()->initCallback($obj_Processor->getPSPConfig(), $obj_TxnInfo, Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE, "Fraud Check Failed.", intval($obj_Elem->type["id"]));
-                                                                    $xml .= '<status code="2010">Payment Declined Due to Failed Fraud Check.</status>';
+                                                                else
+                                                                {
+                                                                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_Elem["pspid"], $aHTTP_CONN_INFO);
+                                                                    $aCallbackArgs = array("amount" => $obj_TxnInfo->getAmount(),
+                                                                        "card-id" =>  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]);
+                                                                    if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+
+
+                                                                    $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');
+                                                                    $xml .= '<status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
                                                                 }
                                                             }
 

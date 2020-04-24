@@ -415,7 +415,92 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUND_INITIATED_STATE = 20032;
 
-    /**
+	/**
+	 * Defines the ID of the State that indicates that Pre-Auth Fraud Initiated
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_INITIATED_STATE = 3010;
+
+	/**
+	 * Defines the ID of the State that indicates that Pre-Auth Fraud Result ACCEPTED
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_ACCEPTED_STATE = 3011;
+
+	/**
+	 * Defines the ID of the State that indicates that Pre-Auth Fraud Service Unavailable
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_UNAVAILABLE_STATE = 3012;
+
+	/**
+	 * Defines the ID of the State that indicates that Pre-Auth Fraud Result Unknown
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_UNKNOWN_STATE = 3013;
+
+	/**
+	 * Defines the ID of the State that indicates that Pre-Auth Fraud Result Review
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_REVIEW_STATE = 3014;
+	/**
+	 * Defines the ID of the State that indicates that Pre-Auth Fraud Result Rejected
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_REJECTED_STATE = 3015;
+
+	/**
+	 * Defines the ID of the State that indicates that PRE-Auth Fraud Connection Failed
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3016;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_INITIATED_STATE = 3110;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Result ACCEPTED
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_ACCEPTED_STATE = 3111;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Service Unavailable
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_UNAVAILABLE_STATE = 3112;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Result Unknown
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_UNKNOWN_STATE = 3113;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Result Review
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_REVIEW_STATE = 3114;
+
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Result Rejected
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_REJECTED_STATE = 3115;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Connection Failed
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3116;
+
+
+	/**
      * Defines the ProductType for the ticket
      *
      */
@@ -915,6 +1000,12 @@ abstract class Constants
      *
      */
 	const iDragonPay_AGGREGATOR = 61;
+	/**
+	 * Unique ID for the Cyber Source Fraud Service Provider
+	 *
+	 */
+	const iCYBER_SOURCE_FSP = 62;
+
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1432,7 +1523,8 @@ abstract class Constants
 	const iPROCESSOR_TYPE_MPI = 6;
 	const iPROCESSOR_TYPE_GATEWAY = 7;
 	const iPROCESSOR_TYPE_TOKENIZATION = 8;
-	const iPROCESSOR_TYPE_FRAUD_GATEWAY = 9;
+	const iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY = 9;
+	const iPROCESSOR_TYPE_POST_FRAUD_GATEWAY = 10;
 
 
 

@@ -1275,7 +1275,7 @@ class TxnInfo
 			$xml .= '<currency>'.$obj_CurrencyConfig->getCode().'</currency>';
 			$xml .= '<symbol>'.$this->_obj_CountryConfig->getSymbol().'</symbol>';
 			$xml .= '<format>'.$this->_obj_CountryConfig->getPriceFormat().'</format>';
-			$xml .= '<value>'.$this->_iFee.'</value>';
+			$xml .= '<amount>'.$this->_iFee.'</amount>';
 			$xml .= '</fee>';
 		}
 
@@ -1290,7 +1290,7 @@ class TxnInfo
 			$xml .= '<currency>points</currency>';
 			$xml .= '<symbol>points</symbol>';
 			$xml .= '<format>{PRICE} {CURRENCY}</format>';
-			$xml .= '<value>'.$this->_iPoints.'</value>';
+			$xml .= '<amount>'.$this->_iPoints.'</amount>';
 			$xml .= '</points>';
 		}
 
@@ -1301,7 +1301,7 @@ class TxnInfo
 			$xml .= '<currency>points</currency>';
 			$xml .= '<symbol>points</symbol>';
 			$xml .= '<format>{PRICE} {CURRENCY}</format>';
-			$xml .= '<value>'.$this->_iReward.'</value>';
+			$xml .= '<amount>'.$this->_iReward.'</amount>';
 			$xml .= '</reward>';
 		}
 
@@ -1392,7 +1392,7 @@ class TxnInfo
 				{
 					$xml .= '<param>';
 					$xml .=  '<name>'. $key . '</name>';
-					$xml .=  '<value>'. $value . '</name>';
+					$xml .=  '<value>'. $value . '</value>';
 					$xml .= '</param>';
 				}
 			}

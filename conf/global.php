@@ -946,7 +946,7 @@ $aHTTP_CONN_INFO["ezy"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["ezy"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/mpoint/fraud/ezy/check-fraud-status";
+$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
 
 /**
  * Connection info for connecting to VeriTrans4G
@@ -1045,6 +1045,17 @@ $aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "application/xml";
 $aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/foreignexchange/notify";
 
 
+/**
+ * Connection info for connecting to cybersource fraud gateway
+ */
+$aHTTP_CONN_INFO["cybersource"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cybersource"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cybersource"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cybersource"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cybersource"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cybersource"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cybersource"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/check-fraud-status";
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

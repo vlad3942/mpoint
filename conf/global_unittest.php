@@ -101,6 +101,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-c
 $aHTTP_CONN_INFO["wire-card"]["paths"]["pay"] = "/_test/simulators/wire-card/pay.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/_test/simulators/wire-card/capture.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/_test/simulators/mobilepay/cancel.php";
 
 /**
  * Connection info for connecting to DataCash
