@@ -357,7 +357,7 @@ try
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
-                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
+                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
                                             //made hmac mandatory for dcc
 										{
 
