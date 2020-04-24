@@ -946,7 +946,7 @@ $aHTTP_CONN_INFO["ezy"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["ezy"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/mpoint/fraud/ezy/check-fraud-status";
+$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
 
 /**
  * Connection info for connecting to VeriTrans4G

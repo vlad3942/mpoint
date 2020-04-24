@@ -16,5 +16,5 @@
  */
 class CyberSourceFSP extends CPMFRAUD
 {
-    public function getFPSID() { return Constants::iCYBER_SOURCE_FSP; }
+    public function getFSPID() { return Constants::iCYBER_SOURCE_FSP; }
 }

@@ -24,5 +24,5 @@ class EZYException extends CallbackException { }
  */
 class EZY extends CPMFRAUD
 {
-    public function getFPSID() { return Constants::iEZY_PSP; }
+    public function getFSPID() { return Constants::iEZY_PSP; }
 }

@@ -53,7 +53,7 @@ abstract class CPMFRAUD
     {
         $this->_obj_TxnInfo = $oTI;
         $this->_oDB = $oDB;
-        $iFSPID = $this->getFPSID();
+        $iFSPID = $this->getFSPID();
         if(empty($aConnInfo) === false )
         {
             $this->aCONN_INFO = $aConnInfo;
@@ -67,7 +67,7 @@ abstract class CPMFRAUD
         $this->_obj_mPoint = new General($oDB, $oTxt);
     }
 
-    abstract protected function getFPSID();
+    abstract protected function getFSPID();
     /**
      * Returns the Data object with the Transaction Information.
      *
@@ -75,17 +75,32 @@ abstract class CPMFRAUD
      */
     public function getTxnInfo() { return $this->_obj_TxnInfo; }
 
-
     /**
      * Returns the Configuration object with the PSP Information.
      *
      * @return PSPConfig
      */
     public function getPSPConfig() { return $this->_obj_PSPConfig; }
+
+    /**
+     * Reference to the Database Object that holds the active connection to the mPoint Database
+     *
+     * @return RDB
+     */
     public function getDBConn() { return $this->_oDB; }
 
 
-
+    /**
+     * Factory Returns fraud object
+     * @param RDB $obj_DB Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param TranslateText $obj_Txt Text Translation Object for translating any text into a specific language
+     * @param TxnInfo $obj_TxnInfo Data object with the Transaction Information
+     * @param array $aConnInfo Connection Information
+     * @param integer $iFSPID FSP id for Fraud Service Provider
+     * @return CyberSourceFSP|EZY
+     * @throws CPMFraudEXCEPTION
+     * @throws CallbackException
+     */
     public static function produceFSP(RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo, $iFSPID)
     {
         switch ($iFSPID)
@@ -162,7 +177,15 @@ abstract class CPMFRAUD
         return $bFraudPass;
     }
 
-
+    /**
+     * Initiate Request to Fraud Service Provider
+     *
+     * @param	SimpleDOMElement $obj_Card	Card Information
+     * @param	RDB $obj_DB	Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
+     * @param 	integer $iFraudType	Fraud Check Type
+     * @return integer $iStatusCode
+     */
     public function initiateFraudCheck($obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
 
@@ -217,6 +240,14 @@ abstract class CPMFRAUD
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
                 $response = FraudResponse::produceInfoFromXML($iFraudType,$obj_XML);
                 $iStatusCode = $response->getStatusCode();
+                if(empty($response->getExternalID()) === false)
+                {
+                    $additionalTxnData = [];
+                    $additionalTxnData[0]['name'] = "FraudExternalID";
+                    $additionalTxnData[0]['value'] = $response->getExternalID();
+                    $additionalTxnData[0]['type'] = 'Transaction';
+                    $this->getTxnInfo()->setAdditionalDetails($this->getDBConn(),$additionalTxnData,$this->getTxnInfo()->getID());
+                }
                 $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $iStatusCode, utf8_encode($obj_HTTP->getReplyBody() ));
                 return $iStatusCode;
             }
