@@ -591,6 +591,6 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'email\': [facet \'pattern\'] The value \'invalid email@test.com\' is not accepted by the pattern \'(\w+([-+.\']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}\'.</status></root>', $sReplyBody);
+		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'email\': [facet \'pattern\'] The value \'invalid email@test.com\' is not accepted by the pattern \'(\w+([-+.\']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}\'.</status></root>', $sReplyBody);
     }
 }
