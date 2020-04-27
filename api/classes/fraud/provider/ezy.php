@@ -1,8 +1,6 @@
 <?php
 /**
- * The Callback Package provide methods for informing the Client of the Transaction status automatically.
- * Callbacks can be performed either using mPoint's own Callback protocol or the PSP's native protocol. 
- *
+ * Fraud service provider(FSP) handles fraud related operation
  * @author Gaurav Pawar
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
