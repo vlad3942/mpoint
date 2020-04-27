@@ -27,3 +27,13 @@ DROP TABLE IF EXISTS SYSTEM.RETRIALTYPE_TBL;
 
 --pspcurrency UNIQUE CONSTRAINT
 CREATE UNIQUE INDEX pspcurrency_psp_currency_uq ON system.pspcurrency_tbl USING btree (pspid, currencyid) WHERE (enabled = true);
+
+
+
+-- passenger tbl --
+ALTER TABLE log.passenger_tbl alter column first_name type varchar(50);
+ALTER TABLE log.passenger_tbl alter column last_name type varchar(50);
+
+-- currency improvement --
+ALTER TABLE system.currency_tbl ADD COLUMN symbol VARCHAR(5);
+ALTER TABLE system.country_tbl DROP COLUMN symbol;

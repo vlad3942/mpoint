@@ -445,6 +445,9 @@ abstract class Callback extends EndUserAccount
 			$dateTime->setTimezone(new DateTimeZone($timeZone));
 			$sBody .= '&local-date-time=' . $dateTime->format('c');
 		}
+		if (strlen($this->_obj_TxnInfo->getIssuingBankName()) >0){
+			$sBody .= "&issuing-bank=". $this->_obj_TxnInfo->getIssuingBankName();
+		}
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
@@ -489,7 +492,7 @@ abstract class Callback extends EndUserAccount
 		array_push($aExcludeNode,'points');
 		array_push($aExcludeNode,'reward');
 		array_push($aExcludeNode,'mobile');
-		
+
 		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toAttributeLessXML($aExcludeNode));
 		$b .= '</callback>';
 		$b .= '</root>';
@@ -925,7 +928,9 @@ abstract class Callback extends EndUserAccount
 		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"]);
         case (Constants::iFirstData_PSP):
 			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"]);
-        default:
+        case (Constants::iCyberSource_PSP):
+			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
+		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
@@ -1002,6 +1007,11 @@ abstract class Callback extends EndUserAccount
 				if (($this->_obj_TxnInfo->getAccountID() > 0) === true) {
 					$obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
 					$sBody .= "&customer-country-id=" . $obj_CustomerInfo->getCountryID();
+				}
+
+				if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+				{
+					$sBody .= "&issuing-bank=" . urlencode($this->_obj_TxnInfo->getIssuingBankName());
 				}
 
 
@@ -1100,6 +1110,11 @@ abstract class Callback extends EndUserAccount
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
 						$transactionData['local-date-time'] = $dateTime->format('c');
+					}
+
+					if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+					{
+						$transactionData['issuing-bank'] =  $this->_obj_TxnInfo->getIssuingBankName();
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;

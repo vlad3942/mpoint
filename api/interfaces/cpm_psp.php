@@ -171,6 +171,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
 						}
+						//Update Refund amount in txn table
+						if((int)$iAmount === -1)
+						{
+							//get auth amount
+							$iAmount = $this->getTxnInfo()->getAmount();
+						}
+						$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 						return $iStatusCode;
 					}
 					else
@@ -773,22 +780,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else { unset($obj_XML->amount); }
 
-		$obj_XML->orderid = $this->_getFullOrderID();
-		
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
-
-	protected function _getFullOrderID()
-    {
-        if(intval($this->getTxnInfo()->getAttemptNumber()) == 0)
-        {
-            return $this->getTxnInfo()->getOrderID();
-        }
-        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 0)
-        {
-            return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
-        }
-    }
 
 	protected function _constConnInfo($path)
 	{

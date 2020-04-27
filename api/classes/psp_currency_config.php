@@ -22,6 +22,13 @@ class PSPCurrencyConfig extends BasicConfig
 	 */
 	private $_iCurrencyID;
 
+    /**
+     * The Decimals number for the currency that the Payment Service Provider uses
+     *
+     * @var integer
+     */
+    private $_iDecimals;
+
 	/**
 	 * Default constructor
 	 * 
@@ -29,13 +36,16 @@ class PSPCurrencyConfig extends BasicConfig
 	 * @param string $name			The Payment Service Provider's name for the currency
 	 * @param integer $countryid	The unique ID for the country that the Payment Service Provider uses this currency in
 	 */
-	public function __construct($id, $name, $currencyid)
+	public function __construct($id, $name, $currencyid, $decimals)
 	{
 		parent::__construct($id, $name);
 		$this->_iCurrencyID = (integer) $currencyid;
+        $this->_iDecimals = (integer) $decimals;
 	}
 
 	public function getCurrencyID() { return $this->_iCurrencyID; }
+
+    public function getDecimals() { return $this->_iDecimals; }
 	
 	/**
 	 * Marshalls the object as an XML element in the following format:
@@ -45,7 +55,7 @@ class PSPCurrencyConfig extends BasicConfig
 	 */
 	public function toXML()
 	{
-		$xml = '<currency id="'. $this->getID() .'" country-id="'. $this->_iCurrencyID .'" currency-id="'. $this->_iCurrencyID .'">';
+		$xml = '<currency id="'. $this->getID() .'" country-id="'. $this->_iCurrencyID .'" currency-id="'. $this->_iCurrencyID .'" decimals="'. $this->_iDecimals .'">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES);
 		$xml .= '</currency>';
 		
@@ -82,9 +92,10 @@ class PSPCurrencyConfig extends BasicConfig
 	 */
 	public static function produceConfigurations(RDB $oDB, $pspid)
 	{
-		$sql = "SELECT id, currencyid, name
-				FROM System". sSCHEMA_POSTFIX .".PSPCurrency_Tbl
-				WHERE pspid = ". intval($pspid) ." AND enabled = '1' 
+		$sql = "SELECT PC.id, PC.currencyid, PC.name, C.decimals
+				FROM System". sSCHEMA_POSTFIX .".PSPCurrency_Tbl PC
+				INNER JOIN System". sSCHEMA_POSTFIX .".Currency_Tbl C ON PC.currencyid = C.id AND C.enabled = '1' 
+				WHERE PC.pspid = ". intval($pspid) ." AND PC.enabled = '1' 
 				ORDER BY id ASC";
 //		echo $sql ."\n";
 		$res = $oDB->query($sql);
@@ -93,7 +104,7 @@ class PSPCurrencyConfig extends BasicConfig
 		{
 			if (is_array($RS) === true && $RS["ID"] > 0)
 			{
-				$aObj_Currencies[] = new PSPCurrencyConfig($RS["ID"], $RS["NAME"], $RS["CURRENCYID"]);
+				$aObj_Currencies[] = new PSPCurrencyConfig($RS["ID"], $RS["NAME"], $RS["CURRENCYID"], $RS["DECIMALS"]);
 			}
 		}
 		

@@ -915,6 +915,13 @@ abstract class Constants
      *
      */
 	const iDragonPay_AGGREGATOR = 61;
+
+	/**
+	 * Unique ID for the Payment aggregator: Cybersource
+	 *
+	 */
+	const iCyberSource_PSP = 63;
+
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1342,6 +1349,13 @@ abstract class Constants
 	 *
 	 */
 	const iOMANNET = 87;
+	
+	/**
+	 * Unique Card ID for transaction's made using DRAGONPAY OFFLINE
+	 *
+	 */
+	const iDRAGONPAYOFFLINE = 88;
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
