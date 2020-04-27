@@ -17,7 +17,7 @@ class EZYException extends CallbackException { }
 /* ==================== EZY Exception Classes End ==================== */
 
 /**
- * Model Class containing all the Business Logic for the Payment Service Provider: EZY
+ * Model Class containing all the Business Logic for the Fraud Service Provider: EZY
  *
  */
 class EZY extends CPMFRAUD
