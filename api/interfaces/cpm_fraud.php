@@ -108,7 +108,7 @@ abstract class CPMFRAUD
              case (Constants::iEZY_PSP):
                 return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
             case (Constants::iCYBER_SOURCE_FSP):
-                return new CyberSourceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
+                return new CyberSourceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource_fsp"]);
             default:
                 throw new CallbackException("Unknown Fraud Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
         }

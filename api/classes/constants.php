@@ -1004,7 +1004,7 @@ abstract class Constants
 	 * Unique ID for the Cyber Source Fraud Service Provider
 	 *
 	 */
-	const iCYBER_SOURCE_FSP = 62;
+	const iCYBER_SOURCE_FSP = 64;
 
     /**
 	 * Unique ID for the Electronic Payment Flow

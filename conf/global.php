@@ -1048,14 +1048,14 @@ $aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/foreignexchange/no
 /**
  * Connection info for connecting to cybersource fraud gateway
  */
-$aHTTP_CONN_INFO["cybersource"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["cybersource"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["cybersource"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["cybersource"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["cybersource"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["cybersource"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["cybersource"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/check-fraud-status";
+$aHTTP_CONN_INFO["cybersource_fsp"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cybersource_fsp"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cybersource_fsp"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cybersource_fsp"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cybersource_fsp"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cybersource_fsp"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cybersource_fsp"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cybersource_fsp"]["paths"]["fraud-check"] = "/fraud/cybersource/check-fraud-status";
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
