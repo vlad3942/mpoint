@@ -73,6 +73,7 @@ abstract class mPointSettlement
         return $aAccounts;
     }
 
+
     protected function _getClientConfiguration($_OBJ_DB)
     {
         $this->_objClientConfig = ClientConfig::produceConfig($_OBJ_DB, $this->_iClientId);

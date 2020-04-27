@@ -20,13 +20,13 @@ class SurePayConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-		$sql = "SELECT max, delay
+		$sql = "SELECT max, resend
 				FROM Client.SurePay_Tbl
-				WHERE clientid = ". intval($id);
+				WHERE clientid = ". (int)$id;
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
-		return is_array($RS) === true ? new SurePayConfig($RS["MAX"], $RS["DELAY"]) : null;
+		return is_array($RS) === true ? new SurePayConfig($RS["MAX"], $RS["RESEND"]) : null;
 	}
 }
 ?>

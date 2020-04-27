@@ -270,7 +270,7 @@ final class TxnPassbook
         } elseif ($requestedOperation === Constants::iVoidRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_cancelledAmount + $this->_refundedAmount, $passbookEntry->getAmount(), $this->_getCancelableAmount() + $this->_getRefundableAmount(), $this->isPartialRefundSupported());
         } elseif ($requestedOperation === Constants::iAuthorizeRequested) {
-            if ($this->_authorizedAmount === 0 && $this->_initializedAmount >= $passbookEntry->getAmount()) {
+            if ($this->_authorizedAmount === 0 && round($this->_initializedAmount * $passbookEntry->getConversationRate()) >= $passbookEntry->getAmount()) {
                 $validateOperationResponse['Status'] = 0;
                 $validateOperationResponse['Message'] = '';
             }

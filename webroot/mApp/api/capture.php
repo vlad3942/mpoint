@@ -91,7 +91,8 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
-
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
@@ -221,7 +222,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
 													"fee" => $obj_TxnInfo->getFee() );
-											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
 									}
                                     elseif ($code == 1002)
@@ -242,7 +243,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										{
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount);
-											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
 									}
 								}

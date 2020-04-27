@@ -319,34 +319,6 @@ abstract class Callback extends EndUserAccount
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." of ". $obj_SurePay->getMax() );
 				$this->performCallback($body, $obj_SurePay, $attempt,$sid);
 			}
-
-
-
-			//Retrial Based On Configuration
-			$sql = "SELECT typeid,retrialvalue,delay FROM client".sSCHEMA_POSTFIX.".retrial_tbl WHERE clientid =". $this->_obj_TxnInfo->getClientConfig()->getID()." AND enabled = 't' ;";
-			$RS = $this->getDBConn($sql)->getName($sql);
-			if (is_array($RS) === true){
-				$retrialType = $RS["TYPEID"] ;
-				$retrialValue = $RS["RETRIALVALUE"] ;
-				$delayBetweenAttempts = $RS["DELAY"] ;
-				$attempt++;
-
-				switch ($retrialType)
-				{
-					case (Constants::iRETRIAL_TYPE_RESPONSEBASED):
-						sleep($delayBetweenAttempts);
-						trigger_error("mPoint Callback request retried for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
-						$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." until '".$retrialValue."' message received" );
-						$this->performCallback($body,$obj_SurePay,$attempt,$sid);
-					break;
-					case (Constants::iRETRIAL_TYPE_TIMEBASED):
-						//To be implemented
-						break;
-					case (Constants::iRETRIAL_TYPE_MAXATTEMPTBASED):
-						//To be implemented
-						break;
-				}
-			}
 			//Retrial Based On Configuration Ends
 		}
 	}
@@ -473,8 +445,90 @@ abstract class Callback extends EndUserAccount
 			$dateTime->setTimezone(new DateTimeZone($timeZone));
 			$sBody .= '&local-date-time=' . $dateTime->format('c');
 		}
+		if (strlen($this->_obj_TxnInfo->getIssuingBankName()) >0){
+			$sBody .= "&issuing-bank=". $this->_obj_TxnInfo->getIssuingBankName();
+		}
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
+	}
+
+	/**
+	 * Function used to make a callback to the foreign Exchange instance for updating it with the transaction status.
+	 * @param array $aStateId Transaction state array
+	 * @param array $aCI Connection Information Array
+	 */
+	public function notifyForeignExchange(array $aStateId,array $aCI)
+	{
+		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<callback>';
+		$b .=  '<clientId>'.$this->_obj_TxnInfo->getClientConfig()->getID().'</clientId>';
+		$b .=  '<account>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account>';
+		$b .= '<clientConfig>';
+		$b .= '<additionalConfig>';
+		foreach ($this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
+		{
+			$b .= '<property>';
+			$b .=  '<name>'.$aAdditionalProperty['key'].'</name>';
+			$b .=  '<value>'.$aAdditionalProperty['value'].'</value>';
+			$b .= '</property>';
+		}
+		$b .= '</additionalConfig>';
+		$b .= '</clientConfig>';
+		$b .= $this->_obj_PSPConfig->toAttributeLessXML(Constants::iPrivateProperty);
+		$s = '<status>';
+		foreach ($aStateId as $iStateId)
+		{
+			$s .= '<code>'.$iStateId.'</code>';
+		}
+
+		$s .= '</status>';
+		$iForeignExchangeId = $this->_obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$this->_obj_TxnInfo->getPSPID());
+		$s .= '<cfxId>'.$iForeignExchangeId.'</cfxId>';
+		$aExcludeNode = array();
+		array_push($aExcludeNode,'fee');
+		array_push($aExcludeNode,'price');
+		array_push($aExcludeNode,'points');
+		array_push($aExcludeNode,'reward');
+		array_push($aExcludeNode,'mobile');
+
+		$b .= str_replace("</transaction>", $s. "</transaction>", $this->_obj_TxnInfo->toAttributeLessXML($aExcludeNode));
+		$b .= '</callback>';
+		$b .= '</root>';
+		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_CONSTRUCTED_STATE, $b);
+
+        $aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
+ 	    $obj_ConnInfo = new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"],  $aCI["paths"]["callback"], $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
+	    try
+		{
+			$obj_HTTP = $this->send($obj_ConnInfo,$this->constHTTPHeaders(),$b);
+			$iCode = $obj_HTTP->getReturnCode();
+			if(intval($iCode) === 200 || intval($iCode) === 202)
+			{
+				trigger_error("mPoint Callback request to Foreign Exchange succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+				$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iACKFX_ACCEPTED_STATE, $obj_HTTP->getReplyHeader () );
+
+			}
+			else
+			{
+				trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_REJECTED_STATE, $obj_HTTP->getReplyHeader() );
+			}
+
+		}
+		// Error: Unable to establish Connection to Client
+		catch (HTTPConnectionException $e)
+		{
+			trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_CONN_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
+		}
+			// Error: Unable to send Callback to Client
+		catch (HTTPSendException $e)
+		{
+			trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_SEND_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
+		}
 	}
 
 	/*
@@ -871,8 +925,12 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iCellulant_PSP):
 				return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"]);
 		case (Constants::iDragonPay_AGGREGATOR):
-		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"]);		
-        default:
+		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"]);
+        case (Constants::iFirstData_PSP):
+			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"]);
+        case (Constants::iCyberSource_PSP):
+			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
+		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
@@ -904,7 +962,7 @@ abstract class Callback extends EndUserAccount
         $this->performCallback($body,$obj_SurePay, $attempt);
     }
 
-    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
+    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0 )
     {
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
         $isStateUpdated = $sessionObj->updateState();
@@ -949,6 +1007,11 @@ abstract class Callback extends EndUserAccount
 				if (($this->_obj_TxnInfo->getAccountID() > 0) === true) {
 					$obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
 					$sBody .= "&customer-country-id=" . $obj_CustomerInfo->getCountryID();
+				}
+
+				if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+				{
+					$sBody .= "&issuing-bank=" . urlencode($this->_obj_TxnInfo->getIssuingBankName());
 				}
 
 
@@ -1047,6 +1110,11 @@ abstract class Callback extends EndUserAccount
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
 						$transactionData['local-date-time'] = $dateTime->format('c');
+					}
+
+					if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+					{
+						$transactionData['issuing-bank'] =  $this->_obj_TxnInfo->getIssuingBankName();
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;

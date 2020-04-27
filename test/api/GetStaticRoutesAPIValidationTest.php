@@ -127,10 +127,10 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<route><card_type_id>8</card_type_id><country_id>200</country_id><currency_id>840</currency_id><psp_id>17</psp_id><enabled>true</enabled><payment_type>1</payment_type></route>', $sReplyBody);
-        $this->assertContains('<route><card_type_id>7</card_type_id><country_id>608</country_id><currency_id></currency_id><psp_id>18</psp_id><enabled>true</enabled><payment_type>1</payment_type></route>', $sReplyBody);
-        $this->assertContains('<route><card_type_id>8</card_type_id><country_id>608</country_id><currency_id></currency_id><psp_id>18</psp_id><enabled>true</enabled><payment_type>1</payment_type></route>', $sReplyBody);
-        $this->assertContains('<route><card_type_id>7</card_type_id><country_id>200</country_id><currency_id>840</currency_id><psp_id>17</psp_id><enabled>true</enabled><payment_type>1</payment_type></route>', $sReplyBody);
+		$this->assertContains('<route><card_type_id>8</card_type_id><country_id>200</country_id><currency_id>840</currency_id><psp_id>17</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        $this->assertContains('<route><card_type_id>7</card_type_id><country_id>608</country_id><currency_id></currency_id><psp_id>18</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        $this->assertContains('<route><card_type_id>8</card_type_id><country_id>608</country_id><currency_id></currency_id><psp_id>18</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        $this->assertContains('<route><card_type_id>7</card_type_id><country_id>200</country_id><currency_id>840</currency_id><psp_id>17</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
 
     }
 

@@ -461,8 +461,8 @@ class General
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
-					countryid = ". $oTI->getCountryConfig()->getID() .",currencyid = ". $oTI->getCurrencyConfig()->getID().", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
-					amount = ". $oTI->getAmount() .", points = ". ($oTI->getPoints() > 0 ? $oTI->getPoints() : "NULL") .", reward = ". ($oTI->getReward() > 0 ? $oTI->getReward() : "NULL") .",
+					countryid = ". $oTI->getCountryConfig()->getID() .",currencyid = ". $oTI->getInitializedCurrencyConfig()->getID().", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
+					amount = ". $oTI->getInitializedAmount() .", points = ". ($oTI->getPoints() > 0 ? $oTI->getPoints() : "NULL") .", reward = ". ($oTI->getReward() > 0 ? $oTI->getReward() : "NULL") .",
 					orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
@@ -471,7 +471,10 @@ class General
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". $oTI->useAutoCapture() .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
-					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType());
+					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType()).",
+					convertedamount = ". $oTI->getConvertedAmount() .",convetredcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
+					conversionrate = ". $oTI->getConversationRate();
+
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
@@ -547,7 +550,7 @@ class General
 	 * @param unknown $iSecondaryRoute
 	 * @return string
 	 */
-	public function authWithSecondaryPSP(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
+	public function authWithAlternateRoute(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
 	{
 		$xml = "" ;
 		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
@@ -567,9 +570,45 @@ class General
 	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
 	    
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
-		
-		$obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
-		
+        $this->logTransaction($obj_AssociatedTxnInfo);
+
+        // Add entry into Passbook
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
+        $passbookEntry = new PassbookEntry
+        (
+            NULL,
+            $obj_TxnInfo->getAmount(),
+            $obj_TxnInfo->getCurrencyConfig()->getID(),
+            Constants::iInitializeRequested
+        );
+        if($txnPassbookObj instanceof TxnPassbook) {
+            $txnPassbookObj->addEntry($passbookEntry);
+            $txnPassbookObj->performPendingOperations();
+        }
+
+        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
+        $passbookEntry = new PassbookEntry
+        (
+            NULL,
+            $obj_TxnInfo->getAmount(),
+            $obj_TxnInfo->getCurrencyConfig()->getID(),
+            Constants::iAuthorizeRequested
+        );
+        if($txnPassbookObj instanceof TxnPassbook) {
+            $txnPassbookObj->addEntry($passbookEntry);
+            $txnPassbookObj->performPendingOperations();
+        }
+
+
+        $txnPassbookObj->updateInProgressOperations($obj_TxnInfo->getAmount(), Constants::iPAYMENT_ACCEPTED_STATE, Constants::sPassbookStatusError);
+
+        $this->newMessage($iAssociatedTxnId, Constants::iINPUT_VALID_STATE, "Payment retried using dynamic routing ");
+        $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_REJECTED_STATE, "Payment Rejected");
+
+
+
+        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
 		if ($code == "100") {
 			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';

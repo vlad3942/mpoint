@@ -138,13 +138,20 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/cellulant.php");
 // Require specific Business logic for the Global Payments component
 require_once(sCLASS_PATH ."/global-payments.php");
-
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
+
+// Require specific Business logic for the FirstData component
+require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+require_once(sCLASS_PATH ."/core/card.php");
+require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
 
@@ -211,22 +218,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else { $code = 10; }
 
-						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 ){
-						    $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
-						    if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
-                            {
-                                $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
-                            }
-                            else{
-                                $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
-                            }
-                        }else {
-                            $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
-                            if ($iValResult !== 10) {
-                                $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
-                            }
-                        }
-						
+
 						
 						// Validate currency if explicitly passed in request, which defer from default currency of the country
 						if((int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"] > 0){
@@ -235,26 +227,50 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[56] = "Invalid Currency:". (int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"];
 							}
 						}
-						
+
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
+                        $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
+                        $payment_type = $obj_card->getPaymentType();
+
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-						if ($drService === 'true') {
+
+						if ($payment_type == Constants::iPAYMENT_TYPE_CARD && strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] ,$obj_DOM->pay [$i] ["account"] , $obj_DOM->pay[$i] ) ;
-							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
-							
+                            $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
+                            if($obj_RS instanceof RoutingService)
+							{
+                                $obj_RoutingServiceResponse = $obj_RS->getRoute();
+                                if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+                                {
+                                    $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+                                    $aRoutes = $aObj_Route->psps->psp;
+                                }
+							}
+
 						}
 
 						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
 
-						foreach ( $aRoutes as $oRoute ) {
-							if ($oRoute {'type-id'} === 1) {
-								$empty = array();
-								$obj_CardResultSet['PSPID'] = $oRoute;
-								break;
-							}
-						}
+                        if (count ( $aRoutes ) > 0) {
+                            foreach ($aRoutes as $oRoute) {
+                                if(empty($oRoute->preference) === false){
+                                    if ($oRoute->preference === 1) {
+                                        $obj_CardResultSet['PSPID'] = $oRoute->id;
+                                        break;
+                                    }
+								}else{
+                                    $obj_CardResultSet['PSPID'] = $oRoute->id;
+								}
+                            }
+                            // Store dynamic route to use it again during Auth if require
+                            $additionalData = array();
+                            $additionalData[0]['name']  = (string)'psps';
+                            $additionalData[0]['value'] = json_encode($aRoutes);
+                            $additionalData[0]['type']  = (string)'Transaction';
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
+                        }
 
 						$pspId = (int)$obj_CardResultSet['PSPID'];
 
@@ -265,10 +281,42 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $ip);
-                        if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'sessiontype') !== 2 && $obj_ClientConfig->getSalt() !== '')
+                        if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
+						|| ($obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()) )
+                        //made hmac mandatory for dcc
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
+
+						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 ){
+							$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+							if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
+							{
+								$aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
+							}
+							else{
+								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
+							}
+						}
+						else
+						{
+						    if($obj_CardResultSet["DCCENABLED"] === true  && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false
+							   && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
+                            {
+                                if(round((float)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) !==  (float)$obj_DOM->pay[$i]->transaction->card->amount)
+                                {
+                                    $aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                }
+                            }
+						    else
+						    {
+                                $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                                if ($iValResult != 10) {
+                                    $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                }
+                            }
+
+						}
 
 						// Success: Input Valid
 						if (count($aMsgCds) === 0)
@@ -320,6 +368,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									try
 									{
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === false)
+										$obj_TxnInfo->setExternalReference($_OBJ_DB,$obj_paymentProcessor->getPSPConfig()->getID(),Constants::iForeignExchange,$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'});
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 										$data['client-config'] = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(),(integer) $obj_DOM->pay[$i]['account']);
@@ -333,6 +383,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
 										$data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE'];
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false)
+										{
+											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);
+											$data['externalref'] = array(Constants::iForeignExchange =>array((integer)$obj_TxnInfo->getClientConfig()->getID() => (string)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'} ));
+											$data['converted-currency-config'] = $obj_CurrencyConfig;
+											$data['converted-amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
+											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
+											unset($data['amount']);
+										}
+
+
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID

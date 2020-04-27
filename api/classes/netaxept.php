@@ -512,7 +512,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 			break;
 		}
 
-		if ($iAmount <= 0) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount <= 0) { $iAmount = $this->getTxnInfo()->getAmount(); }
 
 		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost () . $oCI->getPath (),
 									array("trace" => true,
@@ -543,6 +543,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 				else
 				{
 					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, serialize($data) );
+					$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 					return 1000;
 				}
 			}

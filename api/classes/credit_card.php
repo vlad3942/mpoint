@@ -141,7 +141,7 @@ class CreditCard extends EndUserAccount
                 $enabled = true;
 				if(in_array($RS['ID'], $aDiabledPMs) === true ) { $enabled = false; }
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'.$pspId.'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'"'. ' processor-type = "'. $RS['PSP_TYPE'].'" installment = "'. $RS['INSTALLMENT'].'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'" walletid = "'. $RS['WALLETID'].'">';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'.$pspId.'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'"'. ' processor-type = "'. $RS['PSP_TYPE'].'" installment = "'. $RS['INSTALLMENT'].'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'" walletid = "'. $RS['WALLETID'].'" dcc="'. var_export($RS["DCCENABLED"], true).'" >';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
@@ -174,7 +174,7 @@ class CreditCard extends EndUserAccount
     {
         	$sql = 'SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid,CA.dccEnabled
 				FROM ' . $this->_constDataSourceQuery() . '
 				WHERE CA.clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . '
 					AND A.id = ' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
@@ -269,6 +269,85 @@ class CreditCard extends EndUserAccount
 				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid
 				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.enabled = '1'
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'";
+    }
+
+    public function getCardsForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null)
+	{
+
+        $sql = 'SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
+					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid,CA.dccEnabled
+				FROM ' . $this->_constDataSourceQuery() . '
+				WHERE CA.clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . '
+					AND A.id = ' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
+					AND PC.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
+					AND PP.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
+					AND PP.amount IN (-1, ' . (int)$amount .")
+					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
+					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL)
+					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
+					if($typeid !== null)
+					{
+					    $sql .= ' AND C.ID =' . $typeid ;
+					}
+				$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC';
+
+		$res = $this->getDBConn()->query($sql);
+
+        $xml = '<cards accountid="' . $this->_obj_TxnInfo->getAccountID() . '">';
+        while ($RS = $this->getDBConn()->fetchName($res)) {
+            $aRS = [];
+            // Transaction instantiated via SMS or "Card" is NOT Premium SMS
+            if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10) {
+                // My Account
+
+                $sName = $RS["NAME"];
+
+                $sql = "SELECT min, \"max\"
+							FROM System" . sSCHEMA_POSTFIX . ".CardPrefix_Tbl
+							WHERE cardid = " . $RS["ID"];
+//					echo $sql ."\n";
+                $aRS = $this->getDBConn()->getAllNames($sql);
+            }
+
+            $pspId = '';
+
+            if (is_null($iRoute)) {
+                $pspId = $RS ["PSPID"];
+            } else {
+                $pspId = $iRoute;
+            }
+
+            // Construct XML Document with card data
+            $enabled = TRUE;
+            if (in_array($RS['ID'], $aDiabledPMs) === TRUE) {
+                $enabled = FALSE;
+            }
+            // Construct XML Document with card data
+            $xml .= '<item id="' . $RS["ID"] . '" type-id="' . $RS["ID"] . '" pspid="' . $pspId . '" min-length="' . $RS["MINLENGTH"] . '" max-length="' . $RS["MAXLENGTH"] . '" cvc-length="' . $RS["CVCLENGTH"] . '" state-id="' . $RS["STATEID"] . '" payment-type="' . $RS['PAYMENTTYPE'] . '"' . ' preferred="' . General::bool2xml($RS['PREFERRED']) . '"' . ' enabled = "' . General::bool2xml($enabled) . '"' . ' processor-type = "' . $RS['PSP_TYPE'] . '" installment = "' . $RS['INSTALLMENT'] . '" cvcmandatory = "' . General::bool2xml($RS['CVCMANDATORY']) . '" walletid = "' . $RS['WALLETID'] . '" dcc="' . var_export($RS["DCCENABLED"], TRUE) . '" >';
+            $xml .= '<name>' . htmlspecialchars($sName, ENT_NOQUOTES) . '</name>';
+            $xml .= '<account>' . $RS["ACCOUNT"] . '</account>';
+            $xml .= '<subaccount>' . $RS["SUBACCOUNT"] . '</subaccount>';
+            $xml .= '<currency>' . $RS["CURRENCY"] . '</currency>';
+            $xml .= '<capture_type>' . $RS["CAPTURE_TYPE"] . '</capture_type>';
+            if (is_array($aRS) === TRUE && count($aRS) > 0) {
+                $xml .= '<prefixes>';
+                for ($i = 0, $iMax = count($aRS); $i < $iMax; $i++) {
+                    $xml .= '<prefix>';
+                    $xml .= '<min>' . $aRS[$i]["MIN"] . '</min>';
+                    $xml .= '<max>' . $aRS[$i]["MAX"] . '</max>';
+                    $xml .= '</prefix>';
+                }
+                $xml .= '</prefixes>';
+            } else {
+                $xml .= '<prefixes />';
+            }
+            $xml .= '</item>';
+
+        }
+        $xml .= '</cards>';
+
+        return $xml;
     }
 }
 ?>

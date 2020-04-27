@@ -398,7 +398,15 @@ class ClientConfig extends BasicConfig
      * @var integer
      */
     private $_iInstallmentFrequency;
-	
+
+
+    /**
+     * SurePay Configuration
+     *
+     * @var object
+     */
+    private $_objSurePayConfig;
+
 	/**
 	 * Default Constructor
 	 *
@@ -1129,7 +1137,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
-		$xml .= $this->_getIINRangesConfigAsXML();		
+		$xml .= $this->_getIINRangesConfigAsXML();
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
 		
@@ -1156,6 +1164,7 @@ class ClientConfig extends BasicConfig
             $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
         $xml .= '</additional-config>';
+        $xml .= '<decimal>'.$this->getCountryConfig()->getDecimals().'</decimal>';
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -1477,6 +1486,18 @@ class ClientConfig extends BasicConfig
         }
 
         return false;
+    }
+
+    /**
+     * @return object
+     */
+    public function getSurePayConfig(RDB $oDB)
+    {
+        if(isset($this->_objSurePayConfig) === FALSE)
+        {
+            $this->_objSurePayConfig = SurePayConfig::produceConfig( $oDB, $this->getID());
+        }
+        return $this->_objSurePayConfig;
     }
 }
 ?>

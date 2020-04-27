@@ -220,6 +220,7 @@
 		<xs:element name="device-id" type="xs:string" minOccurs="0" maxOccurs="1" />
 		<xs:element name="ip" type="xs:string" minOccurs="0" maxOccurs="1" />
 		<xs:element ref="additional-config" minOccurs="0" maxOccurs="1" />
+		<xs:element name="decimal" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 	</xs:sequence>
 	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
 	<xs:attribute name="platform" type="xs:string" use="optional" />
