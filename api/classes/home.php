@@ -800,7 +800,7 @@ class Home extends General
     {
         $xml = '';
 
-        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
+        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, CU.symbol, C.priceformat, CL.id AS clientid,
                         Txn.id AS mpointid, Txn.orderid, TS.states,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
                         Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
                         Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, Txn.extid, Txn.approval_action_code, Txn.walletid
