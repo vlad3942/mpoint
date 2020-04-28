@@ -142,7 +142,8 @@ require_once(sCLASS_PATH ."/wallet_processor.php");
 require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
-
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
@@ -357,7 +358,7 @@ try
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
-                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
+                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
                                             //made hmac mandatory for dcc
 										{
 

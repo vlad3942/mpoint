@@ -74,6 +74,8 @@ require_once(sCLASS_PATH ."/publicbank.php");
 require_once(sCLASS_PATH ."/paypal.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the Data Cash component
 require_once(sCLASS_PATH ."/mada_mpgs.php");
 

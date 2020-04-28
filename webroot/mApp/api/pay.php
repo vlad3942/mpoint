@@ -138,7 +138,8 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/cellulant.php");
 // Require specific Business logic for the Global Payments component
 require_once(sCLASS_PATH ."/global-payments.php");
-
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 
@@ -281,7 +282,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $ip);
                         if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
-						|| ($obj_CardResultSet["DCCENABLED"] === true && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()) )
+						|| ($obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()) )
                         //made hmac mandatory for dcc
                         {
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
