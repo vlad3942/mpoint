@@ -48,6 +48,7 @@ class StaticRoute extends Card
             }
             $xml .= '</prefixes>';
         }
+        else { $xml .= '<prefixes />'; }
         $xml .= '</item>';
 
         return $xml;
