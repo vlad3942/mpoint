@@ -368,20 +368,20 @@ class General
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
 	switch (true)
 		{
-		case eregi("iPod", $_SERVER['HTTP_USER_AGENT']):
-		case eregi("iPhone", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPod/i", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPhone/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPhone";
 			break;
-		case eregi("iPad", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPad/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPad";
 			break;
-		case eregi("Firefox", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Firefox/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Firefox";
 			break;
-		case eregi("Skyfire", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Skyfire/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Skyfire";
 			break;
-		case eregi("Android", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Android/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Android";
 			break;
 		default:
@@ -1081,44 +1081,44 @@ class General
 			switch (true)
 			{
 			// Mobile Device Vendors
-			case (eregi("Alcatel", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Amoi Electronics", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Asustek", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Audiovox", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Fujitsu", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Handspring", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("HP", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Hewlett[^a-z]Packard", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Hitachi", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("High Tech Computer Corporation", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("HTC", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Huawei", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Kyocera", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("LG", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Motorola", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("NEC", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Nokia", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Openwave", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Palm", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Panasonic", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Pantech", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("RIM", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Research In Motion", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sagem", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Samsung", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sanyo", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sharp", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Siemens", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sony Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Toshiba", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("UTStar", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Alcatel/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Amoi Electronics/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Asustek/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Audiovox/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Ericsson/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Fujitsu/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Handspring/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/HP/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Hewlett[^a-z]Packard/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Hitachi/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/High Tech Computer Corporation/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/HTC/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Huawei/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Kyocera/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/LG/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Motorola/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/NEC/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Nokia/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Openwave/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Palm/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Panasonic/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Pantech/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/RIM/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Research In Motion/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sagem/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Samsung/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sanyo/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sharp/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Siemens/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sony Ericsson/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Toshiba/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/UTStar/i", $_SERVER['HTTP_USER_AGENT']) ):
 			// Specific Mobile Devices
-			case (eregi("Android", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Blackberry", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("iPhone", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Pocket", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
-			case (eregi("Mini", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
+			case (preg_match("/Android/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Blackberry/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/iPhone/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Pocket/i", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
+			case (preg_match("/Mini/i", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
 				$sBrowser = "mobile";
 				break;
 			default:	// Web Browser

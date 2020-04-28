@@ -147,10 +147,10 @@ require_once(sCONF_PATH ."global.php");
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 
 // Web Request
-if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true || eregi("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
-		&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
-		&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
-		&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
+if ( (preg_match("/buy/", $_SERVER['PHP_SELF']) == false || preg_match("/buy/web.php", $_SERVER['PHP_SELF']) == true || preg_match("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
+		&& preg_match("/subscr/", $_SERVER['PHP_SELF']) == false && preg_match("/callback/", $_SERVER['PHP_SELF']) == false
+		&& preg_match("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
+		&& preg_match("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && preg_match("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
@@ -162,11 +162,11 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 	}
 
 	// Not fetching an Image or performing a back-end process and accessing the mobile website
-	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
-			&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
-					|| eregi("/anet/", $_SERVER['PHP_SELF']) == true || eregi("/wannafind/", $_SERVER['PHP_SELF']) == true
+	if (preg_match("/img/", $_SERVER['PHP_SELF']) == false && preg_match("/sys/", $_SERVER['PHP_SELF']) == false
+			&& (preg_match("/pay/", $_SERVER['PHP_SELF']) == true || preg_match("/shop/", $_SERVER['PHP_SELF']) == true
+					|| preg_match("/anet/", $_SERVER['PHP_SELF']) == true || preg_match("/wannafind/", $_SERVER['PHP_SELF']) == true
 					|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
-					|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
+					|| (preg_match("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
 	{
 		// User Agent Profile not instantiated
 		if (array_key_exists("obj_UA", $_SESSION) === false)
@@ -188,7 +188,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 // Payment link activated, use /overview.php og /shop/products.php through a rewrite rule defined by .htaccess
-if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] == "GET" && eregi("/new/", $_SERVER['PHP_SELF']) == false)
+if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] == "GET" && preg_match("/new/", $_SERVER['PHP_SELF']) == false)
 {
 	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB, $_GET['checksum']);
 }
