@@ -1056,6 +1056,19 @@ $aHTTP_CONN_INFO["cybersource"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["cybersource"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["cybersource"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/check-fraud-status";
+
+
+/**
+ * Connection info for connecting to cybersource fraud gateway
+ */
+$aHTTP_CONN_INFO["cebu-rmfss"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cebu-rmfss"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cebu-rmfss"]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
