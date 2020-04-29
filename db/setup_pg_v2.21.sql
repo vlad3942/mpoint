@@ -219,3 +219,6 @@ INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,sco
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'mid.USD','CebuPacific_USD','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=40;
 
 --- 2c2p ALC end ---
+
+-- currency improvement --
+UPDATE system.currency_tbl AS cur SET symbol = con.symbol FROM system.country_tbl AS con WHERE cur.id = con.currencyid;
