@@ -25,18 +25,19 @@ class CurrencyConfig extends BasicConfig
      */
     private $_sCode;
     private $_iDecimals;
+    private $_sSymbol;
 
-
-	public function __construct($id, $name, $code, $decimals)
+	public function __construct($id, $name, $code, $decimals, $symbol)
 	{
 		parent::__construct($id, $name);
 		$this->_sCode = $code;
 		$this->_iDecimals = intval($decimals);
+        $this->_sSymbol = trim($symbol);
 	}
 
 	public function getCode() { return $this->_sCode; }
 	public function getDecimals() { return $this->_iDecimals; }
-
+    public function getSymbol() { return $this->_sSymbol; }
 
 	/**
 	 * Produces a new instance of a Currency Configuration Object.
@@ -47,13 +48,13 @@ class CurrencyConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-		$sql = "SELECT id, name, code, decimals
+		$sql = "SELECT id, name, code, decimals, symbol
 				FROM System".sSCHEMA_POSTFIX.".Currency_Tbl CT			
 				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1'";
 		
 		$RS = $oDB->getName($sql);
 
-		return new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE'], $RS['DECIMALS']);
+		return new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE'], $RS['DECIMALS'], $RS['SYMBOL']);
 	}
 }
 ?>

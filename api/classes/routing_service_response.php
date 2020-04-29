@@ -55,9 +55,10 @@ class RoutingServiceResponse
 
             $iRouteCount = count($aObj_XML->psps->psp);
             if($iRouteCount > 0){
-                $aObjRoute = new stdClass();
+                $aObjRoute = null;
                 for ($i = 0; $i < $iRouteCount; $i++)
                 {
+                    $aObjRoute->psps->psp[$i] = new stdClass();
                     $aObjRoute->psps->psp[$i]->id = (int)$aObj_XML->psps->psp[$i]->id;
                     $aObjRoute->psps->psp[$i]->preference = (int)$aObj_XML->psps->psp[$i]->preference;
 
@@ -80,9 +81,10 @@ class RoutingServiceResponse
         {
             $iPaymentMethodCount = count($aObj_XML->payment_methods->payment_method);
             if($iPaymentMethodCount > 0){
-                $aObjPaymentMethod = new stdClass();
+                $aObjPaymentMethod = null;
                 for ($i = 0; $i < $iPaymentMethodCount; $i++)
                 {
+                    $aObjPaymentMethod->payment_methods->payment_method[$i] = new stdClass();
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->id = (int)$aObj_XML->payment_methods->payment_method[$i]->id;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->psp_type = (int)$aObj_XML->payment_methods->payment_method[$i]->psp_type;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->preference = (int)$aObj_XML->payment_methods->payment_method[$i]->preference;

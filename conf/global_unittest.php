@@ -178,6 +178,7 @@ $aHTTP_CONN_INFO["uatp"]["port"] = 80;
 $aHTTP_CONN_INFO["uatp"]["timeout"] = 120;
 $aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/_test/simulators/uatp/generate-suvtp.php";
+$aHTTP_CONN_INFO["uatp"]["paths"]["process-settlement"] = "/_test/simulators/uatp/bulk-settlement.php";
 
 /**
  * Connection info for connecting to EZY-fraud check

@@ -1078,7 +1078,8 @@ class TxnInfo
 		{
 			 $iAmount = $this->getAmount();
 		}
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
+
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $obj_CurrencyConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 		
 		$xml .= '<amount_info>';
 		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
@@ -1449,7 +1450,7 @@ class TxnInfo
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
 						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid,
-						convetredcurrencyid,convertedamount,conversionrate,issuing_bank
+						COALESCE(convetredcurrencyid,currencyid) as convetredcurrencyid,COALESCE(convertedamount,amount) as convertedamount,COALESCE(conversionrate,1) as conversionrate,issuing_bank  
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -2059,21 +2060,6 @@ class TxnInfo
     }
 
     /**
-     * Returns Currency Symbol
-     *
-     * @return string
-     *
-     */
-    function getCurrencySymbol(){
-        $symbol = '';
-        if($this->_obj_PaymentSession instanceof PaymentSession)
-        {
-            $symbol = html_entity_decode($this->_obj_PaymentSession->getCurrencySymbol(), ENT_COMPAT, 'UTF-8');
-        }
-        return $symbol;
-    }
-
-    /**
      * Returns Payment Session information in XML format
      *
      * @return string
@@ -2091,7 +2077,7 @@ class TxnInfo
      *
      */
     function updateTransactionAmount(RDB $obj_DB,$amount){
-        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount." WHERE id = " . $this->_iID;
+        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount." and convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
     }
 

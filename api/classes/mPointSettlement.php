@@ -329,6 +329,7 @@ abstract class mPointSettlement
                 SET status = '$status' 
                 WHERE id = $this->_iSettlementId";
         $_OBJ_DB->query($sql);
+        $this->_sFileStatus = $status;
     }
 
     protected function _insertSettlementRecords($_OBJ_DB)
@@ -532,14 +533,22 @@ abstract class mPointSettlement
     /**
      * @return getter method to access file created date
      */
-    public function geFileCreatedDate(){
+    public function getFileCreatedDate(){
         return $this->_sFileCreatedDate;
     }
 
     /**
      * @return getter method to access file status
      */
-    public function geFileStatus(){
+    public function getFileStatus(){
         return $this->_sFileStatus;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getSettlementId()
+    {
+        return $this->_iSettlementId;
     }
 }

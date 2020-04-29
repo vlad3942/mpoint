@@ -162,13 +162,14 @@ class Card
             if ($oDB === NULL) {
                 trigger_error('Database objected is not passed', E_USER_ERROR);
             } else {
-                $sql = "SELECT minlength, maxlength, cvclength, paymenttype FROM system.card_tbl WHERE enabled = true and id = $this->iCardTypeId;";
+                $sql = "SELECT name, minlength, maxlength, cvclength, paymenttype FROM system.card_tbl WHERE enabled = true and id = $this->iCardTypeId;";
                 $resultSet = $oDB->getName($sql);
                 if (is_array($resultSet)) {
                     $this->iCvcLength = (int)$resultSet['CVCLENGTH'];
                     $this->iMinCardLength = (int)$resultSet['MINLENGTH'];
                     $this->iMaxCardLength = (int)$resultSet['MAXLENGTH'];
                     $this->iPaymentType   = (int)$resultSet['PAYMENTTYPE'];
+                    $this->sCardName = (string)$resultSet['NAME'];
                     $this->isAdditionalCardDetailsFetched = TRUE;
                 }
             }
@@ -232,8 +233,9 @@ class Card
     /**
      * @return string
      */
-    public function getCardName()
+    public function getCardName(RDB $oRDB = NULL)
     {
+        $this->getAdditionalCardDetails($oRDB);
         return $this->sCardName;
     }
 
