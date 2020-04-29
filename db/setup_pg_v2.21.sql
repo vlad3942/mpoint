@@ -216,6 +216,6 @@ INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,sco
 --CEBU Phase 1 queries--
 
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'mid.PHP','CebuPacific_MCC','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=40;
-INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'mid.USD','5J_MCC_USD_Demo','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=40;
+INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'mid.USD','CebuPacific_USD','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=40;
 
 --- 2c2p ALC end ---
