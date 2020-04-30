@@ -429,7 +429,7 @@ class Home extends General
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null)
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array())
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -469,6 +469,7 @@ class Home extends General
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE EUC.accountid = ". (int)$id;
+        if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aPaymentMethods).")"; }
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
 		if ($adc === false) { $sql .= "  AND CA.enabled = '1'"; }
 		if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
