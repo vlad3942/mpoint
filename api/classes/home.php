@@ -818,7 +818,7 @@ class Home extends General
                         INNER JOIN Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl  AS Txn ON TS.id = Txn.id
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
                         LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Client_Tbl CL ON Txn.clientid = CL.id
-						LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Country_Tbl C ON Txn.countryid = C.id
+                        LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Country_Tbl C ON Txn.countryid = C.id
 						LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Currency_tbl CU ON CU.id = C.currencyid
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl Card ON Txn.cardid = Card.id";
 //		echo $sql ."\n";
