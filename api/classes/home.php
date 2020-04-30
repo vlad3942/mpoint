@@ -457,7 +457,8 @@ class Home extends General
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
-					CA.position AS client_position
+					CA.position AS client_position,
+                    SRLC.cvcmandatory
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -466,8 +467,9 @@ class Home extends General
 				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
-				WHERE EUC.accountid = ". intval($id);
-		if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aPaymentMethods).")"; }
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
+				WHERE EUC.accountid = ". (int)$id;
+        if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aPaymentMethods).")"; }
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
 		if ($adc === false) { $sql .= "  AND CA.enabled = '1'"; }
 		if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
@@ -502,7 +504,7 @@ class Home extends General
             }
 
             // Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'">';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -801,7 +803,7 @@ class Home extends General
     {
         $xml = '';
 
-        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
+        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, CU.symbol, C.priceformat, CL.id AS clientid,
                         Txn.id AS mpointid, Txn.orderid, TS.states,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
                         Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
                         Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, Txn.extid, Txn.approval_action_code, Txn.walletid
@@ -818,6 +820,7 @@ class Home extends General
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
                         LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Client_Tbl CL ON Txn.clientid = CL.id
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Country_Tbl C ON Txn.countryid = C.id
+						LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Currency_tbl CU ON CU.id = C.currencyid
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl Card ON Txn.cardid = Card.id";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);

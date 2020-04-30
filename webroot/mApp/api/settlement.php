@@ -226,11 +226,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $obj_Settlement->refund($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
                     $obj_Settlement->createBulkSettlementEntry($_OBJ_DB);
-                    $xml .= '<settlement-id>'.$obj_Settlement->getFileSequenceNumber().'</settlement-id>';
+                    $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
                     $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
-                    $xml .= '<created-time>'.$obj_Settlement->geFileCreatedDate().'</created-time>';
+                    $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
                     $xml .= '<psp-id>'.$pspid.'</psp-id>';
-                    $xml .= '<file-status>'.$obj_Settlement->geFileStatus().'</file-status>';
+                    $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
                 }
                 $xml .= '</settlements>';
             }
