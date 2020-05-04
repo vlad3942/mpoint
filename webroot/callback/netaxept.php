@@ -135,20 +135,20 @@ try
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));
+				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 			}
 			else
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE));
+				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010) - Netaxept Error {$responseCode}");
 			}
 		}
 		else
 		    {
 		        $obj_mPoint->notifyClient($iStateID, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-		        $obj_mPoint->notifyForeignExchange(array($iStateID));
+		        $obj_mPoint->notifyForeignExchange(array($iStateID),$aHTTP_CONN_INFO['foreign-exchange']);
 		    }
 	}
 

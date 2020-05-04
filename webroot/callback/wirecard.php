@@ -126,13 +126,13 @@ try
 		if ($responseCode == 1000)
 		{				
 			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
-			$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));
+			$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 		else
 		{
 			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
-			$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE));
+			$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
 		}
 	}
@@ -141,7 +141,7 @@ try
 	{
 		$obj_mPoint->notifyClient($iStateID, $obj_XML, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 	}
-	$obj_mPoint->notifyForeignExchange(array($iStateID));
+	$obj_mPoint->notifyForeignExchange(array($iStateID),$aHTTP_CONN_INFO['foreign-exchange']);
 
 	$xml = '<status code="1000">Callback Success</status>';
 } 

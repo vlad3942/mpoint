@@ -163,7 +163,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 										  "amount" => $_REQUEST['amount']);
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
-                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE));
+                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 
                     }
                     else if ($code == 1100) {

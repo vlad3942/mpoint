@@ -457,9 +457,9 @@ abstract class Callback extends EndUserAccount
 	 * @param array $aStateId Transaction state array
 	 * @param array $aCI Connection Information Array
 	 */
-	public function notifyForeignExchange(array $aStateId)
+	public function notifyForeignExchange(array $aStateId,$aCI)
 	{
-		$aCI = $this->aCONN_INFO["foreign-exchange"];
+
 		$iForeignExchangeId = $this->_obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$this->_obj_TxnInfo->getPSPID());
 		if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0)
 		{

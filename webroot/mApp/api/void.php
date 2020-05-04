@@ -258,8 +258,13 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
                                                                 "amount" => $amount);
                                                             $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                                         }
-														$obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE));
+														$obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 													}
+													else if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CANCELLED_STATE) === true)
+                                                    {
+                                                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CANCELLED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                                                    }
+
 												}
 												//Request send for refund the transaction,
                                                 //Once callback is receive 2003 state will update against transaction in general.php

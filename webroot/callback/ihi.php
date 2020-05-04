@@ -56,7 +56,7 @@ if ($_POST['status'] == Constants::iPAYMENT_ACCEPTED_STATE)
 		// Transaction uses Auto Capture
 		if ($obj_mPoint->getTxnInfo()->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST,  $obj_mPoint->getTxnInfo()->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 	}
-    $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_ACCEPTED_STATE));
-    if ($obj_mPoint->getTxnInfo()->useAutoCapture() === AutoCaptureType::eMerchantLevelAutoCapt) { $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));}
+    $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_ACCEPTED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+    if ($obj_mPoint->getTxnInfo()->useAutoCapture() === AutoCaptureType::eMerchantLevelAutoCapt) { $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);}
 }
 ?>
