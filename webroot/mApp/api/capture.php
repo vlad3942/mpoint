@@ -217,13 +217,18 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										$aMsgCds[1000] = "Success";
 										$xml .= '<status code="1000" ></status>';
 										// Perform callback to Client
-										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
+										if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
 										{
+										    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                                            {
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
 													"fee" => $obj_TxnInfo->getFee() );
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-										}
+                                            }
+                                            $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));
+
+                                        }
 									}
                                     elseif ($code == 1002)
                                     {
@@ -245,7 +250,8 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 													"amount" => $amount);
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
-									}
+                                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE));
+                                    }
 								}
 								catch (BadMethodCallException $e)
 								{

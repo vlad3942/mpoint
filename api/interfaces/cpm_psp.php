@@ -342,6 +342,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
+					$this->notifyForeignExchange(array($paymentState));
 					return $retStatusCode;
 				}
 				else {

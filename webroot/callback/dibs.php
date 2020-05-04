@@ -177,6 +177,7 @@ try
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
 		$obj_mPoint->notifyClient($iStateID, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+		$obj_mPoint->notifyForeignExchange(array($iStateID));
 		// Transaction uses Auto Capture and Authorization was accepted
 		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
@@ -204,9 +205,14 @@ try
 			if (array_key_exists("capturenow", $_POST) === true || $code == 1000)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));
 				if (array_key_exists("capturenow", $_POST) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }
 			}
-			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+			else
+			    {
+			        $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			        $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE));
+			    }
 		}
 	}
 

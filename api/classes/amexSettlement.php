@@ -243,6 +243,8 @@ class AmexSettlement extends mPointSettlement
                                             {
                                                 $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                             }
+ 											
+											$obj_PSP->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));
                                         }
                                         else
                                         {
@@ -253,6 +255,7 @@ class AmexSettlement extends mPointSettlement
                                             {
                                                 $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                             }
+											$obj_PSP->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE));
                                         }
 
                                     }

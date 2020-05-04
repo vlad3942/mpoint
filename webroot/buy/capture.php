@@ -202,6 +202,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                                 "fee" => $obj_TxnInfo->getFee());
                             $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                         }
+                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE));
+
                     }
 				}
 				else
@@ -221,7 +223,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 									  "amount" => $_REQUEST['amount']);
 						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 					}
-				}
+                    $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE));
+
+                }
 			}
 			catch (BadMethodCallException $e)
 			{
