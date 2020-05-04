@@ -103,6 +103,8 @@ require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the PayU component
 require_once(sCLASS_PATH ."/payu.php");
+// Require specific Business logic for the 2c2p alc component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input

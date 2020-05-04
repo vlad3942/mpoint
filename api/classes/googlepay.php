@@ -28,7 +28,7 @@ class GooglePay extends CPMPSP
 	public function refund($iAmount=-1) { throw new GooglePayException("Method: refund is not supported by Google Pay"); }
 	public function void($iAmount=-1) { throw new GooglePayException("Method: void is not supported by Google Pay"); }
 	public function cancel() { throw new GooglePayException("Method: cancel is not supported by Google Pay"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new GooglePayException("Method: authTicket is not supported by Google Pay"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new GooglePayException("Method: authorize is not supported by Google Pay"); }
 	public function status() { throw new GooglePayException("Method: status is not supported by Google Pay"); }
 
 	public function getPSPID() { return Constants::iGOOGLE_PAY_PSP; }

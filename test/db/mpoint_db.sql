@@ -8272,6 +8272,7 @@ ALTER TABLE enduser.address_tbl Alter column state type VARCHAR(200);
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
 ALTER TABLE client.cardaccess_tbl ADD walletid int4;
+
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
 ALTER TABLE log.transaction_tbl ADD convetredcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
@@ -8318,3 +8319,23 @@ ALTER TABLE system.country_tbl DROP COLUMN symbol;
 
 alter table log.transaction_tbl add issuing_bank varchar(100);
 
+CREATE TABLE log.settlement_tbl
+(
+    id serial PRIMARY KEY,
+    record_number int NOT NULL,
+    file_reference_number varchar(10) NOT NULL,
+    file_sequence_number int NOT NULL,
+    created timestamp DEFAULT now(),
+    client_id int NOT NULL,
+    psp_id int NOT NULL,
+    record_tracking_number varchar(20),
+    record_type varchar(20),
+    description varchar(100),
+    status varchar(10) DEFAULT 'active' NOT NULL,
+    CONSTRAINT settlement_tbl_client_tbl_id_fk FOREIGN KEY (client_id) REFERENCES client.client_tbl (id),
+    CONSTRAINT settlement_tbl_psp_tbl_id_fk FOREIGN KEY (psp_id) REFERENCES system.psp_tbl (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE log.settlement_tbl OWNER TO postgres;
