@@ -1392,7 +1392,7 @@ class TxnInfo
 				{
 					$xml .= '<param>';
 					$xml .=  '<name>'. $key . '</name>';
-					$xml .=  '<value>'. $value . '</name>';
+					$xml .=  '<value>'. $value . '</value>';
 					$xml .= '</param>';
 				}
 			}
