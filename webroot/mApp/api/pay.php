@@ -154,6 +154,7 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
+require_once(sCLASS_PATH . '/txnroute.php');
 
 $aMsgCds = array();
 
@@ -254,22 +255,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
 
                         if (count ( $aRoutes ) > 0) {
+                            $objTxnRoute = new TxnRoute($_OBJ_DB, $obj_TxnInfo);
                             foreach ($aRoutes as $oRoute) {
                                 if(empty($oRoute->preference) === false){
                                     if ($oRoute->preference === 1) {
                                         $obj_CardResultSet['PSPID'] = $oRoute->id;
-                                        break;
-                                    }
+                                    }else{
+                                        // Store alternate routes to authorize transaction  if psp1 fails during authorize
+                                        $objTxnRoute->setAlternateRoute($oRoute->id, $oRoute->preference);
+									}
 								}else{
                                     $obj_CardResultSet['PSPID'] = $oRoute->id;
 								}
                             }
-                            // Store dynamic route to use it again during Auth if require
-                            $additionalData = array();
-                            $additionalData[0]['name']  = (string)'psps';
-                            $additionalData[0]['value'] = json_encode($aRoutes);
-                            $additionalData[0]['type']  = (string)'Transaction';
-                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
                         }
 
 						$pspId = (int)$obj_CardResultSet['PSPID'];
