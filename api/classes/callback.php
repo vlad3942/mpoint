@@ -459,6 +459,8 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyForeignExchange(array $aStateId,$aCI)
 	{
+		//Refreshing txnInfo object to reflect updated values after payment operation performed 
+		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
 
 		$iForeignExchangeId = $this->_obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$this->_obj_TxnInfo->getPSPID());
 		if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0)
