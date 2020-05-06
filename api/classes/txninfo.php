@@ -1601,7 +1601,7 @@ class TxnInfo
 			if (array_key_exists("converted-currency-config", $misc) === false) { $misc["converted-currency-config"] = $obj->getConvertedCurrencyConfig(); }
 			if (array_key_exists("converted-amount", $misc) === false) { $misc["converted-amount"] = $obj->getConvertedAmount(); }
 			if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
-			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = $obj->getProfileID(); }
+			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = -1; }
 
 			if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
