@@ -1,5 +1,5 @@
 
-/* ========== CONFIGURE EZY START========== */
+/* ========== CONFIGURE RMFSS START========== */
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (65, 'CEBU-RMFSS',9);
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (<cardid>, 65);
 
