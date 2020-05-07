@@ -57,7 +57,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.14.PHP', 'PAL-IPG PHP APPLEPAY', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=14;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.usernamerule', 'username ::= (property[@name=''<uname>''])
- uname ::= (transaction/authorize-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=<pspid>;
+ uname ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=<pspid>;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.44', 'gpmnl042772772760', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=44;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.44.PHP', 'gpmnl045623832732', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=44;
@@ -66,7 +66,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.14.PHP', 'gpmnl045623832731', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=14;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.pwdrule', 'password ::= (property[@name=''<passwd>''])
- passwd ::= (transaction/authorize-amount/@currency)=="PHP"="GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=<pspid>;
+ passwd ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=<pspid>;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.44', 'a37Va81z32Q+qMNhRKG/2l9J1yvw1tYvw+atWXuW3jPHOFKAwcvGY9dPfuyDiST4ruhe9gDAg36lm+zdeiSUnmd3kN99Io/88daPtzVtnyzqEpT/QzgDoI8Y6rbD7rnINzVLEBWAB7xdWfw5NVRFMQrFuvOUE3VqyM3F8uQdEvCBFoPCxxIbsEo3Dn6hjevgzO7nzZPdrmqDrMO8CE9CUqleJhRlC6MfJNA4M87ZtYt03q0XpAXM/zYd8tYJJu29UelxadoeZxBdQzuoU89XXcZtYs8rUJXd5GRqtEuLXMS0tgNrnf2en7+Xe+Zl3tNSOwoJSkwdFj07yjnPF8nvdg==', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=44;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.44.PHP', <testpwd-changethis>, true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=44;
@@ -101,15 +101,16 @@ UPDATE client.additionalproperty_tbl SET VALUES = 'PAN_ONLY' WHERE  key = 'ALLOW
 ---Google pay -- PHP config
 update client.additionalproperty_tbl set value='merchantaccount ::= (property[@name=''<mid>''])   
  mid ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.MID."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.MID."(transaction/@wallet-id)'
-where externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44);
+where key='GlobalPayment.mechantaccountrule' and externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44);
 
 update client.additionalproperty_tbl set value='username ::= (property[@name=''<uname>''])
- uname ::= (transaction/authorize-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"'
-where externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44);
+ uname ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"'
+where key='GlobalPayment.usernamerule' and externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44);
 
 update client.additionalproperty_tbl set value='password ::= (property[@name=''<passwd>''])
- passwd ::= (transaction/authorize-amount/@currency)=="PHP"="GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)'
-where externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44);
+ passwd ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)'
+where key='GlobalPayment.pwdrule' and externalid =(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44);
+
 
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.44.PHP', 'PAL-IPG PHP GOOGLEPAY', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=44;
@@ -118,17 +119,17 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 ---Apple pay -- PHP config
 
-update client.additionalproperty_tbl set value='merchantaccount ::= (property[@name=''<mid>''])   
+update client.additionalproperty_tbl set value='merchantaccount ::= (property[@name=''<mid>''])
  mid ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.MID."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.MID."(transaction/@wallet-id)'
-where externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14);
+where key='GlobalPayment.mechantaccountrule' and externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14);
 
 update client.additionalproperty_tbl set value='username ::= (property[@name=''<uname>''])
- uname ::= (transaction/authorize-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"'
-where externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14);
+ uname ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"'
+where key='GlobalPayment.usernamerule' and externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14);
 
 update client.additionalproperty_tbl set value='password ::= (property[@name=''<passwd>''])
- passwd ::= (transaction/authorize-amount/@currency)=="PHP"="GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)'
-where externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14);
+ passwd ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.PASSWORD."(transaction/@wallet-id)'
+where key='GlobalPayment.pwdrule' and externalid=(select id from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14);
 
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.14.PHP', 'PAL-IPG PHP APPLEPAY', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=14;
