@@ -311,7 +311,7 @@ try
         (integer)$obj_XML->callback->transaction->card["type-id"],
         $iStateID,
         $fee,
-        array($HTTP_RAW_POST_DATA),
+        array(file_get_contents('php://input')),
         $sIssuingBank);
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)

@@ -25,7 +25,7 @@ class GooglePayException extends CallbackException { }
 class GooglePay extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new GooglePayException("Method: capture is not supported by Google Pay"); }
-	public function refund($iAmount=-1) { throw new GooglePayException("Method: refund is not supported by Google Pay"); }
+	public function refund($iAmount=-1, $iStatus = NULL) { throw new GooglePayException("Method: refund is not supported by Google Pay"); }
 	public function void($iAmount=-1) { throw new GooglePayException("Method: void is not supported by Google Pay"); }
 	public function cancel() { throw new GooglePayException("Method: cancel is not supported by Google Pay"); }
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new GooglePayException("Method: authTicket is not supported by Google Pay"); }

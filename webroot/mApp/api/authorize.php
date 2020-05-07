@@ -191,7 +191,7 @@ $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 	
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 try
 {
@@ -222,7 +222,7 @@ try
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
 						
 							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-							
+
 						}
 						catch (TxnInfoException $e) { $obj_TxnInfo = null; } // Transaction not found
 
@@ -245,11 +245,11 @@ try
 									}
 									
 									$_OBJ_DB->query("COMMIT");
-									
+
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
-											
+
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
@@ -267,8 +267,8 @@ try
 											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE) &&
 											$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 											{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
-										
-										
+
+
 										$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -345,7 +345,7 @@ try
                                         if (count($obj_Elem->capture_type) > 0)
                                         {
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
-                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
@@ -363,7 +363,7 @@ try
 										{
 
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
-										} 
+										}
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
@@ -857,7 +857,6 @@ try
                                                                                 } else {
                                                                                     $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                 }
-
                                                                                 // Authorization succeeded
                                                                                 if ($code == "100") {
                                                                                     $xml .= '<status code="100">Payment Authorized using Stored Card</status>';
@@ -900,7 +899,7 @@ try
                                                                                     $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
                                                                                     header("HTTP/1.1 502 Bad Gateway");
-
+                                                                                    echo 'in1';
                                                                                     $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                                                                                 }
                                                                             } catch (PaymentProcessorException $e) {

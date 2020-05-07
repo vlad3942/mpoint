@@ -27,7 +27,7 @@ class AMEXExpressCheckout extends CPMPSP
 	
 	
 	public function capture($iAmount=-1) { throw new AMEXExpressCheckoutException("Method: capture is not supported by AMEX Express Checkout"); }
-	public function refund($iAmount=-1) { throw new AMEXExpressCheckoutException("Method: refund is not supported by AMEX Express Checkout"); }
+	public function refund($iAmount=-1, $iStatus = NULL) { throw new AMEXExpressCheckoutException("Method: refund is not supported by AMEX Express Checkout"); }
 	public function void($iAmount=-1) { throw new AMEXExpressCheckoutException("Method: void is not supported by AMEX Express Checkout"); }
 	public function cancel() { throw new AMEXExpressCheckoutException("Method: cancel is not supported by AMEX Express Checkout"); }
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new AMEXExpressCheckoutException("Method: authTicket is not supported by AMEX Express Checkout"); }

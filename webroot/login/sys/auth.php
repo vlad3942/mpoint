@@ -25,7 +25,7 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 $obj_Validator = new Validate();
 
-$obj_XML = simplexml_load_string(trim($HTTP_RAW_POST_DATA) );
+$obj_XML = simplexml_load_string(trim(file_get_contents('php://input')) );
 
 $xml = '';
 $sType = "status";

@@ -42,7 +42,7 @@ else
 	$obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_CountryConfig']);
 	$obj_Validator = new Validate($_SESSION['obj_CountryConfig']);
 	
-	$obj_XML = simplexml_load_string(trim($HTTP_RAW_POST_DATA) );
+	$obj_XML = simplexml_load_string(trim(file_get_contents('php://input')) );
 	
 	$xml = '';
 	$sType = "status";

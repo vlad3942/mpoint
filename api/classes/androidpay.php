@@ -25,7 +25,7 @@ class AndroidPayException extends CallbackException { }
 class AndroidPay extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new AndroidPayException("Method: capture is not supported by Android Pay"); }
-	public function refund($iAmount=-1) { throw new AndroidPayException("Method: refund is not supported by Android Pay"); }
+	public function refund($iAmount=-1, $iStatus = NULL) { throw new AndroidPayException("Method: refund is not supported by Android Pay"); }
 	public function void($iAmount=-1) { throw new AndroidPayException("Method: void is not supported by Android Pay"); }
 	public function cancel() { throw new AndroidPayException("Method: cancel is not supported by Android Pay"); }
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new AndroidPayException("Method: authTicket is not supported by Android Pay"); }

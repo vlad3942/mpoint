@@ -60,7 +60,7 @@ $HTTP_RAW_POST_DATA .= '<end-date>2017-01-30T00:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</get-failed-transactions>';
 $HTTP_RAW_POST_DATA .= '</root>';*/
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 

@@ -45,7 +45,7 @@ else
 	$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH,
 								   "MIN TRANSFER" => General::formatAmount($_SESSION['obj_CountryConfig'], $_SESSION['obj_CountryConfig']->getMinTransfer() ), "ACCOUNT BALANCE" => General::formatAmount($_SESSION['obj_CountryConfig'], iACCOUNT_BALANCE) ) );
 	
-	$obj_XML = simplexml_load_string(trim($HTTP_RAW_POST_DATA) );
+	$obj_XML = simplexml_load_string(trim(file_get_contents('php://input')) );
 	
 	$xml = '';
 	$sType = "status";

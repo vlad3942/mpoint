@@ -56,7 +56,7 @@ $HTTP_RAW_POST_DATA .= '<end-date>2015-06-01T00:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</search-transaction-logs>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 

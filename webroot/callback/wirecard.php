@@ -44,7 +44,7 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 	$i++;
 }
-$obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
+$obj_XML = simplexml_load_string(file_get_contents('php://input'));
 
 $id = (integer)$obj_XML->callback->transaction["id"];
 
@@ -102,7 +102,7 @@ try
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,
 									  $fee,
-									  array($HTTP_RAW_POST_DATA) );
+									  array(file_get_contents('php://input')) );
 	
 	// Customer has an account
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getAccountID() > 0)

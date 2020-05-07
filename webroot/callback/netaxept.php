@@ -33,7 +33,7 @@ header("Content-Type: text/plain");
 
 // as netaxept is setting the wrong  post type this can be removed when when they fix it on their side.
 $HTTP_RAW_POST_DATA = file_get_contents("php://input");
-$obj_JSON = json_decode($HTTP_RAW_POST_DATA);
+$obj_JSON = json_decode(file_get_contents('php://input'));
 
 $imPointID = Callback::getTxnIDFromExtID($_OBJ_DB, $obj_JSON->TransactionId, Constants::iNETAXEPT_PSP);
 try

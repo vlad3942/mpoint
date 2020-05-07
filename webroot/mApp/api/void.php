@@ -135,7 +135,7 @@ $HTTP_RAW_POST_DATA .= '</root>';
 
 $xml = '';
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 for ($i=0; $i<count($obj_DOM->void); $i++)
 	{
 					

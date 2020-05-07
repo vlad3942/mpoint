@@ -28,7 +28,7 @@ require_once(sCLASS_PATH ."/sms_purchase.php");
 header("content-type: text/plain");
 
 // Parse received MO-SMS
-$obj_MsgInfo = GoMobileMessage::produceMessage($HTTP_RAW_POST_DATA);
+$obj_MsgInfo = GoMobileMessage::produceMessage(file_get_contents('php://input'));
 
 // Instantiate mPoint object to handle the transaction
 $obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $obj_MsgInfo);

@@ -122,7 +122,7 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 
 $xml = '';
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 for ($i=0; $i<count($obj_DOM->capture); $i++)
 {
 	$clientID=$obj_DOM->capture[$i]["client-id"];
