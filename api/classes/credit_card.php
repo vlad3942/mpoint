@@ -290,7 +290,7 @@ class CreditCard extends EndUserAccount
 					{
 					    $sql .= ' AND C.ID =' . $typeid ;
 					}
-				$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC';
+				$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC LIMIT 1';
 
 		$res = $this->getDBConn()->query($sql);
 
