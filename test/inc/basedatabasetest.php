@@ -1,6 +1,6 @@
 <?php
-
-abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+abstract class BaseDatabaseTest extends TestCase
 {
     protected $mPointDBInfo;
 
