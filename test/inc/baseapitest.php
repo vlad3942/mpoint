@@ -5,6 +5,11 @@ abstract class baseAPITest extends BaseDatabaseTest
 	protected $bIgnoreErrors = false;
 	private static $aVisited = array();
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function setUp($isDBSetupRequired = true)
     {
         if (!file_exists(sLOG_PATH) )
