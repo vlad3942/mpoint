@@ -274,7 +274,7 @@ class CreditCard extends EndUserAccount
     public function getCardsForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null)
 	{
 
-        $sql = 'SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
+        $sql = 'SELECT DISTINCT ON (C.id, CA.walletid) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
 					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid,CA.dccEnabled
 				FROM ' . $this->_constDataSourceQuery() . '
@@ -290,7 +290,7 @@ class CreditCard extends EndUserAccount
 					{
 					    $sql .= ' AND C.ID =' . $typeid ;
 					}
-				$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC';
+				//$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC LIMIT 1';
 
 		$res = $this->getDBConn()->query($sql);
 
