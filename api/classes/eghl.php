@@ -36,8 +36,8 @@ class EGHL extends CPMPSP
         $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
         $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
         $sortable = array();
-        if(count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) > 1){
-            foreach ($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
+        if(count($activePaymentMethods->{'active-payment-methods'}->{'payment-method'}) > 1){
+            foreach ($activePaymentMethods->{'active-payment-methods'}->{'payment-method'} as $node) {
                 $issuingBank = strtolower($node->issuingBank);
                 $usageCount = (int)$aStatisticalData['issuing_bank_' . $issuingBank];
                 $node->addChild('usage', $usageCount);
@@ -45,13 +45,13 @@ class EGHL extends CPMPSP
             }
         }
         usort($sortable,   'compare_usage');
-        $newSortedList = "<root><active-payment-menthods>";
+        $newSortedList = "<root><active-payment-methods>";
         foreach ($sortable as $node)
         {
             unset($node->usage);
             $newSortedList .= $node->asXML();
         }
-        $newSortedList .= "</active-payment-menthods></root>";
+        $newSortedList .= "</active-payment-methods></root>";
         $sxml = simplexml_load_string($newSortedList);
         return $sxml;
 
