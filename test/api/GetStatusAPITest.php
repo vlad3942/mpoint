@@ -9,6 +9,7 @@ class GetStatusAPITest extends baseAPITest
 
 	public function __construct()
 	{
+        parent::__construct();
         $this->bIgnoreErrors = true;
 		$this->constHTTPClient();
 	}
