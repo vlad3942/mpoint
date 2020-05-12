@@ -112,7 +112,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		if ($status == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
-			return $this->cancel($iStatus);
+			return $this->cancel();
 		}
 		// If the PSP does not support a status call we will do a Cancel call if our status of the transaction does not have a capture message
 		elseif (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, false) ) == 0)
@@ -275,7 +275,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel($iStatus=null, $amount = -1)
+	public function cancel()
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -495,7 +495,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, ClientInfo $clientInfo = null)
+	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
 	    try
         {
