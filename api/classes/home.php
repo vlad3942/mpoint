@@ -86,8 +86,12 @@ class Home extends General
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountID(CountryConfig &$oCC, $addr, $clid=-1)
+	public function getAccountID()
 	{
+        $aArgs = func_get_args();
+        $oCC = $aArgs[0];
+        $addr = $aArgs[1];
+        $clid =  $aArgs[2];
 		if (floatval($addr) > $oCC->getMinMobile() ) { $sql = "A.mobile = '". floatval($addr) ."'"; }
 		else { $sql = "Upper(A.email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
 
@@ -1142,7 +1146,7 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid=-1)
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);

@@ -146,9 +146,9 @@ class EndUserAccount extends Home
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid=-1)
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
 	{
-		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable,$profileid);
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable, $profileid);
 
 		// Created account should only be available to Client
 		if ($iAccountID > 0 && ($this->_obj_ClientConfig->getStoreCard()&2) == 2)
