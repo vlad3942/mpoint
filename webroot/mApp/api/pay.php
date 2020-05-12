@@ -260,10 +260,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 if(empty($oRoute->preference) === false){
                                     if ($oRoute->preference === 1) {
                                         $obj_CardResultSet['PSPID'] = $oRoute->id;
-                                    }else{
-                                        // Store alternate routes to authorize transaction  if psp1 fails during authorize
-                                        $objTxnRoute->setAlternateRoute($oRoute->id, $oRoute->preference);
-									}
+                                    }
+									// Store alternate routes to authorize transaction if psp1 fails during authorize
+									$objTxnRoute->setAlternateRoute($oRoute->id, $oRoute->preference);
 								}else{
                                     $obj_CardResultSet['PSPID'] = $oRoute->id;
 								}

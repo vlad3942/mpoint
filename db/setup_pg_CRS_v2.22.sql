@@ -21,3 +21,9 @@ WITH (
 );
 ALTER TABLE log.txnroute_tbl OWNER TO postgres;
 
+
+
+--  Revert Changes
+ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE varchar(50);
+
+

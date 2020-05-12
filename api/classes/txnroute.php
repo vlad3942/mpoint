@@ -93,20 +93,11 @@ class TxnRoute
      */
     public function getAlternateRoute($preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
-        $iRoute = 0;
         if(empty($this->_aRoutes)===true) {
             $this->getRoutes();
         }
 
-        foreach ($this->_aRoutes as $route)
-        {
-            if($route['preference'] == $preference)
-            {
-                $iRoute = $route['pspid'];
-                break;
-            }
-        }
-        return $iRoute;
+        return (empty($this->_aRoutes[$preference]) === false)?$this->_aRoutes[$preference]:0;
     }
 
     /**
@@ -124,16 +115,14 @@ class TxnRoute
 
             $result = $this->getDBConn()->execute($res, $aParams);
 
-            if ($result === FALSE) {
-                throw new Exception('Fail to fetch route for session :' . $this->_obj_TxnInfo->getSessionId(), E_USER_ERROR);
-            } else {
+            if (is_resource($result) === TRUE) {
                 while ($RS = $this->getDBConn()->fetchName($result)) {
-                    $this->_aRoutes[] = array(
-                        'pspid' => $RS['PSPID'],
-                        'preference' => $RS['PREFERENCE']
-                    );
+                    $this->_aRoutes[$RS['PREFERENCE']] = $RS['PSPID'];
                 }
             }
+        }else{
+            trigger_error('Fail to fetch route for session : ' . $this->_obj_TxnInfo->getSessionId(), E_USER_ERROR);
+            return false;
         }
     }
 
