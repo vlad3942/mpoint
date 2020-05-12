@@ -19,15 +19,18 @@ abstract class BaseDatabaseTest extends TestCase
      */
     private $_isDBSetuped;
 
-    public function setup($isDBSetupRequired)
+    public function setDBSetup($isDBSetupRequired){
+        $this->_isDBSetuped = $isDBSetupRequired;
+    }
+
+    public function setup()
     {
         parent::setup();
-        $this->_isDBSetuped = $isDBSetupRequired;
         $this->applyTestConfiguration();
 
         global $aDB_CONN_INFO;
         $this->mPointDBInfo = $aDB_CONN_INFO["mpoint"];
-        if($isDBSetupRequired === true)
+        if($this->_isDBSetuped === true)
         {
             $this->setupMpointDB();
         }

@@ -10,7 +10,7 @@ abstract class baseAPITest extends BaseDatabaseTest
         parent::__construct();
     }
 
-    public function setUp($isDBSetupRequired = true)
+    public function setUp()
     {
         if (!file_exists(sLOG_PATH) )
         {
@@ -22,7 +22,7 @@ abstract class baseAPITest extends BaseDatabaseTest
 		file_put_contents(sERROR_LOG, '');
 
 		echo " ". get_class($this) ."::". $this->getName() ."()\n";
-		parent::setup($isDBSetupRequired);
+		parent::setup();
     }
 
     /**
