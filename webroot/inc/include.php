@@ -147,10 +147,10 @@ require_once(sCONF_PATH ."global.php");
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 
 // Web Request
-if ( (preg_match("/buy/", $_SERVER['PHP_SELF']) == false || preg_match("/buy/web.php", $_SERVER['PHP_SELF']) == true || preg_match("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
+if ( (preg_match("/buy/", $_SERVER['PHP_SELF']) == false || preg_match("/buy/web.php", $_SERVER['PHP_SELF']) == true || preg_match("/buy\/topup.php/", $_SERVER['PHP_SELF']) == true)
 		&& preg_match("/subscr/", $_SERVER['PHP_SELF']) == false && preg_match("/callback/", $_SERVER['PHP_SELF']) == false
 		&& preg_match("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
-		&& preg_match("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && preg_match("/api/", $_SERVER['PHP_SELF']) == false)
+		&& preg_match("/pay\/sys\/sms.php/", $_SERVER['PHP_SELF']) == false && preg_match("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
