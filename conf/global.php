@@ -3,7 +3,7 @@
  * Set error types that are to be reported by the error handler
  * Both errors and warnings are reported, notices however are not
  */
-error_reporting(E_ALL & ~E_STRICT);
+error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
 /**
  * Path to Log Files directory
  */
