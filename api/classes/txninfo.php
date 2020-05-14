@@ -389,12 +389,26 @@ class TxnInfo
      */
     private $_iPaymentType = 0;
 
+	/*
+     *  card name of card used for transaction
+     *
+     * @var integer
+     */
+	private $_sCardName = 0;
+
     /*
      *  Processor type based on psp used for transaction
      *
      * @var integer
      */
     private $_iProcessorType = 0;
+
+	/*
+    *  PSP name based on psp used for transaction
+    *
+    * @var integer
+    */
+	private $_sPSPName = 0;
 
     /**
      * User selected to pay in these many installments
@@ -2176,7 +2190,7 @@ class TxnInfo
         {
             if($this->_iProcessorType === 0)
             {
-                $query = "SELECT system_type FROM system" . sSCHEMA_POSTFIX . ".psp_tbl WHERE id = '" . $this->_iPSPID . "'";
+                $query = "SELECT system_type,name FROM system" . sSCHEMA_POSTFIX . ".psp_tbl WHERE id = '" . $this->_iPSPID . "'";
 
                 $resultSet = $obj_DB->getName($query);
                 if (is_array($resultSet) === true)
@@ -2185,6 +2199,7 @@ class TxnInfo
                     if($processorType !== null && $processorType !== '')
                     {
                         $this->_iProcessorType = $processorType;
+                        $this->_sPSPName = $resultSet['NAME'];
                     }
                 }
             }
@@ -2194,7 +2209,10 @@ class TxnInfo
         {
             trigger_error("Failed to update psp details (log.transaction_tbl)", E_USER_ERROR);
         }
-        return $this->_iProcessorType;
+		$stdClassObj=new stdClass();
+		$stdClassObj->ProcessorType = $this->_iProcessorType;
+		$stdClassObj->PSPName = $this->_sPSPName;
+		return $stdClassObj;
 	}
 
     /**
@@ -2207,7 +2225,7 @@ class TxnInfo
         {
             if($this->_iPaymentType == 0)
             {
-                $query = "SELECT paymenttype FROM system" . sSCHEMA_POSTFIX . ".card_tbl WHERE id = '" . $this->_iCardID . "'";
+                $query = "SELECT paymenttype,name FROM system" . sSCHEMA_POSTFIX . ".card_tbl WHERE id = '" . $this->_iCardID . "'";
 
                 $resultSet = $obj_DB->getName($query);
                 if (is_array($resultSet) === true)
@@ -2216,6 +2234,7 @@ class TxnInfo
                     if($paymentType !== null && $paymentType !== '')
                     {
                         $this->_iPaymentType = $paymentType;
+                        $this->_sCardName = $resultSet['NAME'];
                     }
                 }
             }
@@ -2249,6 +2268,7 @@ class TxnInfo
 		$stdClassObj=new stdClass();
 		$stdClassObj->PaymentType = $this->_iPaymentType;
 		$stdClassObj->PaymentMethod = $paymentMethod;
+		$stdClassObj->CardName = $this->_sCardName;
 		return $stdClassObj;
     }
 

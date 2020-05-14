@@ -28,10 +28,13 @@ $HTTP_RAW_POST_DATA =  '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<get-transaction-status>';
 $HTTP_RAW_POST_DATA .= '<transactions>';
-$HTTP_RAW_POST_DATA .= '<transaction-id>1814879</transaction-id>';
+$HTTP_RAW_POST_DATA .= '<transaction-id mode='1'>1814879</transaction-id>';
 $HTTP_RAW_POST_DATA .= '</transactions>';
 $HTTP_RAW_POST_DATA .= '</get-transaction-status>';
-$HTTP_RAW_POST_DATA .= '</root>';*/
+$HTTP_RAW_POST_DATA .= '</root>';
+mode param is optional when populated with value 1 then status code will return only after session is closed and
+oly final payment status code will be returned to avoid extra checks at API consumer side
+*/
 
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
@@ -43,7 +46,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $aTransactionIDs = $obj_DOM->{'get-transaction-status'}->transactions->{'transaction-id'};
         for ($i=0; $i<count($aTransactionIDs); $i++)
         {
-            $xml .= $obj_mPoint->getTxnStatus($aTransactionIDs[$i]);
+            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$aTransactionIDs[$i]['mode']);
         }
 
 }
