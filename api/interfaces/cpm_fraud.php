@@ -240,11 +240,12 @@ abstract class CPMFRAUD
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
                 $response = FraudResponse::produceInfoFromXML($iFraudType,$obj_XML);
                 $iStatusCode = $response->getStatusCode();
-                if(empty($response->getExternalID()) === false)
+                $externalID = $response->getExternalID();
+                if(empty($externalID) === false)
                 {
                     $additionalTxnData = [];
                     $additionalTxnData[0]['name'] = "FraudExternalID";
-                    $additionalTxnData[0]['value'] = $response->getExternalID();
+                    $additionalTxnData[0]['value'] = $externalID;
                     $additionalTxnData[0]['type'] = 'Transaction';
                     $this->getTxnInfo()->setAdditionalDetails($this->getDBConn(),$additionalTxnData,$this->getTxnInfo()->getID());
                 }
