@@ -865,19 +865,24 @@ class Home extends General
             $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
             $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
             $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
+            $cardMask = $obj_TxnInfo->getCardMask();
+            $acceptUrl = $obj_TxnInfo->getAcceptURL();
+            $cancelUrl = $obj_TxnInfo->getCancelURL();
+            $cssUrl = $obj_TxnInfo->getCSSURL();
+            $logoUrl = $obj_TxnInfo->getLogoURL();
             $xml = '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
             $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             if($obj_TxnInfo->getConversationRate() !=1 )
             {
                 $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
             }
-            if(empty($obj_TxnInfo->getCardMask()) === false){ $xml .= '<card-mask>'.htmlspecialchars($obj_TxnInfo->getCardMask(), ENT_NOQUOTES).'</card-mask>'; }
+            if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
             $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
             $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
-            $xml .= '<accept-url>' . htmlspecialchars($obj_TxnInfo->getAcceptURL(), ENT_NOQUOTES) . '</accept-url>';
-            $xml .= '<cancel-url>' . htmlspecialchars($obj_TxnInfo->getCancelURL(), ENT_NOQUOTES) . '</cancel-url>';
-            $xml .= '<css-url>' . htmlspecialchars($obj_TxnInfo->getCSSURL(), ENT_NOQUOTES) . '</css-url>';
-            $xml .= '<logo-url>' . htmlspecialchars($obj_TxnInfo->getLogoURL(), ENT_NOQUOTES) . '</logo-url>';
+            $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
+            $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
+            $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
+            $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
             $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
             $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
             if (empty($isEmbeddedHpp) === false) {
