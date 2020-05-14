@@ -351,9 +351,9 @@ class CreditCard extends EndUserAccount
 
         if(empty($iRoute) === false){
             $sql .= ' AND CA.pspid =' . $iRoute ;
-            $sql .= ' AND (CA.countryid = ' . $this->_obj_TxnInfo->getCountryConfig()->getID() . ' )';
+            $sql .= ' AND CA.countryid IS NOT NULL';
         }else{
-            $sql .= ' AND (CA.countryid ='. $this->_obj_TxnInfo->getCountryConfig()->getID() .' OR CA.countryid IS NULL)';
+            $sql .= ' AND CA.countryid IS NULL';
         }
 
         if($typeid !== null)
