@@ -1050,6 +1050,7 @@
 								</xs:all>
 							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
 							<xs:attribute name="order-no" type="order-no" use="optional"/>
+							<xs:attribute name="order-ref" type="order-ref" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:all>
@@ -1332,6 +1333,13 @@
 			 <xs:pattern value="[a-zA-Z0-9._-]*"/>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:simpleType name="order-ref">
+		<xs:restriction base="xs:string">
+			 <xs:pattern value="[a-zA-Z0-9._-]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 <xs:element name="urls">
     <xs:complexType>
         <xs:sequence>
