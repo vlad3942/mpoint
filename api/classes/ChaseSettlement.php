@@ -272,6 +272,7 @@ class ChaseSettlement extends mPointSettlement
                                     {
                                         $obj_PSP->notifyClient($stateId, $args,$this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                     }
+                                    $obj_PSP->notifyForeignExchange(array($stateId),$this->_objConnectionInfo['foreign-exchange']);
 
 
                                 if ($isDescriptionUpdated === true) {
