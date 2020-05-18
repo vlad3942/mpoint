@@ -247,14 +247,28 @@ abstract class CPMFRAUD
                 $response = FraudResponse::produceInfoFromXML($iFraudType,$obj_XML);
                 $iStatusCode = $response->getStatusCode();
                 $externalID = $response->getExternalID();
+                $externalActionCode = $response->getExternalActionCode();
+                $additionalTxnData = [];
+                $i = 0;
+                $preFix = "pre_auth";
+                if($iFraudType === Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY) { $preFix = "post_auth"; }
+
                 if(empty($externalID) === false)
                 {
-                    $additionalTxnData = [];
-                    $additionalTxnData[0]['name'] = "FraudExternalID";
-                    $additionalTxnData[0]['value'] = $externalID;
-                    $additionalTxnData[0]['type'] = 'Transaction';
-                    $this->getTxnInfo()->setAdditionalDetails($this->getDBConn(),$additionalTxnData,$this->getTxnInfo()->getID());
+                    $additionalTxnData[$i]['name'] = $preFix.'_ext_id';
+                    $additionalTxnData[$i]['value'] = $externalID;
+                    $additionalTxnData[$i]['type'] = 'Transaction';
+                    $i++;
                 }
+                if(empty($externalActionCode) === false)
+                {
+                    $additionalTxnData[$i]['name'] = $preFix.'_ext_code';
+                    $additionalTxnData[$i]['value'] = $externalActionCode;
+                    $additionalTxnData[$i]['type'] = 'Transaction';
+                }
+
+                $this->getTxnInfo()->setAdditionalDetails($this->getDBConn(),$additionalTxnData,$this->getTxnInfo()->getID());
+
                 $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $iStatusCode, utf8_encode($obj_HTTP->getReplyBody() ));
                 return $iStatusCode;
             }
