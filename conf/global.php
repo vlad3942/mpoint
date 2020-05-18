@@ -700,7 +700,9 @@ $aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-payment-data"] = "/mpoint/mvault/get-payment-data";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-token"] = "/mpoint/mvault/get-token";
 $aHTTP_CONN_INFO["mvault"]["paths"]["tokenize"] = "/mpoint/mvault/save-card";
-$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mpoint/save-card";
+$aHTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
+$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mvault/save-card";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-card-details"] = "/mvault/get-card-details";
 
 /**
  * Connection info for connecting to Paytabs
