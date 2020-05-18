@@ -219,12 +219,23 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						
 						$aMsgCds[$code] = "Success";
 						// Perform callback to Client
-						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
+						if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
 						{
-							$args = array("transact" => $obj_TxnInfo->getExternalID(),
-										  "amount" => $_REQUEST['amount']);
-							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-						}
+						    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                            {
+                                $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                    "amount" => $_REQUEST['amount']);
+                                $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                            }
+
+                            $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                        }
+						else if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CANCELLED_STATE) === true)
+                        {
+                            $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CANCELLED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+
+                        }
+
 					}
                     else if ($code == 1100) {
                         header("HTTP/1.0 200 OK");

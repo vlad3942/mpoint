@@ -119,6 +119,7 @@ class RoutingService extends General
         }else{
             $b .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
         }
+        $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $b .= '</amount>';
         $b .= '</transaction>';
         $b .= '<client_info>';
@@ -171,6 +172,7 @@ class RoutingService extends General
         }else{
             $b .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
         }
+        $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $b .= '</amount>';
         $b .= '<card>';
         $b .= '<id>'.$this->_iCardTypeId.'</id>';
