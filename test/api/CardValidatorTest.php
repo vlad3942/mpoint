@@ -20,7 +20,7 @@ class CardValidatorTest extends baseAPITest
     private $cardValidator;
     private $_OBJ_DB;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(TRUE);
 
@@ -44,7 +44,7 @@ class CardValidatorTest extends baseAPITest
         $this->assertEquals(720, $this->cardValidator->valCardNumber());
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

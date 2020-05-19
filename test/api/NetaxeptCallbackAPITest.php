@@ -56,7 +56,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<status code="2000">', $sReplyBody);
+		$this->assertStringContainsString('<status code="2000">', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT extid, stateid FROM Log.Message_Tbl m, Log.Transaction_Tbl t WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -106,7 +106,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
         $this->bIgnoreErrors = true;
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<status code="2000">', $sReplyBody);
+		$this->assertStringContainsString('<status code="2000">', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT extid, m.stateid stateid, t.euaid euaid, et.accountid accountid FROM Log.Message_Tbl m, Log.Transaction_Tbl t, Enduser.Transaction_Tbl et WHERE t.id = 1001001 AND m.txnid = t.id AND et.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -167,7 +167,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<status code="2000">', $sReplyBody);
+		$this->assertStringContainsString('<status code="2000">', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT extid, m.stateid stateid, t.euaid euaid, et.accountid accountid FROM Log.Message_Tbl m, Log.Transaction_Tbl t LEFT JOIN Enduser.Transaction_Tbl et ON et.txnid = t.id WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );

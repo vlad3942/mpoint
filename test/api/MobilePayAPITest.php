@@ -12,7 +12,7 @@ class MobilePayAPITest extends PayAPITest
     public function testSuccessfulPay()
     {
         $sReplyBody = parent::testSuccessfulPay(Constants::iMOBILEPAY_PSP, Constants::iMOBILEPAY, $typeId=3);
-		$this->assertContains('<url method="app"/>', $sReplyBody);
+		$this->assertStringContainsString('<url method="app"/>', $sReplyBody);
 	}
 
 }

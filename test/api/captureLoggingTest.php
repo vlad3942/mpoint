@@ -30,7 +30,7 @@ class CaptureLoggingTest extends baseAPITest
 	private $_aWireCardConnInfo;
 	private $_aMPOINT_CONN_INFO;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->bIgnoreErrors = true;
 		parent::setUp();
@@ -155,7 +155,7 @@ class CaptureLoggingTest extends baseAPITest
 		}
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->_obj_DB->disConnect();
 		parent::tearDown();

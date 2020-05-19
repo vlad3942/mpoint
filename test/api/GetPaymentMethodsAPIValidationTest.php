@@ -80,7 +80,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
     }
 
     public function testDisabledAccount()
@@ -96,7 +96,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
 	}
 
 	public function testUnauthorized()
@@ -109,7 +109,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Authorization required</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Authorization required</status>', $sReplyBody);
 	}
 
 	public function testWrongUsernamePassword()
@@ -126,7 +126,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
 	}
 
     public function testEmptyCurrencyId()
@@ -155,7 +155,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><payment_methods><cards></cards></payment_methods></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><payment_methods><cards></cards></payment_methods></root>', $sReplyBody);
 	}
 
 	public function testSuccessPaymentMethods()
@@ -188,7 +188,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><payment_methods><cards><card><id>2</id><type-id>2</type-id><psp-id>2</psp-id><min-length>16</min-length><max-length>16</max-length><cvc-length>3</cvc-length><state-id>2</state-id><payment-type>1</payment-type><name>Dankort</name><prefixes><prefix><min>5019</min><max>5019</max></prefix><prefix><min>4571</min><max>4571</max></prefix></prefixes>Dankort</card></cards></payment_methods></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><payment_methods><cards><card><id>2</id><type-id>2</type-id><psp-id>2</psp-id><min-length>16</min-length><max-length>16</max-length><cvc-length>3</cvc-length><state-id>2</state-id><payment-type>1</payment-type><name>Dankort</name><prefixes><prefix><min>5019</min><max>5019</max></prefix><prefix><min>4571</min><max>4571</max></prefix></prefixes>Dankort</card></cards></payment_methods></root>', $sReplyBody);
 	}
 
 	public function testInvalidCurrency()
@@ -214,7 +214,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="56">Invalid Currency:209</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="56">Invalid Currency:209</status></root>', $sReplyBody);
 	}
 	
     public function testInvalidTransactionAmount()
@@ -227,7 +227,7 @@ class GetPaymentMethodsAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:positiveInteger\'.</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:positiveInteger\'.</status></root>', $sReplyBody);
     }
 
 }

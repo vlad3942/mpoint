@@ -24,7 +24,7 @@ class RoutingServiceTest extends baseAPITest
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -117,10 +117,10 @@ class RoutingServiceTest extends baseAPITest
                     $aPSPType[] = $paymentMethod->psp_type;
                 }
 
-                $this->assertContains(17, $aCardId);
-                $this->assertContains(18, $aCardId);
-                $this->assertContains(1, $aPSPType);
-                $this->assertContains(2, $aPSPType);
+                $this->assertStringContainsString(17, $aCardId);
+                $this->assertStringContainsString(18, $aCardId);
+                $this->assertStringContainsString(1, $aPSPType);
+                $this->assertStringContainsString(2, $aPSPType);
             }
         }
     }
@@ -222,10 +222,10 @@ class RoutingServiceTest extends baseAPITest
                     $aPreference[] = $oRoute->preference;
                 }
 
-                $this->assertContains(17, $aPSPIds);
-                $this->assertContains(18, $aPSPIds);
-                $this->assertContains(1, $aPreference);
-                $this->assertContains(2, $aPreference);
+                $this->assertStringContainsString(17, $aPSPIds);
+                $this->assertStringContainsString(18, $aPSPIds);
+                $this->assertStringContainsString(1, $aPreference);
+                $this->assertStringContainsString(2, $aPreference);
             }
         }
     }
@@ -289,7 +289,7 @@ class RoutingServiceTest extends baseAPITest
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

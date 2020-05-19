@@ -229,7 +229,7 @@ class ParserTest extends baseAPITest
         $this->assertEquals(null, $output);
     }
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->bIgnoreErrors = true;
         parent::setUp(false);

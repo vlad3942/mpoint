@@ -10,7 +10,7 @@ abstract class baseAPITest extends BaseDatabaseTest
         parent::__construct();
     }
 
-    public function setUp($isDBSetupRequired = true)
+    public function setUp($isDBSetupRequired = true):void
     {
         if (!file_exists(sLOG_PATH) )
         {
@@ -53,7 +53,7 @@ abstract class baseAPITest extends BaseDatabaseTest
 		return file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		parent::tearDown();
 

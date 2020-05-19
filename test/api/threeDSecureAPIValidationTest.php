@@ -54,7 +54,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertContains('<root><status code="400">Element \'xml\'', $sReplyBody);
+        $this->assertStringContainsString('<root><status code="400">Element \'xml\'', $sReplyBody);
     }
 
     public function testBadRequestDisabledClient()
@@ -69,7 +69,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
     }
 
     public function testDisabledAccount()
@@ -85,7 +85,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
 	}
 
     public function testUndefinedTransaction()
@@ -122,7 +122,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="40">Transaction not in right state. mPoint ID: 1001001 Client ID: 113</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="40">Transaction not in right state. mPoint ID: 1001001 Client ID: 113</status></root>', $sReplyBody);
 	}
 
 	public function testTransactionInWrongStateRefunded()
@@ -144,7 +144,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="37">Transaction not in right state. mPoint ID: 1001001 Client ID: 113</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="37">Transaction not in right state. mPoint ID: 1001001 Client ID: 113</status></root>', $sReplyBody);
 	}
 
 	public function testUnauthorized()
@@ -157,7 +157,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Authorization required</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Authorization required</status>', $sReplyBody);
 	}
 
 	public function testWrongUsernamePassword()
@@ -174,7 +174,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
 	}
 
 	public function testWrongContentType()

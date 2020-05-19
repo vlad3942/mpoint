@@ -70,7 +70,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Authorization required</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Authorization required</status>', $sReplyBody);
 	}
 
     public function testMissingTxnId()
@@ -83,7 +83,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'transaction-id\': \'\' is not a valid value of the atomic type', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'transaction-id\': \'\' is not a valid value of the atomic type', $sReplyBody);
     }
     
     public function testInvalidTxnId()
@@ -95,7 +95,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'transaction-id\': \'70063s82\' is not a valid value of the atomic type', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'transaction-id\': \'70063s82\' is not a valid value of the atomic type', $sReplyBody);
     }
 
 
@@ -126,7 +126,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-	 	$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><transaction id="1001001" mpoint-id="1001001" order-no="103-1418291" accoutid="1100" clientid="113"', $sReplyBody);
+	 	$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><transaction id="1001001" mpoint-id="1001001" order-no="103-1418291" accoutid="1100" clientid="113"', $sReplyBody);
     }
 
 }

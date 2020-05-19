@@ -19,7 +19,7 @@ abstract class BaseDatabaseTest extends TestCase
      */
     private $_isDBSetuped;
 
-    public function setup($isDBSetupRequired)
+    public function setup($isDBSetupRequired): void
     {
         parent::setup();
         $this->_isDBSetuped = $isDBSetupRequired;
@@ -93,7 +93,7 @@ abstract class BaseDatabaseTest extends TestCase
         touch($confDir. 'global.php', filemtime($confDir. 'global.php.backup') );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->dropMpointDB();
         $this->restoreOriginalConfiguration();

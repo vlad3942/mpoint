@@ -16,7 +16,7 @@ abstract class UpdateSettlementStatusAPITest extends baseAPITest
 	private $_obj_TXT;
 	private $_aMPOINT_CONN_INFO;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->bIgnoreErrors = true;
 		parent::setUp();
@@ -133,7 +133,7 @@ abstract class UpdateSettlementStatusAPITest extends baseAPITest
 		$this->assertEquals('OK', $Status[0]);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->_obj_DB->disConnect();
 		parent::tearDown();

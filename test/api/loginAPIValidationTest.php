@@ -69,7 +69,7 @@ class LoginAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="" format="{PRICE} {CURRENCY}">0</balance><funds>0,00 </funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="113" store-card="0">Test Client</client></clients>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="" format="{PRICE} {CURRENCY}">0</balance><funds>0,00 </funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="113" store-card="0">Test Client</client></clients>', $sReplyBody);
 	}
 
 	public function testUnSuccessfulLogin()
@@ -151,7 +151,7 @@ class LoginAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(403, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="31" /></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="31" /></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT attempts FROM EndUser.Account_Tbl WHERE id = 5001");
 		$this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
@@ -168,7 +168,7 @@ class LoginAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="" format="{PRICE} {CURRENCY}">0</balance><funds>0,00 </funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="113" store-card="0">Test Client</client></clients>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="" format="{PRICE} {CURRENCY}">0</balance><funds>0,00 </funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="113" store-card="0">Test Client</client></clients>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT attempts FROM EndUser.Account_Tbl WHERE id = 5001");
 		$this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);

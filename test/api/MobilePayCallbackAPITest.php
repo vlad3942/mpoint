@@ -56,7 +56,7 @@ class MobilePayCallbackAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains("Callback handled", $sReplyBody);
+        $this->assertStringContainsString("Callback handled", $sReplyBody);
 
         $res =  $this->queryDB("SELECT extid, stateid FROM Log.Message_Tbl m, Log.Transaction_Tbl t WHERE t.id = 1001001 AND m.txnid = t.id");
         $this->assertTrue(is_resource($res) );
@@ -103,7 +103,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Callback handled", $sReplyBody);
+		$this->assertStringContainsString("Callback handled", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT extid, stateid FROM Log.Message_Tbl m, Log.Transaction_Tbl t WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -151,7 +151,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Callback handled", $sReplyBody);
+		$this->assertStringContainsString("Callback handled", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT extid, stateid FROM Log.Message_Tbl m, Log.Transaction_Tbl t WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -210,7 +210,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Callback handled", $sReplyBody);
+		$this->assertStringContainsString("Callback handled", $sReplyBody);
 
 		$res2 =  $this->queryDB("SELECT extid, stateid FROM Log.Message_Tbl m, Log.Transaction_Tbl t WHERE t.id = 1001001 AND m.txnid = t.id");
 		$res1 =  $this->queryDB("SELECT extid, stateid FROM Log.Message_Tbl m, Log.Transaction_Tbl t WHERE t.id = 1001002 AND m.txnid = t.id");
@@ -267,7 +267,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 
 		$this->bIgnoreErrors = true;
 		$this->assertEquals(404, $iStatus);
-		$this->assertContains('<status code="404">Transaction not found</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="404">Transaction not found</status>', $sReplyBody);
 	}
 
 	public function testTransactionUnknownByPSP()
@@ -303,7 +303,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 
 		$this->bIgnoreErrors = true;
 		$this->assertEquals(404, $iStatus);
-		$this->assertContains('<status code="404">Transaction not found</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="404">Transaction not found</status>', $sReplyBody);
 	}
 
 	public function testTransactionInInvalidState()
@@ -339,7 +339,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 
 		$this->bIgnoreErrors = true;
 		$this->assertEquals(403, $iStatus);
-		$this->assertContains('<status code="403">Transaction not in a valid state, PSP state: 2003</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="403">Transaction not in a valid state, PSP state: 2003</status>', $sReplyBody);
 	}
 
 }

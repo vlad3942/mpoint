@@ -79,7 +79,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
     }
 
     public function testDisabledAccount()
@@ -95,7 +95,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
 	}
 
     public function testUndefinedTransaction()
@@ -125,7 +125,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Authorization required</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Authorization required</status>', $sReplyBody);
 	}
 
 	public function testWrongUsernamePassword()
@@ -142,7 +142,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
 	}
 
 	public function testIINBlocked4DigitsInput4DigitRule()
@@ -537,7 +537,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertContains('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
+        $this->assertStringContainsString('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
     }
 
 
