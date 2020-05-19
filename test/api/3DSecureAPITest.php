@@ -83,7 +83,6 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testSuccess()
 	{
 		$simulatorConf = array('error' => 0);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
@@ -120,7 +119,6 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testSuccessWithoutOrderID()
 	{
 		$simulatorConf = array('error' => 0);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
@@ -136,7 +134,6 @@ class ThreeDSecureAPITest extends baseAPITest
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-
 		$this->assertEquals(200, $iStatus);
 		$this->assertXmlStringEqualsXmlString($this->responseDoc(), $sReplyBody);
 
@@ -157,7 +154,6 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testUnrecognized3DSecureProvider()
 	{
 		$simulatorConf = array('error' => 91);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
@@ -194,7 +190,6 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testRequiredFieldsMissing()
 	{
 		$simulatorConf = array('error' => 92);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
@@ -231,7 +226,6 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testUnknownResponseFromChallengeParser()
 	{
 		$simulatorConf = array('error' => 93);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
@@ -268,7 +262,6 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testMalformedResponseFromEndpoint()
 	{
 		$simulatorConf = array('error' => 94);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");

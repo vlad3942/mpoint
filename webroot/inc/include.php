@@ -21,7 +21,6 @@ else
 	define("sSYSTEM_PATH", substr($sPath, 0, strlen($sPath)-1) );
 }
 /* ========== Define System path End ========== */
-
 // Define path to the General API classes
 define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/classes/");
 // Define path to the General API interfaces
@@ -145,44 +144,6 @@ require_once(sCONF_PATH ."global.php");
 
 // Set Custom Error & Exception handlers
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
-
-// Web Request
-if ( (preg_match("/buy/", $_SERVER['PHP_SELF']) == false || preg_match("/buy/web.php", $_SERVER['PHP_SELF']) == true || preg_match("/buy\/topup.php/", $_SERVER['PHP_SELF']) == true)
-		&& preg_match("/subscr/", $_SERVER['PHP_SELF']) == false && preg_match("/callback/", $_SERVER['PHP_SELF']) == false
-		&& preg_match("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
-		&& preg_match("/pay\/sys\/sms.php/", $_SERVER['PHP_SELF']) == false && preg_match("/api/", $_SERVER['PHP_SELF']) == false)
-{
-	// Start user session
-	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
-
-	// Session object not initialized
-	if (isset($_SESSION['obj_Info']) === false)
-	{
-		$_SESSION['obj_Info'] = new WebSession();
-	}
-
-	// Not fetching an Image or performing a back-end process and accessing the mobile website
-	if (preg_match("/img/", $_SERVER['PHP_SELF']) == false && preg_match("/sys/", $_SERVER['PHP_SELF']) == false
-			&& (preg_match("/pay/", $_SERVER['PHP_SELF']) == true || preg_match("/shop/", $_SERVER['PHP_SELF']) == true
-					|| preg_match("/anet/", $_SERVER['PHP_SELF']) == true || preg_match("/wannafind/", $_SERVER['PHP_SELF']) == true
-					|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
-					|| (preg_match("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
-	{
-		// User Agent Profile not instantiated
-		if (array_key_exists("obj_UA", $_SESSION) === false)
-		{
-			// Instantiate data object with the User Agent Profile for the customer's mobile device.
-			$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
-		}
-		/*
-		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
-		 * This means that all PHP scripts must output a wellformed XML document.
-		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
-		 */
-		ob_start(array(new Output("all", false, $_SESSION['obj_UA']), "transform") );
-	}
-	else { header('Content-Type: text/xml; charset="UTF-8"'); }
-}
 
 // Instantiate connection to the Database
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
