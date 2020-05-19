@@ -11,12 +11,6 @@
 
 class TxnRoute
 {
-    /**
-     * Data object with the Transaction Information
-     *
-     * @var TxnInfo
-     */
-    private $_obj_TxnInfo;
 
     /**
      * Database Object that holds the active connection to the mPoint Database
@@ -24,6 +18,13 @@ class TxnRoute
      * @var object
      */
     private $_obj_DB;
+
+    /**
+     * Hold payment session id
+     *
+     * @var integer
+     */
+    private $_iSessionId;
 
     /**
      * Holds list of alternate payment routes
@@ -38,10 +39,10 @@ class TxnRoute
      * @param	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
      * @param	TxnInfo $oTI 	Reference to the Data object with the Transaction Information
      */
-    public function __construct(RDB &$oDB, TxnInfo &$oTI)
+    public function __construct(RDB &$oDB, $sessionId)
     {
         $this->_obj_DB = $oDB;
-        $this->_obj_TxnInfo = $oTI;
+        $this->iSessionId = $sessionId;
     }
 
     /**
@@ -59,26 +60,32 @@ class TxnRoute
      * @param   integer $preference      Alternate payment route preference return by CRS
      * @return 	boolean
      */
-    public function setAlternateRoute($pspid, $preference)
+    public function setAlternateRoute($aAlternateRoutes)
     {
-        $sql = 'INSERT INTO Log' . sSCHEMA_POSTFIX . '.TxnRoute_tbl 
+        if(is_array($aAlternateRoutes) === true)
+        {
+            foreach ($aAlternateRoutes as $aRoute)
+            {
+                $sql = 'INSERT INTO Log' . sSCHEMA_POSTFIX . '.TxnRoute_tbl 
                     (sessionid, pspid, preference)                                                         
                 VALUES 
                     ($1, $2, $3)';
 
-        $res = $this->getDBConn()->prepare($sql);
-        if (is_resource($res) === TRUE) {
-            $aParams = array(
-                $this->_obj_TxnInfo->getSessionId(),
-                $pspid,
-                $preference
-            );
+                $res = $this->getDBConn()->prepare($sql);
+                if (is_resource($res) === TRUE) {
+                    $aParams = array(
+                        $this->iSessionId,
+                        $aRoute['id'],
+                        $aRoute['preference']
+                    );
 
-            $result = $this->getDBConn()->execute($res, $aParams);
+                    $result = $this->getDBConn()->execute($res, $aParams);
 
-            if ($result === false) {
-                trigger_error('Fail to store route for session ' . $this->_obj_TxnInfo->getSessionId(), E_USER_ERROR);
-                return false;
+                    if ($result === false) {
+                        trigger_error('Fail to store route for session ' . $this->iSessionId, E_USER_ERROR);
+                        return false;
+                    }
+                }
             }
             return true;
         }
@@ -110,7 +117,7 @@ class TxnRoute
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = array(
-                $this->_obj_TxnInfo->getSessionId()
+                $this->iSessionId
             );
 
             $result = $this->getDBConn()->execute($res, $aParams);
@@ -121,7 +128,7 @@ class TxnRoute
                 }
             }
         }else{
-            trigger_error('Fail to fetch route for session : ' . $this->_obj_TxnInfo->getSessionId(), E_USER_ERROR);
+            trigger_error('Fail to fetch route for session : ' . $this->iSessionId, E_USER_ERROR);
             return false;
         }
     }
