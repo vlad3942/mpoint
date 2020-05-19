@@ -12,9 +12,9 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
-require_once __DIR__ . '/../../api/classes/txnroute.php';
+require_once __DIR__ . '/../../api/classes/payment_route.php';
 
-class TxnRouteTest extends baseAPITest
+class PaymentRouteTest extends baseAPITest
 {
 
     private $_OBJ_DB;
@@ -49,8 +49,8 @@ class TxnRouteTest extends baseAPITest
         );
 
         if (count ( $aRoutes ) > 0) {
-            $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $result = $objTxnRoute->setAlternateRoute($aRoutes);
+            $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $result = $objPaymentRoute->setAlternateRoute($aRoutes);
             $this->assertTrue($result);
 
 
@@ -77,8 +77,8 @@ class TxnRouteTest extends baseAPITest
         );
 
         if (count ( $aRoutes ) > 0) {
-            $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $result = $objTxnRoute->setAlternateRoute($aRoutes);
+            $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $result = $objPaymentRoute->setAlternateRoute($aRoutes);
             $this->assertFalse($result);
         }
 
@@ -105,8 +105,8 @@ class TxnRouteTest extends baseAPITest
         );
 
         if (count ( $aRoutes ) > 0) {
-            $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $result = $objTxnRoute->setAlternateRoute($aRoutes);
+            $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $result = $objPaymentRoute->setAlternateRoute($aRoutes);
             $this->assertFalse($result);
         }
     }
@@ -121,16 +121,16 @@ class TxnRouteTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 1,  18, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
-        $this->queryDB("INSERT INTO Log.Txnroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 10, 18, 2)");
-        $this->queryDB("INSERT INTO Log.Txnroute_Tbl (id, sessionid, pspid, preference) VALUES (112, 10, 30, 3)");
+        $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 10, 18, 2)");
+        $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (112, 10, 30, 3)");
 
         $iTxnID = 1001001;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
 
-        $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-        $iSecondAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
+        $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+        $iSecondAlternateRoute = $objPaymentRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
         $this->assertEquals(18, $iSecondAlternateRoute);
-        $iThirdAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
+        $iThirdAlternateRoute = $objPaymentRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
         $this->assertEquals(30, $iThirdAlternateRoute);
     }
 
@@ -144,14 +144,14 @@ class TxnRouteTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 1,  18, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
-        $this->queryDB("INSERT INTO Log.Txnroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 10, 18, 2)");
-        $this->queryDB("INSERT INTO Log.Txnroute_Tbl (id, sessionid, pspid, preference) VALUES (112, 10, 30, 3)");
+        $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 10, 18, 2)");
+        $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (112, 10, 30, 3)");
 
         $iTxnID = 1001001;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
 
-        $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-        $iSecondAlternateRoute = $objTxnRoute->getAlternateRoute(4);
+        $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+        $iSecondAlternateRoute = $objPaymentRoute->getAlternateRoute(4);
         $this->assertEquals(0, $iSecondAlternateRoute);
 
     }
@@ -166,8 +166,8 @@ class TxnRouteTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 1,  18, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
-        $this->queryDB("INSERT INTO Log.Txnroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 10, 18, 2)");
-        $this->queryDB("INSERT INTO Log.Txnroute_Tbl (id, sessionid, pspid, preference) VALUES (112, 10, 30, 3)");
+        $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 10, 18, 2)");
+        $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (112, 10, 30, 3)");
 
         $iTxnID = 1001001;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
@@ -176,8 +176,8 @@ class TxnRouteTest extends baseAPITest
         $this->mPointDBInfo['port'] = 5400;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
 
-        $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-        $iSecondAlternateRoute = $objTxnRoute->getAlternateRoute(4);
+        $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+        $iSecondAlternateRoute = $objPaymentRoute->getAlternateRoute(4);
         $this->assertEquals(0, $iSecondAlternateRoute);
     }
 
@@ -196,8 +196,8 @@ class TxnRouteTest extends baseAPITest
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
 
         $iRoutes = 18;
-        $objTxnRoute = new TxnRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-        $result = $objTxnRoute->setAlternateRoute($iRoutes);
+        $objPaymentRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+        $result = $objPaymentRoute->setAlternateRoute($iRoutes);
         $this->assertFalse($result);
     }
 

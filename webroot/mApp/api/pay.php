@@ -154,7 +154,7 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
-require_once(sCLASS_PATH . '/txnroute.php');
+require_once(sCLASS_PATH . '/payment_route.php');
 
 $aMsgCds = array();
 

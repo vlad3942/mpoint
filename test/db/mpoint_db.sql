@@ -8341,7 +8341,7 @@ WITH (
 ALTER TABLE log.settlement_tbl OWNER TO postgres;
 
 
-CREATE TABLE log.txnroute_tbl
+CREATE TABLE log.paymentroute_tbl
 (
   id serial NOT NULL,
   sessionid integer NOT NULL,
@@ -8350,7 +8350,7 @@ CREATE TABLE log.txnroute_tbl
   enabled boolean DEFAULT true,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
-  CONSTRAINT txnroute_pk PRIMARY KEY (id),
+  CONSTRAINT paymentroute_pk PRIMARY KEY (id),
   CONSTRAINT pspid FOREIGN KEY (pspid)
       REFERENCES system.psp_tbl (id) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE
@@ -8358,4 +8358,4 @@ CREATE TABLE log.txnroute_tbl
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE log.txnroute_tbl OWNER TO postgres;
+ALTER TABLE log.paymentroute_tbl OWNER TO postgres;

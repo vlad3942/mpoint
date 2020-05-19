@@ -9,7 +9,7 @@
  * File Name:txnroute.php
  */
 
-class TxnRoute
+class PaymentRoute
 {
 
     /**
@@ -66,7 +66,7 @@ class TxnRoute
         {
             foreach ($aAlternateRoutes as $aRoute)
             {
-                $sql = 'INSERT INTO Log' . sSCHEMA_POSTFIX . '.TxnRoute_tbl 
+                $sql = 'INSERT INTO Log' . sSCHEMA_POSTFIX . '.PaymentRoute_tbl 
                     (sessionid, pspid, preference)                                                         
                 VALUES 
                     ($1, $2, $3)';
@@ -113,7 +113,7 @@ class TxnRoute
      */
     private function getRoutes()
     {
-        $sql = 'SELECT pspid, preference FROM Log.' . sSCHEMA_POSTFIX . 'TxnRoute_tbl WHERE sessionid = $1';
+        $sql = 'SELECT pspid, preference FROM Log.' . sSCHEMA_POSTFIX . 'PaymentRoute_tbl WHERE sessionid = $1';
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = array(
