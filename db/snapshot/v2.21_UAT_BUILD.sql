@@ -228,15 +228,19 @@ delete from client.additionalproperty_tbl where key like 'GlobalPayment.%';
 
 --rules
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.merchantaccountrule', 'merchantaccount ::= (property[@name=''<mid>''])
- mid ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.MID."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.MID."(transaction/@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
+ mid ::= (transaction/authorized-amount/@currency)=="PHP"=<phpmid>:<othermid>
+phpmid ::= "GlobalPayment.Wallet.MID."(transaction.@wallet-id)".PHP"
+othermid ::= "GlobalPayment.Wallet.MID."(transaction.@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.usernamerule', 'username ::= (property[@name=''<uname>''])
- uname ::= (transaction/authorized-amount/@currency)=="PHP"="GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)".PHP":"GlobalPayment.Wallet.USERNAME."(transaction/@wallet-id)"', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
+ uname ::= (transaction/authorized-amount/@currency)=="PHP"=<phpcurrency>:<othercurrency>
+phpcurrency ::= "GlobalPayment.Wallet.USERNAME."(transaction.@wallet-id)".PHP"
+othercurrency ::= "GlobalPayment.Wallet.USERNAME."(transaction.@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.pwdrule', 'password ::= (property[@name=''<passwd>''])
  passwd ::= (transaction.authorized-amount.@currency)=="PHP"=<keywithcurrency>:<keywithoutcurrency>
 keywithcurrency ::= "GlobalPayment.Wallet.PASSWORD."(transaction.@wallet-id)".PHP"
-keywithoutcurrency ::= "GlobalPayment.Wallet.PASSWORD."(transaction.@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
+keywithoutcurrency ::= "GlobalPayment.Wallet.PASSWORD."(transaction.@wallet-id)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 
 
 ---Google pay -- PHP config
