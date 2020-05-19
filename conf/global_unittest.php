@@ -220,4 +220,18 @@ $aHTTP_CONN_INFO["foreign-exchange"]["method"] = "POST";
 $aHTTP_CONN_INFO["foreign-exchange"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["foreign-exchange"]["paths"]["callback"] = "/_test/simulators/dcc/callback.php";
 
+/**
+ * Connection info for connecting to mVault
+ */
+$aHTTP_CONN_INFO["mvault"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mvault"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mvault"]["port"] = 80;
+$aHTTP_CONN_INFO["mvault"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mvault"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mvault"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
+$HTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
+$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/_test/simulators/mvault/save-card.php";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-card-details"] = "/_test/simulators/mvault/get-card-details.php";
+
 ?>

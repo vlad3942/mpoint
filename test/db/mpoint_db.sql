@@ -8191,6 +8191,7 @@ INSERT INTO system.processortype_tbl (id, name) VALUES (9, 'Fraud Gateway');
 
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (60, 'EZY Fraud Gateway',9);
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 60); /*With Apple-Pay*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 60); /*With Apple-Pay*/
 
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,60,'DKK');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,60,'USD');
@@ -8356,3 +8357,35 @@ INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3115, 'Post-screenin
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3116, 'Post-screening Connection Failed', 'Fraud', '');
 
 INSERT INTO "system".processortype_tbl (id, "name") VALUES(10, 'Post Auth Fraud Gateway');
+
+-- Table: create type
+  CREATE TYPE log.address_tbl_ref AS ENUM
+   ('order',
+    'transaction');
+
+    -- Table: log.address_tbl
+
+CREATE TABLE log.address_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  street text,
+  street2 text,
+  city character varying(200),
+  state character varying(200),
+  country character varying(200),
+  zip character varying(200),
+  reference_id integer,
+  reference_type log.address_tbl_ref,
+  CONSTRAINT address_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl USING btree (clientid, cardid, pspid, countryid, psp_type,walletid) WHERE (enabled = true);
+INSERT INTO system.psp_tbl (id, name, system_type) VALUES (36, 'mVault', 3);
+INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,36,'USA');
+INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (35, 36);
