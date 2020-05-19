@@ -439,11 +439,11 @@ class TxnInfo
     private $_sIssuingBank;
 
 	/**
-	 * Shipping
+	 * Billing address
 	 *
 	 * @var string
 	 */
-	private $_aShippingAddr;
+	private $_aBillingAddr;
 
     /**
 	 * Default Constructor
@@ -488,10 +488,10 @@ class TxnInfo
 	 * @param	ClientConfig $oFCR	 Offered DCC Currency
 	 * @param	float $fconversionRate	 Offered DCC Conversion Rate
 	 * @param	string $sIssuing_Bank	 Issuing Bank Name
-	 * @param	array $aShippingAddr	 Shipping Address
+	 * @param	array $_aBillingAddr	 Billing Address
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aShippingAddr = [])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -572,7 +572,7 @@ class TxnInfo
         $this->_obj_ConvertedCurrencyConfig = $oFCR;
         $this->_fconversionRate = (float)$fconversionRate;
         $this->_sIssuingBank = trim($sIssuingBank);
-        $this->_aShippingAddr = $aShippingAddr;
+        $this->_aBillingAddr = $aBillingAddr;
 
         }
 
@@ -1039,9 +1039,9 @@ class TxnInfo
 	/**
 	 * @return array
 	 */
-	public function getShippingAddr()
+	public function getBillingAddr()
 	{
-		return $this->_aShippingAddr;
+		return $this->_aBillingAddr;
 	}
 
     /**
@@ -1504,7 +1504,7 @@ class TxnInfo
 			if(intval($RS["CONVETREDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVETREDCURRENCYID"]);
             $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
             $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
-            $aShippingAddr = self::_produceShippingAddr($obj, $RS["ID"]);
+            $aBillingAddr = self::_produceBillingAddr($obj, $RS["ID"]);
 			$paymentSession = null;
             if($RS["SESSIONID"] == -1){
                 $paymentSession = PaymentSession::Get($obj, $obj_ClientConfig,$obj_CountryConfig,$obj_CurrencyConfig,$RS["AMOUNT"], $RS["ORDERID"],"",$RS["MOBILE"], $RS["EMAIL"], $RS["EXTID"],$RS["DEVICEID"], $RS["IP"]);
@@ -1513,7 +1513,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-            $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aShippingAddr);
+            $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr);
 		}
 		return $obj_TxnInfo;
 	}
@@ -1596,7 +1596,7 @@ class TxnInfo
             if (array_key_exists("converted-amount", $misc) === false) { $misc["converted-amount"] = $obj->getConvertedAmount(); }
             if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
             if (array_key_exists("issuing-bank", $misc) === false) { $misc["issuing-bank"] = $obj->getIssuingBankName(); }
-            if (array_key_exists("shippingAddr", $misc) === false) { $misc["shippingAddr"] = $obj->getShippingAddr(); }
+            if (array_key_exists("billingAddr", $misc) === false) { $misc["billingAddr"] = $obj->getBillingAddr(); }
 
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
@@ -1610,7 +1610,7 @@ class TxnInfo
 
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
-					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["shippingAddr"]);
+					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"]);
 
 
 			break;
@@ -1702,25 +1702,25 @@ class TxnInfo
         return $additionalData;
     }
 
-	public static function  _produceShippingAddr($_OBJ_DB, $txnId)
+	public static function  _produceBillingAddr($_OBJ_DB, $txnId)
 	{
-		$aShippingAddr = [];
+		$aBillingAddr = [];
 		$sqlA = "SELECT id, name, street, street2, city, state, zip, country FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
 		$rsa = $_OBJ_DB->getAllNames ( $sqlA );
 		if (empty($rsa) === false )
 		{
 			foreach ($rsa as $rs)
 			{
-				$aShippingAddr["name" ] = $rs ["NAME"];
-				$aShippingAddr["street" ] = $rs ["STREET"];
-				$aShippingAddr["street2" ] = $rs ["STREET2"];
-				$aShippingAddr["city" ] = $rs ["CITY"];
-				$aShippingAddr["state" ] = $rs ["STATE"];
-				$aShippingAddr["zip" ] = $rs ["ZIP"];
-				$aShippingAddr["country" ] = $rs ["COUNTRY"];
+				$aBillingAddr["name" ] = $rs ["NAME"];
+				$aBillingAddr["street" ] = $rs ["STREET"];
+				$aBillingAddr["street2" ] = $rs ["STREET2"];
+				$aBillingAddr["city" ] = $rs ["CITY"];
+				$aBillingAddr["state" ] = $rs ["STATE"];
+				$aBillingAddr["zip" ] = $rs ["ZIP"];
+				$aBillingAddr["country" ] = $rs ["COUNTRY"];
 			}
 		}
-		return $aShippingAddr;
+		return $aBillingAddr;
 	}
 
     static function  _produceExternalReference($_OBJ_DB, $txnId)

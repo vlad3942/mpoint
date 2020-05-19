@@ -247,7 +247,7 @@ class CreditCard extends EndUserAccount
 					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
 					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
 					AND C.enabled = '1' 
-					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
+					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS null ) AND CA.enabled = '1'
 					AND (CA.cardid = ".$iCardID." OR CA.cardid = 0)
 					AND CA.psp_type = ". $iFraudType." order by CA.POSITION" ;
 

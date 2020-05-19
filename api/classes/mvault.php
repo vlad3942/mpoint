@@ -133,9 +133,9 @@ class MVault extends CPMPSP
                     $response .= '<card-holder-name>'.$obj_XML->{'get-card-details-response'}->{'card-holder-name'}.'</card-holder-name>';
                     $response .= '<card-number>'.$obj_XML->{'get-card-details-response'}->{'card-pan'}.'</card-number>';
                     $response .= '<expiry>'.$obj_XML->{'get-card-details-response'}->{'expiry'}.'</expiry>';
-                    if($this->getTxnInfo()->getShippingAddr() !== null)
+                    if($this->getTxnInfo()->getBillingAddr() !== null)
                     {
-                        $aShippingAddress = $this->getTxnInfo()->getShippingAddr();
+                        $aShippingAddress = $this->getTxnInfo()->getBillingAddr();
                         $response .= '<address country-id="' . $aShippingAddress['country'] . '">';
                         $response .= '<full-name>'.$aShippingAddress['name'].'</full-name>';
                         $response .= '<street>'.$aShippingAddress['street'].'</street>';

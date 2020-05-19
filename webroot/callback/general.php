@@ -129,10 +129,10 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
-require_once(sCLASS_PATH ."/fraud/provider/ezy.php");
-require_once(sCLASS_PATH ."/fraud/provider/cyberSourceFsp.php");
+require_once(sCLASS_PATH .'/fraud/provider/ezy.php');
+require_once(sCLASS_PATH .'/fraud/provider/cyberSourceFsp.php');
 // Require Business logic for the Select Credit Card component
-require_once(sCLASS_PATH ."/credit_card.php");
+require_once(sCLASS_PATH .'/credit_card.php');
 
 
 /**
