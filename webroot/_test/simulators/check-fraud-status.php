@@ -13,12 +13,12 @@ if ($obj_XML->validate(dirname(__FILE__). '/xsd/check-fraud-status.xsd') )
     if(intval($obj_XML->{'fraudCheck'}->{'transaction'}->{'additionalData'}->param->value) == 243001)
     {
         echo ' <root>
-                    <externalId>5771721129086953203010</externalId>
+                    <externalId>57717211</externalId>
                     <status code="11">Accepted</status>
                 </root>';
     } else {
         echo '<root>
-                    <externalId>5771721129086953203010</externalId>
+                    <externalId>577172112</externalId>
                     <status code="15">Rejected</status>
                 </root>';
     }

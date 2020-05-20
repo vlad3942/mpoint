@@ -8191,6 +8191,7 @@ INSERT INTO system.processortype_tbl (id, name) VALUES (9, 'Fraud Gateway');
 
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (60, 'EZY Fraud Gateway',9);
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 60); /*With Apple-Pay*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 60); /*With Apple-Pay*/
 
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,60,'DKK');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,60,'USD');
@@ -8272,6 +8273,7 @@ ALTER TABLE enduser.address_tbl Alter column state type VARCHAR(200);
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
 ALTER TABLE client.cardaccess_tbl ADD walletid int4;
+
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
 ALTER TABLE log.transaction_tbl ADD convetredcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
@@ -8318,6 +8320,28 @@ ALTER TABLE system.country_tbl DROP COLUMN symbol;
 
 alter table log.transaction_tbl add issuing_bank varchar(100);
 
+CREATE TABLE log.settlement_tbl
+(
+    id serial PRIMARY KEY,
+    record_number int NOT NULL,
+    file_reference_number varchar(10) NOT NULL,
+    file_sequence_number int NOT NULL,
+    created timestamp DEFAULT now(),
+    client_id int NOT NULL,
+    psp_id int NOT NULL,
+    record_tracking_number varchar(20),
+    record_type varchar(20),
+    description varchar(100),
+    status varchar(10) DEFAULT 'active' NOT NULL,
+    CONSTRAINT settlement_tbl_client_tbl_id_fk FOREIGN KEY (client_id) REFERENCES client.client_tbl (id),
+    CONSTRAINT settlement_tbl_psp_tbl_id_fk FOREIGN KEY (psp_id) REFERENCES system.psp_tbl (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE log.settlement_tbl OWNER TO postgres;
+alter table log.transaction_tbl add issuing_bank varchar(100);
+
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3010, 'Pre Fraud Check Initiated', 'Fraud', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3011, 'Pre-screening Result - Accepted', 'Fraud', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3012, 'Pre-screening Fraud Service Unavailable', 'Fraud', '');
@@ -8335,4 +8359,34 @@ INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3116, 'Post-screenin
 
 INSERT INTO "system".processortype_tbl (id, "name") VALUES(10, 'Post Auth Fraud Gateway');
 
+-- Table: create type
+  CREATE TYPE log.address_tbl_ref AS ENUM
+   ('order',
+    'transaction');
 
+    -- Table: log.address_tbl
+
+CREATE TABLE log.address_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  street text,
+  street2 text,
+  city character varying(200),
+  state character varying(200),
+  country character varying(200),
+  zip character varying(200),
+  reference_id integer,
+  reference_type log.address_tbl_ref,
+  CONSTRAINT address_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl USING btree (clientid, cardid, pspid, countryid, psp_type,walletid) WHERE (enabled = true);
+INSERT INTO system.psp_tbl (id, name, system_type) VALUES (36, 'mVault', 3);
+INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,36,'USA');
+INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (35, 36);

@@ -91,7 +91,8 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
-
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
@@ -216,13 +217,18 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										$aMsgCds[1000] = "Success";
 										$xml .= '<status code="1000" ></status>';
 										// Perform callback to Client
-										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
+										if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
 										{
+										    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                                            {
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
 													"fee" => $obj_TxnInfo->getFee() );
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-										}
+                                            }
+                                            $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+
+                                        }
 									}
                                     elseif ($code == 1002)
                                     {
@@ -244,7 +250,8 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 													"amount" => $amount);
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
-									}
+                                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                                    }
 								}
 								catch (BadMethodCallException $e)
 								{

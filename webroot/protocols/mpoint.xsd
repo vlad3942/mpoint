@@ -1104,7 +1104,7 @@
 							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element type="xs:integer" name="transaction-id"
+									<xs:element name="transaction-id"
 												minOccurs="1" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>
@@ -1112,6 +1112,13 @@
 												configuration should be fetched
 											</xs:documentation>
 										</xs:annotation>
+										<xs:complexType>
+											<xs:simpleContent>
+												<xs:extension base="xs:integer">
+													<xs:attribute name="mode" default="0" use="optional"/>
+												</xs:extension>
+											</xs:simpleContent>
+										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>

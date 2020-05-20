@@ -27,6 +27,6 @@ class Citcon extends CPMPSP
 	public function capture($iAmount=-1) { throw new CitconException("Method: capture is not supported by Citcon"); }
 	public function cancel() { throw new CitconException("Method: cancel is not supported by Citcon"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new CitconException("Method: getPaymentData is not supported by Citcon"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new CitconException("Method: authTicket is not supported by Citcon"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new CitconException("Method: authorize is not supported by Citcon"); }
 	public function getPSPID() { return Constants::iCITCON_PSP; }
 }

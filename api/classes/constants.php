@@ -1000,11 +1000,18 @@ abstract class Constants
      *
      */
 	const iDragonPay_AGGREGATOR = 61;
+
+	/**
+	 * Unique ID for the Payment aggregator: Cybersource
+	 *
+	 */
+	const iCyberSource_PSP = 63;
+
 	/**
 	 * Unique ID for the Cyber Source Fraud Service Provider
 	 *
 	 */
-	const iCYBER_SOURCE_FSP = 62;
+	const iCYBER_SOURCE_FSP = 64;
 	/**
 	 * Unique ID for the Cyber Source Fraud Service Provider
 	 *

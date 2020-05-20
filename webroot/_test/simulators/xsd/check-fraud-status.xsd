@@ -152,6 +152,10 @@
 										<xs:element type="xs:string" name="hmac"/>
 										<xs:element type="xs:int" name="createdDate"/>
 										<xs:element type="xs:int" name="createdTime"/>
+										<xs:element type="xs:string" name="token" minOccurs="0"/>
+										<xs:element type="xs:string" name="cardMask" minOccurs="0"/>
+										<xs:element type="xs:string" name="expiry" minOccurs="0"/>
+										<xs:element type="xs:string" name="approvalCode" minOccurs="0"/>
 										<xs:element ref="additionalData" minOccurs="0" maxOccurs="1" />
 
 									</xs:sequence>
@@ -160,10 +164,12 @@
 							<xs:element name="card">
 								<xs:complexType>
 									<xs:sequence>
+										<xs:element name="card-holder-name" type="xs:string" minOccurs="0" />
 										<xs:element name="card-number" type="xs:string" />
 										<xs:element name="expiry-month" type="xs:string" />
 										<xs:element name="expiry-year" type="xs:string" />
-										<xs:element name="info-3d-secure"/>
+										<xs:element name="cvc" type="xs:string" minOccurs="0" />
+										<xs:element name="info-3d-secure" minOccurs="0"/>
 									</xs:sequence>
 									<xs:attribute name="type-id" type="xs:unsignedByte" use="required" />
 								</xs:complexType>
@@ -173,8 +179,10 @@
 									<xs:all>
 										<xs:element name="first-name" type="xs:string"   minOccurs="0" maxOccurs="1" />
 										<xs:element name="last-name" type="xs:string"    minOccurs="0" maxOccurs="1" />
+										<xs:element name="full-name" type="xs:string"    minOccurs="0" maxOccurs="1" />
 										<xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="street" type="xs:string" minOccurs="0" maxOccurs="1" />
+										<xs:element name="street2" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1" />
@@ -185,7 +193,7 @@
 									<xs:attribute name="code" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

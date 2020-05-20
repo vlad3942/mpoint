@@ -130,7 +130,7 @@ abstract class CPMFRAUD
      * @param 	integer $iFraudType	Fraud Check Type
      * @return FraudResult
      */
-    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB,ClientInfo &$clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB,ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
         $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId,$iFraudType) ;
         $aFSPStatus = array();
@@ -190,8 +190,14 @@ abstract class CPMFRAUD
      */
     public function initiateFraudCheck($obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
+        if($obj_Card === null)
+        {
+            $response = new FraudResponse($iFraudType,13,'','');
+            $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $response->getStatusCode(), 'No card details passed');
+            return $response->getStatusCode();
+        }
 
-        $aMerchantAccountDetails = $this->genMerchantAccountDetails($clientInfo);
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $iStatusCode = 0;
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
@@ -242,14 +248,29 @@ abstract class CPMFRAUD
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
                 $response = FraudResponse::produceInfoFromXML($iFraudType,$obj_XML);
                 $iStatusCode = $response->getStatusCode();
-                if(empty($response->getExternalID()) === false)
+                $externalID = $response->getExternalID();
+                $externalActionCode = $response->getExternalActionCode();
+                $additionalTxnData = [];
+                $i = 0;
+                $preFix = "pre_auth";
+                if($iFraudType === Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY) { $preFix = "post_auth"; }
+
+                if(empty($externalID) === false)
                 {
-                    $additionalTxnData = [];
-                    $additionalTxnData[0]['name'] = "FraudExternalID";
-                    $additionalTxnData[0]['value'] = $response->getExternalID();
-                    $additionalTxnData[0]['type'] = 'Transaction';
-                    $this->getTxnInfo()->setAdditionalDetails($this->getDBConn(),$additionalTxnData,$this->getTxnInfo()->getID());
+                    $additionalTxnData[$i]['name'] = $preFix.'_ext_id';
+                    $additionalTxnData[$i]['value'] = $externalID;
+                    $additionalTxnData[$i]['type'] = 'Transaction';
+                    $i++;
                 }
+                if(empty($externalActionCode) === false)
+                {
+                    $additionalTxnData[$i]['name'] = $preFix.'_ext_code';
+                    $additionalTxnData[$i]['value'] = $externalActionCode;
+                    $additionalTxnData[$i]['type'] = 'Transaction';
+                }
+
+                $this->getTxnInfo()->setAdditionalDetails($this->getDBConn(),$additionalTxnData,$this->getTxnInfo()->getID());
+
                 $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $iStatusCode, utf8_encode($obj_HTTP->getReplyBody() ));
                 return $iStatusCode;
             }
@@ -282,12 +303,12 @@ abstract class CPMFRAUD
     }
 
 
-    protected function genMerchantAccountDetails(ClientInfo $clientInfo)
+    protected function genMerchantAccountDetails()
     {
         $context = '<root>';
         $context .= $this->getPSPConfig()->toXML(Constants::iInternalProperty);
 
-        $context .= str_replace('<?xml version="1.0"?>', '', $clientInfo->toXML(Constants::iPrivateProperty));
+        $context .= str_replace('<?xml version="1.0"?>', '', $this->getTxnInfo()->getClientConfig()->toXML(Constants::iPrivateProperty));
         $context .= $this->getTxnInfo()->toAttributeLessXML();
         $context .= '</root>';
         $parser = new  \mPoint\Core\Parser();
@@ -338,7 +359,8 @@ abstract class CPMFRAUD
         $b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
         $b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
 
-        if(count($obj_Card->{'valid-from'}) > 0) {
+        if(count($obj_Card->{'valid-from'}) > 0)
+        {
             list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';

@@ -12,32 +12,39 @@
 class FraudResponse
 {
     /**
-     * Hold fraud type
+     * Holds fraud type
      *
      * @var integer
      */
     private $_iFraudType;
 
     /**
-     * Hold fraud status code
+     * Holds fraud status code
      *
      * @var integer
      */
     private $_iStatusCode;
 
     /**
-     * Hold Description
+     * Holds Description
      *
      * @var string
      */
     private $_sDesc;
 
     /**
-     * Hold Description
+     * Holds Description
      *
      * @var string
      */
     private $_sExternalRef;
+
+    /**
+     * Holds action code returned by Fraud Provider
+     *
+     * @var string
+     */
+    private $_sExternalActionCode;
 
     /**
      * Default Constructor
@@ -46,12 +53,14 @@ class FraudResponse
      * @param integer $iStatusCode  Fraud attempt status code
      * @param string  $sDesc
      * @param string  $sExternalRef external reference returned by Fraud Provider
+     * @param string  $sExternalActionCode external action code returned by Fraud Provider
      */
-    public function __construct( $iFraudType,$iStatusCode, $sDesc, $sExternalRef )
+    public function __construct( $iFraudType,$iStatusCode, $sDesc, $sExternalRef, $sExternalActionCode )
     {
        $this->_iFraudType = $iFraudType;
        $this->_sDesc = $sDesc;
        $this->_sExternalRef = $sExternalRef;
+       $this->_sExternalActionCode = $sExternalActionCode;
 
         //Fraud Check endpoint will return result status code PRE or POST auth need be determine
         //30 for pre-auth and 31 for post-auth if service return 11 and $iFraudType id pre it become 3011 represents pre-auth fraud Accepted
@@ -66,10 +75,11 @@ class FraudResponse
     public function getStatusCode() { return $this->_iStatusCode; }
     public function getDescription() { return $this->_sDesc; }
     public function getExternalID() { return $this->_sExternalRef; }
+    public function getExternalActionCode() { return $this->_sExternalActionCode; }
 
     public static function produceInfoFromXML($iFraudType, SimpleXMLElement $obj_XML)
     {
-        return new FraudResponse( $iFraudType, (int) $obj_XML->status["code"], (string)$obj_XML->status, (string)$obj_XML->externalId );
+        return new FraudResponse( $iFraudType, (int) $obj_XML->status["code"], (string)$obj_XML->status, (string)$obj_XML->externalId ,(string)$obj_XML->action_code);
     }
 
 

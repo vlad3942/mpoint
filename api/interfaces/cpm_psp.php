@@ -604,8 +604,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				}
 
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' 
-						WHERE id = ". $this->getTxnInfo()->getID();
+						SET pspid = ". $obj_PSPConfig->getID() . $sql ;
+
+                if(empty($obj_Card->ticket) === false)
+                {
+                    $sql .=" ,token='" . $obj_Card->ticket . "'";
+                }
+                $sql .= " WHERE id = ". $this->getTxnInfo()->getID();
 				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}

@@ -87,7 +87,8 @@ require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
-
+// Require specific Business logic for the cybs component
+require_once(sCLASS_PATH ."/cybersource.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
@@ -162,7 +163,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 										  "amount" => $_REQUEST['amount']);
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
-					}
+                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+
+                    }
                     else if ($code == 1100) {
                         header("HTTP/1.0 200 OK");
                         $aMsgCds[$code] = "Success";

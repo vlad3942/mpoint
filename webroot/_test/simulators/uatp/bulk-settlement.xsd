@@ -1,0 +1,131 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="root">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="bulk-settlement">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="client-config">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="name"/>
+                    <xs:element type="xs:string" name="username"/>
+                    <xs:element type="xs:string" name="logo-url"/>
+                    <xs:element type="xs:string" name="css-url"/>
+                    <xs:element type="xs:string" name="accept-url"/>
+                    <xs:element type="xs:string" name="app-url"/>
+                    <xs:element type="xs:string" name="base-image-url"/>
+                    <xs:element type="xs:string" name="cancel-url"/>
+                    <xs:element type="xs:string" name="decline-url"/>
+                    <xs:element type="xs:string" name="callback-url"/>
+                    <xs:element type="xs:string" name="icon-url"/>
+                    <xs:element type="xs:string" name="customer-import-url"/>
+                    <xs:element type="xs:string" name="authentication-url"/>
+                    <xs:element type="xs:string" name="notification-url"/>
+                    <xs:element type="xs:string" name="sms-receipt"/>
+                    <xs:element type="xs:string" name="email-receipt"/>
+                    <xs:element type="xs:string" name="auto-capture"/>
+                    <xs:element type="xs:byte" name="store-card"/>
+                    <xs:element type="xs:string" name="salt"/>
+                    <xs:element type="xs:string" name="secret-key"/>
+                    <xs:element type="xs:string" name="ip-list"/>
+                    <xs:element name="additional-config" maxOccurs="1" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="property" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="name" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="show-all-cards"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:byte" name="id"/>
+                  <xs:attribute type="xs:byte" name="flow-id"/>
+                  <xs:attribute type="xs:byte" name="mode"/>
+                  <xs:attribute type="xs:byte" name="max-cards"/>
+                  <xs:attribute type="xs:byte" name="identification"/>
+                  <xs:attribute type="xs:string" name="masked-digits"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="psp-config">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="name"/>
+                    <xs:element type="xs:byte" name="merchant-account"/>
+                    <xs:element type="xs:byte" name="merchant-sub-account"/>
+                    <xs:element type="xs:string" name="username"/>
+                    <xs:element type="xs:string" name="password"/>
+                    <xs:element type="xs:string" name="messages"/>
+                    <xs:element name="additional-config" maxOccurs="1" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="property" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:byte">
+                                  <xs:attribute type="xs:string" name="name" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:byte" name="id"/>
+                  <xs:attribute type="xs:byte" name="type"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="settlement-in-progress" maxOccurs="1" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="file" maxOccurs="unbounded" minOccurs="1">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:byte" name="id" use="optional"/>
+                            <xs:attribute type="xs:string" name="file-reference-number" use="optional"/>
+                            <xs:attribute type="xs:int" name="file_sequence_number" use="optional"/>
+                            <xs:attribute type="xs:string" name="description" use="optional"/>
+                            <xs:attribute type="xs:string" name="pending-duration" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="settlements" maxOccurs="1" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="settlement" maxOccurs="unbounded" minOccurs="1">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:byte" name="id" use="optional"/>
+                            <xs:attribute type="xs:int" name="file-id" use="optional"/>
+                            <xs:attribute type="xs:int" name="record-id" use="optional"/>
+                            <xs:attribute type="xs:string" name="type" use="optional"/>
+                            <xs:attribute type="xs:string" name="status" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:byte" name="client-id"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
