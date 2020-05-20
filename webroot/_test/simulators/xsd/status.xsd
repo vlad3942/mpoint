@@ -7,6 +7,25 @@
 				<xs:element name="status">
 					<xs:complexType>
 						<xs:all>
+							<xs:element name="client-config">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="additional-config">
+                                            <xs:complexType>
+                                                <xs:all>
+                                                    <xs:element name="property" minOccurs="0" maxOccurs="unbounded" type="xs:string">
+                                                        <xs:complexType>
+                                                            <xs:all>
+                                                                <xs:attribute type="xs:string" name="name" />
+                                                            </xs:all>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:all>
+                                            </xs:complexType>
+										</xs:element>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="psp-config">
 								<xs:complexType>
 									<xs:all>
