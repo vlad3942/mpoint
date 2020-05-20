@@ -273,9 +273,13 @@ try
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
 
-		
-		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
-		
+		$year = $obj_XML->callback->transaction->card->expiry->year;
+		if(strlen($year) === 4)
+		{
+			$year = substr($year, 2, 2);
+		}
+		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $year;
+
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
 										 $obj_TxnInfo->getMobile(),
 										 (integer) $obj_XML->callback->transaction->card["type-id"],
@@ -539,12 +543,7 @@ try
   }
 
   $iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID());
-    if(sizeof($aStateId) === 0)
-    {
-        $iStateid = (integer) $obj_XML->callback->status["code"];
-        array_push($aStateId,$iStateid);
-    }
-  if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO["foreign-exchange"]); }
+  if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO['foreign-exchange']); }
 }
 catch (TxnInfoException $e)
 {

@@ -33,3 +33,6 @@ INSERT INTO Client.CardAccess_Tbl(clientid,cardid,enabled,pspid,countryid,statei
 -- Route DragonPay Offline  Card to DragonPayAggregator with country Japan
 INSERT INTO Client.CardAccess_Tbl(clientid,cardid,enabled,pspid,countryid,stateid,psp_type) values (10018,88,true,61,640,1,1);
 
+--set timezone for CEBU
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('TIMEZONE', 'Asia/Kuala_Lumpur', true, 10077, 'client', 2);
+

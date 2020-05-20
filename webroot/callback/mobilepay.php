@@ -113,12 +113,14 @@ try
 							   'card-id' => (integer)$obj_TxnData["card-id"],
 							   'transact' => $obj_TxnData["external-id"] );
 		$obj_PSP->notifyClient($iStateID, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+		$obj_PSP->notifyForeignExchange(array($iStateID),$aHTTP_CONN_INFO['foreign-exchange']);
 
 		// Notify client about, and log, possible Captured state
 		if ($bPaymentIsCaptured)
 		{
 			$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) );
 			$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			$obj_PSP->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 			$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
 		}
 

@@ -201,7 +201,8 @@ class EndUserAccount extends Home
 			// Card Saved during Authorization
 			if ( ($aArgs[0] instanceof TxnInfo) === true)
 			{
-				list($oTI, $addr, $cardid, $pspid, $token, $mask, $exp, $pid) = $aArgs;
+				list($oTI, $addr, $cardid, $pspid, $token, $mask, $exp) = $aArgs;
+				$pid = (isset($aArgs[7]) === true)?(string)$aArgs[7]:'';
 				$obj_CountryConfig = $oTI->getCountryConfig();
 				$iAccountID = -1;
 				if ($oTI->getAccountID() > 0) { $iAccountID = $oTI->getAccountID(); }
