@@ -157,7 +157,7 @@ require_once sCLASS_PATH . '/passbookentry.php';
 
 require_once(sCLASS_PATH ."/fraud/provider/ezy.php");
 require_once(sCLASS_PATH ."/fraud/provider/cyberSourceFsp.php");
-require_once(sCLASS_PATH ."/fraud/fsp/cebuRmfss.php");
+require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
