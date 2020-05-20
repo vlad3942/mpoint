@@ -8339,3 +8339,23 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE log.settlement_tbl OWNER TO postgres;
+
+
+CREATE TABLE log.paymentroute_tbl
+(
+  id serial NOT NULL,
+  sessionid integer NOT NULL,
+  pspid integer NOT NULL,
+  preference integer NOT NULL,
+  enabled boolean DEFAULT true,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  CONSTRAINT paymentroute_pk PRIMARY KEY (id),
+  CONSTRAINT pspid FOREIGN KEY (pspid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE log.paymentroute_tbl OWNER TO postgres;

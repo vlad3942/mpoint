@@ -39,10 +39,15 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 
 $id = $_REQUEST['mpoint-id'];
 $orderno  = $_REQUEST['orderid'];
-$currency = $_REQUEST['currency'];
 $amount = $_REQUEST['amount'];
 $pspid = 50;
-$ticketNumbers = $_REQUEST['tickernumbers'];
+
+$ticketNumbers = '';
+if(isset($_REQUEST['tickernumbers']))
+{
+	$ticketNumbers = $_REQUEST['tickernumbers'];
+}
+
 $status = $_REQUEST['status'];
 
 $aStateId = array();

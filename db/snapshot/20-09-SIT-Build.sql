@@ -1,0 +1,2 @@
+-- HPP get transaction status polling timeout flag --
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('getTxnStatusPollingTimeOut', '60', true, <clientid>, 'client', 2);
