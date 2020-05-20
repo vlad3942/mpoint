@@ -7,6 +7,13 @@
 				<xs:element name="status">
 					<xs:complexType>
 						<xs:all>
+							<xs:element name="client-config">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="additional-config" type="xs:string"/>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="psp-config">
 								<xs:complexType>
 									<xs:all>
