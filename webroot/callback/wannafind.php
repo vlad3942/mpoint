@@ -128,10 +128,19 @@ try
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_ACCEPTED_STATE,Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 			}
-			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+			else
+			    {
+			        $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			        $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+			    }
 		}
-		else { $obj_mPoint->notifyClient($iStateID, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+		else
+		    {
+		        $obj_mPoint->notifyClient($iStateID, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+		        $obj_mPoint->notifyForeignExchange(array($iStateID),$aHTTP_CONN_INFO['foreign-exchange']);
+		    }
 	}
 }
 catch (TxnInfoException $e)
