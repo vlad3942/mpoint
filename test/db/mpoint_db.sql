@@ -6861,7 +6861,6 @@ ADD CONSTRAINT cardaccess_card_country_uq UNIQUE (clientid, cardid, countryid);
 */
 
 CREATE UNIQUE INDEX cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid) WHERE countryid IS NULL;
-CREATE UNIQUE INDEX cardaccess_card_country_uq ON Client.CardAccess_tbl (clientid, cardid, countryid) WHERE countryid IS NOT NULL;
 
 /* ==================== Client SCHEMA END ==================== */
 
@@ -7359,14 +7358,12 @@ ALTER TABLE client.cardaccess_tbl ADD psp_type INT DEFAULT 1 NOT NULL;
 ALTER TABLE client.cardaccess_tbl
   ADD CONSTRAINT cardaccess_tbl_processortype_tbl_id_fk
 FOREIGN KEY (psp_type) REFERENCES system.processortype_tbl (id);
-DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+
 UPDATE client.cardaccess_tbl
 SET psp_type = psp_tbl.system_type
 FROM system.psp_tbl
 WHERE psp_tbl.id = cardaccess_tbl.pspid;
-CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type);
-
-
 
 
 
@@ -7693,9 +7690,7 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenizati
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Payment', true);
 /*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
 
-DROP INDEX client.cardaccess_card_country_uq RESTRICT;
 
-CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';
 
 
 INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (17, 'Data Cash', 1);
@@ -8340,7 +8335,6 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE log.settlement_tbl OWNER TO postgres;
-alter table log.transaction_tbl add issuing_bank varchar(100);
 
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3010, 'Pre Fraud Check Initiated', 'Fraud', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3011, 'Pre-screening Result - Accepted', 'Fraud', '');
@@ -8383,8 +8377,6 @@ CREATE TABLE log.address_tbl
 WITH (
   OIDS=FALSE
 );
-DROP INDEX client.cardaccess_card_country_uq RESTRICT;
-
 CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl USING btree (clientid, cardid, pspid, countryid, psp_type,walletid) WHERE (enabled = true);
 INSERT INTO system.psp_tbl (id, name, system_type) VALUES (36, 'mVault', 3);
 INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
