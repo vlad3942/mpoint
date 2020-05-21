@@ -196,7 +196,7 @@ abstract class CPMFRAUD
             $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $response->getStatusCode(), 'No card details passed');
             return $response->getStatusCode();
         }
-
+        $this->getTxnInfo()->produceOrderConfig($this->getDBConn());
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $iStatusCode = 0;
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -264,7 +264,7 @@ abstract class CPMFRAUD
                 }
                 if(empty($externalActionCode) === false)
                 {
-                    $additionalTxnData[$i]['name'] = $preFix.'_ext_code';
+                    $additionalTxnData[$i]['name'] = $preFix.'_ext_status_code';
                     $additionalTxnData[$i]['value'] = $externalActionCode;
                     $additionalTxnData[$i]['type'] = 'Transaction';
                 }
