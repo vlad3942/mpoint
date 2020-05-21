@@ -273,29 +273,14 @@ class CreditCard extends EndUserAccount
 
     public function getCardsForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null)
 	{
+	    $res = $this->getCardsQueryForDR($amount, $typeid, $iRoute);
 
-        $sql = 'SELECT DISTINCT ON (C.id, CA.walletid) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
-					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid,CA.dccEnabled
-				FROM ' . $this->_constDataSourceQuery() . '
-				WHERE CA.clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . '
-					AND A.id = ' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
-					AND PC.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
-					AND PP.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
-					AND PP.amount IN (-1, ' . (int)$amount .")
-					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
-					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL)
-					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
-					if($typeid !== null)
-					{
-					    $sql .= ' AND C.ID =' . $typeid ;
-					}
-				//$sql .= ' ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC LIMIT 1';
-
-		$res = $this->getDBConn()->query($sql);
+	    if(is_array($res) === false){
+            $res = $this->getCardsQueryForDR($amount, $typeid);
+        }
 
         $xml = '<cards accountid="' . $this->_obj_TxnInfo->getAccountID() . '">';
-        while ($RS = $this->getDBConn()->fetchName($res)) {
+        foreach ($res as $RS ) {
             $aRS = [];
             // Transaction instantiated via SMS or "Card" is NOT Premium SMS
             if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10) {
@@ -306,7 +291,7 @@ class CreditCard extends EndUserAccount
                 $sql = "SELECT min, \"max\"
 							FROM System" . sSCHEMA_POSTFIX . ".CardPrefix_Tbl
 							WHERE cardid = " . $RS["ID"];
-//					echo $sql ."\n";
+
                 $aRS = $this->getDBConn()->getAllNames($sql);
             }
 
@@ -348,6 +333,36 @@ class CreditCard extends EndUserAccount
         $xml .= '</cards>';
 
         return $xml;
+    }
+
+    private function getCardsQueryForDR($amount, $typeid = null, $iRoute = null)
+    {
+        $sql = 'SELECT DISTINCT ON (C.id, CA.walletid) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
+					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid,CA.dccEnabled
+				FROM ' . $this->_constDataSourceQuery() . '
+				WHERE CA.clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . ' 
+                AND A.id = ' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
+                AND PC.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
+                AND PP.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
+                AND PP.amount IN (-1, ' . (int)$amount .")
+                AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
+                AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
+
+        if(empty($iRoute) === false){
+            $sql .= ' AND CA.pspid =' . $iRoute ;
+            $sql .= ' AND CA.countryid IS NOT NULL';
+        }else{
+            $sql .= ' AND CA.countryid IS NULL';
+        }
+
+        if($typeid !== null)
+        {
+            $sql .= ' AND C.ID =' . $typeid ;
+        }
+
+        $res = $this->getDBConn()->getAllNames($sql);
+        return $res;
     }
 }
 ?>
