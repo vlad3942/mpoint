@@ -192,7 +192,7 @@ abstract class CPMFRAUD
     {
         if($obj_Card === null)
         {
-            $response = new FraudResponse($iFraudType,13,'','');
+            $response = new FraudResponse($iFraudType,13,'','','');
             $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $response->getStatusCode(), 'No card details passed');
             return $response->getStatusCode();
         }
@@ -380,6 +380,13 @@ abstract class CPMFRAUD
         {
             //Produce Country config based on the country id
             CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
+            $pos = strrpos($obj_Card->address->{'full-name'}, " ");
+            if ($pos > 0)
+            {
+                $obj_Card->address->{'first-name'} = trim(substr($obj_Card->address->{'full-name'}, 0, $pos) );
+                $obj_Card->address->{'last-name'} = trim(substr($obj_Card->address->{'full-name'}, $pos) );
+            }
+            else { $obj_Card->address->{'first-name'} = trim($obj_Card->address->{'full-name'}); }
             $b .= $obj_Card->address->asXML();
         }
 
