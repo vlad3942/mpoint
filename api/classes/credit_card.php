@@ -347,7 +347,7 @@ class CreditCard extends EndUserAccount
                 AND PP.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
                 AND PP.amount IN (-1, ' . (int)$amount .")
                 AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
-                AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
+                AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.')';
 
         if(empty($iRoute) === false){
             $sql .= ' AND CA.pspid =' . $iRoute ;
