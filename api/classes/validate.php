@@ -1216,15 +1216,22 @@ class Validate extends ValidateBase
 	 * @param	integer $countryid				The unique ID of the country that designates the currency
 	 * @return 	integer
 	 */
-	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid,CountryConfig $obj_CountryConfig = null)
 	{
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
+		$countryISO_id = $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "";
+		$countryISOCode = "";
+		if($obj_CountryConfig != null && $obj_CountryConfig->getID() >0)
+        {
+            $countryISOCode = $obj_CountryConfig->getNumericCode();
+        }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		
-		if (strtolower($mac) === strtolower($chk))
+		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+
+		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode))
 		{
 			$code = 10;
 		}
