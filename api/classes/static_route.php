@@ -3,10 +3,17 @@
 class StaticRoute extends Card
 {
     private $_obj_TxnInfo = '';
-    private $iProcessorType = '';
-    private $iPSPId;
-    private $iWidth = 180; // Default logo width
-    private $iHeight = 115; // Default logo height
+    private $_iProcessorType = '';
+    private $_iPSPId;
+    private $_iStateId;
+    private $_bPreferred;
+    private $_iInstallment;
+    private $_iCaptureType;
+    private $_bCvcMandatory;
+    private $_iWalletId;
+    private $_bDccEnabled;
+    private $_iWidth = 180; // Default logo width
+    private $_iHeight = 115; // Default logo height
 
     /**
      * Default Constructor
@@ -16,26 +23,41 @@ class StaticRoute extends Card
      * @param 	array $aCard 	    Hold card configuration details
      * @param   integer $processorType    Unique psp type id
      */
-    public function __construct(TxnInfo $oTI, RDB $oDB, array $prefixes, array $aCard, $processorType, $pspId)
+    public function __construct(TxnInfo $oTI, RDB $oDB, array $prefixes, array $aCard, $processorType, $pspId, $stateId, $preferred, $installment, $captureType, $cvcMandatory, $walletId, $dccEnabled)
     {
         parent::__construct($aCard,$oDB, $prefixes);
         $this->_obj_TxnInfo = $oTI;
-        $this->iProcessorType = $processorType;
-        $this->iPSPId = $pspId;
+        $this->_iProcessorType = $processorType;
+        $this->_iPSPId = $pspId;
+        $this->_iStateId = $stateId;
+        $this->_bPreferred = $preferred;
+        $this->_iInstallment = $installment;
+        $this->_iCaptureType = $captureType;
+        $this->_bCvcMandatory = $cvcMandatory;
+        $this->_iWalletId = $walletId;
+        $this->_bDccEnabled = $dccEnabled;
     }
 
-    public function getProcessorType() { return $this->iProcessorType; }
-    public function getPSPId() { return $this->iPSPId; }
-    public function getLogoWidth() { return $this->iWidth; }
-    public function getLogoHeight() { return $this->iHeight; }
+    public function getProcessorType() { return $this->_iProcessorType; }
+    public function getPSPId() { return $this->_iPSPId; }
+    public function getLogoWidth() { return $this->_iWidth; }
+    public function getLogoHeight() { return $this->_iHeight; }
+    public function getstateId() { return $this->_iStateId; }
+    public function getPreferred() { return $this->_bPreferred; }
+    public function getInstallment() { return $this->_iInstallment; }
+    public function getCaptureType() { return $this->_iCaptureType; }
+    public function getCvcMandatory() { return $this->_bCvcMandatory; }
+    public function getWalletId() { return $this->_iWalletId; }
+    public function getDccEnabled() { return $this->_bDccEnabled; }
 
     public function toXML()
     {
-        $xml = '<item id="' . $this->getCardTypeId() . '" type-id="' . $this->getCardTypeId() . '" pspid="' . $this->getPSPId() . '" min-length="' . $this->getMinCardLength() . '" max-length="' . $this->getMaxCardLength() . '" cvc-length="' . $this->getCvcLength() . '" payment-type="' . $this->getPaymentType() . '"' . ' enabled = "' . General::bool2xml(true) . '"' . ' processor-type = "' . $this->getProcessorType() . '" >';
+        $xml = '<item id="' . $this->getCardTypeId() . '" type-id="' . $this->getCardTypeId() . '" pspid="' . $this->getPSPId() . '" min-length="' . $this->getMinCardLength() . '" max-length="' . $this->getMaxCardLength() . '" cvc-length="' . $this->getCvcLength() . '" state-id="' . $this->getstateId() . '" payment-type="' . $this->getPaymentType() . '"' . ' preferred="' . General::bool2xml($this->getPreferred()) . '"' . ' enabled = "' . General::bool2xml(true) . '"' . ' processor-type = "' . $this->getProcessorType() . '" installment = "' . $this->getInstallment() . '" cvcmandatory = "' . General::bool2xml($this->getCvcMandatory()) . '" walletid = "' . $this->getWalletId() . '" dcc="' . General::bool2xml($this->getDccEnabled()) . '" >';
         $xml .= '<name>' . htmlspecialchars($this->getCardName(), ENT_NOQUOTES) . '</name>';
         $xml .= '<logo-width>' . $this->getLogoWidth() . '</logo-width>';
         $xml .= '<logo-height>' . $this->getLogoHeight() . '</logo-height>';
         $xml .= '<currency>' . $this->_obj_TxnInfo->getCurrencyConfig()->getID() . '</currency>';
+        $xml .= '<capture_type>' . $this->getCaptureType() . '</capture_type>';
         if (count($this->getBinRange()) > 0)
         {
             $xml .= '<prefixes>';
@@ -66,11 +88,13 @@ class StaticRoute extends Card
      */
     public static function produceConfig(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $cardId, $pspType)
     {
-        $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, $pspType AS processortype, CA.pspid
+        $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, $pspType AS processortype, CA.pspid,
+                CA.stateid, CA.preferred, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid, CA.dccEnabled
 				FROM System" . sSCHEMA_POSTFIX . ".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid AND CA.clientid = ".$oTI->getClientConfig()->getID()."
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.currencyid = " . $oTI->getCurrencyConfig()->getID() . " AND PP.amount = -1 AND PP.enabled = '1'
+				LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE C.id = " . $cardId . "
 				AND C.enabled = '1'
 				ORDER BY C.name ASC";
@@ -92,7 +116,7 @@ class StaticRoute extends Card
 
                 $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
 
-                return new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID']);
+                return new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
             }
         }
         return null;
