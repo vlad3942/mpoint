@@ -218,11 +218,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else { $code = 10; }
 
-
+						$obj_TransacionCountryConfig = null;
+						if(empty($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) === false)
+						{
+							$obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]);
+						}
 						
 						// Validate currency if explicitly passed in request, which defer from default currency of the country
-						if((int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"] > 0){
-							$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, (int)$obj_DOM->pay[$i]->transaction->card->amount["country-id"]) ;
+						if((int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"] > 0)
+						{
 							if($obj_Validator->valCurrency($_OBJ_DB, (int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"], $obj_TransacionCountryConfig, (int)$obj_DOM->pay[$i]["client-id"]) !== 10 ){
 								$aMsgCds[56] = "Invalid Currency:". (int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"];
 							}
@@ -285,12 +289,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						|| ($obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()) )
                         //made hmac mandatory for dcc
                         {
-							$objCountryConfig = null;
-                        	if(empty($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) === false)
-							{
-								$objCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]);
-							}
-                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"],$objCountryConfig) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
+
+                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"],$obj_TransacionCountryConfig) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
 
 						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 ){

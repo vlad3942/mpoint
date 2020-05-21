@@ -337,10 +337,15 @@ try
                                         if($obj_card->getCardHolderName() !== '' && $obj_CardValidator->valCardFullName() !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
                                         }
+                                        $obj_TransacionCountryConfig = null;
+                                        if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
+                                        {
+                                            $obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]);
+                                        }
 
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country
-                                        if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0){
-                                        	$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"])) ;
+                                        if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0)
+                                        {
                                         	if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'authorize-payment'}[$i]["client-id"])) != 10 ){
                                         		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
                                         	}
@@ -365,13 +370,7 @@ try
                                             (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
                                             //made hmac mandatory for dcc
 										{
-                                            $objCountryConfig = null;
-                                            if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
-                                            {
-                                                $objCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]);
-                                            }
-
-											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$objCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+                                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
 										} 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
