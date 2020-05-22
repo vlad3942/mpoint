@@ -823,7 +823,7 @@ class Home extends General
                     UNION
                     SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
                     ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
-                    ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.")
+                    ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.") and txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.") limit 1)
                     )
                     SELECT  *,row_number() OVER(ORDER BY id ASC) AS rownum FROM WT3";
         }
