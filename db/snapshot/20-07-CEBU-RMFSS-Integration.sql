@@ -3,7 +3,7 @@
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (65, 'CEBU-RMFSS',9);
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (<cardid>, 65);
 
-INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, enabled, username, passwd,) VALUES (<clientid>, 65, 'CEBU-RMFSS', true, 'By9AjPV6j14jgb3DXRIpW0mInOfMEafS', 'E9NBawrSH6UAtw1v');
+INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, enabled, username, passwd) VALUES (<clientid>, 65, 'CEBU-RMFSS', true, 'By9AjPV6j14jgb3DXRIpW0mInOfMEafS', 'E9NBawrSH6UAtw1v');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>, 65, '-1');
 
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,65,'USD');
