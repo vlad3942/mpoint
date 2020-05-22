@@ -1538,6 +1538,7 @@
 						<xs:enumeration value="ivr" />
 						<xs:enumeration value="chat" />
 						<xs:enumeration value="email" />
+						<xs:enumeration value="spa" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
