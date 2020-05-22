@@ -366,6 +366,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<status client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
@@ -627,6 +637,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
     public function tokenize(array $aConnInfo, PSPConfig $obj_PSPConfig, $obj_Card)
     {
+		$sc = false;
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
@@ -993,11 +1004,15 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
 	protected function _constNewCardAuthorizationRequest($obj_Card)
 	{
-		
-		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
-												
-		$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
-										
+		$expiry_month = '';
+		$expiry_year = '';
+
+		if(count($obj_Card->expiry) > 0)
+		{
+			list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+			$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
+		}
+
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
 		
 		if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
@@ -1205,6 +1220,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
     public function getPaymentMethods(PSPConfig $obj_PSPConfig)
     {
+		$sc = false;
         $getPaymentMethodsURL = $this->aCONN_INFO["paths"]["get-payment-methods"];
         if(isset($getPaymentMethodsURL)) {
             $obj_XML = simplexml_load_string($this->getClientConfig()->toXML(Constants::iPrivateProperty));

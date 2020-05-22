@@ -81,12 +81,26 @@ class ClientInfo
      * @var integer
 	 */
 	private $_iProfileID = -1;
+	
+	/**
+	 * The SDKVersion of SDK
+	 * @var integer
+	 */
+	private $_fSDKVersion = -1;
+	
+	/**
+	 * The AppVersion of SDK
+	 * @var integer
+	 */
+	private $_fAppVersion = -1;
+	
+//	sdk-version
 
 	/**
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1)
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -98,6 +112,9 @@ class ClientInfo
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
 		$this->_iProfileID = (integer) $profileid;
+		
+		$this->_fAppVersion = $appversion;
+		$this->_fSDKVersion = $sdkversion;
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -163,6 +180,20 @@ class ClientInfo
      * @return 	integer
      */
     public function getProfileID() { return $this->_iProfileID; }
+    
+    /**
+     * Returns the Client SDK Version: v1.00, v2.00, v2.10 etc.
+     *
+     * @return 	string
+     */
+    public function getSDKVersion() { return $this->_fSDKVersion; }
+    /**
+     * Returns the Client APP Version: v1.00, v2.00, v2.10 etc.
+     *
+     * @return 	string
+     */
+    public function getAPPVersion() { return $this->_fAppVersion; }
+    
 
 	public function toXML()
 	{
@@ -170,6 +201,15 @@ class ClientInfo
 		if ($this->getProfileID() > 0) {
 		    $xml .= ' profileid="'.$this->getProfileID().'"';
         }
+        
+        if ($this->getSDKVersion() > 0) {
+            $xml .= ' sdk-version="'.$this->getSDKVersion().'"';
+        }
+        
+        if ($this->getAPPVersion() > 0) {
+            $xml .= ' app-version="'.$this->getAPPVersion().'"';
+        }
+        
 		$xml .= '>';
         $xml .= '<mobile country-id="'. $this->_obj_CountryConfig->getID() .'" country-code="'. $this->_obj_CountryConfig->getCountryCode() .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
@@ -186,6 +226,9 @@ class ClientInfo
         $xml .= '<platform>'.htmlspecialchars($this->_sPlatform, ENT_NOQUOTES).'</platform>';
         $xml .= '<language>'.htmlspecialchars($this->_sLanguage, ENT_NOQUOTES).'</language>';
         $xml .= '<version>'.number_format($this->_fVersion, 2).'</version>';
+        $xml .= '<sdk-version>'.$this->_fSDKVersion.'</sdk-version>';
+        $xml .= '<app-version>'.$this->_fAppVersion.'</app-version>';
+        
         if(empty($this->_iAppID) == false)
         {
             $xml .= '<app_id>'.$this->_iAppID.'</app_id>';
@@ -275,7 +318,7 @@ class ClientInfo
         $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
         $httpXForwardedForIp = $httpXForwardedForIps[0];
 
-		return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"]);
+        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"]);
 	}
 }
 ?>

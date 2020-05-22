@@ -154,6 +154,7 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
+require_once(sCLASS_PATH . '/payment_route.php');
 
 $aMsgCds = array();
 
@@ -202,7 +203,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
 					)
 				{
-					
+
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 					$aObj_PSPConfigs = array();
@@ -223,7 +224,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]);
 						}
-						
+
 						// Validate currency if explicitly passed in request, which defer from default currency of the country
 						if((int)$obj_DOM->pay[$i]->transaction->card->amount["currency-id"] > 0)
 						{
@@ -258,22 +259,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
 
                         if (count ( $aRoutes ) > 0) {
+                        	$aAlternateRoutes = array();
+                            $objTxnRoute = new TxnRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
                             foreach ($aRoutes as $oRoute) {
                                 if(empty($oRoute->preference) === false){
                                     if ($oRoute->preference === 1) {
                                         $obj_CardResultSet['PSPID'] = $oRoute->id;
-                                        break;
                                     }
+                                    $aAlternateRoutes[] = array(
+                                    	'id' => $oRoute->id,
+										'preference' => $oRoute->preference
+									);
 								}else{
                                     $obj_CardResultSet['PSPID'] = $oRoute->id;
 								}
                             }
-                            // Store dynamic route to use it again during Auth if require
-                            $additionalData = array();
-                            $additionalData[0]['name']  = (string)'psps';
-                            $additionalData[0]['value'] = json_encode($aRoutes);
-                            $additionalData[0]['type']  = (string)'Transaction';
-                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
+                            // Store alternate routes to authorize transaction if psp1 fails during authorize
+                            $objTxnRoute->setAlternateRoute($aAlternateRoutes);
                         }
 
 						$pspId = (int)$obj_CardResultSet['PSPID'];

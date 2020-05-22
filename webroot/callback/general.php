@@ -287,9 +287,13 @@ try
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
 
-		
-		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
-		
+		$year = $obj_XML->callback->transaction->card->expiry->year;
+		if(strlen($year) === 4)
+		{
+			$year = substr($year, 2, 2);
+		}
+		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $year;
+
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
 										 $obj_TxnInfo->getMobile(),
 										 (integer) $obj_XML->callback->transaction->card["type-id"],

@@ -1,0 +1,1 @@
+INSERT INTO system.cardprefix_tbl (cardid, min, max, enabled) VALUES (36, 0, 0, true);
