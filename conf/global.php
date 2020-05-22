@@ -700,7 +700,9 @@ $aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-payment-data"] = "/mpoint/mvault/get-payment-data";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-token"] = "/mpoint/mvault/get-token";
 $aHTTP_CONN_INFO["mvault"]["paths"]["tokenize"] = "/mpoint/mvault/save-card";
-$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mpoint/save-card";
+$aHTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
+$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mvault/save-card";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-card-details"] = "/mvault/get-card-details";
 
 /**
  * Connection info for connecting to Paytabs
@@ -946,7 +948,7 @@ $aHTTP_CONN_INFO["ezy"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["ezy"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/mpoint/fraud/ezy/check-fraud-status";
+$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
 
 /**
  * Connection info for connecting to VeriTrans4G
@@ -1058,9 +1060,23 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["capture"] = "/mpoint/global-payments/c
 $aHTTP_CONN_INFO["cybersource"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
 
 
 
+
+
+/**
+ * Connection info for connecting to cybersource fraud gateway
+ */
+$aHTTP_CONN_INFO["cebu-rmfss"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cebu-rmfss"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cebu-rmfss"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cebu-rmfss"]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

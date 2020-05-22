@@ -51,6 +51,7 @@
 												<xs:all>
 													<xs:element name="captured-amount" type="amount"/>
 													<xs:element name="authorized-amount" type="amount"/>
+													<xs:element name="additional-data" minOccurs="0"/>
 													<xs:element name="amount_info" type="amount_info"/>
 													<xs:element name="amount" type="amount"/>
 													<xs:element name="fee" type="amount"/>

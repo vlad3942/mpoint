@@ -302,3 +302,64 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.14', 'AFYDa+MdhNIANeSrpQORmKhqpOMAnMNF8xadipFE1LhLhfngyjowKj71fvDjoaBwUQZgMTN4GTofztmHbYkWNzuD/y8Qz/9QjSKs63P+o+G67fbYFwk8Q+Hcm5vS69TCi5wygsFiCLvoQsH3R0PTRdz2xoFvbFvJpjBU6gviJICMZUYQv9ZYqtVO7uEI/Ue5DSV3QIh4gSg/Rl6Yz9KfXcsm04j0D21IIu/hjxnnP+zeAhBUjxTOu1SggM9UAF+ryeOXXJc1HTDVFblotsZRFTn1mmmDrUKcgxcv1+JfVc3kqfyv0WFExHbKX9fmWZYpvJeQ8ie/3ePWSU+EZKdVhA==', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 
 -- Globalpayments --end --
+
+----Fraud Integration 
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3010, 'Pre Fraud Check Initiated', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3011, 'Pre-screening Result - Accepted', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3012, 'Pre-screening Fraud Service Unavailable', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3013, 'Pre-screening Result - Unknown', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3014, 'Pre-screening Result - Review', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3015, 'Pre-screening Result - Rejected', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3016, 'Pre-screening Connection Failed - Rejected', 'Fraud', '');
+
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3110, 'Post Fraud Check Initiated', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3111, 'Post-screening Result - Accepted', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3112, 'Post-screening Fraud Service Unavailable', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3113, 'Post-screening Result - Unknown', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3114, 'Post-screening Result - Review', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3115, 'Post-screening Result - Rejected', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3116, 'Post-screening Connection Failed', 'Fraud', '');
+
+INSERT INTO "system".processortype_tbl (id, "name") VALUES(10, 'Post Auth Fraud Gateway');
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, "type","scope" ) VALUES('ISROLLBACK_ON_FRAUD_FAIL', 'true', <ClientID>, 'client', 0);
+
+
+
+/* ========== CONFIGURE Cyber Fraud GateWay START========== */
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (64, 'CyberSource Fraud Gateway',9);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (<cardid>, 64);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (<clientid>, 64, 'Cyber Source FSP', 'cellpoint_mobile', 'i+85bPV1v3AVY6MMwNq98EvWOxmfyLxYtkaENHS+b3zAc5RRCCzYGKNKw0w76m87hfT6dAtMPSr+LS4wyZVlgZEH4FiqzdVZ5FP00saqTGitlzhidR1Il1nSkmK1Yqht0xKTuFRYNhzTDwSt7TLfmFzom6xWmS4YHjT4kp1yOCe2h2xYszSKPPrrGKjpD2GWzhNEVj3UcmglJnQwa4pbVi4Omn2q6tTFNbqqkdxRRVeMbk7tnSTMkW5iTReq4VDpUa4gXjxUZST3GqzfVNwPfe1C7I78POYb6FeaEL4xKGKyag01chtNBKEHLs9Jx8/TZmb947/w6/5MmsfNuDji8w==');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>>, 64, '-1');
+
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 64, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (5, 64, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (7, 64, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 64, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (22, 64, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (0, 64, true);
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,64,'USD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (124,64,'CAD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (36,64,'AUD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (344,64,'HKD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (392,64,'JPY');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (710,64,'ZAR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,64,'GBP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (978,64,'EUR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (554,64,'NZD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (752,64,'SEK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (901,64,'TWD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (643,64,'RUB');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (356,64,'INR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (360,64,'IDR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,64,'PHP');
+
+insert into system.cardpricing_tbl (pricepointid ,cardid ) select pricepointid,0 from system.cardpricing_tbl where cardid = 8
+ ON conflict ON CONSTRAINT cardpricing_uq DO NOTHING;
+ UPDATE SYSTEM.CARD_TBL set enabled=true where id=0;
+
+
+
+
