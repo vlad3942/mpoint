@@ -37,3 +37,9 @@ ALTER TABLE log.passenger_tbl alter column last_name type varchar(50);
 -- currency improvement --
 ALTER TABLE system.currency_tbl ADD COLUMN symbol VARCHAR(5);
 ALTER TABLE system.country_tbl DROP COLUMN symbol;
+----Increase length of additional_data_tbl's name name
+ALTER TABLE log.additional_data_tbl ALTER COLUMN name TYPE varchar(30);
+
+--Support All currency for all or one country
+ALTER TABLE client.countrycurrency_tbl ALTER COLUMN countryid DROP NOT NULL;
+ALTER TABLE client.countrycurrency_tbl ALTER COLUMN currencyid DROP NOT NULL;
