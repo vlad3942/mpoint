@@ -1525,7 +1525,7 @@ class Validate extends ValidateBase
 	{
 			$sql = "SELECT COUNT(*) FROM Client".sSCHEMA_POSTFIX.".countrycurrency_tbl cct RIGHT JOIN 
 					System.country_tbl ct ON cct.countryid = ct.id  WHERE ((cct.countryid = ".$obj_TransacionCountryConfig->getID().
-                    " OR cct.countryid is NULL) AND (cct.currencyid = ".$currencyid." OR cct.currencyid is NULL) AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
+                    " OR cct.countryid = 0) AND (cct.currencyid = ".$currencyid." OR cct.currencyid = 1) AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
                      OR (ct.id = ".$obj_TransacionCountryConfig->getID()." AND ct.currencyid=". $currencyid . ")";
 
 				//echo $sql;exit;

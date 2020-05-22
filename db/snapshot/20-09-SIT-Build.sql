@@ -20,10 +20,6 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 ----Increase length of additional_data_tbl's name name
 ALTER TABLE log.additional_data_tbl ALTER COLUMN name TYPE varchar(30);
 
---Support All currency for all or one country
-ALTER TABLE client.countrycurrency_tbl ALTER COLUMN countryid DROP NOT NULL;
-ALTER TABLE client.countrycurrency_tbl ALTER COLUMN currencyid DROP NOT NULL;
-
 
 ----Fraud Integration
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3010, 'Pre Fraud Check Initiated', 'Fraud', '');
