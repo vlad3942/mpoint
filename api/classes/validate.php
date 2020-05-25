@@ -200,7 +200,7 @@ class Validate extends ValidateBase
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (preg_match("/[^a-z0-9 æøåÆØÅäöÄÖ._-]/", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -228,7 +228,7 @@ class Validate extends ValidateBase
 		if (empty($pwd) === true) { $code = 1; }							// Password is undefined
 		elseif (strlen($pwd) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// Password is too short
 		elseif (strlen($pwd) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// Password is too long
-		elseif (ereg("[\"']", $pwd) == true) { $code = 4; }					// Password contains Invalid Characters
+		elseif (preg_match("/[\"']/", $pwd) == true) { $code = 4; }					// Password contains Invalid Characters
 		else { $code = 10; }												// Password is valid
 
 		return $code;
@@ -473,7 +473,7 @@ class Validate extends ValidateBase
 	public function valLanguage($lang)
 	{
 		if (empty($lang) === true) { $code = 1;}							// Undefined Language
-		elseif (eregi("[^a-z_]", $lang) == true) { $code = 2; }				// Invalid Language
+		elseif (preg_match("/[^a-z_]/", $lang) == true) { $code = 2; }				// Invalid Language
 		elseif (is_dir(sLANGUAGE_PATH . $lang) === false) { $code = 3; }	// Language not supported
 		else { $code = 10; }
 

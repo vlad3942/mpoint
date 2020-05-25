@@ -328,9 +328,9 @@ class General
 		{
 			switch (true)
 			{
-			case (eregi('iPhone', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
-			case (eregi('iPod', $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi('Android', $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match('/iPhone/', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
+			case (preg_match('/iPod/', $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match('/Android/', $_SERVER['HTTP_USER_AGENT']) ):
 				return (is_null($oTI) === false ? $oTI->getMarkupLanguage() : "xhtml");
 				break;
 			case ($oUA->hasXHTML() ):	// Mobile Device supports XHTML
