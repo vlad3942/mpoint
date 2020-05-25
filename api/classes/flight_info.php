@@ -93,11 +93,25 @@ class FlightInfo {
      */
     private $_aServiceLevel;
 
+    /**
+     * Indicates the departure country of the flight
+     *
+     * @var string
+     */
+    private $_iDepartureCountryId;
+
+    /**
+     * Indicates the arrival country of the flight
+     *
+     * @var string
+     */
+    private $_iArrivalCountryId;
+
 
     /**
 	 * Default Constructor
 	 */
-	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $Adata) {
+	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $departureCountryId, $arrivalCountryId, $Adata) {
 		$this->_iID = ( integer ) $id;
 		$this->_ServiceClass = $scid;
 		$this->_DepartureAirport = $daid;
@@ -110,6 +124,8 @@ class FlightInfo {
 		$this->_aTag = $tag;
 		$this->_aTripCount = $tripCount;
 		$this->_aServiceLevel = $serviceLevel;
+        $this->_iDepartureCountryId = $departureCountryId;
+        $this->_iArrivalCountryId = $arrivalCountryId;
 	}
 	
 	/**
@@ -212,8 +228,26 @@ class FlightInfo {
         return $this->_aServiceLevel;
     }
 
+    /**
+     * Returns the departure country of the flight
+     * @return integer
+     */
+    public function getDepartureCountry()
+    {
+        return $this->_iDepartureCountryId;
+    }
+
+    /**
+     * Returns the arrival country of the flight
+     * @return integer
+     */
+    public function getArrivalCountry()
+    {
+        return $this->_iArrivalCountryId;
+    }
+
 	public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level
+		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid
 					FROM log" . sSCHEMA_POSTFIX . ".flight_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
@@ -222,9 +256,9 @@ class FlightInfo {
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RSA );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"], $RSA );
 			} else {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], null );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"],null );
 			}
 		} else {
 			return null;
@@ -264,6 +298,8 @@ class FlightInfo {
 		$xml .= '<airline-code>' . $this->getAirline () . '</airline-code>';
 		$xml .= '<departure-date>' . $this->getDepartureDate () . '</departure-date>';
 		$xml .= '<arrival-date>' . $this->getArrivalDate () . '</arrival-date>';
+        $xml .= '<departure-country>' . $this->getDepartureCountry () . '</departure-country>';
+        $xml .= '<arrival-country>' . $this->getArrivalCountry () . '</arrival-country>';
 		if ($this->getAdditionalData ()) {
 			$xml .= '<additional-data>';
 			foreach ($this->getAdditionalData () as $fAdditionalData) {
