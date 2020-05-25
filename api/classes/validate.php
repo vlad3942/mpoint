@@ -1216,15 +1216,22 @@ class Validate extends ValidateBase
 	 * @param	integer $countryid				The unique ID of the country that designates the currency
 	 * @return 	integer
 	 */
-	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid,CountryConfig $obj_CountryConfig = null)
 	{
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
+		$countryISO_id = $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "";
+		$countryISOCode = "";
+		if($obj_CountryConfig != null && $obj_CountryConfig->getID() >0)
+        {
+            $countryISOCode = $obj_CountryConfig->getNumericCode();
+        }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		
-		if (strtolower($mac) === strtolower($chk))
+		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+
+		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode))
 		{
 			$code = 10;
 		}
@@ -1517,8 +1524,8 @@ class Validate extends ValidateBase
 	public function valCurrency(RDB &$oDB, $currencyid, $obj_TransacionCountryConfig, $clid)
 	{
 			$sql = "SELECT COUNT(*) FROM Client".sSCHEMA_POSTFIX.".countrycurrency_tbl cct RIGHT JOIN 
-					System.country_tbl ct ON cct.countryid = ct.id  WHERE (cct.countryid = ".$obj_TransacionCountryConfig->getID().
-                    " AND cct.currencyid = ".$currencyid." AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
+					System.country_tbl ct ON cct.countryid = ct.id  WHERE ((cct.countryid = ".$obj_TransacionCountryConfig->getID().
+                    " OR cct.countryid = 0) AND (cct.currencyid = ".$currencyid." OR cct.currencyid = 1) AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
                      OR (ct.id = ".$obj_TransacionCountryConfig->getID()." AND ct.currencyid=". $currencyid . ")";
 
 				//echo $sql;exit;
