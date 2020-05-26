@@ -1601,7 +1601,7 @@ class TxnInfo
 			if (array_key_exists("converted-currency-config", $misc) === false) { $misc["converted-currency-config"] = $obj->getConvertedCurrencyConfig(); }
 			if (array_key_exists("converted-amount", $misc) === false) { $misc["converted-amount"] = $obj->getConvertedAmount(); }
 			if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
-
+			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = -1; }
 
 			if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
@@ -1941,8 +1941,8 @@ class TxnInfo
 				// Error: Unable to generate a new Flight ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
 
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level)
-					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', '". $aFlightData["service_level"] ."')";
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid)
+					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', '". $aFlightData["service_level"] ."', '". $aFlightData["departure_country"] ."', '". $aFlightData["arrival_country"] ."')";
 				$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				
 				// Error: Unable to insert a new flight record in the Flight Table

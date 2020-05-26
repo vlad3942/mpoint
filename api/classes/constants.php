@@ -1527,6 +1527,13 @@ abstract class Constants
     const iPAYMENT_TYPE_VIRTUAL = 6;
     const iPAYMENT_TYPE_ONLINE_BANKING = 7;
 
+    /*
+	 * Alternate routes to authorize payment  if primary fails during authorize
+	 * */
+    const iPRIMARY_ROUTE = 1;
+    const iSECOND_ALTERNATE_ROUTE = 2;
+    const iTHIRD_ALTERNATE_ROUTE = 3;
+
 }
 
 abstract class AutoCaptureType

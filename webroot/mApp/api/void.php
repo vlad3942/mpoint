@@ -126,7 +126,7 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<void client-id="10007" account = "100006">';
-$HTTP_RAW_POST_DATA .= '<transaction id="5045166" order-no="UAT-71081237">';
+$HTTP_RAW_POST_DATA .= '<transaction id="5045166" order-no="UAT-71081237" order-ref="1412177706">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">10000</amount>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '</void>';
@@ -145,16 +145,16 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 		$transactionID=$obj_DOM->void[$i]->transaction["id"];
 		$amount=$obj_DOM->void[$i]->transaction->amount;
 		$country=$obj_DOM->void[$i]->transaction->amount["country-id"];
+		$orderref=(isset($obj_DOM->void[$i]->transaction["order-ref"]) === true) ? (string)$obj_DOM->void[$i]->transaction["order-ref"]:'';
 			
 		$xml .= '<transactions client-id="'. intval($clientID) .'">';
-		$xml .= '<transaction id="'. intval($transactionID) .'" order-no="'. htmlspecialchars($orderno) .'">';	
+		$xml .= '<transaction id="'. intval($transactionID) .'" order-no="'. htmlspecialchars($orderno) .'" order-ref="'. htmlspecialchars($orderref) .'">';
 						
 
 			if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 			{	
 				if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'void'}) > 0)
 				{
-					
 						/* ========== INPUT VALIDATION START ========== */
 						$obj_Validate = new Validate();
 						$aMsgCodes = array();		
@@ -184,6 +184,9 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 							if (Validate::valBasic($_OBJ_DB, $clientID, $account) == 100)
 							{
 								$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientID, $account);
+								$isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
+								$isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+								$isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
 
 								// Set Client Defaults
 								
@@ -227,7 +230,6 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 									/* ========== Input Validation Start ========== */
 									if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) + 50] = $amount; }
 									/* ========== Input Validation End ========== */
-									
 									// Success: Input Valid
 									if (count($aMsgCds) == 0)
 									{
@@ -240,10 +242,39 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 												$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 												$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
-												// Refund operation succeeded
-												$code = $obj_mPoint->refund($amount);
-												
-											
+												$code = 0;
+												$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+												$ticketNumber = '';
+												$ticketReferenceIdentifier = '';
+												if(isset($orderref) && empty($orderref) === false)
+												{
+													$ticketNumber = $orderref;
+													$ticketReferenceIdentifier = 'log.additional_data_tbl - TicketNumber';
+												}
+												$passbookEntry = new PassbookEntry
+												(
+														NULL,
+														$amount,
+														$obj_TxnInfo->getCurrencyConfig()->getID(),
+														Constants::iVoidRequested,
+														$ticketNumber,
+														$ticketReferenceIdentifier
+												);
+												if ($txnPassbookObj instanceof TxnPassbook)
+												{
+													$txnPassbookObj->addEntry($passbookEntry);
+													try {
+														$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+														$code = reset($codes);
+													} catch (Exception $e) {
+														trigger_error($e, E_USER_WARNING);
+													}
+												}
+
+												// Refresh transactioninfo object once the refund/cancel is performed
+												$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
+
+												// Refund or Cancel operation succeeded
 												if ($code == 1000 || $code == 1001)
 												{
 													header("HTTP/1.0 200 OK");
@@ -266,9 +297,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
                                                     }
 
 												}
-												//Request send for refund the transaction,
-                                                //Once callback is receive 2003 state will update against transaction in general.php
-												else if($code == 1100) //Refund initiated
+												else if($code == 1100) //Refund or Cancel initiated
                                                 {
                                                     header("HTTP/1.0 200 OK");
 													$xml .= '<status code="1000"></status>';
