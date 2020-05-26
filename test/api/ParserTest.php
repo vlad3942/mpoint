@@ -151,7 +151,7 @@ class ParserTest extends baseAPITest
 
     public function testInvalidXPath()
     {
-        $rulesString = "invoiceid ::=  ([@name='AIRLINE_CODE'])";
+        $rulesString = "invalid path";
 
         $this->parser->setRules($rulesString);
         $output = $this->parser->parse();
