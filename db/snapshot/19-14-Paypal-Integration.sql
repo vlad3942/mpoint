@@ -121,11 +121,6 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, scope )
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 24,'ACCu12.jik2Wb3kzHJgFE1palQEsAHD7wsynoTYqRcOZAX7RzupgW4sQ', 'sb-sahh431638744_api1.business.example.com', '7W56K2VQBRYF8FLX', true, null);
 
 ---additional MIDs for SGD, HKD, MYR, USD
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'PayPal.rule', 'username ::= "PAYPAL_USERNAME_"(transaction/authorized-amount/@currency)
-password ::= "PAYPAL_PASSWORD_"(transaction/authorized-amount/@currency)
-mid ::= "PAYPAL_MID_"(transaction/authorized-amount/@currency)', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10077 and pspid=24;
-
-
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'PAYPAL_USERNAME_SGD', 'sb-mohn91867880_api1.business.example.com', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10077 and pspid=24;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'PAYPAL_PASSWORD_SGD', 'B9WX2HPY9DPD6284', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10077 and pspid=24;
@@ -149,8 +144,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'PAYPAL_PASSWORD_USD', '37JT6WGJFFUJFRM3', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10077 and pspid=24;
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'PAYPAL_MID_USD', 'Awzp6NMJcMOsM6SlpR13Cez-7vPFAMODxiW5ZT0qx6EbatLFSrMoBKtc', true, id, 'merchant', 0 from Client.MerchantAccount_Tbl where clientid=10077 and pspid=24;
-
-
 
 /*=========================End===================================== */
 
