@@ -279,10 +279,11 @@ try
 
 										$aRoutes = array();
                                         $iPrimaryRoute = 0 ;
-										$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-                                        if (strtolower($drService) == 'true')
-                                        {
-                                            $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                        if($obj_card->getPaymentType() === 1) {
+                                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+                                            if (strtolower($drService) == 'true') {
+                                                $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                            }
                                         }
 
                                         $obj_CardXML = '';
