@@ -260,7 +260,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         if (count ( $aRoutes ) > 0) {
                         	$aAlternateRoutes = array();
-                            $objTxnRoute = new TxnRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                            $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
                             foreach ($aRoutes as $oRoute) {
                                 if(empty($oRoute->preference) === false){
                                     if ($oRoute->preference === 1) {
