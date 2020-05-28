@@ -517,11 +517,29 @@ try
          	//Check whether a notification has already been sent to retail system with status 20109
          	// Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
          	if($count == 0)  {
-         		$obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => (string)$sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+         		$obj_mPoint->notifyClient($iStateId,
+                    array("transact" => (string)$obj_XML->callback->transaction['external-id'],
+                        "amount" => $obj_XML->callback->transaction->amount,
+                        "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'},
+                        "card-id" => $obj_XML->callback->transaction->card["type-id"],
+                        "expiry" => $sExpirydate ,
+                        "additionaldata" => (string)$sAdditionalData
+                    ),
+                    $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)
+                );
          	}
          }
          else {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "additionaldata" => (string)$sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+             $obj_mPoint->notifyClient(
+                 $iStateId,
+                 array("transact" => (string)$obj_XML->callback->transaction['external-id'],
+                     "amount" => $obj_XML->callback->transaction->amount,
+                     "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'},
+                     "card-id" => $obj_XML->callback->transaction->card["type-id"],
+                     "additionaldata" => (string)$sAdditionalData
+                 ),
+                 $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)
+             );
         }
      }
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});

@@ -10,7 +10,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars, SurePay $surePay)
+	public function notifyClient($iStateId, array $vars, $surePay)
     {
         if(isset($vars["expiry"]) === false ){$vars["expiry"] = null; }
         if(isset($vars["additionaldata"]) === false ){$vars["additionaldata"] = ""; }
