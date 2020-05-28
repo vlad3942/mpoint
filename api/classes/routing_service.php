@@ -218,4 +218,42 @@ class RoutingService extends General
         }
     }
 
+    /**
+     * @param \RDB     $_OBJ_DB
+     * @param \TxnInfo $obj_TxnInfo
+     *
+     * @return int
+     * @throws \mPointException
+     */
+    public function getAndStorePSP(RDB &$_OBJ_DB, TxnInfo $obj_TxnInfo)
+    {
+        $obj_RoutingServiceResponse = $this->getRoute();
+        $aRoutes = [];
+        if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+        {
+            $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+            $aRoutes = $aObj_Route->psps->psp;
+        }
+        $firstPSP = -1;
+        if (count ( $aRoutes ) > 0) {
+            foreach ($aRoutes as $oRoute) {
+                if(empty($oRoute->preference) === false){
+                    if ($oRoute->preference === 1) {
+                        $firstPSP = $oRoute->id;
+                        break;
+                    }
+                }else{
+                    $firstPSP = $oRoute->id;
+                }
+            }
+            // Store dynamic route to use it again during Auth if require
+            $additionalData = array();
+            $additionalData[0]['name']  = (string)'psps';
+            $additionalData[0]['value'] = json_encode($aRoutes);
+            $additionalData[0]['type']  = (string)'Transaction';
+            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
+
+        }
+        return (int)$firstPSP;
+    }
 }
