@@ -98,13 +98,15 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 
+require_once(sCLASS_PATH . '/txn_passbook.php');
+require_once(sCLASS_PATH . '/passbookentry.php');
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
  $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
  $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
- $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
+ $HTTP_RAW_POST_DATA = ' <?xml version="1.0" encoding="UTF-8"?>';
  $HTTP_RAW_POST_DATA .= '<root>';
  $HTTP_RAW_POST_DATA .= '<capture client-id="10007" account="100007">';
  $HTTP_RAW_POST_DATA .= '<transaction id="1813219" order-no="UAT-28577880">';
@@ -129,7 +131,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 	$account=$obj_DOM->capture[$i]["account"];
 	$orderno=$obj_DOM->capture[$i]->transaction["order-no"];
 	$transactionID=$obj_DOM->capture[$i]->transaction["id"];
-	$amount=$obj_DOM->capture[$i]->transaction->amount;
+	$amount=(int)$obj_DOM->capture[$i]->transaction->amount;
 	$country=$obj_DOM->capture[$i]->transaction->amount["country-id"];
 	
 	$xml .= '<transactions client-id = "'. intval($clientID) .'" >';	
@@ -205,7 +207,29 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 								{
 									$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 									$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-									$code = $obj_mPoint->capture( (integer) $amount);
+									//$code = $obj_mPoint->capture( (integer) $amount);
+
+                                    $code = 0;
+                                    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                                    $passbookEntry = new PassbookEntry
+                                    (
+                                        NULL,
+                                        $amount,
+                                        $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                        Constants::iCaptureRequested,
+                                        '',
+                                        ''
+                                    );
+                                    if ($txnPassbookObj instanceof TxnPassbook) {
+                                        try {
+                                            $txnPassbookObj->addEntry($passbookEntry);
+                                            $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+                                            $code = reset($codes);
+                                        } catch (Exception $e) {
+                                            trigger_error($e, E_USER_WARNING);
+                                        }
+                                    }
 									// Refresh transactioninfo object once the capture is performed
 									$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
@@ -310,7 +334,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						else
 						{
 							header("HTTP/1.0 400 Bad Request");
-							$xml .= '<status code="400" ></status>';
+							$xml .= '<status code="400" >json_encode($aMsgCds)</status>';
 							// Log Errors
 							foreach ($aMsgCds as $state => $debug)
 							{
