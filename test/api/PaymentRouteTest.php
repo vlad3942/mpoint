@@ -20,7 +20,7 @@ class PaymentRouteTest extends baseAPITest
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp($isDBSetupRequired): void
+    public function setUp(): void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;

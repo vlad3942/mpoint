@@ -222,10 +222,10 @@ class RoutingServiceTest extends baseAPITest
                     $aPreference[] = $oRoute->preference;
                 }
 
-                $this->assertStringContainsString(17, $aPSPIds);
-                $this->assertStringContainsString(18, $aPSPIds);
-                $this->assertStringContainsString(1, $aPreference);
-                $this->assertStringContainsString(2, $aPreference);
+                $this->assertContains(17, $aPSPIds);
+                $this->assertContains(18, $aPSPIds);
+                $this->assertContains(1, $aPreference);
+                $this->assertContains(2, $aPreference);
             }
         }
     }

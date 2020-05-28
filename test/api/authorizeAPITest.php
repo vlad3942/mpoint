@@ -267,7 +267,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 			$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
 		}
 
-		$this->assertStringContainsString("Message: CAPTURE APPROVED BY PSP ". $pspID, parent::getErrorLogContent() );
+		$this->assertContains("Message: CAPTURE APPROVED BY PSP ". $pspID, parent::getErrorLogContent() );
 
 
 		/* Test that euaid has been set on txn */

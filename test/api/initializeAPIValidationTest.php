@@ -294,7 +294,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('eua-id="5001"', $sReplyBody);
-		$this->assertNotContains('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
+		$this->assertStringNotContainsString('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
 	}
 
     public function testSSOFailForStoredCard()
@@ -331,7 +331,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('eua-id="-1"', $sReplyBody);
-		$this->assertNotContains('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
+		$this->assertStringNotContainsString('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
 	}
 
 	public function testSSOTimeoutForStoredCard()
@@ -367,7 +367,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('eua-id="-1"', $sReplyBody);
-		$this->assertNotContains('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
+		$this->assertStringNotContainsString('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
 	}
 
 	public function testSSOSuccessForStoredCard()
@@ -441,7 +441,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('eua-id="-1"', $sReplyBody);
-		$this->assertNotContains('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
+		$this->assertStringNotContainsString('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
 	}
 
     public function testInvalidTransactionAmount()

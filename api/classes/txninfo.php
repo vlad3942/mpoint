@@ -931,13 +931,13 @@ class TxnInfo
         {
             if (empty($key) === true)
             {
-                if (count($this->_aAdditionalData) > 0)
+                if (is_array($this->_aAdditionalData) && count($this->_aAdditionalData) > 0)
                 {
                     return $this->_aAdditionalData;
                 }
                 return null;
             }
-            if ($this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
+            if (is_array($this->_aAdditionalData) && $this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
             {
                 return $this->_aAdditionalData[$key];
             }
@@ -963,13 +963,13 @@ class TxnInfo
 		{
 			if ($type === 0 && $pspid === 0 )
 			{
-				if (count($this->_aExternalRef) > 0)
+				if (is_array($this->_aExternalRef) && count($this->_aExternalRef) > 0)
 				{
 					return $this->_aExternalRef;
 				}
 				return null;
 			}
-			if ($this->_aExternalRef != null && array_key_exists($type, $this->_aExternalRef) === true)
+			if ( is_array($this->_aExternalRef) && $this->_aExternalRef != null && array_key_exists($type, $this->_aExternalRef) === true)
 			{
 				$aExternalRef = $this->_aExternalRef[$type];
 				if($pspid === 0)	return $aExternalRef;

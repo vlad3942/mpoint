@@ -75,7 +75,7 @@ class GetTransactionStatusAPITest extends baseAPITest
 
     public function testMissingTxnId()
     {
-        $xml = $this->getGetTransactionStatusDoc();
+        $xml = $this->getGetTransactionStatusDoc(1001001);
 
 		$this->_httpClient->connect();
 
