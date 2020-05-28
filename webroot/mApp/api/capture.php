@@ -176,6 +176,10 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
+						    $isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
+	                        $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+	                        $isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
+
 							$obj_TxnInfo = TxnInfo::produceInfo($transactionID, $_OBJ_DB);
 							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 							if (array_key_exists("HTTP_X_AUTH_TOKEN", $_SERVER) === true)
