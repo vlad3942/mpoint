@@ -431,7 +431,7 @@ class Home extends General
      * @param   integer $countryId
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId)
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
