@@ -473,7 +473,7 @@ class Home extends General
 				WHERE EUC.accountid = ". (int)$id;
          if($countryId !== NULL)
         {
-            $sql = " AND (CA.countryid = ". $countryId ." OR CA.countryid IS NULL) AND CA.enabled = '1' ";
+            $sql = " AND (CA.countryid = ". $countryId ." OR CA.countryid IS NULL)";
         }
         if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aPaymentMethods).")"; }
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
