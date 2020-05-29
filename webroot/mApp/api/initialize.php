@@ -658,9 +658,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 if(empty($obj_PaymentMethods) === false){
                                     $oUA = null;
                                     $aPaymentMethods = array_map(function ($paymentMethod) { return $paymentMethod->id; }, $obj_PaymentMethods->payment_methods->payment_method);
-                                    $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, $aPaymentMethods), "SimpleXMLElement", LIBXML_COMPACT);
+                                    $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, $aPaymentMethods, $obj_TxnInfo->getCountryConfig()->getID()), "SimpleXMLElement", LIBXML_COMPACT);
                                 }else{
-                                    $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig), "SimpleXMLElement", LIBXML_COMPACT);
+                                    $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, FALSE,$oUA, array(), $obj_TxnInfo->getCountryConfig()->getID() ), "SimpleXMLElement", LIBXML_COMPACT);
                                 }
 								if ($obj_ClientConfig->getStoreCard() <= 3) { $aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]"); }
 								else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
