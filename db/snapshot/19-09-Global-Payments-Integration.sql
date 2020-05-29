@@ -48,12 +48,6 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10012
 
 --Sandbox env details. Google Pay and Apple Pay MID config
 
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.44', 'PAL-IPG GOOGLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.44.PHP', 'PAL-IPG PHP GOOGLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
-
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.14', 'PAL-IPG APPLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.14.PHP', 'PAL-IPG PHP APPLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
-
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.44', 'gpmnl042772772760', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.44.PHP', 'gpmnl045623832732', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=<clientid> and pspid=56;
 
@@ -99,22 +93,16 @@ delete from client.additionalproperty_tbl where key like 'GlobalPayment.rule%';
 
 ---Google pay -- PHP config
 
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.44.PHP', 'PAL-IPG PHP GOOGLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.44.PHP', 'gpmnl045623832732', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.44.PHP', 'xrELE5yHDUR+jMpa8pcpIccQ2zQGjZMI45piyCzWR15AL9eLgFV5xhPciSHHUQtW1NpFpwip46oV1G2Oy9SQtBjEuszTVVPF3tOQVCaBhO6J3Tfjv8VBNLY2GEUPmpFwEKW+p79eJR0iEpMqdwy/necg2O0FfmDIcQ1ZlGh5G+asjIcgeWyZYjf+8UAy4qH/94TzNf2ku93W1xtobJXaQ5IcyC9dKxoAl3m4cqVTRDj1jKKjRdcsdt6IAopm4yorRlNy3pbZpdDq7OT2Jhb3uAe1O7fUWZye1hnTd4bzZpIxV2k/L81xaMnv9wLVsG/RiML0HqfWRzwcQNi+qpqayA==', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 -- Google pay -- rest of the currencies config
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.44', 'PAL-IPG GOOGLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.44', 'gpmnl042772772760', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.44', 'a37Va81z32Q+qMNhRKG/2l9J1yvw1tYvw+atWXuW3jPHOFKAwcvGY9dPfuyDiST4ruhe9gDAg36lm+zdeiSUnmd3kN99Io/88daPtzVtnyzqEpT/QzgDoI8Y6rbD7rnINzVLEBWAB7xdWfw5NVRFMQrFuvOUE3VqyM3F8uQdEvCBFoPCxxIbsEo3Dn6hjevgzO7nzZPdrmqDrMO8CE9CUqleJhRlC6MfJNA4M87ZtYt03q0XpAXM/zYd8tYJJu29UelxadoeZxBdQzuoU89XXcZtYs8rUJXd5GRqtEuLXMS0tgNrnf2en7+Xe+Zl3tNSOwoJSkwdFj07yjnPF8nvdg==', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 
 ---Apple pay -- PHP config
-
-
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.14.PHP', 'PAL-IPG PHP APPLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.14.PHP', 'gpmnl045623832731', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.14.PHP', 'ov/87C1W9ahpp4MroX/Xray0pc/T2q0fE9R6pyAdVXrlw1+I9vU++oIul9AkHMa7H6Emb3msTyB91y34ST6Tysyi4Xvu/hYbB3KoFxairs1xOpXds3siOkNACVtFIhraIPhWi1TXbbMDRKkbe1U/zokXmdxsRRVjw6SJLevPLUSGVDXnjkbjIZM5rJ4PbwFHXfr3UQ5LW/PWgksxjMh34Yco+xT+4/gKO4r5cbr6GxlBmWcGtY//GGIq+lByAhDEiJvFsFLdBg6EyqyiSt4pf74NiN0XCKbljoQZ3U507P8PWi2tjsmeBp81kgpUmsPfE9MkucCDEey71KCpGbAmKA==', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 
 -- Apple pay --rest of the currencies config
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.MID.14', 'PAL-IPG APPLEPAY', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.USERNAME.14', 'gpmnl042772772761', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select 'GlobalPayment.Wallet.PASSWORD.14', 'AFYDa+MdhNIANeSrpQORmKhqpOMAnMNF8xadipFE1LhLhfngyjowKj71fvDjoaBwUQZgMTN4GTofztmHbYkWNzuD/y8Qz/9QjSKs63P+o+G67fbYFwk8Q+Hcm5vS69TCi5wygsFiCLvoQsH3R0PTRdz2xoFvbFvJpjBU6gviJICMZUYQv9ZYqtVO7uEI/Ue5DSV3QIh4gSg/Rl6Yz9KfXcsm04j0D21IIu/hjxnnP+zeAhBUjxTOu1SggM9UAF+ryeOXXJc1HTDVFblotsZRFTn1mmmDrUKcgxcv1+JfVc3kqfyv0WFExHbKX9fmWZYpvJeQ8ie/3ePWSU+EZKdVhA==', true, id, 'merchant', 2 from Client.MerchantAccount_Tbl where clientid=10020 and pspid=56;
