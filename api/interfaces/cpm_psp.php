@@ -662,8 +662,28 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE, $obj_HTTP->getReplyBody());
                 //Rollback transaction
-                $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
-                $obj_PaymentProcessor->cancel($this->getTxnInfo()->getAmount());
+
+                //$obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
+                $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $this->getTxnInfo()->getID(), $this->getTxnInfo()->getClientConfig()->getID());
+                $passbookEntry = new PassbookEntry
+                (
+                    NULL,
+                    $this->getTxnInfo()->getAmount(),
+                    $this->getTxnInfo()->getCurrencyConfig()->getID(),
+                    Constants::iCancelRequested,
+                    '',
+                    ''
+                );
+                if ($txnPassbookObj instanceof TxnPassbook) {
+                    $txnPassbookObj->addEntry($passbookEntry);
+                    try {
+                        $codes = $txnPassbookObj->performPendingOperations($this->getText(), $aConnInfo);
+                        $code = reset($codes);
+                    } catch (Exception $e) {
+                        trigger_error($e, E_USER_WARNING);
+                    }
+                }
+                //$obj_PaymentProcessor->cancel($this->getTxnInfo()->getAmount());
                 throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
             }
         }
