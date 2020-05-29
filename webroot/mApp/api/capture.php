@@ -338,7 +338,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						else
 						{
 							header("HTTP/1.0 400 Bad Request");
-							$xml .= '<status code="400" >json_encode($aMsgCds)</status>';
+							$xml .= '<status code="400" ></status>';
 							// Log Errors
 							foreach ($aMsgCds as $state => $debug)
 							{
