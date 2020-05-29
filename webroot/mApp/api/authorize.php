@@ -289,7 +289,8 @@ try
                                                     $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
                                                     if($obj_RS instanceof RoutingService)
                                                     {
-                                                        $iPrimaryRoute = $obj_RS->getAndStorePSP($_OBJ_DB, $obj_TxnInfo);
+                                                        $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                        $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
                                                     }
                                                 }
                                             }
