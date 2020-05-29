@@ -248,7 +248,9 @@ delete from client.additionalproperty_tbl where key like 'GlobalPayment.merchant
 delete from client.additionalproperty_tbl where key like 'GlobalPayment.usernamerule%';
 delete from client.additionalproperty_tbl where key like 'GlobalPayment.pwdrule%';
 delete from client.additionalproperty_tbl where key like 'GlobalPayment.rule%';
-
+delete from client.additionalproperty_tbl where key like 'GlobalPayment.Wallet.MID%';
+delete from client.additionalproperty_tbl where key like 'GlobalPayment.Wallet.USERNAME%';
+delete from client.additionalproperty_tbl where key like 'GlobalPayment.Wallet.PASSWORD%';
 
 ---Google pay -- PHP config
 
