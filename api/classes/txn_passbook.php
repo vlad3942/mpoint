@@ -567,7 +567,7 @@ final class TxnPassbook
 						$code = -1;
 						if($isPSPCallRequired === TRUE)
 						{
-							$txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
+						    $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
 							$obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
 							switch ($passbookEntry->getPerformedOperation())
 							{
@@ -597,6 +597,7 @@ final class TxnPassbook
                         }
                         $this->_updatePassbookEntries(array($passbookEntry));
                     }
+                    $codes[] = $code;
                 }
             }
         }
