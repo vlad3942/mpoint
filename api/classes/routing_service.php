@@ -219,13 +219,12 @@ class RoutingService extends General
     }
 
     /**
-     * @param \RDB     $_OBJ_DB
-     * @param \TxnInfo $obj_TxnInfo
+     * Store all alternate payment routes to authorize transaction if psp1 fails during authorize
+     * and return primary route to authorize transaction
      *
-     * @return int
-     * @throws \mPointException
+     * @return (integer) $firstPSP	Primary route to authorize transaction
      */
-    public function getAndStorePSP(RDB &$_OBJ_DB, TxnInfo $obj_TxnInfo)
+    public function getAndStorePSP(PaymentRoute $objTxnRoute)
     {
         $obj_RoutingServiceResponse = $this->getRoute();
         $aRoutes = [];
@@ -236,23 +235,22 @@ class RoutingService extends General
         }
         $firstPSP = -1;
         if (count ( $aRoutes ) > 0) {
+            $aAlternateRoutes = array();
             foreach ($aRoutes as $oRoute) {
                 if(empty($oRoute->preference) === false){
                     if ($oRoute->preference === 1) {
                         $firstPSP = $oRoute->id;
-                        break;
                     }
+                    $aAlternateRoutes[] = array(
+                        'id' => $oRoute->id,
+                        'preference' => $oRoute->preference
+                    );
                 }else{
                     $firstPSP = $oRoute->id;
                 }
             }
-            // Store dynamic route to use it again during Auth if require
-            $additionalData = array();
-            $additionalData[0]['name']  = (string)'psps';
-            $additionalData[0]['value'] = json_encode($aRoutes);
-            $additionalData[0]['type']  = (string)'Transaction';
-            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalData, $obj_TxnInfo->getID());
-
+            // Store alternate routes to authorize transaction if psp1 fails during authorize
+            $objTxnRoute->setAlternateRoute($aAlternateRoutes);
         }
         return (int)$firstPSP;
     }
