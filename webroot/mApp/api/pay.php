@@ -241,42 +241,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$aRoutes = array();
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
 
+						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
+
 						if ($payment_type == Constants::iPAYMENT_TYPE_CARD && strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
                             $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
                             if($obj_RS instanceof RoutingService)
 							{
-                                $obj_RoutingServiceResponse = $obj_RS->getRoute();
-                                if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
-                                {
-                                    $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
-                                    $aRoutes = $aObj_Route->psps->psp;
-                                }
-							}
-
-						}
-
-						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
-
-                        if (count ( $aRoutes ) > 0) {
-                        	$aAlternateRoutes = array();
-                            $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                            foreach ($aRoutes as $oRoute) {
-                                if(empty($oRoute->preference) === false){
-                                    if ($oRoute->preference === 1) {
-                                        $obj_CardResultSet['PSPID'] = $oRoute->id;
-                                    }
-                                    $aAlternateRoutes[] = array(
-                                    	'id' => $oRoute->id,
-										'preference' => $oRoute->preference
-									);
-								}else{
-                                    $obj_CardResultSet['PSPID'] = $oRoute->id;
+                                $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+                                if($iPrimaryRoute > 0){
+                                    $obj_CardResultSet['PSPID'] = $iPrimaryRoute;
 								}
-                            }
-                            // Store alternate routes to authorize transaction if psp1 fails during authorize
-                            $objTxnRoute->setAlternateRoute($aAlternateRoutes);
-                        }
+							}
+						}
 
 						$pspId = (int)$obj_CardResultSet['PSPID'];
 
