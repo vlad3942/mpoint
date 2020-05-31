@@ -107,7 +107,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
 		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SAVE_CLIENT, $aClientIDs, $_SERVER['HTTP_VERSION']);
-		
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -336,6 +335,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["country-id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["capture-type"],
+                                                                             (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["walletid"],
 																			 $enabled);
 										// Error: Break out of loop
 										if ($iPMID < 0) { throw new mConsoleSaveCardAccessFailedException("Error during save card access: ". $iPMID ." for client: ". $iClientID); }
