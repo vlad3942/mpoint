@@ -1538,6 +1538,7 @@
 						<xs:enumeration value="ivr" />
 						<xs:enumeration value="chat" />
 						<xs:enumeration value="email" />
+						<xs:enumeration value="spa" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -1711,6 +1712,7 @@
 					default="true" />
 				<xs:attribute name="capture-type" type="xs:positiveInteger"
 				   use="required"/>
+				<xs:attribute name="walletid" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>

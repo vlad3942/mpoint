@@ -1567,6 +1567,8 @@
    <xs:element type="xs:string" name="airline-code" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:string" name="departure-date" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:string" name="arrival-date" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:positiveInteger" name="departure-country" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:positiveInteger" name="arrival-country" minOccurs="0" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
 	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
