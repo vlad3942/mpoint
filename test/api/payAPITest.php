@@ -47,6 +47,10 @@ class PayAPITest extends baseAPITest
             {
                 $xml .= '<conversation-rate>'.$aDccParams[1].'</conversation-rate>';
             }
+
+            $xml .= '<sale-currecyid>'.$currencyid.'</sale-currecyid>';
+            $xml .= '<sale-amount>'.$amount.'</sale-amount>';
+
             $xml .= '</foreign-exchange-info>';
         }
 		$xml .= '</transaction>';
