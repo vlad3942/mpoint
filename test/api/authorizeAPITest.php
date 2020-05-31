@@ -49,8 +49,9 @@ abstract class AuthorizeAPITest extends baseAPITest
             {
                 $xml .= '<conversation-rate>'.$aDccParams[1].'</conversation-rate>';
             }
-            $xml .= '<sale-currecyid>'.$currecyid.'</sale-currecyid>';
-            $xml .= '<sale-amount>'.$amount.'</sale-amount>';
+
+            if(empty($aDccParams[2]) === false) { $xml .= '<sale-currecyid>'.$aDccParams[2].'</sale-currecyid>'; }
+            if(empty($aDccParams[3]) === false) { $xml .= '<sale-amount>'.$aDccParams[3].'</sale-amount>'; }
             $xml .= '</foreign-exchange-info>';
         }
 		$xml .= '</transaction>';
