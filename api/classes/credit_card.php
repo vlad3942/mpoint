@@ -377,7 +377,7 @@ class CreditCard extends EndUserAccount
         if(is_array($res) === false){
             $res = $this->getCardsQueryForDR($amount, $typeid, null, $walletid);
         }
-        return isset($res[0])?$res[0]:array();
+        return isset($res[0])?$res[0]:FALSE;
     }
 
 }
