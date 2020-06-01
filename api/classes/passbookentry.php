@@ -72,9 +72,10 @@ class PassbookEntry implements JsonSerializable
     private $_clientId;
 
     /**
-     * @var float
+     * used in case of DCC passbook validation
+     * @var int
      */
-    private $_conversionRate;
+    private $_initializedAmount;
     /**
      * PassbookEntry constructor.
      *
@@ -90,9 +91,9 @@ class PassbookEntry implements JsonSerializable
      * @param $modified
      * @param $externalReference
      * @param $externalReferenceIdentifier
-     * @param $conversionrate
+     * @param $initializedAmount
      */
-    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL, $clientId = -1,$conversionRate = 1)
+    public function __construct($id, $amount, $currencyId, $requestedOperation, $externalReference = '', $externalReferenceIdentifier = '', $performedOperation = 0, $status = '', $enabled = TRUE, $created = NULL, $modified= NULL, $clientId = -1,$initializedAmount = 0)
     {
         $this->_id = (int)$id;
         $this->_amount = (int)$amount;
@@ -106,7 +107,8 @@ class PassbookEntry implements JsonSerializable
         $this->_externalReference = (string)$externalReference;
         $this->_externalReferenceIdentifier = (string)$externalReferenceIdentifier;
         $this->_clientId = (int)$clientId;
-        $this->_conversionRate = (float)$conversionRate;
+        if($initializedAmount === 0){ $this->_initializedAmount = (int)$amount; }
+        else {$this->_initializedAmount = (int)$initializedAmount;}
     }
 
     /**
@@ -237,10 +239,10 @@ class PassbookEntry implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getConversationRate()
+    public function getInitializedAmount()
     {
-        return $this->_conversionRate;
+        return $this->_initializedAmount;
     }
 }
