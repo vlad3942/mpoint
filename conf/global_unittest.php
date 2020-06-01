@@ -1,7 +1,7 @@
 <?php
 
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5435;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint_". TESTDB_TOKEN;
 $aDB_CONN_INFO["mpoint"]["username"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["password"] = "postgres";
