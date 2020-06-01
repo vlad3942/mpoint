@@ -335,7 +335,7 @@ class CreditCard extends EndUserAccount
         return $xml;
     }
 
-    private function getCardsQueryForDR($amount, $typeid = null, $iRoute = null)
+    private function getCardsQueryForDR($amount, $typeid = null, $iRoute = null, $walletid = null)
     {
         $sql = 'SELECT DISTINCT ON (C.id, CA.walletid) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
@@ -361,8 +361,24 @@ class CreditCard extends EndUserAccount
             $sql .= ' AND C.ID =' . $typeid ;
         }
 
+        if($walletid !== null)
+        {
+            $sql .= ' AND coalesce(walletid,-1) = '. $walletid;
+        }
+
         $res = $this->getDBConn()->getAllNames($sql);
         return $res;
     }
+
+    public function getCardsObjectForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null, $walletid = null)
+    {
+        $res = $this->getCardsQueryForDR($amount, $typeid, $iRoute, $walletid);
+
+        if(is_array($res) === false){
+            $res = $this->getCardsQueryForDR($amount, $typeid, null, $walletid);
+        }
+        return isset($res[0])?$res[0]:array();
+    }
+
 }
 ?>
