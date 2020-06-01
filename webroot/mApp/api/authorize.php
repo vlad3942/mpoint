@@ -164,6 +164,7 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
+require_once(sCLASS_PATH . '/payment_route.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -279,10 +280,20 @@ try
 
 										$aRoutes = array();
                                         $iPrimaryRoute = 0 ;
-										$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-                                        if (strtolower($drService) == 'true')
-                                        {
-                                            $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                        if($obj_card->getPaymentType() === 1) {
+                                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+                                            if (strtolower($drService) == 'true') {
+                                                $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                                if($iPrimaryRoute <=0)
+                                                {
+                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
+                                                    if($obj_RS instanceof RoutingService)
+                                                    {
+                                                        $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                        $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         $obj_CardXML = '';
