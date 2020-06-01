@@ -78,13 +78,35 @@ foreach ($aTxns as $txn)
 		switch ($obj_TxnInfo->getPSPID() )
 		{
 		case Constants::iDIBS_PSP:
-			$obj_PSP->notifyClient($iStatus, array('transact'=>$obj_TxnInfo->getExternalID(), 'amount'=>$obj_TxnInfo->getAmount() ) );
+			$obj_PSP->notifyClient(
+			    $iStatus,
+                array('transact'=>$obj_TxnInfo->getExternalID(),
+                    'amount'=>$obj_TxnInfo->getAmount()
+                ),
+                null
+            );
 			break;
 		case Constants::iNETAXEPT_PSP:
-			$obj_PSP->notifyClient($iStatus, array('transact'=>$obj_TxnInfo->getExternalID(), 'amount'=>$obj_TxnInfo->getAmount(), 'fee'=>$obj_TxnInfo->getFee(), 'cardid'=>0, 'cardnomask'=>"" ) );
+			$obj_PSP->notifyClient(
+			    $iStatus,
+                array('transact'=>$obj_TxnInfo->getExternalID(),
+                    'amount'=>$obj_TxnInfo->getAmount(),
+                    'fee'=>$obj_TxnInfo->getFee(),
+                    'cardid'=>0,
+                    'cardnomask'=>""
+                ),
+                null
+            );
 			break;
 		case Constants::iMOBILEPAY_PSP:
-			$obj_PSP->notifyClient($iStatus, array('transact'=>$obj_TxnInfo->getExternalID(), 'amount'=>$obj_TxnInfo->getAmount(), 'card-id'=>0 ) );
+			$obj_PSP->notifyClient(
+			    $iStatus,
+                array('transact'=>$obj_TxnInfo->getExternalID(),
+                    'amount'=>$obj_TxnInfo->getAmount(),
+                    'card-id'=>0
+                ),
+                null
+            );
 			break;
 		default:
 			trigger_error("Transaction ". $obj_TxnInfo->getID() ." updated with state ". $iStatus ." but PSP-id: ". $obj_TxnInfo->getPSPID() ." notify client protocol is not supported", E_USER_WARNING);
