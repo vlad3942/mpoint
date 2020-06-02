@@ -121,6 +121,7 @@ class RoutingService extends General
         }
         $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $b .= '</amount>';
+        $b .= $this->toAttributeLessOrderDataXML();
         $b .= '</transaction>';
         $b .= '<client_info>';
         $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
@@ -254,4 +255,60 @@ class RoutingService extends General
         }
         return (int)$firstPSP;
     }
+
+    private function toAttributeLessOrderDataXML()
+    {
+        $objOrderConfig = $this->_obj_TxnInfo->getOrderConfigs();
+        $xml = '';
+        if( empty($objOrderConfig) === false )
+        {
+            $xml .= '<orders>';
+            $xml .= '<line_item>';
+            $xml .= '<product>';
+            foreach ($objOrderConfig as $obj_OrderInfo)
+            {
+                if( ($obj_OrderInfo instanceof OrderInfo) === true )
+                {
+                    $xml .= '<name>'. $obj_OrderInfo->getProductName() .'</name>';
+                    $xml .= '<sku>'. $obj_OrderInfo->getProductSKU() .'</sku>';
+                    $xml .= '<description>'. $obj_OrderInfo->getProductDesc() .'</description>';
+
+                    if(count($obj_OrderInfo->getFlightConfigs()) > 0 )
+                    {
+                        $xml .= '<airline_data>';
+                        foreach ($obj_OrderInfo->getFlightConfigs() as $flight_Obj)
+                        {
+                            if (($flight_Obj instanceof FlightInfo) === TRUE)
+                            {
+                                $xml .= '<flight_detail>';
+                                $xml .= '<tag>'.$flight_Obj->getATag().'</tag>';
+                                $xml .= '<trip_count>'.$flight_Obj->getATripCount().'</trip_count>';
+                                $xml .= '<service_level>'.$flight_Obj->getAServiceLevel().'</service_level>';
+                                $xml .= '<service_class>' . $flight_Obj->getServiceClass () . '</service_class>';
+                                $xml .= '<flight_number>' . $flight_Obj->getFlightNumber () . '</flight_number>';
+                                $xml .= '<departure_airport>' . $flight_Obj->getDepartureAirport () . '</departure_airport>';
+                                $xml .= '<arrival_airport>' . $flight_Obj->getArrivalAirport () . '</arrival_airport>';
+                                $xml .= '<airline_code>' . $flight_Obj->getAirline () . '</airline_code>';
+                                $xml .= '<departure_date>' . date("Y-m-d\Th:i:s\Z", strtotime($flight_Obj->getDepartureDate ())) . '</departure_date>';
+                                $xml .= '<arrival_date>' . date("Y-m-d\Th:i:s\Z", strtotime($flight_Obj->getArrivalDate ())) . '</arrival_date>';
+                                $xml .= '<departure_country>' . $flight_Obj->getDepartureCountry () . '</departure_country>';
+                                $xml .= '<arrival_country>' . $flight_Obj->getArrivalCountry () . '</arrival_country>';
+                                $xml .= '</flight_detail>';
+                            }
+                        }
+                        $xml .= '</airline_data>';
+                    }
+                }
+            }
+            $xml .= '</product>';
+            $xml .= '</line_item>';
+            $xml .= '<amount>';
+            $xml .= '<country_id>'. $obj_OrderInfo->getCountryID() .'</country_id>';
+            $xml .= '<value>'. $obj_OrderInfo->getAmount(). '</value>';
+            $xml .= '</amount>';
+            $xml .= '</orders>';
+        }
+        return $xml;
+    }
+
 }
