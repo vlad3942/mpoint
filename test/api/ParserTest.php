@@ -170,7 +170,7 @@ class ParserTest extends baseAPITest
         $this->parser->setRules($rulesString);
         $this->parser->setRule('timestamp', '{date.dmY.' . $timestamp . '}');
         $output = $this->parser->parse();
-        $this->assertEquals('webNYSI0O' . date("dmY") . '0', $output);
+        $this->assertEquals(date("dmY"), $output);
         $timestampOutput = $this->parser->getValue('timestamp');
         $this->assertEquals(date('dmY', $timestamp), $timestampOutput);
     }
