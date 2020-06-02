@@ -878,7 +878,7 @@ class TxnInfo
 	 *
 	 * @return 	string		Message Authentication Code
 	 */
-	public function getHMAC() { return sha1($this->_obj_ClientConfig->getID() . $this->_obj_ClientConfig->getAccountConfig()->getID() . $this->_iID . $this->_sOrderID . $this->_obj_CountryConfig->getID() . $this->_lAmount . $this->_sCustomerRef . $this->_sEMail . $this->_sMobile . $this->_obj_ClientConfig->getPassword() ); }
+	public function getHMAC() { return hash('sha512',$this->_obj_ClientConfig->getID() . $this->_sOrderID . $this->_lAmount . $this->_obj_CountryConfig->getID() . $this->_sMobile . $this->_obj_CountryConfig->getID() . $this->_sEMail . $this->_sDeviceID . $this->_obj_ClientConfig->getSalt()); }
 	/**
 	 * Returns Unique ID for the The PSP used for the transaction Defaults to -1.
 	 *
