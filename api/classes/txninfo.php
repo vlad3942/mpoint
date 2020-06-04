@@ -713,6 +713,12 @@ class TxnInfo
 	 */
 	public function getMobile() { return $this->_sMobile; }
 	/**
+	 * Returns the Mobile Country ID for the Customer.
+	 *
+	 * @return 	integer
+	 */
+	public function getMobileCountry() { return intval($this->_iOperatorID/100); }
+	/**
 	 * Returns the GoMobile's ID for the Customer's Mobile Network Operator
 	 *
 	 * @return 	integer
@@ -878,7 +884,7 @@ class TxnInfo
 	 *
 	 * @return 	string		Message Authentication Code
 	 */
-	public function getHMAC() { return hash('sha512',$this->_obj_ClientConfig->getID() . $this->_sOrderID . $this->_lAmount . $this->_obj_CountryConfig->getID() . $this->_sMobile . $this->_obj_CountryConfig->getID() . $this->_sEMail . $this->_sDeviceID . $this->_obj_ClientConfig->getSalt()); }
+	public function getHMAC() { return hash('sha512',$this->_obj_ClientConfig->getID() . $this->_sOrderID . $this->_lAmount . $this->_obj_CountryConfig->getID() . $this->_sMobile . $this->getMobileCountry() . $this->_sEMail . $this->_sDeviceID . $this->_obj_ClientConfig->getSalt());	}
 	/**
 	 * Returns Unique ID for the The PSP used for the transaction Defaults to -1.
 	 *
