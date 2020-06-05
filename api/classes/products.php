@@ -142,8 +142,7 @@ class Products extends Overview
 		else
 		{
 			$code = 2;
-			while (list(, $quantity) = each($aProds) )
-			{
+			foreach ($aProds as $quantity){
 				if (intval($quantity) > 0) { $code = 10; }
 			}
 		}

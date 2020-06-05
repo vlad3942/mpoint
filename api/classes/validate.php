@@ -437,20 +437,25 @@ class Validate extends ValidateBase
 			reset($aNames);
 			reset($aQuantities);
 			reset($aPrices);
-
-			while ( (list($key) = each($aNames) ) && $code == 10)
-			{
-				if (array_key_exists($key, $aQuantities) === false) { $code = 5; }	// Array key not found in Product Quantities
-				elseif (array_key_exists($key, $aPrices) === false) { $code = 6; }	// Array key not found in Product Prices
-			}
+			if($code == 10) {
+                foreach ($aNames as $key=>$value){
+                    if (array_key_exists($key, $aQuantities) === false) {
+                        $code=5;
+                    }    // Array key not found in Product Quantities
+                    elseif (array_key_exists($key, $aPrices) === false) {
+                        $code=6;
+                    }    // Array key not found in Product Prices
+                }
+            }
 			// Mandatory Product data appears to be valid
 			if ($code == 10)
 			{
 				reset($aLogos);
-				while ( (list($key, $url) = each($aLogos) ) && $code == 10)
-				{
-					if ($this->valURL($url) != 10) { $code = 7; }					// Invalid Logo URL
-				}
+				if(is_array($aLogos) && $code == 10){
+				    foreach ($aLogos as $key=>$url){
+                        if ($this->valURL($url) != 10) { $code = 7; }					// Invalid Logo URL
+                    }
+                }
 			}
 		}
 
