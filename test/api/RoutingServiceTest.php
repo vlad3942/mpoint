@@ -275,7 +275,8 @@ class RoutingServiceTest extends baseAPITest
         $obj_DOM = simpledom_load_string($xml);
 
         $this->_aHTTP_CONN_INFO['routing-service']['port'] = '';
-
+var_dump($this->_aHTTP_CONN_INFO['routing-service']);
+echo '----';
         $iTxnID = 1001001;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->pay->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
