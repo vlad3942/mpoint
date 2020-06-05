@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  app:
+    container_name: mpoint_app
+    build:
+      context: .
+    dns: 1.1.1.1
+    entrypoint: bash
+    
+  composer:
+    container_name: mpoint_composer
+    image: registry.t.cpm.dev/library/phpcomposerbuildimage:latest
+    entrypoint: ["sh","-c"]
+    volumes:
+      - .:/app

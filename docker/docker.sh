@@ -16,7 +16,8 @@ cd /opt/cpm/mPoint
 chmod -R 777 log
 
 if [ -z ${debug+x} ]; then
-	php phpunit.phar test
+	# php phpunit.phar test
+	php vendor/bin/phpunit test
 else
 	/bin/bash
 fi
