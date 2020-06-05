@@ -285,7 +285,7 @@ final class PaymentSession
 
     public function updateTransaction($txnId)
     {
-        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET sessionid = " . $this->_id . " WHERE id = " . (int)$txnId ." and SESSIONID NOTNULL";
+        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET sessionid = " . $this->_id . " WHERE id = " . (int)$txnId ." and SESSIONID ISNULL";
         $this->_obj_Db->query($sql);
     }
 
