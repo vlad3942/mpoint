@@ -12,7 +12,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/bulk-settlement.xsd') )
 	$clientId =  $obj_XML->{'bulk-settlement'}->{'client-config'}['id'];
 
 	$alreadyProcessedSettlementId = $obj_XML->{'bulk-settlement'}->settlements->settlement['id'];
-	$alreadyProcessedSettlementDate = trim($obj_XML->{'bulk-settlement'}->settlements->settlement['file-id']);
+	$alreadyProcessedSettlementDate = trim($obj_XML->{'bulk-settlement'}->settlements->settlement['record-id']);
 
 	$currentProcessingSettlementId = $obj_XML->{'bulk-settlement'}->{'settlement-in-progress'}->file['id'];
 	$currentProcessingSettlementDate = trim($obj_XML->{'bulk-settlement'}->{'settlement-in-progress'}->file['file_sequence_number']);
