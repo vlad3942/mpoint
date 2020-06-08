@@ -531,7 +531,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-        $b .= '<client-config business-type="'.$this->getClientConfig()->getAccountConfig()->getBusinessType(). '">';
+        $b .= '<client-config>';
         $b .= '<additional-config>';
 
         foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
