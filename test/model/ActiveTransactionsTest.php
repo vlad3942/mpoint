@@ -18,9 +18,9 @@ class ActiveTransactionsTest extends baseAPITest
 	private $_aMPOINT_CONN_INFO;
 
 
-	public function setUp()
+	public function setUp() : void
 	{
-		parent::setUp();
+		parent::setUp(TRUE);
 
 		$this->_obj_DB = RDB::produceDatabase($this->mPointDBInfo);
 		$this->_obj_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
@@ -68,7 +68,7 @@ class ActiveTransactionsTest extends baseAPITest
 		$this->assertContains(1001003, $aIDs);
     }
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->_obj_DB->disConnect();
 		parent::tearDown();
