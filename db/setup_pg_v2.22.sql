@@ -74,5 +74,4 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 ---end CEBU paypal --
 
 --- If any client using the cybersource api then as per cybersource documentation compulsary businesstype is 2 (airline)
-update client.account_tbl set businesstype = 2 where clientid = 10077;
-update client.account_tbl set businesstype = 2 where clientid = 10020;
+update client.account_tbl set businesstype = <businesstype> where clientid = <clientid>;
