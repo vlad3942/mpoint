@@ -150,7 +150,7 @@ SELECT  clientid, cardid, created, modified, enabled, pspid, countryid, stateid,
 /* Stored Card Route for stored card 10021*/
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,walletid)
 SELECT  clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,36
-FROM client.cardaccess_tbl where clientid = 10021 and enabled = true and cardid in (8,7,1,5);
+FROM client.cardaccess_tbl where clientid = 10021 and enabled = true and cardid in (8,7,1,5,71);
 
 /* Stored Card Route for stored card 10062*/
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,walletid)
