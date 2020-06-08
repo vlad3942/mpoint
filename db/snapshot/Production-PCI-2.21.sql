@@ -44,15 +44,14 @@ ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
 ALTER TABLE Log.Transaction_Tbl ALTER COLUMN attempt SET DEFAULT 1;
 ALTER TABLE CLIENT.SUREPAY_TBL ADD MAX INT4 DEFAULT 1;
 INSERT INTO CLIENT.SUREPAY_TBL (CLIENTID, RESEND, MAX) SELECT CLIENTID, DELAY, RETRIALVALUE::INTEGER FROM CLIENT.RETRIAL_TBL;
-DROP TABLE IF EXISTS CLIENT.RETRIAL_TBL;
-DROP TABLE IF EXISTS SYSTEM.RETRIALTYPE_TBL;
+
 
 ALTER TABLE log.passenger_tbl alter column first_name type varchar(50);
 ALTER TABLE log.passenger_tbl alter column last_name type varchar(50);
 
 ALTER TABLE system.currency_tbl ADD COLUMN symbol VARCHAR(5);
 UPDATE system.currency_tbl AS cur SET symbol = con.symbol FROM system.country_tbl AS con WHERE cur.id = con.currencyid;
-ALTER TABLE system.country_tbl DROP COLUMN symbol;
+
 
 INSERT INTO system.externalreferencetype_tbl (id, "name") VALUES(0, 'System');
 INSERT INTO system.externalreferencetype_tbl (id, "name") VALUES(50, 'UATP');
@@ -72,13 +71,85 @@ INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (608,61,'PHP
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (47, 61);
 /* ========== Global Configuration for DragonPay = END ========== */
 
+INSERT INTO system.psp_tbl (id, name, enabled, system_type) VALUES (62, 'FIRST DATA', true, 1);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (5, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (7, 62, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 62, true);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'AED',true,784);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'AUD',true,36);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'BHD',true,48);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'BND',true,96);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'CAD',true,124);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'CHF',true,756);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'CNY',true,156);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'DKK',true,208);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'EUR',true,978);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'GBP',true,826);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'HKD',true,344);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'IDR',true,360);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'INR',true,356);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'JPY',true,392);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'KRW',true,410);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'KWD',true,414);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'LKR',true,144);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'MOP',true,446);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'MYR',true,458);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'NOK',true,578);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'NZD',true,554);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'PHP',true,608);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'QAR',true,634);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'SAR',true,682);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'SEK',true,752);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'SGD',true,702);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'THB',true,764);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'TWD',true,901);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'USD',true,840);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (62,'VND',true,704);
+
+INSERT INTO system.psp_tbl (id, name, enabled, system_type) VALUES (63, 'CyberSource', true, 1);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 63, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (5, 63, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (7, 63, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 63, true);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'AED',true,784);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'AUD',true,36);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'BHD',true,48);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'BND',true,96);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'CAD',true,124);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'CHF',true,756);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'CNY',true,156);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'DKK',true,208);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'EUR',true,978);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'GBP',true,826);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'HKD',true,344);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'IDR',true,360);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'INR',true,356);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'JPY',true,392);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'KRW',true,410);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'KWD',true,414);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'LKR',true,144);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'MOP',true,446);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'MYR',true,458);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'NOK',true,578);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'NZD',true,554);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'PHP',true,608);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'QAR',true,634);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'SAR',true,682);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'SEK',true,752);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'SGD',true,702);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'THB',true,764);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'TWD',true,901);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'USD',true,840);
+INSERT INTO "system".pspcurrency_tbl (pspid,"name",enabled,currencyid) VALUES (63,'VND',true,704);
+
 /* Stored Card Route for stored card 10018*/
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,walletid)
 SELECT  clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,36 FROM client.cardaccess_tbl where clientid = 10018 and enabled = true and cardid in (8,7,1,5);
 
 /* Stored Card Route for stored card 10021*/
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,walletid)
-SELECT id, clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,36
+SELECT  clientid, cardid, created, modified, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type,36
 FROM client.cardaccess_tbl where clientid = 10021 and enabled = true and cardid in (8,7,1,5);
 
 /* Stored Card Route for stored card 10062*/
@@ -129,9 +200,7 @@ INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type) SE
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type) SELECT 'mid.JPY','JPYNMA','t', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10020 AND pspid=40;
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type) SELECT 'mid.CAD','CADNMA','t', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10020 AND pspid=40;
 
-
-
-
-
+--cvcmandatory
+INSERT INTO CLIENT.STATICROUTELEVELCONFIGURATION (CARDACCESSID) SELECT id FROM CLIENT.CARDACCESS_TBL WHERE cardid in (select id from system.card_tbl where paymenttype=1) and clientid not in (10069);
 
 
