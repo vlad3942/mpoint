@@ -531,7 +531,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-        $b .= '<client-config business-type="'.$this->getClientConfig()->getAccountConfig()->getBusinessType(). '">';
+		if($this->getClientConfig()->getAccountConfig()->getBusinessType() !=null)
+        {
+            $b .= '<client-config business-type="'.$this->getClientConfig()->getAccountConfig()->getBusinessType(). '">';
+        }
+        else{
+            $b .= '<client-config>';
+        }
         $b .= '<additional-config>';
 
         foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
@@ -602,7 +608,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if($approvalCode != ''){
 					$sql .= ",approval_action_code = '".$approvalCode."'";
 				}
-					
 
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
