@@ -256,6 +256,7 @@
 	<xs:attribute name="version" type="xs:string" use="optional" />
 	<xs:attribute name="language" type="xs:string" use="optional" />
 	<xs:attribute name="pushid" type="xs:string" use="optional"/>
+    <xs:attribute name="business-type" type="xs:positiveInteger" use="required"/>
 </xs:complexType>
 
 		<xs:complexType name="client-info">
