@@ -651,7 +651,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else { $aObj_XML = array(); }
 
-							$isnewcardconfig =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"isnewcardconfig");
+							$version = 1;
+							$isnewcardconfig = FALSE;
+							if(empty($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['sdk-version']) === FALSE)
+                            {
+                                $version =  (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['sdk-version'];
+                            }
+							else
+                            {
+                                $version =  (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['version'];
+                            }
+
+							if($version >= 2 )
+                            {
+                                $isnewcardconfig = TRUE;
+                            }
+
 							$aPSPs = array();
 							$cardsXML = '<cards>';
 							$walletsXML = '<wallets>';
@@ -708,7 +723,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $cardXML .= '</card>';
                                 }
 
-                                if($isnewcardconfig === 'true')
+                                if($isnewcardconfig === TRUE)
                                 {
                                     switch ((int)$obj_XML->item[$j]["processor-type"]) {
                                         case Constants::iPROCESSOR_TYPE_WALLET;
@@ -741,7 +756,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             $xml .= $cardsXML;
                             $xml .= $walletsXML;
-                            if ($isnewcardconfig === 'true') {
+                            if ($isnewcardconfig === TRUE) {
                                 $xml .= $apmsXML;
                                 $xml .= $gatewaysXML;
                             }
