@@ -203,4 +203,5 @@ INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type) SE
 --cvcmandatory
 INSERT INTO CLIENT.STATICROUTELEVELCONFIGURATION (CARDACCESSID) SELECT id FROM CLIENT.CARDACCESS_TBL WHERE cardid in (select id from system.card_tbl where paymenttype=1) and clientid not in (10069);
 
-
+--Missing state
+INSERT INTO log.state_tbl(id, name, module) VALUES(4031,'Session Partially Completed','Payment');
