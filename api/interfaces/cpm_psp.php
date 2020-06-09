@@ -531,13 +531,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-        if($this->getClientConfig()->getAccountConfig()->getBusinessType() !=null)
-        {
-            $b .= '<client-config business-type="'.$this->getClientConfig()->getAccountConfig()->getBusinessType(). '">';
-        }
-        else{
-            $b .= '<client-config>';
-        }
+        $b .= '<client-config business-type="' .$this->getClientConfig()->getAccountConfig()->getBusinessType(). '">';
         $b .= '<additional-config>';
 
         foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
@@ -573,6 +567,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</authorize>';
         $b .= '</root>';
 
+        var_dump("request".$b);
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
