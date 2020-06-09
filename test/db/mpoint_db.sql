@@ -8403,3 +8403,21 @@ INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,36,'USA');
 INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (35, 36);
 ALTER TABLE log.additional_data_tbl ALTER COLUMN name TYPE varchar(30);
+
+
+
+/* ================ Start: Update log.flight table  ===================*/
+ALTER TABLE log.flight_tbl ADD COLUMN tag character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "trip_count" character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "service_level" character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "flight_number" character varying(20);
+ALTER TABLE log.flight_tbl ADD COLUMN departure_countryid integer;
+ALTER TABLE log.flight_tbl ADD COLUMN arrival_countryid integer;
+
+ALTER TABLE log.flight_tbl ADD CONSTRAINT departure_countryid_country_tbl_id_fk
+FOREIGN KEY (departure_countryid) REFERENCES system.country_tbl (id);
+
+ALTER TABLE log.flight_tbl
+  ADD CONSTRAINT arrival_countryid_country_tbl_id_fk
+FOREIGN KEY (arrival_countryid) REFERENCES system.country_tbl (id);
+/* ================ End: Update log.flight table  ===================*/
