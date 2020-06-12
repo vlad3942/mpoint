@@ -1,12 +1,11 @@
 <?php
 /**
- *
- * @author Jonatan Evald Buus
- * @copyright Cellpoint Mobile
- * @link http://www.cellpointmobile.com
- * @package mConsole
- * @subpackage Config
- * @version 1.01
+ * Created by IntelliJ IDEA.
+ * User: Anna Lagad
+ * Copyright: Cellpoint Digital
+ * Link: http://www.cellpointdigital.com
+ * Project: server
+ * File Name:failed_payment_method_config.php
  */
 
 /**
