@@ -73,6 +73,13 @@ class RoutingService extends General
     private $_sCardName = '';
 
     /**
+     * Data object with the failed payment methods Configuration
+     *
+     * @var FailedPaymentMethodConfig
+     */
+    private $_obj_FailedPaymentMethods;
+
+    /**
      * Default Constructor
      *
      * @param	ClientConfig $clientConfig 		Reference to the Data object with the client information
@@ -80,7 +87,7 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, HTTPConnInfo &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL)
     {
         $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
@@ -92,6 +99,7 @@ class RoutingService extends General
         $this->_iCardTypeId = $cardTypeId;
         $this->_iIssuerIdentificationNumber = $issuerIdentificationNumber;
         $this->_sCardName = $cardName;
+        $this->_obj_FailedPaymentMethods = $obj_FailedPaymentMethod;
     }
 
     /**
@@ -121,6 +129,18 @@ class RoutingService extends General
         }
         $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $b .= '</amount>';
+        if(count($this->_obj_FailedPaymentMethods) > 0 )
+        {
+            $b .= '<failed_payment_methods>';
+            foreach ($this->_obj_FailedPaymentMethods as $obj_FailedPaymentMethod)
+            {
+                if (($obj_FailedPaymentMethod instanceof FailedPaymentMethodConfig) === TRUE)
+                {
+                    $b .= $obj_FailedPaymentMethod->toAttributeLessXML();
+                }
+            }
+            $b .= '</failed_payment_methods>';
+        }
         $b .= '</transaction>';
         $b .= '<client_info>';
         $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
