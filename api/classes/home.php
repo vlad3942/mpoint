@@ -1191,7 +1191,7 @@ class Home extends General
             } else {
                 $profileExpiryDays = Constants::iProfileExpiry;
             }
-            $b .= '<expiry>'.date('Y-m-d', strtotime("+$profileExpiryDays day")).'</expiry>';
+            $b .= '<expiry-date>'.date('Y-m-d', strtotime("+$profileExpiryDays day")).'</expiry-date>';
         }
         if(floatval($mob) > 0) {
             $b .= '<mobile country-id="' . $cid . '" validated="'.$validated.'">' . floatval($mob) . '</mobile>';
