@@ -22,11 +22,12 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($this->_aMPOINT_CONN_INFO));
 	}
 
-    protected function getGetTransactionStatusDoc($txn_id,$mode=0)
+    protected function getGetTransactionStatusDoc($txn_id,$clientid,$mode=0)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<get-transaction-status>';
+        $xml .= '<client-id>'.$clientid.'</client-id>';
         $xml .= '<transactions>';
         $xml .= '<transaction-id ';
         if($mode>0){ $xml .= 'mode= "'.$mode.'"'; }
@@ -119,7 +120,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, operatorid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 5001, 10000, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
 
-		$xml = $this->getGetTransactionStatusDoc(1001001);
+        $xml = $this->getGetTransactionStatusDoc(1001001,113);
 
 		$this->_httpClient->connect();
 
@@ -149,7 +150,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, operatorid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convetredcurrencyid,conversionrate) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 5001, 10000, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,10000,840,2)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
 
-        $xml = $this->getGetTransactionStatusDoc(1001001,1);
+        $xml = $this->getGetTransactionStatusDoc(1001001,113,1);
 
         $this->_httpClient->connect();
 
