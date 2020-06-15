@@ -13,7 +13,10 @@ services:
       - XDEBUG_CONFIG=remote_enable=1 remote_autostart=on remote_port=9090 remote_host=host.docker.internal
       - PHP_IDE_CONFIG=serverName=mpoint
     volumes:
-    - .:/opt/cpm/mPoint
+    - ./api:/opt/cpm/mPoint/api
+    - ./test:/opt/cpm/mPoint/test
+    - ./conf:/opt/cpm/mPoint/conf
+    - ./webroot:/opt/cpm/mPoint/webroot
     - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
     - ./docker/docker.sh:/docker.sh
     
