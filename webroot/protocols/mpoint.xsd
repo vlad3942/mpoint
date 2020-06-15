@@ -1100,6 +1100,7 @@
 						</xs:documentation>
 					</xs:annotation>
 					<xs:all>
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="1"/>
 						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
 							<xs:annotation>
 								<xs:documentation>
