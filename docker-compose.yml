@@ -7,6 +7,15 @@ services:
       context: .
     dns: 1.1.1.1
     entrypoint: bash
+    ports:
+    - 15432:5432
+    environment:
+      - XDEBUG_CONFIG=remote_enable=1 remote_autostart=on remote_port=9090 remote_host=host.docker.internal
+      - PHP_IDE_CONFIG=serverName=mpoint
+    volumes:
+    - .:/opt/cpm/mPoint
+    - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    - ./docker/docker.sh:/docker.sh
     
   composer:
     container_name: mpoint_composer

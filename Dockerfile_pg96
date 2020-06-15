@@ -10,16 +10,21 @@ RUN composer install -vvv --prefer-dist --no-dev
 FROM php:7.4.6-apache-buster
 
 RUN apt-get update \
-    && apt-get install -y postgresql-11 libpq-dev libxslt-dev less nano vim net-tools acl unzip dos2unix \
-    && docker-php-ext-install pgsql xsl
+    && apt-get install -y wget gnupg2 lsb-release nano vim net-tools iputils-ping acl unzip dos2unix less libpq-dev libxslt-dev \
+    && docker-php-ext-install pgsql xsl \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && apt-get update \
+    && apt-get install -y postgresql-9.6
+
 
 ## Host file, database and timezone config
 RUN echo "Europe/Copenhagen" > /etc/timezone \
     && dpkg-reconfigure -f noninteractive tzdata \
-    && echo "fsync=off" >> /etc/postgresql/11/main/postgresql.conf \
-    && echo "host all all 127.0.0.1/32 trust" > /etc/postgresql/11/main/pg_hba.conf \
-    && echo "host all all ::1/128 trust" >> /etc/postgresql/11/main/pg_hba.conf \
-    && echo "local all postgres trust" >> /etc/postgresql/11/main/pg_hba.conf
+    && echo "fsync=off" >> /etc/postgresql/9.6/main/postgresql.conf \
+    && echo "host all all 127.0.0.1/32 trust" > /etc/postgresql/9.6/main/pg_hba.conf \
+    && echo "host all all ::1/128 trust" >> /etc/postgresql/9.6/main/pg_hba.conf \
+    && echo "local all postgres trust" >> /etc/postgresql/9.6/main/pg_hba.conf
 
 ## Populate session database
 COPY test/db/session.sql session.sql
@@ -34,7 +39,7 @@ RUN a2enmod rewrite
 EXPOSE 80 5432
 
 # Apache vhost
-COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/000-default.conf /etc/apache2/sites-available/default
 
 WORKDIR /opt/cpm/mPoint
 
