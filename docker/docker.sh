@@ -17,7 +17,7 @@ chmod -R 777 log
 
 if [ -z ${debug+x} ]; then
 	# php phpunit.phar test
-	php vendor/bin/phpunit test
+	php vendor/bin/phpunit test/api
 else
 	/bin/bash
 fi
