@@ -19,6 +19,8 @@ services:
     - ./webroot:/opt/cpm/mPoint/webroot
     - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
     - ./docker/docker.sh:/docker.sh
+    - ./vendor:/opt/cpm/mPoint/vendor
+    - ./vendor/cellpointmobile/php5api:/opt/php5api
     
   composer:
     container_name: mpoint_composer
