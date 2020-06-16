@@ -239,9 +239,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $payment_type = $obj_card->getPaymentType();
 
 						$aRoutes = array();
+                        $iPrimaryRoute = 0 ;
 						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-
-						$obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
 
 						if ($payment_type == Constants::iPAYMENT_TYPE_CARD && strtolower($drService) == 'true') {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -250,15 +249,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
                                 $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
                                 $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
-                                if($iPrimaryRoute > 0){
-                                    $obj_CardResultSet['PSPID'] = $iPrimaryRoute;
-								}
 							}
 						}
 
+                        $obj_CardResultSet = array();
+						if($iPrimaryRoute > 0){
+                            $empty = array();
+                            $obj_CardResultSet = $obj_mPoint->getCardsObjectForDR( (integer) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty, $iPrimaryRoute, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], -1);
+                            $obj_CardResultSet['PSPID'] = (empty($obj_CardResultSet)===FALSE)?$iPrimaryRoute:FALSE;
+						}else{
+                            $obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
+						}
+
+                        if ($obj_CardResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
+
 						$pspId = (int)$obj_CardResultSet['PSPID'];
 
-						if ($obj_CardResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
 						$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                         $ips = array_map('trim', $ips);
                         $ip = $ips[0];

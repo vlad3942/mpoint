@@ -842,6 +842,7 @@ class General
 		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 		$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
 		$h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
+		$h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
 		/* ----- Construct HTTP Header End ----- */
 
 		return $h;
