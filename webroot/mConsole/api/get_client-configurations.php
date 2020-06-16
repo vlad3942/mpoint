@@ -20,7 +20,6 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-require_once(sCLASS_PATH ."/TransactionTypeConfig.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
