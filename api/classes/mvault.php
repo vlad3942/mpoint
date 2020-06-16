@@ -137,7 +137,12 @@ class MVault extends CPMPSP
                     {
                         $aShippingAddress = $this->getTxnInfo()->getBillingAddr();
                         $response .= '<address country-id="' . $aShippingAddress['country'] . '">';
-                        $response .= '<full-name>'.$aShippingAddress['name'].'</full-name>';
+                        if(empty(trim($aShippingAddress['last_name'])) == false)
+                        {
+                            $response .= '<first-name>'.$aShippingAddress['first_name'].'</first-name>';
+                            $response .= '<last-name>'.$aShippingAddress['last_name'].'</last-name>';
+                        }
+                        else { $response .= '<full-name>'.$aShippingAddress['first_name'].'</full-name>'; }
                         $response .= '<street>'.$aShippingAddress['street'].'</street>';
                         $response .= '<street2>'.$aShippingAddress['street2'].'</street2>';
                         $response .= '<postal-code>'.$aShippingAddress['zip'].'</postal-code>';
