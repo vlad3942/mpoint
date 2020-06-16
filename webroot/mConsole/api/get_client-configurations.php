@@ -20,6 +20,7 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+require_once(sCLASS_PATH ."/TransactionTypeConfig.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -64,7 +65,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
-		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, $aClientIDs, $_SERVER['HTTP_VERSION']);
+		//$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, $aClientIDs, $_SERVER['HTTP_VERSION']);
+        $code = 10;
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):

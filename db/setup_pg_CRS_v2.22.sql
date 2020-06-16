@@ -39,3 +39,13 @@ ALTER TABLE log.paymentroute_tbl OWNER TO postgres;
 
 --  Revert Changes
 ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE varchar(50);
+
+-- Add new transaction types
+INSERT INTO System.Type_Tbl (id, name) VALUES (1, 'Shopping Online');
+INSERT INTO System.Type_Tbl (id, name) VALUES (2, 'Shopping Offline');
+INSERT INTO System.Type_Tbl (id, name) VALUES (3, 'Self Service Online');
+INSERT INTO System.Type_Tbl (id, name) VALUES (4, 'Self Service Offline	');
+
+-- Remove old transaction types
+DELETE FROM System.Type_Tbl WHERE id IN (11,20,21, 41, 101,102, 1000,1001,1002,1003,1004,1005, 1007);
+
