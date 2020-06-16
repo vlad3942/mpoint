@@ -109,44 +109,44 @@ class RoutingService extends General
      */
     public function getPaymentMethods()
     {
-        $b = '<?xml version="1.0" encoding="UTF-8"?>';
-        $b .= '<payment_method_search_criteria>';
-        $b .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
-        $b .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
-        $b .= '<transaction>';
-        $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
-        $b .= '<amount>';
+        $body = '<?xml version="1.0" encoding="UTF-8"?>';
+        $body .= '<payment_method_search_criteria>';
+        $body .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
+        $body .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
+        $body .= '<transaction>';
+        $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
+        $body .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
-            $b .= '<value>'.$this->_iAmount.'</value>';
+            $body .= '<value>'.$this->_iAmount.'</value>';
         }
-        $b .= '<country_id>'.$this->_iCountryId.'</country_id>';
+        $body .= '<country_id>'.$this->_iCountryId.'</country_id>';
         if(empty($this->_iCurrencyId)===false)
         {
-            $b .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
+            $body .= '<currency_id>'.$this->_iCurrencyId.'</currency_id>';
         }else{
-            $b .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
+            $body .= '<currency_id>'.$this->_obj_TxnInfo->getCurrencyConfig()->getID().'</currency_id>';
         }
-        $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
-        $b .= '</amount>';
+        $body .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
+        $body .= '</amount>';
         if(count($this->_obj_FailedPaymentMethods) > 0 )
         {
-            $b .= '<failed_payment_methods>';
+            $body .= '<failed_payment_methods>';
             foreach ($this->_obj_FailedPaymentMethods as $obj_FailedPaymentMethod)
             {
                 if (($obj_FailedPaymentMethod instanceof FailedPaymentMethodConfig) === TRUE)
                 {
-                    $b .= $obj_FailedPaymentMethod->toAttributeLessXML();
+                    $body .= $obj_FailedPaymentMethod->toAttributeLessXML();
                 }
             }
-            $b .= '</failed_payment_methods>';
+            $body .= '</failed_payment_methods>';
         }
-        $b .= '</transaction>';
-        $b .= '<client_info>';
-        $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
-        $b .= '<client_id>'.$this->_iClientId.'</client_id>';
-        $b .= '</client_info>';
-        $b .= '</payment_method_search_criteria>';
+        $body .= '</transaction>';
+        $body .= '<client_info>';
+        $body .=  $this->_obj_ClientInfo->toAttributeLessXML();
+        $body .= '<client_id>'.$this->_iClientId.'</client_id>';
+        $body .= '</client_info>';
+        $body .= '</payment_method_search_criteria>';
         $obj_XML = '';
         try
         {
@@ -155,7 +155,7 @@ class RoutingService extends General
             $obj_ConnInfo =  new HTTPConnInfo ($this->aCONN_INFO["protocol"], $aURLInfo["host"], $this->aCONN_INFO["port"], $this->aCONN_INFO["timeout"], $path, $this->aCONN_INFO["method"], $this->aCONN_INFO["contenttype"], $this->_obj_TxnInfo->getClientConfig()->getUsername(), $this->_obj_TxnInfo->getClientConfig()->getPassword() );
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
-            $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+            $code = $obj_HTTP->send($this->constHTTPHeaders(), $body);
             $obj_HTTP->disConnect();
             $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
             return RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);

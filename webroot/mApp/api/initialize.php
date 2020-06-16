@@ -71,7 +71,7 @@ require_once(sCLASS_PATH ."/card_prefix_config.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
-require_once sCLASS_PATH . '/failed_payment_method_config.php';
+require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 
 $aMsgCds = array();
 
