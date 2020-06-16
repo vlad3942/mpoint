@@ -9,8 +9,8 @@ RUN composer install -vvv --prefer-dist --no-dev
 
 FROM php:7.4.6-apache-buster
 
-RUN apt-get update \
-    && apt-get install -y postgresql-11 libpq-dev libxslt-dev less nano vim net-tools acl unzip dos2unix \
+RUN apt update \
+    && apt install -y postgresql-11 libpq-dev libxslt-dev less nano vim net-tools iputils-ping iproute2 acl unzip dos2unix less libpq-dev libxslt-dev jq \
     && docker-php-ext-install pgsql xsl
 
 ## Host file, database and timezone config

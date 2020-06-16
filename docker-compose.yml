@@ -8,18 +8,18 @@ services:
     dns: 1.1.1.1
     entrypoint: bash
     ports:
-    - 15432:5432
+      - 15432:5432
     environment:
-      - XDEBUG_CONFIG=remote_enable=1 remote_autostart=on remote_port=9090 remote_host=host.docker.internal
-      - PHP_IDE_CONFIG=serverName=mpoint
+      - XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9000 remote_host=host.docker.internal
+      - PHP_IDE_CONFIG=serverName=mpoint_app
     volumes:
-    - ./api:/opt/cpm/mPoint/api
-    - ./test:/opt/cpm/mPoint/test
-    - ./conf:/opt/cpm/mPoint/conf
-    - ./webroot:/opt/cpm/mPoint/webroot
-    - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
-    - ./docker/docker.sh:/docker.sh
-    
+      - ./api:/opt/cpm/mPoint/api
+      - ./test:/opt/cpm/mPoint/test
+      - ./conf:/opt/cpm/mPoint/conf
+      - ./webroot:/opt/cpm/mPoint/webroot
+      - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./docker/docker.sh:/docker.sh
+    #zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20190902/xdebug.so
   composer:
     container_name: mpoint_composer
     image: registry.t.cpm.dev/library/phpcomposerbuildimage:latest
