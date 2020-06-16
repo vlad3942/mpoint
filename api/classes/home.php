@@ -909,21 +909,21 @@ class Home extends General
             $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
             $xml .= '</client-info>';
             $xml .= $sTxnAdditionalDataXml;
-            if(empty($obj_TxnInfo->getBillingAddr()) === false) {
-                $aShippingAddress = $obj_TxnInfo->getBillingAddr();
-                $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer) $aShippingAddress['country']);
-                    $xml .= '<address>';
-                    $xml .= '<first-name>' . $aShippingAddress['name'] . '</first-name>';
-                    $xml .= '<last-name>' . $aShippingAddress['name'] . '</last-name>';
-                    $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
-                    $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
-                    $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
-                    $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
-                    $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
-                    if (($obj_CountryConfig instanceof CountryConfig) === true) {
-                        $xml .= '<country>' . $obj_CountryConfig->getName() . '</country>';
-                    }
-                    $xml .= '</address>';
+            $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+            if (empty($aShippingAddress) === false) {
+                $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+                $xml .= '<address>';
+                $xml .= '<first-name>' . $aShippingAddress['name'] . '</first-name>';
+                $xml .= '<last-name>' . $aShippingAddress['name'] . '</last-name>';
+                $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
+                $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+                $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+                $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
+                $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
+                if (($obj_CountryConfig instanceof CountryConfig) === true) {
+                    $xml .= '<country>' . $obj_CountryConfig->getName() . '</country>';
+                }
+                $xml .= '</address>';
             }
             $xml .= '</transaction>';
 
