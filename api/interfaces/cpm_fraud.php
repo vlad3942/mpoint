@@ -380,7 +380,7 @@ abstract class CPMFRAUD
         {
             //Produce Country config based on the country id
             CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
-            if(empty(trim($obj_Card->address->{'full-name'})) === false)
+            if(empty($obj_Card->address->{'full-name'}) === false)
             {
                 $pos = strrpos($obj_Card->address->{'full-name'}, " ");
                 if ($pos > 0)
