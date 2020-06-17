@@ -162,7 +162,7 @@ class AddressInfo
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, name, street, street2, city, state, country, zip, reference_id, reference_type
+		$sql = "SELECT id, first_name, street, street2, city, state, country, zip, reference_id, reference_type
 					FROM log".sSCHEMA_POSTFIX.".address_tbl WHERE id=".$id;
 			//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
@@ -171,7 +171,7 @@ class AddressInfo
 			$RSA = $oDB->getName($sqlA);
 		
 			    
-			return new AddressInfo($RS["ID"], $RS["NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
+			return new AddressInfo($RS["ID"], $RS["FIRST_NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
 					$RS["ZIP"], $RS["COUNTRY"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
 			 
 		}
