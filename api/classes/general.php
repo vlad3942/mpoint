@@ -569,7 +569,7 @@ class General
 	    $data['orderid'] = $obj_TxnInfo->getOrderID();
 	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
 	    
-		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
+		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_AssociatedTxnInfo);
 
         // Add entry into Passbook
