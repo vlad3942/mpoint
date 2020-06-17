@@ -727,7 +727,7 @@ try
                                                                                 else
                                                                                 {
                                                                                     $aBillingAddr['billing_address'][0]['first_name'] = (string) trim($obj_Elem->address->{'full-name'});
-                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = "";
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = ' ';
                                                                                 }
                                                                             }
                                                                             else
