@@ -118,7 +118,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, operatorid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convetredcurrencyid,expiry) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 5001, 10000, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,'12/21')");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
-        $this->queryDB("INSERT INTO Log.Address_Tbl (name ,street, street2, city, state, country, zip, reference_id, reference_type) VALUES ('test', 'test', 'test', 'test', 'test', 'test', '411023', '1001001', 'transaction')");
+        $this->queryDB("INSERT INTO Log.Address_Tbl (first_name,last_name ,street, street2, city, state, country, zip, reference_id, reference_type) VALUES ('test','test', 'test', 'test', 'test', 'test', 'test', '411023', '1001001', 'transaction')");
 
 		$xml = $this->getGetTransactionStatusDoc(1001001);
 

@@ -913,8 +913,8 @@ class Home extends General
             if (empty($aShippingAddress) === false) {
                 $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
                 $xml .= '<address>';
-                $xml .= '<first-name>' . $aShippingAddress['name'] . '</first-name>';
-                $xml .= '<last-name>' . $aShippingAddress['name'] . '</last-name>';
+                $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+                $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
                 $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
                 $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
                 $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';

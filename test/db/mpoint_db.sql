@@ -8403,3 +8403,5 @@ INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,36,'USA');
 INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (35, 36);
 ALTER TABLE log.additional_data_tbl ALTER COLUMN name TYPE varchar(30);
+ALTER TABLE log.address_tbl add last_name varchar(200) null;
+ALTER TABLE log.address_tbl RENAME COLUMN name TO first_name;
