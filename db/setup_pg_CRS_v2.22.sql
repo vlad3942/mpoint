@@ -46,6 +46,3 @@ INSERT INTO System.Type_Tbl (id, name) VALUES (2, 'Shopping Offline');
 INSERT INTO System.Type_Tbl (id, name) VALUES (3, 'Self Service Online');
 INSERT INTO System.Type_Tbl (id, name) VALUES (4, 'Self Service Offline	');
 
--- Remove old transaction types
-DELETE FROM System.Type_Tbl WHERE id IN (11,20,21, 41, 101,102, 1000,1001,1002,1003,1004,1005, 1007);
-
