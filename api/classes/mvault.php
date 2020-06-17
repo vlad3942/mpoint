@@ -138,10 +138,11 @@ class MVault extends CPMPSP
                     {
 
                         $response .= '<address country-id="' . $aShippingAddress['country'] . '">';
-                        if(empty($aShippingAddress['last_name']) === false)
+                        $sLastName = $aShippingAddress['last_name'] != null ? trim($aShippingAddress['last_name']): "";
+                        if(empty($sLastName) === false)
                         {
                             $response .= '<first-name>'.$aShippingAddress['first_name'].'</first-name>';
-                            $response .= '<last-name>'.$aShippingAddress['last_name'].'</last-name>';
+                            $response .= '<last-name>'.$sLastName.'</last-name>';
                         }
                         else { $response .= '<full-name>'.$aShippingAddress['first_name'].'</full-name>'; }
                         $response .= '<street>'.$aShippingAddress['street'].'</street>';
