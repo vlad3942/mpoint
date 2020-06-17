@@ -23,7 +23,7 @@ if (empty($clientid) === false) {
 } else {
     $sql .= " ) ";
 }
-$sql .= " and txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id desc";
+$sql .= " and txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id asc";
 if (empty($limit) === false) {
     $sql .= " limit " . intval($limit);
 }
