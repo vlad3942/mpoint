@@ -567,7 +567,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</authorize>';
         $b .= '</root>';
 
-        var_dump("request".$b);
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
