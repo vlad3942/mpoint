@@ -1,7 +1,3 @@
-repositories {
-    jcenter()
-}
-
 apply plugin: 'base'
 
 task dockerTest(type:Exec) {
