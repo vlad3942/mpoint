@@ -133,11 +133,18 @@ class MVault extends CPMPSP
                     $response .= '<card-holder-name>'.$obj_XML->{'get-card-details-response'}->{'card-holder-name'}.'</card-holder-name>';
                     $response .= '<card-number>'.$obj_XML->{'get-card-details-response'}->{'card-pan'}.'</card-number>';
                     $response .= '<expiry>'.$obj_XML->{'get-card-details-response'}->{'expiry'}.'</expiry>';
-                    if($this->getTxnInfo()->getBillingAddr() !== null)
+                    $aShippingAddress = $this->getTxnInfo()->getBillingAddr();
+                    if($aShippingAddress !== null && empty($aShippingAddress) === false)
                     {
-                        $aShippingAddress = $this->getTxnInfo()->getBillingAddr();
+
                         $response .= '<address country-id="' . $aShippingAddress['country'] . '">';
-                        $response .= '<full-name>'.$aShippingAddress['name'].'</full-name>';
+                        $sLastName = $aShippingAddress['last_name'] != null ? trim($aShippingAddress['last_name']): "";
+                        if(empty($sLastName) === false)
+                        {
+                            $response .= '<first-name>'.$aShippingAddress['first_name'].'</first-name>';
+                            $response .= '<last-name>'.$sLastName.'</last-name>';
+                        }
+                        else { $response .= '<full-name>'.$aShippingAddress['first_name'].'</full-name>'; }
                         $response .= '<street>'.$aShippingAddress['street'].'</street>';
                         $response .= '<street2>'.$aShippingAddress['street2'].'</street2>';
                         $response .= '<postal-code>'.$aShippingAddress['zip'].'</postal-code>';

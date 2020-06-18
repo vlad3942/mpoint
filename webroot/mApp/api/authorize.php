@@ -707,7 +707,7 @@ try
                                                                         $obj_PSP->saveCard($obj_Elem);
                                                                         if(empty($obj_Elem->address) === false)
                                                                         {
-                                                                            $aBillingAddr['billing_address'][0]['name'] = (string) $obj_Elem->{'address'}->{'full-name'};
+
                                                                             $aBillingAddr['billing_address'][0]['street'] = (string) $obj_Elem->{'address'}->street;
                                                                             $aBillingAddr['billing_address'][0]['street2'] = (string) $obj_Elem->{'address'}->street2;
                                                                             $aBillingAddr['billing_address'][0]['city'] = (string) $obj_Elem->{'address'}->city;
@@ -716,6 +716,25 @@ try
                                                                             $aBillingAddr['billing_address'][0]['country'] = (string) $obj_Elem->{'address'}['country-id'];
                                                                             $aBillingAddr['billing_address'][0]['reference_type'] = "transaction";
                                                                             $aBillingAddr['billing_address'][0]['reference_id'] = $obj_TxnInfo->getID();
+                                                                            if (count($obj_Elem->address->{'full-name'}) == 1)
+                                                                            {
+                                                                                $pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+                                                                                if ($pos > 0)
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim($obj_Elem->address->{'full-name'});
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = "";
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $aBillingAddr['billing_address'][0]['first_name'] = $obj_Elem->address->{'first-name'};
+                                                                                $aBillingAddr['billing_address'][0]['last_name'] = $obj_Elem->address->{'last-name'} ;
+                                                                            }
                                                                             $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $aBillingAddr['billing_address']);
                                                                         }
                                                                     }
