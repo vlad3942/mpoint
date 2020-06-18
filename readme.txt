@@ -78,4 +78,6 @@ php vendor/bin/phpunit --filter '/testSuccessfulAuthorize$/' test/api/AMEXAuthor
 apt-get install iputils-ping
 
 Run test cases
+gradle build -q
+
 

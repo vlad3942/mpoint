@@ -1,48 +1,10 @@
-
-buildscript
-        {
-            repositories {
-                mavenCentral()
-                maven {
-                    url = 'http://nexus.cellpointmobile.com/content/repositories/snapshots/'
-                    credentials {
-                        username 'default-read'
-                        password 'CPMRead4321'
-                    }
-                }
-            }
-            dependencies
-                    {
-                        classpath group: 'com.cellpointmobile.gradle', name: 'cpmgradle', version: '0.1-SNAPSHOT'
-                    }
-        }
-
-apply plugin: 'maven'
-apply plugin: 'com.cellpointmobile.gradle.php'
-
-projectinfo
-        {
-            group = 'com.cellpointmobile.mpoint'
-            artifact = 'mPoint'
-            version = '2.01.MCDEV-SNAPSHOT'
-            description = 'mPoint'
-            packaging = 'zip'
-        }
-
-configurations
-        {
-            runtime
-        }
-
-dependencies
-        {
-            runtime 'com.cellpointmobile.php5api:php5api:1.31'
-        }
-
-task phpDependencies(type:Copy) {
-    into project.buildDir
-    from configurations.runtime
+repositories {
+    jcenter()
 }
+
+apply plugin: 'base'
+defaultTasks 'build'
+
 
 task dockerTest(type:Exec) {
 
@@ -53,26 +15,4 @@ task dockerTest(type:Exec) {
     }
 }
 
-tasks.dockerTest.dependsOn extractPhpUnit
-tasks.dockerTest.dependsOn phpDependencies
-
-sourceSets {
-    main {
-        php
-                {
-                    srcDir 'api'
-                    srcDir 'webroot'
-                }
-        resources
-                {
-                    srcDir 'conf'
-                    srcDir 'db'
-                }
-    }
-    test {
-        php
-                {
-                    srcDir 'test'
-                }
-    }
-}
+build.dependsOn dockerTest
