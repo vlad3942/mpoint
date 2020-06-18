@@ -3,8 +3,6 @@ repositories {
 }
 
 apply plugin: 'base'
-defaultTasks 'build'
-
 
 task dockerTest(type:Exec) {
 
