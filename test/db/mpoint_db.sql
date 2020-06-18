@@ -8419,6 +8419,5 @@ ALTER TABLE log.flight_tbl
   ADD CONSTRAINT arrival_countryid_country_tbl_id_fk
 FOREIGN KEY (arrival_countryid) REFERENCES system.country_tbl (id);
 /* ================ End: Update log.flight table  ===================*/
-=======
 ALTER TABLE log.address_tbl add last_name varchar(200) null;
 ALTER TABLE log.address_tbl RENAME COLUMN name TO first_name;
