@@ -617,7 +617,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $obj_FailedPaymentMethod = null;
                             $fopSelection = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'FOP_SELECTION');
                             if (strtolower($fopSelection) == 'true') {
-                                $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                                 if(empty($sessionId)===false){
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
