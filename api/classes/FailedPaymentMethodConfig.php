@@ -107,9 +107,10 @@ class FailedPaymentMethodConfig
      *
      * @param 	RDB $oDB 		     Reference to the Database Object that holds the active connection to the mPoint Database
      * @param 	integer $sessionId   Unique session ID for payment transaction
+     * @param 	integer $clientId    Hold unique client ID
      * @return  FailedPaymentMethodConfig $aObj_Configurations  Data object with the failed payment method information
      */
-    public static function produceFailedTxnInfoFromSession(RDB $obj, $sessionId)
+    public static function produceFailedTxnInfoFromSession(RDB $obj, $sessionId, $clientId)
     {
         $aStateIDs = array( Constants::iInitializeRequested, Constants::iRefundRequested, Constants::iCancelRequested, Constants::iCaptureRequested, Constants::iAuthorizeRequested );
         $sql = "SELECT Txn.id, Txn.pspid, Txn.cardid, Txn.sessionid, PSP.system_type, C.paymenttype, p2.st AS stateid
@@ -117,7 +118,7 @@ class FailedPaymentMethodConfig
                 INNER JOIN Log".sSCHEMA_POSTFIX.".Session_Tbl S ON Txn.sessionid = S.id AND S.stateid != ".Constants::iSESSION_COMPLETED.".
                 INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON Txn.cardid = C.id
-				INNER JOIN (select transactionid,max(requestedopt) as st from log.txnpassbook_tbl group by transactionid) p2 ON (Txn.id = p2.transactionid)
+				INNER JOIN (select transactionid,max(requestedopt) as st from log.txnpassbook_tbl where clientid = $clientId group by transactionid) p2 ON (Txn.id = p2.transactionid)
 				WHERE Txn.sessionid = ".$sessionId." AND p2.st IN (".implode(",",$aStateIDs).")";
 
         $res  = $obj->query($sql);
