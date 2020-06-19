@@ -1,22 +1,17 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: Anna Lagad
+ * Created by VS code
+ * User: Chaitenya Yadav
  * Copyright: Cellpoint Mobile
  * Link: http://www.cellpointmobile.com
  * Project: mPoint
  * Package:
- * File Name:RoutingServiceTest.php
+ * File Name:HomeTest.php
  */
 
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
-require_once __DIR__ . '/../../api/classes/clientinfo.php';
-require_once __DIR__ . '/../../api/classes/core/card.php';
-require_once __DIR__ . '/../../api/classes/routing_service.php';
-require_once __DIR__ . '/../../api/classes/static_route.php';
-require_once sCLASS_PATH . '/routing_service_response.php';
 
 
 class HomeTest extends baseAPITest
@@ -81,7 +76,7 @@ class HomeTest extends baseAPITest
     }
 
 
-    public function testGetTxnStatusInvalidClientId()
+    /*public function testGetTxnStatusInvalidClientId()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -134,7 +129,7 @@ class HomeTest extends baseAPITest
         $getTxnStatusResponse = $obj_mPoint->getTxnStatus((int)$iTxnID,(int)$iClientID,(int)$iMode);
 
         $this->assertEmpty($getTxnStatusResponse);
-    }
+    }*/
 
     public function tearDown()
     {
