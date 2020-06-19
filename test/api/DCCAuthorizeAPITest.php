@@ -30,9 +30,9 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
 
         $aDccParams = array(
             "12345",
-            "4"
+            "4","840","5000"
         );
-        $xml = $this->getAuthDoc(10018, 1100, 1001012,20000, 'profilePass', 0,null,208,'235fe8c3d8f1afb990c91e997d09cef8aca15549f0c71d7930e20e95691eb1c9d41c8f3ad91fa06be9c9b3f94afa71687b8c66a9a9095e9e9047afdc0907aee1',8,$aDccParams);
+        $xml = $this->getAuthDoc(10018, 1100, 1001012,20000, 'profilePass', 0,null,208,'4874b565db376dffc0801d91e2bdb5b9d2a3f610917753204cd15a30357e42984cabceb6055495a6f95a7f761270dc9e9c9a04fd45d2a4992f36f3f8799a77f5',8,$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);

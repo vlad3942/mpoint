@@ -218,4 +218,40 @@ class RoutingService extends General
         }
     }
 
+    /**
+     * Store all alternate payment routes to authorize transaction if psp1 fails during authorize
+     * and return primary route to authorize transaction
+     *
+     * @return (integer) $firstPSP	Primary route to authorize transaction
+     */
+    public function getAndStorePSP(PaymentRoute $objTxnRoute)
+    {
+        $obj_RoutingServiceResponse = $this->getRoute();
+        $aRoutes = [];
+        if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
+        {
+            $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
+            $aRoutes = $aObj_Route->psps->psp;
+        }
+        $firstPSP = -1;
+        if (count ( $aRoutes ) > 0) {
+            $aAlternateRoutes = array();
+            foreach ($aRoutes as $oRoute) {
+                if(empty($oRoute->preference) === false){
+                    if ($oRoute->preference === 1) {
+                        $firstPSP = $oRoute->id;
+                    }
+                    $aAlternateRoutes[] = array(
+                        'id' => $oRoute->id,
+                        'preference' => $oRoute->preference
+                    );
+                }else{
+                    $firstPSP = $oRoute->id;
+                }
+            }
+            // Store alternate routes to authorize transaction if psp1 fails during authorize
+            $objTxnRoute->setAlternateRoute($aAlternateRoutes);
+        }
+        return (int)$firstPSP;
+    }
 }

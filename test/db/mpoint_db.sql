@@ -6861,7 +6861,6 @@ ADD CONSTRAINT cardaccess_card_country_uq UNIQUE (clientid, cardid, countryid);
 */
 
 CREATE UNIQUE INDEX cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid) WHERE countryid IS NULL;
-CREATE UNIQUE INDEX cardaccess_card_country_uq ON Client.CardAccess_tbl (clientid, cardid, countryid) WHERE countryid IS NOT NULL;
 
 /* ==================== Client SCHEMA END ==================== */
 
@@ -7359,14 +7358,12 @@ ALTER TABLE client.cardaccess_tbl ADD psp_type INT DEFAULT 1 NOT NULL;
 ALTER TABLE client.cardaccess_tbl
   ADD CONSTRAINT cardaccess_tbl_processortype_tbl_id_fk
 FOREIGN KEY (psp_type) REFERENCES system.processortype_tbl (id);
-DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+
 UPDATE client.cardaccess_tbl
 SET psp_type = psp_tbl.system_type
 FROM system.psp_tbl
 WHERE psp_tbl.id = cardaccess_tbl.pspid;
-CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type);
-
-
 
 
 
@@ -7693,9 +7690,7 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenizati
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Payment', true);
 /*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
 
-DROP INDEX client.cardaccess_card_country_uq RESTRICT;
 
-CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';
 
 
 INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (17, 'Data Cash', 1);
@@ -8191,6 +8186,7 @@ INSERT INTO system.processortype_tbl (id, name) VALUES (9, 'Fraud Gateway');
 
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (60, 'EZY Fraud Gateway',9);
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 60); /*With Apple-Pay*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 60); /*With Apple-Pay*/
 
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,60,'DKK');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,60,'USD');
@@ -8359,3 +8355,69 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE log.paymentroute_tbl OWNER TO postgres;
+
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3010, 'Pre Fraud Check Initiated', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3011, 'Pre-screening Result - Accepted', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3012, 'Pre-screening Fraud Service Unavailable', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3013, 'Pre-screening Result - Unknown', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3014, 'Pre-screening Result - Review', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3015, 'Pre-screening Result - Rejected', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3016, 'Pre-screening Connection Failed - Rejected', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3110, 'Post Fraud Check Initiated', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3111, 'Post-screening Result - Accepted', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3112, 'Post-screening Fraud Service Unavailable', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3113, 'Post-screening Result - Unknown', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3114, 'Post-screening Result - Review', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3115, 'Post-screening Result - Rejected', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3116, 'Post-screening Connection Failed', 'Fraud', '');
+
+INSERT INTO "system".processortype_tbl (id, "name") VALUES(10, 'Post Auth Fraud Gateway');
+
+-- Table: create type
+  CREATE TYPE log.address_tbl_ref AS ENUM
+   ('order',
+    'transaction');
+
+    -- Table: log.address_tbl
+
+CREATE TABLE log.address_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  street text,
+  street2 text,
+  city character varying(200),
+  state character varying(200),
+  country character varying(200),
+  zip character varying(200),
+  reference_id integer,
+  reference_type log.address_tbl_ref,
+  CONSTRAINT address_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl USING btree (clientid, cardid, pspid, countryid, psp_type,walletid) WHERE (enabled = true);
+INSERT INTO system.psp_tbl (id, name, system_type) VALUES (36, 'mVault', 3);
+INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,36,'USA');
+INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (35, 36);
+ALTER TABLE log.additional_data_tbl ALTER COLUMN name TYPE varchar(30);
+
+/* ================ Start: Update log.flight table  ===================*/
+ALTER TABLE log.flight_tbl ADD COLUMN tag character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "trip_count" character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "service_level" character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "flight_number" character varying(20);
+ALTER TABLE log.flight_tbl ADD COLUMN departure_countryid integer;
+ALTER TABLE log.flight_tbl ADD COLUMN arrival_countryid integer;
+
+ALTER TABLE log.flight_tbl ADD CONSTRAINT departure_countryid_country_tbl_id_fk
+FOREIGN KEY (departure_countryid) REFERENCES system.country_tbl (id);
+
+ALTER TABLE log.flight_tbl
+  ADD CONSTRAINT arrival_countryid_country_tbl_id_fk
+FOREIGN KEY (arrival_countryid) REFERENCES system.country_tbl (id);
+/* ================ End: Update log.flight table  ===================*/
+ALTER TABLE log.address_tbl add last_name varchar(200) null;
+ALTER TABLE log.address_tbl RENAME COLUMN name TO first_name;
