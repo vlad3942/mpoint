@@ -508,7 +508,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}); $j++ )
 									{
 
-										$data['shipping_address'][$j]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->name;
+										$data['shipping_address'][$j]['first_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->name;
+										$data['shipping_address'][$j]['last_name'] = "";
 										$data['shipping_address'][$j]['street'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street;
 										$data['shipping_address'][$j]['street2'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street2;
 										$data['shipping_address'][$j]['city'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->city;

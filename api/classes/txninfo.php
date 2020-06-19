@@ -1711,13 +1711,14 @@ class TxnInfo
 	public static function  _produceBillingAddr($_OBJ_DB, $txnId)
 	{
 		$aBillingAddr = [];
-		$sqlA = "SELECT id, name, street, street2, city, state, zip, country FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
+		$sqlA = "SELECT id, first_name, last_name, street, street2, city, state, zip, country FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
 		$rsa = $_OBJ_DB->getAllNames ( $sqlA );
 		if (empty($rsa) === false )
 		{
 			foreach ($rsa as $rs)
 			{
-				$aBillingAddr["name" ] = $rs ["NAME"];
+				$aBillingAddr["first_name" ] = $rs ["FIRST_NAME"];
+				$aBillingAddr["last_name" ] = $rs ["LAST_NAME"];
 				$aBillingAddr["street" ] = $rs ["STREET"];
 				$aBillingAddr["street2" ] = $rs ["STREET2"];
 				$aBillingAddr["city" ] = $rs ["CITY"];
@@ -1874,9 +1875,9 @@ class TxnInfo
 	
 	
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
-							(id, name, street, street2, city, state, zip, country, reference_id, reference_type)
+							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type)
 						VALUES
-							(". $RS["ID"] .", '". $aShippingObj["name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
+							(". $RS["ID"] .", '". $aShippingObj["first_name"] ."','". $aShippingObj["last_name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
 							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."' )";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
