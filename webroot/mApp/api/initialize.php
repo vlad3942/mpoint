@@ -508,7 +508,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}); $j++ )
 									{
 
-										$data['shipping_address'][$j]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->name;
+										$data['shipping_address'][$j]['first_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->name;
+										$data['shipping_address'][$j]['last_name'] = "";
 										$data['shipping_address'][$j]['street'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street;
 										$data['shipping_address'][$j]['street2'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street2;
 										$data['shipping_address'][$j]['city'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->city;
@@ -621,6 +622,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 if(empty($sessionId)===false){
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                 }
+                                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
                                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
                                 $obj_PaymentMethodResponse = null;
@@ -672,7 +674,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else { $aObj_XML = array(); }
 
-							$isnewcardconfig =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"isnewcardconfig");
+							$version = 1;
+							$isnewcardconfig = FALSE;
+							if(empty($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['sdk-version']) === FALSE)
+                            {
+                                $version =  (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['sdk-version'];
+                            }
+							else
+                            {
+                                $version =  (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['version'];
+                            }
+
+							if($version >= 2 )
+                            {
+                                $isnewcardconfig = TRUE;
+                            }
+
 							$aPSPs = array();
 							$cardsXML = '<cards>';
 							$walletsXML = '<wallets>';
@@ -729,7 +746,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $cardXML .= '</card>';
                                 }
 
-                                if($isnewcardconfig === 'true')
+                                if($isnewcardconfig === TRUE)
                                 {
                                     switch ((int)$obj_XML->item[$j]["processor-type"]) {
                                         case Constants::iPROCESSOR_TYPE_WALLET;
@@ -762,7 +779,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             $xml .= $cardsXML;
                             $xml .= $walletsXML;
-                            if ($isnewcardconfig === 'true') {
+                            if ($isnewcardconfig === TRUE) {
                                 $xml .= $apmsXML;
                                 $xml .= $gatewaysXML;
                             }
