@@ -707,7 +707,7 @@ try
                                                                         $obj_PSP->saveCard($obj_Elem);
                                                                         if(empty($obj_Elem->address) === false)
                                                                         {
-                                                                            $aBillingAddr['billing_address'][0]['name'] = (string) $obj_Elem->{'address'}->{'full-name'};
+
                                                                             $aBillingAddr['billing_address'][0]['street'] = (string) $obj_Elem->{'address'}->street;
                                                                             $aBillingAddr['billing_address'][0]['street2'] = (string) $obj_Elem->{'address'}->street2;
                                                                             $aBillingAddr['billing_address'][0]['city'] = (string) $obj_Elem->{'address'}->city;
@@ -716,6 +716,25 @@ try
                                                                             $aBillingAddr['billing_address'][0]['country'] = (string) $obj_Elem->{'address'}['country-id'];
                                                                             $aBillingAddr['billing_address'][0]['reference_type'] = "transaction";
                                                                             $aBillingAddr['billing_address'][0]['reference_id'] = $obj_TxnInfo->getID();
+                                                                            if (count($obj_Elem->address->{'full-name'}) == 1)
+                                                                            {
+                                                                                $pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+                                                                                if ($pos > 0)
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim($obj_Elem->address->{'full-name'});
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = "";
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $aBillingAddr['billing_address'][0]['first_name'] = $obj_Elem->address->{'first-name'};
+                                                                                $aBillingAddr['billing_address'][0]['last_name'] = $obj_Elem->address->{'last-name'} ;
+                                                                            }
                                                                             $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $aBillingAddr['billing_address']);
                                                                         }
                                                                     }
@@ -910,26 +929,12 @@ try
                                                                                     $xml .= $code;
                                                                                 } else if ($code == "20102" && strtolower($drService) == 'true') {
                                                                                     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via secondary route
-                                                                                    $sRoutes = TxnInfo::_produceAdditionalData($_OBJ_DB, $obj_TxnInfo->getID());
-                                                                                    $aRoutes = json_decode($sRoutes['psps']);
-
-                                                                                    $iSecondRoute = 0 ;
-                                                                                    $iThirdRoute = 0 ;
-                                                                                    if (count ( $aRoutes ) > 0) {
-                                                                                        foreach ( $aRoutes as $oRoute ) {
-                                                                                            if ($oRoute->preference == 2) {
-                                                                                                $iSecondRoute = $oRoute->id ;
-                                                                                            }
-                                                                                            elseif($oRoute->preference == 3){
-                                                                                                $iThirdRoute = $oRoute->id ;
-                                                                                            }
-                                                                                        }
-                                                                                    }
-
-                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iSecondRoute, $aHTTP_CONN_INFO, $obj_Elem);
-
+                                                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                                                    $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
+                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                                                                                     if($code == "20102"){
-                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iThirdRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                                                                                        $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
+                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                                                                                     }else{
                                                                                         $xml .= $code;
                                                                                     }

@@ -555,21 +555,9 @@ class General
 		$xml = "" ;
 		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
 	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
+
 	    $data = array();
-	    
-	    $data['amount'] = $obj_TxnInfo->getAmount();
-	    $data['country-config'] = $obj_TxnInfo->getCountryConfig();
-	    $data['currency-config'] = $obj_TxnInfo->getCurrencyConfig();
-	    $data['orderid'] = $obj_TxnInfo->getOrderID();
-	    $data['mobile'] = $obj_TxnInfo->getMobile();
-	    $data['operator'] = $obj_TxnInfo->getOperator();
-	    $data['email'] = $obj_TxnInfo->getEMail();
-	    $data['device-id'] = $obj_TxnInfo->getDeviceID();
-	    $data['markup'] = $obj_TxnInfo->getMarkupLanguage();
-	    $data['orderid'] = $obj_TxnInfo->getOrderID();
-	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
-	    
-		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
+		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_AssociatedTxnInfo);
 
         // Add entry into Passbook
