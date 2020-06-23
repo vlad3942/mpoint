@@ -52,11 +52,16 @@ $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
-$aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+
+function env($key, $default=null) {
+    return getenv($key) ?: $default;
+}
+
+$aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "localhost");
+$aDB_CONN_INFO["mpoint"]["port"] = env('DB_PORT',5432);
+$aDB_CONN_INFO["mpoint"]["username"] = env('DB_USERNAME',"mpoint");
+$aDB_CONN_INFO["mpoint"]["password"] = env('DB_PASSWORD',"hspzr735abl");
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-//$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-//$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
