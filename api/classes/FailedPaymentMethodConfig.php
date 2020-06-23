@@ -15,36 +15,11 @@
 class FailedPaymentMethodConfig
 {
     /**
-     * Unique ID for the Transaction
-     *
-     * @var integer
-     */
-    private $_iID;
-    /**
-     * Unique ID for the The PSP used for the transaction
-     *
-     * @var integer
-     */
-    private $_iPSPID;
-    /**
      * Card-id used for the payment
      *
      * @var integer
      */
     private $_iCardID;
-    /**
-     * Unique ID for the payment session
-     *
-     * @var integer
-     */
-    private $_iSessionId;
-
-    /**
-     * System type ID for the card
-     *
-     * @var integer
-     */
-    private $_iPSPCategoryId;
     /**
      * Payment type ID for the psp
      *
@@ -61,44 +36,29 @@ class FailedPaymentMethodConfig
     /**
      * Default constructor
      *
-     * @param integer $id			The unique ID for the transaction
-     * @param integer $pspId		The unique ID for the PSP
      * @param integer $cardId		The unique ID for the Payment Method (Card)
-     * @param integer $sessionId	The unique ID for the Payment session
-     * @param integer $systemType	The unique ID for the card category
      * @param integer $paymentType	The unique ID for the psp category
+     * @param integer $stateid      The unique ID for transaction status
      */
-	public function __construct($id, $pspId, $cardId, $sessionId, $systemType, $paymentType, $stateid)
+	public function __construct($cardId, $paymentType, $stateid)
 	{
-		$this->_iID = $id;
-		$this->_iPSPID = $pspId;
 		$this->_iCardID = $cardId;
-        $this->_iSessionId = $sessionId;
-        $this->_iPSPCategoryId = $systemType;
         $this->_iCardCategoryId = $paymentType;
         $this->_iTransactionStateId = $stateid;
 	}
 
-	public function getID() { return $this->_iID; }
-    public function getPSPID() { return $this->_iPSPID; }
     public function getCardID() { return $this->_iCardID; }
-    public function getSessionID() { return $this->_iSessionId; }
     public function getSystemType() { return $this->_iCardCategoryId; }
-    public function getPaymentType() { return $this->_iPSPCategoryId; }
     public function getPaymentState() { return $this->_iTransactionStateId; }
 
 
 	public function toAttributeLessXML()
 	{
-        $xml = '<failed_payment_method>';
-        $xml .= '<session_id>'. $this->getSessionID() .'</session_id>';
-        $xml .= '<transaction_id>'. $this->getID() .'</transaction_id>';
+        $xml = '<retry_attempt>';
         $xml .= '<card_id>'. $this->getCardID() .'</card_id>';
-        $xml .= '<psp_id>'. $this->getPSPID() .'</psp_id>';
         $xml .= '<transaction_state_id>'. $this->getPaymentState() .'</transaction_state_id>';
         $xml .= '<card_category_id>'. $this->getSystemType() .'</card_category_id>';
-        $xml .= '<psp_category_id>'. $this->getPaymentType() .'</psp_category_id>';
-        $xml .= '</failed_payment_method>';
+        $xml .= '</retry_attempt>';
         return $xml;
 	}
 
@@ -115,7 +75,7 @@ class FailedPaymentMethodConfig
         $aObj_Configurations = array();
         if($obj instanceof RDB && $sessionId > 0 && $clientId > 0) {
             $aStateIDs = array(Constants::iInitializeRequested, Constants::iRefundRequested, Constants::iCancelRequested, Constants::iCaptureRequested, Constants::iAuthorizeRequested);
-            $sql = "SELECT Txn.id, Txn.pspid, Txn.cardid, Txn.sessionid, PSP.system_type, C.paymenttype, p2.st AS stateid
+            $sql = "SELECT Txn.cardid, C.paymenttype, p2.st AS stateid
                 FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
                 INNER JOIN Log" . sSCHEMA_POSTFIX . ".Session_Tbl S ON Txn.sessionid = S.id AND S.stateid != " . Constants::iSESSION_COMPLETED . ".
                 INNER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
@@ -125,8 +85,8 @@ class FailedPaymentMethodConfig
 
             $res = $obj->query($sql);
             while ($RS = $obj->fetchName($res)) {
-                if (empty($RS["PSPID"]) === false && empty($RS["CARDID"]) === false && empty($RS["SESSIONID"]) === false && empty($RS["SYSTEM_TYPE"]) === false && empty($RS["PAYMENTTYPE"]) === false && empty($RS["STATEID"]) === false) {
-                    $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["ID"], $RS["PSPID"], $RS["CARDID"], $RS["SESSIONID"], $RS["SYSTEM_TYPE"], $RS["PAYMENTTYPE"], $RS["STATEID"]);
+                if (empty($RS["CARDID"]) === false && empty($RS["PAYMENTTYPE"]) === false && empty($RS["STATEID"]) === false) {
+                    $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $RS["STATEID"]);
                 }
             }
         }

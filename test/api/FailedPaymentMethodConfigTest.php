@@ -47,11 +47,11 @@ class FailedPaymentMethodConfigTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,113)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'inprocess',113)");
         $sessionId = 10;
-        $obj_FailedPaymentMethods = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId);
+        $obj_FailedPaymentMethods = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId, 113);
         $xml = '';
         if(count($obj_FailedPaymentMethods) > 0 )
         {
-            $xml .= '<failed_payment_methods>';
+            $xml .= '<retry_attempts>';
             foreach ($obj_FailedPaymentMethods as $obj_FailedPaymentMethod)
             {
                 if (($obj_FailedPaymentMethod instanceof FailedPaymentMethodConfig) === TRUE)
@@ -59,10 +59,10 @@ class FailedPaymentMethodConfigTest extends baseAPITest
                     $xml .= $obj_FailedPaymentMethod->toAttributeLessXML();
                 }
             }
-            $xml .= '<failed_payment_methods>';
+            $xml .= '<retry_attempts>';
         }
         $this->assertEquals(1, count($obj_FailedPaymentMethod));
-        $this->assertContains('<failed_payment_methods><failed_payment_method><session_id>10</session_id><transaction_id>1001001</transaction_id><card_id>8</card_id><psp_id>18</psp_id><transaction_state_id>5014</transaction_state_id><card_category_id>1</card_category_id><psp_category_id>1</psp_category_id></failed_payment_method><failed_payment_methods>', $xml);
+        $this->assertContains('<retry_attempts><retry_attempt><card_id>8</card_id><transaction_state_id>5014</transaction_state_id><card_category_id>1</card_category_id></retry_attempt><retry_attempts>', $xml);
     }
 
    public function testGetFailedPaymentMethodsNegetiveScenario()
@@ -82,7 +82,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,113)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'inprocess',113)");
         $sessionId = 1;
-        $obj_FailedPaymentMethods = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId);
+        $obj_FailedPaymentMethods = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId, 113);
         $xml = '';
         if(count($obj_FailedPaymentMethods) > 0 )
         {
@@ -117,7 +117,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,113)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'inprocess',113)");
         $sessionId = 100;
-        $obj_FailedPaymentMethods = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId);
+        $obj_FailedPaymentMethods = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId, 113);
         $xml = '';
         if(count($obj_FailedPaymentMethods) > 0 )
         {

@@ -131,7 +131,7 @@ class RoutingService extends General
         $body .= '</amount>';
         if(count($this->_obj_FailedPaymentMethods) > 0 )
         {
-            $body .= '<failed_payment_methods>';
+            $body .= '<retry_attempts>';
             foreach ($this->_obj_FailedPaymentMethods as $obj_FailedPaymentMethod)
             {
                 if (($obj_FailedPaymentMethod instanceof FailedPaymentMethodConfig) === TRUE)
@@ -139,7 +139,7 @@ class RoutingService extends General
                     $body .= $obj_FailedPaymentMethod->toAttributeLessXML();
                 }
             }
-            $body .= '</failed_payment_methods>';
+            $body .= '</retry_attempts>';
         }
         $body .= $this->toAttributeLessOrderDataXML();
         $body .= '</transaction>';
