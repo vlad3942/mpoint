@@ -1,6 +1,21 @@
-# Dockerfile for building the anonymous container for running mPoint test cases
+# TODO use official phpcomposerbuildimage from harbour when this is moved to the new jenkins
+
 #Fetch dependencies
-FROM registry.t.cpm.dev/library/phpcomposerbuildimage:master20200203174815 as builder
+FROM composer:1 as builder
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /tmp
+ENV COMPOSER_AUTH='{"http-basic": {"repo.t.cpm.ninja": {"username": "cpmdeploy","password": "qwe123qwe"},"satis.cellpointmobile.com": {"username": "admin","password": "70211512"}}}'
+ENV CPM_REPOLIST='git.t.cpm.dev satis.cellpointmobile.com'
+
+WORKDIR /app
+
+COPY ./docker/.ssh /root/.ssh
+
+RUN composer global require hirak/prestissimo \
+    && chmod 400 /root/.ssh/id_rsa \
+    && ssh-keyscan -t rsa $(printenv CPM_REPOLIST) > ~/.ssh/known_hosts
+    
 COPY composer.json .
 RUN composer install -vvv --prefer-dist --no-dev
 
