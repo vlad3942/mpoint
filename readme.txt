@@ -79,5 +79,31 @@ apt-get install iputils-ping
 
 Run test cases
 gradle build -q
+################################################
+Connect Docker container with external database
+Add or edit the following line in your postgresql.conf :
+listen_addresses = '*'
+
+Add the following line as the first line of pg_hba.conf. It allows access to all databases for all users with an encrypted password:
+# TYPE DATABASE USER CIDR-ADDRESS  METHOD
+host  all  all 0.0.0.0/0 md5
+
+edit the below line
+ local   all             postgres                                peer
+to
+ local   all             postgres                                trust
+
+sudo service postgresql restart
+#Get host ip
+ifconfig docker0
+
+Use inet 172.17.0.1 as host. This may be different.
+
+OR
+use host = host.docker.internal
+
+---------------------------
+Access container externally using host http://mpoint.local.cellpointmobile.com
+
 
 

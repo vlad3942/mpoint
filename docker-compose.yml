@@ -11,10 +11,10 @@ services:
     ports:
       - 15432:5432
     environment:
-      - DB_HOST=db
+      - DB_HOST=host.docker.internal
       - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=XmlocatorpassX
+      - DB_USERNAME=mpoint
+      - DB_PASSWORD=hspzr735abl
       - DB_PASS_PATH=/secrets/database/password
       - debug=true
      #- XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9000 remote_host=docker.host.internal
