@@ -6,6 +6,7 @@ services:
     build:
       context: .
     dns: 1.1.1.1
+    command: /docker.sh
     entrypoint: bash
     ports:
       - 15432:5432
@@ -15,6 +16,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=XmlocatorpassX
       - DB_PASS_PATH=/secrets/database/password
+      - debug=true
      #- XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9000 remote_host=docker.host.internal
      #- PHP_IDE_CONFIG=serverName=mpoint_app
     volumes:
