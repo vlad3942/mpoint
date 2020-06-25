@@ -842,7 +842,7 @@ class Home extends General
             $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
             $objCountryConf = $obj_TxnInfo->getCountryConfig();
 			$objClientConf = $obj_TxnInfo->getClientConfig();
-			if($objClientConf->getID() == $clientid){
+			if($objClientConf->getID() === $clientid){
             	$sTxnAdditionalDataXml = "";
             	$aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
 				if($aTxnAdditionalData !== null)

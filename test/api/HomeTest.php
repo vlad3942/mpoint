@@ -76,7 +76,7 @@ class HomeTest extends baseAPITest
     }
 
 
-    /*public function testGetTxnStatusInvalidClientId()
+    public function testGetTxnStatusInvalidClientId()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -129,7 +129,7 @@ class HomeTest extends baseAPITest
         $getTxnStatusResponse = $obj_mPoint->getTxnStatus((int)$iTxnID,(int)$iClientID,(int)$iMode);
 
         $this->assertEmpty($getTxnStatusResponse);
-    }*/
+    }
 
     public function tearDown()
     {
