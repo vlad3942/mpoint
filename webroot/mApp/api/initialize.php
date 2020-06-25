@@ -299,6 +299,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 							$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
 							$bIsSingleSingOnPass = false;
+                            $profileTypeId = null;
                             if (empty($authenticationURL) === false && empty($authToken)=== false)
                             {
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
@@ -320,6 +321,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                     if ($code == 10) {
                                         $bIsSingleSingOnPass = true;
+                                        $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
                                     }
                                 }
                             }
@@ -617,7 +619,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $fopSelection = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'FOP_SELECTION');
                             if (strtolower($fopSelection) == 'true') {
                                 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
                                 $obj_PaymentMethodResponse = null;
                                 if($obj_RS instanceof RoutingService)
