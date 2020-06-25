@@ -1256,7 +1256,7 @@ class ClientConfig extends BasicConfig
 					CL.\"mode\", CL.enable_cvv, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
 					CL.identification, CL.transaction_ttl, CL.num_masked_digits, CL.salt,CL.secretkey,CL.communicationchannels AS channels, CL.installment, CL.max_installments, CL.installment_frequency,
 					C.id AS countryid,
-					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
+					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup, Acc.businesstype, 
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
 					U1.id AS customerimporturlid, U2.id AS authurlid, U3.id AS notifyurlid, U4.id AS mesburlid, U5.id AS parse3dsecureurlid,
 					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl,
@@ -1324,7 +1324,7 @@ class ClientConfig extends BasicConfig
 		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
 		{
 			$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
-			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
+			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"], array(),$RS["BUSINESSTYPE"]);
 			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 			$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
