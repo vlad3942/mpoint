@@ -64,9 +64,11 @@ Execute below commands on local
 Go to code location
 cd /var/www/html/cpm/mPoint
 
-`docker-compose build`
-`docker-compose run --rm composer "composer install -vvv"`
+`docker-compose build`  -- if changes are in docker image. No need to run if using docker compose. here we are using volumes.
 `docker-compose run app`
+
+Expose port to connect with external system.
+`docker-compose run -p 8080:80  app`
 
 This will give you a bash shell acces to the app container... there you can run
 /docker.sh
@@ -104,6 +106,22 @@ use host = host.docker.internal
 
 ---------------------------
 Access container externally using host http://mpoint.local.cellpointmobile.com
+Exposed port : 8080
+Create virtual host
 
+       ServerName mpoint.local.cellpointmobile.com
+
+       ServerAdmin webmaster@localhost
+       ProxyPass / http://127.0.0.1:8080/ nocanon retry=0
+       ProxyPassReverse / http://127.0.0.1:8080/
+       ProxyPreserveHost On
+       ProxyRequests Off
+       AllowEncodedSlashes NoDecode
+
+       <Proxy http://127.0.0.1:8080/*>
+               Order deny,allow
+               Allow from all
+               Require all granted
+       </Proxy>
 
 
