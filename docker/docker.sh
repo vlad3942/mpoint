@@ -16,9 +16,9 @@ setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log
 cd /opt/cpm/mPoint
 chmod -R 777 log
 
-if [ -z ${debug+x} ]; then
-	php vendor/bin/phpunit test/api
-else
-	/bin/bash
-	#while true; do sleep 2; done
-fi
+#if [ -z ${debug+x} ]; then
+#	php vendor/bin/phpunit test/api
+#else
+#	/bin/bash
+#	#while true; do sleep 2; done
+#fi
