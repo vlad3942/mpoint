@@ -74,6 +74,8 @@ $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
 $aDB_CONN_INFO["mpoint"]["method"] = 1;
 
+print_r($aDB_CONN_INFO['mpoint']);die;
+
 /**
  * Database settings for Session database
  */
