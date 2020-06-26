@@ -135,8 +135,10 @@ class StaticRoute extends Card
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aObj_Configurations = array();
-        for ($i = 0; $i < count($paymentMethods); $i++) {
-            $aObj_Configurations[] = self::produceConfig($oDB, $oTxt, $oTI, $paymentMethods[$i]->id, $paymentMethods[$i]->psp_type);
+        if(is_object($paymentMethods)) {
+            foreach ($paymentMethods as $pm){
+                $aObj_Configurations[]=self::produceConfig($oDB, $oTxt, $oTI, $pm->id, $pm->psp_type);
+            }
         }
         return $aObj_Configurations;
     }
