@@ -236,7 +236,7 @@ try
 							$_OBJ_DB->query("START TRANSACTION");
 							if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === false)
 							{
-								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
+								if (is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
 									if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"] ) !== Constants::iNEW_CARD_PURCHASE_TYPE)
 									{
@@ -342,7 +342,7 @@ try
                                         	}
                                         }
 
-                                        if (count($obj_Elem->capture_type) > 0)
+                                        if (is_object($obj_Elem->capture_type) && count($obj_Elem->capture_type) > 0)
                                         {
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
