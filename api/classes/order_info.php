@@ -289,12 +289,12 @@ class OrderInfo
 		else { return null; }
 	}
 
-    public static function produceConfigurationsFromOrderID(RDB $oDB, $orderid)
+    public static function produceConfigurationsFromOrderID(RDB $oDB,TxnInfo $obj_TxnInfo)
     {
         $sql = "SELECT OT.id			
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl AS OT
 				INNER JOIN Log". sSCHEMA_POSTFIX .".Transaction_Tbl AS TT ON OT.txnid = TT.id 
-				WHERE TT.orderid = '". $oDB->escStr($orderid) ."' AND OT.enabled = '1' AND TT.enabled = '1'";
+				WHERE TT.clientid = ".$obj_TxnInfo->getClientConfig()->getID()." AND TT.orderid = '". $oDB->escStr($obj_TxnInfo->getOrderID()) ."' AND OT.enabled = '1' AND TT.enabled = '1'";
         //echo $sql ."\n";
         $aConfigurations = array();
         $res = $oDB->query($sql);
