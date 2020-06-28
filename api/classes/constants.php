@@ -1017,6 +1017,11 @@ abstract class Constants
 	 *
 	 */
 	const iCEBU_RMFSS_FSP = 65;
+	/**
+	 * Unique ID for the Payment APM: SWISH
+	 *
+	 */
+	const iSWISH_APM = 66;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1450,6 +1455,12 @@ abstract class Constants
 	 *
 	 */
 	const iDRAGONPAYOFFLINE = 88;
+	
+	/**
+	 * Unique Card ID for transaction's made using SWISH
+	 *
+	 */
+	const iSWISH = 88;
 	
 
 	/**
