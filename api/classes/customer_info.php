@@ -103,7 +103,7 @@ class CustomerInfo
 	public function getFullName() { return $this->_sFullName; }
 	public function getLanguage() { return $this->_sLanguage; }
     public function getProfileID() { return $this->_iProfileID; }
-    public function setProfileTypeID($profileTypeId = null) { $this->_iprofileTypeId = $profileTypeId; }
+    public function setProfileTypeID($profileTypeId) { $this->_iprofileTypeId = $profileTypeId; }
     public function getProfileTypeID() { return $this->_iprofileTypeId; }
 
 	public function toXML()
