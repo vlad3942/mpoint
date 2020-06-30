@@ -1132,7 +1132,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $code;
     }
 
-    private function genInvoiceId(ClientInfo $objClientInfo)
+    private function genInvoiceId(?ClientInfo $objClientInfo)
     {
         if($this->getTxnInfo()->getAdditionalData('invoiceid') === null)
         {
