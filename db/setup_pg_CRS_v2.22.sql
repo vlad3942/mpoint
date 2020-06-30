@@ -39,3 +39,8 @@ ALTER TABLE log.paymentroute_tbl OWNER TO postgres;
 
 --  Revert Changes
 ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE varchar(50);
+
+-- Alter Log.flight_tbl to store additional flight data
+ALTER TABLE log.flight_tbl
+  ADD COLUMN time_zone character varying(10);
+
