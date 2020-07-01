@@ -1328,7 +1328,7 @@ class ClientConfig extends BasicConfig
                            $obj_NotificationURL = new ClientURLConfig($aRS[$i]["ID"], self::iNOTIFICATION_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iMESB_URL:
-                           $obj_MESBURL = new ClientURLConfig($aRS[$i]["ID"], self::iMESB_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_MESBURL = new ClientURLConfig($aRS[$i]["ID"], self::iMESB_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iPARSE_3DSECURE_CHALLENGE_URL:
                            $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"]);
