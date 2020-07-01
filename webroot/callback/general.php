@@ -23,6 +23,8 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for Capture component (for use with auto-capture functionality)
 require_once(sCLASS_PATH ."/capture.php");
+// Require specific Business logic for the Refund component
+require_once(sCLASS_PATH ."/refund.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM FRAUD GATEWAY component
@@ -591,7 +593,7 @@ try
      }
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
-     if(($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID === Constants::iPAYMENT_CAPTURED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)
+     if(($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)
      $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 
       //update captured amt when psp returns captured callback

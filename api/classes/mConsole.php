@@ -276,12 +276,13 @@ class mConsole extends Admin
 	 * @param integer $id			The unique ID of the existing routing configuration that should be changed, pass -1 to create a new routing configuration
 	 * @return integer
 	 */
-	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $capturetype = 1,$enabled='true')
+	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $capturetype = 1, $walletid = 0, $enabled='true')
 	{
 		$clientid = (integer) $clientid;
 		$pmid = (integer) $pmid;
 		$pspid = (integer) $pspid;
 		$countryid = (integer) $countryid;
+        if ($walletid <= 0) { $walletid = 'NULL'; }
 		if ($countryid <= 0) { $countryid = "NULL"; }
 		$id = (integer) $id;
 		
@@ -293,7 +294,7 @@ class mConsole extends Admin
 					WHERE clientid = ". $clientid ." AND cardid = ". $pmid ." AND pspid = ". $pspid ." AND countryid = ". $countryid;
 //			echo $sql ."\n";
 			$RS = $this->getDBConn()->getName($sql);
-			$id = $RS["ID"];			
+			$id = $RS["ID"];
 		}
 		
 		if ($id > 0)
@@ -309,7 +310,7 @@ class mConsole extends Admin
 			
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
 					SET countryid = ". $countryid .", cardid = ". $pmid .", pspid = ". $pspid .", 
-						stateid = ". intval($stateid) .", enabled = '".$enabled."', capture_type = ". intval($capturetype) ."
+						stateid = ". intval($stateid) .", enabled = '".$enabled."', capture_type = ". intval($capturetype) .", walletid = ". $walletid ."
 					WHERE id = ". $id;				
 		}
 		else
@@ -319,9 +320,9 @@ class mConsole extends Admin
 			$id = $RS["ID"];
 			
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
-						(id, clientid, cardid, pspid, countryid, stateid, capture_type)
+						(id, clientid, cardid, pspid, countryid, stateid, capture_type, walletid)
 				    VALUES
-						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .", ". intval($capturetype).")";
+						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .", ". intval($capturetype).", ". $walletid .")";
 		}		
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

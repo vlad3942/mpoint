@@ -427,9 +427,11 @@ class Home extends General
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param 	boolean $adc 	Include Stored Cards where the card type has been disabled, defaults to false
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
+     * @param   array   $aPaymentMethods
+     * @param   integer $countryId
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array())
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -469,6 +471,10 @@ class Home extends General
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE EUC.accountid = ". (int)$id;
+         if($countryId !== NULL)
+        {
+            $sql .= " AND (CA.countryid = ". $countryId ." OR CA.countryid IS NULL)";
+        }
         if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aPaymentMethods).")"; }
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
 		if ($adc === false) { $sql .= "  AND CA.enabled = '1'"; }
@@ -866,6 +872,7 @@ class Home extends General
             $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
             $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
             $cardMask = $obj_TxnInfo->getCardMask();
+            $cardExpiry = $obj_TxnInfo->getCardExpiry();
             $acceptUrl = $obj_TxnInfo->getAcceptURL();
             $cancelUrl = $obj_TxnInfo->getCancelURL();
             $cssUrl = $obj_TxnInfo->getCSSURL();
@@ -877,6 +884,7 @@ class Home extends General
                 $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
             }
             if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
+            if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
             $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
             $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
             $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
@@ -895,12 +903,28 @@ class Home extends General
             $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
             //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
             $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '">';
-            $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator()/100 . '" country-id="' . $objCountryConf->getID() . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
+            $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
             $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
             $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
             $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
             $xml .= '</client-info>';
             $xml .= $sTxnAdditionalDataXml;
+            $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+            if (empty($aShippingAddress) === false) {
+                $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+                $xml .= '<address>';
+                $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+                $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
+                $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
+                $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+                $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+                $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
+                $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
+                if (($obj_CountryConfig instanceof CountryConfig) === true) {
+                    $xml .= '<country>' . $obj_CountryConfig->getName() . '</country>';
+                }
+                $xml .= '</address>';
+            }
             $xml .= '</transaction>';
 
             if ( ($objCountryConf instanceof CountryConfig) === true) {

@@ -164,6 +164,7 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
+require_once(sCLASS_PATH . '/payment_route.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -279,10 +280,20 @@ try
 
 										$aRoutes = array();
                                         $iPrimaryRoute = 0 ;
-										$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-                                        if (strtolower($drService) == 'true')
-                                        {
-                                            $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                        if($obj_card->getPaymentType() === 1) {
+                                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+                                            if (strtolower($drService) == 'true') {
+                                                $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                                if($iPrimaryRoute <=0)
+                                                {
+                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
+                                                    if($obj_RS instanceof RoutingService)
+                                                    {
+                                                        $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                        $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         $obj_CardXML = '';
@@ -304,6 +315,29 @@ try
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
 
+                                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                        $ips = array_map('trim', $ips);
+                                        $ip = $ips[0];
+                                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
+                                            CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+                                            $ip);
+
+                                        $obj_TransacionCountryConfig = null;
+                                        if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
+                                        {
+                                            $obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]);
+                                        }
+                                        // Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
+                                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2 && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'})  === true)
+                                        {
+                                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+                                        }
+                                        //made hmac mandatory for dcc
+                                        else if (General::xml2bool($obj_Elem["dcc"]) === true  && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
+                                        {
+                                            if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+                                        }
+
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
                                             $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
                                             if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
@@ -316,10 +350,9 @@ try
                                         }
                                        else
                                        {
-                                           if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true &&
-                                               round((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount &&
-                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID()  &&
-                                               empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false )
+                                           if (General::xml2bool($obj_Elem["dcc"]) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false &&
+                                               (int)$obj_TxnInfo->getAmount() === (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} &&
+                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
                                                {
                                                    $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
@@ -337,11 +370,6 @@ try
                                         if($obj_card->getCardHolderName() !== '' && $obj_CardValidator->valCardFullName() !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
                                         }
-                                        $obj_TransacionCountryConfig = null;
-                                        if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
-                                        {
-                                            $obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]);
-                                        }
 
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country
                                         if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0)
@@ -358,20 +386,7 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
-                                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                                        $ips = array_map('trim', $ips);
-                                        $ip = $ips[0];
-										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
-                                        CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-                                        $ip);
 
-										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
-                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
-                                            //made hmac mandatory for dcc
-										{
-                                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
-										} 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
@@ -669,7 +684,7 @@ try
                                                                         NULL,
                                                                         NULL,
                                                                         $obj_TxnInfo->getClientConfig()->getID(),
-                                                                        $obj_TxnInfo->getConversationRate()
+                                                                        $obj_TxnInfo->getInitializedAmount()
 																	);
 																	if ($txnPassbookObj instanceof TxnPassbook)
 																	{
@@ -692,7 +707,7 @@ try
                                                                         $obj_PSP->saveCard($obj_Elem);
                                                                         if(empty($obj_Elem->address) === false)
                                                                         {
-                                                                            $aBillingAddr['billing_address'][0]['name'] = (string) $obj_Elem->{'address'}->{'full-name'};
+
                                                                             $aBillingAddr['billing_address'][0]['street'] = (string) $obj_Elem->{'address'}->street;
                                                                             $aBillingAddr['billing_address'][0]['street2'] = (string) $obj_Elem->{'address'}->street2;
                                                                             $aBillingAddr['billing_address'][0]['city'] = (string) $obj_Elem->{'address'}->city;
@@ -701,6 +716,25 @@ try
                                                                             $aBillingAddr['billing_address'][0]['country'] = (string) $obj_Elem->{'address'}['country-id'];
                                                                             $aBillingAddr['billing_address'][0]['reference_type'] = "transaction";
                                                                             $aBillingAddr['billing_address'][0]['reference_id'] = $obj_TxnInfo->getID();
+                                                                            if (count($obj_Elem->address->{'full-name'}) == 1)
+                                                                            {
+                                                                                $pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+                                                                                if ($pos > 0)
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim($obj_Elem->address->{'full-name'});
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = "";
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $aBillingAddr['billing_address'][0]['first_name'] = $obj_Elem->address->{'first-name'};
+                                                                                $aBillingAddr['billing_address'][0]['last_name'] = $obj_Elem->address->{'last-name'} ;
+                                                                            }
                                                                             $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $aBillingAddr['billing_address']);
                                                                         }
                                                                     }
