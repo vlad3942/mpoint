@@ -1319,31 +1319,31 @@ class ClientConfig extends BasicConfig
                    switch ($aRS[$i]["URLTYPEID"])
                    {
                        case self::iCUSTOMER_IMPORT_URL:
-                           $obj_CustomerImportURL = new ClientURLConfig($aRS[$i]["ID"], self::iCUSTOMER_IMPORT_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_CustomerImportURL = new ClientURLConfig($aRS[$i]["ID"], self::iCUSTOMER_IMPORT_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iAUTHENTICATION_URL:
-                           $obj_AuthenticationURL = new ClientURLConfig($aRS[$i]["ID"], self::iAUTHENTICATION_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_AuthenticationURL = new ClientURLConfig($aRS[$i]["ID"], self::iAUTHENTICATION_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iNOTIFICATION_URL:
-                           $obj_NotificationURL = new ClientURLConfig($aRS[$i]["ID"], self::iNOTIFICATION_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_NotificationURL = new ClientURLConfig($aRS[$i]["ID"], self::iNOTIFICATION_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iMESB_URL:
                            $obj_MESBURL = new ClientURLConfig($aRS[$i]["ID"], self::iMESB_URL, $aRS[$i]["URLTYPEID"]);
                            break;
                        case self::iPARSE_3DSECURE_CHALLENGE_URL:
-                           $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iMERCHANT_APP_RETURN_URL:
-                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iBASE_IMAGE_URL:
-                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iTHREED_REDIRECT_URL:
-                           $obj_ThreedRedirectURL= new ClientURLConfig($aRS[$i]["ID"], self::iTHREED_REDIRECT_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_ThreedRedirectURL= new ClientURLConfig($aRS[$i]["ID"], self::iTHREED_REDIRECT_URL, $aRS[$i]["URL"]);
                            break;
                        case self::iBASE_ASSET_URL:
-                           $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URLTYPEID"]);
+                           $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URL"]);
                            break;
                    }
                 }
