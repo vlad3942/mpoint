@@ -2,11 +2,9 @@ ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE varchar(255);
 
 -- Alter Log.flight_tbl to store additional flight data
 ALTER TABLE log.flight_tbl
-  ADD COLUMN departure_country integer;
   ADD COLUMN departure_countryid integer;
 
 ALTER TABLE log.flight_tbl
-  ADD COLUMN arrival_country integer;
   ADD COLUMN arrival_countryid integer;
 
 ALTER TABLE log.flight_tbl

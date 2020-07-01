@@ -124,6 +124,8 @@
 										<xs:complexType>
 											<xs:all>
 												<xs:element name="id" type="xs:string"	minOccurs="1" maxOccurs="1" />
+												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversation-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
@@ -285,6 +287,8 @@
 										<xs:complexType>
 											<xs:all>
 												<xs:element name="id" type="xs:string"	minOccurs="1" maxOccurs="1" />
+												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversation-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
@@ -1105,7 +1109,7 @@
 							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element type="xs:integer" name="transaction-id"
+									<xs:element name="transaction-id"
 												minOccurs="1" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>
@@ -1113,6 +1117,13 @@
 												configuration should be fetched
 											</xs:documentation>
 										</xs:annotation>
+										<xs:complexType>
+											<xs:simpleContent>
+												<xs:extension base="xs:integer">
+													<xs:attribute name="mode" default="0" use="optional"/>
+												</xs:extension>
+											</xs:simpleContent>
+										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
