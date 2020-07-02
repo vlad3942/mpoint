@@ -75,3 +75,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 -- Card prefix range for master card --
 INSERT INTO "system".cardprefix_tbl (cardid, min, max, enabled) VALUES(7, 222100, 272099, true);
+
+--- If any client using the cybersource api then as per cybersource documentation compulsary businesstype is 2(airline) for airline transaction
+update client.account_tbl set businesstype = <businesstype> where clientid = <clientid>
+update client.account_tbl set businesstype = 2 where clientid = 10020;
