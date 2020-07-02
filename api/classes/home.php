@@ -268,6 +268,9 @@ class Home extends General
 			if ($code == 200)
 			{
 				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				$profile_type_id = (integer)$obj_XML->profile_type;
+                $obj_CustomerInfo->setProfileTypeID($profile_type_id);
 				return 10;
 			}
 			else
