@@ -705,6 +705,12 @@ try
 
                                                                         $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                                                         $obj_PSP->saveCard($obj_Elem);
+                                                                    }
+
+                                                                   $bStoreBillingAddrs = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_STORE_BILLING_ADDRS");
+
+                                                                    if(General::xml2bool($bStoreBillingAddrs) === true)
+                                                                    {
                                                                         if(empty($obj_Elem->address) === false)
                                                                         {
 

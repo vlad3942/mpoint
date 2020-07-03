@@ -79,3 +79,5 @@ INSERT INTO "system".cardprefix_tbl (cardid, min, max, enabled) VALUES(7, 222100
 
 -- CYBS DM for Fraud integration -- CEBU
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'DEFAULT_EMAIL_ID','null@cybersource.com','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=64;
+--Store Billing Addrs property
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, "type","scope" ) VALUES('IS_STORE_BILLING_ADDRS', 'true', <ClientID>, 'client', 0);
