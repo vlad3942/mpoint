@@ -26,7 +26,7 @@ FROM php:7.4.6-apache-buster
 
 RUN apt update \
     && apt install -y postgresql-11 libpq-dev libxslt-dev less nano vim net-tools iputils-ping iproute2 acl unzip dos2unix less libpq-dev libxslt-dev jq \
-    && docker-php-ext-install pgsql xsl
+    && docker-php-ext-install pgsql xsl \
     && docker-php-ext-install soap
 
 ## Host file, database and timezone config
