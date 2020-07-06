@@ -679,7 +679,7 @@ class EndUserAccount extends Home
 	 * @param	boolean $strict 	Only check for an account associated with the specific client
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountIDFromExternalID(RDB &$oDB, ClientConfig &$oClC, $id, $strict=true)
+	public static function getAccountIDFromExternalID(RDB &$oDB, ClientConfig &$oClC, $id, $strict=true)
 	{
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA
