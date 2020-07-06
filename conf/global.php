@@ -54,7 +54,8 @@ $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 
 function env($key, $default=null) {
-    return getenv($key) ?: $default;
+    $value = getenv($key);
+    return isset($value) ? $value : $default;
 }
 
 $aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "host.docker.internal");
