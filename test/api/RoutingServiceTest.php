@@ -23,7 +23,6 @@ require_once(sCLASS_PATH . '/payment_route.php');
 
 class RoutingServiceTest extends baseAPITest
 {
-
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
@@ -104,7 +103,7 @@ class RoutingServiceTest extends baseAPITest
         $obj_FailedPaymentMethod = null;
         $sessionId = (string)$obj_DOM->{'initialize-payment'}->transaction["session-id"];
         if(empty($sessionId)===false){
-            $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId);
+            $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId, 113);
         }
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);

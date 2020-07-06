@@ -20,7 +20,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -62,7 +62,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
             $xml .= '<retry_attempts>';
         }
         $this->assertEquals(1, count($obj_FailedPaymentMethod));
-        $this->assertContains('<retry_attempts><retry_attempt><card_id>8</card_id><transaction_state_id>5014</transaction_state_id><card_category_id>1</card_category_id></retry_attempt><retry_attempts>', $xml);
+        $this->assertStringContainsString('<retry_attempts><retry_attempt><card_id>8</card_id><transaction_state_id>5014</transaction_state_id><card_category_id>1</card_category_id></retry_attempt><retry_attempts>', $xml);
     }
 
    public function testGetFailedPaymentMethodsNegetiveScenario()
@@ -138,7 +138,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
 
 
 
-    public function tearDown()
+    public function tearDown():void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();
