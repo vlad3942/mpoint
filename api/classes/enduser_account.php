@@ -729,7 +729,7 @@ class EndUserAccount extends Home
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $mode)
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $cref, $mob, $email, CountryConfig &$oCC)
     public function getAccountID(){
-        forward_static_call_array ( "self::getAccountID_Static", func_get_args());
+        return forward_static_call_array ( "self::getAccountID_Static", func_get_args());
     }
 	public static function getAccountID_Static()
 	{
