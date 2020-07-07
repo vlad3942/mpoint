@@ -935,26 +935,12 @@ try
                                                                                     $xml .= $code;
                                                                                 } else if ($code == "20102" && strtolower($drService) == 'true') {
                                                                                     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via secondary route
-                                                                                    $sRoutes = TxnInfo::_produceAdditionalData($_OBJ_DB, $obj_TxnInfo->getID());
-                                                                                    $aRoutes = json_decode($sRoutes['psps']);
-
-                                                                                    $iSecondRoute = 0 ;
-                                                                                    $iThirdRoute = 0 ;
-                                                                                    if (count ( $aRoutes ) > 0) {
-                                                                                        foreach ( $aRoutes as $oRoute ) {
-                                                                                            if ($oRoute->preference == 2) {
-                                                                                                $iSecondRoute = $oRoute->id ;
-                                                                                            }
-                                                                                            elseif($oRoute->preference == 3){
-                                                                                                $iThirdRoute = $oRoute->id ;
-                                                                                            }
-                                                                                        }
-                                                                                    }
-
-                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iSecondRoute, $aHTTP_CONN_INFO, $obj_Elem);
-
+                                                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                                                    $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
+                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                                                                                     if($code == "20102"){
-                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iThirdRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                                                                                        $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
+                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                                                                                     }else{
                                                                                         $xml .= $code;
                                                                                     }

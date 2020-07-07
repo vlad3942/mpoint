@@ -65,6 +65,12 @@ class CustomerInfo
      */
     private $_iProfileID = -1;
 
+    /**
+     * Hold customer profile type id
+     * @var integer
+     */
+    private $_iprofileTypeId;
+
 	/**
 	 * Default constructor
 	 * 
@@ -97,6 +103,8 @@ class CustomerInfo
 	public function getFullName() { return $this->_sFullName; }
 	public function getLanguage() { return $this->_sLanguage; }
     public function getProfileID() { return $this->_iProfileID; }
+    public function setProfileTypeID($profileTypeId) { $this->_iprofileTypeId = $profileTypeId; }
+    public function getProfileTypeID() { return $this->_iprofileTypeId; }
 
 	public function toXML()
 	{
