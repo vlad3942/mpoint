@@ -33,7 +33,7 @@ CREATE TABLE log.paymentroute_tbl
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE log.paymentroute_tbl OWNER TO postgres;
+ALTER TABLE log.paymentroute_tbl OWNER TO mpoint;
 
 
 
