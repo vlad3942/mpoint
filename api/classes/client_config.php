@@ -407,13 +407,6 @@ class ClientConfig extends BasicConfig
      */
     private $_objSurePayConfig;
 
-    /**
-     * Object that holds the transaction type configurations
-     *
-     * @var TransactionTypeConfig
-     */
-    private $_aObj_TransactionTypeConfigurations;
-
 	/**
 	 * Default Constructor
 	 *
@@ -458,7 +451,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey=null, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=null, TransactionTypeConfig $obj_TransactionTypeConfig=null)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey=null, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=null)
 	{
 		parent::__construct($id, $name);
 
@@ -522,7 +515,6 @@ class ClientConfig extends BasicConfig
 		$this->_iInstallment = (integer) $installment;
 		$this->_iMaxInstallments = (integer) $maxInstallments;
 		$this->_iInstallmentFrequency = (integer) $installmentFrequency;
-        $this->_aObj_TransactionTypeConfigurations = $obj_TransactionTypeConfig;
 		
 	}
 
@@ -1063,25 +1055,6 @@ class ClientConfig extends BasicConfig
 
 		return $xml;
 	}
-
-    /**
-     * Returns the XML payload of array of Configurations for the Transaction Type
-     *
-     * @return 	String
-     */
-	private function getTransactionTypeConfigXML()
-    {
-        $xml = '<transaction-types>';
-        foreach ($this->_aObj_TransactionTypeConfigurations as $obj_TransactionType)
-        {
-            if ( ($obj_TransactionType instanceof TransactionTypeConfig) === true)
-            {
-                $xml .= $obj_TransactionType->toXML();
-            }
-        }
-        $xml .= '</transaction-types>';
-        return $xml;
-    }
 	
 	/**
 	 * Returns the transaction time to live in seconds.	 
@@ -1192,7 +1165,6 @@ class ClientConfig extends BasicConfig
         }
         $xml .= '</additional-config>';
         $xml .= '<decimal>'.$this->getCountryConfig()->getDecimals().'</decimal>';
-        $xml .= $this->getTransactionTypeConfigXML();
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -1256,26 +1228,13 @@ class ClientConfig extends BasicConfig
 					CL.\"mode\", CL.enable_cvv, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
 					CL.identification, CL.transaction_ttl, CL.num_masked_digits, CL.salt,CL.secretkey,CL.communicationchannels AS channels, CL.installment, CL.max_installments, CL.installment_frequency,
 					C.id AS countryid,
-					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup, Acc.businesstype, 
-					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
-					U1.id AS customerimporturlid, U2.id AS authurlid, U3.id AS notifyurlid, U4.id AS mesburlid, U5.id AS parse3dsecureurlid,
-					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl,
-					U5.url AS parse3dsecureurl,U6.id AS appurlid,U6.url AS appurl,U7.id AS baseimageurlid,U7.url AS baseimageurl,
-                    U8.id AS threedredirecturlid,U8.url AS threedredirecturl, U9.id AS baseasseturlid,U9.url AS baseasseturl
+					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
+					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
 				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Keyword_Tbl KW ON CL.id = KW.clientid AND KW.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U4 ON CL.id = U4.clientid AND U4.urltypeid = ". self::iMESB_URL ." AND U4.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U5 ON CL.id = U5.clientid AND U5.urltypeid = ". self::iPARSE_3DSECURE_CHALLENGE_URL ." AND U5.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U6 ON CL.id = U6.clientid AND U6.urltypeid = ". self::iMERCHANT_APP_RETURN_URL ." AND U6.enabled = '1'
-                LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U7 ON CL.id = U7.clientid AND U7.urltypeid = ". self::iBASE_IMAGE_URL ." AND U7.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U8 ON CL.id = U8.clientid AND U8.urltypeid = ". self::iTHREED_REDIRECT_URL." AND U8.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U9 ON CL.id = U9.clientid AND U9.urltypeid = ". self::iBASE_ASSET_URL." AND U9.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'	
                 WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -1293,9 +1252,7 @@ class ClientConfig extends BasicConfig
 					CL.identification, CL.transaction_ttl,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
-					KW.id, KW.name,
-					U1.id, U2.id, U3.id, U4.id, U5.id,U6.id,U7.id,U8.id,U9.id,
-					U1.url, U2.url, U3.url, U4.url, U5.url,U6.url,U7.url,U8.url,U9.url";
+					KW.id, KW.name";
 		// Use Default Account
 		if ($acc == -1)
 		{
@@ -1324,7 +1281,7 @@ class ClientConfig extends BasicConfig
 		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
 		{
 			$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
-			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"], array(),$RS["BUSINESSTYPE"]);
+			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 			$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
@@ -1332,7 +1289,6 @@ class ClientConfig extends BasicConfig
 			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
 			$aObj_ClientGoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $id);
 			$obj_ClientCommunicationChannels = ClientCommunicationChannelsConfig::produceConfig($oDB, $id);
-            $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
 
 			$obj_LogoURL = null;
 			$obj_CSSURL = null;
@@ -1351,6 +1307,48 @@ class ClientConfig extends BasicConfig
 			$obj_ThreedRedirectURL = null;
             $obj_BaseAssetURL = null;
 
+            $sql  = "SELECT id,url, urltypeid
+					 FROM Client". sSCHEMA_POSTFIX .".URL_Tbl
+					 WHERE clientid = ". intval($id) ." AND enabled = true ORDER BY urltypeid ASC";
+
+            $aRS = $oDB->getAllNames($sql);
+           if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                for ($i=0; $i<count($aRS); $i++)
+                {
+                   switch ($aRS[$i]["URLTYPEID"])
+                   {
+                       case self::iCUSTOMER_IMPORT_URL:
+                           $obj_CustomerImportURL = new ClientURLConfig($aRS[$i]["ID"], self::iCUSTOMER_IMPORT_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iAUTHENTICATION_URL:
+                           $obj_AuthenticationURL = new ClientURLConfig($aRS[$i]["ID"], self::iAUTHENTICATION_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iNOTIFICATION_URL:
+                           $obj_NotificationURL = new ClientURLConfig($aRS[$i]["ID"], self::iNOTIFICATION_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iMESB_URL:
+                           $obj_MESBURL = new ClientURLConfig($aRS[$i]["ID"], self::iMESB_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iPARSE_3DSECURE_CHALLENGE_URL:
+                           $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iMERCHANT_APP_RETURN_URL:
+                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iBASE_IMAGE_URL:
+                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iTHREED_REDIRECT_URL:
+                           $obj_ThreedRedirectURL= new ClientURLConfig($aRS[$i]["ID"], self::iTHREED_REDIRECT_URL, $aRS[$i]["URL"]);
+                           break;
+                       case self::iBASE_ASSET_URL:
+                           $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URL"]);
+                           break;
+                   }
+                }
+            }
+
 			if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"]); }
 			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
 			if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"]); }
@@ -1358,15 +1356,7 @@ class ClientConfig extends BasicConfig
 			if (strlen($RS["DECLINEURL"]) > 0) { $obj_DeclineURL = new ClientURLConfig($RS["CLIENTID"], self::iDECLINE_URL, $RS["DECLINEURL"]); }
 			if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"]); }
 			if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"]); }
-			if ($RS["CUSTOMERIMPORTURLID"] > 0) { $obj_CustomerImportURL = new ClientURLConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]); }
-			if ($RS["AUTHURLID"] > 0) { $obj_AuthenticationURL = new ClientURLConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]); }
-			if ($RS["NOTIFYURLID"] > 0) { $obj_NotificationURL = new ClientURLConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]); }
-			if ($RS["MESBURLID"] > 0) { $obj_MESBURL = new ClientURLConfig($RS["MESBURLID"], self::iMESB_URL, $RS["MESBURL"]); }
-			if ($RS["PARSE3DSECUREURLID"] > 0) { $obj_Parse3DSecureURL = new ClientURLConfig($RS["PARSE3DSECUREURLID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $RS["PARSE3DSECUREURL"]); }
-			if ($RS["APPURLID"] > 0) { $obj_AppURL = new ClientURLConfig($RS["APPURLID"], self::iMERCHANT_APP_RETURN_URL, $RS["APPURL"]); }
-            if ($RS["BASEIMAGEURLID"] > 0) { $obj_BaseImageURL = new ClientURLConfig($RS["BASEIMAGEURLID"], self::iBASE_IMAGE_URL, $RS["BASEIMAGEURL"]); }
-            if ($RS["THREEDREDIRECTURLID"] > 0) { $obj_ThreedRedirectURL= new ClientURLConfig($RS["THREEDREDIRECTURLID"], self::iTHREED_REDIRECT_URL, $RS["THREEDREDIRECTURL"]); }
-            if ($RS["BASEASSETURLID"] > 0) { $obj_BaseAssetURL= new ClientURLConfig($RS["BASEASSETURLID"], self::iBASE_ASSET_URL, $RS["BASEASSETURL"]); }
+
             
 			$sql  = "SELECT ipaddress
 					 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
@@ -1430,7 +1420,7 @@ class ClientConfig extends BasicConfig
             	}
             }
             
-            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts,$aDRGateways,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig);
+            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts,$aDRGateways,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
