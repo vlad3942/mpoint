@@ -158,12 +158,13 @@ abstract class Callback extends EndUserAccount
 	 * @param 	integer $txnid 	Transaction ID returned by the PSP
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
+	 * @param 	integer $sub_code_id 	Unique ID indicating sub error code of the failed Transaction
 	 * @param 	integer $fee	The amount the customer will pay in fees for the Transaction. Default value 0
 	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null, $issuingbank=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null)
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
@@ -190,6 +191,9 @@ abstract class Callback extends EndUserAccount
 					$sid = Constants::iPAYMENT_DUPLICATED_STATE;
 				} else if ($iIsCompleteTransactionStateLogged == 0 ) {
 					$this->newMessage ( $this->_obj_TxnInfo->getID (), $sid, var_export ( $debug, true ) );
+					if($sub_code_id != 0) {
+						$this->newMessage ( $this->_obj_TxnInfo->getID (), $sub_code_id, var_export ( $debug, true ) );
+					}
 				}
 			
 		}
