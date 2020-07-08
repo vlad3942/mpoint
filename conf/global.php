@@ -54,10 +54,11 @@ $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 
 function env($key, $default=null) {
-    return getenv($key) ?: $default;
+    $value = getenv($key);
+    return isset($value) ? $value : $default;
 }
 
-$aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "localhost");
+$aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "host.docker.internal");
 $aDB_CONN_INFO["mpoint"]["port"] = env('DB_PORT',5432);
 $aDB_CONN_INFO["mpoint"]["username"] = env('DB_USERNAME',"mpoint");
 $aDB_CONN_INFO["mpoint"]["password"] = env('DB_PASSWORD',"hspzr735abl");
