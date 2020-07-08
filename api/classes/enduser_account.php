@@ -679,7 +679,7 @@ class EndUserAccount extends Home
 	 * @param	boolean $strict 	Only check for an account associated with the specific client
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountIDFromExternalID(RDB &$oDB, ClientConfig &$oClC, $id, $strict=true)
+	public static function getAccountIDFromExternalID(RDB &$oDB, ClientConfig &$oClC, $id, $strict=true)
 	{
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA
@@ -728,7 +728,10 @@ class EndUserAccount extends Home
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $strict=true)
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $mode)
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $cref, $mob, $email, CountryConfig &$oCC)
-	public function getAccountID()
+    public function getAccountID(){
+        return forward_static_call_array ( "self::getAccountID_Static", func_get_args());
+    }
+	public static function getAccountID_Static()
 	{
 		$aArgs = func_get_args();
 		switch (count($aArgs) )
@@ -750,25 +753,25 @@ class EndUserAccount extends Home
 			list($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail) = $aArgs;
 			$iAccountID = -1;
 			if (strlen($sCustomerRef ) > 0 && ($obj_ClientConfig->getIdentification() & 1) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($obj_DB, $obj_ClientConfig, $sCustomerRef, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-			if ($iAccountID == -1 && floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-			if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+			if ($iAccountID == -1 && floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+			if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 			// Both Mobile No. and E-Mail address must match
 			if ( ($obj_ClientConfig->getIdentification() & 8) == 8)
 			{
-				if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-				if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+				if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+				if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 				if ($iMobileAccountID == $iEMailAccountID) { $iAccountID = $iMobileAccountID; }
 			}
 			// Client supports global storage of payment cards
 			if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
 			{
-				if (floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
-				if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
+				if (floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
+				if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
 				// Both Mobile No. and E-Mail address must match
 				if ( ($obj_ClientConfig->getIdentification() & 8) == 8)
 				{
-					if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
-					if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
+					if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
+					if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
 					if ($iMobileAccountID == $iEMailAccountID) { $iAccountID = $iMobileAccountID; }
 				}
 			}
@@ -779,7 +782,7 @@ class EndUserAccount extends Home
                 $iAccountID = -1;
                 if (isset($iProfileID) === false || $iProfileID < 0)
                 {
-                    $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail);
+                    $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail);
                 } else {
                     $iAccountID = self::getAccountIdFromProfileId($obj_DB, $iProfileID);
                 }

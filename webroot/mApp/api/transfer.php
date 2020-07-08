@@ -82,7 +82,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 
 					$obj_mPoint = new Transfer($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
-					$iSenderAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->transfer[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->transfer[$i]->{'client-info'}->mobile, $obj_DOM->transfer[$i]->{'client-info'}->email);
+					$iSenderAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->transfer[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->transfer[$i]->{'client-info'}->mobile, $obj_DOM->transfer[$i]->{'client-info'}->email);
 
 					if ($obj_Validator->valPassword( (string) $obj_DOM->transfer[$i]->password) < 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->transfer[$i]->password) + 20; }
 					if ($obj_Validator->valCountry($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->amount["country-id"]) == 10)
@@ -149,7 +149,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if (count($obj_DOM->transfer[$i]->mobile) == 1)
 								{
 									$obj_Cfg = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->mobile["country-id"]);
-									$iRecipientAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, (float) $obj_DOM->transfer[$i]->mobile, $obj_Cfg);
+									$iRecipientAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, (float) $obj_DOM->transfer[$i]->mobile, $obj_Cfg);
 									if ($iRecipientAccountID < 0) { $iRecipientAccountID = $obj_mPoint->getAccountID($obj_Cfg, (float) $obj_DOM->transfer[$i]->mobile); }
 								}
 								elseif (count($obj_DOM->transfer[$i]->email) == 1)

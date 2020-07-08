@@ -27,7 +27,7 @@ class DCCInitTest extends InitializeAPIValidationTest
         $this->bIgnoreErrors = true; //User Warning Expected
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        $this->assertMatchesRegularExpression('/dcc="true"/',$sReplyBody);
+        $this->assertStringContainsString('dcc="true"',$sReplyBody);
     }
 
 }

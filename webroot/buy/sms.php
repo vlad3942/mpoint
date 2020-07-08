@@ -84,7 +84,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	
 	// Verify whether Transaction is possible via SMS
-	$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, @$_REQUEST['mobile'], false);
+	$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, @$_REQUEST['mobile'], false);
 	if ($iAccountID > 0)
 	{
 		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
@@ -122,8 +122,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 
 			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }
+			$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() );
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }
 			$obj_TxnInfo->setAccountID($iAccountID);
 			
 			// Update Transaction Log

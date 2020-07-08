@@ -179,9 +179,9 @@ final class PaymentSession
 
     public static function Get()
     {
-        if (empty(self::$instance) === true) {
+     //   if (empty(self::$instance) === true) {
             self::$instance = new PaymentSession(func_get_args());
-        }
+      //  }
 
         return self::$instance;
     }

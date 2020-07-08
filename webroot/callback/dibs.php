@@ -78,8 +78,8 @@ try
 		$iEMailAccountID = -1;
 		if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
 		{
-			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
-			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
+			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
+			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
 			if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
 			{
 				$obj_TxnInfo->setAccountID(-1);
@@ -102,8 +102,8 @@ try
 		{
 			if ($iMobileAccountID == $iEMailAccountID || $iEMailAccountID < 0)
 			{
-				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) );
-				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
+				$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) );
+				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
 				$obj_TxnInfo->setAccountID($iAccountID);
 				$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
 			}
