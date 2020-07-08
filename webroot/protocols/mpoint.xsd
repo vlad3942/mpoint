@@ -1569,7 +1569,8 @@
    <xs:element type="xs:string" name="arrival-date" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:positiveInteger" name="departure-country" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:positiveInteger" name="arrival-country" minOccurs="0" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+   <xs:element type="xs:string" name="time-zone" minOccurs="0" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
 	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
 	<xs:attribute name="trip-count" use="optional" type="xs:positiveInteger"/>

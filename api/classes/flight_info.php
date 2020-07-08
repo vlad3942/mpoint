@@ -107,11 +107,18 @@ class FlightInfo {
      */
     private $_iArrivalCountryId;
 
+    /**
+     * Indicates the departure date time zone
+     *
+     * @var string
+     */
+    private $_sTimeZone;
+
 
     /**
 	 * Default Constructor
 	 */
-	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $departureCountryId, $arrivalCountryId, $Adata) {
+	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $departureCountryId, $arrivalCountryId, $Adata, $timeZone) {
 		$this->_iID = ( integer ) $id;
 		$this->_ServiceClass = $scid;
 		$this->_DepartureAirport = $daid;
@@ -126,6 +133,7 @@ class FlightInfo {
 		$this->_aServiceLevel = $serviceLevel;
         $this->_iDepartureCountryId = $departureCountryId;
         $this->_iArrivalCountryId = $arrivalCountryId;
+        $this->_sTimeZone = $timeZone;
 	}
 	
 	/**
@@ -246,8 +254,17 @@ class FlightInfo {
         return $this->_iArrivalCountryId;
     }
 
+    /**
+     * Returns the departure date time zone
+     * @return string
+     */
+    public function getTimeZone()
+    {
+        return $this->_sTimeZone;
+    }
+
 	public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid
+		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, time_zone
 					FROM log" . sSCHEMA_POSTFIX . ".flight_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
@@ -256,9 +273,9 @@ class FlightInfo {
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"], $RSA );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"], $RSA, $RS ["TIME_ZONE"] );
 			} else {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"],null );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"],null, $RS ["TIME_ZONE"] );
 			}
 		} else {
 			return null;
@@ -300,6 +317,7 @@ class FlightInfo {
 		$xml .= '<arrival-date>' . $this->getArrivalDate () . '</arrival-date>';
         $xml .= '<departure-country>' . $this->getDepartureCountry () . '</departure-country>';
         $xml .= '<arrival-country>' . $this->getArrivalCountry () . '</arrival-country>';
+        $xml .= '<time-zone>' . $this->getTimeZone () . '</time-zone>';
 		if ($this->getAdditionalData ()) {
 			$xml .= '<additional-data>';
 			foreach ($this->getAdditionalData () as $fAdditionalData) {
