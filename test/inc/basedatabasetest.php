@@ -75,7 +75,9 @@ abstract class BaseDatabaseTest extends TestCase
         $confDir = __DIR__. '/../../conf/';
 
         // Backup existing conf/global.php
-        @unlink($confDir. 'global.php.backup');
+        if(file_exists($confDir. 'global.php.backup')) {
+            @unlink($confDir . 'global.php.backup');
+        }
         copy($confDir. 'global.php', $confDir. 'global.php.backup');
         touch($confDir. 'global.php.backup', filemtime($confDir. 'global.php') );
 
