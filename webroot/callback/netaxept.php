@@ -67,8 +67,8 @@ try
 
 		if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
 		{
-			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), 2); }
-			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), 2); }
+			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), 2); }
+			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), 2); }
 
 			if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
 			{

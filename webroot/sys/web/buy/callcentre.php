@@ -108,8 +108,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 
 			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
-			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
+			$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
 			$obj_TxnInfo->setAccountID($iAccountID);
 						
 			// Update Transaction Log

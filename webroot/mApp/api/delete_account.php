@@ -73,7 +73,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     if (count($obj_DOM->{'delete-account'}[$i]->euaid) > 0)
                         $iAccountID = $obj_DOM->{'delete-account'}[$i]->euaid;
                     else
-                        $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'delete-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'delete-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'delete-account'}[$i]->{'client-info'}->email);
+                        $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'delete-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'delete-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'delete-account'}[$i]->{'client-info'}->email);
 
                     if($iAccountID != -1){
                     if (strlen((string)$obj_DOM->{'delete-account'}[$i]->password) > 1 && $obj_Validator->valPassword((string)$obj_DOM->{'delete-account'}[$i]->password) != 10) {

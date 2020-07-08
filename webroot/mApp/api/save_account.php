@@ -173,7 +173,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         //If auth sso is successful
                         if ($code == 10 || $code == 11) {
                             //check if account already exists
-                            $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}["profileid"]);
+                            $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}["profileid"]);
 
                             $iProfileID = -1;
                             //If data anonymization is enabled for the client
@@ -208,7 +208,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             //get the account id if new account was created
                             if ($iAccountID < 0) {
-                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
+                                $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $iProfileID);
                             }
 
 

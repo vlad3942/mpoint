@@ -354,7 +354,7 @@ if (count($aMsgCds) == 0)
 					
 				} else {
 					
-					$iAccountID = EndUserAccount::getAccountID(
+					$iAccountID = EndUserAccount::getAccountID_Static(
 							$_OBJ_DB, $obj_TxnInfo->getClientConfig(), 
 							$obj_TxnInfo->getClientConfig()->getCountryConfig(), 
 							$obj_TxnInfo->getCustomerRef(), 
