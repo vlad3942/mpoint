@@ -93,6 +93,12 @@ class ClientInfo
 	 * @var integer
 	 */
 	private $_fAppVersion = -1;
+
+    /**
+     * Hold customer profile type id
+     * @var integer
+     */
+    private $_iprofileTypeID;
 	
 //	sdk-version
 
@@ -100,7 +106,7 @@ class ClientInfo
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0)
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0, $profileTypeId=null)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -112,9 +118,9 @@ class ClientInfo
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
 		$this->_iProfileID = (integer) $profileid;
-		
 		$this->_fAppVersion = $appversion;
 		$this->_fSDKVersion = $sdkversion;
+        $this->_iprofileTypeID = $profileTypeId;
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -193,6 +199,12 @@ class ClientInfo
      * @return 	string
      */
     public function getAPPVersion() { return $this->_fAppVersion; }
+    /**
+     * Returns the customer profile type ID
+     *
+     * @return 	integer
+     */
+    public function getProfileTypeID() { return $this->_iprofileTypeID; }
     
 
 	public function toXML()
@@ -263,6 +275,9 @@ class ClientInfo
         if(empty($this->_sIP) === false){
             $xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
         }
+        if(empty($this->_iprofileTypeID) === false){
+            $xml .= '<customer_type>'. $this->getProfileTypeID() .'</customer_type>';
+        }
         return $xml;
     }
 	
@@ -277,6 +292,9 @@ class ClientInfo
 		case (3):
 			return self::_produceInfoFromXML($aArgs[0], $aArgs[1], $aArgs[2]);
 			break;
+        case (4):
+            return self::_produceInfoFromXML($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+            break;
 		default:
 			return null;
 			break;
@@ -314,16 +332,17 @@ class ClientInfo
 	 * @param 	SimpleXMLElement $oXML 	Reference to the XML document that the Client Information should be constructed from
 	 * @param 	CountryConfig $oCC 		Reference to Country Configuration
 	 * @param 	string $ip 				The IP address that the request originates from
+     * @param 	string $profileTypeId 	Unique ID for customer profile type
 	 * @return 	CustomerInfo
 	 */
-	private static function _produceInfoFromXML(SimpleXMLElement &$oXML, CountryConfig $oCC, $ip)
+	private static function _produceInfoFromXML(SimpleXMLElement &$oXML, CountryConfig $oCC, $ip, $profileTypeId = null)
 	{
 		if (empty($oXML["language"]) === true) { $oXML["language"] = sLANG; }
 		$httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
         $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
         $httpXForwardedForIp = $httpXForwardedForIps[0];
 
-        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"]);
+        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId);
 	}
 }
 ?>

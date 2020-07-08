@@ -77,5 +77,12 @@ UPDATE client.additionalproperty_tbl SET  value = '5QBM4GMSFPV8AHNK' where key =
 -- Card prefix range for master card --
 INSERT INTO "system".cardprefix_tbl (cardid, min, max, enabled) VALUES(7, 222100, 272099, true);
 
+--- If any client using the cybersource api then as per cybersource documentation compulsary businesstype is 2(airline) for airline transaction
+update client.account_tbl set businesstype = <businesstype> where clientid = <clientid>
+update client.account_tbl set businesstype = 2 where clientid = 10020;
+INSERT INTO "system".cardprefix_tbl (cardid, min, max, enabled) VALUES(7, 222100, 272099, true);
+
 -- CYBS DM for Fraud integration -- CEBU
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'DEFAULT_EMAIL_ID','null@cybersource.com','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=64;
+--Store Billing Addrs property
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, "type","scope" ) VALUES('IS_STORE_BILLING_ADDRS', 'true', <ClientID>, 'client', 0);

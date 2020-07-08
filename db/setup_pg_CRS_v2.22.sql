@@ -33,7 +33,7 @@ CREATE TABLE log.paymentroute_tbl
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE log.paymentroute_tbl OWNER TO postgres;
+ALTER TABLE log.paymentroute_tbl OWNER TO mpoint;
 
 
 
@@ -43,4 +43,10 @@ ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE varchar(50);
 -- Alter Log.flight_tbl to store additional flight data
 ALTER TABLE log.flight_tbl
   ADD COLUMN time_zone character varying(10);
+
+-- Add new transaction types
+INSERT INTO System.Type_Tbl (id, name) VALUES (1, 'Shopping Online');
+INSERT INTO System.Type_Tbl (id, name) VALUES (2, 'Shopping Offline');
+INSERT INTO System.Type_Tbl (id, name) VALUES (3, 'Self Service Online');
+INSERT INTO System.Type_Tbl (id, name) VALUES (4, 'Self Service Offline	');
 
