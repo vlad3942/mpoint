@@ -152,6 +152,19 @@ namespace mPoint\Core {
                 }
             }
 
+            $priorityArray = array();
+            foreach ($this->_aVariableUsageCount as $index => $count)
+            {
+                if(array_key_exists($count, $priorityArray))
+                {
+                    $this->_aVariableUsageCount[$index] = ++$priorityArray[$count];
+                }
+                else
+                {
+                    $this->_aVariableUsageCount[$index] = $priorityArray[$count] = $count * 100;
+                }
+            }
+
             //This will sort the array, so that high usage count rule will execute first
             arsort($this->_aVariableUsageCount);
             end($this->_aVariableUsageCount);
