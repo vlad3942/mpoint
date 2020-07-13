@@ -333,7 +333,7 @@ try
                                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
                                         //made hmac mandatory for dcc
-                                        else if (General::xml2bool($obj_Elem["dcc"]) === true  && $obj_TxnInfo->getInitializedCurrencyConfig()->getID() != $obj_TxnInfo->getCurrencyConfig()->getID())
+                                        else if (General::xml2bool($obj_Elem["dcc"]) === true)
                                         {
                                             if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
