@@ -86,11 +86,11 @@ class CardValidator extends ValidateBase
             } else {
                 $checksum = 0;
                 for ($i = (2 - (strlen($number) % 2)); $i <= $cardNumberLength; $i += 2) {
-                    $checksum += (int)($number{$i - 1});
+                    $checksum += (int)($number[$i - 1]);
                 }
 
                 for ($i = (strlen($number) % 2) + 1; $i < $cardNumberLength; $i += 2) {
-                    $digit = (int)($number{$i - 1}) * 2;
+                    $digit = (int)($number[$i - 1]) * 2;
                     if ($digit < 10) {
                         $checksum += $digit;
                     } else {

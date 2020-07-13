@@ -56,7 +56,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertEquals(2, count($aStates) );
@@ -117,7 +117,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
 
@@ -240,7 +240,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
@@ -312,7 +312,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
@@ -384,7 +384,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
