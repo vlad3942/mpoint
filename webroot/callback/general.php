@@ -192,6 +192,7 @@ try
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 
 	$iStateID = (integer) $obj_XML->callback->status["code"];
+	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
 
     if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE)
     {
@@ -330,6 +331,7 @@ try
         $obj_XML->callback->transaction["external-id"],
         (integer)$obj_XML->callback->transaction->card["type-id"],
         $iStateID,
+        $iSubCodeID,
         $fee,
         array(file_get_contents('php://input')),
         $sIssuingBank);

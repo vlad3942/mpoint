@@ -8421,3 +8421,9 @@ FOREIGN KEY (arrival_countryid) REFERENCES system.country_tbl (id);
 /* ================ End: Update log.flight table  ===================*/
 ALTER TABLE log.address_tbl add last_name varchar(200) null;
 ALTER TABLE log.address_tbl RENAME COLUMN name TO first_name;
+
+-- Alter Log.flight_tbl to store additional flight data
+ALTER TABLE log.flight_tbl
+  ADD COLUMN time_zone character varying(10);
+ALTER TABLE log.flight_tbl
+  DROP COLUMN additional_data_ref;

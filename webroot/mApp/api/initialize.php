@@ -300,6 +300,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 							$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
 							$bIsSingleSingOnPass = false;
+                            $profileTypeId = null;
                             if (empty($authenticationURL) === false && empty($authToken)=== false)
                             {
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
@@ -321,6 +322,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                     if ($code == 10) {
                                         $bIsSingleSingOnPass = true;
+                                        $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
                                     }
                                 }
                             }
@@ -450,6 +452,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         {
                                             $data['flights']['arrival_country'] = 0;
                                         }
+                                        $data['flights']['time_zone'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'time-zone'};
                                         $data['flights']['order_id'] = $order_id;
                                         $data['flights']['tag'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['tag'];
                                         $data['flights']['trip_count'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['trip-count'];
@@ -623,7 +626,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                 }
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
                                 $obj_PaymentMethodResponse = null;
                                 if($obj_RS instanceof RoutingService)
