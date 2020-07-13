@@ -358,7 +358,7 @@ try
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
                                                    $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
-                                                   $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
+                                                   $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
                                                }
@@ -710,6 +710,12 @@ try
 
                                                                         $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                                                         $obj_PSP->saveCard($obj_Elem);
+                                                                    }
+
+                                                                   $bStoreBillingAddrs = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_STORE_BILLING_ADDRS");
+
+                                                                    if(General::xml2bool($bStoreBillingAddrs) === true)
+                                                                    {
                                                                         if(empty($obj_Elem->address) === false)
                                                                         {
 
