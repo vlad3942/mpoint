@@ -195,7 +195,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-	
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 try
@@ -335,7 +335,11 @@ try
                                         //made hmac mandatory for dcc
                                         else if (General::xml2bool($obj_Elem["dcc"]) === true)
                                         {
-                                            if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+											$iForeignExchangeId = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'};
+											if(strlen($iForeignExchangeId) > 0 && empty($iForeignExchangeId) === false){
+												$iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange, $obj_TxnInfo->getPSPID());
+											}
+											if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo, $iForeignExchangeId) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
 
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
