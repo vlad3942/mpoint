@@ -114,6 +114,7 @@ class RoutingService extends General
         $body .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
         $body .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $body .= '<transaction>';
+        $body .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
         $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
         $body .= '<amount>';
         if(empty($this->_iAmount)===false)
