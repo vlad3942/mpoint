@@ -35,7 +35,7 @@ switch($_POST['x_response_code'])
 {
 case (1):	// Payment Approved
 	$fee = 0;
-	$obj_mPoint->completeTransaction(Constants::iANET_PSP, $_POST['x_trans_id'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE, $fee, $_POST);
+	$obj_mPoint->completeTransaction(Constants::iANET_PSP, $_POST['x_trans_id'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE, 0,$fee, $_POST);
 	// Account Top-Up
 	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{

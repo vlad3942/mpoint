@@ -23,7 +23,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200,$hmac=null,$email=null)
+	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200,$hmac=null,$email=null, $version="2.0")
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -40,7 +40,7 @@ class InitializeAPIValidationTest extends baseAPITest
         {
 		    $xml .= '<auth-token>'.$token.'</auth-token>';
         }
-		$xml .= '<client-info platform="iOS" version="1.9" language="da">';
+		$xml .= '<client-info platform="iOS" version="'.$version.'" language="da">';
 		$xml .= '<mobile country-id="100" operator-id="10000">288828610</mobile>';
 		if(isset($email) === true) {
 			$xml .= '<email>'.$email.'</email>';
@@ -578,6 +578,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->constHTTPClient();
 		$this->_httpClient->connect();
 
+		$xml = $this->getInitDoc(113, 1100, NULL,null, 200,null,null, "1.9");
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);

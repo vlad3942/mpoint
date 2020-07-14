@@ -191,11 +191,11 @@ class NetAxept extends Callback implements Captureable, Refundable
 						if ($this->getTxnInfo()->getAccountID() > 0) { $this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() ); }
 						//if ($this->getTxnInfo()->getEMail() != "") { $this->saveEMail($this->getTxnInfo()->$obj_TxnInfo->getMobile(), $this->getTxnInfo()->getEMail() ); }
 					}
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE,0 , $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 				else
 				{
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE,0, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 			}
 

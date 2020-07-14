@@ -450,12 +450,13 @@ class PayEx extends Callback
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 				$fee = 0;
-				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), $sid, $fee, array("result" => $obj_Std->CompleteResult) );
+				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), $sid,0 , $fee, array("result" => $obj_Std->CompleteResult) );
 			}
 		}
 		else
 		{
-			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_DECLINED_STATE, $fee, array("result" => $obj_Std->CompleteResult) );
+		    $fee = 0;
+			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_DECLINED_STATE, 0, $fee, array("result" => $obj_Std->CompleteResult) );
 		}
 		
 		return $obj_XML;

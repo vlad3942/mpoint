@@ -129,7 +129,7 @@ class RoutingService extends General
         }
         $body .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $body .= '</amount>';
-        if(count($this->_obj_FailedPaymentMethods) > 0 )
+        if(is_array($this->_obj_FailedPaymentMethods) && count($this->_obj_FailedPaymentMethods) > 0 )
         {
             $body .= '<retry_attempts>';
             foreach ($this->_obj_FailedPaymentMethods as $obj_FailedPaymentMethod)

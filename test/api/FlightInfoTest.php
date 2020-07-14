@@ -231,7 +231,7 @@ class FlightInfoTest extends baseAPITest
             }
             $xml .= '</airline-data>';
         }
-        $this->assertContains('<airline-data><flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number>1850</flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>200</departure-country><arrival-country>200</arrival-country><time-zone>+08:30</time-zone></flight-detail></airline-data>', $xml);
+        $this->assertStringContainsString('<airline-data><flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number>1850</flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>200</departure-country><arrival-country>200</arrival-country><time-zone>+08:30</time-zone></flight-detail></airline-data>', $xml);
     }
 
     public function testGetFlightDetailsNegetiveScenario()
@@ -291,12 +291,12 @@ class FlightInfoTest extends baseAPITest
             }
             $xml .= '</airline-data>';
         }
-        $this->assertContains('<airline-data><flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number>1850</flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>200</departure-country><arrival-country>200</arrival-country><time-zone>+08:30</time-zone><additional-data><param name="FCTxnID">243001</param></additional-data></flight-detail></airline-data>', $xml);
+        $this->assertStringContainsString('<airline-data><flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number>1850</flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>200</departure-country><arrival-country>200</arrival-country><time-zone>+08:30</time-zone><additional-data><param name="FCTxnID">243001</param></additional-data></flight-detail></airline-data>', $xml);
 
     }
 
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

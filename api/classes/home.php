@@ -933,9 +933,9 @@ class Home extends General
                 $xml .= '</address>';
             }
             $xml .= '</transaction>';
-            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer) $RS["COUNTRYID"]);
-            if ( ($obj_CountryConfig instanceof CountryConfig) === true) {
-                $iAccountID = EndUserAccount::getAccountID_Static($this->getDBConn(), $obj_ClientConfig, $obj_CountryConfig, $RS["CUSTOMER_REF"], $RS["MOBILE"], $RS["EMAIL"]);
+
+            if ( ($objCountryConf instanceof CountryConfig) === true) {
+                $iAccountID = $obj_TxnInfo->getAccountID();
 
                 $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
                              WHERE EC.accountid = $iAccountID AND EC.enabled = '1'

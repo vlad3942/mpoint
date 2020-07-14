@@ -61,7 +61,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
             }
             $xml .= '<retry_attempts>';
         }
-        $this->assertEquals(1, count($obj_FailedPaymentMethod));
+        $this->assertInstanceOf(FailedPaymentMethodConfig::class, $obj_FailedPaymentMethod);
         $this->assertStringContainsString('<retry_attempts><retry_attempt><card_id>8</card_id><transaction_state_id>5014</transaction_state_id><card_category_id>1</card_category_id></retry_attempt><retry_attempts>', $xml);
     }
 
@@ -96,7 +96,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
             }
             $xml .= '<failed_payment_methods>';
         }
-        $this->assertEquals(0, count($obj_FailedPaymentMethod));
+        $this->assertNull($obj_FailedPaymentMethod);
         $this->assertEmpty($obj_FailedPaymentMethods);
     }
 
@@ -131,7 +131,7 @@ class FailedPaymentMethodConfigTest extends baseAPITest
             }
             $xml .= '<failed_payment_methods>';
         }
-        $this->assertEquals(0, count($obj_FailedPaymentMethod));
+        $this->assertNull($obj_FailedPaymentMethod);
         $this->assertEmpty($obj_FailedPaymentMethods);
     }
 

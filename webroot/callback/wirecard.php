@@ -101,6 +101,7 @@ try
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,
+										0,
 									  $fee,
 									  array(file_get_contents('php://input')) );
 	

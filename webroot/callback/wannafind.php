@@ -79,7 +79,7 @@ try
 
 	//
 	$fee = 0;
-	$iStateID = $obj_mPoint->completeTransaction(Constants::iWANNAFIND_PSP, $_REQUEST['transact'], $_REQUEST['cardid'], ($_REQUEST['actioncode'] == 0 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $fee, $_REQUEST);
+	$iStateID = $obj_mPoint->completeTransaction(Constants::iWANNAFIND_PSP, $_REQUEST['transact'], $_REQUEST['cardid'], ($_REQUEST['actioncode'] == 0 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), 0, $fee, $_REQUEST);
 	// Account Top-Up
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{
