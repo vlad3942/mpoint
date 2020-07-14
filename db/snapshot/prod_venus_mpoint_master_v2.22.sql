@@ -9,7 +9,8 @@ ALTER TABLE log.address_tbl RENAME COLUMN name TO first_name;
 ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE varchar(50);
 
 CREATE INDEX CONCURRENTLY externalreference_transaction_idx ON Log.Externalreference_Tbl (txnid, externalid);
-CREATE INDEX address_tbl_referebceid_type_index ON log.address_tbl USING btree (reference_id, reference_type);
+CREATE INDEX concurrently address_tbl_referenceid_type_index ON log.address_tbl USING btree (reference_id, reference_type);
+
 
 
 ---- setup_pg_CRS_v2.22.sql
@@ -50,7 +51,4 @@ WITH (
 ALTER TABLE log.paymentroute_tbl OWNER TO mpoint;
 
 -------End of the master script ----------------
-
-
-Partitioning scripts
 

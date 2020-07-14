@@ -10,7 +10,6 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (22, 65);
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,65,'USD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,65,'PHP');
 
-TO BE DONE ADD OTHER CURRENCIES FOR 65
 
 INSERT INTO system.cardprefix_tbl (cardid, min, max, enabled) VALUES (36, 0, 0, true);
 
