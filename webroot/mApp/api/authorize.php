@@ -243,7 +243,11 @@ try
 							{
 								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
-									if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"]) > 0 || count($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) == 1 || count($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) == 1 )
+                                    $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
+                                    $isCardTokenExist = (isset($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
+                                    $isCardNetworkExist = (isset($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
+
+									if ($isStoredCardPayment === true || $isCardTokenExist === true || $isCardNetworkExist === true )
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
@@ -254,20 +258,19 @@ try
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
-                                        $isStoredCardPayment = (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0)?true:false;
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
 										$obj_CardValidator = new CardValidator($obj_card);
 										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
-										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && $isStoredCardPayment === true))
+										((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] !== Constants::iINVOICE && $isStoredCardPayment === true))
 										{
 											if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 										}
 										$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 										// Authorize Purchase using Stored Value Account
-										if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE &&
+										if ($isCardTokenExist === false && $isStoredCardPayment === true && (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] !== Constants::iINVOICE &&
 											$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 											{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 										
@@ -307,7 +310,7 @@ try
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1 and @walletid = '']");
 										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 										
-										if($isStoredCardPayment === false && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["network"]) == 0 && $obj_CardValidator->valCardNumber() !== 720)
+										if($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false && $obj_CardValidator->valCardNumber() !== 720)
 										{
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
@@ -404,8 +407,8 @@ try
 												$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}),(integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"] );
 											}
 											// Authentication is not required for payment methods that are sending a token or Invoice
-											elseif ( (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) || 
-											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE || $isStoredCardPayment === false) )
+											elseif ( ($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
+                                                (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1))
 											{
 												$code = 10;
 											}
@@ -625,7 +628,7 @@ try
 															$xml .= '<status code="99">Invoice payment not configured for client</status>';
 														}
 													} 
-													else if ($isStoredCardPayment === false && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["network"]) == 0)
+													else if ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false)
 													{
 																											
 														$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->addAttribute("pspid", $obj_Elem["pspid"]);
