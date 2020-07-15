@@ -58,7 +58,8 @@ try
 	$obj_mPoint = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 	
 	$iStateID = (integer) $obj_XML->callback->status["code"];
-	
+	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
+
 	if($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card) == 1)
 	{
 
@@ -96,11 +97,12 @@ try
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
 	
-	$fee = 0;	
+	$fee = 0;
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,
+		                              $iSubCodeID,
 									  $fee,
 									  array($HTTP_RAW_POST_DATA) );
 	
