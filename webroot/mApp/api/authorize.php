@@ -243,7 +243,7 @@ try
 							{
 								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
-									if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"] ) !== Constants::iNEW_CARD_PURCHASE_TYPE)
+									if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"]) > 0 || count($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) == 1 || count($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) == 1 )
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
@@ -254,22 +254,20 @@ try
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
-											
+                                        $isStoredCardPayment = (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0)?true:false;
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
 										$obj_CardValidator = new CardValidator($obj_card);
 										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
-										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE))
+										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && $isStoredCardPayment === true))
 										{
 											if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 										}
 										$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 										// Authorize Purchase using Stored Value Account
-										if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 &&
-											intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && 
-											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE) &&
+										if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE &&
 											$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 											{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 										
@@ -309,8 +307,7 @@ try
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1 and @walletid = '']");
 										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 										
-										if(((int)$obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
-											$obj_CardValidator->valCardNumber() !== 720)
+										if($isStoredCardPayment === false && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["network"]) == 0 && $obj_CardValidator->valCardNumber() !== 720)
 										{
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
@@ -408,7 +405,7 @@ try
 											}
 											// Authentication is not required for payment methods that are sending a token or Invoice
 											elseif ( (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) || 
-											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE) )
+											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE || $isStoredCardPayment === false) )
 											{
 												$code = 10;
 											}
@@ -420,6 +417,8 @@ try
 												if ($obj_TxnInfo->getMobile() > 0) { $obj_mPoint->saveMobile($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getMobile(), true); }
 												switch ($iTypeID)
 												{
+                                                // Not in use as of now hence commenting this code  (reference jira - CMP-4079)
+                                                /***********************
 												case (Constants::iPURCHASE_USING_EMONEY):	// Authorize Purchase using Stored Value Account
 												case (Constants::iPURCHASE_USING_POINTS):
 													$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );
@@ -453,7 +452,7 @@ try
 																//Initialise Callback to Client
 																$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_ACCEPTED_STATE);
 															}
-															catch (HTTPException $ignore) { /* Ignore */ }
+															catch (HTTPException $ignore) { // Ignore }
 															if ($iTypeID == Constants::iPURCHASE_USING_POINTS) { $xml .= '<status code="102">Payment Authorized using Loyalty Account (Points)</status>'; }
 															else { $xml .= '<status code="101">Payment Authorized using Pre-Paid Account (E-Money)</status>'; }
 														}
@@ -475,7 +474,7 @@ try
 														header("HTTP/1.1 400 Bad Request");
 													}
 													break;
-												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
+                                                    **********************************************/
 												default:
 
                                                     $card_psp_id = $obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
@@ -626,7 +625,7 @@ try
 															$xml .= '<status code="99">Invoice payment not configured for client</status>';
 														}
 													} 
-													else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"] ) == Constants::iNEW_CARD_PURCHASE_TYPE)
+													else if ($isStoredCardPayment === false && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["network"]) == 0)
 													{
 																											
 														$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->addAttribute("pspid", $obj_Elem["pspid"]);
