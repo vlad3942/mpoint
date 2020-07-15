@@ -244,8 +244,8 @@ try
 								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
                                     $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
-                                    $isCardTokenExist = (isset($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
-                                    $isCardNetworkExist = (isset($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
+                                    $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
+                                    $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
 
 									if ($isStoredCardPayment === true || $isCardTokenExist === true || $isCardNetworkExist === true )
 									{
