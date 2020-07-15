@@ -37,3 +37,5 @@ ALTER TABLE log.passenger_tbl alter column last_name type varchar(50);
 -- currency improvement --
 ALTER TABLE system.currency_tbl ADD COLUMN symbol VARCHAR(5);
 ALTER TABLE system.country_tbl DROP COLUMN symbol;
+
+ALTER TABLE system.currency_tbl ALTER COLUMN symbol TYPE varchar(7) USING symbol::varchar(7);
