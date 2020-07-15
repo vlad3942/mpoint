@@ -463,7 +463,8 @@ class Home extends General
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
 					CA.position AS client_position,
-                    SRLC.cvcmandatory
+                    SRLC.cvcmandatory,
+					CA.dccenabled
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -513,7 +514,7 @@ class Home extends General
             }
 
             // Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'">';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'" dcc = "'.General::bool2xml($RS["DCCENABLED"]).'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
