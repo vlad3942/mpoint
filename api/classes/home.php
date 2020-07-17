@@ -463,7 +463,8 @@ class Home extends General
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
 					CA.position AS client_position,
-                    SRLC.cvcmandatory
+                    SRLC.cvcmandatory,
+					CA.dccenabled
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -513,7 +514,7 @@ class Home extends General
             }
 
             // Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'">';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'" dcc = "'.General::bool2xml($RS["DCCENABLED"]).'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -808,9 +809,10 @@ class Home extends General
 	}
 
 
-    public function getTxnStatus($txnid,$mode)
+    public function getTxnStatus($txnid,$clientid,$mode)
     {
-        $xml = '';
+		try{
+		$xml = '';
 
         $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
                           FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
@@ -843,7 +845,8 @@ class Home extends General
 
             $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
             $objCountryConf = $obj_TxnInfo->getCountryConfig();
-            $objClientConf = $obj_TxnInfo->getClientConfig();
+			$objClientConf = $obj_TxnInfo->getClientConfig();
+			if($objClientConf->getID() === $clientid){
             $sTxnAdditionalDataXml = "";
             $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
             if($aTxnAdditionalData !== null)
@@ -945,7 +948,14 @@ class Home extends General
                     $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
                     $xml .= '</stored-card>';
                 }
-            }
+			}
+			}else{
+				trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE);
+			}
+		}
+		catch (mPointException $e){
+			return $xml;
+		}
         return $xml;
     }
 
