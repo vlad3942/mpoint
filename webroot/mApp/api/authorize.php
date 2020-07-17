@@ -908,15 +908,8 @@ try
                                                                             try {
 
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-                                                                                $propertyValue = false;
-                                                                                $pspPropertyValue = true;
-                                                                                if ($obj_Processor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER) {
-                                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
-                                                                                    //psp property will be false in config if 3ds is not applicable
-                                                                                    $pspPropertyValue = $obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
-                                                                                }
 
-                                                                                if ($propertyValue == 'true' && $pspPropertyValue != 'false') {
+                                                                                if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
                                                                                     $code = $obj_Processor->authenticate($requset);
                                                                                 } else {
