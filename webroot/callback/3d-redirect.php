@@ -99,6 +99,8 @@ require_once(sCLASS_PATH ."/cellulant.php");
 require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the CYBS ie. Global Payments component
 require_once(sCLASS_PATH ."/global-payments.php");
+require_once(sCLASS_PATH ."/cybersource.php");
+
 
 /**
  * Input XML format
