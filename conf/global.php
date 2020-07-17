@@ -1084,7 +1084,7 @@ $aHTTP_CONN_INFO["swish"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["swish"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize";
 $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
-$aHTTP_CONN_INFO["swish"]["paths"]["status"] = "/mpoint/apm/swish/status";
+$aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
 
 /**
