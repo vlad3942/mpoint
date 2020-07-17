@@ -86,10 +86,10 @@ class StaticRoute extends Card
      * @param   integer $pspType             Unique psp type id
      * @return 	object                       Instance of static Routes Configuration
      */
-    public static function produceConfig(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $cardId, $pspType)
+    public static function produceConfig(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $cardId, $pspType, $stateId)
     {
         $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, $pspType AS processortype, CA.pspid,
-                CA.stateid, CA.preferred, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid, CA.dccEnabled
+                $stateId AS stateid, CA.preferred, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid, CA.dccEnabled
 				FROM System" . sSCHEMA_POSTFIX . ".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid AND CA.clientid = ".$oTI->getClientConfig()->getID()."
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid
@@ -136,7 +136,7 @@ class StaticRoute extends Card
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aObj_Configurations = array();
         for ($i = 0; $i < count($paymentMethods); $i++) {
-            $aObj_Configurations[] = self::produceConfig($oDB, $oTxt, $oTI, $paymentMethods[$i]->id, $paymentMethods[$i]->psp_type);
+            $aObj_Configurations[] = self::produceConfig($oDB, $oTxt, $oTI, $paymentMethods[$i]->id, $paymentMethods[$i]->psp_type, $paymentMethods[$i]->state_id);
         }
         return $aObj_Configurations;
     }
