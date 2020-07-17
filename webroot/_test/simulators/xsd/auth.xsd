@@ -138,6 +138,7 @@
                                     <xs:all>
                                         <xs:element name="first-name" type="xs:string"   minOccurs="0" maxOccurs="1" />
                                         <xs:element name="last-name" type="xs:string"    minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="full-name" type="xs:string"    minOccurs="0" maxOccurs="1" />
                                         <xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
                                         <xs:element name="street" type="xs:string" minOccurs="0" maxOccurs="1" />
                                         <xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
@@ -255,6 +256,7 @@
 	<xs:attribute name="version" type="xs:string" use="optional" />
 	<xs:attribute name="language" type="xs:string" use="optional" />
 	<xs:attribute name="pushid" type="xs:string" use="optional"/>
+	<xs:attribute name="business-type" type="xs:int" use="optional"/>
 </xs:complexType>
 
 		<xs:complexType name="client-info">

@@ -124,7 +124,9 @@
 										<xs:complexType>
 											<xs:all>
 												<xs:element name="id" type="xs:string"	minOccurs="1" maxOccurs="1" />
-												<xs:element name="conversation-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
@@ -285,7 +287,9 @@
 										<xs:complexType>
 											<xs:all>
 												<xs:element name="id" type="xs:string"	minOccurs="1" maxOccurs="1" />
-												<xs:element name="conversation-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
@@ -1097,6 +1101,7 @@
 						</xs:documentation>
 					</xs:annotation>
 					<xs:all>
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="1"/>
 						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
 							<xs:annotation>
 								<xs:documentation>
@@ -1106,7 +1111,7 @@
 							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element type="xs:integer" name="transaction-id"
+									<xs:element name="transaction-id"
 												minOccurs="1" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>
@@ -1114,6 +1119,13 @@
 												configuration should be fetched
 											</xs:documentation>
 										</xs:annotation>
+										<xs:complexType>
+											<xs:simpleContent>
+												<xs:extension base="xs:integer">
+													<xs:attribute name="mode" default="0" use="optional"/>
+												</xs:extension>
+											</xs:simpleContent>
+										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
@@ -1559,7 +1571,8 @@
    <xs:element type="xs:string" name="arrival-date" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:positiveInteger" name="departure-country" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:positiveInteger" name="arrival-country" minOccurs="0" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+   <xs:element type="xs:string" name="time-zone" minOccurs="0" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
 	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
 	<xs:attribute name="trip-count" use="optional" type="xs:positiveInteger"/>

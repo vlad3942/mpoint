@@ -23,32 +23,37 @@ if (empty($clientid) === false) {
 } else {
     $sql .= " ) ";
 }
-$sql .= " and txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id desc";
+$sql .= " and txn.profileid IS NULL AND txn.created >= (now() - INTERVAL '" . $interval . "') order by txn.id asc";
 if (empty($limit) === false) {
     $sql .= " limit " . intval($limit);
 }
 
-$res = $_OBJ_DB->query($sql);
+try {
+    $res = $_OBJ_DB->query($sql);
 
-while ($RS = $_OBJ_DB->fetchName($res)) {
-    $cid = $RS["COUNTRYID"];
-    if ($RS["MOBILE"] > 0 && $RS["OPERATORID"] > 0) {
-        $cid = substr($RS["OPERATORID"], 0, 3);
-    }
+    while ($RS = $_OBJ_DB->fetchName($res)) {
+        $cid = $RS["COUNTRYID"];
+        if ($RS["MOBILE"] > 0 && $RS["OPERATORID"] > 0) {
+            $cid = substr($RS["OPERATORID"], 0, 3);
+        }
 
 // Call Save-Profile API for each transaction
-    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $RS["CLIENTID"], $RS['ACCOUNTID']);
-    $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
-    $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], "true");
-    if ($profileId > 0) {
-        try {
-            $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET EMAIL=NULL, mobile=NULL, operatorid=NULL, customer_ref=NULL, profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
-            $result = $_OBJ_DB->query($updateQuery);
-        } catch (Exception $e) {
-            trigger_error("Failed to update profile for txn id =" . $RS["ID"], E_USER_ERROR);
+        $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $RS["CLIENTID"], $RS['ACCOUNTID']);
+        $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
+        $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], "true");
+        if ($profileId > 0) {
+            try {
+                $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET EMAIL=NULL, mobile=NULL, operatorid=NULL, customer_ref=NULL, profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
+                $result = $_OBJ_DB->query($updateQuery);
+            } catch (Exception $e) {
+                trigger_error("Failed to update profile for txn id =" . $RS["ID"], E_USER_ERROR);
+            }
         }
+        //trigger_error("Updated txn id =" . $RS["ID"], E_USER_NOTICE);
     }
-    //trigger_error("Updated txn id =" . $RS["ID"], E_USER_NOTICE);
+    trigger_error("Total updated txn ids =" . $_OBJ_DB->countAffectedRows($res), E_USER_NOTICE);
+} catch (Exception $e) {
+    trigger_error("Error during cron run." , E_USER_ERROR);
 }
 header('HTTP/1.1 200 Ok');
 echo '<root><status>ok<status></root>';

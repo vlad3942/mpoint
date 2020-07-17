@@ -23,8 +23,12 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for Capture component (for use with auto-capture functionality)
 require_once(sCLASS_PATH ."/capture.php");
+// Require specific Business logic for the Refund component
+require_once(sCLASS_PATH ."/refund.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM FRAUD GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_fraud.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the CPM GATEWAY component
@@ -123,6 +127,18 @@ require_once(sCLASS_PATH ."/first-data.php");
 
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
+require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
+require_once sCLASS_PATH . '/fraud/fraud_response.php';
+require_once sCLASS_PATH . '/fraud/fraudResult.php';
+require_once(sCLASS_PATH .'/fraud/provider/ezy.php');
+require_once(sCLASS_PATH .'/fraud/provider/cyberSourceFsp.php');
+require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
+
+// Require Business logic for the Select Credit Card component
+require_once(sCLASS_PATH .'/credit_card.php');
+
+
 /**
  * Input XML format
  *
@@ -176,6 +192,7 @@ try
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 
 	$iStateID = (integer) $obj_XML->callback->status["code"];
+	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
 
     if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE)
     {
@@ -314,6 +331,7 @@ try
         $obj_XML->callback->transaction["external-id"],
         (integer)$obj_XML->callback->transaction->card["type-id"],
         $iStateID,
+        $iSubCodeID,
         $fee,
         array($HTTP_RAW_POST_DATA),
         $sIssuingBank);
@@ -430,8 +448,59 @@ try
 			"card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
     $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-	// Transaction uses Auto Capture and Authorization was accepted
-	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+
+        //Post-Auth-Fraud Check call
+        $fraudCheckResponse = new FraudResult();
+        if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE)) === false && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE  && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
+            || ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)))
+        {
+            $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+            if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
+            {
+                $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
+
+                $obj_mVaultPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mVaultPSPConfig);
+                $obj_CardElem = $obj_mVaultPSP->getCardDetails();
+
+                $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_CardElem,$_OBJ_DB,null, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,(int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY);
+                if($fraudCheckResponse->isFraudCheckAccepted() === false && $fraudCheckResponse->isFraudCheckAttempted() === true )
+                {
+                    $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_FRAUD_FAIL"));
+                    if($bisRollBack === true)
+                    {
+                        $passbookEntry = new PassbookEntry
+                        (
+                            NULL,
+                            $obj_TxnInfo->getAmount(),
+                            $obj_TxnInfo->getCurrencyConfig()->getID(),
+                            Constants::iVoidRequested
+                        );
+                        if ($txnPassbookObj instanceof TxnPassbook)
+                        {
+                            $txnPassbookObj->addEntry($passbookEntry);
+                            try
+                            {
+                                $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+                                $code = reset($codes);
+                            }
+                            catch (Exception $e)
+                            {
+                                $code = 99;
+                                trigger_error($e, E_USER_WARNING);
+                            }
+                            if ($code === 1000 || $code === 1001)
+                            {
+                                if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { array_push($aStateId,Constants::iPAYMENT_REFUNDED_STATE); }
+                                else { array_push($aStateId,Constants::iPAYMENT_CANCELLED_STATE); }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    // Transaction uses Auto Capture and Authorization was accepted
+	if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false))
 	{
 
 		$code=0;
@@ -525,6 +594,8 @@ try
         }
      }
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
+
+     if(($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)
      $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 
       //update captured amt when psp returns captured callback

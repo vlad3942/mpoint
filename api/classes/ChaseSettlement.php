@@ -348,7 +348,7 @@ class ChaseSettlement extends mPointSettlement
         }
         catch (Exception $e)
         {
-            throw new Exception("Failed to updated Chase Confirmation report", E_USER_ERROR);
+           throw new Exception("Failed to updated Chase Confirmation report With Error Code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
         }
     }
 }

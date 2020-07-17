@@ -46,7 +46,7 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the CPM GATEWAY component
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the CPM FRAUD GATEWAY component
-require_once(sINTERFACE_PATH ."/cpm_fraud_gateway.php");
+require_once(sINTERFACE_PATH ."/cpm_fraud.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
@@ -155,11 +155,16 @@ require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
-require_once(sCLASS_PATH ."/ezy.php");
+require_once(sCLASS_PATH ."/fraud/provider/ezy.php");
+require_once(sCLASS_PATH ."/fraud/provider/cyberSourceFsp.php");
+require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
+require_once sCLASS_PATH . '/fraud/fraud_response.php';
+require_once sCLASS_PATH . '/fraud/fraudResult.php';
+require_once(sCLASS_PATH . '/payment_route.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -275,10 +280,20 @@ try
 
 										$aRoutes = array();
                                         $iPrimaryRoute = 0 ;
-										$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
-                                        if (strtolower($drService) == 'true')
-                                        {
-                                            $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                        if($obj_card->getPaymentType() === 1) {
+                                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+                                            if (strtolower($drService) == 'true') {
+                                                $iPrimaryRoute = $obj_TxnInfo->getPSPID();
+                                                if($iPrimaryRoute <=0)
+                                                {
+                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
+                                                    if($obj_RS instanceof RoutingService)
+                                                    {
+                                                        $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                        $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         $obj_CardXML = '';
@@ -300,6 +315,29 @@ try
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
 
+                                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                                        $ips = array_map('trim', $ips);
+                                        $ip = $ips[0];
+                                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
+                                            CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+                                            $ip);
+
+                                        $obj_TransacionCountryConfig = null;
+                                        if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
+                                        {
+                                            $obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]);
+                                        }
+                                        // Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
+                                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2 && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'})  === true)
+                                        {
+                                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+                                        }
+                                        //made hmac mandatory for dcc
+                                        else if (General::xml2bool($obj_Elem["dcc"]) === true  && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
+                                        {
+                                            if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+                                        }
+
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
                                             $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
                                             if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
@@ -312,16 +350,15 @@ try
                                         }
                                        else
                                        {
-                                           if (filter_var( $obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true &&
-                                               round((float)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'} * $obj_TxnInfo->getAmount()) === (float)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount &&
-                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID()  &&
-                                               empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false )
+                                           if (General::xml2bool($obj_Elem["dcc"]) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false &&
+                                               (int)$obj_TxnInfo->getAmount() === (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} &&
+                                               ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
                                                {
                                                    $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
                                                    $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
-                                                   $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
+                                                   $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
                                                }
@@ -335,8 +372,8 @@ try
                                         }
 
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country
-                                        if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0){
-                                        	$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"])) ;
+                                        if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0)
+                                        {
                                         	if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'authorize-payment'}[$i]["client-id"])) != 10 ){
                                         		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
                                         	}
@@ -349,21 +386,7 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
-                                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                                        $ips = array_map('trim', $ips);
-                                        $ip = $ips[0];
-										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
-                                        CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-                                        $ip);
 
-										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if ((strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2) ||
-                                            (filter_var($obj_Elem["dcc"], FILTER_VALIDATE_BOOLEAN) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) === false && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) != $obj_TxnInfo->getCurrencyConfig()->getID()))
-                                            //made hmac mandatory for dcc
-										{
-
-											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
-										} 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
@@ -643,9 +666,10 @@ try
 														    if($obj_Elem["pspid"] > 0) {
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
 																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
-																if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
+                                                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                                                                if($obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_APM && $obj_PSPConfig->getProcessorType() !== Constants::iPROCESSOR_TYPE_GATEWAY)
 																{
-																	$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 																	$passbookEntry = new PassbookEntry
 																	(
 																		NULL,
@@ -660,7 +684,7 @@ try
                                                                         NULL,
                                                                         NULL,
                                                                         $obj_TxnInfo->getClientConfig()->getID(),
-                                                                        $obj_TxnInfo->getConversationRate()
+                                                                        $obj_TxnInfo->getInitializedAmount()
 																	);
 																	if ($txnPassbookObj instanceof TxnPassbook)
 																	{
@@ -668,17 +692,58 @@ try
 																		$txnPassbookObj->performPendingOperations();
 																	}
 																}
+                                                                //Refresh TxnInfo obj In case of Wallet payment to get wallet-id
+                                                                if($obj_card->getPaymentType() === 3)
+                                                                $obj_TxnInfo =  TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
 
-                                                                $fraudCheckCode = 0;
-                                                                $iFraudCheckProcessor = intval($obj_mCard->getFraudCheckRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
-                                                                if(empty($iFraudCheckProcessor) === false)
+                                                                $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+                                                                if ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)
                                                                 {
-                                                                    $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
-                                                                    $obj_FraudCheckPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iFraudCheckProcessor), $aHTTP_CONN_INFO);
-                                                                    $fraudCheckCode = $obj_FraudCheckPSP->fraudCheck($obj_Elem);
-                                                                }
-                                                                if ($fraudCheckCode == Constants::iPAYMENT_FRAUD_CHECK_COMPLETE_STATE || $fraudCheckCode == 0)
-                                                                {
+                                                                    if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
+                                                                    {
+                                                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
+
+                                                                        $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                                                                        $obj_PSP->saveCard($obj_Elem);
+                                                                    }
+
+                                                                   $bStoreBillingAddrs = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_STORE_BILLING_ADDRS");
+
+                                                                    if(General::xml2bool($bStoreBillingAddrs) === true)
+                                                                    {
+                                                                        if(empty($obj_Elem->address) === false)
+                                                                        {
+
+                                                                            $aBillingAddr['billing_address'][0]['street'] = (string) $obj_Elem->{'address'}->street;
+                                                                            $aBillingAddr['billing_address'][0]['street2'] = (string) $obj_Elem->{'address'}->street2;
+                                                                            $aBillingAddr['billing_address'][0]['city'] = (string) $obj_Elem->{'address'}->city;
+                                                                            $aBillingAddr['billing_address'][0]['state'] = (string) $obj_Elem->{'address'}->state;
+                                                                            $aBillingAddr['billing_address'][0]['zip'] = (string) $obj_Elem->{'address'}->{'postal-code'};
+                                                                            $aBillingAddr['billing_address'][0]['country'] = (string) $obj_Elem->{'address'}['country-id'];
+                                                                            $aBillingAddr['billing_address'][0]['reference_type'] = "transaction";
+                                                                            $aBillingAddr['billing_address'][0]['reference_id'] = $obj_TxnInfo->getID();
+                                                                            if (count($obj_Elem->address->{'full-name'}) == 1)
+                                                                            {
+                                                                                $pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+                                                                                if ($pos > 0)
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = (string) trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $aBillingAddr['billing_address'][0]['first_name'] = (string) trim($obj_Elem->address->{'full-name'});
+                                                                                    $aBillingAddr['billing_address'][0]['last_name'] = "";
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $aBillingAddr['billing_address'][0]['first_name'] = $obj_Elem->address->{'first-name'};
+                                                                                $aBillingAddr['billing_address'][0]['last_name'] = $obj_Elem->address->{'last-name'} ;
+                                                                            }
+                                                                            $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $aBillingAddr['billing_address']);
+                                                                        }
+                                                                    }
                                                                     switch (intval($obj_Elem["pspid"])) {
                                                                         case (Constants::iSTRIPE_PSP):
                                                                             $obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array());
@@ -870,26 +935,12 @@ try
                                                                                     $xml .= $code;
                                                                                 } else if ($code == "20102" && strtolower($drService) == 'true') {
                                                                                     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via secondary route
-                                                                                    $sRoutes = TxnInfo::_produceAdditionalData($_OBJ_DB, $obj_TxnInfo->getID());
-                                                                                    $aRoutes = json_decode($sRoutes['psps']);
-
-                                                                                    $iSecondRoute = 0 ;
-                                                                                    $iThirdRoute = 0 ;
-                                                                                    if (count ( $aRoutes ) > 0) {
-                                                                                        foreach ( $aRoutes as $oRoute ) {
-                                                                                            if ($oRoute->preference == 2) {
-                                                                                                $iSecondRoute = $oRoute->id ;
-                                                                                            }
-                                                                                            elseif($oRoute->preference == 3){
-                                                                                                $iThirdRoute = $oRoute->id ;
-                                                                                            }
-                                                                                        }
-                                                                                    }
-
-                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iSecondRoute, $aHTTP_CONN_INFO, $obj_Elem);
-
+                                                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                                                    $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
+                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                                                                                     if($code == "20102"){
-                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iThirdRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                                                                                        $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
+                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                                                                                     }else{
                                                                                         $xml .= $code;
                                                                                     }
@@ -903,6 +954,7 @@ try
 
                                                                                     $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                                                                                 }
+
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
@@ -914,10 +966,17 @@ try
 
                                                                     }
                                                                 }
-                                                                else {
-                                                                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-                                                                    $obj_Processor->getPSPInfo()->initCallback($obj_Processor->getPSPConfig(), $obj_TxnInfo, Constants::iPAYMENT_FRAUD_CHECK_FAILURE_STATE, "Fraud Check Failed.", intval($obj_Elem->type["id"]));
-                                                                    $xml .= '<status code="2010">Payment Declined Due to Failed Fraud Check.</status>';
+                                                                else
+                                                                {
+                                                                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_Elem["pspid"], $aHTTP_CONN_INFO);
+                                                                    $aCallbackArgs = array("amount" => $obj_TxnInfo->getAmount(),
+                                                                        "card-id" =>  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]);
+                                                                    if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+
+
+                                                                    $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');
+                                                                    $obj_Processor->getPSPInfo()->updateSessionState(Constants::iPAYMENT_REJECTED_STATE,$obj_Processor->getPSPInfo()->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                                                                    $xml .= '<status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
                                                                 }
                                                             }
 

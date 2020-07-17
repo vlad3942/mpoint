@@ -183,7 +183,7 @@ class CreditCard extends EndUserAccount
 					AND PP.amount IN (-1, ' . (int)$amount .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
-					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
+					AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.')';
 					if($typeid !== null)
 					{
 					    $sql .= ' AND C.ID =' . $typeid ;
@@ -239,21 +239,21 @@ class CreditCard extends EndUserAccount
     * @return 	string
    */
 
-    public function getFraudCheckRoute($iCardID)
+    public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
-        $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
+        $sql = "SELECT DISTINCT PSP.id AS pspid,CA.POSITION FROM ". $this->_constDataSourceQuery() .
             "WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
 					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
 					AND C.enabled = '1' 
-					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
-					AND CA.cardid = ".$iCardID."
-					AND CA.psp_type = ". Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY;
+					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS null ) AND CA.enabled = '1'
+					AND (CA.cardid = ".$iCardID." OR CA.cardid = 0)
+					AND CA.psp_type = ". $iFraudType." order by CA.POSITION" ;
 
         //echo $sql ."\n";
-        $RS = $this->getDBConn()->getName($sql);
-        return $RS['PSPID'];
+        $res = $this->getDBConn()->query($sql);
+        return $res;
     }
 
     private function _constDataSourceQuery()
@@ -335,7 +335,7 @@ class CreditCard extends EndUserAccount
         return $xml;
     }
 
-    private function getCardsQueryForDR($amount, $typeid = null, $iRoute = null)
+    private function getCardsQueryForDR($amount, $typeid = null, $iRoute = null, $walletid = null)
     {
         $sql = 'SELECT DISTINCT ON (C.id, CA.walletid) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
@@ -347,7 +347,7 @@ class CreditCard extends EndUserAccount
                 AND PP.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
                 AND PP.amount IN (-1, ' . (int)$amount .")
                 AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
-                AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY. ')';
+                AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.')';
 
         if(empty($iRoute) === false){
             $sql .= ' AND CA.pspid =' . $iRoute ;
@@ -361,8 +361,24 @@ class CreditCard extends EndUserAccount
             $sql .= ' AND C.ID =' . $typeid ;
         }
 
+        if($walletid !== null)
+        {
+            $sql .= ' AND coalesce(walletid,-1) = '. $walletid;
+        }
+
         $res = $this->getDBConn()->getAllNames($sql);
         return $res;
     }
+
+    public function getCardsObjectForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null, $walletid = null)
+    {
+        $res = $this->getCardsQueryForDR($amount, $typeid, $iRoute, $walletid);
+
+        if(is_array($res) === false){
+            $res = $this->getCardsQueryForDR($amount, $typeid, null, $walletid);
+        }
+        return isset($res[0])?$res[0]:FALSE;
+    }
+
 }
 ?>
