@@ -936,6 +936,8 @@ $aHTTP_CONN_INFO["global-payments"]["paths"]["capture"] = "/mpoint/global-paymen
 $aHTTP_CONN_INFO["global-payments"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["authenticate"] = "/mpoint/authenticate";
+
 
 /**
  * Connection info for connecting to EZY fraud gateway
@@ -1059,6 +1061,8 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["capture"] = "/mpoint/global-payments/c
 $aHTTP_CONN_INFO["cybersource"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["authenticate"] = "/mpoint/authenticate";
+
 
 
 
