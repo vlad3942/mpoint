@@ -44,12 +44,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
         $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT );
         $aTransactionIDs = $obj_DOM->{'get-transaction-status'}->transactions->{'transaction-id'};
+        $iClientId = (integer)$obj_DOM->{'get-transaction-status'}->{"client-id"};
         for ($i=0; $i<count($aTransactionIDs); $i++)
         {
-            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$aTransactionIDs[$i]['mode']);
+            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,(int)$aTransactionIDs[$i]['mode']);
         }
-
-}
+    }
     elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
     {
         header("HTTP/1.1 415 Unsupported Media Type");

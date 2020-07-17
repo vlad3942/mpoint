@@ -809,9 +809,10 @@ class Home extends General
 	}
 
 
-    public function getTxnStatus($txnid,$mode)
+    public function getTxnStatus($txnid,$clientid,$mode)
     {
-        $xml = '';
+		try{
+		$xml = '';
 
         $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
                           FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
@@ -844,7 +845,8 @@ class Home extends General
 
             $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
             $objCountryConf = $obj_TxnInfo->getCountryConfig();
-            $objClientConf = $obj_TxnInfo->getClientConfig();
+			$objClientConf = $obj_TxnInfo->getClientConfig();
+			if($objClientConf->getID() === $clientid){
             $sTxnAdditionalDataXml = "";
             $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
             if($aTxnAdditionalData !== null)
@@ -946,7 +948,14 @@ class Home extends General
                     $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
                     $xml .= '</stored-card>';
                 }
-            }
+			}
+			}else{
+				trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE);
+			}
+		}
+		catch (mPointException $e){
+			return $xml;
+		}
         return $xml;
     }
 
