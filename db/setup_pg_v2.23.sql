@@ -6,6 +6,9 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 ------------------------- Card prefix range for VISA/Dankort -------------------------------------
 UPDATE system.cardprefix_tbl SET cardid=37 WHERE cardid=2 AND min=5019 AND max=5019;
 
+------------------------- Add new state id into system.cardstate_tbl -------------------------------------
+
+INSERT INTO System.CardState_Tbl (id, name) VALUES (6, 'Disable Show');
 ------Worldpay-Modirum-----
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('3DVERIFICATION', 'mpi', true, <merchant-id>, 'merchant', 2);
 ----------------------
