@@ -657,10 +657,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $version =  (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['sdk-version'];
                             }
-							else
-                            {
-                                $version =  (int)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}['version'];
-                            }
 
 							if($version >= 2 )
                             {
