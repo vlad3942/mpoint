@@ -44,7 +44,7 @@ class WireCard extends CPMPSP
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null, $issuingbank=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null)
 	{
 		if (empty($txnid) == true) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
@@ -69,6 +69,9 @@ class WireCard extends CPMPSP
                 $iIsCompleteTransactionStateLogged =$this->getTxnInfo()->hasEitherState($this->getDBConn(),$sid);
                 if($iIsCompleteTransactionStateLogged != 1) {
                     $this->newMessage($this->getTxnInfo()->getID(), $sid, var_export($debug, true));
+                    if($sub_code_id != 0) {
+                        $this->newMessage ( $this->getTxnInfo()->getID (), $sub_code_id, var_export ( $debug, true ) );
+                    }
                 }
 			}
 		}

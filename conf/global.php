@@ -175,6 +175,7 @@ $aHTTP_CONN_INFO["worldpay"]["path"] =""; // Set by calling class
 $aHTTP_CONN_INFO["worldpay"]["method"] =  $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/mpoint/worldpay/initialize";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["authenticate"] = "/mpoint/authenticate";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/mpoint/worldpay/authorize-payment";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["capture"] = "/mpoint/worldpay/capture";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["status"] = "/mpoint/worldpay/status";
