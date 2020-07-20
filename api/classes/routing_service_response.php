@@ -88,7 +88,7 @@ class RoutingServiceResponse
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->id = (int)$aObj_XML->payment_methods->payment_method[$i]->id;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->psp_type = (int)$aObj_XML->payment_methods->payment_method[$i]->psp_type;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->preference = (int)$aObj_XML->payment_methods->payment_method[$i]->preference;
-
+                    $aObjPaymentMethod->payment_methods->payment_method[$i]->state_id = (int)$aObj_XML->payment_methods->payment_method[$i]->state_id;
                 }
                 return new RoutingServiceResponse($aObjPaymentMethod);
             }
