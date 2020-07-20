@@ -625,6 +625,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 if(empty($sessionId)===false){
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                 }
+                                // Call mProfile to get customer type
+                                if (empty($authenticationURL) === false && empty($authToken)=== false && empty($profileTypeId) === true){
+                                    $obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"]);
+                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+                                    $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+                                    if ($code == 10) {
+                                        $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
+                                    }
+                                }
+
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
                                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod);

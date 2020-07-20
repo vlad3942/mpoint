@@ -131,7 +131,8 @@ try
 
 	//
 	$fee = 0;
-	$iStateID = $obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POST['cardid'], ($_POST['transact'] > 0 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $fee, $_POST);
+    $sub_code = 0;
+	$iStateID = $obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POST['cardid'], ($_POST['transact'] > 0 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $sub_code, $fee, $_POST);
 
 	// Reload TxnInfo object after it has been modified
 	$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);

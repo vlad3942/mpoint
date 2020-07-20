@@ -70,9 +70,11 @@ class Stripe_PSP extends Callback
 								WHERE id = ". $this->getTxnInfo()->getID();
 //					echo $sql ."\n";
 				$this->getDBConn()->query($sql);
+                $sub_code = 0;
 				$iStateID = $this->completeTransaction(Constants::iSTRIPE_PSP, 
 													   $charge->id,
 													   $cardID, Constants::iPAYMENT_ACCEPTED_STATE,
+													   $sub_code,
 													   $this->getTxnInfo()->getFee(),
 													   array('0' => var_export($charge, true) ) );
 				if ($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt)
