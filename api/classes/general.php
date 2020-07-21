@@ -1315,7 +1315,7 @@ class General
 
     public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
     {
-        $sql = "SELECT max(attempt) FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+        $sql = "SELECT max(attempt) as attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
 					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
 					AND countryid = '.$countryConfig->getID()."
