@@ -1315,12 +1315,11 @@ class General
 
     public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
     {
-        $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+        $sql = "SELECT max(attempt) FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
 					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
 					AND countryid = '.$countryConfig->getID()."
-					AND created > NOW() - interval '15 days' 
-					ORDER BY created DESC LIMIT 1";
+					AND created > NOW() - interval '15 days' ";
 //			echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
