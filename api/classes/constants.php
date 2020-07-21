@@ -1630,6 +1630,14 @@ abstract class Constants
     const iSECOND_ALTERNATE_ROUTE = 2;
     const iTHIRD_ALTERNATE_ROUTE = 3;
 
+    /*
+	 * Transaction types in mPoint
+	 * */
+    const iTRANSACTION_TYPE_SHOPPING_ONLINE = 1;
+    const iTRANSACTION_TYPE_SHOPPING_OFFLINE = 2;
+    const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
+    const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
+
 }
 
 abstract class AutoCaptureType
