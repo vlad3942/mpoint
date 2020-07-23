@@ -157,8 +157,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							// Update Transaction State
 							$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
-	
-							$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
+                            $aTransactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE, Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE);
+
+                            $iTransactionTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
+                            if(in_array($iTransactionTypeId, $aTransactionTypes)){
+                                $data['typeid'] = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
+                            }else{
+                                $data['typeid'] = Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE;
+                            }
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['converted-amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;

@@ -86,40 +86,51 @@ class StaticRoute extends Card
      * @param   integer $pspType             Unique psp type id
      * @return 	object                       Instance of static Routes Configuration
      */
-    public static function produceConfig(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $cardId, $pspType, $stateId)
+    public static function produceConfig(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aPaymentMethodsConfig)
     {
-        $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, $pspType AS processortype, CA.pspid,
-                $stateId AS stateid, CA.preferred, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid, CA.dccEnabled
+        $aObj_Configurations = array();
+        $cardIds = array_keys($aPaymentMethodsConfig);
+
+        $sql = "SELECT DISTINCT ON (C.id) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, CA.psp_type AS processortype, CA.pspid,
+                CA.stateid, CA.preferred, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid, CA.dccEnabled
 				FROM System" . sSCHEMA_POSTFIX . ".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid AND CA.clientid = ".$oTI->getClientConfig()->getID()."
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.currencyid = " . $oTI->getCurrencyConfig()->getID() . " AND PP.amount = -1 AND PP.enabled = '1'
 				LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
-				WHERE C.id = " . $cardId . "
-				AND C.enabled = '1'
-				ORDER BY C.name ASC";
+				WHERE C.id IN (" . implode(',', $cardIds) . ")
+				AND CA.psp_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.")
+                AND CA.walletid IS NULL
+				AND C.enabled = '1'";
 
-        $aRS = $oDB->getName($sql);
+        $result = $oDB->getAllNames($sql);
 
-        if (is_array($aRS) === true && count($aRS) > 0)
+        if (is_array($result) === true && count($result) > 0)
         {
-            // Transaction instantiated via SMS or "Card" is NOT Premium SMS
-            if ($oTI->getGoMobileID() > -1 || $aRS['ID'] != Constants::iPREMIUM_SMS) {
+            foreach ($result as $aRS) {
+                // Set processor type and stateid given by CRS into resultset
+                $aCardConfig = $aPaymentMethodsConfig[$aRS['ID']];
+                $aRS['PROCESSORTYPE'] = $aCardConfig['psp_type'];
+                $aRS['STATEID'] = $aCardConfig['state_id'];
 
-                if ($aRS['ID'] == 11) {
-                    if (($oTI->getClientConfig()->getStoreCard() & 1) == 1) {
-                        $aRS['NAME'] = $oTxt->_("Stored Cards");
-                    } else {
-                        $aRS['NAME'] = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $oTxt->_("My Account"));
+                // Transaction instantiated via SMS or "Card" is NOT Premium SMS
+                if ($oTI->getGoMobileID() > -1 || $aRS['ID'] != Constants::iPREMIUM_SMS) {
+
+                    if ($aRS['ID'] == 11) {
+                        if (($oTI->getClientConfig()->getStoreCard() & 1) == 1) {
+                            $aRS['NAME'] = $oTxt->_("Stored Cards");
+                        } else {
+                            $aRS['NAME'] = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $oTxt->_("My Account"));
+                        }
                     }
+
+                    $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
+
+                    $aObj_Configurations[] = new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
                 }
-
-                $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
-
-                return new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
             }
         }
-        return null;
+        return $aObj_Configurations;
     }
 
     /**
@@ -134,11 +145,14 @@ class StaticRoute extends Card
     public static function produceConfigurations(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aObj_PaymentMethods)
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
-        $aObj_Configurations = array();
+        $aPaymentMethodsConfig = array();
         for ($i = 0; $i < count($paymentMethods); $i++) {
-            $aObj_Configurations[] = self::produceConfig($oDB, $oTxt, $oTI, $paymentMethods[$i]->id, $paymentMethods[$i]->psp_type, $paymentMethods[$i]->state_id);
+            $aPaymentMethodsConfig[$paymentMethods[$i]->id] = array(
+                'psp_type' => $paymentMethods[$i]->psp_type,
+                'state_id' => $paymentMethods[$i]->state_id
+            );
         }
-        return $aObj_Configurations;
+        return self::produceConfig($oDB, $oTxt, $oTI, $aPaymentMethodsConfig);
     }
 
 }
