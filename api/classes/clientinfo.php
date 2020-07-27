@@ -100,13 +100,19 @@ class ClientInfo
      */
     private $_iprofileTypeID;
 	
+	/**
+     * The locale used by the Client
+     * @var string
+     */
+    private $_sLocale;
+	
 //	sdk-version
 
 	/**
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0, $profileTypeId=null)
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0, $profileTypeId=null, $locale=null)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -120,7 +126,8 @@ class ClientInfo
 		$this->_iProfileID = (integer) $profileid;
 		$this->_fAppVersion = $appversion;
 		$this->_fSDKVersion = $sdkversion;
-        $this->_iprofileTypeID = $profileTypeId;
+		$this->_iprofileTypeID = $profileTypeId;
+		$this->_sLocale = trim($locale);		
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -204,7 +211,13 @@ class ClientInfo
      *
      * @return 	integer
      */
-    public function getProfileTypeID() { return $this->_iprofileTypeID; }
+	public function getProfileTypeID() { return $this->_iprofileTypeID; }
+	/**
+	 * Returns the locale used by the Client
+	 * 
+	 * @var string
+	 */
+	public function getLocale() { return $this->_sLocale; }
     
 
 	public function toXML()
@@ -222,13 +235,16 @@ class ClientInfo
             $xml .= ' app-version="'.$this->getAPPVersion().'"';
         }
         
+        if(empty($this->_sLocale) === false){
+            $xml .= ' locale="'.$this->getLocale().'"';
+        }
+        
 		$xml .= '>';
         $xml .= '<mobile country-id="'. $this->_obj_CountryConfig->getID() .'" country-code="'. $this->_obj_CountryConfig->getCountryCode() .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
 		$xml .= '<device-id>'. htmlspecialchars($this->_sDeviceID, ENT_NOQUOTES) .'</device-id>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '</client-info>';
-		
 		return $xml;
 	}
 
@@ -249,6 +265,10 @@ class ClientInfo
         if(empty($this->_iAppID) == false)
         {
             $xml .= '<app_id>'.$this->_iAppID.'</app_id>';
+		}
+		
+        if(empty($this->_sLocale) === false){
+            $xml .= '<locale>'.$this->_iAppID.'</locale>';
         }
         if(empty($this->_sMobile) === false)
         {
@@ -342,7 +362,7 @@ class ClientInfo
         $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
         $httpXForwardedForIp = $httpXForwardedForIps[0];
 
-        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId);
+        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId, $oXML["locale"]);
 	}
 }
 ?>

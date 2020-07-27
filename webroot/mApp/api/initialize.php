@@ -342,6 +342,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $additionalTxnData[$additionalTxnDataIndex]['name'] = "booking-ref";
                                 $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction['booking-ref'];
                                 $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
+							}
+							if(isset($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["locale"]))
+                            {
+                                $additionalTxnDataIndex++;
+                                $additionalTxnData[$additionalTxnDataIndex]['name'] = "locale";
+                                $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["locale"];
+                                $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
                             }
                             if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
