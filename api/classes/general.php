@@ -587,15 +587,12 @@ class General
             $txnPassbookObj->performPendingOperations();
         }
 
-
         $txnPassbookObj->updateInProgressOperations($obj_TxnInfo->getAmount(), Constants::iPAYMENT_ACCEPTED_STATE, Constants::sPassbookStatusError);
 
         $this->newMessage($iAssociatedTxnId, Constants::iINPUT_VALID_STATE, "Payment retried using dynamic routing ");
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_REJECTED_STATE, "Payment Rejected");
 
-
-
-        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
 		if ($code == "100") {
@@ -605,7 +602,9 @@ class General
 		} else if (strpos ( $code, '2005' ) !== false) {
 			header ( "HTTP/1.1 303" );
 			$xml .= $code;
-		} else {
+		} else if($code == "20103" || $code == "504") {
+            $xml .= $code;
+        }else {
 			$xml .= '<status code="92">Authorization failed, ' . $obj_PSPConfig->getName () . ' returned error: ' . $code . '</status>';
 		}
 	

@@ -580,11 +580,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			
 			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
 			
-			if ($code == 200 || $code == 303 )
+			if ($code == 200 || $code == 303 || $code == 504)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$sql = "";
+                $subCode = 0;
 				
 				if(count($obj_XML->transaction) > 0)
 				{
@@ -594,15 +595,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
 					}
 				 $code = $obj_XML->transaction->status["code"];
+                 $subCode = $obj_XML->transaction->status["sub-code"];
 				} 
-				else { $code = $obj_XML->status["code"]; }
+				else {
+				    $code = $obj_XML->status["code"];
+                    $subCode = $obj_XML->status["sub-code"];
+				}
 				
 				$approvalCode = $obj_XML->{'approval-code'};
 				
 				if($approvalCode != ''){
 					$sql .= ",approval_action_code = '".$approvalCode."'";
 				}
-					
+
+                if($code == Constants::iPAYMENT_REJECTED_STATE && $this->getTxnInfo()->hasEitherSoftDeclinedState($subCode) === true){
+                    $code = Constants::iPAYMENT_SOFT_DECLINED_STATE;
+                }
 
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)

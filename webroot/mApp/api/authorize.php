@@ -932,20 +932,27 @@ try
                                                                                 } else if (strpos($code, '2005') !== false) {
                                                                                     header("HTTP/1.1 303");
                                                                                     $xml .= $code;
-                                                                                } else if ($code == "20102" && strtolower($drService) == 'true') {
+                                                                                } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true') {
                                                                                     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via secondary route
                                                                                     $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
                                                                                     $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
-                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                                                                                    if($code == "20102"){
-                                                                                        $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
-                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                                                                                    if(empty($iAlternateRoute) === false){
+                                                                                        $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                                                                                        if($code == "20103" || $code == "504"){
+                                                                                            $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
+                                                                                            $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                                                                                            if($code == "20103" || $code == "504"){
+                                                                                                $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+                                                                                            }else{
+                                                                                                $xml .= $code;
+                                                                                            }
+                                                                                        }else{
+                                                                                            $xml .= $code;
+                                                                                        }
                                                                                     }else{
-                                                                                        $xml .= $code;
+                                                                                        $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                                                                                     }
-
                                                                                 } // Error: Authorization declined'
-
                                                                                 else {
                                                                                     $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
