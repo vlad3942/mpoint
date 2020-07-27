@@ -111,7 +111,7 @@ class PaymentRoute
      * Get all alternate route for a specific payment session
      * @return List of all preferred routes
      */
-    private function getRoutes()
+    public function getRoutes()
     {
         $sql = 'SELECT pspid, preference FROM Log.' . sSCHEMA_POSTFIX . 'PaymentRoute_tbl WHERE sessionid = $1';
         $res = $this->getDBConn()->prepare($sql);
@@ -131,6 +131,7 @@ class PaymentRoute
             trigger_error('Fail to fetch route for session : ' . $this->iSessionId, E_USER_ERROR);
             return false;
         }
+        return $this->_aRoutes;
     }
 
 
