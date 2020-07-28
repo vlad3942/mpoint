@@ -23,8 +23,12 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
+// Require API for txnpassbook
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp_card_account.php");
+
 
 set_time_limit(600);
 
@@ -38,8 +42,6 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 }
 
 $id = $_REQUEST['mpoint-id'];
-$orderno  = $_REQUEST['orderid'];
-$amount = $_REQUEST['amount'];
 $pspid = 50;
 
 $ticketNumbers = '';
@@ -49,8 +51,6 @@ if(isset($_REQUEST['tickernumbers']))
 }
 
 $status = $_REQUEST['status'];
-
-$aStateId = array();
 
 $sPassbookStatus = 'done';
 if($status == Constants::iPAYMENT_DECLINED_STATE) { $sPassbookStatus = 'error'; }
@@ -63,11 +63,12 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspid);
-		
+
 		$iStateID = (integer) $status;
+		$performedOptArray = array($iStateID);
+
 		$isTicketLevelSettlement = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,'IS_TICKET_LEVEL_SETTLEMENT');
 		$aTicketNumbers = [];
-		
 		if($isTicketLevelSettlement === 'true')
 		{
 			$sAdditionalData = $ticketNumbers;
@@ -81,20 +82,10 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 			}
 		}
 		$obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
-		$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
-		$createdtimestamp = null;
-		foreach ($aMessages as $m) {
-			$iMessageID = (integer)$m["id"];
-			$iStateId = (integer)$m["stateid"];
-			if($iStateId === $iStateID)
-			{
-				$createdtimestamp = $m["created"];
-				break;
-			}
-		}
-		
+
+		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $sPassbookStatus ,$obj_TxnInfo->getCardID(),$createdtimestamp);
+		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $sPassbookStatus, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 		
 		if($code === 1000)
 		{
