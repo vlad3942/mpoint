@@ -992,9 +992,9 @@ final class TxnPassbook
 					$aExtRefStrArray = array_filter(explode(',', $sExtRefNumData));
 					foreach ($passbookEntryInstance as $requestedOptEntry)
 					{
-						$reqOptId = $requestedOptEntry->getId();
 						if ($requestedOptEntry instanceof PassbookEntry)
 						{
+							$reqOptId = $requestedOptEntry->getId();
 							if(empty($reqOptId) === false && in_array($requestedOptEntry->getId(), $aExtRefStrArray))
 							{
 								$xml .= '<requestedopt>';
