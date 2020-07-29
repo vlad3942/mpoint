@@ -41,9 +41,13 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 	$i++;
 }
 
-$id = $_REQUEST['mpoint-id'];
-$pspid = 50;
+$id = '';
+if(isset($_REQUEST['mpoint-id']))
+{
+	$id = $_REQUEST['mpoint-id'];
+}
 
+$pspid = 50;
 $ticketNumbers = '';
 if(isset($_REQUEST['tickernumbers']))
 {
