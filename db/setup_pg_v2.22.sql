@@ -83,4 +83,4 @@ INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,sco
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, "type","scope" ) VALUES('IS_STORE_BILLING_ADDRS', 'true', <ClientID>, 'client', 0);
 
 --CMP-4185
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) SELECT 'invoiceidrule', 'invoiceid ::= (transaction.@id)', true, id, 'merchant', 0 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=40;
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', true, 10077, 'client', 0);
