@@ -81,3 +81,15 @@ INSERT INTO "system".cardprefix_tbl (cardid, min, max, enabled) VALUES(7, 222100
 INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) SELECT 'DEFAULT_EMAIL_ID','null@cybersource.com','t', id, 'merchant',2 FROM client.merchantaccount_tbl WHERE clientid=10077 AND pspid=64;
 --Store Billing Addrs property
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, "type","scope" ) VALUES('IS_STORE_BILLING_ADDRS', 'true', <ClientID>, 'client', 0);
+
+--CMP-4185
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', true, 10077, 'client', 0);
+
+--CMP-4191
+update client.additionalproperty_tbl set value='orderid ::= (transaction.orderid)
+attempt ::= (@attempt)
+date ::= {date.ymd}
+invoiceid ::= (psp-config/@id)=="24"="NM"<orderid><date><attempt>' where value='orderid ::= (transaction.orderid)
+attempt ::= (@attempt)
+date ::= {date.ymd}
+invoiceid ::= "NM"<orderid><date><attempt>' and key='invoiceidrules' and externalid=10020;
