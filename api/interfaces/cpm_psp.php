@@ -580,7 +580,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			
 			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
 			
-			if ($code == 200 || $code == 303 || $code == 504)
+			if ($code == 200 || $code == 303)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
@@ -632,7 +632,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
-			
+			else if($code == 504){
+                trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+                return $code;
+            }
 			else { throw new mPointException("Authorization failed with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)

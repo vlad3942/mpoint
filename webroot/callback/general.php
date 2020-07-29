@@ -195,26 +195,15 @@ try
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
 
-
     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via alternate route
     $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
     $bHoldSessionComplete = false;
     if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true')
     {
-        $iPSPID = (int)$obj_XML->callback->{"psp-config"}["id"];
-        // Exclude list of sub code which are not part of soft decline
-        $aExcludeSubCodeIDs = array(
-            Constants::iPAYMENT_CANCELLED, Constants::iPAYMENT_DUPLICATE_TRANSACTION, Constants::iPAYMENT_TRANSACTION_FAILED, Constants::iPAYMENT_TRANSACTION_ALREADY_CAPTURED,
-            Constants::iPAYMENT_INVALID_CAPTURE_ATTEMPTED, Constants::iPAYMENT_TRANSACTION_NOT_POSTED, Constants::iPAYMENT_TRANSACTION_EXCEED_APPROVAL_LIMIT,
-            Constants::iPAYMENT_TRANSACTION_CANNOT_VOID_CAPTURED, Constants::iPAYMENT_TRANSACTION_CANNOT_REFUND, Constants::iPAYMENT_TRANSACTION_CREDIT_AMOUNT_EXCEEDS
-        );
-        // Check whether sub code start with 20103 only and it not in the exclude list of sub code
-        if (preg_match('/^20103/', $iSubCodeID) && in_array($iSubCodeID, $aExcludeSubCodeIDs) === false)
+        // Check whether sub code is a part of transaction soft declined
+        if ($obj_TxnInfo->hasEitherSoftDeclinedState($iSubCodeID) === true)
         {
-            $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $iAlternateRoutes = $objTxnRoute->getRoutes();
-            $retry_count = array_search($iPSPID, $iAlternateRoutes);
-            if($retry_count < count($iAlternateRoutes)){
+            if($obj_TxnInfo->getAttemptNumber() < 3){
                 $bHoldSessionComplete = true;
             }
         }
