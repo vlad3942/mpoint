@@ -49,7 +49,7 @@ abstract class CPMFRAUD
      * @param 	TxnInfo $oTI 			Data object with the Transaction Information
      * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
      */
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, ?array $aConnInfo)
     {
         $this->_obj_TxnInfo = $oTI;
         $this->_oDB = $oDB;
