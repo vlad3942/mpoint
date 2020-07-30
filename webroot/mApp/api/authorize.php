@@ -924,37 +924,7 @@ try
                                                                                     $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                 }
 
-                                                                                // Authorization succeeded
-                                                                                if ($code == "100") {
-                                                                                    $xml .= '<status code="100">Payment Authorized using Stored Card</status>';
-                                                                                } else if ($code == "2000") {
-                                                                                    $xml .= '<status code="2000">Payment authorized</status>';
-                                                                                } else if ($code == "2009") {
-                                                                                    $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>';
-                                                                                } else if (strpos($code, '2005') !== false) {
-                                                                                    header("HTTP/1.1 303");
-                                                                                    $xml .= $code;
-                                                                                } else if ($code == "20102" && strtolower($drService) == 'true') {
-                                                                                    // In case of the primary PSP is down, and secondary route is configured for this client, authorize via secondary route
-                                                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                                                                    $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
-                                                                                    $code = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                                                                                    if($code == "20102"){
-                                                                                        $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iTHIRD_ALTERNATE_ROUTE);
-                                                                                        $xml .= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                                                                                    }else{
-                                                                                        $xml .= $code;
-                                                                                    }
-
-                                                                                } // Error: Authorization declined'
-
-                                                                                else {
-                                                                                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                                    header("HTTP/1.1 502 Bad Gateway");
-
-                                                                                    $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
-                                                                                }
+                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService);
 
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
