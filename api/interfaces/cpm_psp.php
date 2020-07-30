@@ -1072,6 +1072,20 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 		    //Produce Country config based on the country id
             CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
+
+            if(empty($obj_Card->address->{'state'}) === false)
+            {
+                $pos = strrpos($obj_Card->address->{'state'}, "[");
+                if ($pos > 0)
+                {
+                    $obj_Card->address->{'state'} = trim(substr($obj_Card->address->{'state'}, 0, $pos) );
+                }
+                else
+                {
+                    $obj_Card->address->{'state'} = trim($obj_Card->address->{'state'});
+                }
+            }
+
 	        $b .= $obj_Card->address->asXML();
 		}
 		

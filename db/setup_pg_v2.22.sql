@@ -348,3 +348,14 @@ update system.currency_tbl set symbol='R$'  where id='986'  and code='BRL';
 update system.currency_tbl set symbol='UF'  where id='990'  and code='CLF';
 update system.currency_tbl set symbol='S/.'  where id='994'  and code='XSU';
 update system.currency_tbl set symbol='$'  where id='997'  and code='USN';
+--CMP-4185
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', true, 10077, 'client', 0);
+
+--CMP-4191
+update client.additionalproperty_tbl set value='orderid ::= (transaction.orderid)
+attempt ::= (@attempt)
+date ::= {date.ymd}
+invoiceid ::= (psp-config/@id)=="24"="NM"<orderid><date><attempt>' where value='orderid ::= (transaction.orderid)
+attempt ::= (@attempt)
+date ::= {date.ymd}
+invoiceid ::= "NM"<orderid><date><attempt>' and key='invoiceidrules' and externalid=10020;
