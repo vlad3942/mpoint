@@ -21,3 +21,6 @@ INSERT INTO client.additionalproperty_tbl (key,value,enabled,externalid,type,sco
 
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('TIMEZONE', 'Asia/Kuala_Lumpur', true, 10077, 'client', 2);
+
+--CMP-4185
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', true, 10077, 'client', 0);
