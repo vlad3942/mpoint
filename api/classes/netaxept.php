@@ -161,6 +161,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
 				
 				$fee = 0;
+                $sub_code = 0;
 				if (intval($queryResponse->OrderInformation->Fee) > 0) {$fee = intval($queryResponse->OrderInformation->Fee); }
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")
@@ -191,11 +192,11 @@ class NetAxept extends Callback implements Captureable, Refundable
 						if ($this->getTxnInfo()->getAccountID() > 0) { $this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() ); }
 						//if ($this->getTxnInfo()->getEMail() != "") { $this->saveEMail($this->getTxnInfo()->$obj_TxnInfo->getMobile(), $this->getTxnInfo()->getEMail() ); }
 					}
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $sub_code, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 				else
 				{
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, $sub_code, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 			}
 

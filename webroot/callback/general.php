@@ -192,6 +192,7 @@ try
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 
 	$iStateID = (integer) $obj_XML->callback->status["code"];
+	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
 
     if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE)
     {
@@ -215,9 +216,9 @@ try
         array_push($aStateId,$iStateID);
     }
 
-    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
+    $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
 
-    if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP) && $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
@@ -330,6 +331,7 @@ try
         $obj_XML->callback->transaction["external-id"],
         (integer)$obj_XML->callback->transaction->card["type-id"],
         $iStateID,
+        $iSubCodeID,
         $fee,
         array($HTTP_RAW_POST_DATA),
         $sIssuingBank);

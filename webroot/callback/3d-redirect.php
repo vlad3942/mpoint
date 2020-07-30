@@ -97,7 +97,13 @@ require_once(sCLASS_PATH ."/cellulant.php");
 
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
+// Require specific Business logic for the CYBS ie. Global Payments component
+require_once(sCLASS_PATH ."/global-payments.php");
+require_once(sCLASS_PATH ."/cybersource.php");
 
+
+// Require specific Business logic for the WorldPay component
+require_once(sCLASS_PATH . "/worldpay.php");
 /**
  * Input XML format
  *
@@ -162,10 +168,10 @@ try
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
+    $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     //Log the incoming status code.
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
-    if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
 
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
 

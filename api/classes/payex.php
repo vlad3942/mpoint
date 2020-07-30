@@ -430,7 +430,9 @@ class PayEx extends Callback
 		
 		$obj_Std = $obj_SOAP->Complete($aParams);
 		$obj_XML = simplexml_load_string($obj_Std->CompleteResult);
-		
+
+        $fee = 0;
+        $sub_code = 0;
 		if ($obj_XML->status->errorCode == "OK")
 		{
 			// Payment Captured
@@ -449,13 +451,12 @@ class PayEx extends Callback
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
-				$fee = 0;
-				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), $sid, $fee, array("result" => $obj_Std->CompleteResult) );
+				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), $sid, $sub_code, $fee, array("result" => $obj_Std->CompleteResult) );
 			}
 		}
 		else
 		{
-			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_DECLINED_STATE, $fee, array("result" => $obj_Std->CompleteResult) );
+			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_DECLINED_STATE,$sub_code, $fee, array("result" => $obj_Std->CompleteResult) );
 		}
 		
 		return $obj_XML;

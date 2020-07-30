@@ -111,6 +111,7 @@ class StaticRoute extends Card
                 // Set processor type and stateid given by CRS into resultset
                 $aCardConfig = $aPaymentMethodsConfig[$aRS['ID']];
                 $aRS['PROCESSORTYPE'] = $aCardConfig['psp_type'];
+                $aRS['STATEID'] = $aCardConfig['state_id'];
 
                 // Transaction instantiated via SMS or "Card" is NOT Premium SMS
                 if ($oTI->getGoMobileID() > -1 || $aRS['ID'] != Constants::iPREMIUM_SMS) {
@@ -147,7 +148,8 @@ class StaticRoute extends Card
         $aPaymentMethodsConfig = array();
         for ($i = 0; $i < count($paymentMethods); $i++) {
             $aPaymentMethodsConfig[$paymentMethods[$i]->id] = array(
-                'psp_type' => $paymentMethods[$i]->psp_type
+                'psp_type' => $paymentMethods[$i]->psp_type,
+                'state_id' => $paymentMethods[$i]->state_id
             );
         }
         return self::produceConfig($oDB, $oTxt, $oTI, $aPaymentMethodsConfig);
