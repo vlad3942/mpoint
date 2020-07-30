@@ -499,6 +499,11 @@ abstract class Constants
 	 */
 	const iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3116;
 
+    /**
+     * Defines the ID of the State that indicates that Payment retried using dynamic routing
+     *
+     */
+	const iPAYMENT_RETRIED_USING_DR_STATE = 7010;
 
 	/**
      * Defines the ProductType for the ticket
