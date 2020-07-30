@@ -83,7 +83,8 @@ while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 	$txnStateName = $RESULTSET['STATUS'];
 	$iStateID = intval($RESULTSET['PERFORMEDOPT']);
 	$exteRef = $RESULTSET['EXTREF'];
-	
+	$performedOptArray = array($iStateID);
+
 	$subQuery = "SELECT tp.extref, tp.amount
 			FROM log.txnpassbook_tbl tp
 			WHERE tp.clientid = ".$clientid."
@@ -105,22 +106,11 @@ while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 		$obj_TxnInfo = TxnInfo::produceInfo($txnid, $_OBJ_DB);
 		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($pspid));
-		
 		$obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
-		$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
-		$createdtimestamp = null;
-		foreach ($aMessages as $m) {
-			$iMessageID = (integer)$m["id"];
-			$iStateId = (integer)$m["stateid"];
-			//To satisfy partial operations i.e. message table will have 20012 and passbook will have 2001
-			if(intval(substr($iStateId,0,4)) === $iStateID)
-			{
-				$createdtimestamp = $m["created"];
-				break;
-			}
-		}
+
+		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $txnStateName, $obj_TxnInfo->getCardID(),$createdtimestamp);
+		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $txnStateName, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 
 		if($code === 1000)
 		{
