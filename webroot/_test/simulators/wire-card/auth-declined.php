@@ -10,7 +10,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/../xsd/auth.xsd') )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 
-    echo '<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>';
+    echo '<?xml version="1.0" encoding="UTF-8"?><root><status code="2010" sub-code="2010301">Payment Declined</status></root>';
 }
 else
 {

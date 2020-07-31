@@ -509,7 +509,16 @@ class General
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
 			throw new mPointException("Unable to update associated transaction: ". $iTxnID. " of original transaction: ".$oTI->getID(), 1004);
-		}
+		}else{
+		    // Update attempt count of original transaction
+            $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET sessionid = ".$iSessionId." , attempt = attempt+1 WHERE id=".$oTI->getID() ;
+
+            if (is_resource($this->getDBConn()->query($sql) ) === false)
+            {
+                throw new mPointException("Unable to update attemp count of original transaction: ".$oTI->getID(), 1004);
+            }
+        }
 		return $iTxnID ;
 	}
 
@@ -560,7 +569,7 @@ class General
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_AssociatedTxnInfo);
 
-        // Add entry into Passbook
+        /*******************************
         $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
         $passbookEntry = new PassbookEntry
         (
@@ -587,29 +596,16 @@ class General
             $txnPassbookObj->performPendingOperations();
         }
 
-
         $txnPassbookObj->updateInProgressOperations($obj_TxnInfo->getAmount(), Constants::iPAYMENT_ACCEPTED_STATE, Constants::sPassbookStatusError);
+        ********************************/
 
-        $this->newMessage($iAssociatedTxnId, Constants::iINPUT_VALID_STATE, "Payment retried using dynamic routing ");
-        $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_REJECTED_STATE, "Payment Rejected");
+        $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
 
-
-
-        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-		if ($code == "100") {
-			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
-		} else if ($code == "2000") {
-			$xml .= '<status code="2000">Payment authorized</status>';
-		} else if (strpos ( $code, '2005' ) !== false) {
-			header ( "HTTP/1.1 303" );
-			$xml .= $code;
-		} else {
-			$xml .= '<status code="92">Authorization failed, ' . $obj_PSPConfig->getName () . ' returned error: ' . $code . '</status>';
-		}
-	
-		return $xml ;
+
+		return $code ;
 			
 	}
 
@@ -1414,6 +1410,35 @@ class General
         {
             trigger_error ( 'Get AdditionalProperty From DB error - .' . $mPointException->getMessage(), E_USER_ERROR );
         }
+    }
+
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    {
+        $xml = '';
+        if ($code == "100") {
+            $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+        } else if ($code == "2000") {
+            $xml = '<status code="2000">Payment authorized</status>';
+        } else if ($code == "2009") {
+            $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
+        } else if (strpos($code, '2005') !== false) {
+            header("HTTP/1.1 303");
+            $xml = $code;
+        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true') {
+            $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
+            $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
+            if(empty($iAlternateRoute) === false) {
+                $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
+            }else{
+                $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+            }
+        }else{
+            $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+            header("HTTP/1.1 502 Bad Gateway");
+            $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+        }
+        return $xml;
     }
 }
 ?>
