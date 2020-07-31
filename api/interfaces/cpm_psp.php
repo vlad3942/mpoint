@@ -615,7 +615,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
-                    $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+				    $obj_XML= simplexml_load_string($obj_HTTP->getReplyBody() );
+				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';
+                    $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
+                    //$this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
 					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
