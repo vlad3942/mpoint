@@ -436,7 +436,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -862,7 +862,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $this->getDBConn()->query($sql);
         }
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
-	    $obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+	    $obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn()) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -903,7 +903,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$purchaseDateNode = "<PurchaseDate>".$purchaseDate."</PurchaseDate>";
 		}
 		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';

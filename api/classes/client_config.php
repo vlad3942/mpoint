@@ -971,8 +971,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getPaymentMethodsAsXML()
+	private function _getPaymentMethodsAsXML(RDB &$oDB)
 	{
+	    if($this->_aObj_PaymentMethodConfigurations === null)
+        {
+            $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<payment-methods store-card="'. $this->_iStoreCard .'" show-all-cards="'. General::bool2xml($this->_bShowAllCards) .'" max-stored-cards="'. $this->_iMaxCards .'">';
 		foreach ($this->_aObj_PaymentMethodConfigurations as $obj_PM)
 		{
@@ -990,8 +994,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getAccountsConfigurationsAsXML()
+	private function _getAccountsConfigurationsAsXML(RDB &$oDB)
 	{
+	    if($this->_aObj_AccountsConfigurations === null)
+        {
+            $this->_aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<account-configurations>';
 		foreach ($this->_aObj_AccountsConfigurations as $obj_AccountConfig)
 		{
@@ -1009,8 +1017,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getMerchantAccountsConfigAsXML()
+	private function _getMerchantAccountsConfigAsXML(RDB &$oDB)
 	{
+	    if($this->_aObj_MerchantAccounts === null)
+        {
+            $this->_aObj_MerchantAccounts = ClientMerchantAccountConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<payment-service-providers>';
 		foreach ($this->_aObj_MerchantAccounts as $obj_MA)
 		{
@@ -1029,8 +1041,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getIINRangesConfigAsXML()
+	private function _getIINRangesConfigAsXML(RDB &$oDB)
 	{
+	    if($this->_aObj_IINRangeConfigurations === null)
+        {
+            $this->_aObj_IINRangeConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<issuer-identification-number-ranges>';
 		foreach ($this->_aObj_IINRangeConfigurations as $obj_IINR)
 		{
@@ -1049,8 +1065,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getGoMobileConfigAsXML()
+	private function _getGoMobileConfigAsXML(RDB &$oDB)
 	{
+	    if($this->_aObj_GoMobileConfigurations === null)
+        {
+            $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<gomobile-configuration-params>';
 		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
 		{
@@ -1069,8 +1089,12 @@ class ClientConfig extends BasicConfig
      *
      * @return 	String
      */
-	private function getTransactionTypeConfigXML()
+	private function getTransactionTypeConfigXML(RDB $oDB)
     {
+        if($this->_aObj_TransactionTypeConfigurations === null)
+        {
+            $this->_aObj_TransactionTypeConfigurations = TransactionTypeConfig::produceConfig($oDB);
+        }
         $xml = '<transaction-types>';
         foreach ($this->_aObj_TransactionTypeConfigurations as $obj_TransactionType)
         {
@@ -1131,7 +1155,7 @@ class ClientConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public function toFullXML($propertyScope=2)
+	public function toFullXML(RDB &$oDB,$propertyScope=2)
 	{
 		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -1156,15 +1180,15 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_ThreedRedirectURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_ThreedRedirectURL->toXML(); }
 		$xml .= '</urls>';
 		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
-		$xml .= $this->_getPaymentMethodsAsXML();
-		$xml .= $this->_getMerchantAccountsConfigAsXML();				
-		$xml .= $this->_getAccountsConfigurationsAsXML();		
-		$xml .= $this->_getGoMobileConfigAsXML();
-		if( ($this->_obj_CommunicationChannelsConfig instanceof ClientCommunicationChannelsConfig) === true ) { $xml .= $this->_obj_CommunicationChannelsConfig->toXML(); }
+		$xml .= $this->_getPaymentMethodsAsXML($oDB);
+		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
+		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
+		$xml .= $this->_getGoMobileConfigAsXML($oDB);
+        $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
-		$xml .= $this->_getIINRangesConfigAsXML();
+		$xml .= $this->_getIINRangesConfigAsXML($oDB);
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
 		
@@ -1192,7 +1216,7 @@ class ClientConfig extends BasicConfig
         }
         $xml .= '</additional-config>';
         $xml .= '<decimal>'.$this->getCountryConfig()->getDecimals().'</decimal>';
-        $xml .= $this->getTransactionTypeConfigXML();
+        $xml .= $this->getTransactionTypeConfigXML($oDB);
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -1311,13 +1335,13 @@ class ClientConfig extends BasicConfig
 			$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"], array(),$RS["BUSINESSTYPE"]);
 			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-			$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
-			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
-			$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
-			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
-			$aObj_ClientGoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $id);
-			$obj_ClientCommunicationChannels = ClientCommunicationChannelsConfig::produceConfig($oDB, $id);
-            $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
+			$aObj_AccountsConfigurations = null;//AccountConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientMerchantAccountConfigurations = null;//ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientCardsAccountConfigurations = null;//ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientIINRangesConfigurations = null;//ClientIINRangeConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientGoMobileConfigurations = null;//ClientGoMobileConfig::produceConfigurations($oDB, $id);
+			$obj_ClientCommunicationChannels = null;//ClientCommunicationChannelsConfig::produceConfig($oDB, $id);
+            $obj_TransactionTypeConfig = null;//TransactionTypeConfig::produceConfig($oDB);
 
 			$obj_LogoURL = null;
 			$obj_CSSURL = null;
@@ -1546,6 +1570,18 @@ class ClientConfig extends BasicConfig
             $this->_objSurePayConfig = SurePayConfig::produceConfig( $oDB, $this->getID());
         }
         return $this->_objSurePayConfig;
+    }
+
+    private function _getCommunicationCannelConfigAsXML(RDB $oDB)
+    {
+        if($this->_obj_CommunicationChannelsConfig === null)
+        {
+            $this->_obj_CommunicationChannelsConfig = ClientCommunicationChannelsConfig::produceConfig($oDB, $this->getID());
+        }
+        if (($this->_obj_CommunicationChannelsConfig instanceof ClientCommunicationChannelsConfig) === TRUE) {
+            return $this->_obj_CommunicationChannelsConfig->toXML();
+        }
+        return "";
     }
 }
 ?>
