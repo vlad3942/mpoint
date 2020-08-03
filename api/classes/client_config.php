@@ -1509,10 +1509,10 @@ class ClientConfig extends BasicConfig
 		else { return in_array($ip, $this->_aIPList); }
 	}
 
-	public function getClientGoMobileConfigurationToXML()
+	public function getClientGoMobileConfigurationToXML(RDB &$oDB)
     {
         $xml = '<client-config id="'. $this->getID() .'">';
-        $xml .= $this->_getGoMobileConfigAsXML();
+        $xml .= $this->_getGoMobileConfigAsXML($_OBJ_DB);
         $xml .= '</client-config>';
         return $xml;
     }
