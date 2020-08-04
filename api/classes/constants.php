@@ -499,6 +499,11 @@ abstract class Constants
 	 */
 	const iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3116;
 
+    /**
+     * Defines the ID of the State that indicates that Payment retried using dynamic routing
+     *
+     */
+	const iPAYMENT_RETRIED_USING_DR_STATE = 7010;
 
 	/**
      * Defines the ProductType for the ticket
@@ -1017,6 +1022,11 @@ abstract class Constants
 	 *
 	 */
 	const iCEBU_RMFSS_FSP = 65;
+	/**
+	 * Unique ID for the Payment APM: SWISH
+	 *
+	 */
+	const iSWISH_APM = 66;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1451,6 +1461,12 @@ abstract class Constants
 	 */
 	const iDRAGONPAYOFFLINE = 88;
 	
+	/**
+	 * Unique Card ID for transaction's made using SWISH
+	 *
+	 */
+	const iSWISH = 88;
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -1629,6 +1645,33 @@ abstract class Constants
     const iPRIMARY_ROUTE = 1;
     const iSECOND_ALTERNATE_ROUTE = 2;
     const iTHIRD_ALTERNATE_ROUTE = 3;
+
+    /*
+	 * Transaction types in mPoint
+	 * */
+    const iTRANSACTION_TYPE_SHOPPING_ONLINE = 1;
+    const iTRANSACTION_TYPE_SHOPPING_OFFLINE = 2;
+    const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
+    const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
+
+    /*
+    *  Exclude list of payment declined sub code
+    * */
+    const iPAYMENT_CANCELLED = 2010305;
+    const iPAYMENT_DUPLICATE_TRANSACTION = 2010310;
+    const iPAYMENT_TRANSACTION_FAILED = 2010314;
+    const iPAYMENT_TRANSACTION_ALREADY_CAPTURED = 2010317;
+    const iPAYMENT_INVALID_CAPTURE_ATTEMPTED = 2010319;
+    const iPAYMENT_TRANSACTION_NOT_POSTED = 2010320;
+    const iPAYMENT_TRANSACTION_EXCEED_APPROVAL_LIMIT = 2010331;
+    const iPAYMENT_TRANSACTION_CANNOT_VOID_CAPTURED = 2010332;
+    const iPAYMENT_TRANSACTION_CANNOT_REFUND = 2010333;
+    const iPAYMENT_TRANSACTION_CREDIT_AMOUNT_EXCEEDS = 2010334;
+
+    /*
+     * Defines unique ID of the State that indicates payment soft declined
+     */
+    const iPAYMENT_SOFT_DECLINED_STATE = 20103;
 
 }
 

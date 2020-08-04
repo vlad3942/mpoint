@@ -26,7 +26,7 @@ class SaveCardAPITest extends baseAPITest
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
-        $xml .= '<save-card client-id="' . $client . '" account="' . $account . '">';
+        $xml .= '<save-card client-id="' . $client . '" account="' . $account . '" txn-id="'. 1001001 .'">';
         $xml .= '<card type-id="7" psp-id="9" preferred="true" charge-type-id="2">';
         $xml .= '<name>TESTSaveCard</name>';
         $xml .= '<card-number-mask>540287******5344</card-number-mask>';
@@ -85,6 +85,8 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
         $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', null,'successtoken',-1);
         $this->_httpClient->connect();
@@ -184,6 +186,8 @@ class SaveCardAPITest extends baseAPITest
 
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
         $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', null,'profilePass',-1);
 
@@ -223,6 +227,8 @@ class SaveCardAPITest extends baseAPITest
 
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
         $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', null,'profilePass',12345);//,'testemail@test.com',123456677);
         //printf($xml);
@@ -257,7 +263,9 @@ class SaveCardAPITest extends baseAPITest
        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-       
+       $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
+       $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
+
        $xml = $this->getSaveCardDoc(113, 1100, 'abcExternal', '123456','',-1);
        $this->_httpClient->connect();
 

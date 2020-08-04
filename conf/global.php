@@ -175,6 +175,7 @@ $aHTTP_CONN_INFO["worldpay"]["path"] =""; // Set by calling class
 $aHTTP_CONN_INFO["worldpay"]["method"] =  $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/mpoint/worldpay/initialize";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["authenticate"] = "/mpoint/authenticate";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/mpoint/worldpay/authorize-payment";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["capture"] = "/mpoint/worldpay/capture";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["status"] = "/mpoint/worldpay/status";
@@ -730,8 +731,9 @@ $aHTTP_CONN_INFO["2c2p-alc"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["initialize"] = "/mpoint/2c2p-alc/initialize";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["auth"] = "/mpoint/2c2p-alc/authorize-payment";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["capture"] = "/mpoint/2c2p-alc/capture";
-$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/2c2p-alc/refund";
-$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/2c2p-alc/cancel";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/2c2p-alc/void";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/2c2p-alc/void";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["void"] = "/mpoint/2c2p-alc/void";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["post-status"] = "/mpoint/2c2p-alc/post-status";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["status"] = "/mpoint/2c2p-alc/status";
@@ -937,6 +939,8 @@ $aHTTP_CONN_INFO["global-payments"]["paths"]["capture"] = "/mpoint/global-paymen
 $aHTTP_CONN_INFO["global-payments"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["authenticate"] = "/mpoint/authenticate";
+
 
 /**
  * Connection info for connecting to EZY fraud gateway
@@ -981,10 +985,7 @@ $aHTTP_CONN_INFO["dragonpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["dragonpay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["initialize"] = "/mpoint/aggregator/dragonpay/initialize";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["auth"] = "/mpoint/aggregator/dragonpay/authorize-payment";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["capture"] = "/mpoint/aggregator/dragonpay/capture";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["refund"] = "/mpoint/aggregator/dragonpay/refund";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["status"] = "/mpoint/aggregator/dragonpay/status";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["cancel"] = "/mpoint/aggregator/dragonpay/cancel";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["callback"] = "/mpoint/aggregator/dragonpay/callback";
 
 
@@ -1061,10 +1062,7 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["initialize"] = "/mpoint/global-payment
 $aHTTP_CONN_INFO["cybersource"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
-
-
-
-
+$aHTTP_CONN_INFO["cybersource"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
  * Connection info for connecting to cybersource fraud gateway
@@ -1077,6 +1075,23 @@ $aHTTP_CONN_INFO["cebu-rmfss"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["cebu-rmfss"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["cebu-rmfss"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["cebu-rmfss"]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
+
+
+/**
+ * Connection info for connecting to SWISH
+ */
+$aHTTP_CONN_INFO["swish"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["swish"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["swish"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["swish"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["swish"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["swish"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["swish"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize";
+$aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
+$aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
+$aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

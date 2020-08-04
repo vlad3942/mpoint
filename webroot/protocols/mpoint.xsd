@@ -126,7 +126,7 @@
 												<xs:element name="id" type="xs:string"	minOccurs="1" maxOccurs="1" />
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
-												<xs:element name="conversation-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
@@ -289,7 +289,7 @@
 												<xs:element name="id" type="xs:string"	minOccurs="1" maxOccurs="1" />
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
-												<xs:element name="conversation-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
@@ -520,6 +520,7 @@
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 					<xs:attribute name="mvault" type="xs:boolean" use="optional" />
+					<xs:attribute name="txn-id" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="save-account" minOccurs="1" maxOccurs="1">
@@ -1100,6 +1101,7 @@
 						</xs:documentation>
 					</xs:annotation>
 					<xs:all>
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="1"/>
 						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
 							<xs:annotation>
 								<xs:documentation>
@@ -1569,7 +1571,8 @@
    <xs:element type="xs:string" name="arrival-date" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:positiveInteger" name="departure-country" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:positiveInteger" name="arrival-country" minOccurs="0" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+   <xs:element type="xs:string" name="time-zone" minOccurs="0" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
 	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
 	<xs:attribute name="trip-count" use="optional" type="xs:positiveInteger"/>

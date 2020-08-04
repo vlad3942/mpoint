@@ -4793,6 +4793,10 @@ INSERT INTO type_tbl VALUES (102, 'Points Top-Up Purchase', '2012-09-29 11:46:12
 INSERT INTO type_tbl VALUES (1004, 'Points Top-Up', '2012-09-29 11:46:12.060279', '2012-09-29 11:46:12.060279', true);
 INSERT INTO type_tbl VALUES (1005, 'Points Purchase', '2012-09-29 11:46:12.060279', '2012-09-29 11:46:12.060279', true);
 INSERT INTO type_tbl VALUES (1007, 'Points Reward', '2012-09-30 10:42:49.38124', '2012-09-30 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (1, 'Shopping Online', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (2, 'Shopping Offline', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (3, 'Self Service Online', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (4, 'Self Service Offline', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
 
 
 --
@@ -8403,3 +8407,27 @@ INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,36,'USA');
 INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (35, 36);
 ALTER TABLE log.additional_data_tbl ALTER COLUMN name TYPE varchar(30);
+
+/* ================ Start: Update log.flight table  ===================*/
+ALTER TABLE log.flight_tbl ADD COLUMN tag character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "trip_count" character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "service_level" character varying(2);
+ALTER TABLE log.flight_tbl ADD COLUMN "flight_number" character varying(20);
+ALTER TABLE log.flight_tbl ADD COLUMN departure_countryid integer;
+ALTER TABLE log.flight_tbl ADD COLUMN arrival_countryid integer;
+
+ALTER TABLE log.flight_tbl ADD CONSTRAINT departure_countryid_country_tbl_id_fk
+FOREIGN KEY (departure_countryid) REFERENCES system.country_tbl (id);
+
+ALTER TABLE log.flight_tbl
+  ADD CONSTRAINT arrival_countryid_country_tbl_id_fk
+FOREIGN KEY (arrival_countryid) REFERENCES system.country_tbl (id);
+/* ================ End: Update log.flight table  ===================*/
+ALTER TABLE log.address_tbl add last_name varchar(200) null;
+ALTER TABLE log.address_tbl RENAME COLUMN name TO first_name;
+
+-- Alter Log.flight_tbl to store additional flight data
+ALTER TABLE log.flight_tbl
+  ADD COLUMN time_zone character varying(10);
+ALTER TABLE log.flight_tbl
+  DROP COLUMN additional_data_ref;

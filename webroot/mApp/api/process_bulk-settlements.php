@@ -100,6 +100,8 @@ require_once sCLASS_PATH . '/passbookentry.php';
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the SWISH component
+require_once(sCLASS_PATH ."/apm/swish.php");
 
 ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");
@@ -350,8 +352,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             {
                                                 $data['flights']['flight_number'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'flight-number'};
                                             }
-
-
+                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-country'}) > 0)
+                                            {
+                                                $data['flights']['departure_country'] = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-country'};
+                                            }
+                                            else
+                                            {
+                                                $data['flights']['departure_country'] = 0;
+                                            }
+                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-country'}) > 0)
+                                            {
+                                                $data['flights']['arrival_country'] = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-country'};
+                                            }
+                                            else
+                                            {
+                                                $data['flights']['arrival_country'] = 0;
+                                            }
+                                            $data['flights']['time_zone'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'time-zone'};
                                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) > 0) {
                                                 for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()); $l++) {
                                                     $data['additional'][$l]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l]['name'];

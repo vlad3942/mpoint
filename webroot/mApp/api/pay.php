@@ -147,6 +147,8 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the SWISH component
+require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
 require_once(sCLASS_PATH ."/core/card.php");
@@ -376,13 +378,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
 										$data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE'];
-										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'}) === false)
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'}) === false)
 										{
 											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);
 											$data['externalref'] = array(Constants::iForeignExchange =>array((integer)$obj_TxnInfo->getClientConfig()->getID() => (string)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'} ));
 											$data['converted-currency-config'] = $obj_CurrencyConfig;
 											$data['converted-amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
-											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversation-rate'};
+											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
 											unset($data['amount']);
 										}
 

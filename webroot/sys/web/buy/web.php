@@ -310,7 +310,8 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 					{
 						for ($j=0; $j<count($aAirlinedata["orders"][$i]['shipping']); $j++ )
 						{
-							$data['shipping_address'][$j]['name'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['name'];
+							$data['shipping_address'][$j]['first_name'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['name'];
+							$data['shipping_address'][$j]['last_name'] = "";
 							$data['shipping_address'][$j]['street'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['street'];
 							$data['shipping_address'][$j]['street2'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['street2'];
 							$data['shipping_address'][$j]['city'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['city'];

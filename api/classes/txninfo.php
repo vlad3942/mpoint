@@ -1711,13 +1711,14 @@ class TxnInfo
 	public static function  _produceBillingAddr($_OBJ_DB, $txnId)
 	{
 		$aBillingAddr = [];
-		$sqlA = "SELECT id, name, street, street2, city, state, zip, country FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
+		$sqlA = "SELECT id, first_name, last_name, street, street2, city, state, zip, country FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
 		$rsa = $_OBJ_DB->getAllNames ( $sqlA );
 		if (empty($rsa) === false )
 		{
 			foreach ($rsa as $rs)
 			{
-				$aBillingAddr["name" ] = $rs ["NAME"];
+				$aBillingAddr["first_name" ] = $rs ["FIRST_NAME"];
+				$aBillingAddr["last_name" ] = $rs ["LAST_NAME"];
 				$aBillingAddr["street" ] = $rs ["STREET"];
 				$aBillingAddr["street2" ] = $rs ["STREET2"];
 				$aBillingAddr["city" ] = $rs ["CITY"];
@@ -1874,9 +1875,9 @@ class TxnInfo
 	
 	
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
-							(id, name, street, street2, city, state, zip, country, reference_id, reference_type)
+							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type)
 						VALUES
-							(". $RS["ID"] .", '". $aShippingObj["name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
+							(". $RS["ID"] .", '". $aShippingObj["first_name"] ."','". $aShippingObj["last_name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
 							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."' )";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
@@ -2000,8 +2001,8 @@ class TxnInfo
 				// Error: Unable to generate a new Flight ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
 
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid)
-					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', '". $aFlightData["service_level"] ."', '". $aFlightData["departure_country"] ."', '". $aFlightData["arrival_country"] ."')";
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, time_zone)
+					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', '". $aFlightData["service_level"] ."', '". $aFlightData["departure_country"] ."', '". $aFlightData["arrival_country"] ."', '". $aFlightData["time_zone"] ."')";
 				$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				
 				// Error: Unable to insert a new flight record in the Flight Table
@@ -2428,5 +2429,21 @@ class TxnInfo
 		}
 		return $retStatus;
 	}
+
+    public function hasEitherSoftDeclinedState($subCodeID)
+    {
+        // Exclude list of soft declined sub code
+        $aExcludeSubCodeIDs = array(
+            Constants::iPAYMENT_CANCELLED, Constants::iPAYMENT_DUPLICATE_TRANSACTION, Constants::iPAYMENT_TRANSACTION_FAILED, Constants::iPAYMENT_TRANSACTION_ALREADY_CAPTURED,
+            Constants::iPAYMENT_INVALID_CAPTURE_ATTEMPTED, Constants::iPAYMENT_TRANSACTION_NOT_POSTED, Constants::iPAYMENT_TRANSACTION_EXCEED_APPROVAL_LIMIT,
+            Constants::iPAYMENT_TRANSACTION_CANNOT_VOID_CAPTURED, Constants::iPAYMENT_TRANSACTION_CANNOT_REFUND, Constants::iPAYMENT_TRANSACTION_CREDIT_AMOUNT_EXCEEDS
+        );
+
+        if (preg_match('/^20103/', $subCodeID) && in_array($subCodeID, $aExcludeSubCodeIDs) === false) {
+            return true;
+        }
+        return false;
+    }
+
 }
 ?>
