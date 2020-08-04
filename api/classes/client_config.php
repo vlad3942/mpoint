@@ -1526,7 +1526,7 @@ class ClientConfig extends BasicConfig
 	public function getClientGoMobileConfigurationToXML(RDB &$oDB)
     {
         $xml = '<client-config id="'. $this->getID() .'">';
-        $xml .= $this->_getGoMobileConfigAsXML($_OBJ_DB);
+        $xml .= $this->_getGoMobileConfigAsXML($oDB);
         $xml .= '</client-config>';
         return $xml;
     }
