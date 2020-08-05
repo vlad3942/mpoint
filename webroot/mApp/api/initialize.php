@@ -717,7 +717,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$cardsXML = '<cards>';
 							$walletsXML = '<wallets>';
 							$apmsXML = '<apms>';
-							$gatewaysXML = '<gateways>';
+							$aggregatorsXML = '<aggregators>';
 							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 							    $cardXML = '';
@@ -779,7 +779,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $apmsXML .= $cardXML;
                                             break;
                                         case Constants::iPROCESSOR_TYPE_GATEWAY;
-                                            $gatewaysXML .= $cardXML;
+                                            $aggregatorsXML .= $cardXML;
                                             break;
                                         default:
                                             $cardsXML .= $cardXML;
@@ -798,13 +798,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $cardsXML .= '</cards>';
                             $walletsXML .= '</wallets>';
                             $apmsXML .= '</apms>';
-                            $gatewaysXML .= '</gateways>';
+                            $aggregatorsXML .= '</aggregators>';
 
                             $xml .= $cardsXML;
                             $xml .= $walletsXML;
                             if ($isnewcardconfig === TRUE) {
                                 $xml .= $apmsXML;
-                                $xml .= $gatewaysXML;
+                                $xml .= $aggregatorsXML;
                             }
 
 							for ($j=0, $jMax = count($aPSPs); $j< $jMax; $j++)
