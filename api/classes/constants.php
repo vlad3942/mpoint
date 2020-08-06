@@ -1663,7 +1663,7 @@ abstract class Constants
      * Define upper and lower limit for soft decline status sub code
      */
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
-    const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010400;
+    const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
 
 }
 
