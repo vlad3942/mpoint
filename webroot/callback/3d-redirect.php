@@ -180,15 +180,15 @@ try
             if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
             {
                 $aPaymentSecureData = array();
-                $aPaymentSecureData['eci'] = $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
-                $aPaymentSecureData['cavv'] = $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'};
-                $aPaymentSecureData['cavvAlgorithm'] = $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
+                $aPaymentSecureData['eci'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
+                $aPaymentSecureData['cavv'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'};
+                $aPaymentSecureData['cavvAlgorithm'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
 
 
                 for ($j=0; $j<count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param); $j++ )
                 {
-                    $sKey = $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
-                    $sValue = $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
+                    $sKey = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
+                    $sValue =(string) $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
                     $aPaymentSecureData[$sKey] = $sValue;
                 }
                 $obj_mPoint->storePaymentSecureInfo($obj_TxnInfo->getID(),$aPaymentSecureData);
@@ -304,6 +304,7 @@ try
             }
             else
             {
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE,'3DS authentication successfully completed and authorization not attempted due to rule matched');
                 $xml .= '<status code="'.Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.'">3DS authentication successfully completed and authorization not attempted
 	                     due to rule matched</status>';
             }
