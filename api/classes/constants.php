@@ -311,6 +311,11 @@ abstract class Constants
      */
     const iPAYMENT_3DS_FAILURE_STATE = 2016;
 	/**
+	 * Defines the ID of the State that indicates that 3DS authentication successfully completed and authorization not attempted
+	 * due to rule matched
+	 */
+	const iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE = 2017;
+	/**
 	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
 	 *
 	 */
@@ -498,6 +503,11 @@ abstract class Constants
 	 *
 	 */
 	const iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3116;
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Check Skipped due to rule matched
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE = 3117;
 
     /**
      * Defines the ID of the State that indicates that Payment retried using dynamic routing

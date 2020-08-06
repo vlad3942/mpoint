@@ -12,7 +12,7 @@
  * @package General
  * @version 1.11
  */
-
+require_once sCLASS_PATH .'/Parser.php';
 /**
  * General class for functionality methods which are used by several different modules or components
  *
@@ -1439,6 +1439,70 @@ class General
             $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
         }
         return $xml;
+    }
+
+
+    public static function applyRule(SimpleXMLElement $obj_XML,$aRuleProperties=array())
+    {
+        $parser = new  \mPoint\Core\Parser();
+        $parser->setContext($obj_XML);
+        foreach ($aRuleProperties as $value )
+        {
+            $parser->setRules($value);
+        }
+        return $parser->parse();;
+    }
+
+    /**
+     * Logs payment 3ds secure information.
+     * @param int $txnId
+     * @param array $aSecureInfo
+     * @throws mPointException
+     */
+    public function storePaymentSecureInfo($txnId,$aSecureInfo)
+    {
+        $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
+					(txnid, mdStatus, mdErrorMsg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm,md,PAResVerified,PAResSyntaxOK,protocol,cardType)
+				VALUES
+					(". $txnId. ", '". $aSecureInfo['mdStatus'] ."', '". $aSecureInfo['mdErrorMsg'] ."', '". $aSecureInfo['veresEnrolledStatus'] ."',  '". $aSecureInfo['paresTxStatus'] ."',  '". $aSecureInfo['eci'] ."','". $aSecureInfo['cavv'] ."','". $aSecureInfo['cavvAlgorithm'] ."','". $aSecureInfo['md'] ."','". $aSecureInfo['PAResVerified'] ."'
+					,'". $aSecureInfo['PAResSyntaxOK'] ."','". $aSecureInfo['protocol'] ."','". $aSecureInfo['cardType'] ."')";
+        if (is_resource($this->getDBConn()->query($sql) ) === false)
+        {
+            throw new mPointException("Unable to insert new payment secure message for txn id: ". $txnId, 1005);
+        }
+    }
+
+    /**
+     * gets payment 3ds secure information.
+     * @param int $txnId
+     * @return array
+     * @throws mPointException
+     */
+    public function getPaymentSecureInfo($txnId)
+    {
+        $sql = "SELECT  mdStatus, mdErrorMsg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm,md,PAResVerified,PAResSyntaxOK,protocol,cardType 
+        FROM LOG".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl WHERE txnid=".$txnId;
+        $aSecureInfo = [];
+        $rsa = $this->getDBConn()->getAllNames ( $sql );
+        if (empty($rsa) === false )
+        {
+            foreach ($rsa as $rs)
+            {
+                $aSecureInfo["mdStatus" ] = $rs ["MDSTATUS"];
+                $aSecureInfo["mdErrorMsg" ] = $rs ["MDERRORMSG"];
+                $aSecureInfo["veresEnrolledStatus" ] = $rs ["VERESENROLLEDSTATUS"];
+                $aSecureInfo["paresTxStatus" ] = $rs ["PARESTXSTATUS"];
+                $aSecureInfo["eci" ] = $rs ["ECI"];
+                $aSecureInfo["cavv" ] = $rs ["CAVV"];
+                $aSecureInfo["cavvAlgorithm" ] = $rs ["CAVVALGORITHM"];
+                $aSecureInfo["PAResVerified" ] = $rs ["PARESVERIFIED"];
+                $aSecureInfo["PAResSyntaxOK" ] = $rs ["PARESSYNTAXOK"];
+                $aSecureInfo["protocol" ] = $rs ["PROTOCOL"];
+                $aSecureInfo["cardType" ] = $rs ["CARDTYPE"];
+            }
+        }
+        return $aSecureInfo;
+
     }
 }
 ?>
