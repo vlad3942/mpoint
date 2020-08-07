@@ -63,7 +63,7 @@ class TransactionTypeConfig
      */
 	public function toXML()
 	{
-        $xml = '<transaction  type-id="'.$this->getID().'" name="'.$this->getName().'" enabled="'.General::bool2xml($this->getEnabled()).'" />';
+        $xml = '<transaction-type  id="'.$this->getID().'" name="'.$this->getName().'" enabled="'.General::bool2xml($this->getEnabled()).'" />';
 		return $xml;
 	}
 	
