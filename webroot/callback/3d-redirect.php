@@ -173,87 +173,142 @@ try
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
     if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
 
-        if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
-
-            $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
-
-            $xmlString = "<card id='" . $obj_XML->{'threed-redirect'}->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
-            /* Reset the eua-id to contain txn-id which will be linked as external ref for the txn.
-            This is only applicable for Acq flow with MPI */
-            $obj_TxnInfo->setAccountID($obj_TxnInfo->getID());
-
-            $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
-            //var_dump($obj_Elem);die;
-            $card_obj = simplexml_load_string($obj_Elem);
-            $card_obj = $card_obj->{'payment-data'};
-            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()) );
-            $card_obj->card['type-id'] = $obj_XML->{'threed-redirect'}->transaction->card["type-id"];
-            if (!isset($card_obj->card->{'info-3d-secure'}))
+        if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
+        {
+            $aMpiRule = array();
+            $bIsSkipAuth = false;
+            if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
             {
-                $card_obj->card->addChild('info-3d-secure','');
-            }
-            $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
-            $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
-            $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
-            $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
-            if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
-            {
-                $address = $card_obj->card->address;
-                foreach ($obj_XML->{'threed-redirect'}->transaction->card->address->attributes() as $name=>$value)
+                $aPaymentSecureData = array();
+                $aPaymentSecureData['eci'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
+                $aPaymentSecureData['cavv'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'};
+                $aPaymentSecureData['cavvAlgorithm'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
+
+
+                for ($j=0; $j<count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param); $j++ )
                 {
-                    $address->addAttribute($name,$value);
+                    $sKey = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
+                    $sValue =(string) $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
+                    $aPaymentSecureData[$sKey] = $sValue;
                 }
-                foreach ($obj_XML->xpath('threed-redirect/transaction/card/address/*') as $item)
-				{
-                    $node =$address->addChild($item->getName(),$item);
-                    foreach ($item->attributes() as $name=>$value)
-					{
-						$node->addAttribute($name,$value);
-					}
+                $obj_mPoint->storePaymentSecureInfo($obj_TxnInfo->getID(),$aPaymentSecureData);
+            }
+            if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+            {
+                $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);
+                foreach ($aRules as $value)
+                {
+                    if (strpos($value['key'], 'mpi_rule') !== false)
+                    {
+                        $aMpiRule[] = $value['value'];
+                    }
                 }
             }
-            if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
-			{
-				$additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
-				foreach ($obj_XML->xpath('threed-redirect/transaction/card/info-3d-secure/additional-data/param') as $item)
-				{
-					$param = $additionalData->addChild('param',$item);
-					$param->addAttribute('name',$item['name']);
-				}
-			}
+            else if($obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+            {
+                $aRules = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
+                foreach ($aRules as $value)
+                {
+                    if (strpos($value['key'], 'mpi_rule') !== false)
+                    {
+                        $aMpiRule[] = $value['value'];
+                    }
+                }
+            }
+            if(empty($aMpiRule) === false)
+            {
+                $bIsSkipAuth = $obj_mPoint->applyRule($obj_XML,$aMpiRule);
+            }
 
-            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+            if($bIsSkipAuth === false)
+            {
+                $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
+
+                $xmlString = "<card id='" . $obj_XML->{'threed-redirect'}->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+                /* Reset the eua-id to contain txn-id which will be linked as external ref for the txn.
+                This is only applicable for Acq flow with MPI */
+                $obj_TxnInfo->setAccountID($obj_TxnInfo->getID());
+
+                $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
+                //var_dump($obj_Elem);die;
+                $card_obj = simplexml_load_string($obj_Elem);
+                $card_obj = $card_obj->{'payment-data'};
+                $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()) );
+                $card_obj->card['type-id'] = $obj_XML->{'threed-redirect'}->transaction->card["type-id"];
+                if (!isset($card_obj->card->{'info-3d-secure'}))
+                {
+                    $card_obj->card->addChild('info-3d-secure','');
+                }
+                $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
+                $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
+                $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+                $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
+                {
+                    $address = $card_obj->card->address;
+                    foreach ($obj_XML->{'threed-redirect'}->transaction->card->address->attributes() as $name=>$value)
+                    {
+                        $address->addAttribute($name,$value);
+                    }
+                    foreach ($obj_XML->xpath('threed-redirect/transaction/card/address/*') as $item)
+                    {
+                        $node =$address->addChild($item->getName(),$item);
+                        foreach ($item->attributes() as $name=>$value)
+                        {
+                            $node->addAttribute($name,$value);
+                        }
+                    }
+                }
+                if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
+                {
+                    $additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
+                    foreach ($obj_XML->xpath('threed-redirect/transaction/card/info-3d-secure/additional-data/param') as $item)
+                    {
+                        $param = $additionalData->addChild('param',$item);
+                        $param->addAttribute('name',$item['name']);
+                    }
+                }
+
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET extid=''
                             WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
-            //echo $sql ."\n";
-            $_OBJ_DB->query($sql);
-            $additionalTxnData = [];
-            $additionalTxnData[0]['name'] = "eci";
-            $additionalTxnData[0]['value'] = (string)$card_obj->card->{'info-3d-secure'}->cryptogram["eci"];
-            $additionalTxnData[0]['type'] = 'Transaction';
-            //Store xid in DB
-            $additionalTxnData[1]['name'] = 'xid';
-            $additionalTxnData[1]['value'] = base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']);
-            $additionalTxnData[1]['type'] = 'Transaction';
-            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
+                //echo $sql ."\n";
+                $_OBJ_DB->query($sql);
+                $additionalTxnData = [];
+                $additionalTxnData[0]['name'] = "eci";
+                $additionalTxnData[0]['value'] = (string)$card_obj->card->{'info-3d-secure'}->cryptogram["eci"];
+                $additionalTxnData[0]['type'] = 'Transaction';
+                //Store xid in DB
+                $additionalTxnData[1]['name'] = 'xid';
+                $additionalTxnData[1]['value'] = base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']);
+                $additionalTxnData[1]['type'] = 'Transaction';
+                $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
 
 
-            $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
 
-            if ($code == "100")
-            {
-                $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                if ($code == "100")
+                {
+                    $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                }
+                else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                else
+                {
+                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                    header("HTTP/1.1 502 Bad Gateway");
+
+                    $xml .= '<status code="92">Authorization failed, '.$obj_PSPConfig->getName().' returned error: '. $code .'</status>';
+                }
             }
-            else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-            else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
             else
             {
-                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                header("HTTP/1.1 502 Bad Gateway");
-
-                $xml .= '<status code="92">Authorization failed, '.$obj_PSPConfig->getName().' returned error: '. $code .'</status>';
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE,'3DS authentication successfully completed and authorization not attempted due to rule matched');
+                $xml .= '<status code="'.Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.'">3DS authentication successfully completed and authorization not attempted
+	                     due to rule matched</status>';
             }
+
         }
         else
         {

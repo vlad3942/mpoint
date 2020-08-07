@@ -228,6 +228,14 @@ class ParserTest extends baseAPITest
         $output = $this->parser->getValue('undefinedvar');
         $this->assertEquals(null, $output);
     }
+    public function testNotEqualToOperatorInRule()
+    {
+        $rulesString = 'attempt::=(@attempt)!=="0"';
+        $this->parser->setRules($rulesString);
+        $output = $this->parser->parse();
+
+        $this->assertEquals(false, $output);
+    }
 
     public function setUp()
     {
