@@ -121,3 +121,7 @@ allowAuth2::= <pares>=="Y"AND<veres>=="A"
 allowAuth3::= <pares>=="Y"AND<veres>=="U"
 allowAuth4::= <pares>=="Y"AND<veres>=="Y"', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=<pspid>;
 
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'RestrictedTicket', '1', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'FareBasisCode', 'BK', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyName', 'CebuPacificair', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyCode', '5J', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
