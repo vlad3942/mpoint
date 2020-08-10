@@ -8431,3 +8431,22 @@ ALTER TABLE log.flight_tbl
   ADD COLUMN time_zone character varying(10);
 ALTER TABLE log.flight_tbl
   DROP COLUMN additional_data_ref;
+ CREATE TABLE Log.paymentsecureinfo_tbl
+(
+   id       SERIAL,
+   txnid    INT4 NOT NULL,
+   mdStatus TEXT,
+   mdErrorMsg TEXT,
+   veresEnrolledStatus TEXT,
+   paresTxStatus TEXT,
+   eci TEXT,
+   cavv TEXT,
+   cavvAlgorithm TEXT,
+   md TEXT,
+   PAResVerified TEXT,
+   PAResSyntaxOK TEXT,
+   protocol TEXT,
+   cardType TEXT,
+   CONSTRAINT payment_secure_pk PRIMARY KEY (id),
+   CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
+) WITHOUT OIDS;
