@@ -611,7 +611,7 @@ try
 													else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
 													{
 														$iPSPID = -1;
-														$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods();
+														$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
 														foreach ($aPaymentMethods as $m)
 														{
 															if ($m->getPaymentMethodID() == Constants::iINVOICE) { $iPSPID = $m->getPSPID(); }
@@ -1055,7 +1055,7 @@ try
 									foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
 									{
 										$iPSPID = -1;
-										$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods();
+										$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
 										foreach ($aPaymentMethods as $m)
 										{
 											if ($m->getPaymentMethodID() == Constants::iVOUCHER_CARD) { $iPSPID = $m->getPSPID(); }
