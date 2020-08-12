@@ -354,11 +354,15 @@ try
                                         }
                                        else
                                        {
+											$iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange, $obj_TxnInfo->getPSPID());
+											if(General::xml2bool($obj_Elem["dcc"]) === true && empty($iForeignExchangeId) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === false)
+											{
+												$obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+											}
                                            if (General::xml2bool($obj_Elem["dcc"]) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false &&
                                                (int)$obj_TxnInfo->getAmount() === (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} &&
                                                ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
                                                {
-                                                   $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
                                                    $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
