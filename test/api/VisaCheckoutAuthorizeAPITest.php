@@ -52,10 +52,7 @@ class VisaCheckoutAuthorizeAPITest extends AuthorizeAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertEquals(1, count($aStates) );
-
-        $s = 0;
-        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+        $this->assertEquals(0, count($aStates) );
 
         /* Test that euaid has been set on txn */
         $res =  $this->queryDB("SELECT t.euaid, et.accountid FROM Log.Transaction_Tbl t LEFT JOIN Enduser.Transaction_Tbl et ON et.txnid = t.id WHERE t.id = 1001001");
