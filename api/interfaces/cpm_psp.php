@@ -5,9 +5,9 @@ require_once sCLASS_PATH .'/Parser.php';
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
     private $_obj_ResponseXML = null;
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
 
 	public function notifyClient($iStateId, array $vars, SurePay $surePay)

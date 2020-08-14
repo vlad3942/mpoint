@@ -46,6 +46,14 @@ abstract class Callback extends EndUserAccount
 	 */
 	private $_obj_PSPConfig;
 
+
+	/**
+	 * Data object with PSP configuration Information
+	 *
+	 * @var ClientInfo
+	 */
+	private $_obj_ClientInfo;
+
 	/*
 	 * Integer identifier to identify the Settlement Mode
 	 *
@@ -65,11 +73,12 @@ abstract class Callback extends EndUserAccount
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null)
+	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null, ClientInfo $oClientInfo = null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
+		$this->_obj_ClientInfo = $oClientInfo;
 		$pspID = (integer)$this->getPSPID() > 0 ? $this->getPSPID() : $oTI->getPSPID();
         if(empty($aConnInfo) === false )
         {
@@ -96,6 +105,13 @@ abstract class Callback extends EndUserAccount
 	 * @return TxnInfo
 	 */
 	public function getTxnInfo() { return $this->_obj_TxnInfo; }
+	
+	/**
+	 * Returns the Data object with the Client Information.
+	 *
+	 * @return ClientInfo
+	 */
+	public function getClientInfo() { return $this->_obj_ClientInfo; }
 
 
 	/**

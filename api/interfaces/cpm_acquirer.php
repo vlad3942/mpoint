@@ -11,9 +11,9 @@
 
 abstract class CPMACQUIRER extends CPMPSP
 {
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
 
     public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, $obj_ClientInfo= null)
