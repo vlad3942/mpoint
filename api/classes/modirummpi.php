@@ -19,6 +19,8 @@ class ModirumMPI extends CPMMPI
 
     public function authenticate()
     {
+        $clientInfo = $this->getClientInfo();
+
         $cvv= strrev(base64_encode($this->obj_Card->cvc)) ;
 
         $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
@@ -47,6 +49,11 @@ class ModirumMPI extends CPMMPI
         $b .= $txnXML;
 
         $b .=  $this->_constNewCardAuthorizationRequest($this->obj_Card);
+
+        if($clientInfo !== null && $clientInfo instanceof ClientInfo)
+        {
+            $b .= $clientInfo->toXML();
+        }
 
         $b .= '</authenticate>';
         $b .= '</root>';

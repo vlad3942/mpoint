@@ -19,6 +19,8 @@ class NetsMpi extends CPMMPI
 
     public function authenticate()
     {
+        $clientInfo = $this->getClientInfo();
+
         $cvv= strrev(base64_encode($this->obj_Card->cvc)) ;
 
         $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
@@ -59,6 +61,10 @@ class NetsMpi extends CPMMPI
             if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
         }
 
+        if($clientInfo !== null && $clientInfo instanceof ClientInfo)
+        {
+            $b .= $clientInfo->toXML();
+        }
 
         $b .= '</authenticate>';
         $b .= '</root>';
