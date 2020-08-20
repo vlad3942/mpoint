@@ -155,6 +155,8 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
 require_once(sCLASS_PATH . '/payment_route.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 
 $aMsgCds = array();
 

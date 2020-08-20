@@ -138,6 +138,8 @@ require_once(sCLASS_PATH . '/payment_route.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 
 
 /**

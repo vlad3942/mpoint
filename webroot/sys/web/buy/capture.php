@@ -83,6 +83,9 @@ require_once(sCLASS_PATH ."/mada_mpgs.php");
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
+
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input

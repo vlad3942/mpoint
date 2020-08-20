@@ -18,3 +18,4 @@ CREATE TABLE Log.paymentsecureinfo_tbl
    CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) WITHOUT OIDS;
 ALTER TABLE Log.paymentsecureinfo_tbl OWNER TO mpoint;
+ALTER TABLE log.additional_data_tbl ALTER COLUMN value TYPE text;
