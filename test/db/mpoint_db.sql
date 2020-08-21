@@ -4793,6 +4793,10 @@ INSERT INTO type_tbl VALUES (102, 'Points Top-Up Purchase', '2012-09-29 11:46:12
 INSERT INTO type_tbl VALUES (1004, 'Points Top-Up', '2012-09-29 11:46:12.060279', '2012-09-29 11:46:12.060279', true);
 INSERT INTO type_tbl VALUES (1005, 'Points Purchase', '2012-09-29 11:46:12.060279', '2012-09-29 11:46:12.060279', true);
 INSERT INTO type_tbl VALUES (1007, 'Points Reward', '2012-09-30 10:42:49.38124', '2012-09-30 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (1, 'Shopping Online', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (2, 'Shopping Offline', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (3, 'Self Service Online', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
+INSERT INTO type_tbl VALUES (4, 'Self Service Offline', '2020-07-15 10:42:49.38124', '2020-07-15 10:42:49.38124', true);
 
 
 --
@@ -8427,3 +8431,22 @@ ALTER TABLE log.flight_tbl
   ADD COLUMN time_zone character varying(10);
 ALTER TABLE log.flight_tbl
   DROP COLUMN additional_data_ref;
+ CREATE TABLE Log.paymentsecureinfo_tbl
+(
+   id       SERIAL,
+   txnid    INT4 NOT NULL,
+   mdStatus TEXT,
+   mdErrorMsg TEXT,
+   veresEnrolledStatus TEXT,
+   paresTxStatus TEXT,
+   eci TEXT,
+   cavv TEXT,
+   cavvAlgorithm TEXT,
+   md TEXT,
+   PAResVerified TEXT,
+   PAResSyntaxOK TEXT,
+   protocol TEXT,
+   cardType TEXT,
+   CONSTRAINT payment_secure_pk PRIMARY KEY (id),
+   CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
+) WITHOUT OIDS;

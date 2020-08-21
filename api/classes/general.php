@@ -12,7 +12,7 @@
  * @package General
  * @version 1.11
  */
-
+require_once sCLASS_PATH .'/Parser.php';
 /**
  * General class for functionality methods which are used by several different modules or components
  *
@@ -509,7 +509,16 @@ class General
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
 			throw new mPointException("Unable to update associated transaction: ". $iTxnID. " of original transaction: ".$oTI->getID(), 1004);
-		}
+		}else{
+		    // Update attempt count of original transaction
+            $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET sessionid = ".$iSessionId." , attempt = attempt+1 WHERE id=".$oTI->getID() ;
+
+            if (is_resource($this->getDBConn()->query($sql) ) === false)
+            {
+                throw new mPointException("Unable to update attemp count of original transaction: ".$oTI->getID(), 1004);
+            }
+        }
 		return $iTxnID ;
 	}
 
@@ -560,7 +569,7 @@ class General
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_AssociatedTxnInfo);
 
-        // Add entry into Passbook
+        /*******************************
         $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
         $passbookEntry = new PassbookEntry
         (
@@ -587,29 +596,16 @@ class General
             $txnPassbookObj->performPendingOperations();
         }
 
-
         $txnPassbookObj->updateInProgressOperations($obj_TxnInfo->getAmount(), Constants::iPAYMENT_ACCEPTED_STATE, Constants::sPassbookStatusError);
+        ********************************/
 
-        $this->newMessage($iAssociatedTxnId, Constants::iINPUT_VALID_STATE, "Payment retried using dynamic routing ");
-        $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_REJECTED_STATE, "Payment Rejected");
+        $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
 
-
-
-        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-		if ($code == "100") {
-			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
-		} else if ($code == "2000") {
-			$xml .= '<status code="2000">Payment authorized</status>';
-		} else if (strpos ( $code, '2005' ) !== false) {
-			header ( "HTTP/1.1 303" );
-			$xml .= $code;
-		} else {
-			$xml .= '<status code="92">Authorization failed, ' . $obj_PSPConfig->getName () . ' returned error: ' . $code . '</status>';
-		}
-	
-		return $xml ;
+
+		return $code ;
 			
 	}
 
@@ -1315,12 +1311,11 @@ class General
 
     public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
     {
-        $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+        $sql = "SELECT max(attempt) as attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
 					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
 					AND countryid = '.$countryConfig->getID()."
-					AND created > NOW() - interval '15 days' 
-					ORDER BY created DESC LIMIT 1";
+					AND created > NOW() - interval '15 days' ";
 //			echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
@@ -1415,6 +1410,99 @@ class General
         {
             trigger_error ( 'Get AdditionalProperty From DB error - .' . $mPointException->getMessage(), E_USER_ERROR );
         }
+    }
+
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    {
+        $xml = '';
+        if ($code == "100") {
+            $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+        } else if ($code == "2000") {
+            $xml = '<status code="2000">Payment authorized</status>';
+        } else if ($code == "2009") {
+            $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
+        } else if (strpos($code, '2005') !== false) {
+            header("HTTP/1.1 303");
+            $xml = $code;
+        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true') {
+            $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
+            $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
+            if(empty($iAlternateRoute) === false) {
+                $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
+            }else{
+                $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+            }
+        }else{
+            $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+            header("HTTP/1.1 502 Bad Gateway");
+            $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+        }
+        return $xml;
+    }
+
+
+    public static function applyRule(SimpleXMLElement $obj_XML,$aRuleProperties=array())
+    {
+        $parser = new  \mPoint\Core\Parser();
+        $parser->setContext($obj_XML);
+        foreach ($aRuleProperties as $value )
+        {
+            $parser->setRules($value);
+        }
+        return $parser->parse();;
+    }
+
+    /**
+     * Logs payment 3ds secure information.
+     * @param int $txnId
+     * @param array $aSecureInfo
+     * @throws mPointException
+     */
+    public function storePaymentSecureInfo($txnId,$aSecureInfo)
+    {
+        $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
+					(txnid, mdStatus, mdErrorMsg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm,md,PAResVerified,PAResSyntaxOK,protocol,cardType)
+				VALUES
+					(". $txnId. ", '". $aSecureInfo['mdStatus'] ."', '". $aSecureInfo['mdErrorMsg'] ."', '". $aSecureInfo['veresEnrolledStatus'] ."',  '". $aSecureInfo['paresTxStatus'] ."',  '". $aSecureInfo['eci'] ."','". $aSecureInfo['cavv'] ."','". $aSecureInfo['cavvAlgorithm'] ."','". $aSecureInfo['md'] ."','". $aSecureInfo['PAResVerified'] ."'
+					,'". $aSecureInfo['PAResSyntaxOK'] ."','". $aSecureInfo['protocol'] ."','". $aSecureInfo['cardType'] ."')";
+        if (is_resource($this->getDBConn()->query($sql) ) === false)
+        {
+            throw new mPointException("Unable to insert new payment secure message for txn id: ". $txnId, 1005);
+        }
+    }
+
+    /**
+     * gets payment 3ds secure information.
+     * @param int $txnId
+     * @return array
+     * @throws mPointException
+     */
+    public function getPaymentSecureInfo($txnId)
+    {
+        $sql = "SELECT  mdStatus, mdErrorMsg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm,md,PAResVerified,PAResSyntaxOK,protocol,cardType 
+        FROM LOG".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl WHERE txnid=".$txnId;
+        $aSecureInfo = [];
+        $rsa = $this->getDBConn()->getAllNames ( $sql );
+        if (empty($rsa) === false )
+        {
+            foreach ($rsa as $rs)
+            {
+                $aSecureInfo["mdStatus" ] = $rs ["MDSTATUS"];
+                $aSecureInfo["mdErrorMsg" ] = $rs ["MDERRORMSG"];
+                $aSecureInfo["veresEnrolledStatus" ] = $rs ["VERESENROLLEDSTATUS"];
+                $aSecureInfo["paresTxStatus" ] = $rs ["PARESTXSTATUS"];
+                $aSecureInfo["eci" ] = $rs ["ECI"];
+                $aSecureInfo["cavv" ] = $rs ["CAVV"];
+                $aSecureInfo["cavvAlgorithm" ] = $rs ["CAVVALGORITHM"];
+                $aSecureInfo["PAResVerified" ] = $rs ["PARESVERIFIED"];
+                $aSecureInfo["PAResSyntaxOK" ] = $rs ["PARESSYNTAXOK"];
+                $aSecureInfo["protocol" ] = $rs ["PROTOCOL"];
+                $aSecureInfo["cardType" ] = $rs ["CARDTYPE"];
+            }
+        }
+        return $aSecureInfo;
+
     }
 }
 ?>

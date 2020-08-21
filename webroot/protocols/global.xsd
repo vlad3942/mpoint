@@ -17,6 +17,7 @@
 	<xs:attribute name="sdk-version" type="version" use="optional"/>
 	<xs:attribute name="app-version" type="version" use="optional"/>
 	<xs:attribute name="profileid" type="xs:string" use="optional"/>
+	<xs:attribute name="locale" type="xs:string" use="optional"/>
 </xs:complexType>
 
 <xs:complexType name="get-updated-core-data">
@@ -50,7 +51,7 @@
 <xs:complexType name="phone">
 	<xs:simpleContent>
 		<xs:extension base="xs:token">
-			<xs:attribute name="country-id" type="countryid" use="required" />
+			<xs:attribute name="country-id" type="xs:string" use="required" />
 			<xs:attribute name="operator-id" type="operatorid" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>

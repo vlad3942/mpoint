@@ -5,9 +5,9 @@ require_once sCLASS_PATH .'/Parser.php';
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
     private $_obj_ResponseXML = null;
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
 
 	public function notifyClient($iStateId, array $vars, $surePay)
@@ -577,11 +577,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$obj_HTTP->disConnect();
 			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
 			
-			if ($code == 200 || $code == 303 )
+			if ($code == 200 || $code == 303)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$sql = "";
+                $subCode = 0;
 				
 				if(count($obj_XML->transaction) > 0)
 				{
@@ -591,20 +592,30 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
 					}
 				 $code = $obj_XML->transaction->status["code"];
+                 $subCode = $obj_XML->transaction->status["sub-code"];
 				} 
-				else { $code = $obj_XML->status["code"]; }
+				else {
+				    $code = $obj_XML->status["code"];
+                    $subCode = $obj_XML->status["sub-code"];
+				}
 				
 				$approvalCode = $obj_XML->{'approval-code'};
 				
 				if($approvalCode != ''){
 					$sql .= ",approval_action_code = '".$approvalCode."'";
 				}
-					
+
+                if($code == Constants::iPAYMENT_REJECTED_STATE && $this->getTxnInfo()->hasEitherSoftDeclinedState($subCode) === true){
+                    $code = Constants::iPAYMENT_SOFT_DECLINED_STATE;
+                }
 
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
-                    $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+				    $obj_XML= simplexml_load_string($obj_HTTP->getReplyBody() );
+				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';
+                    $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
+                    //$this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
 					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
@@ -621,7 +632,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
-			
+			else if($code == 504){
+                trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+                return $code;
+            }
 			else { throw new mPointException("Authorization failed with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
@@ -1058,6 +1072,20 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 		    //Produce Country config based on the country id
             CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
+
+            if(empty($obj_Card->address->{'state'}) === false)
+            {
+                $pos = strrpos($obj_Card->address->{'state'}, "[");
+                if ($pos > 0)
+                {
+                    $obj_Card->address->{'state'} = trim(substr($obj_Card->address->{'state'}, 0, $pos) );
+                }
+                else
+                {
+                    $obj_Card->address->{'state'} = trim($obj_Card->address->{'state'});
+                }
+            }
+
 	        $b .= $obj_Card->address->asXML();
 		}
 		
@@ -1286,5 +1314,38 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $aStatisticalData[$rs['KEY']] = $rs['VALUE'];
         }
         return $aStatisticalData;
+    }
+
+    public function authenticate($xml)
+    {
+        try {
+            $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["authenticate"]);
+
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+            $obj_HTTP->disConnect();
+
+            if ($code == 200 || $code == 303) {
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+                $code = $obj_XML->status["code"];
+            }
+
+            $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+            // In case of 3D verification status code 2005 will be received
+            if ($code == 2005) {
+                $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
+                $str = str_replace("<root>", "", $str);
+                $code = str_replace("</root>", "", $str);
+
+            }
+            else {
+                throw new mPointException("Authenticate failed with PSP: " . $this->obj_PSPConfig->getName() . " responded with HTTP status code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
+            }
+        } catch (mPointException $e) {
+            trigger_error("Authenticate failed of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
+        }
+
+        return $code;
     }
 }

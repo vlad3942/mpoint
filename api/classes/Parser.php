@@ -128,7 +128,8 @@ namespace mPoint\Core {
          */
         public function setContext($context)
         {
-            $contextXMLElement = @simplexml_load_string($context);
+            if(is_a($context, 'SimpleXMLElement') === false) { $contextXMLElement = @simplexml_load_string($context); }
+            else { $contextXMLElement = $context; }
             if ($contextXMLElement) {
                 array_push($this->_sContext, $contextXMLElement);
             }
@@ -254,7 +255,22 @@ namespace mPoint\Core {
                         }
                         $stringIndex = $nextIndex;
                         break;
+                    case strpos($currentString, '!==') === 0; // !== Operator will compare LHS with RHL
+                        $stringIndex += 3;
+                        $nextIndex = $stringIndex;
 
+                        // This will create a substring which need to compare
+                        $xmlVariable = $this->_getSubstring($rule, array('=', 'AND', 'OR'), $stringIndex, $nextIndex);
+                        if ($rule[$stringIndex] === '<' || $rule[$stringIndex] === '"' || $rule[$stringIndex] === '(') {
+                            $xmlVariable = $this->_parseInput($xmlVariable);
+                        }
+                        if ($output !== $xmlVariable) {
+                            $output = true;
+                        } else {
+                            $output = false;
+                        }
+                        $stringIndex = $nextIndex;
+                        break;
                     case strpos($currentString, 'AND') === 0; // AND is used to check all conditions are true or not
                         $stringIndex += 3;
                         $nextIndex = $stringIndex;
@@ -335,7 +351,12 @@ namespace mPoint\Core {
                         if (count($functionArg) > 0) {
                             for ($functionArgIndex = 0, $functionArgMaxIndex = count($functionArg); $functionArgIndex < $functionArgMaxIndex; $functionArgIndex++) {
 
-                                if ($functionArg[$functionArgIndex][0] === '<' || $functionArg[$functionArgIndex][0] === '"' || $functionArg[$functionArgIndex][0] === '(') {
+                                if ($functionArg[$functionArgIndex][0] === '<' || $functionArg[$functionArgIndex][0] === '"' || $functionArg[$functionArgIndex][0] === '(')
+                                {
+                                    if( $functionArg[$functionArgIndex][0] === '(')
+                                    {
+                                        $functionArg[$functionArgIndex] = str_replace(',','.',$functionArg[$functionArgIndex]);
+                                    }
                                     $functionArg[$functionArgIndex] = $this->_parseInput($functionArg[$functionArgIndex]);
                                 }
                             }

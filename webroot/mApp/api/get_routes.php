@@ -27,7 +27,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientId);
         if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
         {
-            $obj_RoutesConfig = ClientRoutesConfig::produceConfigurations($_OBJ_DB, $clientId);
+            $obj_RoutesConfig = ClientRoutesConfig::produceConfig($_OBJ_DB, $clientId);
             $routesCount = count($obj_RoutesConfig);
             $xml = '';
             $xml .= '<routes>';

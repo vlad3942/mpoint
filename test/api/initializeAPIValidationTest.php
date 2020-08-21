@@ -578,7 +578,6 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->constHTTPClient();
 		$this->_httpClient->connect();
 
-		$xml = $this->getInitDoc(113, 1100, NULL,null, 200,null,null, "1.9");
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);

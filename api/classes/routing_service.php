@@ -114,6 +114,7 @@ class RoutingService extends General
         $body .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
         $body .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $body .= '<transaction>';
+        $body .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
         $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
         $body .= '<amount>';
         if(empty($this->_iAmount)===false)
@@ -296,6 +297,7 @@ class RoutingService extends General
                     if(count($obj_OrderInfo->getFlightConfigs()) > 0 )
                     {
                         $xml .= '<airline_data>';
+                        $xml .= '<flight_details>';
                         foreach ($obj_OrderInfo->getFlightConfigs() as $flight_Obj)
                         {
                             if (($flight_Obj instanceof FlightInfo) === TRUE)
@@ -305,17 +307,15 @@ class RoutingService extends General
                                 $xml .= '<trip_count>'.$flight_Obj->getATripCount().'</trip_count>';
                                 $xml .= '<service_level>'.$flight_Obj->getAServiceLevel().'</service_level>';
                                 $xml .= '<service_class>' . $flight_Obj->getServiceClass () . '</service_class>';
-                                $xml .= '<flight_number>' . $flight_Obj->getFlightNumber () . '</flight_number>';
-                                $xml .= '<departure_airport>' . $flight_Obj->getDepartureAirport () . '</departure_airport>';
-                                $xml .= '<arrival_airport>' . $flight_Obj->getArrivalAirport () . '</arrival_airport>';
-                                $xml .= '<airline_code>' . $flight_Obj->getAirline () . '</airline_code>';
                                 $xml .= '<departure_date>' . date("Y-m-d\Th:i:s\Z", strtotime($flight_Obj->getDepartureDate ())) . '</departure_date>';
                                 $xml .= '<arrival_date>' . date("Y-m-d\Th:i:s\Z", strtotime($flight_Obj->getArrivalDate ())) . '</arrival_date>';
                                 $xml .= '<departure_country>' . $flight_Obj->getDepartureCountry () . '</departure_country>';
                                 $xml .= '<arrival_country>' . $flight_Obj->getArrivalCountry () . '</arrival_country>';
+                                $xml .= '<time_zone>' . $flight_Obj->getTimeZone () . '</time_zone>';
                                 $xml .= '</flight_detail>';
                             }
                         }
+                        $xml .= '</flight_details>';
                         $xml .= '</airline_data>';
                     }
                 }

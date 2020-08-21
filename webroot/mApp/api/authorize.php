@@ -196,7 +196,7 @@ $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 	
-$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
+$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 try
 {
@@ -227,7 +227,7 @@ try
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
 						
 							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-
+							
 						}
 						catch (TxnInfoException $e) { $obj_TxnInfo = null; } // Transaction not found
 
@@ -243,7 +243,11 @@ try
 							{
 								if (is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
-									if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"] ) !== Constants::iNEW_CARD_PURCHASE_TYPE)
+                                    $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
+                                    $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
+                                    $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
+
+									if ($isStoredCardPayment === true)
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
@@ -272,8 +276,8 @@ try
 											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE) &&
 											$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 											{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
-
-
+										
+										
 										$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -328,14 +332,18 @@ try
                                             $obj_TransacionCountryConfig = CountryConfig::produceConfig( $_OBJ_DB,$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]);
                                         }
                                         // Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-                                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2 && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'})  === true)
+                                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") != 2 && (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'})  === true &&  $obj_TxnInfo->getInitializedCurrencyConfig()->getID() === $obj_TxnInfo->getCurrencyConfig()->getID()))
                                         {
                                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
                                         //made hmac mandatory for dcc
-                                        else if (General::xml2bool($obj_Elem["dcc"]) === true  && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
+                                        else if (General::xml2bool($obj_Elem["dcc"]) === true)
                                         {
-                                            if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+											$iForeignExchangeId = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'};
+											if(empty($iForeignExchangeId) === true){
+												$iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange, $obj_TxnInfo->getPSPID());
+											}
+											if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo, $iForeignExchangeId) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
 
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
@@ -350,11 +358,15 @@ try
                                         }
                                        else
                                        {
+											$iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange, $obj_TxnInfo->getPSPID());
+											if(General::xml2bool($obj_Elem["dcc"]) === true && empty($iForeignExchangeId) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === false)
+											{
+												$obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+											}
                                            if (General::xml2bool($obj_Elem["dcc"]) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false &&
                                                (int)$obj_TxnInfo->getAmount() === (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} &&
                                                ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
                                                {
-                                                   $obj_TxnInfo->setExternalReference($_OBJ_DB,intval($obj_Elem["pspid"]),Constants::iForeignExchange,$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'});
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
                                                    $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
@@ -379,10 +391,10 @@ try
                                         	}
                                         }
 
-                                        if (is_object($obj_Elem->capture_type) && count($obj_Elem->capture_type) > 0)
+                                        if (count($obj_Elem->capture_type) > 0)
                                         {
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
-                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),null, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
@@ -482,13 +494,8 @@ try
 													// 3rd Party Wallet
 													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || intval($card_psp_id)== Constants::iMVAULT_PSP)
 													{
-													    $iTypeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
-                                                        if ($iTypeId > 0) {
-                                                            if (empty($card_psp_id) === FALSE && $card_psp_id == Constants::iMVAULT_PSP) {
-                                                                $iTypeId = Constants::iMVAULT_WALLET;
-                                                            }
-
-                                                            $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $iTypeId, $aHTTP_CONN_INFO);
+                                                        if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) > 0) {
+                                                            $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), $aHTTP_CONN_INFO, $card_psp_id);
                                                             if (empty($wallet_Processor) === true) {
                                                                 $obj_XML = simpledom_load_string($obj_mCard->getCards((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount));
 
@@ -927,6 +934,7 @@ try
                                                                                 } else {
                                                                                     $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                 }
+
                                                                                 // Authorization succeeded
                                                                                 if ($code == "100") {
                                                                                     $xml .= '<status code="100">Payment Authorized using Stored Card</status>';
@@ -955,7 +963,7 @@ try
                                                                                     $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
                                                                                     header("HTTP/1.1 502 Bad Gateway");
-                                                                                    echo 'in1';
+
                                                                                     $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                                                                                 }
 

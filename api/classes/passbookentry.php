@@ -245,4 +245,27 @@ class PassbookEntry implements JsonSerializable
     {
         return $this->_initializedAmount;
     }
+
+    /**
+     * Return XML for given passbook table entries
+     */
+    public function toXML()
+    {
+		$xml = '<id>'.$this->getId().'</id>';
+		if(empty($this->_requestedOperation) === false){
+			$xml .= '<code>'.$this->getRequestedOperation().'</code>';
+		}
+		else {
+			$xml .= '<code>'.$this->getPerformedOperation().'</code>';
+		}
+		$xml .= '<status>'.$this->getStatus().'</status>';
+		$xml .= '<amount currency-id="'.$this->getCurrencyId().'">'.$this->getAmount().'</amount>';
+		if (empty($this->_externalReference) === false){
+			$xml .= '<extref>'.$this->getExternalReference().'</extref>';
+		}
+		$xml .= '<created>'.$this->getCreated().'</created>';
+		$xml .= '<modified>'.$this->getModified().'</modified>';
+
+		return $xml;
+    }
 }

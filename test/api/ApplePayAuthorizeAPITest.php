@@ -50,10 +50,7 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertEquals(1, count($aStates) );
-
-        $s = 0;
-        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+        $this->assertEquals(0, count($aStates) );
 
     }
 
@@ -102,10 +99,9 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertEquals(2, count($aStates) );
+        $this->assertEquals(1, count($aStates) );
 
         $s = 0;
-        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
         $this->assertEquals(Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $aStates[$s++]);
 
     }
