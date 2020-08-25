@@ -105,6 +105,12 @@ class ClientInfo
      * @var string
      */
     private $_sLocale;
+
+    /**
+     * Hold customer reference
+     * @var string
+     */
+    private $_sCustomerRef;
 	
 //	sdk-version
 
@@ -112,7 +118,7 @@ class ClientInfo
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0, $profileTypeId=null, $locale=null)
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0, $profileTypeId=null, $locale=null, $customerRef=null)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -123,11 +129,12 @@ class ClientInfo
 		$this->_sDeviceID = trim($dvc);
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
-		$this->_iProfileID = (integer) $profileid;
+		$this->_iProfileID = $profileid;
 		$this->_fAppVersion = $appversion;
 		$this->_fSDKVersion = $sdkversion;
 		$this->_iprofileTypeID = $profileTypeId;
-		$this->_sLocale = trim($locale);		
+		$this->_sLocale = trim($locale);
+		$this->_sCustomerRef = trim($customerRef);
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -218,6 +225,12 @@ class ClientInfo
 	 * @var string
 	 */
 	public function getLocale() { return $this->_sLocale; }
+    /**
+     * Returns the customer reference
+     *
+     * @var string
+     */
+    public function getCustomerRef() { return $this->_sCustomerRef; }
     
 
 	public function toXML()
@@ -362,7 +375,7 @@ class ClientInfo
         $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
         $httpXForwardedForIp = $httpXForwardedForIps[0];
 
-        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId, $oXML["locale"]);
+        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId, $oXML["locale"], (string) $oXML->{"customer-ref"});
 	}
 }
 ?>
