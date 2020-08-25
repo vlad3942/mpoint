@@ -180,7 +180,7 @@ abstract class Callback extends EndUserAccount
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null, $sSwishPaymentID=null)
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
@@ -189,6 +189,10 @@ abstract class Callback extends EndUserAccount
 		if($issuingbank != '')
 		{
 			 $sql .= ", issuing_bank = '".$issuingbank."'";
+		}
+		if(empty($sSwishPaymentID) === false)
+		{
+            $sql .= ", authoriginaldata = '".$sSwishPaymentID."'";
 		}
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -954,6 +958,8 @@ abstract class Callback extends EndUserAccount
 			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"]);
         case (Constants::iCyberSource_PSP):
 			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
+        case (Constants::iSWISH_APM):
+            return new SWISH($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["swish"]);
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

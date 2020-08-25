@@ -19,7 +19,7 @@
 		
 		if(is_object( $obj_ClientConfig )) 
 		{
-			$accounts = $obj_ClientConfig->getAccountsConfigurations();
+			$accounts = $obj_ClientConfig->getAccountsConfigurations($_OBJ_DB);
 			
 			/* if($obj_ClientConfig->getCallbackURL() !== "")
 				$urls["Callback"] = $obj_ClientConfig->getCallbackURL()."?".htmlentities("from=webpage&url=callback");

@@ -140,6 +140,8 @@ require_once(sCLASS_PATH ."/cellulant.php");
 require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the SWISH component
+require_once(sCLASS_PATH ."/apm/swish.php");
 // </editor-fold>
 
 ignore_user_abort(true);

@@ -148,6 +148,8 @@ require_once(sCLASS_PATH ."/cybersource.php");
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the SWISH component
+require_once(sCLASS_PATH ."/apm/swish.php");
 
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
@@ -402,17 +404,26 @@ try
 											if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
 											{
 												$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-												$obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML() );
-												if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef(); }
-												if (floatval($obj_TxnInfo->getMobile() ) > 0)
-												{
-													$obj_Customer->mobile = $obj_TxnInfo->getMobile();
-													$obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig ()->getID ());
-													$obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
-												}
-												if (strlen($obj_TxnInfo->getEMail() ) > 0) { $obj_Customer->email = $obj_TxnInfo->getEMail(); }
-												$obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-												$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}),(integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"] );
+												if($obj_CustomerInfo === null) {
+                                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                                    if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
+                                                        $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
+                                                    }
+                                                    if (floatval($obj_TxnInfo->getMobile()) > 0) {
+                                                        $obj_Customer->mobile = $obj_TxnInfo->getMobile();
+                                                        $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
+                                                        $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+                                                    }
+                                                    if (strlen($obj_TxnInfo->getEMail()) > 0) {
+                                                        $obj_Customer->email = $obj_TxnInfo->getEMail();
+                                                    }
+                                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+                                                    $code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
+                                                }
+												else{
+												    //Account Not Found
+												    $code = 5;
+                                                }
 											}
 											// Authentication is not required for payment methods that are sending a token or Invoice
 											elseif ( ($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
@@ -609,7 +620,7 @@ try
 													else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
 													{
 														$iPSPID = -1;
-														$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods();
+														$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
 														foreach ($aPaymentMethods as $m)
 														{
 															if ($m->getPaymentMethodID() == Constants::iINVOICE) { $iPSPID = $m->getPSPID(); }
@@ -1053,7 +1064,7 @@ try
 									foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
 									{
 										$iPSPID = -1;
-										$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods();
+										$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
 										foreach ($aPaymentMethods as $m)
 										{
 											if ($m->getPaymentMethodID() == Constants::iVOUCHER_CARD) { $iPSPID = $m->getPSPID(); }
