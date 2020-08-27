@@ -128,6 +128,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 
 -------------G-CASH 2C2P-ALC FOR CEBU START------------
 
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT 10077, PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT <client ID>, PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 
 -------------G-CASH 2C2P-ALC SYSTEM------------
