@@ -18,3 +18,7 @@ CREATE TABLE Log.paymentsecureinfo_tbl
    CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) WITHOUT OIDS;
 ALTER TABLE Log.paymentsecureinfo_tbl OWNER TO mpoint;
+
+ALTER TABLE log.address_tbl add mobile_country_id varchar(4) null;
+ALTER TABLE log.address_tbl add mobile varchar(15) null;
+ALTER TABLE log.address_tbl add email varchar(50) null;

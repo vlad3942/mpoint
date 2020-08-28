@@ -109,6 +109,7 @@
 												<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element ref="contact-details" minOccurs="0" maxOccurs="1" />
 											</xs:all>
 											<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
@@ -1280,9 +1281,19 @@
 				<xs:union memberTypes="state xs:string" />
 			</xs:simpleType>
 		</xs:element>
+		<xs:element ref="contact-details" minOccurs="0" maxOccurs="1" />
 	</xs:sequence>
 	<xs:attribute name="country-id" type="countryid" use="required" />
 </xs:complexType>
+
+<xs:element name="contact-details">
+	<xs:complexType>
+		<xs:all>
+			<xs:element type="mobile" name="mobile" minOccurs="0" maxOccurs="1"/>
+			<xs:element type="email" name="email" minOccurs="0" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
+</xs:element>
 
 <xs:complexType name="voucher">
 	<xs:attribute name="id" type="xs:positiveInteger" use="required" />
