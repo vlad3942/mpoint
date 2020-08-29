@@ -1067,6 +1067,20 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/ca
 $aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
+/**
+ * Connection info for connecting to GrabPay
+ */
+$aHTTP_CONN_INFO["grabpay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["grabpay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["grabpay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["grabpay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["grabpay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["grabpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["grabpay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["capture"] = "/mpoint/grab-pay/capture";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["initialize"] = "/mpoint/grab-pay/initialize";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["refund"] = "/mpoint/grab-pay/refund";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["status"] = "/mpoint/grab-pay/status";
 
 
 

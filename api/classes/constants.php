@@ -1036,7 +1036,7 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: GrabPay
 	 *
 	 */
-	const iGRAB_PAY_PSP = 66;
+	const iGRAB_PAY_PSP = 67;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1474,7 +1474,7 @@ abstract class Constants
 	 * Unique Card ID for transaction's made using Grab Pay
 	 *
 	 */
-	const iGRAB_PAY = 89;
+	const iGRAB_PAY = 94;
 	
 
 	/**
