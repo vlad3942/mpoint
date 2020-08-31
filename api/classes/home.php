@@ -456,7 +456,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
+		$sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
 					SC.id AS typeid, SC.name AS type, CA.stateid, SC.cvclength AS cvclength,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
@@ -488,8 +488,7 @@ class Home extends General
 														       FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 														       WHERE accountid = EUA.id) )";
 		}
-		$sql .= "
-				ORDER BY CA.position ASC NULLS LAST, SC.name ASC";
+		$sql .= " ORDER BY EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, CA.position ASC NULLS LAST, SC.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
