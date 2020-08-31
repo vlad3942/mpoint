@@ -899,6 +899,44 @@ try
                                                                                 $xml .= '<status code="92">Authorization failed, CHUBB returned error: ' . $code . '</status>';
                                                                             }
                                                                             break;
+                                                                        case (Constants::iSWISH_APM): // SWISH
+                                                                            try {
+                                                                                
+                                                                                $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
+                                                                                
+                                                                                if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
+                                                                                    $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
+                                                                                    $code = $obj_Processor->authenticate($requset);
+                                                                                } else {
+                                                                                    $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                }
+                                                                                
+                                                                                // Authorization succeeded
+                                                                                if ($code == "2001") {
+                                                                                    $xml .= '<status code="2001">Payment Captured</status>';
+                                                                                } else if ($code == "2000") {
+                                                                                    $xml .= '<status code="2000">Payment authorized</status>';
+                                                                                } // Error: Authorization declined'
+                                                                                else if ($code == "2010") {
+                                                                                    $xml .= '<status code="2010">Payment declined</status>';
+                                                                                } // Error: Authorization declined'
+                                                                                
+                                                                                else {
+                                                                                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                                                                                    
+                                                                                    header("HTTP/1.1 502 Bad Gateway");
+                                                                                    
+                                                                                    $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+                                                                                }
+                                                                                
+                                                                            } catch (PaymentProcessorException $e) {
+                                                                                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                                                                                
+                                                                                header("HTTP/1.1 500 Internal Server Error");
+                                                                                
+                                                                                $xml .= '<status code="99">' . $e->getMessage() . '</status>';
+                                                                            }
+                                                                            break;
 
                                                                         default:    // Use Payment processor for PSP.
                                                                             try {
