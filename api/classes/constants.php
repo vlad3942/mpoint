@@ -1037,6 +1037,11 @@ abstract class Constants
 	 *
 	 */
 	const iSWISH_APM = 66;
+	/**
+	 * Unique ID for the Payment Service Provider: GrabPay
+	 *
+	 */
+	const iGRAB_PAY_PSP = 67;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1470,6 +1475,11 @@ abstract class Constants
 	 *
 	 */
 	const iDRAGONPAYOFFLINE = 88;
+	/**
+	 * Unique Card ID for transaction's made using Grab Pay
+	 *
+	 */
+	const iGRAB_PAY = 94;
 	
 	/**
 	 * Unique Card ID for transaction's made using SWISH
