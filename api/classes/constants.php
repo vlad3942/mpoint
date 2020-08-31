@@ -1033,6 +1033,11 @@ abstract class Constants
 	 */
 	const iCEBU_RMFSS_FSP = 65;
 	/**
+	 * Unique ID for the Payment APM: SWISH
+	 *
+	 */
+	const iSWISH_APM = 66;
+	/**
 	 * Unique ID for the Payment Service Provider: GrabPay
 	 *
 	 */
@@ -1476,6 +1481,12 @@ abstract class Constants
 	 */
 	const iGRAB_PAY = 94;
 	
+	/**
+	 * Unique Card ID for transaction's made using SWISH
+	 *
+	 */
+	const iSWISH = 88;
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -1664,23 +1675,15 @@ abstract class Constants
     const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
 
     /*
-    *  Exclude list of payment declined sub code
-    * */
-    const iPAYMENT_CANCELLED = 2010305;
-    const iPAYMENT_DUPLICATE_TRANSACTION = 2010310;
-    const iPAYMENT_TRANSACTION_FAILED = 2010314;
-    const iPAYMENT_TRANSACTION_ALREADY_CAPTURED = 2010317;
-    const iPAYMENT_INVALID_CAPTURE_ATTEMPTED = 2010319;
-    const iPAYMENT_TRANSACTION_NOT_POSTED = 2010320;
-    const iPAYMENT_TRANSACTION_EXCEED_APPROVAL_LIMIT = 2010331;
-    const iPAYMENT_TRANSACTION_CANNOT_VOID_CAPTURED = 2010332;
-    const iPAYMENT_TRANSACTION_CANNOT_REFUND = 2010333;
-    const iPAYMENT_TRANSACTION_CREDIT_AMOUNT_EXCEEDS = 2010334;
-
-    /*
      * Defines unique ID of the State that indicates payment soft declined
      */
     const iPAYMENT_SOFT_DECLINED_STATE = 20103;
+
+    /*
+     * Define upper and lower limit for soft decline status sub code
+     */
+    const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
+    const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
 
 }
 
