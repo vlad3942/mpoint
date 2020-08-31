@@ -18,3 +18,6 @@ CREATE TABLE Log.paymentsecureinfo_tbl
    CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) WITHOUT OIDS;
 ALTER TABLE Log.paymentsecureinfo_tbl OWNER TO mpoint;
+
+DROP INDEX log.externalreference_transaction_idx;
+CREATE INDEX CONCURRENTLY externalreference_transaction_idx ON log.externalreference_tbl (txnid, externalid, pspid, type);
