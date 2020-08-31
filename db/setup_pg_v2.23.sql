@@ -138,5 +138,5 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd)
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>, 67, '-1');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'CLIENT_ID', '14c3e87ce4e04e82954fd78cea2b3a64', id, 'merchant',1 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=67;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'CLIENT_SECRET', 'dcyDLGEYkeLZA1YM', id, 'merchant',1 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=67;
-INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled) VALUES (<>, 94, 67, 640, 1, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled,capture_type,psp_type) VALUES (<>, 94, 67, 640, 1, true,2,4);
 /* ========== Grab Pay Integration = STARTS ========== */
