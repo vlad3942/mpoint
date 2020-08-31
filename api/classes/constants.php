@@ -1485,7 +1485,7 @@ abstract class Constants
 	 * Unique Card ID for transaction's made using SWISH
 	 *
 	 */
-	const iSWISH = 88;
+	const iSWISH = 92;
 	
 
 	/**
