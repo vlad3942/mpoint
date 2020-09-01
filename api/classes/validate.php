@@ -1229,7 +1229,7 @@ class Validate extends ValidateBase
         }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $this->addLeadingZeros($countryISOCode) . $mobile . $this->addLeadingZeros($countryISO_id) . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
 		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode))
 		{
 			$code = 10;
@@ -1238,9 +1238,6 @@ class Validate extends ValidateBase
 		return $code;
 	}
 
-	private function addLeadingZeros($countryId) {
-        return substr("000{$countryId}", -3);
-    }
     /**
      * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
      * The HMAC is generated based on the following data fields in the request (in that order):
