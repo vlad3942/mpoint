@@ -64,6 +64,8 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the SWISH component
+require_once(sCLASS_PATH ."/apm/swish.php");
 
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
@@ -501,6 +503,25 @@ if (count($aMsgCds) == 0)
 						        /* header ( "HTTP/1.1 502 Bad Gateway" );
 						        
 						        $xml .= '<status code="92">Authorization failed, DragonPay returned error: ' . $code . '</status>'; */
+						    }
+						    break;
+						case (Constants::iSWISH_APM) : // SWISH
+						    $obj_PSPConfig = PSPConfig::produceConfig ( $_OBJ_DB, $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), Constants::iSWISH_APM );
+						    
+						    $obj_PSP = new SWISH( $_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO ["swish"] );
+						    
+						    $code = $obj_PSP->authorize ( $obj_PSPConfig, $obj_Elem );
+						    
+						    if ($code == "2000") {
+						        $xml .= '<status code="2000">Payment authorized</status>';
+						    } else if (strpos ( $code, '2005' ) !== false) { header("HTTP/1.1 303"); $xml = $code;
+						    } 						// Error: Authorization declined
+						    else {
+						        $obj_mPoint->delMessage ( $obj_TxnInfo->getID (), Constants::iPAYMENT_WITH_ACCOUNT_STATE );
+						        
+						        /* header ( "HTTP/1.1 502 Bad Gateway" );
+						        
+						        $xml .= '<status code="92">Authorization failed, SWISH returned error: ' . $code . '</status>'; */
 						    }
 						    break;
 									

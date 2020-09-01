@@ -92,6 +92,8 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
+// Require specific Business logic for the SWISH component
+require_once(sCLASS_PATH ."/apm/swish.php");
 // Require specific Business logic for the cellulant component
 require_once(sCLASS_PATH ."/cellulant.php");
 
@@ -104,6 +106,9 @@ require_once(sCLASS_PATH ."/cybersource.php");
 
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH . "/worldpay.php");
+
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 /**
  * Input XML format
  *
@@ -142,7 +147,6 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 $sRawXML = file_get_contents("php://input");
 $obj_XML = simplexml_load_string($sRawXML);
 
-	
 $id = (integer)$obj_XML->{'threed-redirect'}->transaction["id"];
 $xml = '';
 
@@ -162,6 +166,8 @@ try
     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_TxnInfo->getPSPID()) );
 
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+
+    $obj_ClientInfo = ClientInfo::produceInfo($obj_XML->{'threed-redirect'}->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->{'threed-redirect'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 	$year = substr(strftime("%Y"), 0, 2);
 	$sExpirydate =  $year.$obj_XML->{'threed-redirect'}->transaction->card->expiry->year ."-". $obj_XML->{'threed-redirect'}->transaction->card->expiry->month;
@@ -285,7 +291,7 @@ try
                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
 
 
-                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
 
                 if ($code == "100")
                 {
