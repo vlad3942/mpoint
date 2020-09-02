@@ -126,6 +126,8 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyName', 'CebuPacificair', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyCode', '5J', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 
+-- CMP-4296
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', true, 10077, 'client', 0);
 --------------------------------------------------------------------------------
 ----  Update fraud state descriptions
 --------------------------------------------------------------------------------
