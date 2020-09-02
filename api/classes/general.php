@@ -561,7 +561,8 @@ class General
 	 */
 	public function authWithAlternateRoute(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
 	{
-		$xml = "" ;
+        global $_OBJ_TXT;
+        $xml = "" ;
 		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
 	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
@@ -600,7 +601,6 @@ class General
         ********************************/
 
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
-
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );

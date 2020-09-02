@@ -8450,3 +8450,5 @@ ALTER TABLE log.flight_tbl
    CONSTRAINT payment_secure_pk PRIMARY KEY (id),
    CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) WITHOUT OIDS;
+
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (7010, 'Payment retried using dynamic routing', 'General', 'authWithAlternateRoute');

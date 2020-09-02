@@ -65,7 +65,7 @@ class GetTransactionStatusAPITest extends baseAPITest
 
     public function testUnauthorized()
 	{
-        $xml = $this->getGetTransactionStatusDoc(1001001);
+        $xml = $this->getGetTransactionStatusDoc(1001001,113);
 
 		$this->_httpClient->connect();
 
@@ -78,7 +78,7 @@ class GetTransactionStatusAPITest extends baseAPITest
 
     public function testMissingTxnId()
     {
-        $xml = $this->getGetTransactionStatusDoc("");
+        $xml = $this->getGetTransactionStatusDoc("",113);
 
 		$this->_httpClient->connect();
 
@@ -91,7 +91,7 @@ class GetTransactionStatusAPITest extends baseAPITest
     
     public function testInvalidTxnId()
     {
-        $xml = $this->getGetTransactionStatusDoc('70063s82');
+        $xml = $this->getGetTransactionStatusDoc('70063s82',113);
 		$this->_httpClient->connect();
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);

@@ -21,7 +21,7 @@ class HomeTest extends baseAPITest
     private $_OBJ_TXT;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp():void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -70,9 +70,9 @@ class HomeTest extends baseAPITest
         $obj_mPoint = new Home($this->_OBJ_DB, $this->_OBJ_TXT );
         $getTxnStatusResponse = $obj_mPoint->getTxnStatus((int)$iTxnID,(int)$iClientID,(int)$iMode);
 
-        $this->assertContains('mpoint-id="1001001"', $getTxnStatusResponse);
-        $this->assertContains('accoutid="1100" clientid="113"', $getTxnStatusResponse);
-        $this->assertContains('country-id="100" currency="208"', $getTxnStatusResponse);
+        $this->assertStringContainsString('mpoint-id="1001001"', $getTxnStatusResponse);
+        $this->assertStringContainsString('accoutid="1100" clientid="113"', $getTxnStatusResponse);
+        $this->assertStringContainsString('country-id="100" currency="208"', $getTxnStatusResponse);
     }
 
 
@@ -131,7 +131,7 @@ class HomeTest extends baseAPITest
         $this->assertEmpty($getTxnStatusResponse);
     }
 
-    public function tearDown()
+    public function tearDown():void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();
