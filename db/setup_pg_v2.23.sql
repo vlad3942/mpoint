@@ -126,4 +126,4 @@ status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'me
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 
-update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and clientid = 10077;
+update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and cardid not in (7,8) and clientid = 10077;
