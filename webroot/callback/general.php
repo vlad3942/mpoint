@@ -136,6 +136,7 @@ require_once(sCLASS_PATH .'/fraud/provider/ezy.php');
 require_once(sCLASS_PATH .'/fraud/provider/cyberSourceFsp.php');
 require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH . '/payment_route.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
@@ -477,46 +478,20 @@ try
                 {
                     $aFraudRule = array();
                     $bIsSkipFraud = flase;
+
                     if($obj_XML->callback->transaction->card->{'info-3d-secure'})
                     {
-                        $aPaymentSecureData = array();
-                        $aPaymentSecureData['eci'] = (string)$obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
-                        $aPaymentSecureData['cavv'] = (string)$obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'};
-                        $aPaymentSecureData['cavvAlgorithm'] =(string) $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
+                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
 
-
-                        for ($j=0; $j<count($obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->param); $j++ )
-                        {
-                            $sKey = (string)$obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
-                            $sValue =(string) $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
-                            $aPaymentSecureData[$sKey] = $sValue;
-                        }
-                        $bRuleResult = $obj_mPoint->storePaymentSecureInfo($obj_TxnInfo->getID(),$aPaymentSecureData);
+                        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
                     }
                     else
                     {
-                        $aPaymentSecureData = $obj_mPoint->getPaymentSecureInfo($obj_TxnInfo->getID());
-                        if(empty($aPaymentSecureData) === false)
+                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($_OBJ_DB,$obj_TxnInfo->getID());
+                        if($paymentSecureInfo !== null)
                         {
-                            $obj_XML->callback->transaction->card->addChild('info-3d-secure');
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->addChild('cryptogram',$aPaymentSecureData['cavv']);
-                            unset($aPaymentSecureData['cavv']);
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}->addAttribute('eci',$aPaymentSecureData['eci']);
-                            unset($aPaymentSecureData['eci']);
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}->addAttribute('algorithm-id',$aPaymentSecureData['cavvAlgorithm']);
-                            unset($aPaymentSecureData['cavvAlgorithm']);
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->addChild('additional-data');
-                            foreach ($aPaymentSecureData as $key => $value)
-                            {
-                                if(empty($value) === false)
-                                {
-                                    $param = $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->addChild('param',$value);
-                                    $param->addAttribute('name',$key);
-                                }
-
-                            }
+                            $paymentSecureInfo->attachPaymentSecureNode($obj_XML->callback->transaction->card);
                         }
-
                     }
                     if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"post_fraud_rule") !== false)
                     {
