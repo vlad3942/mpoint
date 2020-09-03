@@ -1,6 +1,3 @@
--- Change the code column datatype to var_char from integer
-ALTER TABLE system.country_tbl  ALTER COLUMN code type character varying(5)
-
 -- Update/Correct invalid country codes in the database
 UPDATE System.Country_Tbl SET code = 056 WHERE alpha3code = "BEL";
 UPDATE System.Country_Tbl SET code = 040 WHERE alpha3code = "AUT";
