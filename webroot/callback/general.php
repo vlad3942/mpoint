@@ -139,6 +139,8 @@ require_once(sCLASS_PATH . '/payment_route.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 
 
 /**
@@ -345,6 +347,7 @@ try
         }
         $fee = 0;
         $sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
+        $sSwishPaymentID = (string) $obj_XML->callback->{'swishPaymentID'};
         $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
             $obj_XML->callback->transaction["external-id"],
             (integer)$obj_XML->callback->transaction->card["type-id"],
@@ -352,7 +355,7 @@ try
             $iSubCodeID,
             $fee,
             array($HTTP_RAW_POST_DATA),
-            $sIssuingBank);
+            $sIssuingBank, $sSwishPaymentID);
         // Payment Authorized: Perform a callback to the 3rd party Wallet if required
         if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
