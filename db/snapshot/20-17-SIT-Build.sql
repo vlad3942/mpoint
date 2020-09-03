@@ -5,4 +5,4 @@ ALTER TABLE log.address_tbl add email varchar(50) null;
 -- CMP-4323
 INSERT INTO client.additionalproperty_tbl
 ("key", value, enabled, externalid, "type", "scope")
-VALUES('PAYPAL_ORDER_DETAIL_DESC', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
+VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
