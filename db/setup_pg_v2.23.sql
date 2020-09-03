@@ -162,3 +162,9 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'CLIENT_SECRET', 'dcyDLGEYkeLZA1YM', id, 'merchant',1 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=67;
 INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled,capture_type,psp_type) VALUES (<>, 94, 67, 640, 1, true,2,4);
 /* ========== Grab Pay Integration = STARTS ========== */
+
+-- CMP-4323
+INSERT INTO client.additionalproperty_tbl
+("key", value, enabled, externalid, "type", "scope")
+VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
+
