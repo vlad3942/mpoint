@@ -1229,7 +1229,7 @@ class Validate extends ValidateBase
         }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $this->addLeadingZeros($countryISOCode) . $mobile . $this->addLeadingZeros($countryISO_id) . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
         $chkWithAuthTokenCustRefCustId = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt(). $authToken. $obj_ClientInfo->getCustomerRef() . $obj_ClientInfo->getProfileID());
 		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode) || strtolower($mac) === strtolower($chkWithAuthTokenCustRefCustId))
 		{
