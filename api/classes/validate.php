@@ -1239,9 +1239,6 @@ class Validate extends ValidateBase
 		return $code;
 	}
 
-	private function addLeadingZeros($countryId) {
-        return substr("000{$countryId}", -3);
-    }
     /**
      * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
      * The HMAC is generated based on the following data fields in the request (in that order):

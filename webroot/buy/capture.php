@@ -110,6 +110,8 @@ header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 
 set_time_limit(120);
 
