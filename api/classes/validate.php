@@ -1216,7 +1216,7 @@ class Validate extends ValidateBase
 	 * @param	integer $countryid				The unique ID of the country that designates the currency
 	 * @return 	integer
 	 */
-	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid,CountryConfig $obj_CountryConfig = null)
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid,CountryConfig $obj_CountryConfig = null, $authToken = null)
 	{
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
@@ -1230,7 +1230,8 @@ class Validate extends ValidateBase
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
 		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode))
+        $chkWithAuthTokenCustRefCustId = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt(). $authToken. $obj_ClientInfo->getCustomerRef() . $obj_ClientInfo->getProfileID());
+		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode) || strtolower($mac) === strtolower($chkWithAuthTokenCustRefCustId))
 		{
 			$code = 10;
 		}
