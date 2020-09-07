@@ -96,30 +96,8 @@ WHERE key = '3DVERIFICATION' and externalid = <AMEX merchant-id> ;
 ----------------------
 
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3117, 'Post-screening Check not attempted Due to rule matched', 'Fraud', '');
-
----2c2p-alc Rule---
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<isPostFraudAttemp1>OR<isPostFraudAttemp2>OR<isPostFraudAttemp3>OR<isPostFraudAttemp4>
-isPostFraudAttemp1::=<cardid>=="7"AND<eci>=="2"AND<isCryptogrm>!==""
-isPostFraudAttemp2::=<cardid>=="7"AND<eci>=="1"AND<isCryptogrm>!==""
-isPostFraudAttemp3::=<cardid>=="8"AND<eci>=="5"AND<isCryptogrm>!==""
-isPostFraudAttemp4::=<cardid>=="8"AND<eci>=="6"AND<isCryptogrm>!==""
-eci::=(card.info-3d-secure.cryptogram.@eci)
-cardid::=(card.@type-id)
-isCryptogrm::={trim.(card,info-3d-secure,cryptogram)}', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=40;
-
----First Data Rule---
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<eci>=="1"OR<eci>=="2"OR<eci>=="4"
-eci::=(card.info-3d-secure.additional-data.param[@name=''Secure3DResponse''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=62;
-
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2017, 'Authorization not attempted due to rule matched', 'Payment', '');
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mpi_rule', 'allowAuth::=<allowAuth1>OR<allowAuth2>OR<allowAuth3>OR<allowAuth4>
-pares::= (card.info-3d-secure.additional-data.param[@name=''paresTxStatus''])
-veres::= (card.info-3d-secure.additional-data.param[@name=''veresEnrolledStatus''])
-allowAuth1::= <pares>=="Y"AND<veres>=="Y"
-allowAuth2::= <pares>=="Y"AND<veres>=="A"
-allowAuth3::= <pares>=="Y"AND<veres>=="U"
-allowAuth4::= <pares>=="Y"AND<veres>=="Y"', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=<pspid>;
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'RestrictedTicket', '1', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'FareBasisCode', 'BK', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
@@ -134,3 +112,23 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl
 ("key", value, enabled, externalid, "type", "scope")
 VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
+
+
+
+DELETE FROM client.additionalproperty_tbl where key = 'post_fraud_rule';
+DELETE FROM client.additionalproperty_tbl where key = 'mpi_rule';
+---2c2p-alc Rule---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<pspid>=="40"
+pspid::=(psp-config.@id)', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=40;
+
+---First Data Rule---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<status>=="1"OR<status>=="2"OR<status>=="4"
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=62;
+---WorldPay Rule for MPI---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mpi_rule', 'isSkippAuth::=<status>!=="1"AND<status>!=="2"AND<status>!=="4"AND<status>!=="5"AND<status>!=="6"
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+---WorldPay Rule for FRAUD---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+
+update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and cardid not in (7,8) and clientid = 10077;
