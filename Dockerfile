@@ -4,6 +4,9 @@
 FROM cellpointmobile/main:php-test
 EXPOSE 80 5432
 
+COPY composer.json .
+RUN composer install -vvv --prefer-dist --no-dev
+
 # Apache vhost
 COPY docker/000-default.conf /etc/apache2/sites-available/default
 
