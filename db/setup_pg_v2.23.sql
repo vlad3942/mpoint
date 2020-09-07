@@ -108,6 +108,11 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 -- CMP-4296
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', true, 10077, 'client', 0);
 
+-- CMP-4323
+INSERT INTO client.additionalproperty_tbl
+("key", value, enabled, externalid, "type", "scope")
+VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
+
 
 
 DELETE FROM client.additionalproperty_tbl where key = 'post_fraud_rule';
