@@ -1,0 +1,12 @@
+{
+    "require": {
+        "google/cloud-pubsub": "^1.27"
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "autoload": {
+        "psr-4": {"api\\": "./api"},
+        "classmap": ["api/"]
+    }
+}
