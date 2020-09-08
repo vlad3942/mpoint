@@ -55,3 +55,92 @@ UPDATE System.Country_Tbl SET country_calling_code = 1670 WHERE alpha3code = 'MN
 UPDATE System.Country_Tbl SET country_calling_code = 886 WHERE alpha3code = 'TWN';
 UPDATE System.Country_Tbl SET country_calling_code = 675 WHERE alpha3code = 'PGK';
 UPDATE System.Country_Tbl SET country_calling_code = 95 WHERE alpha3code = 'MMR';
+
+--Add/Update missing standard ISO countries in the database.
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Aland Islands', '1000', '9999999999', '123', '', 2,'AX', 'ALA', 248, 978, 358);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('British Indian Ocean Territory', '1000', '9999999999', '123', '', 2,'IO', 'IOT', 086, 840, 246);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('French Southern Territories', '1000', '9999999999', '123', '', 2,'TF', 'ATF', 260, 978, 262);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Heard and McDonald Islands', '1000', '9999999999', '123', '', 2,'HM', 'HMD', 334, 36, 672);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Vatican', '1000', '9999999999', '123', '', 2,'VA', 'VAT', 336, 978, 379);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Laos', '1000', '9999999999', '123', '', 2,'LA', 'LAO', 418, 418, 856);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Myanmar', '1000', '9999999999', '123', '', 2,'MM', 'MMR', 104, 104, 95);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, alpha2code,alpha3code, code, country_calling_code)
+VALUES ('Palestine', '1000', '9999999999', '123', '', 'PS', 'PSE', 275, 970);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Svalbard & Jan Mayen Islands', '1000', '9999999999', '123', '', 2,'SJ', 'SJM', 774, 578, 47);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Eswatini', '1000', '9999999999', '123', '', 2,'SZ', 'SWZ', 748, 748, 268);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Tajikistan', '1000', '9999999999', '123', '', 2,'TJ', 'TJK', 762, 972, 992);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Timor-Leste', '1000', '9999999999', '123', '', 2,'TL', 'TLS', 626, 840, 670);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Tokelau', '1000', '9999999999', '123', '', 2,'TK', 'TKL', 772, 554, 690);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('US Virgin Islands', '1000', '9999999999', '123', '', 2,'VI', 'VIR', 850, 840, 1);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Serbia and Montenegro', '1000', '9999999999', '123', '', 2,'CS', 'SCG', 891, 978, 381);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Cote DIvoire', '1000', '9999999999', '123', '', 0,'CI', 'CIV', 384, 952, 225);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, alpha2code,alpha3code, code, country_calling_code)
+VALUES ('South Georgia and the South Sandwich Islands', '1000', '9999999999', '123', '', 'GS', 'SGS', 239, 500);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Saint Barthelemy', '1000', '9999999999', '123', '', 2,'BL', 'BLM', 652, 978, 590);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Bonaire, Saint Eustatius and Saba', '1000', '9999999999', '123', '', 2,'BQ', 'BES', 535, 840, 599);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Curacao', '1000', '9999999999', '123', '', 2,'CW', 'CUW', 531, 532, 599);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Guernsey', '1000', '9999999999', '123', '', 2,'GG', 'GGY', 831, 826, 44);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Jersey', '1000', '9999999999', '123', '', 2,'JE', 'JEY', 832, 826, 44);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('Saint Martin', '1000', '9999999999', '123', '', 2,'MF', 'MAF', 663, 978, 590);
+
+INSERT INTO system.country_tbl(name, minmob, maxmob, channel, priceformat, decimals, alpha2code,alpha3code, code, currencyid, country_calling_code)
+VALUES ('South Sudan', '1000', '9999999999', '123', '', 2,'SS', 'SSD', 728, 728, 221);
+
+UPDATE System.Country_Tbl SET code = 704, decimals = 2, alpha2code = 'VN', alpha3code = 'VNM', country_calling_code = 84 WHERE id = 649 AND currencyid = 704;
+
+UPDATE System.Country_Tbl SET code = 383, decimals = 2, alpha2code = 'XK', alpha3code = 'XKX', country_calling_code = 383 WHERE id = 148 AND currencyid = 978;
+
+UPDATE System.Country_Tbl SET code = 398, alpha2code = 'KZ', alpha3code = 'KAZ', country_calling_code = 7 WHERE id = 633 AND currencyid = 398;
+
+UPDATE System.Country_Tbl SET code = 410, alpha2code = 'KR', alpha3code = 'KOR', country_calling_code = 82 WHERE id = 632 AND currencyid = 410;
+
+UPDATE System.Country_Tbl SET code = 408, alpha2code = 'KP', alpha3code = 'PRK', country_calling_code = 850 WHERE id = 631 AND currencyid = 408;
+
+UPDATE System.Country_Tbl SET code = 104, decimals = 2, alpha2code = 'BU', alpha3code = 'BUR', country_calling_code = 95 WHERE id = 625 AND currencyid = 104;
+
+
+
+
