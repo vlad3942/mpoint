@@ -1091,6 +1091,7 @@ $aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize
 $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
 $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
+$aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
 
 /**
  * GoMobile Connection Info.
