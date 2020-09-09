@@ -1,12 +1,23 @@
+#Fetch dependencies
+FROM composer:1 as composer
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /tmp
+WORKDIR /app
+
+# Project files
+COPY api api
+COPY composer.json .
+
+RUN composer install -v --prefer-dist --no-dev
+
+##------------------------------------------------------------------------------
+
 # Dockerfile for building the anonymous container for running mPoint test cases
 # Author: johan@cellpointmobile.com
 
 FROM cellpointmobile/main:php-test
 EXPOSE 80 5432
-
-COPY composer.json .
-RUN composer install -vvv --prefer-dist --no-dev
-
+    
 # Apache vhost
 COPY docker/000-default.conf /etc/apache2/sites-available/default
 
@@ -17,10 +28,12 @@ VOLUME ["/opt/cpm/mPoint"]
 RUN setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log
 
 # Project files
-COPY api api
 COPY test test
 COPY conf conf
 COPY webroot webroot
+
+# Composer dependencies
+COPY --from=composer /app /opt/cpm/mPoint
 
 # Runtime dependencies
 COPY build/php5api-*.zip /opt/php5api.zip
