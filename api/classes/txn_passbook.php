@@ -1011,4 +1011,36 @@ final class TxnPassbook
 
 	    return $xml;
     }
+
+     /**
+     * @return int
+     */
+    public function getAuthorizedAmount()
+    {
+        return $this->_authorizedAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCapturedAmount()
+    {
+        return $this->_capturedAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRefundedAmount()
+    {
+        return $this->_refundedAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCancelledAmount()
+    {
+        return $this->_cancelledAmount;
+    }
 }

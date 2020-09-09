@@ -9,10 +9,11 @@
  * File Name:Card.php
  */
 
-class Card
+class Card implements JsonSerializable
 {
     private $sCvc = '';
     private $sCardNumber = '';
+    private $sMaskCardNumber = '';
     private $sExpiry = '';
     private $sValidFrom = '';
     private $sCardHolderName = '';
@@ -36,7 +37,7 @@ class Card
 
     private $objDB;
 
-    public function __construct(SimpleDOMElement $obj_Card, RDB &$oDB = NULL, array $prefixes = NULL)
+    public function __construct(SimpleDOMElement $obj_Card = NULL, RDB &$oDB = NULL, array $prefixes = NULL)
     {
         if ( ($obj_Card instanceof SimpleDOMElement) === true)
         {
@@ -341,6 +342,31 @@ class Card
         {
             $this->iPaymentType = $aCard['PAYMENTTYPE'];
         }
+        if(empty($aCard['MASKCARDNUMBER']) === FALSE)
+        {
+            $this->sMaskCardNumber = $aCard['MASKCARDNUMBER'];
+        }
+        if(empty($aCard['EXPIRY']) === FALSE && strlen($aCard['EXPIRY']) >= 5)
+        {
+            $this->sExpiry = $aCard['EXPIRY'];
+        }
     }
 
+    /**
+     * @return string
+     */
+    public function getMaskCardNumber()
+    {
+        return $this->sMaskCardNumber;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getCardTypeId(),
+            'card_mask_number' => $this->getMaskCardNumber(),
+            'expiry' => $this->getExpiry(),
+        ];
+    }
 }

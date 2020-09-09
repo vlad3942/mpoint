@@ -14,7 +14,7 @@
  * Data class for hold all data relevant for a Customer
  *
  */
-class CustomerInfo
+class CustomerInfo implements JsonSerializable
 {
 	/**
 	 * Unique ID for the Customer
@@ -40,6 +40,7 @@ class CustomerInfo
 	 * @var string
 	 */
 	private $_sEMail;
+
 	/**
 	 * The Client's Reference for the Customer
 	 *
@@ -71,6 +72,16 @@ class CustomerInfo
      */
     private $_iprofileTypeId;
 
+    /**
+     * @var string
+     */
+    private $_sDeviceId;
+
+    /**
+     * @var integer
+     */
+    private $_iOperator;
+
 	/**
 	 * Default constructor
 	 * 
@@ -85,14 +96,38 @@ class CustomerInfo
 	 */
 	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid=-1)
 	{
-		$this->_iID =  (integer) $id;
-		$this->_iCountryID = (integer) $cid;
-		$this->_lMobile = (float) $mob;
-		$this->_sEMail = trim($email);
-		$this->_sCustomerRef = trim($cr);
-		$this->_sFullName = trim($name);
-		$this->_sLanguage = trim($lang);
-        $this->_iProfileID = (integer) $profileid;
+	    if($id>-1)
+        {
+            $this->_iID =  (integer) $id;
+        }
+		if(empty($cid) ===FALSE)
+        {
+            $this->_iCountryID = (integer) $cid;
+        }
+
+		if(empty($mob) ===FALSE) {
+            $this->_lMobile = (float)$mob;
+        }
+
+		if(empty($email) ===FALSE) {
+            $this->_sEMail = trim($email);
+        }
+
+		if(empty($cr) ===FALSE) {
+            $this->_sCustomerRef = trim($cr);
+        }
+
+		if(empty($name) ===FALSE) {
+            $this->_sFullName = trim($name);
+        }
+
+		if(empty($lang) ===FALSE) {
+            $this->_sLanguage = trim($lang);
+        }
+
+		if($profileid > -1) {
+            $this->_iProfileID = (integer)$profileid;
+        }
 	}
 
 	public function getID() { return $this->_iID; }
@@ -161,5 +196,95 @@ class CustomerInfo
 								 @trim($obj_XML->{'full-name'}),
 								 @trim($obj_XML["language"]) );
 	}
+
+    /**
+     * @param long $lMobile
+     */
+    public function setMobile($lMobile)
+    {
+        if(empty($lMobile) === FALSE)
+        {
+        $this->_lMobile = $lMobile;
+        }
+    }
+
+    /**
+     * @param string $sEMail
+     */
+    public function setEMail($sEMail)
+    {
+        if (empty($sEMail) === FALSE) {
+            $this->_sEMail = trim($sEMail);
+        }
+    }
+
+    /**
+     * @param string $sCustomerRef
+     */
+    public function setCustomerRef($sCustomerRef)
+    {
+        if (empty($sCustomerRef) === FALSE) {
+            $this->_sCustomerRef = trim($sCustomerRef);
+        }
+    }
+
+    /**
+     * @param string $sLanguage
+     */
+    public function setLanguage($sLanguage)
+    {
+        if (empty($sLanguage) === FALSE) {
+            $this->_sLanguage = trim($sLanguage);
+        }
+    }
+
+    /**
+     * @param string $sDeviceId
+     */
+    public function setDeviceId($sDeviceId)
+    {
+        if (empty($sDeviceId) === FALSE) {
+            $this->_sDeviceId = $sDeviceId;
+        }
+    }
+
+    /**
+     * @param int $iOperator
+     */
+    public function setOperator($iOperator)
+    {
+        if (empty($iOperator) === FALSE) {
+            $this->_iOperator = $iOperator;
+        }
+    }
+
+    public function jsonSerialize()
+    {
+        $response = [
+            'language' => $this->_sLanguage
+        ];
+
+        if(empty($this->_sEMail) === FALSE) {
+            $response['email'] = $this->_sEMail;
+        }
+
+        if(empty($this->_iCountryID) === FALSE) {
+            $response['country_id'] = $this->_iCountryID;
+        }
+
+        if(empty($this->_lMobile) === FALSE) {
+            $response['mobile'] = $this->_lMobile;
+        }
+
+        if(empty($this->_iOperator) === FALSE) {
+            $response['operator'] = $this->_iOperator;
+        }
+
+        if(empty($this->_sDeviceId) === FALSE) {
+            $response['device_id'] = $this->_sDeviceId;
+        }
+
+        return $response;
+    }
 }
 ?>
