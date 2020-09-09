@@ -17,7 +17,7 @@ class AdditionalDataTest extends baseAPITest
     {
         $additional_data = new AdditionalData('Name', 'Value');
         $json_string = json_encode($additional_data);
-        $this->assertEquals('{"name":"Name","value":"Value"}', $json_string);
+        $this->assertEquals('{"key":"Name","value":"Value"}', $json_string);
     }
 
     public function testEmpty__construct()

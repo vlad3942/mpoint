@@ -18,7 +18,7 @@ class AdditionalData implements JsonSerializable
     /**
      * @var string
      */
-    public $name;
+    public $key;
 
     /**
      * @var string
@@ -28,13 +28,13 @@ class AdditionalData implements JsonSerializable
     /**
      * AdditionalData constructor.
      *
-     * @param $name
+     * @param $key
      * @param $value
      */
-    public function __construct($name, $value)
+    public function __construct($key, $value)
     {
-        if(empty($name) === FALSE) {
-            $this->name = $name;
+        if(empty($key) === FALSE) {
+            $this->key = $key;
             $this->value = $value;
         }
     }
