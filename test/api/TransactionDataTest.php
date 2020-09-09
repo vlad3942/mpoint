@@ -94,7 +94,7 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('DeliveryInfo', 'Test');
         $this->transactionData->setDeliveryInfo([$additionalData]);
-        $this->assertContains('"delivery_info":[{"name":"DeliveryInfo","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertContains('"delivery_info":[{"key":"DeliveryInfo","value":"Test"}]', json_encode($this->transactionData));
 
     }
 
@@ -102,7 +102,7 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('AdditionalData', 'Test');
         $this->transactionData->setAdditionalData([$additionalData]);
-        $this->assertContains('"additional_data":[{"name":"AdditionalData","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertContains('"additional_data":[{"key":"AdditionalData","value":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetProductInfo()
@@ -116,20 +116,20 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('ShippingInfo', 'Test');
         $this->transactionData->setShippingInfo([$additionalData]);
-        $this->assertContains('"shipping_info":[{"name":"ShippingInfo","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertContains('"shipping_info":[{"key":"ShippingInfo","value":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetClientData()
     {
         $additionalData = new AdditionalData('ClientData', 'Test');
         $this->transactionData->setClientData([$additionalData]);
-        $this->assertContains('"client_data":[{"name":"ClientData","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertContains('"client_data":[{"key":"ClientData","value":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetBillingAddress()
     {
         $additionalData = new AdditionalData('BillingAddress', 'Test');
         $this->transactionData->setBillingAddress([$additionalData]);
-        $this->assertContains('"billing_address":[{"name":"BillingAddress","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertContains('"billing_address":[{"key":"BillingAddress","value":"Test"}]', json_encode($this->transactionData));
     }
 }

@@ -1190,5 +1190,13 @@ abstract class Callback extends EndUserAccount
 		}
 		return $this->_iCaptureMethod;
 	}
+
+	public static function EmptyValueComparator($value)
+    {
+        if (is_array($value)) {
+            return count($value) !== 0;
+        }
+        return NULL !== $value;
+    }
 }
 ?>
