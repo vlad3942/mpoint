@@ -928,6 +928,12 @@ class Home extends General
                 if (($obj_CountryConfig instanceof CountryConfig) === true) {
                     $xml .= '<country>' . $obj_CountryConfig->getName() . '</country>';
                 }
+                if (empty($aShippingAddress['mobile']) === false){
+                    $xml .= '<mobile>' . $aShippingAddress['mobile'] . '</mobile>';
+                }
+                if (empty($aShippingAddress['email']) === false){
+                    $xml .= '<email>' . $aShippingAddress['email'] . '</email>';
+                }
                 $xml .= '</address>';
             }
             $xml .= '</transaction>';
