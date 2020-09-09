@@ -10,6 +10,16 @@
  * @version 1.11
  */
 
+require_once(sCLASS_PATH ."/core/card.php");
+
+use api\classes\AdditionalData;
+use api\classes\Amount;
+use api\classes\CallbackMessageRequest;
+use api\classes\ProductInfo;
+use api\classes\PSPData;
+use api\classes\StateInfo;
+use api\classes\TransactionData;
+use api\classes\messagequeue\client\MessageQueueClient;
 /* ==================== Callback Exception Classes Start ==================== */
 /**
  * Exception class for all Callback exceptions
@@ -1190,6 +1200,257 @@ abstract class Callback extends EndUserAccount
 		}
 		return $this->_iCaptureMethod;
 	}
+
+
+	/**
+	 * @param bool $isSessionCallback
+	 * @param      $sid
+	 * @param null $amt
+	 *
+	 * @return \CallbackMessageRequest|null
+	 */
+	private function constructMessage($sid = NULL, $amt = NULL, $isSessionCallback = FALSE)
+    {
+    	$isIgnoreRequest = TRUE;
+		$aTransactionData = [];
+		$sub_code = NULL;
+		//Callback for session
+		if($isSessionCallback === TRUE || ($sid > 4001 && $sid < 4999)) {
+			$sessionObj = $this->getTxnInfo()->getPaymentSession();
+			$isStateUpdated = $sessionObj->updateState();
+			//Here Session Callback is triggering 2nd time, queryParam callback is already sent
+			//Below lines (1230, 1234) needs to be remove the queryParam callback flow is removed
+			if ($isStateUpdated === 1 || TRUE) {
+				$checkSessionCallback = $sessionObj->checkSessionCompletion();
+				$aTransaction = [];
+				if (true || empty($checkSessionCallback) === TRUE && $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId()) !== 1) {
+					$sid = $sessionObj->getStateId();
+					$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), '');
+					if ($sessionObj->getPendingAmount() === 0) {
+						$aTransaction = $this->_obj_TxnInfo->getPaymentSession()->getTransactions();
+						$isIgnoreRequest = FALSE;
+					}
+				}
+				foreach ($aTransaction as $transactionId) {
+					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData));
+				}
+			}
+		}
+		//Callbacks for transaction
+		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
+			//Create a TxnInfo object to refresh newly added data in database
+			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
+			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn, $sid, $amt);
+			$aTransactionData = [$obj_TransactionData];
+			$isIgnoreRequest = FALSE;
+		}
+
+		if($isIgnoreRequest === FALSE) {
+			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(), NULL);
+			if ($this->hasTransactionFailureState($sid) === TRUE) {
+				$status = substr($sid, 0, 4);
+				$sub_code = $sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
+			} else {
+				$status = $sid;
+			}
+			$obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid));
+			return new CallbackMessageRequest($this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData);
+		}
+		return  NULL;
+    }
+
+	/**
+	 * @param \TxnInfo $txnInfo
+	 * @param int|null $sid
+	 * @param int      $amt
+	 *
+	 * @return \TransactionData
+	 * @throws \Exception
+	 */
+	private function constructTransactionInfo(TxnInfo $txnInfo, $sid = NULL, $amt = -1)
+    {
+
+        $obj_CustomerInfo = NULL;
+        $obj_PSPInfo = NULL;
+        $obj_StateInfo= NULL;
+        $aClientData = [];
+        $aProductÌnfo = [];
+        $aDeliveryInfo = [];
+        $aShippingInfo = [];
+        $additionalData = [];
+        $aBillingAddress = [];
+        $sub_code = NULL;
+
+        $obj_getPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
+
+        if($amt === -1)
+		{
+			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $txnInfo->getID(), $txnInfo->getClientConfig()->getID());
+			switch ($sid){
+				case 2001:
+					$amt = $txnPassbookObj->getCapturedAmount();
+					break;
+				case 2002:
+					$amt = $txnPassbookObj->getCancelledAmount();
+					break;
+				case 2003:
+					$amt = $txnPassbookObj->getRefundedAmount();
+					break;
+				default:
+					$amt = $txnPassbookObj->getAuthorizedAmount();
+			}
+		}
+
+        $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(), $txnInfo->getConversationRate());
+
+        if(empty($sid))
+		{
+			$sid = $txnInfo->getLatestPaymentState($this->getDBConn());
+		}
+
+        $aCardInfo = [
+            'ID' => $txnInfo->getCardID(),
+            'MASKCARDNUMBER' => $txnInfo->getCardMask(),
+            'EXPIRY' => $txnInfo->getCardExpiry()
+        ];
+        $obj_CardInfo = new Card($aCardInfo);
+
+        if ($this->hasTransactionFailureState($sid) === TRUE) {
+            $status = substr($sid, 0, 4);
+            $sub_code=$sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
+        } else {
+            $status = $sid;
+        }
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
+
+        if ($txnInfo->getClientConfig()->sendPSPID() === TRUE) {
+            $pspId = $txnInfo->getPSPID();
+            $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
+        }
+
+        if (($txnInfo->getAccountID() > 0) === TRUE) {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setEMail($txnInfo->getEMail());
+            $obj_CustomerInfo->setMobile($txnInfo->getMobile());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+            $obj_CustomerInfo->setLanguage($txnInfo->getLanguage());
+        }
+        else{
+            $obj_CustomerInfo = new CustomerInfo(-1,null, $txnInfo->getMobile(),$txnInfo->getEMail(),'','',$txnInfo->getLanguage() );
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+        }
+
+        $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
+
+        $transactionData->setFee($txnInfo->getFee());
+        $transactionData->setDescription($txnInfo->getDescription());
+        $transactionData->setHmac($txnInfo->getHMAC());
+        $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
+        $transactionData->setWalletId($txnInfo->getWalletID());
+        $transactionData->setShortCode($this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
+        $transactionData->setForeignExchangeId($txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID()));
+        $dateTime = new DateTime($txnInfo->getCreatedTimestamp());
+        $transactionData->setDateTime($dateTime->format('c'));
+        $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
+        if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
+            $dateTime->setTimezone(new DateTimeZone($timeZone));
+            $transactionData->setLocalDateTime($dateTime->format('c'));
+        }
+        $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
+
+        $aTxnAdditionalData = $txnInfo->getAdditionalData();
+        if ($aTxnAdditionalData !== NULL) {
+            foreach ($aTxnAdditionalData as $name => $value) {
+                array_push($additionalData, new AdditionalData($name, $value));
+            }
+        }
+        $transactionData->setAdditionalData($additionalData);
+
+        $transactionId = $txnInfo->getID();
+        $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);
+        $aProducts = $this->getMessageData($transactionId, Constants::iPRODUCTS_STATE);
+        $adeliveryinfo = $this->getMessageData($transactionId, Constants::iDELIVERY_INFO_STATE);
+        $ashippinginfo = $this->getMessageData($transactionId, Constants::iSHIPPING_INFO_STATE);
+        $abillingaddress = $txnInfo->getBillingAddr();
+
+        // Add custom Client Variables
+        foreach ($aClientVars as $name => $value) {
+            $aClientData[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setClientData($aClientData);
+
+        // Add Purchased Products
+        if (count($aProducts) > 0) {
+            foreach ($aProducts["names"] as $key => $name) {
+                $aProductÌnfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+            }
+        }
+
+        $transactionData->setProductInfo($aProductÌnfo);
+
+        // Add Delivery Information
+        foreach ($adeliveryinfo as $name => $value) {
+            $aDeliveryInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setDeliveryInfo($aDeliveryInfo);
+
+        // Add Shipping Information
+        foreach ($ashippinginfo as $name => $value) {
+            $aShippingInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setShippingInfo($aShippingInfo);
+
+        // Add Billing address
+        foreach ($abillingaddress as $name => $value) {
+            $aBillingAddress[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setBillingAddress($aBillingAddress);
+		return $transactionData;
+    }
+
+	/**
+	 * @param string              $body
+	 * @param \SurePayConfig|null $obj_SurePay
+	 * @param int                 $attempt
+	 * @param int                 $sid
+	 */
+	private function publishMessage($body, SurePayConfig &$obj_SurePay = NULL, $attempt = 0, $sid = 0)
+    {
+        $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
+        try {
+            $messageQueueClient = MessageQueueClient::GetClient();
+            $messageQueueClient->authenticate();
+            try {
+                $response = $messageQueueClient->publish($body);
+                if ($response === TRUE) {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, 'Message Successfully Publish :  '. $body);
+                } else {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, 'Fail to Publish :  '. $body);
+                }
+            } catch (Exception $e) {
+                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, $e->getMessage());
+            }
+        }
+        catch (Exception $e) {
+            trigger_error("mPoint Callback request failed for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+            $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_SEND_FAILED_STATE, $e->getMessage());
+        }
+
+        if (($obj_SurePay instanceof SurePayConfig) === TRUE && $attempt < $obj_SurePay->getMax()) {
+            $attempt++;
+            sleep($obj_SurePay->getDelay() * $attempt);
+            trigger_error("mPoint Callback request retried for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+            $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt " . $attempt . " of " . $obj_SurePay->getMax());
+            $this->publishMessage($body, $obj_SurePay, $attempt);
+        }
+    }
 
 	public static function EmptyValueComparator($value)
     {
