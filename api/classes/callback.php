@@ -1311,7 +1311,7 @@ abstract class Callback extends EndUserAccount
 
         $aCardInfo = [
             'ID' => $txnInfo->getCardID(),
-            'MASKCARDNUMBER' => $txnInfo->getCardMask(),
+            'MASKEDCARDNUMBER' => $txnInfo->getCardMask(),
             'EXPIRY' => $txnInfo->getCardExpiry()
         ];
         $obj_CardInfo = new Card($aCardInfo);

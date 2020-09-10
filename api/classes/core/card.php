@@ -13,7 +13,7 @@ class Card implements JsonSerializable
 {
     private $sCvc = '';
     private $sCardNumber = '';
-    private $sMaskCardNumber = '';
+    private $sMaskedCardNumber = '';
     private $sExpiry = '';
     private $sValidFrom = '';
     private $sCardHolderName = '';
@@ -342,9 +342,9 @@ class Card implements JsonSerializable
         {
             $this->iPaymentType = $aCard['PAYMENTTYPE'];
         }
-        if(empty($aCard['MASKCARDNUMBER']) === FALSE)
+        if(empty($aCard['MASKEDCARDNUMBER']) === FALSE)
         {
-            $this->sMaskCardNumber = $aCard['MASKCARDNUMBER'];
+            $this->sMaskedCardNumber = $aCard['MASKEDCARDNUMBER'];
         }
         if(empty($aCard['EXPIRY']) === FALSE && strlen($aCard['EXPIRY']) >= 5)
         {
@@ -355,9 +355,9 @@ class Card implements JsonSerializable
     /**
      * @return string
      */
-    public function getMaskCardNumber()
+    public function getMaskedCardNumber()
     {
-        return $this->sMaskCardNumber;
+        return $this->sMaskedCardNumber;
     }
 
 
@@ -365,7 +365,7 @@ class Card implements JsonSerializable
     {
         return [
             'id' => $this->getCardTypeId(),
-            'card_mask_number' => $this->getMaskCardNumber(),
+            'masked_card_number' => $this->getMaskedCardNumber(),
             'expiry' => $this->getExpiry(),
         ];
     }
