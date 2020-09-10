@@ -346,6 +346,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                         $xml = '<status code="'. ($code+99) .'" card-id="'. (int)($id) .'">Card successfully saved and CRM system notified</status>';
                                                     }
                                                     else { $xml = '<status code="'. ($code+99) .'">Card successfully saved and CRM system notified</status>'; }
+                                                    if (empty($obj_DOM->{'save-card'}[$i]["txn-id"])===false)
+                                                    {
+                                                        $obj_mPoint->newMessage($obj_DOM->{'save-card'}[$i]["txn-id"], Constants::iTICKET_CREATED_STATE, "Payment card stored.");
+                                                    }
                                                     break;
                                                 default:	// Error: Unknown response from CRM System
                                                     // Abort transaction and rollback to previous state
@@ -397,6 +401,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $xml = '<status code="'. ($code+99) .'" card-id="'. (int)($id) .'">Card successfully saved</status>';
                                         }
                                         else { $xml = '<status code="'. ($code+99) .'">Card successfully saved</status>'; }
+                                        if (empty($obj_DOM->{'save-card'}[$i]["txn-id"])===false)
+                                        {
+                                            $obj_mPoint->newMessage($obj_DOM->{'save-card'}[$i]["txn-id"], Constants::iTICKET_CREATED_STATE, "Payment card stored.");
+                                        }
                                     }
                                     // Internal Error: Unable to save Card
                                     else

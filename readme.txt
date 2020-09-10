@@ -67,6 +67,8 @@ cd /var/www/html/cpm/mPoint
 `docker-compose build`  -- if changes are in docker image. No need to run if using docker compose. here we are using volumes.
 `docker-compose run -p 8080:80  app`
 
+docker exec -it <container name> /bin/bash
+
 This will give you a bash shell acces to the app container... there you can run
 /docker.sh
 

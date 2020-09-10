@@ -58,7 +58,8 @@ try
 	$obj_mPoint = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 	
 	$iStateID = (integer) $obj_XML->callback->status["code"];
-	
+	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
+
 	if($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card) == 1)
 	{
 

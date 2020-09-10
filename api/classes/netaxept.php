@@ -161,6 +161,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
 				
 				$fee = 0;
+                $sub_code = 0;
 				if (intval($queryResponse->OrderInformation->Fee) > 0) {$fee = intval($queryResponse->OrderInformation->Fee); }
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")

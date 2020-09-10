@@ -39,6 +39,8 @@ require_once(sCLASS_PATH ."/Mpi.php");
 require_once(sCLASS_PATH ."/netsmpi.php");
 // Require specific Business logic for Modirum MPI component
 require_once(sCLASS_PATH ."/modirummpi.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 
 set_time_limit(120);
 
@@ -105,7 +107,9 @@ try {
 
                             $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
                        // Re-Intialise Text Translation Object based on transaction
-							$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+                            $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+                            
+                            $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authenticate'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authenticate'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                             for ($j=0; $j<count($obj_DOM->{'authenticate'}[$i]->transaction->card); $j++) {
                                 $countryId = intval($obj_DOM->{'authenticate'}[$i]->transaction->card[$j]->amount["country-id"]) ;
@@ -120,7 +124,7 @@ try {
                                     }
 
                                     $obj_MpiRoute = new Mpi();
-                                    $obj_Mpi = $obj_MpiRoute->GetMpi($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo,$obj_Card,$aHTTP_CONN_INFO, $clientId, $countryId, $cardId);
+                                    $obj_Mpi = $obj_MpiRoute->GetMpi($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo,$obj_Card, $obj_ClientInfo,$aHTTP_CONN_INFO, $clientId, $countryId, $cardId);
                                     $xml = $obj_Mpi->authenticate();
                                 } else {
                                     header("HTTP/1.1 404 File Not Found");

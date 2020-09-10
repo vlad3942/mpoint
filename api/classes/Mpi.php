@@ -17,6 +17,7 @@ class Mpi
      * @param 	Object    $_OBJ_TXT   	        Object of TranslateText
      * @param 	Object    $obj_TxnInfo   	    Object of Transaction info
      * @param   Object    $obj_Card             Object of Card
+     * @param   Object    $obj_ClientInfo       Object of Client Info
      * @param   Array     $aHTTP_CONN_INFO      Array of connection info
      * @param   Integer   $clientId             Client id
      * @param   Integer   $countryId            Country id
@@ -24,16 +25,16 @@ class Mpi
      *
      * @return  Object                      Object of PSPConfig class
      */
-    public function GetMpi(RDB $objDb, $_OBJ_TXT, $obj_TxnInfo, $obj_Card, $aHTTP_CONN_INFO, $clientId, $countryId, $cardId){
+    public function GetMpi(RDB $objDb, $_OBJ_TXT, $obj_TxnInfo, $obj_Card, $obj_ClientInfo, $aHTTP_CONN_INFO, $clientId, $countryId, $cardId){
         $obj = null;
 
         $pspConfig = $this->createPSPConfig($objDb, $clientId, $countryId, $cardId);
         switch ($pspConfig->getId()) {
             case Constants::iNETS_MPI:
-                $obj = new NetsMpi($objDb,$_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netsmpi"],$pspConfig, $obj_Card);
+                $obj = new NetsMpi($objDb,$_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netsmpi"],$pspConfig, $obj_Card, $obj_ClientInfo);
                 break;
             case Constants::iMODIRUM_MPI:
-                $obj = new ModirumMPI($objDb, $_OBJ_TXT,  $obj_TxnInfo, $aHTTP_CONN_INFO["modirummpi"], $pspConfig, $obj_Card);
+                $obj = new ModirumMPI($objDb, $_OBJ_TXT,  $obj_TxnInfo, $aHTTP_CONN_INFO["modirummpi"], $pspConfig, $obj_Card, $obj_ClientInfo);
         }
         return $obj;
     }

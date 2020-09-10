@@ -23,11 +23,12 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($this->_aMPOINT_CONN_INFO));
 	}
 
-    protected function getGetTransactionStatusDoc($txn_id,$mode=0)
+    protected function getGetTransactionStatusDoc($txn_id,$clientid,$mode=0)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<get-transaction-status>';
+        $xml .= '<client-id>'.$clientid.'</client-id>';
         $xml .= '<transactions>';
         $xml .= '<transaction-id ';
         if($mode>0){ $xml .= 'mode= "'.$mode.'"'; }
@@ -64,7 +65,7 @@ class GetTransactionStatusAPITest extends baseAPITest
 
     public function testUnauthorized()
 	{
-        $xml = $this->getGetTransactionStatusDoc(1001001);
+        $xml = $this->getGetTransactionStatusDoc(1001001,113);
 
 		$this->_httpClient->connect();
 
@@ -77,7 +78,7 @@ class GetTransactionStatusAPITest extends baseAPITest
 
     public function testMissingTxnId()
     {
-        $xml = $this->getGetTransactionStatusDoc("");
+        $xml = $this->getGetTransactionStatusDoc("",113);
 
 		$this->_httpClient->connect();
 
@@ -90,7 +91,7 @@ class GetTransactionStatusAPITest extends baseAPITest
     
     public function testInvalidTxnId()
     {
-        $xml = $this->getGetTransactionStatusDoc('70063s82');
+        $xml = $this->getGetTransactionStatusDoc('70063s82',113);
 		$this->_httpClient->connect();
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -121,7 +122,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
         $this->queryDB("INSERT INTO Log.Address_Tbl (first_name,last_name ,street, street2, city, state, country, zip, reference_id, reference_type) VALUES ('test','test', 'test', 'test', 'test', 'test', 'test', '411023', '1001001', 'transaction')");
 
-		$xml = $this->getGetTransactionStatusDoc(1001001);
+        $xml = $this->getGetTransactionStatusDoc(1001001,113);
 
 		$this->_httpClient->connect();
 
@@ -152,7 +153,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
         $this->queryDB("INSERT INTO Log.Address_Tbl (first_name,last_name ,street, street2, city, state, country, zip, reference_id, reference_type) VALUES ('test','test', 'test', 'test', 'test', 'test', 'test', '411023', '1001001', 'transaction')");
 
-        $xml = $this->getGetTransactionStatusDoc(1001001,1);
+        $xml = $this->getGetTransactionStatusDoc(1001001,113,1);
 
         $this->_httpClient->connect();
 

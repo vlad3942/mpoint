@@ -70,6 +70,7 @@ class Stripe_PSP extends Callback
 								WHERE id = ". $this->getTxnInfo()->getID();
 //					echo $sql ."\n";
 				$this->getDBConn()->query($sql);
+                $sub_code = 0;
 				$iStateID = $this->completeTransaction(Constants::iSTRIPE_PSP, 
 													   $charge->id,
 													   $cardID, Constants::iPAYMENT_ACCEPTED_STATE,

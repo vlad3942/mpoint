@@ -16,9 +16,9 @@ abstract class CPMMPI extends CPMACQUIRER
 
     public $sRequstBody = "";
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null,$obj_Card=null)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null,$obj_Card=null, $oClientInfo = null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
         $this->obj_Card = $obj_Card;
     }
 

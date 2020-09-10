@@ -972,4 +972,44 @@ final class TxnPassbook
         return $this->_clientId;
     }
 
+    /**
+     * Returns xml of passbook table entries of performedopt Capture, Refund, Cancel
+     */
+    public function toXML($checkPerformedOptArray = array(Constants::iINPUT_VALID_STATE,Constants::iPAYMENT_ACCEPTED_STATE,Constants::iPAYMENT_CAPTURED_STATE,Constants::iPAYMENT_REFUNDED_STATE,Constants::iPAYMENT_CANCELLED_STATE,Constants::iPAYMENT_DECLINED_STATE,Constants::iPAYMENT_REJECTED_STATE))
+    {
+		$xml = '<passbook-status>';
+		$passbookEntryInstance = $this->getEntries(TRUE);
+
+		foreach ($passbookEntryInstance as $performedOptEntry)
+		{
+			if ($performedOptEntry instanceof PassbookEntry)
+			{
+				$performOptCode = $performedOptEntry->getPerformedOperation();
+				if(empty($performOptCode) === false && in_array($performedOptEntry->getPerformedOperation(), $checkPerformedOptArray))
+				{
+					$xml .= '<performedopt>';
+					$xml .= $performedOptEntry->toXML();
+					$sExtRefNumData = $performedOptEntry->getExternalReference();
+					$aExtRefStrArray = array_filter(explode(',', $sExtRefNumData));
+					foreach ($passbookEntryInstance as $requestedOptEntry)
+					{
+						if ($requestedOptEntry instanceof PassbookEntry)
+						{
+							$reqOptId = $requestedOptEntry->getId();
+							if(empty($reqOptId) === false && in_array($requestedOptEntry->getId(), $aExtRefStrArray))
+							{
+								$xml .= '<requestedopt>';
+								$xml .= $requestedOptEntry->toXML();
+								$xml .= '</requestedopt>';
+							}
+						}
+					}
+					$xml .= '</performedopt>';
+				}
+			}
+		}
+	    $xml .= '</passbook-status>';
+
+	    return $xml;
+    }
 }
