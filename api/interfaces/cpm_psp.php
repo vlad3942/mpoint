@@ -548,7 +548,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= $txnXML;
         $b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 
-        if (count($obj_Card->ticket) == 0)
+        if ($obj_Card->ticket)
         {
             $b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
         }
@@ -1038,7 +1038,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$expiry_month = '';
 		$expiry_year = '';
 
-		if(count($obj_Card->expiry) > 0)
+		if($obj_Card->expiry)
 		{
 			list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
 			$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
@@ -1046,29 +1046,29 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
 		
-		if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
+		if($obj_Card->{'card-holder-name'}) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 				
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
                 
-        if(count($obj_Card->{'valid-from'}) > 0) {
+        if($obj_Card->{'valid-from'}) {
             list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
             $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
         }
                 
-		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
+		if($obj_Card->cvc) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }
 
-		if(count($obj_Card->{'info-3d-secure'}) > 0)
+		if($obj_Card->{'info-3d-secure'})
         {
             $b .= $obj_Card->{'info-3d-secure'}->asXML();
         }
 
 		$b .= '</card>';
 		
-		if(count($obj_Card->address) > 0)
+		if($obj_Card->address)
 		{
 		    //Produce Country config based on the country id
             CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
@@ -1112,18 +1112,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
 		$b .= '<token>'. $obj_Card->ticket .'</token>';
                 
-        if(count($obj_Card->{'valid-from'}) > 0) {
+        if($obj_Card->{'valid-from'}) {
             list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
             $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
         }
                 
-		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
+		if($obj_Card->cvc) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }
 
 		$b .= '</card>';
 
-		if(count($obj_Card->address) > 0)
+		if($obj_Card->address)
 		{
 		    //Produce Country config based on the country id
             CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
