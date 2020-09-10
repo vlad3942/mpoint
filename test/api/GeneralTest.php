@@ -76,8 +76,8 @@ class GeneralTest extends baseAPITest
             $this->_aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
             $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
             if(empty($iAlternateRoute) === false){
-                $xml = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
-                $this->assertContains('<status code="2000">Payment authorized</status>', $xml);
+                $xml = (int)$obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
+                $this->assertEquals(2000, $xml);
             }
         }
 
@@ -88,8 +88,8 @@ class GeneralTest extends baseAPITest
         $this->assertEquals(1, count($iAlternateRoute));
         $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         if(empty($iAlternateRoute) === false){
-            $xml = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
-            $this->assertContains('<status code="92">Authorization failed, WireCard returned error: 400</status>', $xml);
+            $xml = (int)$obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
+            $this->assertEquals(400, $xml);
         }
 
         $this->_aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth-declined.php";
