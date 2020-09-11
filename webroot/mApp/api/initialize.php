@@ -663,7 +663,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
                                         $paymentMethodCount = count($obj_SR);
                                         $obj_XML = '<cards>';
-                                        for($p=0; $paymentMethodCount > $p; $p++)
+                                        for($p=1; $paymentMethodCount >= $p; $p++)
                                         {
                                             if(($obj_SR[$p] instanceof StaticRoute) === true )
                                             {

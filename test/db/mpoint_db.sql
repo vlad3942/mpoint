@@ -8433,22 +8433,22 @@ ALTER TABLE log.flight_tbl
   DROP COLUMN additional_data_ref;
  CREATE TABLE Log.paymentsecureinfo_tbl
 (
-   id       SERIAL,
-   txnid    INT4 NOT NULL,
-   mdStatus TEXT,
-   mdErrorMsg TEXT,
+   id     SERIAL,
+   txnid  INT4 NOT NULL,
+   pspid  INT4 NOT NULL,
+   status INT4,
+   msg TEXT,
    veresEnrolledStatus TEXT,
    paresTxStatus TEXT,
-   eci TEXT,
+   eci INT4,
    cavv TEXT,
-   cavvAlgorithm TEXT,
-   md TEXT,
-   PAResVerified TEXT,
-   PAResSyntaxOK TEXT,
+   cavvAlgorithm INT4,
    protocol TEXT,
-   cardType TEXT,
    CONSTRAINT payment_secure_pk PRIMARY KEY (id),
-   CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
+   CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
+   CONSTRAINT payment_secure2psp_FK FOREIGN KEY (pspid) REFERENCES system.psp_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
+
 ) WITHOUT OIDS;
+CREATE INDEX paymentsecure_txn_idx ON log.paymentsecureinfo_tbl (txnid);
 
 INSERT INTO log.state_tbl (id, name, module, func) VALUES (7010, 'Payment retried using dynamic routing', 'General', 'authWithAlternateRoute');

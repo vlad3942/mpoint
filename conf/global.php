@@ -991,10 +991,7 @@ $aHTTP_CONN_INFO["dragonpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["dragonpay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["initialize"] = "/mpoint/aggregator/dragonpay/initialize";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["auth"] = "/mpoint/aggregator/dragonpay/authorize-payment";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["capture"] = "/mpoint/aggregator/dragonpay/capture";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["refund"] = "/mpoint/aggregator/dragonpay/refund";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["status"] = "/mpoint/aggregator/dragonpay/status";
-//$aHTTP_CONN_INFO["dragonpay"]["paths"]["cancel"] = "/mpoint/aggregator/dragonpay/cancel";
 $aHTTP_CONN_INFO["dragonpay"]["paths"]["callback"] = "/mpoint/aggregator/dragonpay/callback";
 
 
@@ -1073,10 +1070,6 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/ca
 $aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
-
-
-
-
 /**
  * Connection info for connecting to cybersource fraud gateway
  */
@@ -1088,6 +1081,23 @@ $aHTTP_CONN_INFO["cebu-rmfss"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["cebu-rmfss"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["cebu-rmfss"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["cebu-rmfss"]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
+
+
+/**
+ * Connection info for connecting to SWISH
+ */
+$aHTTP_CONN_INFO["swish"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["swish"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["swish"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["swish"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["swish"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["swish"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["swish"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize";
+$aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
+$aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
+$aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

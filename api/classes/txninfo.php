@@ -1875,10 +1875,10 @@ class TxnInfo
 	
 	
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
-							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type)
+							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type, mobile_country_id, mobile, email)
 						VALUES
 							(". $RS["ID"] .", '". $aShippingObj["first_name"] ."','". $aShippingObj["last_name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
-							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."' )";
+							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."', '". $aShippingObj["mobile_country_id"] ."', '". $aShippingObj["mobile"] ."', '". $aShippingObj["email"] ."' )";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
