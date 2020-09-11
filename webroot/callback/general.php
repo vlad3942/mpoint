@@ -485,7 +485,7 @@ try
                 if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
-                    $bIsSkipFraud = flase;
+                    $bIsSkipFraud = false;
 
 
                     if($paymentSecureInfo === null)
