@@ -102,6 +102,7 @@ require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the CYBS ie. Global Payments component
 require_once(sCLASS_PATH ."/global-payments.php");
 require_once(sCLASS_PATH ."/cybersource.php");
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 
 // Require specific Business logic for the WorldPay component
@@ -177,28 +178,19 @@ try
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     //Log the incoming status code.
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
-    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
+    {
+        if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
+        {
+            $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
+            if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
 
+        }
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
         {
             $aMpiRule = array();
             $bIsSkipAuth = false;
-            if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
-            {
-                $aPaymentSecureData = array();
-                $aPaymentSecureData['eci'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
-                $aPaymentSecureData['cavv'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'};
-                $aPaymentSecureData['cavvAlgorithm'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
 
-
-                for ($j=0; $j<count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param); $j++ )
-                {
-                    $sKey = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
-                    $sValue =(string) $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
-                    $aPaymentSecureData[$sKey] = $sValue;
-                }
-                $obj_mPoint->storePaymentSecureInfo($obj_TxnInfo->getID(),$aPaymentSecureData);
-            }
             if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
             {
                 $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);

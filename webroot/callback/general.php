@@ -136,6 +136,7 @@ require_once(sCLASS_PATH .'/fraud/provider/ezy.php');
 require_once(sCLASS_PATH .'/fraud/provider/cyberSourceFsp.php');
 require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH . '/payment_route.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
@@ -470,6 +471,14 @@ try
         $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
         $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
+            $paymentSecureInfo = null;
+            if($obj_XML->callback->transaction->card->{'info-3d-secure'})
+            {
+                $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
+
+                if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+            }
+
             //Post-Auth-Fraud Check call
             $fraudCheckResponse = new FraudResult();
             if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE)) === false && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE  && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
@@ -479,47 +488,16 @@ try
                 if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
-                    $bIsSkipFraud = flase;
-                    if($obj_XML->callback->transaction->card->{'info-3d-secure'})
+                    $bIsSkipFraud = false;
+
+
+                    if($paymentSecureInfo === null)
                     {
-                        $aPaymentSecureData = array();
-                        $aPaymentSecureData['eci'] = (string)$obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
-                        $aPaymentSecureData['cavv'] = (string)$obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'};
-                        $aPaymentSecureData['cavvAlgorithm'] =(string) $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
-
-
-                        for ($j=0; $j<count($obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->param); $j++ )
+                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($_OBJ_DB,$obj_TxnInfo->getID());
+                        if($paymentSecureInfo !== null)
                         {
-                            $sKey = (string)$obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
-                            $sValue =(string) $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
-                            $aPaymentSecureData[$sKey] = $sValue;
+                            $paymentSecureInfo->attachPaymentSecureNode($obj_XML->callback->transaction->card);
                         }
-                        $bRuleResult = $obj_mPoint->storePaymentSecureInfo($obj_TxnInfo->getID(),$aPaymentSecureData);
-                    }
-                    else
-                    {
-                        $aPaymentSecureData = $obj_mPoint->getPaymentSecureInfo($obj_TxnInfo->getID());
-                        if(empty($aPaymentSecureData) === false)
-                        {
-                            $obj_XML->callback->transaction->card->addChild('info-3d-secure');
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->addChild('cryptogram',$aPaymentSecureData['cavv']);
-                            unset($aPaymentSecureData['cavv']);
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}->addAttribute('eci',$aPaymentSecureData['eci']);
-                            unset($aPaymentSecureData['eci']);
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'cryptogram'}->addAttribute('algorithm-id',$aPaymentSecureData['cavvAlgorithm']);
-                            unset($aPaymentSecureData['cavvAlgorithm']);
-                            $obj_XML->callback->transaction->card->{'info-3d-secure'}->addChild('additional-data');
-                            foreach ($aPaymentSecureData as $key => $value)
-                            {
-                                if(empty($value) === false)
-                                {
-                                    $param = $obj_XML->callback->transaction->card->{'info-3d-secure'}->{'additional-data'}->addChild('param',$value);
-                                    $param->addAttribute('name',$key);
-                                }
-
-                            }
-                        }
-
                     }
                     if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"post_fraud_rule") !== false)
                     {
