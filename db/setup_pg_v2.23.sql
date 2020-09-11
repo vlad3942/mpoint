@@ -104,7 +104,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyName', 'CebuPacificair', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyCode', '5J', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 
-
 -- CMP-4296
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', true, 10077, 'client', 0);
 
@@ -132,3 +131,17 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 
 update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and cardid not in (7,8) and clientid = 10077;
+
+
+-------------G-CASH 2C2P-ALC FOR CEBU START------------
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT 10077, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT <client ID>, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+-------------G-CASH 2C2P-ALC SYSTEM------------
+INSERT INTO system.card_tbl (id, name, position, minlength, maxlength, cvclength, paymenttype) VALUES (93, 'Gcash', 23, -1, -1, -1, 3);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 93);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 93, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 608;
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHP');
+
+
+-------------G-CASH 2C2P-ALC FOR CEBU END------------
