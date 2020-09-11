@@ -548,7 +548,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= $txnXML;
         $b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 
-        if ($obj_Card->ticket)
+        if ($obj_Card->ticket !== '')
         {
             $b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
         }
