@@ -331,7 +331,7 @@ try
             // New Account automatically created when Card was saved
             else if ($iStatus == 2)
             {
-                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+                $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
                 if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
                 $obj_TxnInfo->setAccountID($iAccountID);
                 $obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
@@ -477,7 +477,7 @@ try
                 if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
-                    $bIsSkipFraud = flase;
+                    $bIsSkipFraud = false;
 
                     if($obj_XML->callback->transaction->card->{'info-3d-secure'})
                     {
