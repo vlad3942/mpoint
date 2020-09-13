@@ -1711,7 +1711,7 @@ class TxnInfo
 	public static function  _produceBillingAddr($_OBJ_DB, $txnId)
 	{
 		$aBillingAddr = [];
-		$sqlA = "SELECT id, first_name, last_name, street, street2, city, state, zip, country, mobile, email FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
+		$sqlA = "SELECT id, first_name, last_name, street, street2, city, state, zip, country, mobile, email,mobile_country_id FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
 		$rsa = $_OBJ_DB->getAllNames ( $sqlA );
 		if (empty($rsa) === false )
 		{
@@ -1727,6 +1727,7 @@ class TxnInfo
 				$aBillingAddr["country" ] = $rs ["COUNTRY"];
 				$aBillingAddr["mobile" ] = $rs ["MOBILE"];
 				$aBillingAddr["email" ] = $rs ["EMAIL"];
+				$aBillingAddr["mobile_country_id" ] = $rs ["MOBILE_COUNTRY_ID"];
 			}
 		}
 		return $aBillingAddr;
