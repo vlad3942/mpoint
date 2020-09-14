@@ -1462,12 +1462,28 @@ class General
     {
         $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
 					(txnid, pspid, status, msg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm, protocol)
-				VALUES
-					(". $paymentSecureInfo->getTransactionID(). ",". $paymentSecureInfo->getPSPID(). ", ". $paymentSecureInfo->getStatus() .", '". $paymentSecureInfo->getMsg() ."', '". $paymentSecureInfo->getVeresEnrolledStatus()."', '". $paymentSecureInfo->getParestxstatus()."',  ". $paymentSecureInfo->getECI().",'". $paymentSecureInfo->getCAVV() ."'
-					,".$paymentSecureInfo->getCavvAlgorithm() .",'". $paymentSecureInfo->getProtocol() ."')";
-        if (is_resource($this->getDBConn()->query($sql) ) === false)
+				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10)";
+        $res = $this->getDBConn()->prepare($sql);
+
+        if (is_resource($res) === TRUE)
         {
-            trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+            $aParams = array(
+                $paymentSecureInfo->getTransactionID(),
+                $paymentSecureInfo->getPSPID(),
+                $paymentSecureInfo->getStatus(),
+                $paymentSecureInfo->getMsg(),
+                $paymentSecureInfo->getVeresEnrolledStatus(),
+                $paymentSecureInfo->getParestxstatus(),
+                $paymentSecureInfo->getECI(),
+                $paymentSecureInfo->getCAVV(),
+                $paymentSecureInfo->getCavvAlgorithm(),
+                $paymentSecureInfo->getProtocol()
+            );
+            $result = $this->getDBConn()->execute($res, $aParams);
+            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            {
+                trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+            }
         }
     }
 }
