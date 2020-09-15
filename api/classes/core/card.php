@@ -36,7 +36,7 @@ class Card
 
     private $objDB;
 
-    public function __construct(SimpleDOMElement $obj_Card, RDB &$oDB = NULL, array $prefixes = NULL)
+    public function __construct($obj_Card, RDB &$oDB = NULL, array $prefixes = NULL)
     {
         if ( ($obj_Card instanceof SimpleDOMElement) === true)
         {
@@ -264,7 +264,7 @@ class Card
                 trigger_error('Database objected is not passed', E_USER_ERROR);
             } else {
                 $sql = "SELECT min, max FROM system.cardprefix_tbl WHERE enabled = true and cardid = $this->iCardTypeId;";
-                while ($resultSet = $oDB->getNames($sql))
+                while ($resultSet = $oDB->getName($sql))
                     array_push($this->aBinRange, '{"min": "' . (int)$resultSet['MIN'] . '" , "max": "' . (int)$resultSet['MAX'] . '"}');
             }
         }
