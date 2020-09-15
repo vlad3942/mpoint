@@ -390,10 +390,11 @@ class Home extends General
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
 		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["POINTS"] .'</points>';
 		$xml .= '<clients>';
-		for ($i=0; $i<count($aRS); $i++)
-		{
-			$xml .= '<client id="'. $aRS[$i]["ID"] .'" store-card="'. $aRS[$i]["STORE_CARD"] .'">'. htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) .'</client>';
-		}
+		if(is_array($aRS) === TRUE) {
+            for ($i = 0, $iMax = count($aRS); $i < $iMax; $i++) {
+                $xml .= '<client id="' . $aRS[$i]["ID"] . '" store-card="' . $aRS[$i]["STORE_CARD"] . '">' . htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) . '</client>';
+            }
+        }
 		$xml .= '</clients>';
 		$xml .= '<created timestamp="'. $ts .'">'. gmdate("Y-m-d H:i:sP", $ts) .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
