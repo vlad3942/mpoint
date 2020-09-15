@@ -140,6 +140,8 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 
 
 /**
@@ -346,6 +348,7 @@ try
         }
         $fee = 0;
         $sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
+        $sSwishPaymentID = (string) $obj_XML->callback->{'swishPaymentID'};
         $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
             $obj_XML->callback->transaction["external-id"],
             (integer)$obj_XML->callback->transaction->card["type-id"],
@@ -353,7 +356,7 @@ try
             $iSubCodeID,
             $fee,
             array($HTTP_RAW_POST_DATA),
-            $sIssuingBank);
+            $sIssuingBank, $sSwishPaymentID);
         // Payment Authorized: Perform a callback to the 3rd party Wallet if required
         if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
@@ -468,6 +471,14 @@ try
         $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
         $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
+            $paymentSecureInfo = null;
+            if($obj_XML->callback->transaction->card->{'info-3d-secure'})
+            {
+                $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
+
+                if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+            }
+
             //Post-Auth-Fraud Check call
             $fraudCheckResponse = new FraudResult();
             if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE)) === false && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE  && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
@@ -477,15 +488,10 @@ try
                 if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
-                    $bIsSkipFraud = flase;
+                    $bIsSkipFraud = false;
 
-                    if($obj_XML->callback->transaction->card->{'info-3d-secure'})
-                    {
-                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
 
-                        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
-                    }
-                    else
+                    if($paymentSecureInfo === null)
                     {
                         $paymentSecureInfo = PaymentSecureInfo::produceInfo($_OBJ_DB,$obj_TxnInfo->getID());
                         if($paymentSecureInfo !== null)

@@ -2435,14 +2435,7 @@ class TxnInfo
 
     public function hasEitherSoftDeclinedState($subCodeID)
     {
-        // Exclude list of soft declined sub code
-        $aExcludeSubCodeIDs = array(
-            Constants::iPAYMENT_CANCELLED, Constants::iPAYMENT_DUPLICATE_TRANSACTION, Constants::iPAYMENT_TRANSACTION_FAILED, Constants::iPAYMENT_TRANSACTION_ALREADY_CAPTURED,
-            Constants::iPAYMENT_INVALID_CAPTURE_ATTEMPTED, Constants::iPAYMENT_TRANSACTION_NOT_POSTED, Constants::iPAYMENT_TRANSACTION_EXCEED_APPROVAL_LIMIT,
-            Constants::iPAYMENT_TRANSACTION_CANNOT_VOID_CAPTURED, Constants::iPAYMENT_TRANSACTION_CANNOT_REFUND, Constants::iPAYMENT_TRANSACTION_CREDIT_AMOUNT_EXCEEDS
-        );
-
-        if (preg_match('/^20103/', $subCodeID) && in_array($subCodeID, $aExcludeSubCodeIDs) === false) {
+        if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT) {
             return true;
         }
         return false;

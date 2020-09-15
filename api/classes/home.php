@@ -926,7 +926,12 @@ class Home extends General
                 $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
                 $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
                 if (($obj_CountryConfig instanceof CountryConfig) === true) {
-                    $xml .= '<country>' . $obj_CountryConfig->getName() . '</country>';
+                    $xml .= '<country>';
+                    $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
+                    $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
+                    $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
+					$xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
+					$xml .= '</country>';
                 }
                 if (empty($aShippingAddress['mobile']) === false){
                     $xml .= '<mobile>' . $aShippingAddress['mobile'] . '</mobile>';
