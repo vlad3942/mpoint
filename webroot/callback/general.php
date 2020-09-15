@@ -201,13 +201,19 @@ try
 
     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via alternate route
     $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+    $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
     $bHoldSessionComplete = false;
-    if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true')
+    if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true')
     {
         // Check whether sub code is a part of transaction soft declined
         if ($obj_TxnInfo->hasEitherSoftDeclinedState($iSubCodeID) === true)
         {
-            if($obj_TxnInfo->getAttemptNumber() < 3){
+            $iPSPID = (int)$obj_XML->callback->{"psp-config"}["id"];
+            $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iAlternateRoutes = $objTxnRoute->getRoutes();
+            $retry_count = array_search($iPSPID, $iAlternateRoutes);
+
+            if($retry_count < count($iAlternateRoutes)){
                 $bHoldSessionComplete = true;
             }
         }

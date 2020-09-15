@@ -1412,7 +1412,7 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
         $xml = '';
         if ($code == "100") {
@@ -1424,12 +1424,12 @@ class General
         } else if (strpos($code, '2005') !== false) {
             header("HTTP/1.1 303");
             $xml = $code;
-        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true') {
+        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
             if(empty($iAlternateRoute) === false) {
                 $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
+                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
             }
@@ -1462,12 +1462,28 @@ class General
     {
         $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
 					(txnid, pspid, status, msg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm, protocol)
-				VALUES
-					(". $paymentSecureInfo->getTransactionID(). ",". $paymentSecureInfo->getPSPID(). ", ". $paymentSecureInfo->getStatus() .", '". $paymentSecureInfo->getMsg() ."', '". $paymentSecureInfo->getVeresEnrolledStatus()."', '". $paymentSecureInfo->getParestxstatus()."',  ". $paymentSecureInfo->getECI().",'". $paymentSecureInfo->getCAVV() ."'
-					,".$paymentSecureInfo->getCavvAlgorithm() .",'". $paymentSecureInfo->getProtocol() ."')";
-        if (is_resource($this->getDBConn()->query($sql) ) === false)
+				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10)";
+        $res = $this->getDBConn()->prepare($sql);
+
+        if (is_resource($res) === TRUE)
         {
-            trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+            $aParams = array(
+                $paymentSecureInfo->getTransactionID(),
+                $paymentSecureInfo->getPSPID(),
+                $paymentSecureInfo->getStatus(),
+                $paymentSecureInfo->getMsg(),
+                $paymentSecureInfo->getVeresEnrolledStatus(),
+                $paymentSecureInfo->getParestxstatus(),
+                $paymentSecureInfo->getECI(),
+                $paymentSecureInfo->getCAVV(),
+                $paymentSecureInfo->getCavvAlgorithm(),
+                $paymentSecureInfo->getProtocol()
+            );
+            $result = $this->getDBConn()->execute($res, $aParams);
+            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            {
+                trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+            }
         }
     }
 }
