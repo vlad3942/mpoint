@@ -178,18 +178,22 @@ try
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     //Log the incoming status code.
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
-    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+
+    if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
+    {
+        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
+        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+
+    }
+
+    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
+    {
 
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
         {
             $aMpiRule = array();
             $bIsSkipAuth = false;
-            if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
-            {
-                $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
-                if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
 
-            }
             if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
             {
                 $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);

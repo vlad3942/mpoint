@@ -199,13 +199,19 @@ try
 
     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via alternate route
     $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+    $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
     $bHoldSessionComplete = false;
-    if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true')
+    if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true')
     {
         // Check whether sub code is a part of transaction soft declined
         if ($obj_TxnInfo->hasEitherSoftDeclinedState($iSubCodeID) === true)
         {
-            if($obj_TxnInfo->getAttemptNumber() < 3){
+            $iPSPID = (int)$obj_XML->callback->{"psp-config"}["id"];
+            $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iAlternateRoutes = $objTxnRoute->getRoutes();
+            $retry_count = array_search($iPSPID, $iAlternateRoutes);
+
+            if($retry_count < count($iAlternateRoutes)){
                 $bHoldSessionComplete = true;
             }
         }
@@ -468,6 +474,14 @@ try
         $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
         $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
+            $paymentSecureInfo = null;
+            if($obj_XML->callback->transaction->card->{'info-3d-secure'})
+            {
+                $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
+
+                if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+            }
+
             //Post-Auth-Fraud Check call
             $fraudCheckResponse = new FraudResult();
             if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE)) === false && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE  && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
@@ -477,15 +491,10 @@ try
                 if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
-                    $bIsSkipFraud = flase;
+                    $bIsSkipFraud = false;
 
-                    if($obj_XML->callback->transaction->card->{'info-3d-secure'})
-                    {
-                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
 
-                        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
-                    }
-                    else
+                    if($paymentSecureInfo === null)
                     {
                         $paymentSecureInfo = PaymentSecureInfo::produceInfo($_OBJ_DB,$obj_TxnInfo->getID());
                         if($paymentSecureInfo !== null)

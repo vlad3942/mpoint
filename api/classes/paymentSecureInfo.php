@@ -82,7 +82,7 @@ class PaymentSecureInfo
      *
      * @param integer $iTxnId 	Unique ID for the Transaction
      * @param integer $iPSPID   Unique ID for the The PSP used for the transaction
-     * @param string  $iStatus  authentication status
+     * @param integer  $iStatus  authentication status
      * @param string  $sMsg     authentication Message
      * @param string  $sVeresEnrolledStatus Holds Verify Enrollment Response enrolled status
      * @param string  $sParestxstatus Payer Authentication Response status
@@ -144,7 +144,7 @@ class PaymentSecureInfo
         FROM LOG".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl WHERE txnid=".$iTxnId;
         $RS = $oDB->getName($sql);
 
-        if (is_array($RS) === true & count($RS) > 0)
+        if (is_array($RS) === true && count($RS) > 0)
         {
             return new PaymentSecureInfo($iTxnId, $RS["PSPID"], $RS["STATUS"], $RS["MSG"],$RS["VERESENROLLEDSTATUS"],$RS["PARESTXSTATUS"],$RS["ECI"],$RS["CAVV"],$RS["CAVVALGORITHM"],$RS["PROTOCOL"]);
         }
