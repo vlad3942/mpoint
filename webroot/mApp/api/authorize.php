@@ -393,7 +393,7 @@ try
                                         	}
                                         }
 
-                                        if (count($obj_Elem->capture_type) > 0)
+                                        if (isset($obj_Elem->capture_type) > 0)
                                         {
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
