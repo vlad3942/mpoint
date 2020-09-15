@@ -8275,7 +8275,7 @@ ALTER TABLE client.cardaccess_tbl ADD walletid int4;
 
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
-ALTER TABLE log.transaction_tbl ADD convetredcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
+ALTER TABLE log.transaction_tbl ADD convertedcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
 ALTER TABLE log.transaction_tbl ADD convertedamount int8 NULL;
 ALTER TABLE log.transaction_tbl ADD conversionrate decimal DEFAULT 1;
 ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
