@@ -1165,5 +1165,22 @@ class EndUserAccount extends Home
         return is_array($RS) === true ? $RS["ID"] : -1;
     }
 
+    /**
+     * Retrieves mask card for given end user accountid and card id
+     * @param integer $id      End user account id
+     * @param integer $cardid  Card number
+     * @return string          Masked card number
+     */
+    public function getMaskCard($id, $cardid)
+    {
+        $sql = "SELECT mask
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
+
+        $RS = $this->getDBConn()->getName($sql);
+
+        return is_array($RS) === true ? $RS["MASK"] : NULL;
+    }
+
 }
 ?>
