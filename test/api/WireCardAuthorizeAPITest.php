@@ -70,4 +70,8 @@ class WireCardAuthorizeAPITest extends AuthorizeAPITest
 
     }
 
+    public function testSuccessfulAuthorizeWithSubCode()
+    {
+        parent::testSuccessfulAuthorizeWithSubCode(Constants::iWIRE_CARD_PSP);
+    }
 }
