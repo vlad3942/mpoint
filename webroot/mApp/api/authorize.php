@@ -284,9 +284,9 @@ try
                                         $issuerIdentificationNumber = NULL;
                                         if($isStoredCardPayment === true){
                                             $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                            $issuerIdentificationNumber = substr($maskCardNumber, 0, 6);
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
                                         }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
-                                            $issuerIdentificationNumber = substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}, 0, 6);
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
 
                                         $aRoutes = array();

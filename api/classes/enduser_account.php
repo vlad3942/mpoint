@@ -1171,15 +1171,18 @@ class EndUserAccount extends Home
      * @param integer $cardid  Card number
      * @return string          Masked card number
      */
-    public function getMaskCard($id, $cardid)
+    public function getMaskCard($accoutnid, $cardid)
     {
-        $sql = "SELECT mask
+        if($this->getDBConn() != NULL){
+            $sql = "SELECT mask
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
+				WHERE accountid = ". (int)$accoutnid ." AND id = ". (int)$cardid;
 
-        $RS = $this->getDBConn()->getName($sql);
+            $RS = $this->getDBConn()->getName($sql);
 
-        return is_array($RS) === true ? $RS["MASK"] : NULL;
+            return is_array($RS) === true ? $RS["MASK"] : NULL;
+        }
+        return NULL;
     }
 
 }
