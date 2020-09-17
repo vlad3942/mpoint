@@ -1167,7 +1167,7 @@ class EndUserAccount extends Home
 
     /**
      * Retrieves mask card for given end user accountid and card id
-     * @param integer $id      End user account id
+     * @param integer $accoutnid      End user account id
      * @param integer $cardid  Card number
      * @return string          Masked card number
      */
