@@ -1486,5 +1486,15 @@ class General
             }
         }
     }
+
+    /**
+     * Retrieves Issuer identification number from given card number
+     * @param $cardno integer  Card Number
+     * @return string          Issuer identification number
+     */
+    public static function getIssuerIdentificationNumber($cardno)
+    {
+        return substr($cardno, 0, 6);
+    }
 }
 ?>
