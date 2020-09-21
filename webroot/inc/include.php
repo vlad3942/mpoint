@@ -39,6 +39,8 @@ define("sFUNCTION_PATH", sSYSTEM_PATH ."/api/functions/");
 define("sLIB_PATH", sSYSTEM_PATH ."/api/lib/");
 // Define path to the System Configuration
 define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
+// Define path to the Environment Configuration
+define("sENV_PATH", sSYSTEM_PATH ."/env/");
 // Define Language Path Constant
 define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
@@ -140,6 +142,12 @@ require_once(sCLASS_PATH ."/TransactionTypeConfig.php");
 
 // Require specific Business logic for the Status component
 require_once(sCLASS_PATH ."/status.php");
+
+
+//Include the env config file.
+if(file_exists(sENV_PATH.'/env.'.'local'.'.php')) {
+    include (sENV_PATH.'/env.'.'local'.'.php');
+}
 
 // Require global settings file
 require_once(sCONF_PATH ."global.php");
