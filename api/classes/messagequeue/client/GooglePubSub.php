@@ -47,10 +47,15 @@ namespace api\classes\messagequeue\client {
          */
         public function authenticate()
         {
-            $pubSubClient = new PubSubClient([
-                                                 'projectId' => $this->getProjectId(),
-                                                 'keyFile' => $this->getKeyFile()
-                                             ]);
+            $options = ['projectId' => $this->getProjectId()];
+            $keyDetails = $this->getKeyFile();
+            if(empty($keyDetails) == FALSE)
+            {
+                $options['keyFile'] = $keyDetails;
+            }
+
+            $pubSubClient = new PubSubClient($options);
+
             $this->_messageQueueClient = $pubSubClient;
             return TRUE;
         }
