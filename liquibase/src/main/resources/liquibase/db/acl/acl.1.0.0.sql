@@ -1,0 +1,2 @@
+DROP ROLE IF EXISTS mpoint;
+CREATE ROLE mpoint;
