@@ -36,25 +36,20 @@ namespace api\classes\messagequeue\client {
             $provider = $providerInfo['provider'];
             if (empty($provider)) {
                 trigger_error('Message Queue Provider : Provider information is missing', E_USER_ERROR);
-                throw new MessageQueueClientException("Message Queue Provider : Provider information is missing");
+                throw new MessageQueueClientException('Message Queue Provider : Provider information is missing');
             }
 
-            $keyFile = FALSE;
+            $keyFile = NULL;
             if (array_key_exists('keyfile', $providerInfo) && $providerInfo['keyfile'] !== '') {
                 $keyFile = $providerInfo['keyfile'];
             } elseif (array_key_exists('keyfilepath', $providerInfo) && $providerInfo['keyfilepath'] !== '') {
                 $keyFile = readfile($providerInfo['keyfilepath']);
             }
 
-            if (empty($keyFile)) {
-                trigger_error('Message Queue Provider : Provider information is missing', E_USER_ERROR);
-                throw new MessageQueueClientException("Message Queue Provider : Credentials Information is missing");
-            }
-
             $projectId = $providerInfo['projectid'];
             if (empty($projectId)) {
                 trigger_error('Message Queue Provider : Provider information is missing', E_USER_ERROR);
-                throw new MessageQueueClientException("Message Queue Provider : Project id is missing");
+                throw new MessageQueueClientException('Message Queue Provider : Project id is missing');
             }
 
             $topicName = $providerInfo['topicname'];
