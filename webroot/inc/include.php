@@ -43,6 +43,8 @@ define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
 define("sENV_PATH", sSYSTEM_PATH ."/env/");
 // Define Language Path Constant
 define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
+//Set environment post deployment
+define("sENV_NAME", 'local');
 
 // Require API for defining the Database interface
 require_once(sAPI_INTERFACE_PATH ."database.php");
@@ -145,8 +147,8 @@ require_once(sCLASS_PATH ."/status.php");
 
 
 //Include the env config file.
-if(file_exists(sENV_PATH.'/env.'.'local'.'.php')) {
-    include (sENV_PATH.'/env.'.'local'.'.php');
+if(file_exists(sENV_PATH.'/env.'.sENV_NAME.'.php')) {
+    include (sENV_PATH.'/env.'.sENV_NAME.'.php');
 }
 
 // Require global settings file
