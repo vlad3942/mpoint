@@ -399,3 +399,25 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10077
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('3DSVERSION', '1.0', true, 10077, 'client', 2);
 
 -------END Modirum 3ds 1.0
+
+-- CyberSource Merchant MID configuration --
+
+--CyberSource Sandbox env details. default merchant config
+ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10077, 63, 'CyberSourceAMEX', 'cebupacificamex', 'VmZzDRg2odfkF64FVY1MFo+rT7vS6Fb3YC16h1bcmScuCW//j08C0oE8Z3lDMDm6ShxkKZmuftifmUfnulPxaucAQapVV5n5wjhjWwg5Mr9CyOKTQ6RbCuSeIJdAXHewYB4jNVK5h3Bk728IivhwDyyrk4vXULJGQqVToocvO6+bXNVLtTNOHBGbSEts3DM26Rx/GZ1HYtWaauFV3g39cG/x6Ao4NXjg9UoZ59g6FYOgCgsmHAB/XpK7kxjbI+pxBzqhiRDeX79NxAfhUIXWPFYqaBH83YsSGganHUxzkNg2jTzxmwSV2+JXZKUoq37TUgHCygl2pT9Gs+mMieTuBQ==');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100770, 63, '-1');
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) select '3DVERIFICATION', 'mpi', true, id, 'merchant', 2 from client.merchantaccount_tbl WHERE clientid=10077 AND pspid=63;
+
+
+-- END CyberSource Merchant MID configuration --
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 7, true, 47, NULL, 1, NULL, false, 6, 0, 0, 1, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 8, true, 47, NULL, 1, NULL, false, 6, 0, 0, 1, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 7, false, 4, 640, 1, NULL, false, 1, 0, 0, 3, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 5, false, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 1, false, 63, NULL, 1, NULL, false, 1, 0, 0, 2, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 1, true, 47, NULL, 1, NULL, false, 6, 0, 0, 1, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 8, false, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 7, false, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 8, false, 4, 640, 1, NULL, false, 1, 0, 0, 3, NULL, false);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10077, 1, false, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, false);
+
