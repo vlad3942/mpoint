@@ -33,22 +33,6 @@ define("iDEBUG_LEVEL", 2);
  */
 define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
 
-/*
- * This function is used to overload the env() function.
- * */
-
-if(!function_exists('env')) {
-    function env($key, $default = null)
-    {
-        $value = getenv($key);
-
-        if ($value === false) {
-            return $default;
-        }
-
-        return $value;
-    }
-}
 
 /**
  * Database settings for mPoint's database
@@ -75,7 +59,7 @@ $aDB_CONN_INFO["mpoint"]["host"] = env("database.mpoint.host", "localhost");
 $aDB_CONN_INFO["mpoint"]["port"] = env("database.mpoint.port", 5432);
 $aDB_CONN_INFO["mpoint"]["path"] = env("database.mpoint.path", "mpoint");
 $aDB_CONN_INFO["mpoint"]["username"] = env("database.mpoint.username", "mpoint");
-$aDB_CONN_INFO["mpoint"]["password"] = env("database.mpoint.password", "hspzr735abl");
+$aDB_CONN_INFO["mpoint"]["password"] = env("database.mpoint.password", "");
 $aDB_CONN_INFO["mpoint"]["class"] = env("database.mpoint.class", "PostGreSQL");
 $aDB_CONN_INFO["mpoint"]["timeout"] = env("database.mpoint.timeout", 10);
 $aDB_CONN_INFO["mpoint"]["charset"] = env("database.mpoint.charset", "UTF8");
@@ -95,7 +79,7 @@ $aDB_CONN_INFO["session"]["host"] = env("database.session.host", "localhost");
 $aDB_CONN_INFO["session"]["port"] = env("database.session.port", 5432);
 $aDB_CONN_INFO["session"]["path"] = env("database.session.path", "session");
 $aDB_CONN_INFO["session"]["username"] = env("database.session.username", "session");
-$aDB_CONN_INFO["session"]["password"] = env("database.session.password", "2a2ac8447e");
+$aDB_CONN_INFO["session"]["password"] = env("database.session.password", "");
 $aDB_CONN_INFO["session"]["timeout"] = env("database.session.timeout", 10);
 $aDB_CONN_INFO["session"]["charset"] = env("database.session.charset", "ISO8859_1");
 $aDB_CONN_INFO["session"]["class"] = env("database.session.class", "PostGreSQL");
@@ -194,7 +178,7 @@ $aHTTP_CONN_INFO["payex"]["timeout"] = env("http.payex.timeout", 120);
 $aHTTP_CONN_INFO["payex"]["path"] = env("http.payex.path", "/PxOrder/Pxorder.asmx?WSDL");
 $aHTTP_CONN_INFO["payex"]["method"] = env("http.payex.method", "POST");
 $aHTTP_CONN_INFO["payex"]["contenttype"] = env("http.payex.contenttype", "text/xml");
-$aHTTP_CONN_INFO["payex"]["password"] = env("http.payex.password", "b9ppZDPbRcJNEgHM57BV");
+$aHTTP_CONN_INFO["payex"]["password"] = env("http.payex.password", "");
 
 /**
  * Connection info for connecting to CPG
@@ -1113,33 +1097,33 @@ $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
  *
  * @global 	array $aGM_CONN_INFO
  */
-$aGM_CONN_INFO["protocol"] = env("http.gm.protocol", "http");
-$aGM_CONN_INFO["host"] = env("http.gm.host", "gomobile.cellpointmobile.com");
-$aGM_CONN_INFO["port"] = env("http.gm.port", 8000);
-$aGM_CONN_INFO["timeout"] = env("http.gm.timeout", 20);	// In seconds
-$aGM_CONN_INFO["path"] = env("http.gm.path", "/");
-$aGM_CONN_INFO["method"] = env("http.gm.method", "POST");
-$aGM_CONN_INFO["contenttype"] = env("http.gm.contenttype", "text/xml");
-$aGM_CONN_INFO["username"] = env("http.gm.username", "");		// Set from the Client Configuration
-$aGM_CONN_INFO["password"] = env("http.gm.password", "");		// Set from the Client Configuration
-$aGM_CONN_INFO["logpath"] = env("http.gm.logpath", sLOG_PATH);
+$aGM_CONN_INFO["protocol"] = env("gomobile.protocol", "http");
+$aGM_CONN_INFO["host"] = env("gomobile.host", "gomobile.cellpointmobile.com");
+$aGM_CONN_INFO["port"] = env("gomobile.port", 8000);
+$aGM_CONN_INFO["timeout"] = env("gomobile.timeout", 20);	// In seconds
+$aGM_CONN_INFO["path"] = env("gomobile.path", "/");
+$aGM_CONN_INFO["method"] = env("gomobile.method", "POST");
+$aGM_CONN_INFO["contenttype"] = env("gomobile.contenttype", "text/xml");
+$aGM_CONN_INFO["username"] = env("gomobile.username", "");		// Set from the Client Configuration
+$aGM_CONN_INFO["password"] = env("gomobile.password", "");		// Set from the Client Configuration
+$aGM_CONN_INFO["logpath"] = env("gomobile.logpath", sLOG_PATH);
 /**
  * 1 - Write log entry to file
  * 2 - Output log entry to screen
  * 3 - Write log entry to file and output to screen
  *
  */
-$aGM_CONN_INFO["mode"] = env("http.gm.mode", 1);
+$aGM_CONN_INFO["mode"] = env("gomobile.mode", 1);
 
 
 //Connection info connecting to the same host, used while running unit tests
-$aCPM_CONN_INFO["protocol"] = env("http.mpoint.protocol", "http");
-$aCPM_CONN_INFO["host"] = env("http.mpoint.host", "mpoint.local.cellpointmobile.com");
-$aCPM_CONN_INFO["port"] = env("http.mpoint.port", 80);
-$aCPM_CONN_INFO["timeout"] = env("http.mpoint.timeout", 20);
-$aCPM_CONN_INFO["path"] = env("http.mpoint.path", "/callback/cpm.php");
-$aCPM_CONN_INFO["method"] = env("http.mpoint.method", "POST");
-$aCPM_CONN_INFO["contenttype"] = env("http.mpoint.contenttype", "application/x-www-form-urlencoded");
+$aCPM_CONN_INFO["protocol"] = env("mpoint.protocol", "http");
+$aCPM_CONN_INFO["host"] = env("mpoint.host", "mpoint.local.cellpointmobile.com");
+$aCPM_CONN_INFO["port"] = env("mpoint.port", 80);
+$aCPM_CONN_INFO["timeout"] = env("mpoint.timeout", 20);
+$aCPM_CONN_INFO["path"] = env("mpoint.path", "/callback/cpm.php");
+$aCPM_CONN_INFO["method"] = env("mpoint.method", "POST");
+$aCPM_CONN_INFO["contenttype"] = env("mpoint.contenttype", "application/x-www-form-urlencoded");
 
 
 /**
