@@ -413,7 +413,7 @@ try
 											if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
 											{
 												$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-												if($obj_CustomerInfo === null) {
+												if(empty($obj_CustomerInfo) === false) {
                                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
                                                     if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
                                                         $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
