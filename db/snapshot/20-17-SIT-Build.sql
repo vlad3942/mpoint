@@ -45,3 +45,7 @@ CREATE TABLE Log.paymentsecureinfo_tbl
 ) WITHOUT OIDS;
 ALTER TABLE Log.paymentsecureinfo_tbl OWNER TO mpoint;
 CREATE INDEX CONCURRENTLY paymentsecure_txn_idx ON log.paymentsecureinfo_tbl (txnid);
+
+--Payment is currently unavailable due to large amount of IDR currency
+UPDATE Client.Client_Tbl SET maxamount = 999999999900 WHERE id = 10020;
+

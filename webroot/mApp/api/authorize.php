@@ -281,7 +281,15 @@ try
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
-										$aRoutes = array();
+                                        $issuerIdentificationNumber = NULL;
+                                        if($isStoredCardPayment === true){
+                                            $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
+                                        }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
+                                        }
+
+                                        $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
                                         if($obj_card->getPaymentType() === 1) {
                                             $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
@@ -289,7 +297,7 @@ try
                                                 $iPrimaryRoute = $obj_TxnInfo->getPSPID();
                                                 if($iPrimaryRoute <=0)
                                                 {
-                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
+                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $issuerIdentificationNumber, $obj_card->getCardName());
                                                     if($obj_RS instanceof RoutingService)
                                                     {
                                                         $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
@@ -405,7 +413,7 @@ try
 											if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
 											{
 												$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-												if($obj_CustomerInfo === null) {
+												if(empty($obj_CustomerInfo) === false) {
                                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
                                                     if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
                                                         $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
