@@ -77,7 +77,8 @@ class RoutingServiceResponse
         {
             $iPaymentMethodCount = count($aObj_XML->payment_methods->payment_method);
             if($iPaymentMethodCount > 0){
-                $aObjPaymentMethod = null;
+                $aObjPaymentMethod = new stdClass();
+				$aObjPaymentMethod->payment_methods = new stdClass();
                 for ($i = 0; $i < $iPaymentMethodCount; $i++)
                 {
                     $aObjPaymentMethod->payment_methods->payment_method[$i] = new stdClass();
