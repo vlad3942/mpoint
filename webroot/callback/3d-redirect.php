@@ -102,10 +102,14 @@ require_once(sCLASS_PATH ."/first-data.php");
 // Require specific Business logic for the CYBS ie. Global Payments component
 require_once(sCLASS_PATH ."/global-payments.php");
 require_once(sCLASS_PATH ."/cybersource.php");
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH . "/worldpay.php");
+
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 /**
  * Input XML format
  *
@@ -144,7 +148,6 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 $sRawXML = file_get_contents("php://input");
 $obj_XML = simplexml_load_string($sRawXML);
 
-	
 $id = (integer)$obj_XML->{'threed-redirect'}->transaction["id"];
 $xml = '';
 
@@ -165,6 +168,8 @@ try
 
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 
+    $obj_ClientInfo = ClientInfo::produceInfo($obj_XML->{'threed-redirect'}->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->{'threed-redirect'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 	$year = substr(strftime("%Y"), 0, 2);
 	$sExpirydate =  $year.$obj_XML->{'threed-redirect'}->transaction->card->expiry->year ."-". $obj_XML->{'threed-redirect'}->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
@@ -173,28 +178,22 @@ try
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     //Log the incoming status code.
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
-    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+
+    if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
+    {
+        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
+        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+
+    }
+
+    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
+    {
 
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
         {
             $aMpiRule = array();
             $bIsSkipAuth = false;
-            if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
-            {
-                $aPaymentSecureData = array();
-                $aPaymentSecureData['eci'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["eci"];
-                $aPaymentSecureData['cavv'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'};
-                $aPaymentSecureData['cavvAlgorithm'] = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'cryptogram'}["algorithm-id"];
 
-
-                for ($j=0; $j<count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param); $j++ )
-                {
-                    $sKey = (string)$obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j]['name'];
-                    $sValue =(string) $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}->param[$j];
-                    $aPaymentSecureData[$sKey] = $sValue;
-                }
-                $obj_mPoint->storePaymentSecureInfo($obj_TxnInfo->getID(),$aPaymentSecureData);
-            }
             if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
             {
                 $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);
@@ -241,10 +240,14 @@ try
                 {
                     $card_obj->card->addChild('info-3d-secure','');
                 }
-                $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
-                $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
-                $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
-                $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram)
+                {
+                    $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
+                    $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
+                    $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+                    $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                }
+
                 if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
                 {
                     $address = $card_obj->card->address;
@@ -287,7 +290,7 @@ try
                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
 
 
-                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
 
                 if ($code == "100")
                 {

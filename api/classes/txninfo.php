@@ -1486,7 +1486,7 @@ class TxnInfo
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
 						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid,
-						COALESCE(convetredcurrencyid,currencyid) as convetredcurrencyid,COALESCE(convertedamount,amount) as convertedamount,COALESCE(conversionrate,1) as conversionrate,issuing_bank  
+						COALESCE(convertedcurrencyid,currencyid) as convertedcurrencyid,COALESCE(convertedamount,amount) as convertedamount,COALESCE(conversionrate,1) as conversionrate,issuing_bank  
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -1507,7 +1507,7 @@ class TxnInfo
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
 			$obj_ConvertedCurrencyConfig = null;
-			if(intval($RS["CONVETREDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVETREDCURRENCYID"]);
+			if(intval($RS["CONVERTEDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVERTEDCURRENCYID"]);
             $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
             $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
             $aBillingAddr = self::_produceBillingAddr($obj, $RS["ID"]);
@@ -1711,7 +1711,7 @@ class TxnInfo
 	public static function  _produceBillingAddr($_OBJ_DB, $txnId)
 	{
 		$aBillingAddr = [];
-		$sqlA = "SELECT id, first_name, last_name, street, street2, city, state, zip, country FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
+		$sqlA = "SELECT id, first_name, last_name, street, street2, city, state, zip, country, mobile, email,mobile_country_id FROM log" . sSCHEMA_POSTFIX . ".address_tbl WHERE reference_type='transaction' and reference_id=" . $txnId;
 		$rsa = $_OBJ_DB->getAllNames ( $sqlA );
 		if (empty($rsa) === false )
 		{
@@ -1725,6 +1725,9 @@ class TxnInfo
 				$aBillingAddr["state" ] = $rs ["STATE"];
 				$aBillingAddr["zip" ] = $rs ["ZIP"];
 				$aBillingAddr["country" ] = $rs ["COUNTRY"];
+				$aBillingAddr["mobile" ] = $rs ["MOBILE"];
+				$aBillingAddr["email" ] = $rs ["EMAIL"];
+				$aBillingAddr["mobile_country_id" ] = $rs ["MOBILE_COUNTRY_ID"];
 			}
 		}
 		return $aBillingAddr;
@@ -1875,10 +1878,10 @@ class TxnInfo
 	
 	
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
-							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type)
+							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type, mobile_country_id, mobile, email)
 						VALUES
 							(". $RS["ID"] .", '". $aShippingObj["first_name"] ."','". $aShippingObj["last_name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
-							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."' )";
+							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."', '". $aShippingObj["mobile_country_id"] ."', '". $aShippingObj["mobile"] ."', '". $aShippingObj["email"] ."' )";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)

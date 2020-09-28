@@ -472,7 +472,7 @@ class General
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". $oTI->useAutoCapture() .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
 					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType()).",
-					convertedamount = ". $oTI->getConvertedAmount() .",convetredcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
+					convertedamount = ". $oTI->getConvertedAmount() .",convertedcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
 					conversionrate = ". $oTI->getConversationRate();
 
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
@@ -1412,7 +1412,7 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
         $xml = '';
         if ($code == "100") {
@@ -1424,12 +1424,12 @@ class General
         } else if (strpos($code, '2005') !== false) {
             header("HTTP/1.1 303");
             $xml = $code;
-        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true') {
+        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
             if(empty($iAlternateRoute) === false) {
                 $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
+                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
             }
@@ -1455,54 +1455,46 @@ class General
 
     /**
      * Logs payment 3ds secure information.
-     * @param int $txnId
-     * @param array $aSecureInfo
-     * @throws mPointException
+     * @param PaymentSecureInfo $paymentSecureInfo
+
      */
-    public function storePaymentSecureInfo($txnId,$aSecureInfo)
+    public function storePaymentSecureInfo(PaymentSecureInfo $paymentSecureInfo)
     {
         $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
-					(txnid, mdStatus, mdErrorMsg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm,md,PAResVerified,PAResSyntaxOK,protocol,cardType)
-				VALUES
-					(". $txnId. ", '". $aSecureInfo['mdStatus'] ."', '". $aSecureInfo['mdErrorMsg'] ."', '". $aSecureInfo['veresEnrolledStatus'] ."',  '". $aSecureInfo['paresTxStatus'] ."',  '". $aSecureInfo['eci'] ."','". $aSecureInfo['cavv'] ."','". $aSecureInfo['cavvAlgorithm'] ."','". $aSecureInfo['md'] ."','". $aSecureInfo['PAResVerified'] ."'
-					,'". $aSecureInfo['PAResSyntaxOK'] ."','". $aSecureInfo['protocol'] ."','". $aSecureInfo['cardType'] ."')";
-        if (is_resource($this->getDBConn()->query($sql) ) === false)
+					(txnid, pspid, status, msg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm, protocol)
+				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10)";
+        $res = $this->getDBConn()->prepare($sql);
+
+        if (is_resource($res) === TRUE)
         {
-            throw new mPointException("Unable to insert new payment secure message for txn id: ". $txnId, 1005);
+            $aParams = array(
+                $paymentSecureInfo->getTransactionID(),
+                $paymentSecureInfo->getPSPID(),
+                $paymentSecureInfo->getStatus(),
+                $paymentSecureInfo->getMsg(),
+                $paymentSecureInfo->getVeresEnrolledStatus(),
+                $paymentSecureInfo->getParestxstatus(),
+                $paymentSecureInfo->getECI(),
+                $paymentSecureInfo->getCAVV(),
+                $paymentSecureInfo->getCavvAlgorithm(),
+                $paymentSecureInfo->getProtocol()
+            );
+            $result = $this->getDBConn()->execute($res, $aParams);
+            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            {
+                trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+            }
         }
     }
 
     /**
-     * gets payment 3ds secure information.
-     * @param int $txnId
-     * @return array
-     * @throws mPointException
+     * Retrieves Issuer identification number from given card number
+     * @param $cardno integer  Card Number
+     * @return string          Issuer identification number
      */
-    public function getPaymentSecureInfo($txnId)
+    public static function getIssuerIdentificationNumber($cardno)
     {
-        $sql = "SELECT  mdStatus, mdErrorMsg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm,md,PAResVerified,PAResSyntaxOK,protocol,cardType 
-        FROM LOG".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl WHERE txnid=".$txnId;
-        $aSecureInfo = [];
-        $rsa = $this->getDBConn()->getAllNames ( $sql );
-        if (empty($rsa) === false )
-        {
-            foreach ($rsa as $rs)
-            {
-                $aSecureInfo["mdStatus" ] = $rs ["MDSTATUS"];
-                $aSecureInfo["mdErrorMsg" ] = $rs ["MDERRORMSG"];
-                $aSecureInfo["veresEnrolledStatus" ] = $rs ["VERESENROLLEDSTATUS"];
-                $aSecureInfo["paresTxStatus" ] = $rs ["PARESTXSTATUS"];
-                $aSecureInfo["eci" ] = $rs ["ECI"];
-                $aSecureInfo["cavv" ] = $rs ["CAVV"];
-                $aSecureInfo["cavvAlgorithm" ] = $rs ["CAVVALGORITHM"];
-                $aSecureInfo["PAResVerified" ] = $rs ["PARESVERIFIED"];
-                $aSecureInfo["PAResSyntaxOK" ] = $rs ["PARESSYNTAXOK"];
-                $aSecureInfo["protocol" ] = $rs ["PROTOCOL"];
-                $aSecureInfo["cardType" ] = $rs ["CARDTYPE"];
-            }
-        }
-        return $aSecureInfo;
-
+        return substr($cardno, 0, 6);
     }
 }
 ?>
