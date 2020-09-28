@@ -496,8 +496,13 @@ try
 													// 3rd Party Wallet
 													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || intval($card_psp_id)== Constants::iMVAULT_PSP)
 													{
+													    $typeId = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+													    if(intval($card_psp_id)== Constants::iMVAULT_PSP)
+                                                        {
+                                                            $typeId = Constants::iMVAULT_WALLET;
+                                                        }
                                                         if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) > 0) {
-                                                            $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), $aHTTP_CONN_INFO, $card_psp_id);
+                                                            $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $typeId , $aHTTP_CONN_INFO);
                                                             if (empty($wallet_Processor) === true) {
                                                                 $obj_XML = simpledom_load_string($obj_mCard->getCards((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount));
 
