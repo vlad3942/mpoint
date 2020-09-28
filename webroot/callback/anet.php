@@ -75,22 +75,15 @@ case (1):	// Payment Approved
 	}
 	
 	// Callback URL has been defined for Client
-	if ($obj_TxnInfo->getCallbackURL() != "")
-	{
-		$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST['x_trans_id']);
-	}
-    $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_ACCEPTED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+	$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST['x_trans_id']);
+
 
     // Auto-Capture enabled for Transaction
 	if (strtolower($_POST['x_type']) == "auth_capture")
 	{
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		// Callback URL has been defined for Client
-		if ($obj_TxnInfo->getCallbackURL() != "")
-		{
-			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['x_trans_id']);
-		}
-        $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+		$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['x_trans_id']);
 	}
 	break;
 default:			// Payment Rejected

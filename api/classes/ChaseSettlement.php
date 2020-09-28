@@ -268,12 +268,8 @@ class ChaseSettlement extends mPointSettlement
                                             $args['additionaldata'] = 'tickernumbers=' . implode(',', $aTicketNumbers);
                                         }
                                     }
-                                    if ($obj_TxnInfo->getCallbackURL() !== '')
-                                    {
-                                        $obj_PSP->notifyClient($stateId, $args,$this->_objClientConfig->getSurePayConfig($_OBJ_DB));
-                                    }
-                                    $obj_PSP->notifyForeignExchange(array($stateId),$this->_objConnectionInfo['foreign-exchange']);
 
+                                    $obj_PSP->notifyClient($stateId, $args,$this->_objClientConfig->getSurePayConfig($_OBJ_DB));
 
                                 if ($isDescriptionUpdated === true) {
                                     $sql = "UPDATE log.settlement_record_tbl

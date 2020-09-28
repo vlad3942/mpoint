@@ -664,8 +664,7 @@ try
 
       $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
       // Callback URL has been defined for Client
-      if ($obj_TxnInfo->getCallbackURL() != "")
-      {
+
         /*
          * Return the success code 202 to indicate Request Accepted and
          * the request to notify the upstream  retail system.
@@ -702,18 +701,6 @@ try
               $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
               $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
           }
-       }
-      else {
-          header("Content-Type: text/xml; charset=\"UTF-8\"");
-          echo '<?xml version="1.0" encoding="UTF-8"?>';
-          echo '<root>';
-          echo '<status code="1000">Callback Success</status>';
-          echo '</root>';
-          $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
-      }
-
-      $iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID());
-      if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO['foreign-exchange']); }
     }
 }
 catch (TxnInfoException $e)

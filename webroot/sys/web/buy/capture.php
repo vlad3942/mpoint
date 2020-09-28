@@ -147,15 +147,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					
 					$aMsgCds[1000] = "Success";
 					// Perform callback to Client
-					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-					{
-						$args = array("transact" => $obj_TxnInfo->getExternalID(),
-									  "amount" => $_REQUEST['amount'],
-									  "fee" => $obj_TxnInfo->getFee() );
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
-					}
-                    $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
-
+                    $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                  "amount" => $_REQUEST['amount'],
+                                  "fee" => $obj_TxnInfo->getFee() );
+                    $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
                 }
 				else
 				{
@@ -163,13 +158,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					
 					$aMsgCds[999] = "Declined";
 					// Perform callback to Client
-					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-					{
-						$args = array("transact" => $obj_TxnInfo->getExternalID(),
-									  "amount" => $_REQUEST['amount']);
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
-					}
-                    $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                    $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                  "amount" => $_REQUEST['amount']);
+                    $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
                 }
 			}
 			catch (BadMethodCallException $e)
