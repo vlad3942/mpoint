@@ -140,6 +140,8 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 
 
 /**
@@ -199,13 +201,19 @@ try
 
     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via alternate route
     $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
+    $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
     $bHoldSessionComplete = false;
-    if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true')
+    if($iStateID == Constants::iPAYMENT_REJECTED_STATE && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true')
     {
         // Check whether sub code is a part of transaction soft declined
         if ($obj_TxnInfo->hasEitherSoftDeclinedState($iSubCodeID) === true)
         {
-            if($obj_TxnInfo->getAttemptNumber() < 3){
+            $iPSPID = (int)$obj_XML->callback->{"psp-config"}["id"];
+            $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iAlternateRoutes = $objTxnRoute->getRoutes();
+            $retry_count = array_search($iPSPID, $iAlternateRoutes);
+
+            if($retry_count < count($iAlternateRoutes)){
                 $bHoldSessionComplete = true;
             }
         }
@@ -346,6 +354,7 @@ try
         }
         $fee = 0;
         $sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
+        $sSwishPaymentID = (string) $obj_XML->callback->{'swishPaymentID'};
         $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
             $obj_XML->callback->transaction["external-id"],
             (integer)$obj_XML->callback->transaction->card["type-id"],
@@ -353,7 +362,7 @@ try
             $iSubCodeID,
             $fee,
             array(file_get_contents("php://input")),
-            $sIssuingBank);
+            $sIssuingBank, $sSwishPaymentID);
         // Payment Authorized: Perform a callback to the 3rd party Wallet if required
         if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
@@ -468,6 +477,14 @@ try
         $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
         $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
+            $paymentSecureInfo = null;
+            if($obj_XML->callback->transaction->card->{'info-3d-secure'})
+            {
+                $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
+
+                if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+            }
+
             //Post-Auth-Fraud Check call
             $fraudCheckResponse = new FraudResult();
             if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE)) === false && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE  && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
@@ -479,13 +496,8 @@ try
                     $aFraudRule = array();
                     $bIsSkipFraud = false;
 
-                    if($obj_XML->callback->transaction->card->{'info-3d-secure'})
-                    {
-                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->callback->transaction->card->{'info-3d-secure'},(integer)$obj_XML->callback->{'psp-config'}["id"],$obj_TxnInfo->getID());
 
-                        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
-                    }
-                    else
+                    if($paymentSecureInfo === null)
                     {
                         $paymentSecureInfo = PaymentSecureInfo::produceInfo($_OBJ_DB,$obj_TxnInfo->getID());
                         if($paymentSecureInfo !== null)

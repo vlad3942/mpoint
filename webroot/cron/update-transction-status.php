@@ -142,6 +142,8 @@ require_once(sCLASS_PATH ."/first-data.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 // Require specific Business logic for the SWISH component
 require_once(sCLASS_PATH ."/apm/swish.php");
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
 // </editor-fold>
 
 ignore_user_abort(true);

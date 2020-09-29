@@ -171,7 +171,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $aObj_Logs = $obj_mPoint->searchTransactionLogs($sTimeZoneOffset , array_keys($aAccounts), $aAccountIDs, $aPspIDs, $aCardIDs, $aStateIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), $obj_CustomerInfo, str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["verbose"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
 			foreach ($aObj_Logs as $obj_Log)
 			{
-				$xml .= $obj_Log->toXML();
+				$xml .= $obj_Log->toXML($_OBJ_DB);
 			}
 			$xml .= '</transactions>';
 			break;

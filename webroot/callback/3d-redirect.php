@@ -178,18 +178,22 @@ try
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     //Log the incoming status code.
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
-    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+
+    if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
+    {
+        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
+        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+
+    }
+
+    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
+    {
 
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
         {
             $aMpiRule = array();
             $bIsSkipAuth = false;
-            if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
-            {
-                $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
-                if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
 
-            }
             if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
             {
                 $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);
@@ -236,10 +240,14 @@ try
                 {
                     $card_obj->card->addChild('info-3d-secure','');
                 }
-                $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
-                $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
-                $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
-                $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram)
+                {
+                    $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
+                    $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
+                    $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+                    $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                }
+
                 if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
                 {
                     $address = $card_obj->card->address;

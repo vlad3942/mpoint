@@ -458,7 +458,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey=null, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=null, $obj_TransactionTypeConfig=null)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, $obj_TransactionTypeConfig=NULL)
 	{
 		parent::__construct($id, $name);
 
@@ -537,25 +537,51 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	AccountConfig
 	 */
-	public function getAccountConfig() { return $this->_obj_AccountConfig; }	
-	/**
-	 * Returns the array of Configurations for the Accounts the Transaction can be processed through
-	 *
-	 * @return 	array
-	 */
-	public function getAccountsConfigurations() { return $this->_aObj_AccountsConfigurations; }
-	/**
-	 * Returns the array of Configurations for the Merchant Accounts that communicate with the PSPs
-	 *
-	 * @return 	Array
-	 */
-	public function getMerchantAccounts() { return $this->_aObj_MerchantAccounts; }
-	/**
-	 * Returns the array of Configurations for the Cards used by the client.
-	 *
-	 * @return 	Array
-	 */
-	public function getPaymentMethods() { return $this->_aObj_PaymentMethodConfigurations; }
+	public function getAccountConfig() { return $this->_obj_AccountConfig; }
+
+    /**
+     * Returns the array of Configurations for the Accounts the Transaction can be processed through
+     *
+     * @param \RDB|null $oDB
+     *
+     * @return    array
+     */
+	public function getAccountsConfigurations(RDB &$oDB = NULL) {
+        if ($this->_aObj_AccountsConfigurations === NULL && $oDB !== NULL) {
+            $this->_aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $this->getID());
+        }
+        return $this->_aObj_AccountsConfigurations;
+    }
+
+    /**
+     * Returns the array of Configurations for the Merchant Accounts that communicate with the PSPs
+     *
+     * @param \RDB|null $oDB
+     *
+     * @return    Array
+     */
+    public function getMerchantAccounts(RDB &$oDB = NULL)
+    {
+        if ($this->_aObj_MerchantAccounts === NULL && $oDB !== NULL) {
+            $this->_aObj_MerchantAccounts = ClientMerchantAccountConfig::produceConfigurations($oDB, $this->getID());
+        }
+        return $this->_aObj_MerchantAccounts;
+    }
+
+    /**
+     * Returns the array of Configurations for the Cards used by the client.
+     *
+     * @param \RDB|null $oDB
+     *
+     * @return    Array
+     */
+    public function getPaymentMethods(RDB &$oDB = NULL)
+    {
+        if ($this->_aObj_PaymentMethodConfigurations === NULL && $oDB !== NULL ) {
+            $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $this->getID());
+        }
+        return $this->_aObj_PaymentMethodConfigurations;
+    }
 	/**
 	 * Returns the Client's Username for GoMobile
 	 *
@@ -585,7 +611,13 @@ class ClientConfig extends BasicConfig
      *
      * @return 	ClientCommunicationChannelsConfig
      */
-    public function getCommunicationChannelsConfig() { return $this->_obj_CommunicationChannelsConfig; }
+    public function getCommunicationChannelsConfig(RDB $oDB) {
+        if($this->_obj_CommunicationChannelsConfig === NULL)
+        {
+            $this->_obj_CommunicationChannelsConfig = ClientCommunicationChannelsConfig::produceConfig($oDB, $this->getID());
+        }
+        return $this->_obj_CommunicationChannelsConfig;
+    }
     
 
     /**
@@ -971,10 +1003,10 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getPaymentMethodsAsXML()
+	private function _getPaymentMethodsAsXML(RDB &$oDB)
 	{
 		$xml = '<payment-methods store-card="'. $this->_iStoreCard .'" show-all-cards="'. General::bool2xml($this->_bShowAllCards) .'" max-stored-cards="'. $this->_iMaxCards .'">';
-		foreach ($this->_aObj_PaymentMethodConfigurations as $obj_PM)
+		foreach ($this->getPaymentMethods($oDB) as $obj_PM)
 		{
 			if ( ($obj_PM instanceof ClientPaymentMethodConfig) === true)
 			{
@@ -990,10 +1022,10 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getAccountsConfigurationsAsXML()
+	private function _getAccountsConfigurationsAsXML(RDB &$oDB)
 	{
 		$xml = '<account-configurations>';
-		foreach ($this->_aObj_AccountsConfigurations as $obj_AccountConfig)
+		foreach ($this->getAccountsConfigurations($oDB) as $obj_AccountConfig)
 		{
 			if ( ($obj_AccountConfig instanceof AccountConfig) == true)
 			{
@@ -1009,10 +1041,10 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getMerchantAccountsConfigAsXML()
+	private function _getMerchantAccountsConfigAsXML(RDB &$oDB)
 	{
 		$xml = '<payment-service-providers>';
-		foreach ($this->_aObj_MerchantAccounts as $obj_MA)
+		foreach ($this->getMerchantAccounts($oDB) as $obj_MA)
 		{
 			if ( ($obj_MA instanceof ClientMerchantAccountConfig) === true)
 			{
@@ -1029,8 +1061,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getIINRangesConfigAsXML()
+	private function _getIINRangesConfigAsXML(RDB &$oDB = NULL)
 	{
+	    if($this->_aObj_IINRangeConfigurations === NULL && $oDB !== NULL)
+        {
+            $this->_aObj_IINRangeConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<issuer-identification-number-ranges>';
 		foreach ($this->_aObj_IINRangeConfigurations as $obj_IINR)
 		{
@@ -1049,8 +1085,12 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getGoMobileConfigAsXML()
+	private function _getGoMobileConfigAsXML(RDB &$oDB = NULL)
 	{
+	    if($this->_aObj_GoMobileConfigurations === NULL && $oDB !== NULL)
+        {
+            $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $this->getID());
+        }
 		$xml = '<gomobile-configuration-params>';
 		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
 		{
@@ -1069,8 +1109,12 @@ class ClientConfig extends BasicConfig
      *
      * @return 	String
      */
-	private function getTransactionTypeConfigXML()
+	private function getTransactionTypeConfigXML(RDB $oDB)
     {
+        if($this->_aObj_TransactionTypeConfigurations === NULL)
+        {
+            $this->_aObj_TransactionTypeConfigurations = TransactionTypeConfig::produceConfig($oDB);
+        }
         $xml = '<transaction-types>';
         foreach ($this->_aObj_TransactionTypeConfigurations as $obj_TransactionType)
         {
@@ -1131,7 +1175,7 @@ class ClientConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public function toFullXML($propertyScope=2)
+	public function toFullXML(RDB &$oDB,$propertyScope=2)
 	{
 		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -1156,15 +1200,15 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_ThreedRedirectURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_ThreedRedirectURL->toXML(); }
 		$xml .= '</urls>';
 		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
-		$xml .= $this->_getPaymentMethodsAsXML();
-		$xml .= $this->_getMerchantAccountsConfigAsXML();				
-		$xml .= $this->_getAccountsConfigurationsAsXML();		
-		$xml .= $this->_getGoMobileConfigAsXML();
-		if( ($this->_obj_CommunicationChannelsConfig instanceof ClientCommunicationChannelsConfig) === true ) { $xml .= $this->_obj_CommunicationChannelsConfig->toXML(); }
+		$xml .= $this->_getPaymentMethodsAsXML($oDB);
+		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
+		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
+		$xml .= $this->_getGoMobileConfigAsXML($oDB);
+        $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
-		$xml .= $this->_getIINRangesConfigAsXML();
+		$xml .= $this->_getIINRangesConfigAsXML($oDB);
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
 		
@@ -1192,7 +1236,7 @@ class ClientConfig extends BasicConfig
         }
         $xml .= '</additional-config>';
         $xml .= '<decimal>'.$this->getCountryConfig()->getDecimals().'</decimal>';
-        $xml .= $this->getTransactionTypeConfigXML();
+        $xml .= $this->getTransactionTypeConfigXML($oDB);
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -1311,30 +1355,30 @@ class ClientConfig extends BasicConfig
 			$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"], array(),$RS["BUSINESSTYPE"]);
 			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-			$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
-			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
-			$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
-			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
-			$aObj_ClientGoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $id);
-			$obj_ClientCommunicationChannels = ClientCommunicationChannelsConfig::produceConfig($oDB, $id);
-            $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
+			$aObj_AccountsConfigurations = NULL;//AccountConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientMerchantAccountConfigurations = NULL;//ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientCardsAccountConfigurations = NULL;//ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientIINRangesConfigurations = NULL;//ClientIINRangeConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientGoMobileConfigurations = NULL;//ClientGoMobileConfig::produceConfigurations($oDB, $id);
+			$obj_ClientCommunicationChannels = NULL;//ClientCommunicationChannelsConfig::produceConfig($oDB, $id);
+            $obj_TransactionTypeConfig = NULL;//TransactionTypeConfig::produceConfig($oDB);
 
-			$obj_LogoURL = null;
-			$obj_CSSURL = null;
-			$obj_AcceptURL = null;
-			$obj_CancelURL = null;
-			$obj_DeclineURL = null;
-			$obj_CallbackURL = null;
-			$obj_IconURL = null;
-			$obj_CustomerImportURL = null;
-			$obj_AuthenticationURL = null;
-			$obj_NotificationURL = null;
-			$obj_MESBURL = null;
-			$obj_Parse3DSecureURL = null;
-			$obj_AppURL = null;
-			$obj_BaseImageURL = null;
-			$obj_ThreedRedirectURL = null;
-            $obj_BaseAssetURL = null;
+			$obj_LogoURL = NULL;
+			$obj_CSSURL = NULL;
+			$obj_AcceptURL = NULL;
+			$obj_CancelURL = NULL;
+			$obj_DeclineURL = NULL;
+			$obj_CallbackURL = NULL;
+			$obj_IconURL = NULL;
+			$obj_CustomerImportURL = NULL;
+			$obj_AuthenticationURL = NULL;
+			$obj_NotificationURL = NULL;
+			$obj_MESBURL = NULL;
+			$obj_Parse3DSecureURL = NULL;
+			$obj_AppURL = NULL;
+			$obj_BaseImageURL = NULL;
+			$obj_ThreedRedirectURL = NULL;
+            $obj_BaseAssetURL = NULL;
 
             $sql  = "SELECT id,url, urltypeid
 					 FROM Client". sSCHEMA_POSTFIX .".URL_Tbl
@@ -1454,7 +1498,7 @@ class ClientConfig extends BasicConfig
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
 
-		return null;
+		return NULL;
 	}
 
 	public static function authenticate($obj_DB, $clientID, $accountID, $username, $password, $ip='')
@@ -1485,10 +1529,10 @@ class ClientConfig extends BasicConfig
 		else { return in_array($ip, $this->_aIPList); }
 	}
 
-	public function getClientGoMobileConfigurationToXML()
+	public function getClientGoMobileConfigurationToXML(RDB &$oDB)
     {
         $xml = '<client-config id="'. $this->getID() .'">';
-        $xml .= $this->_getGoMobileConfigAsXML();
+        $xml .= $this->_getGoMobileConfigAsXML($oDB);
         $xml .= '</client-config>';
         return $xml;
     }
@@ -1546,6 +1590,18 @@ class ClientConfig extends BasicConfig
             $this->_objSurePayConfig = SurePayConfig::produceConfig( $oDB, $this->getID());
         }
         return $this->_objSurePayConfig;
+    }
+
+    private function _getCommunicationCannelConfigAsXML(RDB $oDB)
+    {
+        if($this->_obj_CommunicationChannelsConfig === NULL)
+        {
+            $this->_obj_CommunicationChannelsConfig = ClientCommunicationChannelsConfig::produceConfig($oDB, $this->getID());
+        }
+        if (($this->_obj_CommunicationChannelsConfig instanceof ClientCommunicationChannelsConfig) === TRUE) {
+            return $this->_obj_CommunicationChannelsConfig->toXML();
+        }
+        return "";
     }
 }
 ?>

@@ -294,7 +294,7 @@ class TransactionLogInfo
 	public function getMessages() { return $this->_aObj_MessageInfos; }
 	public function getDescription() { return $this->_sDescription; }
 	
-	public function toXML()
+	public function toXML(RDB $RDB)
 	{
 		$xml  = '<transaction id="'. $this->_iID .'" type-id="'. $this->_iTypeID .'" state-id="'. $this->_iStateID .'"';
 		if (strlen($this->_sOrderNumber) > 0) { $xml .= ' order-no="'. htmlspecialchars($this->_sOrderNumber, ENT_NOQUOTES) .'"'; }
@@ -303,7 +303,7 @@ class TransactionLogInfo
 		$xml .= '<client id="'. $this->_obj_Client->getID() .'">'. htmlspecialchars($this->_obj_Client->getName(), ENT_NOQUOTES) .'</client>';
 		if( ($this->_obj_Client instanceof ClientConfig) === true)
         {
-            $xml .= $this->_obj_Client->getCommunicationChannelsConfig()->toXML();
+            $xml .= $this->_obj_Client->getCommunicationChannelsConfig($RDB)->toXML();
         }
 		$xml .= $this->_getSubAccountXML();
 		if ( ($this->_obj_PSP instanceof BasicConfig) === true) { $xml .= '<payment-service-provider id="'. $this->_obj_PSP->getID() .'">'. htmlspecialchars($this->_obj_PSP->getName(), ENT_NOQUOTES) .'</payment-service-provider>'; }
