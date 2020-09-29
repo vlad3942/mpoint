@@ -611,7 +611,13 @@ class ClientConfig extends BasicConfig
      *
      * @return 	ClientCommunicationChannelsConfig
      */
-    public function getCommunicationChannelsConfig() { return $this->_obj_CommunicationChannelsConfig; }
+    public function getCommunicationChannelsConfig(RDB $oDB) {
+        if($this->_obj_CommunicationChannelsConfig === NULL)
+        {
+            $this->_obj_CommunicationChannelsConfig = ClientCommunicationChannelsConfig::produceConfig($oDB, $this->getID());
+        }
+        return $this->_obj_CommunicationChannelsConfig;
+    }
     
 
     /**

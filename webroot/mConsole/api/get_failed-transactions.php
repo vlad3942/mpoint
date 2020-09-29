@@ -103,7 +103,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$aObj_Logs = $obj_mPoint->getFailedTransactions($clients, $aStateIDs, str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'end-date'}));
 		foreach ($aObj_Logs as $obj_Log)
 		{
-			$xml .= $obj_Log->toXML();
+			$xml .= $obj_Log->toXML($_OBJ_DB);
 		}
 		
 	$xml .="</failed-transactions>";
