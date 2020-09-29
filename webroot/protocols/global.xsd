@@ -115,6 +115,7 @@
 		<xs:enumeration value="sv" />
 		<xs:enumeration value="en" />
 		<xs:enumeration value="es" />
+		<xs:enumeration value="nn" />
 	</xs:restriction>
 </xs:simpleType>
 

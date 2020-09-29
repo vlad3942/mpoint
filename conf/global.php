@@ -1071,6 +1071,24 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/fr
 $aHTTP_CONN_INFO["cybersource"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
+ * Connection info for connecting to GrabPay
+ */
+$aHTTP_CONN_INFO["grabpay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["grabpay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["grabpay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["grabpay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["grabpay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["grabpay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["grabpay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["capture"] = "/mpoint/grab-pay/capture";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["initialize"] = "/mpoint/grab-pay/initialize";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["refund"] = "/mpoint/grab-pay/refund";
+$aHTTP_CONN_INFO["grabpay"]["paths"]["status"] = "/mpoint/grab-pay/status";
+
+
+
+
+/**
  * Connection info for connecting to cybersource fraud gateway
  */
 $aHTTP_CONN_INFO["cebu-rmfss"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
@@ -1090,13 +1108,14 @@ $aHTTP_CONN_INFO["swish"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["swish"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["swish"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO["swish"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["swish"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["swish"]["path"] = "";  // Set by calling class
 $aHTTP_CONN_INFO["swish"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["swish"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize";
 $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
 $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
+$aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
 
 /**
  * GoMobile Connection Info.
