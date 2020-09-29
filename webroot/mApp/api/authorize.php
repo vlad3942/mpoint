@@ -888,7 +888,7 @@ try
                                                                             $aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
                                                                             $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);
 
-                                                                            $xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
+                                                                                $xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
                                                                             break;
                                                                         case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
 
@@ -985,19 +985,11 @@ try
 
                                                                         default:    // Use Payment processor for PSP.
                                                                             try {
-
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-                                                                                $propertyValue = false;
-                                                                                $pspPropertyValue = true;
-                                                                                if ($obj_Processor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER) {
-                                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
-                                                                                    //psp property will be false in config if 3ds is not applicable
-                                                                                    $pspPropertyValue = $obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
-                                                                                }
 
-                                                                                if ($propertyValue == 'true' && $pspPropertyValue != 'false') {
-                                                                                    $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
-                                                                                    $code = $obj_Processor->authenticate($requset);
+                                                                                if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
+                                                                                    $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
+                                                                                    $code = $obj_Processor->authenticate($request);
                                                                                 } else {
                                                                                     $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                 }
