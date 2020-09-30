@@ -5,7 +5,7 @@
 -- Dumped from database version 10.9
 -- Dumped by pg_dump version 12.3 (Debian 12.3-1.pgdg80+1)
 
--- Started on 2020-09-21 12:14:07 UTC
+-- Started on 2020-09-22 08:24:52 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -250,7 +250,7 @@ $$;
 ALTER FUNCTION log.fn_add_txnpassbook_permissions(p_ods_table character varying, p_client_id integer, p_nested character varying, p_dim_from bigint, p_dim_to bigint, p_size bigint) OWNER TO mpoint;
 
 --
--- TOC entry 503 (class 1255 OID 33315430)
+-- TOC entry 502 (class 1255 OID 33315430)
 -- Name: fn_add_txnpassbook_triggers(character varying, integer, character varying, bigint, bigint, bigint); Type: FUNCTION; Schema: log; Owner: mpoint
 --
 
@@ -557,7 +557,7 @@ $$;
 ALTER FUNCTION log.fn_generate_txnpassbook_partitions(p_ods_table character varying, p_client_id integer, p_nested character varying, p_dim_from bigint, p_dim_to bigint, p_size bigint) OWNER TO mpoint;
 
 --
--- TOC entry 502 (class 1255 OID 33320842)
+-- TOC entry 503 (class 1255 OID 33320842)
 -- Name: fn_generate_txnpassbook_publications(character varying, integer, character varying, bigint, bigint, bigint); Type: FUNCTION; Schema: log; Owner: mpoint
 --
 
@@ -1064,7 +1064,7 @@ CREATE SEQUENCE admin.access_tbl_id_seq
 ALTER TABLE admin.access_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6671 (class 0 OID 0)
+-- TOC entry 6662 (class 0 OID 0)
 -- Dependencies: 209
 -- Name: access_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
 --
@@ -1106,7 +1106,7 @@ CREATE SEQUENCE admin.role_tbl_id_seq
 ALTER TABLE admin.role_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6673 (class 0 OID 0)
+-- TOC entry 6663 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: role_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
 --
@@ -1147,7 +1147,7 @@ CREATE SEQUENCE admin.roleaccess_tbl_id_seq
 ALTER TABLE admin.roleaccess_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6675 (class 0 OID 0)
+-- TOC entry 6664 (class 0 OID 0)
 -- Dependencies: 213
 -- Name: roleaccess_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
 --
@@ -1190,7 +1190,7 @@ CREATE SEQUENCE admin.roleinfo_tbl_id_seq
 ALTER TABLE admin.roleinfo_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6677 (class 0 OID 0)
+-- TOC entry 6665 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: roleinfo_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
 --
@@ -1234,7 +1234,7 @@ CREATE SEQUENCE client.account_tbl_id_seq
 ALTER TABLE client.account_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6679 (class 0 OID 0)
+-- TOC entry 6666 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: account_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1263,7 +1263,7 @@ CREATE TABLE client.additionalproperty_tbl (
 ALTER TABLE client.additionalproperty_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6680 (class 0 OID 0)
+-- TOC entry 6667 (class 0 OID 0)
 -- Dependencies: 328
 -- Name: COLUMN additionalproperty_tbl.scope; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1290,7 +1290,7 @@ CREATE SEQUENCE client.additionalproperty_tbl_id_seq
 ALTER TABLE client.additionalproperty_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6682 (class 0 OID 0)
+-- TOC entry 6668 (class 0 OID 0)
 -- Dependencies: 327
 -- Name: additionalproperty_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1327,7 +1327,7 @@ CREATE TABLE client.cardaccess_tbl (
 ALTER TABLE client.cardaccess_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6683 (class 0 OID 0)
+-- TOC entry 6669 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: COLUMN cardaccess_tbl.installment; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1337,7 +1337,7 @@ COMMENT ON COLUMN client.cardaccess_tbl.installment IS 'Default 0 - No installme
 
 
 --
--- TOC entry 6684 (class 0 OID 0)
+-- TOC entry 6670 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: COLUMN cardaccess_tbl.capture_method; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1364,7 +1364,7 @@ CREATE SEQUENCE client.cardaccess_tbl_id_seq
 ALTER TABLE client.cardaccess_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6686 (class 0 OID 0)
+-- TOC entry 6671 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: cardaccess_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1423,7 +1423,7 @@ CREATE TABLE client.client_tbl (
 ALTER TABLE client.client_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6687 (class 0 OID 0)
+-- TOC entry 6672 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: COLUMN client_tbl.transaction_ttl; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1432,7 +1432,7 @@ COMMENT ON COLUMN client.client_tbl.transaction_ttl IS 'Transaction Time To Live
 
 
 --
--- TOC entry 6688 (class 0 OID 0)
+-- TOC entry 6673 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: COLUMN client_tbl.installment; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1442,7 +1442,7 @@ COMMENT ON COLUMN client.client_tbl.installment IS 'Default to 0 installment not
 
 
 --
--- TOC entry 6689 (class 0 OID 0)
+-- TOC entry 6674 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: COLUMN client_tbl.max_installments; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1452,7 +1452,7 @@ Usually set by Acq';
 
 
 --
--- TOC entry 6690 (class 0 OID 0)
+-- TOC entry 6675 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: COLUMN client_tbl.installment_frequency; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -1478,7 +1478,7 @@ CREATE SEQUENCE client.client_tbl_id_seq
 ALTER TABLE client.client_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6692 (class 0 OID 0)
+-- TOC entry 6676 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: client_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1520,7 +1520,7 @@ CREATE SEQUENCE client.countrycurrency_tbl_id_seq
 ALTER TABLE client.countrycurrency_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6694 (class 0 OID 0)
+-- TOC entry 6677 (class 0 OID 0)
 -- Dependencies: 333
 -- Name: countrycurrency_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1564,7 +1564,7 @@ CREATE SEQUENCE client.gatewaystat_tbl_id_seq
 ALTER TABLE client.gatewaystat_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6696 (class 0 OID 0)
+-- TOC entry 6678 (class 0 OID 0)
 -- Dependencies: 348
 -- Name: gatewaystat_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1608,7 +1608,7 @@ CREATE SEQUENCE client.gatewaytrigger_tbl_id_seq
 ALTER TABLE client.gatewaytrigger_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6698 (class 0 OID 0)
+-- TOC entry 6679 (class 0 OID 0)
 -- Dependencies: 344
 -- Name: gatewaytrigger_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1651,7 +1651,7 @@ CREATE SEQUENCE client.gomobileconfiguration_tbl_id_seq
 ALTER TABLE client.gomobileconfiguration_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6700 (class 0 OID 0)
+-- TOC entry 6680 (class 0 OID 0)
 -- Dependencies: 325
 -- Name: gomobileconfiguration_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1694,7 +1694,7 @@ CREATE SEQUENCE client.iinlist_tbl_id_seq
 ALTER TABLE client.iinlist_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6702 (class 0 OID 0)
+-- TOC entry 6681 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: iinlist_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1738,7 +1738,7 @@ CREATE SEQUENCE client.info_tbl_id_seq
 ALTER TABLE client.info_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6704 (class 0 OID 0)
+-- TOC entry 6682 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: info_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1779,7 +1779,7 @@ CREATE SEQUENCE client.infotype_tbl_id_seq
 ALTER TABLE client.infotype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6706 (class 0 OID 0)
+-- TOC entry 6683 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: infotype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1820,7 +1820,7 @@ CREATE SEQUENCE client.ipaddress_tbl_id_seq
 ALTER TABLE client.ipaddress_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6708 (class 0 OID 0)
+-- TOC entry 6684 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: ipaddress_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1862,7 +1862,7 @@ CREATE SEQUENCE client.keyword_tbl_id_seq
 ALTER TABLE client.keyword_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6710 (class 0 OID 0)
+-- TOC entry 6685 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: keyword_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1908,7 +1908,7 @@ CREATE SEQUENCE client.merchantaccount_tbl_id_seq
 ALTER TABLE client.merchantaccount_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6712 (class 0 OID 0)
+-- TOC entry 6686 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: merchantaccount_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1950,7 +1950,7 @@ CREATE SEQUENCE client.merchantsubaccount_tbl_id_seq
 ALTER TABLE client.merchantsubaccount_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6714 (class 0 OID 0)
+-- TOC entry 6687 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: merchantsubaccount_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -1994,7 +1994,7 @@ CREATE SEQUENCE client.product_tbl_id_seq
 ALTER TABLE client.product_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6716 (class 0 OID 0)
+-- TOC entry 6688 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: product_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2035,7 +2035,7 @@ CREATE SEQUENCE client.producttype_tbl_id_seq
 ALTER TABLE client.producttype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6718 (class 0 OID 0)
+-- TOC entry 6689 (class 0 OID 0)
 -- Dependencies: 340
 -- Name: producttype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2078,7 +2078,7 @@ CREATE SEQUENCE client.retrial_tbl_id_seq
 ALTER TABLE client.retrial_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6720 (class 0 OID 0)
+-- TOC entry 6690 (class 0 OID 0)
 -- Dependencies: 356
 -- Name: retrial_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2121,7 +2121,7 @@ CREATE SEQUENCE client.shipping_tbl_id_seq
 ALTER TABLE client.shipping_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6722 (class 0 OID 0)
+-- TOC entry 6691 (class 0 OID 0)
 -- Dependencies: 239
 -- Name: shipping_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2163,7 +2163,7 @@ CREATE SEQUENCE client.shop_tbl_id_seq
 ALTER TABLE client.shop_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6724 (class 0 OID 0)
+-- TOC entry 6692 (class 0 OID 0)
 -- Dependencies: 241
 -- Name: shop_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2189,7 +2189,7 @@ CREATE TABLE client.staticroutelevelconfiguration (
 ALTER TABLE client.staticroutelevelconfiguration OWNER TO mpoint;
 
 --
--- TOC entry 6725 (class 0 OID 0)
+-- TOC entry 6693 (class 0 OID 0)
 -- Dependencies: 474
 -- Name: TABLE staticroutelevelconfiguration; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -2198,7 +2198,7 @@ COMMENT ON TABLE client.staticroutelevelconfiguration IS 'This table will contai
 
 
 --
--- TOC entry 6726 (class 0 OID 0)
+-- TOC entry 6694 (class 0 OID 0)
 -- Dependencies: 474
 -- Name: COLUMN staticroutelevelconfiguration.cardaccessid; Type: COMMENT; Schema: client; Owner: mpoint
 --
@@ -2223,7 +2223,7 @@ CREATE SEQUENCE client.staticroutelevelconfiguration_id_seq
 ALTER TABLE client.staticroutelevelconfiguration_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6728 (class 0 OID 0)
+-- TOC entry 6695 (class 0 OID 0)
 -- Dependencies: 473
 -- Name: staticroutelevelconfiguration_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2267,7 +2267,7 @@ CREATE SEQUENCE client.surepay_tbl_id_seq
 ALTER TABLE client.surepay_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6730 (class 0 OID 0)
+-- TOC entry 6696 (class 0 OID 0)
 -- Dependencies: 243
 -- Name: surepay_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2309,7 +2309,7 @@ CREATE SEQUENCE client.url_tbl_id_seq
 ALTER TABLE client.url_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6732 (class 0 OID 0)
+-- TOC entry 6697 (class 0 OID 0)
 -- Dependencies: 245
 -- Name: url_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: client; Owner: mpoint
 --
@@ -2346,7 +2346,7 @@ CREATE TABLE enduser.account_tbl (
 ALTER TABLE enduser.account_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6733 (class 0 OID 0)
+-- TOC entry 6698 (class 0 OID 0)
 -- Dependencies: 246
 -- Name: COLUMN account_tbl.profileid; Type: COMMENT; Schema: enduser; Owner: mpoint
 --
@@ -2370,7 +2370,7 @@ CREATE SEQUENCE enduser.account_tbl_id_seq
 ALTER TABLE enduser.account_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6735 (class 0 OID 0)
+-- TOC entry 6699 (class 0 OID 0)
 -- Dependencies: 247
 -- Name: account_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: enduser; Owner: mpoint
 --
@@ -2426,7 +2426,7 @@ CREATE SEQUENCE enduser.activation_tbl_id_seq
 ALTER TABLE enduser.activation_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6738 (class 0 OID 0)
+-- TOC entry 6700 (class 0 OID 0)
 -- Dependencies: 250
 -- Name: activation_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: enduser; Owner: mpoint
 --
@@ -2476,7 +2476,7 @@ CREATE SEQUENCE enduser.address_tbl_id_seq
 ALTER TABLE enduser.address_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6740 (class 0 OID 0)
+-- TOC entry 6701 (class 0 OID 0)
 -- Dependencies: 252
 -- Name: address_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: enduser; Owner: mpoint
 --
@@ -2526,7 +2526,7 @@ CREATE SEQUENCE enduser.card_tbl_id_seq
 ALTER TABLE enduser.card_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6742 (class 0 OID 0)
+-- TOC entry 6702 (class 0 OID 0)
 -- Dependencies: 254
 -- Name: card_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: enduser; Owner: mpoint
 --
@@ -2567,7 +2567,7 @@ CREATE SEQUENCE enduser.claccess_tbl_id_seq
 ALTER TABLE enduser.claccess_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6744 (class 0 OID 0)
+-- TOC entry 6703 (class 0 OID 0)
 -- Dependencies: 256
 -- Name: claccess_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: enduser; Owner: mpoint
 --
@@ -2619,7 +2619,7 @@ CREATE SEQUENCE enduser.transaction_tbl_id_seq
 ALTER TABLE enduser.transaction_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6746 (class 0 OID 0)
+-- TOC entry 6704 (class 0 OID 0)
 -- Dependencies: 258
 -- Name: transaction_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: enduser; Owner: mpoint
 --
@@ -2661,7 +2661,7 @@ CREATE SEQUENCE log.additional_data_tbl_id_seq
 ALTER TABLE log.additional_data_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6748 (class 0 OID 0)
+-- TOC entry 6705 (class 0 OID 0)
 -- Dependencies: 260
 -- Name: additional_data_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2707,7 +2707,7 @@ CREATE SEQUENCE log.address_tbl_id_seq
 ALTER TABLE log.address_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6750 (class 0 OID 0)
+-- TOC entry 6706 (class 0 OID 0)
 -- Dependencies: 262
 -- Name: address_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2753,7 +2753,7 @@ CREATE SEQUENCE log.auditlog_tbl_id_seq
 ALTER TABLE log.auditlog_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6752 (class 0 OID 0)
+-- TOC entry 6707 (class 0 OID 0)
 -- Dependencies: 264
 -- Name: auditlog_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2799,7 +2799,7 @@ CREATE SEQUENCE log.billing_summary_tbl_id_seq
 ALTER TABLE log.billing_summary_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6754 (class 0 OID 0)
+-- TOC entry 6708 (class 0 OID 0)
 -- Dependencies: 476
 -- Name: billing_summary_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2843,7 +2843,7 @@ CREATE SEQUENCE log.externalreference_tbl_id_seq
 ALTER TABLE log.externalreference_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6756 (class 0 OID 0)
+-- TOC entry 6709 (class 0 OID 0)
 -- Dependencies: 358
 -- Name: externalreference_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2894,7 +2894,7 @@ CREATE SEQUENCE log.flight_tbl_id_seq
 ALTER TABLE log.flight_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6758 (class 0 OID 0)
+-- TOC entry 6710 (class 0 OID 0)
 -- Dependencies: 266
 -- Name: flight_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2936,7 +2936,7 @@ CREATE SEQUENCE log.message_tbl_id_seq
 ALTER TABLE log.message_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6760 (class 0 OID 0)
+-- TOC entry 6711 (class 0 OID 0)
 -- Dependencies: 268
 -- Name: message_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -2978,7 +2978,7 @@ CREATE SEQUENCE log.note_tbl_id_seq
 ALTER TABLE log.note_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6763 (class 0 OID 0)
+-- TOC entry 6712 (class 0 OID 0)
 -- Dependencies: 270
 -- Name: note_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3018,7 +3018,7 @@ CREATE SEQUENCE log.operation_tbl_id_seq
 ALTER TABLE log.operation_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6765 (class 0 OID 0)
+-- TOC entry 6713 (class 0 OID 0)
 -- Dependencies: 272
 -- Name: operation_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3069,7 +3069,7 @@ CREATE SEQUENCE log.order_tbl_id_seq
 ALTER TABLE log.order_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6767 (class 0 OID 0)
+-- TOC entry 6714 (class 0 OID 0)
 -- Dependencies: 274
 -- Name: order_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3115,7 +3115,7 @@ CREATE SEQUENCE log.passenger_tbl_id_seq
 ALTER TABLE log.passenger_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6769 (class 0 OID 0)
+-- TOC entry 6715 (class 0 OID 0)
 -- Dependencies: 276
 -- Name: passenger_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3158,7 +3158,7 @@ CREATE SEQUENCE log.paymentroute_tbl_id_seq
 ALTER TABLE log.paymentroute_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6771 (class 0 OID 0)
+-- TOC entry 6716 (class 0 OID 0)
 -- Dependencies: 480
 -- Name: paymentroute_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3194,7 +3194,7 @@ CREATE TABLE log.session_tbl (
 ALTER TABLE log.session_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6772 (class 0 OID 0)
+-- TOC entry 6717 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: TABLE session_tbl; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3203,7 +3203,7 @@ COMMENT ON TABLE log.session_tbl IS 'Session table act as master table for trans
 
 
 --
--- TOC entry 6773 (class 0 OID 0)
+-- TOC entry 6718 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.clientid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3212,7 +3212,7 @@ COMMENT ON COLUMN log.session_tbl.clientid IS 'Merchant Id';
 
 
 --
--- TOC entry 6774 (class 0 OID 0)
+-- TOC entry 6719 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.accountid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3221,7 +3221,7 @@ COMMENT ON COLUMN log.session_tbl.accountid IS 'Storefront Id';
 
 
 --
--- TOC entry 6775 (class 0 OID 0)
+-- TOC entry 6720 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.currencyid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3230,7 +3230,7 @@ COMMENT ON COLUMN log.session_tbl.currencyid IS 'Currency of transaction';
 
 
 --
--- TOC entry 6776 (class 0 OID 0)
+-- TOC entry 6721 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.countryid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3239,7 +3239,7 @@ COMMENT ON COLUMN log.session_tbl.countryid IS 'Country of transaction';
 
 
 --
--- TOC entry 6777 (class 0 OID 0)
+-- TOC entry 6722 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.stateid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3248,7 +3248,7 @@ COMMENT ON COLUMN log.session_tbl.stateid IS 'State of session';
 
 
 --
--- TOC entry 6778 (class 0 OID 0)
+-- TOC entry 6723 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.amount; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3257,7 +3257,7 @@ COMMENT ON COLUMN log.session_tbl.amount IS 'Total amount for payment';
 
 
 --
--- TOC entry 6779 (class 0 OID 0)
+-- TOC entry 6724 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.externalid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3266,7 +3266,7 @@ COMMENT ON COLUMN log.session_tbl.externalid IS 'Profile id';
 
 
 --
--- TOC entry 6780 (class 0 OID 0)
+-- TOC entry 6725 (class 0 OID 0)
 -- Dependencies: 338
 -- Name: COLUMN session_tbl.sessiontypeid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3290,7 +3290,7 @@ CREATE SEQUENCE log.session_tbl_id_seq
 ALTER TABLE log.session_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6782 (class 0 OID 0)
+-- TOC entry 6726 (class 0 OID 0)
 -- Dependencies: 337
 -- Name: session_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3331,7 +3331,7 @@ CREATE SEQUENCE log.settlement_record_tbl_id_seq
 ALTER TABLE log.settlement_record_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6784 (class 0 OID 0)
+-- TOC entry 6727 (class 0 OID 0)
 -- Dependencies: 352
 -- Name: settlement_record_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3378,7 +3378,7 @@ CREATE SEQUENCE log.settlement_tbl_id_seq
 ALTER TABLE log.settlement_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6786 (class 0 OID 0)
+-- TOC entry 6728 (class 0 OID 0)
 -- Dependencies: 350
 -- Name: settlement_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3420,7 +3420,7 @@ CREATE SEQUENCE log.state_tbl_id_seq
 ALTER TABLE log.state_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6788 (class 0 OID 0)
+-- TOC entry 6729 (class 0 OID 0)
 -- Dependencies: 278
 -- Name: state_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3498,7 +3498,7 @@ WITH (autovacuum_enabled='true', toast.autovacuum_enabled='true');
 ALTER TABLE log.transaction_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6789 (class 0 OID 0)
+-- TOC entry 6730 (class 0 OID 0)
 -- Dependencies: 279
 -- Name: COLUMN transaction_tbl.producttype; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3507,7 +3507,7 @@ COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transactio
 
 
 --
--- TOC entry 6790 (class 0 OID 0)
+-- TOC entry 6731 (class 0 OID 0)
 -- Dependencies: 279
 -- Name: COLUMN transaction_tbl.approval_action_code; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3517,7 +3517,7 @@ COMMENT ON COLUMN log.transaction_tbl.approval_action_code IS 'This field contai
 
 
 --
--- TOC entry 6791 (class 0 OID 0)
+-- TOC entry 6732 (class 0 OID 0)
 -- Dependencies: 279
 -- Name: COLUMN transaction_tbl.installment_value; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3526,7 +3526,7 @@ COMMENT ON COLUMN log.transaction_tbl.installment_value IS 'Installment value is
 
 
 --
--- TOC entry 6792 (class 0 OID 0)
+-- TOC entry 6733 (class 0 OID 0)
 -- Dependencies: 279
 -- Name: COLUMN transaction_tbl.profileid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -3550,7 +3550,7 @@ CREATE SEQUENCE log.transaction_tbl_id_seq
 ALTER TABLE log.transaction_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6794 (class 0 OID 0)
+-- TOC entry 6734 (class 0 OID 0)
 -- Dependencies: 280
 -- Name: transaction_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -3600,7 +3600,7 @@ CREATE SEQUENCE log.txnpassbook_tbl_id_seq
 ALTER TABLE log.txnpassbook_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6796 (class 0 OID 0)
+-- TOC entry 6735 (class 0 OID 0)
 -- Dependencies: 364
 -- Name: txnpassbook_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -6286,7 +6286,7 @@ CREATE TABLE log.txnpassbook_tbl_backup_20200401 (
 ALTER TABLE log.txnpassbook_tbl_backup_20200401 OWNER TO mpoint;
 
 --
--- TOC entry 6904 (class 0 OID 0)
+-- TOC entry 6736 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.transactionid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6295,7 +6295,7 @@ COMMENT ON COLUMN log.txnpassbook_tbl_backup_20200401.transactionid IS 'Primary 
 
 
 --
--- TOC entry 6905 (class 0 OID 0)
+-- TOC entry 6737 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.amount; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6304,7 +6304,7 @@ COMMENT ON COLUMN log.txnpassbook_tbl_backup_20200401.amount IS 'Amount used for
 
 
 --
--- TOC entry 6906 (class 0 OID 0)
+-- TOC entry 6738 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.currencyid; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6314,7 +6314,7 @@ primary key of system.currency_tbl';
 
 
 --
--- TOC entry 6907 (class 0 OID 0)
+-- TOC entry 6739 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.requestedopt; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6328,7 +6328,7 @@ COMMENT ON COLUMN log.txnpassbook_tbl_backup_20200401.requestedopt IS 'Request o
 
 
 --
--- TOC entry 6908 (class 0 OID 0)
+-- TOC entry 6740 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.performedopt; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6338,7 +6338,7 @@ Entry will contain either requested or performed operation';
 
 
 --
--- TOC entry 6909 (class 0 OID 0)
+-- TOC entry 6741 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.extref; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6348,7 +6348,7 @@ This contains the primary id of repective table to fetch all necessary in the ca
 
 
 --
--- TOC entry 6910 (class 0 OID 0)
+-- TOC entry 6742 (class 0 OID 0)
 -- Dependencies: 361
 -- Name: COLUMN txnpassbook_tbl_backup_20200401.extrefidentifier; Type: COMMENT; Schema: log; Owner: mpoint
 --
@@ -6373,7 +6373,7 @@ CREATE SEQUENCE log.txnpassbook_tbl_id_seq_backup
 ALTER TABLE log.txnpassbook_tbl_id_seq_backup OWNER TO mpoint;
 
 --
--- TOC entry 6912 (class 0 OID 0)
+-- TOC entry 6743 (class 0 OID 0)
 -- Dependencies: 360
 -- Name: txnpassbook_tbl_id_seq_backup; Type: SEQUENCE OWNED BY; Schema: log; Owner: mpoint
 --
@@ -6424,7 +6424,7 @@ CREATE SEQUENCE system.businesstype_tbl_id_seq
 ALTER TABLE system.businesstype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6916 (class 0 OID 0)
+-- TOC entry 6744 (class 0 OID 0)
 -- Dependencies: 362
 -- Name: businesstype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6465,7 +6465,7 @@ CREATE SEQUENCE system.capturetype_tbl_id_seq
 ALTER TABLE system.capturetype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6918 (class 0 OID 0)
+-- TOC entry 6745 (class 0 OID 0)
 -- Dependencies: 471
 -- Name: capturetype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6511,7 +6511,7 @@ CREATE SEQUENCE system.card_tbl_id_seq
 ALTER TABLE system.card_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6920 (class 0 OID 0)
+-- TOC entry 6746 (class 0 OID 0)
 -- Dependencies: 283
 -- Name: card_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6551,7 +6551,7 @@ CREATE SEQUENCE system.cardchargetype_tbl_id_seq
 ALTER TABLE system.cardchargetype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6922 (class 0 OID 0)
+-- TOC entry 6747 (class 0 OID 0)
 -- Dependencies: 285
 -- Name: cardchargetype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6593,7 +6593,7 @@ CREATE SEQUENCE system.cardprefix_tbl_id_seq
 ALTER TABLE system.cardprefix_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6924 (class 0 OID 0)
+-- TOC entry 6748 (class 0 OID 0)
 -- Dependencies: 287
 -- Name: cardprefix_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6634,7 +6634,7 @@ CREATE SEQUENCE system.cardpricing_tbl_id_seq
 ALTER TABLE system.cardpricing_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6926 (class 0 OID 0)
+-- TOC entry 6749 (class 0 OID 0)
 -- Dependencies: 289
 -- Name: cardpricing_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6674,7 +6674,7 @@ CREATE SEQUENCE system.cardstate_tbl_id_seq
 ALTER TABLE system.cardstate_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6928 (class 0 OID 0)
+-- TOC entry 6750 (class 0 OID 0)
 -- Dependencies: 291
 -- Name: cardstate_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6732,7 +6732,7 @@ CREATE SEQUENCE system.country_tbl_id_seq
 ALTER TABLE system.country_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6930 (class 0 OID 0)
+-- TOC entry 6751 (class 0 OID 0)
 -- Dependencies: 293
 -- Name: country_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6775,7 +6775,7 @@ CREATE SEQUENCE system.currency_tbl_id_seq
 ALTER TABLE system.currency_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6932 (class 0 OID 0)
+-- TOC entry 6752 (class 0 OID 0)
 -- Dependencies: 331
 -- Name: currency_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6816,7 +6816,7 @@ CREATE SEQUENCE system.depositoption_tbl_id_seq
 ALTER TABLE system.depositoption_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6934 (class 0 OID 0)
+-- TOC entry 6753 (class 0 OID 0)
 -- Dependencies: 295
 -- Name: depositoption_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6857,7 +6857,7 @@ CREATE SEQUENCE system.externalreferencetype_tbl_id_seq
 ALTER TABLE system.externalreferencetype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6936 (class 0 OID 0)
+-- TOC entry 6754 (class 0 OID 0)
 -- Dependencies: 478
 -- Name: externalreferencetype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6902,7 +6902,7 @@ CREATE SEQUENCE system.fee_tbl_id_seq
 ALTER TABLE system.fee_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6938 (class 0 OID 0)
+-- TOC entry 6755 (class 0 OID 0)
 -- Dependencies: 297
 -- Name: fee_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6942,7 +6942,7 @@ CREATE SEQUENCE system.feetype_tbl_id_seq
 ALTER TABLE system.feetype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6940 (class 0 OID 0)
+-- TOC entry 6756 (class 0 OID 0)
 -- Dependencies: 299
 -- Name: feetype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -6982,7 +6982,7 @@ CREATE SEQUENCE system.flow_tbl_id_seq
 ALTER TABLE system.flow_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6942 (class 0 OID 0)
+-- TOC entry 6757 (class 0 OID 0)
 -- Dependencies: 301
 -- Name: flow_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7042,7 +7042,7 @@ CREATE SEQUENCE system.iprange_tbl_id_seq
 ALTER TABLE system.iprange_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6945 (class 0 OID 0)
+-- TOC entry 6758 (class 0 OID 0)
 -- Dependencies: 304
 -- Name: iprange_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7079,7 +7079,7 @@ CREATE SEQUENCE system.paymenttype_tbl_id_seq
 ALTER TABLE system.paymenttype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6947 (class 0 OID 0)
+-- TOC entry 6759 (class 0 OID 0)
 -- Dependencies: 329
 -- Name: paymenttype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7125,7 +7125,7 @@ CREATE SEQUENCE system.postalcode_tbl_id_seq
 ALTER TABLE system.postalcode_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6949 (class 0 OID 0)
+-- TOC entry 6760 (class 0 OID 0)
 -- Dependencies: 306
 -- Name: postalcode_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7166,7 +7166,7 @@ CREATE SEQUENCE system.pricepoint_tbl_id_seq
 ALTER TABLE system.pricepoint_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6951 (class 0 OID 0)
+-- TOC entry 6761 (class 0 OID 0)
 -- Dependencies: 308
 -- Name: pricepoint_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7203,7 +7203,7 @@ CREATE SEQUENCE system.processortype_tbl_id_seq
 ALTER TABLE system.processortype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6953 (class 0 OID 0)
+-- TOC entry 6762 (class 0 OID 0)
 -- Dependencies: 310
 -- Name: processortype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7228,7 +7228,7 @@ CREATE TABLE system.producttype_tbl (
 ALTER TABLE system.producttype_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6954 (class 0 OID 0)
+-- TOC entry 6763 (class 0 OID 0)
 -- Dependencies: 339
 -- Name: TABLE producttype_tbl; Type: COMMENT; Schema: system; Owner: mpoint
 --
@@ -7237,7 +7237,7 @@ COMMENT ON TABLE system.producttype_tbl IS 'Contains all product types';
 
 
 --
--- TOC entry 6955 (class 0 OID 0)
+-- TOC entry 6764 (class 0 OID 0)
 -- Dependencies: 339
 -- Name: COLUMN producttype_tbl.id; Type: COMMENT; Schema: system; Owner: mpoint
 --
@@ -7246,7 +7246,7 @@ COMMENT ON COLUMN system.producttype_tbl.id IS 'Unique number of product type';
 
 
 --
--- TOC entry 6956 (class 0 OID 0)
+-- TOC entry 6765 (class 0 OID 0)
 -- Dependencies: 339
 -- Name: COLUMN producttype_tbl.name; Type: COMMENT; Schema: system; Owner: mpoint
 --
@@ -7273,7 +7273,7 @@ CREATE TABLE system.psp_tbl (
 ALTER TABLE system.psp_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6958 (class 0 OID 0)
+-- TOC entry 6766 (class 0 OID 0)
 -- Dependencies: 311
 -- Name: COLUMN psp_tbl.supportedpartialoperations; Type: COMMENT; Schema: system; Owner: mpoint
 --
@@ -7309,7 +7309,7 @@ CREATE SEQUENCE system.psp_tbl_id_seq
 ALTER TABLE system.psp_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6960 (class 0 OID 0)
+-- TOC entry 6767 (class 0 OID 0)
 -- Dependencies: 312
 -- Name: psp_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7350,7 +7350,7 @@ CREATE SEQUENCE system.pspcard_tbl_id_seq
 ALTER TABLE system.pspcard_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6962 (class 0 OID 0)
+-- TOC entry 6768 (class 0 OID 0)
 -- Dependencies: 314
 -- Name: pspcard_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7392,7 +7392,7 @@ CREATE SEQUENCE system.pspcurrency_tbl_id_seq
 ALTER TABLE system.pspcurrency_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6964 (class 0 OID 0)
+-- TOC entry 6769 (class 0 OID 0)
 -- Dependencies: 316
 -- Name: pspcurrency_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7433,7 +7433,7 @@ CREATE SEQUENCE system.retrialtype_tbl_id_seq
 ALTER TABLE system.retrialtype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6966 (class 0 OID 0)
+-- TOC entry 6770 (class 0 OID 0)
 -- Dependencies: 354
 -- Name: retrialtype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7456,7 +7456,7 @@ CREATE TABLE system.sessiontype_tbl (
 ALTER TABLE system.sessiontype_tbl OWNER TO mpoint;
 
 --
--- TOC entry 6967 (class 0 OID 0)
+-- TOC entry 6771 (class 0 OID 0)
 -- Dependencies: 336
 -- Name: TABLE sessiontype_tbl; Type: COMMENT; Schema: system; Owner: mpoint
 --
@@ -7480,7 +7480,7 @@ CREATE SEQUENCE system.sessiontype_tbl_id_seq
 ALTER TABLE system.sessiontype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6969 (class 0 OID 0)
+-- TOC entry 6772 (class 0 OID 0)
 -- Dependencies: 335
 -- Name: sessiontype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7521,7 +7521,7 @@ CREATE SEQUENCE system.shipping_tbl_id_seq
 ALTER TABLE system.shipping_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6971 (class 0 OID 0)
+-- TOC entry 6773 (class 0 OID 0)
 -- Dependencies: 318
 -- Name: shipping_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7564,7 +7564,7 @@ CREATE SEQUENCE system.state_tbl_id_seq
 ALTER TABLE system.state_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6973 (class 0 OID 0)
+-- TOC entry 6774 (class 0 OID 0)
 -- Dependencies: 320
 -- Name: state_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7605,7 +7605,7 @@ CREATE SEQUENCE system.statisticstype_tbl_id_seq
 ALTER TABLE system.statisticstype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6975 (class 0 OID 0)
+-- TOC entry 6775 (class 0 OID 0)
 -- Dependencies: 346
 -- Name: statisticstype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7646,7 +7646,7 @@ CREATE SEQUENCE system.triggerunit_tbl_id_seq
 ALTER TABLE system.triggerunit_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6977 (class 0 OID 0)
+-- TOC entry 6776 (class 0 OID 0)
 -- Dependencies: 342
 -- Name: triggerunit_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7686,7 +7686,7 @@ CREATE SEQUENCE system.type_tbl_id_seq
 ALTER TABLE system.type_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6979 (class 0 OID 0)
+-- TOC entry 6777 (class 0 OID 0)
 -- Dependencies: 322
 -- Name: type_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -7726,7 +7726,7 @@ CREATE SEQUENCE system.urltype_tbl_id_seq
 ALTER TABLE system.urltype_tbl_id_seq OWNER TO mpoint;
 
 --
--- TOC entry 6981 (class 0 OID 0)
+-- TOC entry 6778 (class 0 OID 0)
 -- Dependencies: 324
 -- Name: urltype_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: system; Owner: mpoint
 --
@@ -14879,9 +14879,10 @@ ALTER PUBLICATION mpoint_system_pub ADD TABLE ONLY system.type_tbl;
 
 ALTER PUBLICATION mpoint_system_pub ADD TABLE ONLY system.urltype_tbl;
 
+
 --
 -- TOC entry 4755 (class 3466 OID 36072367)
--- Name: no_ddl_allowed; Type: EVENT TRIGGER; Schema: -; Owner: rdsadmin
+-- Name: no_ddl_allowed; Type: EVENT TRIGGER; Schema: -; Owner: postgres
 --
 
 CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
@@ -14891,8 +14892,9 @@ CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
 
 ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres;
 
--- Completed on 2020-09-21 12:14:11 UTC
+-- Completed on 2020-09-22 08:24:56 UTC
 
 --
 -- PostgreSQL database dump complete
 --
+
