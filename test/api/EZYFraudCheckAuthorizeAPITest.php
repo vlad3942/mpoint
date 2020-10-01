@@ -233,7 +233,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $httpClient->connect();
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
 
@@ -305,7 +305,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $this->bIgnoreErrors = true;
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
 
@@ -377,7 +377,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $this->bIgnoreErrors = true;
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
 

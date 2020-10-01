@@ -72,7 +72,7 @@ class TxnPassbookEntriesToXMLFunctionTest extends baseAPITest
 		$this->assertEquals('done', $obj_DOM->{'performedopt'}->{'requestedopt'}->status);
 		$this->assertEquals(5000, (int)$obj_DOM->{'performedopt'}->{'requestedopt'}->amount);
 		$this->assertEquals(208, (int)$obj_DOM->{'performedopt'}->{'requestedopt'}->amount['currency-id']);
-		$this->assertEquals(5802341953600, (int)$obj_DOM->{'performedopt'}->{'requestedopt'}->extref);
+		$this->assertEquals('5802341953600', (string)$obj_DOM->{'performedopt'}->{'requestedopt'}->extref);
 		$this->assertEquals(1, count($obj_DOM->{'performedopt'}->{'requestedopt'}->created));
 		$this->assertEquals(1, count($obj_DOM->{'performedopt'}->{'requestedopt'}->modified));
 		$this->assertNotContains('', $obj_DOM->{'performedopt'}->{'requestedopt'}->created);

@@ -117,7 +117,7 @@ class MessageQueueClientTest extends baseAPITest
     public function testGetClient()
     {
         try {
-            $aMessage_Queue_Provider_info['provider'] = 'invalidProvider';
+            $aMessage_Queue_Provider_info['provider'] = 'googlepubsub';
             $aMessage_Queue_Provider_info['keyfile'] = 'samplefile';
             $aMessage_Queue_Provider_info['projectid'] = 'testproject';
             $aMessage_Queue_Provider_info['topicname'] = 'testtopic';

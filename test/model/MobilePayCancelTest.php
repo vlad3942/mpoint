@@ -74,7 +74,7 @@ class MobilePayCancelTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(5, count($aStates) );
+		$this->assertEquals(6, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_CANCELLED_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[2]);

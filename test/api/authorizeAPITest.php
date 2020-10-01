@@ -114,7 +114,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 		}
 
 		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-		if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(5, count($aStates) ); }
+		if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(6, count($aStates) ); }
 		else { $this->assertEquals(3, count($aStates) ); }
 
 		$s = 0;
@@ -178,7 +178,7 @@ abstract class AuthorizeAPITest extends baseAPITest
         }
 
         //TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-        if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(5, count($aStates) ); }
+        if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(6, count($aStates) ); }
         else { $this->assertEquals(3, count($aStates) ); }
 
         $s = 0;
@@ -245,7 +245,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 		}
 
 		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-		if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(9, count($aStates) ); }
+		if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(11, count($aStates) ); }
 		else { $this->assertEquals(7, count($aStates) ); }
 
 		$s = 0;
@@ -259,7 +259,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 			$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
 			$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
 		}
-
+        $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
 		$this->assertEquals(Constants::iPAYMENT_CAPTURED_STATE, $aStates[$s++]);
 
 		if ($pspID == Constants::iDIBS_PSP)
