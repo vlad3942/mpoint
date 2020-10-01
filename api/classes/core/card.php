@@ -363,10 +363,15 @@ class Card implements JsonSerializable
 
     public function jsonSerialize()
     {
-        return [
-            'id' => $this->getCardTypeId(),
-            'masked_card_number' => $this->getMaskedCardNumber(),
-            'expiry' => $this->getExpiry(),
-        ];
+        $response = ['id' => $this->getCardTypeId()];
+        if(empty($this->sMaskedCardNumber) === false)
+        {
+            $response['masked_card_number'] = $this->sMaskedCardNumber;
+        }
+        if(empty($this->sExpiry) === false)
+        {
+            $response['expiry'] = $this->sExpiry;
+        }
+        return $response;
     }
 }

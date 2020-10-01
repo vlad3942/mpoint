@@ -40,8 +40,11 @@ class StateInfo implements JsonSerializable
     public function __construct($code, $sub_code = NULL, $message = NULL)
     {
         if($code > 1000) {
-            $this->code = $code;
-            $this->sub_code = $sub_code;
+            $this->code = (int)$code;
+            if(empty($sub_code) === false)
+            {
+                $this->sub_code = (int)$sub_code;
+            }
             $this->message = $message;
         }
     }
