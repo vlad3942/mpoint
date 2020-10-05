@@ -14,6 +14,8 @@ RUN chmod uog+rx /app/scripts/*.sh \
 #Build the actual image
 FROM registry.t.cpm.dev/library/liquibase:1.5.1
 
+USER 0
+
 # Get app from the builder
 COPY --from=builder app/ /app
 
