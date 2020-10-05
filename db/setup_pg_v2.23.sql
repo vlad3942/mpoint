@@ -145,3 +145,7 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHP
 
 
 -------------G-CASH 2C2P-ALC FOR CEBU END------------
+
+--CMP-4471 [Chase Payment] Limit process file additional property	CMP-4471[Chase Payment] Limit process file additional property--
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'MAX_DOWNLOAD_FILE_LIMIT', '2', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=10069 AND pspid=52;
+--END CMP-4471 [Chase Payment] Limit process file additional property	CMP-4471[Chase Payment] Limit process file additional property--
