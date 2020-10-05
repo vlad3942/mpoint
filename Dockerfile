@@ -1,7 +1,7 @@
 # TODO use official phpcomposerbuildimage from harbour when this is moved to the new jenkins
 
 #Fetch dependencies
-//TODO CTECH-3909
+#TODO CTECH-3909
 FROM composer:1 as builder
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -23,7 +23,7 @@ RUN composer install -vvv --prefer-dist --no-dev
 # Template dockerfile for building the cellpointmobile/main:php-test container
 #-----------------------BASEIMAGE BEGIN------------------------
 
-//TODO CTECH-3908
+#TODO CTECH-3908
 FROM php:7.4.6-apache-buster
 
 RUN apt update \
