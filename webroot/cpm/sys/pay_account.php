@@ -69,6 +69,7 @@ require_once(sCLASS_PATH ."/apm/swish.php");
 
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
+require_once(sCLASS_PATH .'/paymaya.php');
 
 
 ignore_user_abort(true);

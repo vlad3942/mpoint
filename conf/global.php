@@ -57,7 +57,7 @@ $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
 $aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -1091,6 +1091,23 @@ $aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize
 $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
 $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
+
+
+/**
+ * Connection info for connecting to Paymaya
+ */
+$aHTTP_CONN_INFO["paymaya"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paymaya"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paymaya"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paymaya"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paymaya"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paymaya"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paymaya"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/paymaya/initialize";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/paymaya/callback";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/paymaya/refund";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/paymaya/void";
+
 
 /**
  * GoMobile Connection Info.

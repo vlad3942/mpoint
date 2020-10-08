@@ -100,6 +100,7 @@ header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+require_once(sCLASS_PATH .'/paymaya.php');
 
 set_time_limit(120);
 $aMsgCds = array();

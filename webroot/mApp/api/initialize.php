@@ -72,6 +72,7 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
+require_once(sCLASS_PATH .'/paymaya.php');
 
 $aMsgCds = array();
 

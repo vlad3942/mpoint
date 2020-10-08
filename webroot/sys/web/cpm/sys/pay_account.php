@@ -74,6 +74,7 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 // Require specific Business logic for the SWISH component
 require_once(sCLASS_PATH ."/apm/swish.php");
+require_once(sCLASS_PATH .'/paymaya.php');
 
 ignore_user_abort(true);
 set_time_limit(0);

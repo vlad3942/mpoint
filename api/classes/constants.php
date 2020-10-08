@@ -1037,7 +1037,13 @@ abstract class Constants
 	 *
 	 */
 	const iSWISH_APM = 66;
-    /**
+	/**
+	 * Unique ID for transaction's made using paymaya
+	 *
+	 */
+	const iPAYMAYA_WALLET = 68;
+	
+   /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -1476,6 +1482,12 @@ abstract class Constants
 	 *
 	 */
 	const iSWISH = 92;
+	
+	/**
+	 * Unique Card ID for transaction's made using paymaya wallet
+	 *
+	 */
+	const iPAYMAYA = 95;
 	
 
 	/**

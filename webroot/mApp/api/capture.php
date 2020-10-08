@@ -101,6 +101,8 @@ require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+require_once(sCLASS_PATH .'/paymaya.php');
+
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*

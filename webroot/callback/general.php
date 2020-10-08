@@ -140,6 +140,7 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
+require_once(sCLASS_PATH .'/paymaya.php');
 
 
 /**
