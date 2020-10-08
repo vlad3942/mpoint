@@ -309,9 +309,9 @@ class OrderInfo
 	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers=null)
 	{
 	    $ticketNumbersCount = count($ticketNumbers ) ;
-		$sql = "SELECT id,orderref FROM ( SELECT id,orderref,RANK() OVER(PARTITION BY orderref ORDER BY id desc) rn		
+		$sql = "SELECT id, 	orderref		
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
-				WHERE txnid = ". intval($txnid) ." AND enabled = '1') S WHERE rn=1";
+				WHERE txnid = ". intval($txnid) ." AND enabled = '1'";
         if($ticketNumbersCount > 0) {
             $sql .= " AND orderref in   ('".implode("','", array_keys($ticketNumbers))."')";
         }
