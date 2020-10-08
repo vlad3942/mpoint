@@ -84,17 +84,13 @@ class UATPSettlement extends mPointSettlement
             $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
             if(count($xmlResponse->status->Status) > 0)
             {
-                if(strtoupper(trim($xmlResponse->status->Status)) === "ERROR")
+                switch (strtoupper(trim($xmlResponse->status->Status)))
                 {
-                    $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
-                }
-                elseif (strtouppertrim($xmlResponse->status->Status) === "OK")
-                {
-                    $sStatus = trim($xmlResponse->status->Status);
-                }
-                elseif (strtoupper(trim($xmlResponse->status->Status)) === Constants::sSETTLEMENT_REQUEST_PROCESSING)
-                {
-                    $sStatus = trim($xmlResponse->status->Status);
+                    case "ERROR":
+                        $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
+                        break;
+                    default:
+                        $sStatus = strtoupper(trim($xmlResponse->status->Status));
                 }
 
                 $sFileName = $this->_objClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME');
