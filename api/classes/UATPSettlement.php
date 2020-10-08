@@ -84,11 +84,15 @@ class UATPSettlement extends mPointSettlement
             $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
             if(count($xmlResponse->status->Status) > 0)
             {
-                if(trim($xmlResponse->status->Status) == "ERROR")
+                if(strtoupper(trim($xmlResponse->status->Status)) === "ERROR")
                 {
                     $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
                 }
-                elseif (trim($xmlResponse->status->Status) == "OK")
+                elseif (strtouppertrim($xmlResponse->status->Status) === "OK")
+                {
+                    $sStatus = trim($xmlResponse->status->Status);
+                }
+                elseif (strtoupper(trim($xmlResponse->status->Status)) === Constants::sSETTLEMENT_REQUEST_PROCESSING)
                 {
                     $sStatus = trim($xmlResponse->status->Status);
                 }
@@ -197,7 +201,7 @@ class UATPSettlement extends mPointSettlement
                 }
                 else
                 {
-                    //$this->_parseConfirmationReport($_OBJ_DB, $replyBody);
+                    $this->_parseConfirmationReport($_OBJ_DB, $replyBody);
                 }
             }
         }
