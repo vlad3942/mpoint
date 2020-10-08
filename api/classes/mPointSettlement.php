@@ -282,6 +282,11 @@ abstract class mPointSettlement
                 else
                 {
                     $this->_updateSettlementState($_OBJ_DB, Constants::sSETTLEMENT_REQUEST_FAIL);
+                    if(isset($replyBody->settlement->file))
+                    {
+                       $this->_updateDescription($_OBJ_DB, $replyBody);
+                    }
+
                 }
             }
         } catch (Exception $e) {
