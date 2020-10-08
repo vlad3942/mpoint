@@ -167,9 +167,7 @@ class ChaseSettlement extends mPointSettlement
 
                 $res = $_OBJ_DB->getName($sql);
 
-                $recordUpdateCount = 0;
-                $recordCount = 0;
-
+                $bErrorEncountered  = false;
                 if (is_array($res) === true && count($res) > 0)
                 {
                     $fileId = $res["ID"];
@@ -188,7 +186,6 @@ class ChaseSettlement extends mPointSettlement
                             foreach ($aRS as $rs) {
                                 try
                                 {
-                                    $recordCount ++;
 
                                 $pId = $rs["ID"];
                                 $txnId = $rs["TRANSACTIONID"];
@@ -305,10 +302,10 @@ class ChaseSettlement extends mPointSettlement
                                 }
 
                                 }
-                                    $recordUpdateCount ++;
                             }
                            catch (Exception $e)
                            {
+                               $bErrorEncountered = true;
                                trigger_error("Failed to updated record for SettlementId:".$fileId." With Error Code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 
                            }
@@ -346,9 +343,9 @@ class ChaseSettlement extends mPointSettlement
                     if (is_resource($resource) === true)
                     {
                         $status = $file["status"];
-                        if($recordCount !==  $recordUpdateCount)
+                        if($bErrorEncountered === true)
                         {
-                            $status = 'partially '.$file["status"];
+                            $status = $file["status"].' with error';
                         }
                         $aParam = array(
                             $file["tracking-number"],
