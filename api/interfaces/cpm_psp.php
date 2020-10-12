@@ -507,6 +507,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, $clientInfo=null)
 	{
+	    $code = 0;
+	    $subCode = 0;
 	    try
         {
             $mask =NULL;
@@ -582,7 +584,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$sql = "";
-                $subCode = 0;
 				
 				if(count($obj_XML->transaction) > 0)
 				{
@@ -634,7 +635,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			}
 			else if($code == 504){
                 trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-                return $code;
             }
 			else { throw new mPointException("Authorization failed with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
@@ -642,8 +642,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
-		
-		return $code;
+
+		$response = new stdClass();
+		$response->code = $code;
+		$response->sub_code = $subCode;
+		return $response;
 	}
 
     public function tokenize(array $aConnInfo, PSPConfig $obj_PSPConfig, $obj_Card)
