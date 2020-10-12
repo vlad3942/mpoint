@@ -662,13 +662,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     {
                                         $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
                                         $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
-                                        $paymentMethodCount = count($obj_SR);
+                                        ksort($obj_SR, 1);
                                         $obj_XML = '<cards>';
-                                        for($p=1; $paymentMethodCount >= $p; $p++)
+                                        foreach ($obj_SR as $key => $value)
                                         {
-                                            if(($obj_SR[$p] instanceof StaticRoute) === true )
+                                            if(($value instanceof StaticRoute) === true )
                                             {
-                                                $obj_XML .= $obj_SR[$p]->toXML();
+                                                $obj_XML .= $value->toXML();
                                             }
                                         }
                                         $obj_XML .= '</cards>';
