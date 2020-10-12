@@ -49,7 +49,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</get-account>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -101,7 +101,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                         }
 
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'get-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'get-account'}[$i]->{'client-info'}->email,$iProfileID);
+						$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'get-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'get-account'}[$i]->{'client-info'}->email,$iProfileID);
 
 						$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
 						$xml = '<account id="'. $obj_XML["id"] .'">';

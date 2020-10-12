@@ -3,8 +3,7 @@
  * Set error types that are to be reported by the error handler
  * Both errors and warnings are reported, notices however are not
  */
-error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
-
+error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
 /**
  * Path to Log Files directory
  */
@@ -53,11 +52,17 @@ $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
-$aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+
+function env($key, $default=null) {
+    $value = getenv($key);
+    return isset($value) ? $value : $default;
+}
+
+$aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "host.docker.internal");
+$aDB_CONN_INFO["mpoint"]["port"] = env('DB_PORT',5432);
+$aDB_CONN_INFO["mpoint"]["username"] = env('DB_USERNAME',"mpoint");
+$aDB_CONN_INFO["mpoint"]["password"] = env('DB_PASSWORD',"hspzr735abl");
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -69,6 +74,7 @@ $aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") 
 $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
 $aDB_CONN_INFO["mpoint"]["method"] = 1;
+
 
 /**
  * Database settings for Session database

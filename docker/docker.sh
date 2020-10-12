@@ -5,6 +5,7 @@ trap "echo TRAPed signal" HUP INT QUIT KILL TERM
 
 # insert special hostnames
 echo "127.0.0.1 mpoint.local.cellpointmobile.com" >>/etc/hosts
+echo $(ip route|awk '/default/ { print $3 }') "host.docker.internal" >>/etc/hosts
 echo "ServerName mpoint.local.cellpointmobile.com" >>/etc/apache2/ports.conf
 
 # start services in background here
@@ -16,7 +17,8 @@ cd /opt/cpm/mPoint
 chmod -R 777 log
 
 if [ -z ${debug+x} ]; then
-	php phpunit.phar test
+	php vendor/bin/phpunit test/api
 else
 	/bin/bash
+	#while true; do sleep 2; done
 fi

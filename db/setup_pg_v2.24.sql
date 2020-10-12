@@ -142,5 +142,6 @@ UPDATE System.Country_Tbl SET code = 408, alpha2code = 'KP', alpha3code = 'PRK',
 UPDATE System.Country_Tbl SET code = 104, decimals = 2, alpha2code = 'BU', alpha3code = 'BUR', country_calling_code = 95 WHERE id = 625 AND currencyid = 104;
 
 
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'MAX_DOWNLOAD_FILE_LIMIT', '2', id, 'merchant', from client.merchantaccount_tbl WHERE clientid=10069 AND pspid=52;
 
 

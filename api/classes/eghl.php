@@ -30,13 +30,13 @@ class EGHL extends CPMPSP
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new EGHLException("Method: getPaymentData is not supported by eGHL-FPX"); }
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new EGHLException("Method: authorize is not supported by eGHL-FPX"); }
 	public function getPSPID() { return Constants::iEGHL_PSP; }
-    public function refund($iAmount=-1) { throw new EGHLException("Method: refund is not supported by eGHL-FPX"); }
+    public function refund($iAmount=-1, $iStatus = NULL) { throw new EGHLException("Method: refund is not supported by eGHL-FPX"); }
     public function getPaymentMethods(PSPConfig $obj_PSPConfig)
     {
         $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
         $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
         $sortable = array();
-        if(count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) > 1){
+        if(is_object($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) && count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) > 1){
             foreach ($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
                 $issuingBank = strtolower($node->issuingBank);
                 $usageCount = (int)$aStatisticalData['issuing_bank_' . $issuingBank];

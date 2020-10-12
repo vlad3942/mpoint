@@ -29,7 +29,7 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (113, 15, $pspID, true, 1)");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid,walletid) VALUES (113, 8, $pspID, true, 1,14)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
 
         $xml = $this->getAuthDoc(113, 1100, 1001001, 5000, 'profilePass');
 
@@ -39,7 +39,7 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status>', $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
@@ -79,7 +79,7 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid,walletid) VALUES (113, 8, $pspID, 100, true, 1,14)");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid, psp_type) VALUES (113, 15, $tokenizationPSPID, 100, true, 1, 8)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
 
         $xml = $this->getAuthDoc(113, 1100, 1001001, 5000, 'profilePass');
 
@@ -88,7 +88,7 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status><card><card-number>165400418292788</card-number><expiry-month>03</expiry-month><expiry-year>2020</expiry-year></card></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status><card><card-number>165400418292788</card-number><expiry-month>03</expiry-month><expiry-year>2020</expiry-year></card></root>', $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );

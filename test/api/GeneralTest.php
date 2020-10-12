@@ -26,7 +26,7 @@ class GeneralTest extends baseAPITest
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -53,7 +53,7 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.currencyid * -1 AS pricepointid, 8 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;");
         $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10018,100,840, true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,euaid,convertedamount,convetredcurrencyid) VALUES (1001012, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,50011,5000,840)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001012, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,50011,5000,840)");
         $this->queryDB("INSERT INTO log.txnpassbook_tbl(id, transactionid, amount, currencyid, requestedopt, performedopt, status,clientid) VALUES(102291, 1001012, 5000, 840, 5014, NULL, 'done', 10018)");
         $this->queryDB("INSERT INTO log.txnpassbook_tbl(transactionid, amount, currencyid,  performedopt, status, extref, extrefidentifier, clientid) VALUES ( 1001012, 5000, 840,  1001, 'done', '102291', 'log.txnpassbook_tbl', 10018)");
         $this->queryDB("INSERT INTO Log.Paymentroute_Tbl (id, sessionid, pspid, preference) VALUES (111, 1, 18, 2)");
@@ -73,7 +73,7 @@ class GeneralTest extends baseAPITest
         if($code === Constants::iPAYMENT_SOFT_DECLINED_STATE){
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
-            $this->assertEquals(1, count($iAlternateRoute));
+            $this->assertGreaterThanOrEqual(1, $iAlternateRoute);
             $this->_aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
             $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
             if(empty($iAlternateRoute) === false){
@@ -86,7 +86,7 @@ class GeneralTest extends baseAPITest
         $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id=7 and @state-id=1 and @walletid = '']");
         $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
         $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
-        $this->assertEquals(1, count($iAlternateRoute));
+        $this->assertGreaterThanOrEqual(1, $iAlternateRoute);
         $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         if(empty($iAlternateRoute) === false){
             $response= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
@@ -97,7 +97,7 @@ class GeneralTest extends baseAPITest
         $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id=8 and @state-id=1 and @walletid = '']");
         $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
         $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
-        $this->assertEquals(1, count($iAlternateRoute));
+        $this->assertGreaterThanOrEqual(1, $iAlternateRoute);
         $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         if(empty($iAlternateRoute) === false){
             $response = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
@@ -105,7 +105,7 @@ class GeneralTest extends baseAPITest
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

@@ -60,7 +60,7 @@ $HTTP_RAW_POST_DATA .= '<end-date>2017-01-30T00:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</get-failed-transactions>';
 $HTTP_RAW_POST_DATA .= '</root>';*/
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
@@ -103,7 +103,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$aObj_Logs = $obj_mPoint->getFailedTransactions($clients, $aStateIDs, str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'end-date'}));
 		foreach ($aObj_Logs as $obj_Log)
 		{
-			$xml .= $obj_Log->toXML();
+			$xml .= $obj_Log->toXML($_OBJ_DB);
 		}
 		
 	$xml .="</failed-transactions>";

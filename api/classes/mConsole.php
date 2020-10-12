@@ -932,7 +932,7 @@ class mConsole extends Admin
 						$RS["FEE"],
 						$RS["MODE"],
 						CustomerInfoFactory::getInstance($this->getDBConn(), $this->getText(), new ClientURLConfig($RS["CLIENTID"], ClientConfig::iAUTHENTICATION_URL, $RS['AUTHURL']),
-							$RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"],
+							$RS["CUSTOMERID"], (int)$RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"],
 							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'], $RS["PROFILEID"] ),
 						$RS["IP"],
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),

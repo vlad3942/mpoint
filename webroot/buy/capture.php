@@ -179,7 +179,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					$txnPassbookObj->addEntry($passbookEntry);
 					try {
-						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, TRUE);
 						$code = reset($codes);
 					} catch (Exception $e) {
 						trigger_error($e, E_USER_WARNING);

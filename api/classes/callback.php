@@ -849,7 +849,7 @@ abstract class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
+	public static function producePSP(RDB $obj_DB, ? TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
 	{
 		if (isset($obj_PSPConfig) == true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
 		else { $iPSPID = $obj_TxnInfo->getPSPID(); }

@@ -10,6 +10,7 @@ class PayAPIValidationTest extends baseAPITest
 
     public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 
@@ -60,7 +61,7 @@ class PayAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 7, $pspID, '501910******3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE,208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE,208, 1,5000,208)");
 
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
@@ -99,7 +100,7 @@ class PayAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="3">Client ID / Account doesn\'t match</status>', $sReplyBody);
     }
 
     public function testDisabledAccount()
@@ -115,7 +116,7 @@ class PayAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="14">Client ID / Account doesn\'t match</status>', $sReplyBody);
 	}
 
     public function testUndefinedTransaction()
@@ -146,7 +147,7 @@ class PayAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Authorization required</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Authorization required</status>', $sReplyBody);
 	}
 
 	public function testWrongUsernamePassword()
@@ -163,7 +164,7 @@ class PayAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(401, $iStatus);
-		$this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
 	}
 
 /* 	public function testInvalidMerchantConfiguration()
@@ -186,7 +187,7 @@ class PayAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="90">Unable to find configuration for Payment Service Provider and card', $sReplyBody);
+		$this->assertStringContainsString('<status code="90">Unable to find configuration for Payment Service Provider and card', $sReplyBody);
 	} */
 
 	public function testDisabledCard()
@@ -205,7 +206,7 @@ class PayAPIValidationTest extends baseAPITest
 		//As per talk with Jona and Simon 2016-07-19 it should not be possible to authorize a disabled card, since the client can ignore flags sent from initialize
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (113, 7, $pspID, true, 4)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (2, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid,sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,2,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,2,5000,208)");
 
 		$xml = $this->getPayDoc(113, 1100, 1001001);
 
@@ -215,7 +216,7 @@ class PayAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="24">The selected payment card is not available', $sReplyBody);
+		$this->assertStringContainsString('<status code="24">The selected payment card is not available', $sReplyBody);
 	}
 	
 	public function testDisabledCardWithOneActiveCard()
@@ -234,7 +235,7 @@ class PayAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (113, 7, 2, true, 4)");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, countryid) VALUES (113, 7, 2, true, 1, 100)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 113, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
 			
 		
 		$xml = $this->getPayDoc(113, 1100, 1001001);
@@ -257,7 +258,7 @@ class PayAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertContains('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
+        $this->assertStringContainsString('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
 
     }
 

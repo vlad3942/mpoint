@@ -51,7 +51,7 @@ $HTTP_RAW_POST_DATA .= '</address>';
 $HTTP_RAW_POST_DATA .= '</save-address>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
 {
@@ -124,7 +124,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				// Success: Input valid
 				if (count($aMsgCds) == 0)
 				{
-					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-address'}->{'client-info'}->mobile, $obj_DOM->{'save-address'}->{'client-info'}->email);
+					$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-address'}->{'client-info'}->mobile, $obj_DOM->{'save-address'}->{'client-info'}->email);
 					
 					$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
 					// Authentication succeeded

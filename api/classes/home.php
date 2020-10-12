@@ -86,8 +86,12 @@ class Home extends General
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountID(CountryConfig &$oCC, $addr, $clid=-1)
+	public function getAccountID()
 	{
+        $aArgs = func_get_args();
+        $oCC = $aArgs[0];
+        $addr = $aArgs[1];
+        $clid =  $aArgs[2];
 		if (floatval($addr) > $oCC->getMinMobile() ) { $sql = "A.mobile = '". floatval($addr) ."'"; }
 		else { $sql = "Upper(A.email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
 
@@ -269,8 +273,10 @@ class Home extends General
 			{
 				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				$profile_type_id = (integer)$obj_XML->profile_type;
-                $obj_CustomerInfo->setProfileTypeID($profile_type_id);
+                if(isset($obj_XML->profile_type)) {
+                    $profile_type_id = (integer)$obj_XML->profile_type;
+                    $obj_CustomerInfo->setProfileTypeID($profile_type_id);
+                }
 				return 10;
 			}
 			else
@@ -386,10 +392,11 @@ class Home extends General
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
 		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["POINTS"] .'</points>';
 		$xml .= '<clients>';
-		for ($i=0; $i<count($aRS); $i++)
-		{
-			$xml .= '<client id="'. $aRS[$i]["ID"] .'" store-card="'. $aRS[$i]["STORE_CARD"] .'">'. htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) .'</client>';
-		}
+		if(is_array($aRS) === TRUE) {
+            for ($i = 0, $iMax = count($aRS); $i < $iMax; $i++) {
+                $xml .= '<client id="' . $aRS[$i]["ID"] . '" store-card="' . $aRS[$i]["STORE_CARD"] . '">' . htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) . '</client>';
+            }
+        }
 		$xml .= '</clients>';
 		$xml .= '<created timestamp="'. $ts .'">'. gmdate("Y-m-d H:i:sP", $ts) .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
@@ -1201,7 +1208,7 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true, $profileid=-1)
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);

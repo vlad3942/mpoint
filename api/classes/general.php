@@ -328,9 +328,9 @@ class General
 		{
 			switch (true)
 			{
-			case (eregi('iPhone', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
-			case (eregi('iPod', $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi('Android', $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match('/iPhone/', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
+			case (preg_match('/iPod/', $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match('/Android/', $_SERVER['HTTP_USER_AGENT']) ):
 				return (is_null($oTI) === false ? $oTI->getMarkupLanguage() : "xhtml");
 				break;
 			case ($oUA->hasXHTML() ):	// Mobile Device supports XHTML
@@ -368,20 +368,20 @@ class General
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
 	switch (true)
 		{
-		case eregi("iPod", $_SERVER['HTTP_USER_AGENT']):
-		case eregi("iPhone", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPod/i", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPhone/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPhone";
 			break;
-		case eregi("iPad", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPad/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPad";
 			break;
-		case eregi("Firefox", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Firefox/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Firefox";
 			break;
-		case eregi("Skyfire", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Skyfire/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Skyfire";
 			break;
-		case eregi("Android", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Android/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Android";
 			break;
 		default:
@@ -472,7 +472,7 @@ class General
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". $oTI->useAutoCapture() .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
 					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType()).",
-					convertedamount = ". $oTI->getConvertedAmount() .",convetredcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
+					convertedamount = ". $oTI->getConvertedAmount() .",convertedcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
 					conversionrate = ". $oTI->getConversationRate();
 
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
@@ -561,7 +561,8 @@ class General
 	 */
 	public function authWithAlternateRoute(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
 	{
-		$xml = "" ;
+        global $_OBJ_TXT;
+        $xml = "" ;
 		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
 	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
@@ -600,7 +601,6 @@ class General
         ********************************/
 
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
-
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
@@ -1066,44 +1066,44 @@ class General
 			switch (true)
 			{
 			// Mobile Device Vendors
-			case (eregi("Alcatel", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Amoi Electronics", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Asustek", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Audiovox", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Fujitsu", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Handspring", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("HP", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Hewlett[^a-z]Packard", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Hitachi", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("High Tech Computer Corporation", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("HTC", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Huawei", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Kyocera", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("LG", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Motorola", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("NEC", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Nokia", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Openwave", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Palm", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Panasonic", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Pantech", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("RIM", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Research In Motion", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sagem", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Samsung", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sanyo", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sharp", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Siemens", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sony Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Toshiba", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("UTStar", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Alcatel/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Amoi Electronics/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Asustek/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Audiovox/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Ericsson/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Fujitsu/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Handspring/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/HP/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Hewlett[^a-z]Packard/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Hitachi/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/High Tech Computer Corporation/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/HTC/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Huawei/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Kyocera/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/LG/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Motorola/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/NEC/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Nokia/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Openwave/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Palm/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Panasonic/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Pantech/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/RIM/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Research In Motion/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sagem/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Samsung/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sanyo/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sharp/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Siemens/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sony Ericsson/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Toshiba/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/UTStar/i", $_SERVER['HTTP_USER_AGENT']) ):
 			// Specific Mobile Devices
-			case (eregi("Android", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Blackberry", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("iPhone", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Pocket", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
-			case (eregi("Mini", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
+			case (preg_match("/Android/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Blackberry/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/iPhone/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Pocket/i", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
+			case (preg_match("/Mini/i", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
 				$sBrowser = "mobile";
 				break;
 			default:	// Web Browser
@@ -1494,6 +1494,16 @@ class General
                 trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
             }
         }
+    }
+
+    /**
+     * Retrieves Issuer identification number from given card number
+     * @param $cardno integer  Card Number
+     * @return string          Issuer identification number
+     */
+    public static function getIssuerIdentificationNumber($cardno)
+    {
+        return substr($cardno, 0, 6);
     }
 }
 ?>

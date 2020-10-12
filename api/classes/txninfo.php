@@ -960,13 +960,13 @@ class TxnInfo
         {
             if (empty($key) === true)
             {
-                if (count($this->_aAdditionalData) > 0)
+                if (is_array($this->_aAdditionalData) && count($this->_aAdditionalData) > 0)
                 {
                     return $this->_aAdditionalData;
                 }
                 return null;
             }
-            if ($this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
+            if (is_array($this->_aAdditionalData) && $this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
             {
                 return $this->_aAdditionalData[$key];
             }
@@ -992,13 +992,13 @@ class TxnInfo
 		{
 			if ($type === 0 && $pspid === 0 )
 			{
-				if (count($this->_aExternalRef) > 0)
+				if (is_array($this->_aExternalRef) && count($this->_aExternalRef) > 0)
 				{
 					return $this->_aExternalRef;
 				}
 				return null;
 			}
-			if ($this->_aExternalRef != null && array_key_exists($type, $this->_aExternalRef) === true)
+			if ( is_array($this->_aExternalRef) && $this->_aExternalRef != null && array_key_exists($type, $this->_aExternalRef) === true)
 			{
 				$aExternalRef = $this->_aExternalRef[$type];
 				if($pspid === 0)	return $aExternalRef;
@@ -1486,7 +1486,7 @@ class TxnInfo
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
 						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid,
-						COALESCE(convetredcurrencyid,currencyid) as convetredcurrencyid,COALESCE(convertedamount,amount) as convertedamount,COALESCE(conversionrate,1) as conversionrate,issuing_bank  
+						COALESCE(convertedcurrencyid,currencyid) as convertedcurrencyid,COALESCE(convertedamount,amount) as convertedamount,COALESCE(conversionrate,1) as conversionrate,issuing_bank  
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -1507,7 +1507,7 @@ class TxnInfo
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
 			$obj_ConvertedCurrencyConfig = null;
-			if(intval($RS["CONVETREDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVETREDCURRENCYID"]);
+			if(intval($RS["CONVERTEDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVERTEDCURRENCYID"]);
             $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
             $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
             $aBillingAddr = self::_produceBillingAddr($obj, $RS["ID"]);

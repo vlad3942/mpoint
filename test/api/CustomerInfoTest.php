@@ -20,7 +20,7 @@ class CustomerInfoTest extends baseAPITest
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -143,7 +143,7 @@ class CustomerInfoTest extends baseAPITest
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

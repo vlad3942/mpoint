@@ -141,7 +141,7 @@ require_once sCLASS_PATH . '/passbookentry.php';
 // </editor-fold>
 ini_set('max_execution_time', 1200);
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 

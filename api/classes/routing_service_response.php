@@ -52,19 +52,15 @@ class RoutingServiceResponse
     {
         if (($aObj_XML instanceof SimpleXMLElement) === true)
         {
-
-            $iRouteCount = count($aObj_XML->psps->psp);
-            if($iRouteCount > 0){
-                $aObjRoute = null;
-                for ($i = 0; $i < $iRouteCount; $i++)
-                {
-                    $aObjRoute->psps->psp[$i] = new stdClass();
-                    $aObjRoute->psps->psp[$i]->id = (int)$aObj_XML->psps->psp[$i]->id;
-                    $aObjRoute->psps->psp[$i]->preference = (int)$aObj_XML->psps->psp[$i]->preference;
-
-                }
-                return new RoutingServiceResponse($aObjRoute);
+            $aObjRoute = new \stdClass();
+            $aObjRoute->psps = new \stdClass();
+            for ($i = 0; $i < count($aObj_XML->psps->psp); $i++)
+            {
+                $aObjRoute->psps->psp[$i] = new \stdClass();
+                $aObjRoute->psps->psp[$i]->id = (int)$aObj_XML->psps->psp[$i]->id;
+                $aObjRoute->psps->psp[$i]->preference = (int)$aObj_XML->psps->psp[$i]->preference;
             }
+            return new RoutingServiceResponse($aObjRoute);
         }
         return null;
     }
@@ -81,7 +77,8 @@ class RoutingServiceResponse
         {
             $iPaymentMethodCount = count($aObj_XML->payment_methods->payment_method);
             if($iPaymentMethodCount > 0){
-                $aObjPaymentMethod = null;
+                $aObjPaymentMethod = new stdClass();
+				$aObjPaymentMethod->payment_methods = new stdClass();
                 for ($i = 0; $i < $iPaymentMethodCount; $i++)
                 {
                     $aObjPaymentMethod->payment_methods->payment_method[$i] = new stdClass();
@@ -89,6 +86,7 @@ class RoutingServiceResponse
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->psp_type = (int)$aObj_XML->payment_methods->payment_method[$i]->psp_type;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->preference = (int)$aObj_XML->payment_methods->payment_method[$i]->preference;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->state_id = (int)$aObj_XML->payment_methods->payment_method[$i]->state_id;
+
                 }
                 return new RoutingServiceResponse($aObjPaymentMethod);
             }

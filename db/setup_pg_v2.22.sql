@@ -356,3 +356,9 @@ update client.additionalproperty_tbl set value='orderid ::= (transaction.orderid
 attempt ::= (@attempt)
 date ::= {date.ymd}
 invoiceid ::= (psp-config/@id)=="24"="NM"<orderid><date><attempt>' where key='invoiceidrules' and externalid=10020;
+
+--end of granular status codesINSERT INTO "system".cardprefix_tbl (cardid, min, max, enabled) VALUES(7, 222100, 272099, true);
+
+--- If any client using the cybersource api then as per cybersource documentation compulsary businesstype is 2(airline) for airline transaction
+update client.account_tbl set businesstype = <businesstype> where clientid = <clientid>
+update client.account_tbl set businesstype = 2 where clientid = 10020;

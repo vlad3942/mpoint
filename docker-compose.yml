@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  app:
+    container_name: mpoint_app
+    build:
+      context: .
+    dns: 1.1.1.1
+    command: /docker.sh
+    entrypoint: bash
+    ports:
+      - 15432:5432
+      - 8080:80
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_USERNAME=mpoint
+      - DB_PASSWORD=hspzr735abl
+      - DB_PASS_PATH=/secrets/database/password
+      - debug=true
+     #- XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9000 remote_host=docker.host.internal
+     #- PHP_IDE_CONFIG=serverName=mpoint_app
+    volumes:
+      - ./api:/opt/cpm/mPoint/api
+      - ./test:/opt/cpm/mPoint/test
+      - ./conf:/opt/cpm/mPoint/conf
+      - ./webroot:/opt/cpm/mPoint/webroot
+      - ./vendor/cellpointmobile/php5api:/opt/php5api
+      - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./docker/docker.sh:/docker.sh
+

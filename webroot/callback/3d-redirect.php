@@ -240,10 +240,14 @@ try
                 {
                     $card_obj->card->addChild('info-3d-secure','');
                 }
-                $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
-                $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
-                $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
-                $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram)
+                {
+                    $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
+                    $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
+                    $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+                    $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                }
+
                 if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
                 {
                     $address = $card_obj->card->address;
