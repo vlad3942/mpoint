@@ -1412,11 +1412,14 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
         $xml = '';
+        $code = $response->code;
         if ($code == "100") {
             $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+        } else if ($code == "2010") {
+            $xml = '<status code="2010">Payment rejected by PSP</status>';
         } else if ($code == "2000") {
             $xml = '<status code="2000">Payment authorized</status>';
         } else if ($code == "2009") {
@@ -1437,6 +1440,12 @@ class General
             $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
             header("HTTP/1.1 502 Bad Gateway");
             $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+        }
+        if($response->sub_code > 0)
+        {
+            $responseXML = simpledom_load_string($xml);
+            $responseXML['sub-code'] = $response->sub_code;
+            $xml =str_replace(["<?xml version=\"1.0\"?>", "\n"], '',  $responseXML->asXML());
         }
         return $xml;
     }
