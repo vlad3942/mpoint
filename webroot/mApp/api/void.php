@@ -117,6 +117,9 @@ require_once(sCLASS_PATH ."/apm/swish.php");
 require_once (sCLASS_PATH . '/txn_passbook.php');
 require_once (sCLASS_PATH . '/passbookentry.php');
 require_once (sCLASS_PATH . '/chase.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/paymaya.php');
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -200,11 +203,6 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 								// Validate input
 								if ($obj_Validator->valUsername($usernm) != 10) { $aMsgCds[$obj_Validator->valUsername($usernm) + 20] = $usernm; }
 								if ($obj_Validator->valPassword($passw) != 10) { $aMsgCds[$obj_Validator->valPassword($passw) + 30] = $passw; }
-								$code = $obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() );
-								if ($code != 6 && $code != 10)
-								{
-									$aMsgCds[$code + 170] = $transactionID;
-								}
 								//if ($obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) + 180] = $orderno; }
 								/* ========== Input Validation End ========== */
 								// Success: Input Valid

@@ -101,8 +101,10 @@ require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/paymaya.php');
-
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
@@ -171,8 +173,6 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 
 						/* ========== Input Validation Start ========== */
 						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-
-					    if ($obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) != 10) { $aMsgCds[$obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) + 170] = $obj_DOM->capture[$i]->transaction["id"]; }
 						//if ($obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) + 180] = $obj_DOM->capture[$i]->transaction["order-no"]; }
 						/* ========== Input Validation End ========== */
 

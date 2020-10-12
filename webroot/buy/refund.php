@@ -114,6 +114,7 @@ require_once(sCLASS_PATH ."/cielo.php");
 // Require specific Business logic for the cellulant component
 require_once(sCLASS_PATH ."/cellulant.php");
 require_once(sCLASS_PATH ."/global-payments.php");
+require_once(sCLASS_PATH ."/cybersource.php");
 
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
@@ -126,6 +127,9 @@ require_once(sCLASS_PATH ."/first-data.php");
 
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/paymaya.php');
 
 set_time_limit(120);
@@ -154,11 +158,6 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	// Validate input
 	if ($obj_Validator->valUsername($_REQUEST['username']) != 10) { $aMsgCds[$obj_Validator->valUsername($_REQUEST['username']) + 20] = $_REQUEST['username']; }
 	if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[$obj_Validator->valPassword($_REQUEST['password']) + 30] = $_REQUEST['password']; }
-	$code = $obj_Validator->valmPointID($_OBJ_DB, $_REQUEST['mpointid'], $obj_ClientConfig->getID() );
-    if ($code != 6 && $code != 10)
-	{
-		$aMsgCds[$code + 170] = $_REQUEST['mpointid'];
-	}
 	if ($obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) + 180] = $_REQUEST['orderid']; }
 	/* ========== Input Validation End ========== */
 

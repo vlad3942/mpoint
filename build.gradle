@@ -4,7 +4,7 @@ buildscript
             repositories {
                 mavenCentral()
                 maven {
-                    url = 'http://nexus.cellpointmobile.com/content/repositories/snapshots/'
+                    url = 'https://nexus.cellpointmobile.com/content/repositories/snapshots/'
                     credentials {
                         username 'default-read'
                         password 'CPMRead4321'
@@ -13,7 +13,7 @@ buildscript
             }
             dependencies
                     {
-                        classpath group: 'com.cellpointmobile.gradle', name: 'cpmgradle', version: '0.1-SNAPSHOT'
+                        classpath group: 'com.cellpointmobile.gradle', name: 'cpmgradle', version: '1.0-SNAPSHOT'
                     }
         }
 

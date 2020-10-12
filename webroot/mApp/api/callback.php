@@ -124,6 +124,9 @@ require_once(sCLASS_PATH ."/apm/swish.php");
 
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
+// Require specific Business logic for the Grab Pay component
+require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/paymaya.php');
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
