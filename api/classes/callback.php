@@ -1259,7 +1259,7 @@ abstract class Callback extends EndUserAccount
         $transactionData->setShortCode($this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
         $foreignExchangeId = $txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID());
         if(empty($foreignExchangeId) === false) {
-			$transactionData->setForeignExchangeId();
+			$transactionData->setForeignExchangeId($foreignExchangeId);
 		}
         $dateTime = new DateTime($txnInfo->getCreatedTimestamp());
         $transactionData->setDateTime($dateTime->format('c'));
