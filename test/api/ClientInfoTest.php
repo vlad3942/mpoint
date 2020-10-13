@@ -19,7 +19,7 @@ class ClientInfoTest extends baseAPITest
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -92,7 +92,7 @@ class ClientInfoTest extends baseAPITest
         $this->assertEquals('<platform>iOS</platform><language>da</language><version>1.00</version><sdk-version>2.0</sdk-version><app-version>2.0</app-version><app_id>2</app_id><mobile><mobile>28882861</mobile><mobile_type>MobileEnriched</mobile_type><country_id>100</country_id><validated>true</validated></mobile><email><email>jona@oismail.com</email><email_type>EmailEnriched</email_type><validated>true</validated></email><device_id>23lkhfgjh24qsdfkjh</device_id><ip>127.0.0.1</ip>', $attributeless_xml);
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

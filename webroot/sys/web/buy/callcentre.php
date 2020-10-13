@@ -69,10 +69,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
 	// Calculate Total Amount from Product Prices
 	$_REQUEST['amount'] = 0;
-	while (list(, $price) = each($_REQUEST['prod-prices']) )
-	{
-		$_REQUEST['amount'] += $price;
-	}
+	foreach ($_REQUEST['prod-prices'] as $price){
+        $_REQUEST['amount'] += $price;
+    }
+
 	if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 	// Validate Product Data
 	if ($obj_Validator->valProducts($_REQUEST['prod-names'], $_REQUEST['prod-quantities'], $_REQUEST['prod-prices'], $_REQUEST['prod-logos']) != 10)
@@ -108,8 +108,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 
 			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
-			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
+			$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
 			$obj_TxnInfo->setAccountID($iAccountID);
 						
 			// Update Transaction Log

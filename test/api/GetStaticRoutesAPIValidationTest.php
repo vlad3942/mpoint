@@ -28,7 +28,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(401, $iStatus);
-        $this->assertContains('<status code="401">Authorization required</status>', $sReplyBody);
+        $this->assertStringContainsString('<status code="401">Authorization required</status>', $sReplyBody);
     }
 
     public function testWrongUsernamePassword()
@@ -45,7 +45,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(401, $iStatus);
-        $this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
+        $this->assertStringContainsString('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
     }
 
     public function testBadRequestUndefinedClient()
@@ -60,7 +60,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertContains('<status code="1">Undefined Client ID</status>', $sReplyBody);
+        $this->assertStringContainsString('<status code="1">Undefined Client ID</status>', $sReplyBody);
     }
 
     public function testBadRequestInvalidClient()
@@ -73,7 +73,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-		$this->assertContains('<status code="2">Invalid Client ID</status>', $sReplyBody);
+		$this->assertStringContainsString('<status code="2">Invalid Client ID</status>', $sReplyBody);
     }
 
     public function testBadRequestUnknownClient()
@@ -88,7 +88,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertContains('<status code="3">Unknown Client ID</status>', $sReplyBody);
+        $this->assertStringContainsString('<status code="3">Unknown Client ID</status>', $sReplyBody);
     }
 
     public function testBadRequestDisabledClient()
@@ -103,7 +103,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><route_response><status code="4">Client Disabled</status></route_response>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><route_response><status code="4">Client Disabled</status></route_response>', $sReplyBody);
     }
 
 	public function testSuccessPaymentMethods()
@@ -127,12 +127,11 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<route><card_type_id>8</card_type_id><country_id>200</country_id><psp_id>17</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
-        $this->assertContains('<route><card_type_id>7</card_type_id><country_id>608</country_id><psp_id>18</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
-        $this->assertContains('<route><card_type_id>8</card_type_id><country_id>608</country_id><psp_id>18</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
-        $this->assertContains('<route><card_type_id>7</card_type_id><country_id>200</country_id><psp_id>17</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
-
-    }
+        $this->assertStringContainsString('<route><card_type_id>8</card_type_id><country_id>200</country_id><psp_id>17</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        $this->assertStringContainsString('<route><card_type_id>7</card_type_id><country_id>608</country_id><psp_id>18</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        $this->assertStringContainsString('<route><card_type_id>8</card_type_id><country_id>608</country_id><psp_id>18</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        $this->assertStringContainsString('<route><card_type_id>7</card_type_id><country_id>200</country_id><psp_id>17</psp_id><enabled>true</enabled><psp_type>1</psp_type></route>', $sReplyBody);
+        }
 
 }
 

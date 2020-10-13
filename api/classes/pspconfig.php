@@ -288,9 +288,9 @@ class PSPConfig extends BasicConfig
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
-            $iConstOfRows = count($aRS);
             if (is_array($aRS) === true && count($aRS) > 0)
             {
+                $iConstOfRows = count($aRS);
                 for ($i=0; $i<$iConstOfRows; $i++)
                 {
                     $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];

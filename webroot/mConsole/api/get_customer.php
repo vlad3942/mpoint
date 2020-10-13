@@ -31,7 +31,7 @@ $HTTP_RAW_POST_DATA .= '<clientid>3</clientid>';
 $HTTP_RAW_POST_DATA .= '</getcustomer>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {

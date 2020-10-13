@@ -57,7 +57,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</delete-card>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -88,7 +88,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Validator = new Validate($obj_CountryConfig);
 						$aMsgCds = array();
 
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email);
+						$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email);
                        
                         if (strlen((string) $obj_DOM->{'delete-card'}[$i]->password) > 1 && $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) != 10)
                         {

@@ -112,6 +112,7 @@ class StaticRoute extends Card
                 $aCardConfig = $aPaymentMethodsConfig[$aRS['ID']];
                 $aRS['PROCESSORTYPE'] = $aCardConfig['psp_type'];
                 $aRS['STATEID'] = $aCardConfig['state_id'];
+                $preference = $aCardConfig['preference'];
 
                 // Transaction instantiated via SMS or "Card" is NOT Premium SMS
                 if ($oTI->getGoMobileID() > -1 || $aRS['ID'] != Constants::iPREMIUM_SMS) {
@@ -126,7 +127,7 @@ class StaticRoute extends Card
 
                     $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
 
-                    $aObj_Configurations[] = new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
+                    $aObj_Configurations[$preference] = new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
                 }
             }
         }
@@ -146,10 +147,12 @@ class StaticRoute extends Card
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aPaymentMethodsConfig = array();
-        for ($i = 0; $i < count($paymentMethods); $i++) {
+        for ($i = 0, $iMax = count($paymentMethods); $i < $iMax; $i++) {
+
             $aPaymentMethodsConfig[$paymentMethods[$i]->id] = array(
                 'psp_type' => $paymentMethods[$i]->psp_type,
-                'state_id' => $paymentMethods[$i]->state_id
+                'state_id' => $paymentMethods[$i]->state_id,
+                'preference' => $paymentMethods[$i]->preference
             );
         }
         return self::produceConfig($oDB, $oTxt, $oTI, $aPaymentMethodsConfig);

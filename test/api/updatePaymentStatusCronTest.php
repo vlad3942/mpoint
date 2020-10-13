@@ -9,6 +9,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 
 	public function __construct()
 	{
+        parent::__construct();
 		$this->constHTTPClient();
 	}
 
@@ -37,7 +38,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-2001', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1,5000,208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
 		$this->_httpClient->connect();
@@ -46,7 +47,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
+		$this->assertStringContainsString("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT captured, stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -77,7 +78,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-2003', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2003', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2003', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1,5000,208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
 		$this->_httpClient->connect();
@@ -86,7 +87,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
+		$this->assertStringContainsString("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT refund, stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -117,7 +118,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-2001', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1,5000,208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CANCELLED_STATE. ")");
 
@@ -127,7 +128,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Updated transaction status for mPoint id's ()", $sReplyBody);
+		$this->assertStringContainsString("Updated transaction status for mPoint id's ()", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY created ASC");
 		$this->assertTrue(is_resource($res) );

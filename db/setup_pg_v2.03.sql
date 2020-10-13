@@ -640,6 +640,8 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.INR', '097332', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.IDR', '097333', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.PHP', '097335', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'MAX_DOWNLOAD_FILE_LIMIT', '2', id, 'merchant', from client.merchantaccount_tbl WHERE clientid=<> AND pspid=52;
+
 
 -- Card Prefix for visa and Master --
 INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 5110, 5210);

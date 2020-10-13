@@ -51,7 +51,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</cancel>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -79,8 +79,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_mPoint = new Transfer($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
-					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->cancel[$i]->{'client-info'}->mobile, $obj_CountryConfig);
-					if ($iAccountID < 0 && count($obj_DOM->cancel[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->cancel[$i]->{'client-info'}->email, $obj_CountryConfig); }
+					$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_DOM->cancel[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+					if ($iAccountID < 0 && count($obj_DOM->cancel[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_DOM->cancel[$i]->{'client-info'}->email, $obj_CountryConfig); }
 					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->cancel[$i]->{'client-info'}->mobile); }
 					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->cancel[$i]->{'client-info'}->email); }
 					

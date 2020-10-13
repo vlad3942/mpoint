@@ -3,8 +3,7 @@
  * Set error types that are to be reported by the error handler
  * Both errors and warnings are reported, notices however are not
  */
-error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
-
+error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
 /**
  * Path to Log Files directory
  */
@@ -53,11 +52,17 @@ $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
-$aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+
+function env($key, $default=null) {
+    $value = getenv($key);
+    return isset($value) ? $value : $default;
+}
+
+$aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "host.docker.internal");
+$aDB_CONN_INFO["mpoint"]["port"] = env('DB_PORT',5432);
+$aDB_CONN_INFO["mpoint"]["username"] = env('DB_USERNAME',"mpoint");
+$aDB_CONN_INFO["mpoint"]["password"] = env('DB_PASSWORD',"hspzr735abl");
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -69,6 +74,7 @@ $aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") 
 $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
 $aDB_CONN_INFO["mpoint"]["method"] = 1;
+
 
 /**
  * Database settings for Session database
@@ -1102,13 +1108,14 @@ $aHTTP_CONN_INFO["swish"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["swish"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["swish"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO["swish"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["swish"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["swish"]["path"] = "";  // Set by calling class
 $aHTTP_CONN_INFO["swish"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["swish"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize";
 $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-payment";
 $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
+$aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
 
 /**
  * GoMobile Connection Info.

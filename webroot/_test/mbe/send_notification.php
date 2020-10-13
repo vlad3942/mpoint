@@ -11,7 +11,7 @@ $sTypes = array(
 		'LOYALTY_MESSAGE' => 5
 );
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $xml = '';
 

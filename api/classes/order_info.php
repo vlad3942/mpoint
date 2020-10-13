@@ -306,10 +306,12 @@ class OrderInfo
         return $aConfigurations;
     }
 	
-	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers=null)
+	public static function produceConfigurations(RDB $oDB, $txnid, $ticketNumbers=array())
 	{
-	    $ticketNumbersCount = count($ticketNumbers ) ;
-		$sql = "SELECT id, 	orderref		
+	    if(is_array($ticketNumbers)){
+            $ticketNumbersCount = count($ticketNumbers ) ;
+        }
+	    $sql = "SELECT id, 	orderref		
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl 				
 				WHERE txnid = ". intval($txnid) ." AND enabled = '1'";
         if($ticketNumbersCount > 0) {

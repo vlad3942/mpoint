@@ -1,15 +1,32 @@
 {
+    "name": "cellpointmobile/mpoint",
+    "description": "mpoint handles everything psp related",
+    "type": "project",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://satis.cellpointmobile.com"
+        },
+        {
+            "type": "composer",
+            "url": "https://packagist.org"
+        },
+        { "packagist": false }
+    ],
     "require": {
+        "cellpointmobile/php5api": "dev-feature/CBS-347-mpoint-php5-to-php7-upgrade",
+        "phpunit/phpunit": "9.*",
         "google/cloud-pubsub": "^1.27"
     },
     "config": {
-        "optimize-autoloader": true,
-        "platform": {
-             "php": "5.6"
-        }
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": false
     },
     "autoload": {
         "psr-4": {"api\\": "./api"},
         "classmap": ["api/"]
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

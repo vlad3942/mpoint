@@ -9,6 +9,7 @@ class CallbackAPITest extends baseAPITest
 
     public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 

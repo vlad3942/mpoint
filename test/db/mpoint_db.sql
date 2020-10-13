@@ -6159,7 +6159,7 @@ INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUE
 INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUES (208, 'URL domain doesn''t match configured URL', 'Validate', 'valURL', '2013-08-05 11:23:33.934246', '2013-08-05 11:23:33.934246', true);
 INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUES (209, 'Auth URL must be configured for Client', 'Validate', 'valURL', '2013-08-05 11:23:33.934246', '2013-08-05 11:23:33.934246', true);
 INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUES (210, 'Invalid Message Authentication Code (MAC)', 'Validate', 'valMAC', '2014-05-25 11:42:34.53579', '2014-05-25 11:42:34.53579', true);
-
+INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUES (7010, 'Payment retried using dynamic routing', 'General', 'authWithAlternateRoute', '2020-09-10 11:42:34.53579', '2020-09-10 11:42:34.53579', true);
 
 
 SELECT pg_catalog.setval('state_tbl_id_seq', 1, true);
@@ -8275,7 +8275,7 @@ ALTER TABLE client.cardaccess_tbl ADD walletid int4;
 
 alter table log.txnpassbook_tbl alter column clientid set not null;
 
-ALTER TABLE log.transaction_tbl ADD convetredcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
+ALTER TABLE log.transaction_tbl ADD convertedcurrencyid int4 NULL CONSTRAINT offeredcurrency_fk REFERENCES system.currency_tbl(id);
 ALTER TABLE log.transaction_tbl ADD convertedamount int8 NULL;
 ALTER TABLE log.transaction_tbl ADD conversionrate decimal DEFAULT 1;
 ALTER TABLE client.cardaccess_tbl ADD dccenabled bool NULL DEFAULT false;
@@ -8433,20 +8433,24 @@ ALTER TABLE log.flight_tbl
   DROP COLUMN additional_data_ref;
  CREATE TABLE Log.paymentsecureinfo_tbl
 (
-   id       SERIAL,
-   txnid    INT4 NOT NULL,
-   mdStatus TEXT,
-   mdErrorMsg TEXT,
+   id     SERIAL,
+   txnid  INT4 NOT NULL,
+   pspid  INT4 NOT NULL,
+   status INT4,
+   msg TEXT,
    veresEnrolledStatus TEXT,
    paresTxStatus TEXT,
-   eci TEXT,
+   eci INT4,
    cavv TEXT,
-   cavvAlgorithm TEXT,
-   md TEXT,
-   PAResVerified TEXT,
-   PAResSyntaxOK TEXT,
+   cavvAlgorithm INT4,
    protocol TEXT,
-   cardType TEXT,
    CONSTRAINT payment_secure_pk PRIMARY KEY (id),
-   CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
+   CONSTRAINT payment_secure2transaction_FK FOREIGN KEY (txnid) REFERENCES log.transaction_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
+   CONSTRAINT payment_secure2psp_FK FOREIGN KEY (pspid) REFERENCES system.psp_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE
+
 ) WITHOUT OIDS;
+CREATE INDEX paymentsecure_txn_idx ON log.paymentsecureinfo_tbl (txnid);
+
+ALTER TABLE log.address_tbl add mobile_country_id varchar(4) null;
+ALTER TABLE log.address_tbl add mobile varchar(15) null;
+ALTER TABLE log.address_tbl add email varchar(50) null;

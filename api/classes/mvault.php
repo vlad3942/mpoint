@@ -27,7 +27,7 @@ class MVaultException extends CallbackException { }
 class MVault extends CPMPSP
 {
     public function capture($iAmount=-1) { throw new MVaultException("Method: capture is not supported by mVault"); }
-    public function refund($iAmount=-1) { throw new MVaultException("Method: refund is not supported by mVault"); }
+    public function refund($iAmount=-1, $iStatus = NULL) { throw new MVaultException("Method: refund is not supported by mVault"); }
     public function void($iAmount=-1) { throw new MVaultException("Method: void is not supported by mVault"); }
     public function cancel() { throw new MVaultException("Method: cancel is not supported by mVault"); }
     public function status() { throw new MVaultException("Method: status is not supported by mVault"); }
@@ -145,6 +145,14 @@ class MVault extends CPMPSP
                             $response .= '<last-name>'.$sLastName.'</last-name>';
                         }
                         else { $response .= '<full-name>'.$aShippingAddress['first_name'].'</full-name>'; }
+
+                        if($aShippingAddress['mobile'] !== null && empty($aShippingAddress['mobile']) === false)
+                        {
+                            $response .= '<contact-details>';
+                            $response .= '<mobile  operator-id="' . ((int)$aShippingAddress['mobile_country_id'])*100 . '" country-id="' . $aShippingAddress['mobile_country_id']. '">'.$aShippingAddress['mobile'].'</mobile>';
+                            $response .= '<email>'.$aShippingAddress['email'].'</email>';
+                            $response .= '</contact-details>';
+                        }
                         $response .= '<street>'.$aShippingAddress['street'].'</street>';
                         $response .= '<street2>'.$aShippingAddress['street2'].'</street2>';
                         $response .= '<postal-code>'.$aShippingAddress['zip'].'</postal-code>';

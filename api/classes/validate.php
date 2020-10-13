@@ -200,7 +200,7 @@ class Validate extends ValidateBase
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (preg_match("[^a-z0-9 æøåÆØÅäöÄÖ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -228,7 +228,7 @@ class Validate extends ValidateBase
 		if (empty($pwd) === true) { $code = 1; }							// Password is undefined
 		elseif (strlen($pwd) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// Password is too short
 		elseif (strlen($pwd) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// Password is too long
-		elseif (ereg("[\"']", $pwd) == true) { $code = 4; }					// Password contains Invalid Characters
+		elseif (preg_match("/[\"']/", $pwd) == true) { $code = 4; }					// Password contains Invalid Characters
 		else { $code = 10; }												// Password is valid
 
 		return $code;
@@ -250,9 +250,9 @@ class Validate extends ValidateBase
 	 * @param	string $email 	E-Mail address to validate
 	 * @return	integer
 	 */
-	public function valEMail($email)
+	public function valEMail($email) :int
 	{
-		return parent::valEmail($email, Constants::iAUTH_MIN_LENGTH, Constants::iAUTH_MAX_LENGTH);
+		return parent::valEmail($email);
 	}
 
 	/**
@@ -348,7 +348,7 @@ class Validate extends ValidateBase
 	 */
 	public function valPrice($max, $prc)
 	{
-		// Validate the total Amount the customer will be paying
+	    // Validate the total Amount the customer will be paying
 		if (empty($prc) === true) { $code = 1; }	// Amount is undefined
 		elseif (floatval($prc) < 1) { $code = 2; }	// Amount is too small
 		elseif (floatval($prc) > floatval($max) ) { $code = 3; }	// Amount is too great
@@ -437,20 +437,25 @@ class Validate extends ValidateBase
 			reset($aNames);
 			reset($aQuantities);
 			reset($aPrices);
-
-			while ( (list($key) = each($aNames) ) && $code == 10)
-			{
-				if (array_key_exists($key, $aQuantities) === false) { $code = 5; }	// Array key not found in Product Quantities
-				elseif (array_key_exists($key, $aPrices) === false) { $code = 6; }	// Array key not found in Product Prices
-			}
+			if($code == 10) {
+                foreach ($aNames as $key=>$value){
+                    if (array_key_exists($key, $aQuantities) === false) {
+                        $code=5;
+                    }    // Array key not found in Product Quantities
+                    elseif (array_key_exists($key, $aPrices) === false) {
+                        $code=6;
+                    }    // Array key not found in Product Prices
+                }
+            }
 			// Mandatory Product data appears to be valid
 			if ($code == 10)
 			{
 				reset($aLogos);
-				while ( (list($key, $url) = each($aLogos) ) && $code == 10)
-				{
-					if ($this->valURL($url) != 10) { $code = 7; }					// Invalid Logo URL
-				}
+				if(is_array($aLogos) && $code == 10){
+				    foreach ($aLogos as $key=>$url){
+                        if ($this->valURL($url) != 10) { $code = 7; }					// Invalid Logo URL
+                    }
+                }
 			}
 		}
 
@@ -473,7 +478,7 @@ class Validate extends ValidateBase
 	public function valLanguage($lang)
 	{
 		if (empty($lang) === true) { $code = 1;}							// Undefined Language
-		elseif (eregi("[^a-z_]", $lang) == true) { $code = 2; }				// Invalid Language
+		elseif (preg_match("/[^a-z_]/", $lang) == true) { $code = 2; }				// Invalid Language
 		elseif (is_dir(sLANGUAGE_PATH . $lang) === false) { $code = 3; }	// Language not supported
 		else { $code = 10; }
 
@@ -1216,7 +1221,7 @@ class Validate extends ValidateBase
 	 * @param	integer $countryid				The unique ID of the country that designates the currency
 	 * @return 	integer
 	 */
-	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid,CountryConfig $obj_CountryConfig = null)
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid,CountryConfig $obj_CountryConfig = null, $authToken = null)
 	{
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
@@ -1229,8 +1234,9 @@ class Validate extends ValidateBase
         }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $this->addLeadingZeros($countryISOCode) . $mobile . $this->addLeadingZeros($countryISO_id) . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
-		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode))
+		$chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
+        $chkWithCustRefCustId = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientInfo->getCustomerRef() . $obj_ClientInfo->getProfileID() . $obj_ClientConfig->getSalt());
+		if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode) || strtolower($mac) === strtolower($chkWithCustRefCustId))
 		{
 			$code = 10;
 		}
@@ -1238,9 +1244,6 @@ class Validate extends ValidateBase
 		return $code;
 	}
 
-	private function addLeadingZeros($countryId) {
-        return substr("000{$countryId}", -3);
-    }
     /**
      * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
      * The HMAC is generated based on the following data fields in the request (in that order):

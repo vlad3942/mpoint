@@ -44,7 +44,7 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 	$i++;
 }
-$obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
+$obj_XML = simplexml_load_string(file_get_contents('php://input'));
 
 $id = (integer)$obj_XML->callback->transaction["id"];
 
@@ -83,8 +83,8 @@ try
 		// New Account automatically created when Card was saved
 		else if ($iStatus == 2)
 		{
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+			$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
 			$obj_TxnInfo->setAccountID($iAccountID);
 			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
 			// SMS communication enabled
@@ -97,14 +97,14 @@ try
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
 	
-	$fee = 0;
+	$fee = 0;	
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,
-		                              $iSubCodeID,
+										0,
 									  $fee,
-									  array($HTTP_RAW_POST_DATA) );
+									  array(file_get_contents('php://input')) );
 	
 	// Customer has an account
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getAccountID() > 0)

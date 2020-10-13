@@ -96,36 +96,16 @@ WHERE key = '3DVERIFICATION' and externalid = <AMEX merchant-id> ;
 ----------------------
 
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3117, 'Post-screening Check not attempted Due to rule matched', 'Fraud', '');
-
----2c2p-alc Rule---
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<isPostFraudAttemp1>OR<isPostFraudAttemp2>OR<isPostFraudAttemp3>OR<isPostFraudAttemp4>
-isPostFraudAttemp1::=<cardid>=="7"AND<eci>=="2"AND<isCryptogrm>!==""
-isPostFraudAttemp2::=<cardid>=="7"AND<eci>=="1"AND<isCryptogrm>!==""
-isPostFraudAttemp3::=<cardid>=="8"AND<eci>=="5"AND<isCryptogrm>!==""
-isPostFraudAttemp4::=<cardid>=="8"AND<eci>=="6"AND<isCryptogrm>!==""
-eci::=(card.info-3d-secure.cryptogram.@eci)
-cardid::=(card.@type-id)
-isCryptogrm::={trim.(card,info-3d-secure,cryptogram)}', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=40;
-
----First Data Rule---
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<eci>=="1"OR<eci>=="2"OR<eci>=="4"
-eci::=(card.info-3d-secure.additional-data.param[@name=''Secure3DResponse''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=62;
-
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2017, 'Authorization not attempted due to rule matched', 'Payment', '');
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mpi_rule', 'allowAuth::=<allowAuth1>OR<allowAuth2>OR<allowAuth3>OR<allowAuth4>
-pares::= (card.info-3d-secure.additional-data.param[@name=''paresTxStatus''])
-veres::= (card.info-3d-secure.additional-data.param[@name=''veresEnrolledStatus''])
-allowAuth1::= <pares>=="Y"AND<veres>=="Y"
-allowAuth2::= <pares>=="Y"AND<veres>=="A"
-allowAuth3::= <pares>=="Y"AND<veres>=="U"
-allowAuth4::= <pares>=="Y"AND<veres>=="Y"', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=<pspid>;
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'RestrictedTicket', '1', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'FareBasisCode', 'BK', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyName', 'CebuPacificair', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyCode', '5J', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 
+-- CMP-4296
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', true, 10077, 'client', 0);
 --------------------------------------------------------------------------------
 ----  Update fraud state descriptions
 --------------------------------------------------------------------------------
@@ -146,7 +126,7 @@ UPDATE log.state_tbl SET name='Post Auth Fail' WHERE id=3115;
 UPDATE log.state_tbl SET name='Post Auth Conx Fail' WHERE id=3116;
 
 
-* ========== Grab Pay Integration = STARTS ========== */
+/* ========== Grab Pay Integration = STARTS ========== */
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES ( 67, 'GrabPay',4);
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (608,67,'PHP');
 INSERT INTO system.Card_tbl (id, name, position, minlength, maxlength, cvclength, paymenttype) VALUES (94, 'GrabPay', 23, -1, -1, -1, 4);
@@ -160,3 +140,41 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'CLIENT_SECRET', 'dcyDLGEYkeLZA1YM', id, 'merchant',1 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=67;
 INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled,capture_type,psp_type) VALUES (<>, 94, 67, 640, 1, true,2,4);
 /* ========== Grab Pay Integration = STARTS ========== */
+
+-- CMP-4323
+INSERT INTO client.additionalproperty_tbl
+("key", value, enabled, externalid, "type", "scope")
+VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
+
+
+DELETE FROM client.additionalproperty_tbl where key = 'post_fraud_rule';
+DELETE FROM client.additionalproperty_tbl where key = 'mpi_rule';
+---2c2p-alc Rule---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<pspid>=="40"
+pspid::=(psp-config.@id)', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=40;
+
+---First Data Rule---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<status>=="1"OR<status>=="2"OR<status>=="4"
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=62;
+---WorldPay Rule for MPI---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mpi_rule', 'isSkippAuth::=<status>!=="1"AND<status>!=="2"AND<status>!=="4"AND<status>!=="5"AND<status>!=="6"
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+---WorldPay Rule for FRAUD---
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
+
+update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and cardid not in (7,8) and clientid = 10077;
+
+
+-------------G-CASH 2C2P-ALC FOR CEBU START------------
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT 10077, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT <client ID>, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+-------------G-CASH 2C2P-ALC SYSTEM------------
+INSERT INTO system.card_tbl (id, name, position, minlength, maxlength, cvclength, paymenttype) VALUES (93, 'Gcash', 23, -1, -1, -1, 3);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 93);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 93, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 608;
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHP');
+
+
+-------------G-CASH 2C2P-ALC FOR CEBU END------------

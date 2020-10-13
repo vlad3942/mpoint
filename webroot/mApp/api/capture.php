@@ -93,6 +93,8 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the cybs component
 require_once(sCLASS_PATH ."/cybersource.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
@@ -127,7 +129,7 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 
 $xml = '';
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 for ($i=0; $i<count($obj_DOM->capture); $i++)
 {
 	$clientID=$obj_DOM->capture[$i]["client-id"];
@@ -171,8 +173,6 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 
 						/* ========== Input Validation Start ========== */
 						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-
-					    if ($obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) != 10) { $aMsgCds[$obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) + 170] = $obj_DOM->capture[$i]->transaction["id"]; }
 						//if ($obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) + 180] = $obj_DOM->capture[$i]->transaction["order-no"]; }
 						/* ========== Input Validation End ========== */
 

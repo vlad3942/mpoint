@@ -9,6 +9,7 @@ class PayAPITest extends baseAPITest
 
 	public function __construct()
 	{
+        parent::__construct();
 		$this->constHTTPClient();
 	}
 
@@ -87,7 +88,7 @@ class PayAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="'.$typeId.'">', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="'.$typeId.'">', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT id FROM Enduser.Account_Tbl");
 		$this->assertTrue(is_resource($res) );

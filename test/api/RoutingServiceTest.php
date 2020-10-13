@@ -23,11 +23,10 @@ require_once(sCLASS_PATH . '/payment_route.php');
 
 class RoutingServiceTest extends baseAPITest
 {
-
     private $_OBJ_DB;
     protected $_aHTTP_CONN_INFO;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
@@ -104,7 +103,7 @@ class RoutingServiceTest extends baseAPITest
         $obj_FailedPaymentMethod = null;
         $sessionId = (string)$obj_DOM->{'initialize-payment'}->transaction["session-id"];
         if(empty($sessionId)===false){
-            $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId);
+            $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId, 113);
         }
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -159,7 +158,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            $this->assertEquals(0, count($obj_PaymentMethodResponse));
+            $this->assertEmpty($obj_PaymentMethodResponse);
         }
 
     }
@@ -187,7 +186,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            $this->assertEquals(1, count($obj_PaymentMethodResponse));
+            $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
         }
 
     }
@@ -217,7 +216,6 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            $this->assertEquals(1, count($obj_PaymentMethodResponse));
             $this->assertEmpty($obj_PaymentMethodResponse);
         }
 
@@ -336,12 +334,11 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_RouteResponse = $obj_RS->getRoute();
-            $this->assertEquals(1, count($obj_RouteResponse));
             $this->assertEmpty($obj_RouteResponse);
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();

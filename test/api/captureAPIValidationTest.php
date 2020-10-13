@@ -10,12 +10,14 @@ class CaptureAPIValidationTest extends baseAPITest
 
     public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 
     public function constHTTPClient()
     {
         global $aMPOINT_CONN_INFO;
+        $this->bIgnoreErrors = true;
         $aMPOINT_CONN_INFO['path'] = "/buy/capture.php";
         $aMPOINT_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
         $this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
@@ -28,7 +30,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,currencyid,sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE,208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, keywordid, amount, ip, enabled,currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 1, 5000, '127.0.0.1', TRUE,208, 1,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
 
@@ -38,7 +40,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=176", $sReplyBody);
+        $this->assertEquals("msg=51", $sReplyBody);
     }
 
     public function testPaymentRefunded()
@@ -47,7 +49,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, keywordid, amount, ip, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 1, 5000, '127.0.0.1', TRUE, 208,1,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REFUNDED_STATE. ")");
@@ -58,43 +60,43 @@ class CaptureAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=177", $sReplyBody);
+        $this->assertEquals("msg=51", $sReplyBody);
     }
 
-    public function testInvalidTransactionState()
+   public function testInvalidTransactionState()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name) VALUES (113, 1, 100, 'Test Client')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE,1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, keywordid, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 1, 5000, '127.0.0.1', TRUE,1,5000)");
 
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(404, $iStatus);
-        $this->assertEquals("msg=173", $sReplyBody);
+        $this->assertEquals(500, $iStatus);
+        $this->assertEquals("msg=1001", $sReplyBody);
     }
 
     public function testTransactionDisabled()
-    {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name) VALUES (113, 1, 100, 'Test Client')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', FALSE, 1,5000)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+   {
+       $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name) VALUES (113, 1, 100, 'Test Client')");
+       $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+       $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+       $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+       $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, keywordid, amount, ip, enabled, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 1, 5000, '127.0.0.1', FALSE, 1,5000)");
+       $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-        $this->_httpClient->connect();
+       $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=5000');
-        $sReplyBody = $this->_httpClient->getReplyBody();
+       $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=5000');
+       $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=174", $sReplyBody);
-    }
+       $this->assertEquals(500, $iStatus);
+       $this->assertEquals("msg=1001", $sReplyBody);
+   }
 
     public function testPaymentRejectedState()
     {
@@ -102,7 +104,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, keywordid, amount, ip, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 1, 5000, '127.0.0.1', 1,5000)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ")");
 
@@ -111,8 +113,8 @@ class CaptureAPIValidationTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=175", $sReplyBody);
+        $this->assertEquals(500, $iStatus);
+        $this->assertEquals("msg=1001", $sReplyBody);
     }
 
     public function testPaymentAlreadyCapturedState()
@@ -121,7 +123,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '800-1234', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip,currencyid, sessionid,convertedamount,convetredcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1',208,1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, keywordid, amount, ip,currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 1, 5000, '127.0.0.1',208,1,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
 
@@ -130,8 +132,8 @@ class CaptureAPIValidationTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=176", $sReplyBody);
+        $this->assertEquals(500, $iStatus);
+        $this->assertEquals("msg=1001", $sReplyBody);
     }
 
     public function testPaymentRefundedState()
@@ -140,7 +142,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-005', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, orderid, amount, ip, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, '1513-005', 5000, '127.0.0.1', 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, orderid, keywordid, amount, ip, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, '1513-005', 1, 5000, '127.0.0.1', 1,5000)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REFUNDED_STATE. ")");
@@ -150,8 +152,8 @@ class CaptureAPIValidationTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=5000&orderid=1513-005');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=177", $sReplyBody);
+        $this->assertEquals(500, $iStatus);
+        $this->assertEquals("msg=1001", $sReplyBody);
     }
 
     public function testInvalidAmount()
@@ -167,6 +169,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&orderid=1513-005');
+
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -174,13 +177,22 @@ class CaptureAPIValidationTest extends baseAPITest
 
         $this->_httpClient->disConnect();
 
+    }
 
-        $this->constHTTPClient();
+    public function testInvalidAmount1()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name) VALUES (113, 1, 100, 'Test Client')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-005', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, amount, ip, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 1, 100, '1513-005', 5000, '127.0.0.1', 1,5000)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-        //Too small amount
+        //Undefined amount
         $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&amount=-1');
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&orderid=1513-005&amount=-1');
+
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -188,8 +200,17 @@ class CaptureAPIValidationTest extends baseAPITest
 
         $this->_httpClient->disConnect();
 
+    }
 
-        $this->constHTTPClient();
+
+    public function testInvalidAmount2()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name) VALUES (113, 1, 100, 'Test Client')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-005', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, amount, ip, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 1, 100, '1513-005', 5000, '127.0.0.1', 1,5000)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
         //Too large amount
         $this->_httpClient->connect();
@@ -201,7 +222,6 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->assertEquals("msg=53", $sReplyBody);
 
     }
-
     public function testBadRequestInvalidRequestBody()
     {
         $this->_httpClient->connect();
@@ -299,8 +319,8 @@ class CaptureAPIValidationTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=171", $sReplyBody);
+        $this->assertEquals(200, $iStatus);
+        $this->assertEmpty($sReplyBody);
     }
 
     public function testInvalidTransaction()
@@ -314,8 +334,8 @@ class CaptureAPIValidationTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=172", $sReplyBody);
+        $this->assertEquals(200, $iStatus);
+        $this->assertEmpty($sReplyBody);
     }
 
     public function testDisabledTransaction()
@@ -324,7 +344,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-005', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', FALSE, 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, amount, ip, enabled, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 1, 100, 5000, '127.0.0.1', FALSE, 1,5000)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
         $this->_httpClient->connect();
@@ -333,7 +353,7 @@ class CaptureAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertEquals("msg=174", $sReplyBody);
+        $this->assertEquals("msg=51", $sReplyBody);
     }
 
 }
