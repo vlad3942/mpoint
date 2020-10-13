@@ -15,15 +15,9 @@ use JsonSerializable;
 
 class AdditionalData implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    public $key;
+    public string $key;
 
-    /**
-     * @var string
-     */
-    public $value;
+    public string $value;
 
     /**
      * AdditionalData constructor.
@@ -31,7 +25,7 @@ class AdditionalData implements JsonSerializable
      * @param $key
      * @param $value
      */
-    public function __construct($key, $value)
+    public function __construct(string $key, string $value)
     {
         if(empty($key) === FALSE) {
             $this->key = $key;

@@ -17,17 +17,14 @@ namespace api\classes\messagequeue\client {
     class GooglePubSub extends MessageQueueProvider
     {
 
-        /**
-         * @var object
-         */
-        private $_messageQueueClient = NULL;
+        private ?object $_messageQueueClient = NULL;
 
         /**
          * @param string $message
          *
          * @return bool
          */
-        public function publish($message)
+        public function publish(string $message)
         {
             $topic = $this->getMessageQueueClient()->topic($this->getTopicName());
             $topic->publish(['data' => $message]);
@@ -37,7 +34,7 @@ namespace api\classes\messagequeue\client {
         /**
          * @return object
          */
-        protected function getMessageQueueClient()
+        protected function getMessageQueueClient(): ?object
         {
             return $this->_messageQueueClient;
         }
@@ -45,7 +42,7 @@ namespace api\classes\messagequeue\client {
         /**
          * @return bool
          */
-        public function authenticate()
+        public function authenticate() : bool
         {
             $options = ['projectId' => $this->getProjectId()];
             $keyDetails = $this->getKeyFile();

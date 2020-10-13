@@ -15,29 +15,20 @@ use JsonSerializable;
 
 class ProductInfo implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    public $name;
+    public string $name;
 
-    /**
-     * @var integer
-     */
-    public $quantity;
+    public int $quantity;
 
-    /**
-     * @var integer
-     */
-    public $price;
+    public int $price;
 
     /**
      * ProductInfo constructor.
      *
      * @param string $name
-     * @param int    $quantity
-     * @param int    $price
+     * @param int $quantity
+     * @param int $price
      */
-    public function __construct($name, $quantity, $price)
+    public function __construct(string $name, int $quantity, int $price)
     {
         if(empty($name) === FALSE && $quantity > 0 && $price > 0) {
             $this->name = $name;

@@ -12,20 +12,20 @@
 namespace api\interfaces\messagequeue {
     abstract class MessageQueueProvider
     {
-        private $_keyFile;
+        private ?array $_keyFile;
 
-        private $_projectId;
+        private string $_projectId;
 
-        private $_topicName;
+        private string $_topicName;
 
         /**
          * MessageQueueProvider constructor.
          *
-         * @param string $keyFile
+         * @param string|null $keyFile
          * @param string $projectId
          * @param string $topicName
          */
-        public function __construct(string $keyFile, string $projectId, string $topicName)
+        public function __construct(?string $keyFile, string $projectId, string $topicName)
         {
             if(empty($keyFile) == FALSE) {
                 $this->_keyFile = json_decode($keyFile, TRUE);
@@ -39,12 +39,12 @@ namespace api\interfaces\messagequeue {
          *
          * @return bool
          */
-        abstract public function publish($message);
+        abstract public function publish(string $message);
 
         /**
-         * @return string
+         * @return array|null
          */
-        protected function getKeyFile()
+        protected function getKeyFile() : ?array
         {
             return $this->_keyFile;
         }
@@ -52,7 +52,7 @@ namespace api\interfaces\messagequeue {
         /**
          * @return string
          */
-        protected function getProjectId()
+        protected function getProjectId() : string
         {
             return $this->_projectId;
         }
@@ -60,7 +60,7 @@ namespace api\interfaces\messagequeue {
         /**
          * @return string
          */
-        protected function getTopicName()
+        protected function getTopicName() : string
         {
             return $this->_topicName;
         }
@@ -68,8 +68,11 @@ namespace api\interfaces\messagequeue {
         /**
          * @return bool
          */
-        abstract public function authenticate();
+        abstract public function authenticate() : bool;
 
-        abstract protected function getMessageQueueClient();
+        /**
+         * @return object
+         */
+        abstract protected function getMessageQueueClient() : ?object;
     }
 }

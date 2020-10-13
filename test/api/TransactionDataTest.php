@@ -13,9 +13,9 @@ require_once __DIR__ . '/../../api/classes/core/card.php';
 
 class TransactionDataTest extends baseAPITest
 {
-    private $transactionData;
+    private TransactionData $transactionData;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(FALSE);
         $amount = new Amount(100, 840, 1);
@@ -33,68 +33,68 @@ class TransactionDataTest extends baseAPITest
     public function testSetShortCode()
     {
         $this->transactionData->setShortCode('WRE');
-        $this->assertContains('"short_code":"WRE"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"short_code":"WRE"', json_encode($this->transactionData));
     }
     
     public function testSetDateTime()
     {
         $this->transactionData->setDateTime('2019-04-05T12:56:49+02:00');
-        $this->assertContains('"date_time":"2019-04-05T12:56:49+02:00"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"date_time":"2019-04-05T12:56:49+02:00"', json_encode($this->transactionData));
     }
 
     public function testSetLocalDateTime()
     {
         $this->transactionData->setLocalDateTime('2019-04-05T18:56:49+08:00');
-        $this->assertContains('"local_date_time":"2019-04-05T18:56:49+08:00"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"local_date_time":"2019-04-05T18:56:49+08:00"', json_encode($this->transactionData));
     }
 
     public function testSetFee()
     {
         $this->transactionData->setFee(100);
-        $this->assertContains('"fee":100', json_encode($this->transactionData));
+        $this->assertStringContainsString('"fee":100', json_encode($this->transactionData));
     }
 
     public function testSetDescription()
     {
         $this->transactionData->setDescription('TestDescription');
-        $this->assertContains('"description":"TestDescription"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"description":"TestDescription"', json_encode($this->transactionData));
     }
 
     public function testSetForeignExchangeId()
     {
         $this->transactionData->setForeignExchangeId(111);
-        $this->assertContains('"foreign_exchange_id":111', json_encode($this->transactionData));
+        $this->assertStringContainsString('"foreign_exchange_id":111', json_encode($this->transactionData));
     }
 
     public function testSetIssuingBank()
     {
         $this->transactionData->setIssuingBank('TestIssuingBank');
-        $this->assertContains('"issuing_bank":"TestIssuingBank"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"issuing_bank":"TestIssuingBank"', json_encode($this->transactionData));
     }
 
     public function testSetWalletId()
     {
         $this->transactionData->setWalletId(15);
-        $this->assertContains('"wallet_id":15', json_encode($this->transactionData));
+        $this->assertStringContainsString('"wallet_id":15', json_encode($this->transactionData));
     }
 
     public function testSetApprovalCode()
     {
         $this->transactionData->setApprovalCode("123456");
-        $this->assertContains('"approval_code":"123456"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"approval_code":"123456"', json_encode($this->transactionData));
     }
 
     public function testSetHmac()
     {
         $this->transactionData->setHmac('f6100dd45e06767c78d7a5532057f4d1059318f463c0cf9d6e8e6c180bca4268e5e770f7a0f9dbd9a5b535dcc0521279dcb696e86d4d2546606f9d90bc96a1fe');
-        $this->assertContains('"hmac":"f6100dd45e06767c78d7a5532057f4d1059318f463c0cf9d6e8e6c180bca4268e5e770f7a0f9dbd9a5b535dcc0521279dcb696e86d4d2546606f9d90bc96a1fe"', json_encode($this->transactionData));
+        $this->assertStringContainsString('"hmac":"f6100dd45e06767c78d7a5532057f4d1059318f463c0cf9d6e8e6c180bca4268e5e770f7a0f9dbd9a5b535dcc0521279dcb696e86d4d2546606f9d90bc96a1fe"', json_encode($this->transactionData));
     }
 
     public function testSetDeliveryInfo()
     {
         $additionalData = new AdditionalData('DeliveryInfo', 'Test');
         $this->transactionData->setDeliveryInfo([$additionalData]);
-        $this->assertContains('"delivery_info":[{"key":"DeliveryInfo","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"delivery_info":[{"key":"DeliveryInfo","value":"Test"}]', json_encode($this->transactionData));
 
     }
 
@@ -102,34 +102,34 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('AdditionalData', 'Test');
         $this->transactionData->setAdditionalData([$additionalData]);
-        $this->assertContains('"additional_data":[{"key":"AdditionalData","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"additional_data":[{"key":"AdditionalData","value":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetProductInfo()
     {
         $additionalData = new ProductInfo('Sample', 2,200);
         $this->transactionData->setProductInfo([$additionalData]);
-        $this->assertContains('"product_info":[{"name":"Sample","quantity":2,"price":200}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"product_info":[{"name":"Sample","quantity":2,"price":200}]', json_encode($this->transactionData));
     }
 
     public function testSetShippingInfo()
     {
         $additionalData = new AdditionalData('ShippingInfo', 'Test');
         $this->transactionData->setShippingInfo([$additionalData]);
-        $this->assertContains('"shipping_info":[{"key":"ShippingInfo","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"shipping_info":[{"key":"ShippingInfo","value":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetClientData()
     {
         $additionalData = new AdditionalData('ClientData', 'Test');
         $this->transactionData->setClientData([$additionalData]);
-        $this->assertContains('"client_data":[{"key":"ClientData","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"client_data":[{"key":"ClientData","value":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetBillingAddress()
     {
         $additionalData = new AdditionalData('BillingAddress', 'Test');
         $this->transactionData->setBillingAddress([$additionalData]);
-        $this->assertContains('"billing_address":[{"key":"BillingAddress","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"billing_address":[{"key":"BillingAddress","value":"Test"}]', json_encode($this->transactionData));
     }
 }

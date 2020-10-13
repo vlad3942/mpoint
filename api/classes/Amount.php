@@ -20,35 +20,26 @@ use JsonSerializable;
  */
 class Amount implements JsonSerializable
 {
-    /**
-     * @var integer
-     */
-    public $value;
+    public int $value;
 
-    /**
-     * @var integer
-     */
-    public $currency_id;
+    public int $currency_id;
 
-    /**
-     * @var long
-     */
-    public $conversion_rate;
+    public float $conversion_rate;
 
     /**
      * Amount constructor.
      *
-     * @param int  $value
-     * @param int  $currency_id
-     * @param long $conversion_rate
+     * @param int $value
+     * @param int $currency_id
+     * @param float|null $conversion_rate
      */
-    public function __construct($value, $currency_id, $conversion_rate = NULL)
+    public function __construct(int $value, int $currency_id, ?float $conversion_rate = NULL)
     {
         if($value > 0 && strlen($currency_id) === 3) {
-            $this->value = (int)$value;
-            $this->currency_id = (int)$currency_id;
+            $this->value = $value;
+            $this->currency_id = $currency_id;
             if (empty($conversion_rate) === false){
-                $this->conversion_rate = (float)$conversion_rate;
+                $this->conversion_rate = $conversion_rate;
             }
         }
     }

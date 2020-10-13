@@ -8,7 +8,7 @@ use api\classes\AdditionalData;
 class AdditionalDataTest extends baseAPITest
 {
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(FALSE);
     }

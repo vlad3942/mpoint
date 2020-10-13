@@ -25,9 +25,9 @@ namespace api\classes\messagequeue\client {
         /**
          * @param array $providerInfo
          *
-         * @throws \api\classes\messagequeue\client\MessageQueueClientException
+         * @throws MessageQueueClientException
          */
-        public static function GetClient(array $providerInfo = [])
+        public static function GetClient(array $providerInfo = []) : object
         {
             if (count($providerInfo) === 0) {
                 global $aMessage_Queue_Provider_info;

@@ -7,7 +7,7 @@ require_once __DIR__ . '/../inc/testinclude.php';
 
 class AmountTest extends baseAPITest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(FALSE);
     }

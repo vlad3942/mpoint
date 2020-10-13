@@ -18,7 +18,7 @@ use api\classes\messagequeue\client\MessageQueueClientException;
 
 class MessageQueueClientTest extends baseAPITest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(FALSE);
         $this->bIgnoreErrors = true;

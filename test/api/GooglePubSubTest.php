@@ -19,7 +19,7 @@ class GooglePubSubTest extends baseAPITest
 {
     protected $_aMessage_Queue_Provider_info;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(FALSE);
         global $aMessage_Queue_Provider_info;
@@ -80,8 +80,9 @@ class GooglePubSubTest extends baseAPITest
     {
 
         $keyFile = NUll;
-        $projectId = $this->_aHTTP_CONN_INFO['projectid'];
-        $topicName = $this->_aHTTP_CONN_INFO['topicname'];
-        $_mqClient = new GooglePubSub($keyFile, $projectId, $topicName);
+        $projectId = $this->_aMessage_Queue_Provider_info['projectid'];
+        $topicName = $this->_aMessage_Queue_Provider_info['topicname'];
+        $_mqClient = new GooglePubSub(null, $projectId, $topicName);
+        $this->assertInstanceOf(GooglePubSub::class,$_mqClient);
     }
 }

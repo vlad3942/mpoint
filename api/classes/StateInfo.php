@@ -15,35 +15,26 @@ use JsonSerializable;
 
 class StateInfo implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    public $code;
+    public int $code;
 
-    /**
-     * @var int|null
-     */
-    public $sub_code;
+    public ?int $sub_code;
 
-    /**
-     * @var string|null
-     */
-    public $message;
+    public ?string $message;
 
     /**
      * StateInfo constructor.
      *
-     * @param int         $code
-     * @param int|null    $sub_code
+     * @param int $code
+     * @param int|null $sub_code
      * @param string|null $message
      */
-    public function __construct($code, $sub_code = NULL, $message = NULL)
+    public function __construct(int $code, ?int $sub_code = NULL, ?string $message = NULL)
     {
         if($code > 1000) {
-            $this->code = (int)$code;
+            $this->code = $code;
             if(empty($sub_code) === false)
             {
-                $this->sub_code = (int)$sub_code;
+                $this->sub_code = $sub_code;
             }
             $this->message = $message;
         }

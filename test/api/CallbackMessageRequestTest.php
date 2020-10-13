@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../api/classes/core/card.php';
 
 class CallbackMessageRequestTest extends baseAPITest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp(FALSE);
     }

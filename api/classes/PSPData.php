@@ -15,29 +15,20 @@ use JsonSerializable;
 
 class PSPData implements JsonSerializable
 {
-    /**
-     * @var integer
-     */
-    public $id;
+    public int $id;
 
-    /**
-     * @var string
-     */
-    public $name;
+    public ?string $name;
 
-    /**
-     * @var string
-     */
-    public $external_id;
+    public ?string $external_id;
 
     /**
      * PSPData constructor.
      *
-     * @param string $name
-     * @param int    $id
-     * @param string $external_id
+     * @param int $id
+     * @param string|null $name
+     * @param string|null $external_id
      */
-    public function __construct($id, $name = NULL,  $external_id = NULL)
+    public function __construct(int $id, ?string $name = NULL, ?string $external_id = NULL)
     {
         if($id > 0) {
             $this->id = $id;
