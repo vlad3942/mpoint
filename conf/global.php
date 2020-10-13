@@ -1126,6 +1126,7 @@ $aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/paymaya/initialize
 $aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/paymaya/callback";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/paymaya/refund";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/paymaya/status";
 
 
 /**
