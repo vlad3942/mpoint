@@ -1257,7 +1257,10 @@ abstract class Callback extends EndUserAccount
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
         $transactionData->setShortCode($this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
-        $transactionData->setForeignExchangeId($txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID()));
+        $foreignExchangeId = $txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID());
+        if(empty($foreignExchangeId) === false) {
+			$transactionData->setForeignExchangeId();
+		}
         $dateTime = new DateTime($txnInfo->getCreatedTimestamp());
         $transactionData->setDateTime($dateTime->format('c'));
         $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');

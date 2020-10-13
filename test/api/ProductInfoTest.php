@@ -18,12 +18,4 @@ class ProductInfoTest extends baseAPITest
         $json_string = json_encode($additional_data);
         $this->assertEquals('{"name":"Sample","quantity":2,"price":200}', $json_string);
     }
-
-    public function testEmpty__construct()
-    {
-        $additional_data = new ProductInfo(NULL, 1, 200);
-        $json_string = json_encode($additional_data);
-        $this->assertEquals('[]', $json_string);
-
-    }
 }
