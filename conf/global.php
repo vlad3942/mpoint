@@ -13,7 +13,7 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  * Output method for the error handler:	
  *	0 - Store Internally
  *	1 - Output to file
- *	2 - Output to screen
+ *	2 - Output to screen2c
  *	3 - Output to file and screen
  *	4 - Send to remote server
  *	5 - Output to file and send remote server
@@ -1124,8 +1124,9 @@ $aHTTP_CONN_INFO["paymaya"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["paymaya"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/paymaya/initialize";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/paymaya/callback";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/paymaya/refund";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/paymaya/status";
 
 
