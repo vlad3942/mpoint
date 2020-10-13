@@ -243,7 +243,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				header("HTTP/1.0 500 Internal Error");
 
 				$aMsgCds[$e->getCode()] = $e->getMessage();
-				trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
+				trigger_error("Internal Error" ."\n". $e->getMessage(), E_USER_WARNING);
 			}
 		}
 		// Error: Invalid Input
