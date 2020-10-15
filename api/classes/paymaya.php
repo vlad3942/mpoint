@@ -24,10 +24,6 @@ class PaymayaException extends CallbackException { }
  */
 class Paymaya extends CPMPSP
 {
-    public function refund($iAmount=-1) { throw new PaymayaException("Method: refund is not supported by Paymaya"); }
-    public function void($iAmount=-1) { throw new PaymayaException("Method: void is not supported by Paymaya"); }
-    public function cancel() { throw new PaymayaException("Method: cancel is not supported by Paymaya"); }
-    public function capture($iAmount=-1) { throw new PaymayaException("Method: capture is not supported by Paymaya"); }
     public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PaymayaException("Method: getPaymentData is not supported by Paymaya"); }
 	public function getPSPID() { return Constants::iPAYMAYA_WALLET; }
 }
