@@ -1122,12 +1122,12 @@ $aHTTP_CONN_INFO["paymaya"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["paymaya"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["paymaya"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["paymaya"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/paymaya/initialize";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/paymaya/callback";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/paymaya/void";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/paymaya/void";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/paymaya/void";
-$aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/paymaya/status";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/apm/paymaya/initialize";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/apm/paymaya/callback";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
 
 
 /**

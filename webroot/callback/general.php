@@ -143,7 +143,7 @@ require_once(sCLASS_PATH .'/credit_card.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
 // Require specific Business logic for the Paymaya component
-require_once(sCLASS_PATH .'/paymaya.php');
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 
 /**
