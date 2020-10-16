@@ -956,6 +956,7 @@ try
                                                                                     $code = $obj_Processor->authenticate($requset);
                                                                                 } else {
                                                                                     $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 }
                                                                                 
                                                                                 // Authorization succeeded
