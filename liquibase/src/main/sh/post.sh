@@ -24,3 +24,7 @@ if [ "$USER_EXISTS" = "t" ]; then
     echo "USER EXISTS, updating ${APP_USER} password"
     echo "${UPDATE_USER_PASS}" | psql
 fi
+
+for i in $(find /app/scripts/sql -name "*.sql" -type f | sort -n); do # will break on whitespaces
+    psql -af "$i"
+done

@@ -31,7 +31,7 @@ define("iDEBUG_LEVEL", 2);
 /**
  * Path to the application error log
  */
-define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
+define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
 
 
 /**
@@ -64,10 +64,10 @@ $aDB_CONN_INFO["mpoint"]["class"] = env("database.mpoint.class", "PostGreSQL");
 $aDB_CONN_INFO["mpoint"]["timeout"] = env("database.mpoint.timeout", 10);
 $aDB_CONN_INFO["mpoint"]["charset"] = env("database.mpoint.charset", "UTF8");
 $aDB_CONN_INFO["mpoint"]["connmode"] = env("database.mpoint.connmode", "normal");
-$aDB_CONN_INFO["mpoint"]["errorpath"] = env("database.mpoint.errorpath", sLOG_PATH ."db_error_". date("Y-m-d") .".log");
+$aDB_CONN_INFO["mpoint"]["errorpath"] = env("database.mpoint.errorpath", sLOG_PATH ."db_error_".".log");
 $aDB_CONN_INFO["mpoint"]["errorhandling"] = env("database.mpoint.errorhandling", 3);
 $aDB_CONN_INFO["mpoint"]["exectime"] = env("database.mpoint.exectime", 0.3);
-$aDB_CONN_INFO["mpoint"]["execpath"] = env("database.mpoint.execpath", sLOG_PATH ."db_exectime_". date("Y-m-d") .".log");
+$aDB_CONN_INFO["mpoint"]["execpath"] = env("database.mpoint.execpath", sLOG_PATH ."db_exectime_".".log");
 $aDB_CONN_INFO["mpoint"]["keycase"] = env("database.mpoint.keycase", CASE_UPPER);
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = env("database.mpoint.debuglevel", 2);
 $aDB_CONN_INFO["mpoint"]["method"] = env("database.mpoint.method", 1);
@@ -84,10 +84,10 @@ $aDB_CONN_INFO["session"]["timeout"] = env("database.session.timeout", 10);
 $aDB_CONN_INFO["session"]["charset"] = env("database.session.charset", "ISO8859_1");
 $aDB_CONN_INFO["session"]["class"] = env("database.session.class", "PostGreSQL");
 $aDB_CONN_INFO["session"]["connmode"] = env("database.session.connmode", "normal");
-$aDB_CONN_INFO["session"]["errorpath"] = env("database.session.errorpath", sLOG_PATH ."db_error_". date("Y-m-d") .".log");
+$aDB_CONN_INFO["session"]["errorpath"] = env("database.session.errorpath", sLOG_PATH ."db_error_".".log");
 $aDB_CONN_INFO["session"]["errorhandling"] = env("database.session.errorhandling", 3);
 $aDB_CONN_INFO["session"]["exectime"] = env("database.session.exectime", 0.3);
-$aDB_CONN_INFO["session"]["execpath"] = env("database.session.execpath", sLOG_PATH ."db_exectime_". date("Y-m-d") .".log");
+$aDB_CONN_INFO["session"]["execpath"] = env("database.session.execpath", sLOG_PATH ."db_exectime_".".log");
 $aDB_CONN_INFO["session"]["keycase"] = env("database.session.keycase", CASE_UPPER);
 $aDB_CONN_INFO["session"]["debuglevel"] = env("database.session.debuglevel", 2);
 $aDB_CONN_INFO["session"]["method"] = env("database.session.method", 1);
@@ -1237,4 +1237,5 @@ define("sSCHEMA_POSTFIX","");
  *	will be expire. When set to "0" No logs will be purged. 
  */
 define("iPURGED_DAYS", 30);
+
 ?>

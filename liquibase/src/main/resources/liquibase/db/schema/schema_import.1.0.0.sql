@@ -3488,7 +3488,7 @@ CREATE TABLE log.transaction_tbl (
     walletid integer,
     issuing_bank character varying(100),
     profileid bigint,
-    convetredcurrencyid integer,
+    convertedcurrencyid integer,
     convertedamount bigint,
     conversionrate numeric DEFAULT 1
 )
@@ -13261,7 +13261,7 @@ ALTER TABLE ONLY log.auditlog_tbl
 --
 
 ALTER TABLE ONLY log.transaction_tbl
-    ADD CONSTRAINT convertedcurrency_fk FOREIGN KEY (convetredcurrencyid) REFERENCES system.currency_tbl(id);
+    ADD CONSTRAINT convertedcurrency_fk FOREIGN KEY (convertedcurrencyid) REFERENCES system.currency_tbl(id);
 
 
 --

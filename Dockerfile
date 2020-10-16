@@ -1,33 +1,15 @@
-# TODO use official phpcomposerbuildimage from harbour when this is moved to the new jenkins
+#-----------------------FETCH TEST DEPENDENCIES------------------------
 
-#Fetch dependencies
-#TODO CTECH-3909
-FROM composer:1 as builder
-
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /tmp
-ENV COMPOSER_AUTH='{"http-basic": {"repo.t.cpm.ninja": {"username": "cpmdeploy","password": "qwe123qwe"},"satis.cellpointmobile.com": {"username": "admin","password": "70211512"}}}'
-ENV CPM_REPOLIST='git.t.cpm.dev satis.cellpointmobile.com'
-
-WORKDIR /app
-
-COPY ./docker/.ssh /root/.ssh
-
-RUN composer global require hirak/prestissimo \
-    && chmod 400 /root/.ssh/id_rsa \
-    && ssh-keyscan -t rsa $(printenv CPM_REPOLIST) > ~/.ssh/known_hosts
-    
+FROM registry.t.cpm.dev/library/phpcomposerbuildimage:master20200203174815 as devbuilder
 COPY composer.json .
-RUN composer install -vvv --prefer-dist --no-dev
+RUN composer install -v --prefer-dist
 
-# Template dockerfile for building the cellpointmobile/main:php-test container
-#-----------------------BASEIMAGE BEGIN------------------------
-
-#TODO CTECH-3908
-FROM php:7.4.6-apache-buster
+#-----------------------RUN UNITTESTS-----------------------------
+# TODO This should run simply from pgunittestextras, but we need all db deps to run via liquibase first
+FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster
 
 RUN apt update \
-    && apt install -y postgresql-11 libpq-dev libxslt-dev less nano vim net-tools iputils-ping iproute2 acl unzip dos2unix less libpq-dev libxslt-dev jq \
+    && apt install -y postgresql-11 libpq-dev libxslt-dev acl unzip dos2unix less jq \
     && docker-php-ext-install pgsql xsl \
     && docker-php-ext-install soap
 
@@ -47,7 +29,7 @@ RUN /etc/init.d/postgresql start \
 
 RUN a2enmod rewrite
 
-#-----------------------BASEIMAGE END------------------------
+#-----------------------BASEIMAGE END-----------------------------
 
 EXPOSE 80 5432
 
@@ -66,16 +48,37 @@ COPY test test
 COPY conf conf
 COPY webroot webroot
 
-#THIS WAS NOT RUN IN THE OLD DOCKERFILE !?
+# Load test db
 RUN /etc/init.d/postgresql start \
     && cat test/db/mpoint_db.sql | psql -U postgres \
     && /etc/init.d/postgresql stop
 
 # Runtime dependencies
-COPY --from=builder /app /opt/cpm/mPoint
+COPY --from=devbuilder /app /opt/cpm/mPoint
 RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api
 
-# Prepare entrypoint script
+# Prepare entrypoint script, env debug disables unnittests
+#ENV debug=true
 COPY docker/docker.sh /docker.sh
-RUN dos2unix /docker.sh
-CMD ["/docker.sh"]
+RUN dos2unix /docker.sh && /docker.sh
+
+#-----------------------FETCH PROD DEPENDENCIES -----------------
+
+FROM devbuilder as builder
+RUN composer install -v --prefer-dist --no-dev
+
+#-----------------------FINAL IMAGE-------------------------------
+
+FROM registry.t.cpm.dev/library/phpfpmextras:master20201006171426
+
+WORKDIR /opt/cpm/mPoint
+
+# Project files
+COPY api api
+COPY conf conf
+COPY webroot webroot
+
+# Runtime dependencies
+COPY --from=builder /app /opt/cpm/mPoint
+RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api
+RUN mkdir /opt/cpm/mPoint/log && chmod -R 777 /opt/cpm/mPoint/log
