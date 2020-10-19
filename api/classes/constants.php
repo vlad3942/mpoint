@@ -461,6 +461,18 @@ abstract class Constants
 	 */
 	const iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3016;
 
+    /**
+     * Defines the ID of the State that indicates that PRE-Auth Review Success
+     *
+     */
+    const iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE = 3017;
+
+    /**
+     * Defines the ID of the State that indicates that PRE-Auth Review Fail
+     *
+     */
+    const iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE = 3018;
+
 	/**
 	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
 	 *
@@ -508,6 +520,19 @@ abstract class Constants
 	 *
 	 */
 	const iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE = 3117;
+
+    /**
+     * Defines the ID of the State that indicates that POST-Auth Review Success
+     *
+     */
+    const iPOST_FRAUD_CHECK_REVIEW_SUCCESS_STATE = 3118;
+
+    /**
+     * Defines the ID of the State that indicates that POST-Auth Review Fail
+     *
+     */
+    const iPOST_FRAUD_CHECK_REVIEW_FAIL_STATE = 3119;
+
 
     /**
      * Defines the ID of the State that indicates that Payment retried using dynamic routing
