@@ -291,8 +291,8 @@ try
                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
 
 
-                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
-
+                $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
+                $code = $response->code;
                 if ($code == "100")
                 {
                     $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';

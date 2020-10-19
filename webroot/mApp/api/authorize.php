@@ -899,8 +899,8 @@ try
 
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
@@ -929,8 +929,8 @@ try
 
                                                                             $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $xml .= '<status code="100">Payment Authorized using stored card</status>';
@@ -956,7 +956,7 @@ try
                                                                                     $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
                                                                                     $code = $obj_Processor->authenticate($requset);
                                                                                 } else {
-                                                                                    $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                     $code = $response->code;
                                                                                 }
                                                                                 
