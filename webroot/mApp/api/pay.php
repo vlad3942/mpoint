@@ -159,6 +159,8 @@ require_once(sCLASS_PATH . '/wallet_processor.php');
 require_once(sCLASS_PATH . '/payment_route.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 $aMsgCds = array();
 
@@ -203,6 +205,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code === 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
+				
+				
 				// Client successfully authenticated
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
 					)
@@ -349,6 +353,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										trigger_error('Error in updating log.transaction table in pay call. Transaction id : ' . $obj_TxnInfo->getID());
 									}
 								}
+								
 								$obj_paymentProcessor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $aHTTP_CONN_INFO);
 
                                 // Standard Payment Service Provider

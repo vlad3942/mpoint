@@ -168,8 +168,9 @@ update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and ca
 
 -------------G-CASH 2C2P-ALC FOR CEBU START------------
 
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT 10077, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT <client ID>, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type,capture_type) SELECT 10077, PC.cardid, PC.pspid, 3, 2 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type,capture_type) SELECT <client ID>, PC.cardid, PC.pspid, 3, 2 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+
 -------------G-CASH 2C2P-ALC SYSTEM------------
 INSERT INTO system.card_tbl (id, name, position, minlength, maxlength, cvclength, paymenttype) VALUES (93, 'Gcash', 23, -1, -1, -1, 3);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 93);
