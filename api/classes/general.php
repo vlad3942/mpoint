@@ -603,10 +603,7 @@ class General
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
-		$response = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-		$code = $response->code;
-
-		return $code ;
+        return $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
 			
 	}
 
@@ -1432,7 +1429,8 @@ class General
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
             if(empty($iAlternateRoute) === false) {
-                $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                $code = $response->code;
                 return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
