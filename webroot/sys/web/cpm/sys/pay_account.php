@@ -205,7 +205,8 @@ if (count($aMsgCds) == 0)
 
                     $obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["worldpay"]);
 
-                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                    $response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                    $code = $response->code;
                     // Authorization succeeded
                     if ($code == "100")
                     {
@@ -228,8 +229,9 @@ if (count($aMsgCds) == 0)
 					$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iWIRE_CARD_PSP);
 				
 					$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["wire-card"]);
-						
-					$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+
+					$response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+					$code = $response->code;
 					// Authorization succeeded
 					if ($code == "100")
 					{
@@ -252,7 +254,8 @@ if (count($aMsgCds) == 0)
 					
 						$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["data-cash"]);
 					
-						$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+						$response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+						$code = $response->code;
 						// Authorization succeeded
 						if ($code == "100")
 						{
@@ -275,7 +278,8 @@ if (count($aMsgCds) == 0)
 
                     $obj_PSP = new MadaMpgs($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["mada-mpgs"]);
 
-                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                    $response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                    $code = $response->code;
                     // Authorization succeeded
                     if ($code == "100")
                     {
@@ -304,7 +308,8 @@ if (count($aMsgCds) == 0)
 								$obj_XML->addChild('cvc', $_POST['cvc']);
 							} else { $obj_XML->addChild('cvc', "123"); }
 								
-							$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+							$response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+							$code = $response->code;
 							
 							// Authorization succeeded
 							if ($code == "100")
@@ -333,8 +338,8 @@ if (count($aMsgCds) == 0)
 					
 						$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["adyen"]);
 					
-						$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
-					
+						$response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+					    $code = $response->code;
 						if ($code == "100")
 						{
 							$aMsgCds[] = 100;
@@ -357,7 +362,8 @@ if (count($aMsgCds) == 0)
 						
 							$obj_PSP = new CCAvenue($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["ccavenue"]);
 						
-							$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+							$response = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+							$code = $response->code;
 							// Authorization succeeded
 							if ($code == "100")
 							{
@@ -383,8 +389,8 @@ if (count($aMsgCds) == 0)
 							
 								$obj_PSP = new PayFort($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["payfort"]);
 									
-								$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
-									
+								$response = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+                                $code = $response->code;
 								// Authorization succeeded
 								if ($code == "100")
 								{
@@ -428,8 +434,8 @@ if (count($aMsgCds) == 0)
 								
 							$obj_PSP = new CCPP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["2c2p"]);
 								
-							$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
-						
+							$response = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+						    $code = $response->code;
 							// Authorization succeeded
 							if ($code == "100")
 							{
@@ -513,7 +519,8 @@ if (count($aMsgCds) == 0)
 
                             $obj_PSP = new FirstData($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["first-data"]);
 
-                            $code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                            $response = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
+                            $code = $response->code;
                             // Authorization succeeded
                             if ($code == "100")
                             {

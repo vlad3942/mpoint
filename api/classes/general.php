@@ -603,7 +603,8 @@ class General
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
-		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
+		$response = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
+		$code = $response->code;
 
 		return $code ;
 			
