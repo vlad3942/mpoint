@@ -8,8 +8,10 @@ RUN composer install -v --prefer-dist
 # TODO This should run simply from pgunittestextras, but we need all db deps to run via liquibase first
 FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster as tester
 
+WORKDIR /opt/cpm/mPoint
+
 RUN apt update \
-    && apt install -y postgresql-11 libpq-dev libxslt-dev acl unzip dos2unix less jq \
+    && apt install -y postgresql-11 libpq-dev libxslt-dev acl unzip less jq \
     && docker-php-ext-install pgsql xsl \
     && docker-php-ext-install soap
 
@@ -20,18 +22,6 @@ RUN echo "Europe/Copenhagen" > /etc/timezone \
     && echo "host all all 127.0.0.1/32 trust" > /etc/postgresql/11/main/pg_hba.conf \
     && echo "host all all ::1/128 trust" >> /etc/postgresql/11/main/pg_hba.conf \
     && echo "local all postgres trust" >> /etc/postgresql/11/main/pg_hba.conf
-
-## Populate session database
-COPY test/db/session.sql session.sql
-RUN /etc/init.d/postgresql start \
-    && cat session.sql | psql -U postgres \
-    && /etc/init.d/postgresql stop
-
-RUN a2enmod rewrite
-
-#-----------------------BASEIMAGE END-----------------------------
-
-WORKDIR /opt/cpm/mPoint
 
 # Apache vhost
 COPY docker/apache.default.conf /etc/apache2/sites-available/000-default.conf
@@ -44,7 +34,8 @@ COPY webroot webroot
 COPY --from=devbuilder /app /opt/cpm/mPoint
 
 #Load db, run unittests
-RUN mkdir /opt/cpm/mPoint/log \
+RUN a2enmod rewrite \
+    && mkdir /opt/cpm/mPoint/log \
     && chmod -R 777 /opt/cpm/mPoint/log \
     && setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log \
     && /etc/init.d/postgresql start \

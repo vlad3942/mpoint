@@ -35,7 +35,6 @@ services:
       context: docker/php-fpm-alpine-debug
     environment:
       - APP_ENV=${APP_ENV}
-      - APP_DEBUG=${APP_DEBUG}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
