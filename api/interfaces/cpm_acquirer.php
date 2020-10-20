@@ -58,8 +58,5 @@ abstract class CPMACQUIRER extends CPMPSP
         return $response;
     }
 
-    public function authenticate($xml)
-    {
-        return $code= parent::authenticate($xml);
-    }
+
 }
