@@ -6,7 +6,7 @@ RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
 # TODO This should run simply from pgunittestextras, but we need all db deps to run via liquibase first
-FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster
+FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster as tester
 
 RUN apt update \
     && apt install -y postgresql-11 libpq-dev libxslt-dev acl unzip dos2unix less jq \
@@ -31,36 +31,32 @@ RUN a2enmod rewrite
 
 #-----------------------BASEIMAGE END-----------------------------
 
-EXPOSE 80 5432
-
-# Apache vhost
-COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
-
 WORKDIR /opt/cpm/mPoint
 
-RUN mkdir /opt/cpm/mPoint/log && chmod -R 777 /opt/cpm/mPoint/log
-VOLUME ["/opt/cpm/mPoint"]
-RUN setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log
-
+# Apache vhost
+COPY docker/apache.default.conf /etc/apache2/sites-available/000-default.conf
 # Project files
 COPY api api
 COPY test test
 COPY conf conf
 COPY webroot webroot
-
-# Load test db
-RUN /etc/init.d/postgresql start \
-    && cat test/db/mpoint_db.sql | psql -U postgres \
-    && /etc/init.d/postgresql stop
-
 # Runtime dependencies
 COPY --from=devbuilder /app /opt/cpm/mPoint
-RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api
 
-# Prepare entrypoint script, env debug disables unnittests
-#ENV debug=true
-COPY docker/docker.sh /docker.sh
-RUN dos2unix /docker.sh && /docker.sh
+#Load db, run unittests
+RUN mkdir /opt/cpm/mPoint/log \
+    && chmod -R 777 /opt/cpm/mPoint/log \
+    && setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log \
+    && /etc/init.d/postgresql start \
+    && cat test/db/mpoint_db.sql | psql -U postgres \
+    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+    && echo "127.0.0.1 mpoint.local.cellpointmobile.com" >>/etc/hosts \
+    && echo "ServerName mpoint.local.cellpointmobile.com" >>/etc/apache2/ports.conf \
+    && /etc/init.d/apache2 start \
+    && php vendor/bin/phpunit test/api \
+    && /etc/init.d/postgresql stop \
+    && /etc/init.d/apache2 stop \
+    && rm -rf /opt/cpm/mPoint/webroot/_test
 
 #-----------------------FETCH PROD DEPENDENCIES -----------------
 
@@ -68,17 +64,22 @@ FROM devbuilder as builder
 RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
+FROM registry.t.cpm.dev/library/phpfpmextras:master20201020083451
 
-FROM registry.t.cpm.dev/library/phpfpmextras:master20201006171426
+USER 0
 
 WORKDIR /opt/cpm/mPoint
 
 # Project files
 COPY api api
 COPY conf conf
-COPY webroot webroot
-
+# webroot without _test folder
+COPY --from=tester /opt/cpm/mPoint/webroot webroot
 # Runtime dependencies
 COPY --from=builder /app /opt/cpm/mPoint
-RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api
-RUN mkdir /opt/cpm/mPoint/log && chmod -R 777 /opt/cpm/mPoint/log
+
+RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+    && mkdir /opt/cpm/mPoint/log \
+    && chown -R 1000:1000 /opt
+
+USER 1000
