@@ -70,6 +70,7 @@ docker-compose.yml - Setup for easy debugging and developing. Runs a minimum via
 1. Rename or copy .env.example to .env in root
 2. Set preferred envs or use defaults
 3. Volume local client setups in alphanumeric order in docker-compose file to liquibase:/app/scripts/sql (see comment).  
+4. Fetc dependencies to host by running `docker-compose run composer "composer install"`. This installs required deps in root/vendor
 4. Run docker-compose up --build
 5. In Intellij open Preferences / Languages & Frameworks / PHP / Servers and add a server called mpoint.local.cellpointmobile.com and setup correct pathmapping.  
 6. Enable php debug listener, set checkpoints and run request.
