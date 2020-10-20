@@ -59,6 +59,12 @@ webroot/template/<template>/<component> - Holds the xsl files used for rendering
 webroot/template/<template>/<component>/<function>.xsl - Holds XSL template files for generating the Application's GUI..  
 webroot/<component> - Holds the controller and XML data files for the component
 
+Dockerfile - Final image Dockerfile formed as a multistage build that runs all unittests as part of the build.   
+Jenkinsfile - Tells Jenkins what to do when mPoint builds.  
+.env.example - example env file to easy configure docker-compose file, must be renamed to .env if in use.  
+composer.json - Dependency configuration file for php composer
+Dockerfile.liquibase - Final image liquibase Dockerfile, containing all core schema and data. This image will be tagged the same as mPoint when build in Jenkins.  
+docker-compose.yml - Setup for easy debugging and developing. Runs a minimum viable configuration for local dev.  
 
 ##Run locally with xdebug enabled and volumed codebase for easy debugging and development
 1. Rename or copy .env.example to .env in root
