@@ -1091,6 +1091,7 @@ class TxnInfo
 	public function toXML(UAProfile &$oUA=null, $iAmount = -1, $ticketNumbers = null)
 	{
 		$obj_CurrencyConfig = $this->getCurrencyConfig();
+		$conversionRate = $this->getConversationRate();
 
 		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
@@ -1117,13 +1118,16 @@ class TxnInfo
 
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $obj_CurrencyConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
 
-		$xml .= '<initialize_amount>';
-		$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
-		$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
-		$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
-		$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
-		$xml .= '</initialize_amount>';
-		$xml .= '<conversion_rate>'.$this->getConversationRate().'</conversion_rate>';
+		if($conversionRate != 1)
+		{
+			$xml .= '<initialize_amount>';
+			$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
+			$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
+			$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
+			$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
+			$xml .= '</initialize_amount>';
+			$xml .= '<conversion_rate>'.$conversionRate.'</conversion_rate>';
+		}
 
 		$extrefArray = $this->getExternalRef();
 		if(is_array($extrefArray) && count($extrefArray) > 0)
@@ -1267,6 +1271,7 @@ class TxnInfo
 	public function toAttributeLessXML($aExcludeNodes = array(),$iAmount = -1,$ticketNumbers = null)
 	{
 		$obj_CurrencyConfig = $this->getCurrencyConfig();
+		$conversionRate = $this->getConversationRate();
 
 		$xml  = '<transaction>';
 		$xml .= '<id>'.$this->_iID.'</id>';
@@ -1280,13 +1285,16 @@ class TxnInfo
 		$xml .= '<productType>'.$this->_iProductType.'</productType>';
 		$xml .= '<externalId>'.htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'</externalId>';
 
-		$xml .= '<initialize_amount>';
-		$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
-		$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
-		$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
-		$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
-		$xml .= '</initialize_amount>';
-		$xml .= '<conversion_rate>'.$this->getConversationRate().'</conversion_rate>';
+		if($conversionRate != 1)
+		{
+			$xml .= '<initialize_amount>';
+			$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
+			$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
+			$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
+			$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
+			$xml .= '</initialize_amount>';
+			$xml .= '<conversion_rate>'.$this->getConversationRate().'</conversion_rate>';
+		}
 
 		$extrefArray = $this->getExternalRef();
 		if(is_array($extrefArray) && count($extrefArray) > 0)
