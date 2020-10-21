@@ -1116,7 +1116,33 @@ class TxnInfo
 		}
 
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $obj_CurrencyConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
-		
+
+		$xml .= '<initialize_amount>';
+		$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
+		$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
+		$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
+		$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
+		$xml .= '</initialize_amount>';
+		$xml .= '<conversion_rate>'.$this->getConversationRate().'</conversion_rate>';
+
+		$extrefArray = $this->getExternalRef();
+		if(is_array($extrefArray) && count($extrefArray) > 0)
+		{
+			$xml .= '<external_refs>';
+			foreach($extrefArray as $type => $details)
+			{
+				foreach($details as $pspid => $refid)
+				{
+					$xml .= '<external_ref>';
+					$xml .= '<type>'.$type.'</type>';
+					$xml .= '<pspid>'.$pspid.'</pspid>';
+					$xml .= '<reference>'.$refid.'</reference>';
+					$xml .= '</external_ref>';
+				}
+			}
+			$xml .= '</external_refs>';
+		}
+
 		$xml .= '<amount_info>';
 		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
 		$xml .= '<currency-id>'. $obj_CurrencyConfig->getID() .'</currency-id>';
@@ -1253,6 +1279,32 @@ class TxnInfo
 		$xml .= '<walletId>'.$this->_iWalletID.'</walletId>';
 		$xml .= '<productType>'.$this->_iProductType.'</productType>';
 		$xml .= '<externalId>'.htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'</externalId>';
+
+		$xml .= '<initialize_amount>';
+		$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
+		$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
+		$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
+		$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
+		$xml .= '</initialize_amount>';
+		$xml .= '<conversion_rate>'.$this->getConversationRate().'</conversion_rate>';
+
+		$extrefArray = $this->getExternalRef();
+		if(is_array($extrefArray) && count($extrefArray) > 0)
+		{
+			$xml .= '<external_refs>';
+			foreach($extrefArray as $type => $details)
+			{
+				foreach($details as $pspid => $refid)
+				{
+					$xml .= '<external_ref>';
+					$xml .= '<type>'.$type.'</type>';
+					$xml .= '<pspid>'.$pspid.'</pspid>';
+					$xml .= '<reference>'.$refid.'</reference>';
+					$xml .= '</external_ref>';
+				}
+			}
+			$xml .= '</external_refs>';
+		}
 
 		if(in_array("capturedAmount", $aExcludeNodes) === false)
 		{
