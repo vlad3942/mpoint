@@ -167,6 +167,8 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
+require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -898,8 +900,8 @@ try
 
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
@@ -928,8 +930,8 @@ try
 
                                                                             $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $xml .= '<status code="100">Payment Authorized using stored card</status>';
@@ -952,10 +954,12 @@ try
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
-                                                                                    $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
-                                                                                    $code = $obj_Processor->authenticate($requset);
+                                                                                    $request = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 } else {
-                                                                                    $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 }
                                                                                 
                                                                                 // Authorization succeeded
@@ -991,7 +995,8 @@ try
                                                                                 $response = NULL;
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
-                                                                                    $code = $obj_Processor->authenticate($request);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 } else {
                                                                                     $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                     $code = $response->code;

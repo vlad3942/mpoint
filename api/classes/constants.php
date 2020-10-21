@@ -228,7 +228,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
-
+	/**
+	 * Defines the ID of the State that indicates that Card is not enrolled for 3DS by Issuer
+	 *
+	 */
+	const iPAYMENT_3DS_CARD_NOT_ENROLLED = 2004;
     /**
      * Defines the ID of the State that indicates that payment requires 3d verification
      *
@@ -1062,11 +1066,16 @@ abstract class Constants
 	 *
 	 */
 	const iSWISH_APM = 66;
-	/**
-	 * Unique ID for the Payment Service Provider: GrabPay
+    /**
+     * Unique ID for the Payment Service Provider: GrabPay
 	 *
 	 */
 	const iGRAB_PAY_PSP = 67;
+	/**
+	 * Unique ID for transaction's made using paymaya
+	 *
+	 */
+	const iPAYMAYA_WALLET = 68;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1512,6 +1521,12 @@ abstract class Constants
 	 */
 	const iSWISH = 92;
 	
+	/**
+	 * Unique Card ID for transaction's made using paymaya wallet
+	 *
+	 */
+	const iPAYMAYA = 95;
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -1709,6 +1724,43 @@ abstract class Constants
      */
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
     const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
+
+	/*
+     * Define substatus code of 2004 status code
+     */
+	const iPAYMENT_3DS_CARD_NOT_ENROLLED_SUB_STATE = 2004002;
+	const iPAYMENT_3DS_CARD_NOT_ENROLLED_CACHE_SUB_STATE = 2004003;
+	const iPAYMENT_3DS_CARD_NOT_ENROLLED_NO_DIR_FOUND_SUB_STATE = 2004095;
+	const iPAYMENT_3DS_CARD_NOT_ENROLLED_NO_VER2_DIR_FOUND_SUB_STATE = 2004096;
+
+	/*
+     * Define substatus code of 2005 status code
+     */
+	const iPAYMENT_3DS_VERIFICATION_CARD_ENROLLED_ATTEMPT_V1_SUB_STATE = 2005001;
+	const iPAYMENT_3DS_VERIFICATION_CARD_ENROLLED_ATTEMPT_V2_SUB_STATE = 2005002;
+	const iPAYMENT_3DS_VERIFICATION_UNKNOWN_HTML_FORMAT_SUB_STATE = 2005003;
+
+	/*
+     * Define substatus code of 2006 status code
+     */
+	const iPAYMENT_3DS_SUCCESS_FULLY_AUTHENTICATED_SUB_STATE = 2006001;
+	const iPAYMENT_3DS_SUCCESS_ATTEMPTED_SUB_STATE = 2006004;
+	/*
+     * Define substatus code of 2016 status code
+     */
+	const iPAYMENT_3DS_FAILURE_NOT_AUTHENTICATED_SUB_STATE = 2016000;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_GRAY_AREA_SUB_STATE = 2016005;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_ERROR_SUB_STATE = 2016006;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_NETWORK_ERROR_SUB_STATE = 2016091;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_TIMEOUT_ERROR_SUB_STATE = 2016092;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_CONFIGURATION_ERROR_SUB_STATE = 2016093;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_INPUT_ERROR_SUB_STATE = 2016094;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_TXN_NOT_FOUND_SUB_STATE = 2016097;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_SYSTEM_ERROR_SUB_STATE = 2016099;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_NOT_APPLICABLE_SUB_STATE = 2016998;
+	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_UNKNOWN_ERROR_SUB_STATE = 2016999;
+
+
 
 }
 

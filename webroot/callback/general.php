@@ -142,6 +142,8 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 require_once(sCLASS_PATH .'/credit_card.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 
 /**
@@ -259,7 +261,8 @@ try
                 $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
                 $cryptogram->addAttribute('algorithm-id', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
 
-                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $code = $response->code;
             }
             else{
                 $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
