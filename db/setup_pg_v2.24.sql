@@ -145,6 +145,7 @@ UPDATE System.Country_Tbl SET code = 104, decimals = 2, alpha2code = 'BU', alpha
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'MAX_DOWNLOAD_FILE_LIMIT', '2', id, 'merchant', from client.merchantaccount_tbl WHERE clientid=10069 AND pspid=52;
 
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2004, '3ds Card Not Enrolled', 'Payment', '');
+UPDATE Log.State_Tbl set name = '3ds Card Not Enrolled' WHERE id = 2004;
 
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2004002, 'Authentication Card Not enrolled.', 'sub-code', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2004003, 'Authentication Card Not enrolled cache.', 'sub-code', '');
@@ -169,6 +170,8 @@ INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2016097, 'Authentica
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2016099, 'Authentication System error', 'sub-code', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2016998, 'Authentication Not Applicable', 'sub-code', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2016999, 'Authentication Unknown Error', 'sub-code', '');
+
+DELETE FROM client.additionalproperty_tbl where key = 'mpi_rule';
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mpi_rule', 'isProceedAuth::=<status>=="2"OR<status>=="5"OR<status>=="6"
 status::=(additional-data.param[@name=''status''])', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10077 AND pspid=4;
