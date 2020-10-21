@@ -2,6 +2,7 @@
 /**
  * Set error types that are to be reported by the error handler
  * Both errors and warnings are reported, notices however are not
+ * TODO CMP-4527 Extend logging functionality to support json formatted logging to std. out
  */
 error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 
@@ -95,6 +96,7 @@ $aDB_CONN_INFO["session"]["method"] = env("database.session.method", 1);
 
 /**
  * Connection info for sending error reports to a remote host
+ * TODO CMP-4529 All mESB URLs must be configurable via env
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = env("http.mesb.protocol", "http");
 $aHTTP_CONN_INFO["mesb"]["host"] = env("http.mesb.host", "localhost");

@@ -1,0 +1,2 @@
+-- TODO CMP-4525 Create minimum viable client setup for local / dev environment
+-- TODO CMP-4526 Create Postman suite for development

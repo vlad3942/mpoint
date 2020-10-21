@@ -5,7 +5,7 @@ COPY composer.json .
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
-# TODO This should run simply from pgunittestextras, but we need all db deps to run via liquibase first
+# TODO Jira CMP-4547 - Unittest part of multistage dockerfile should utilize library/pgunnittestextras
 FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster as tester
 
 WORKDIR /opt/cpm/mPoint
@@ -39,7 +39,9 @@ RUN a2enmod rewrite \
     && chmod -R 777 /opt/cpm/mPoint/log \
     && setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log \
     && /etc/init.d/postgresql start \
+    # TODO CMP-4547	Unittests coredata and schema must come from liquibase
     && cat test/db/mpoint_db.sql | psql -U postgres \
+    # TODO CMP-4532	Library dependencies should be fetched from the vendor folder
     && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && echo "127.0.0.1 mpoint.local.cellpointmobile.com" >>/etc/hosts \
     && echo "ServerName mpoint.local.cellpointmobile.com" >>/etc/apache2/ports.conf \
@@ -69,6 +71,7 @@ COPY --from=tester /opt/cpm/mPoint/webroot webroot
 # Runtime dependencies
 COPY --from=builder /app /opt/cpm/mPoint
 
+# TODO CMP-4532	Library dependencies should be fetched from the vendor folder
 RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && mkdir /opt/cpm/mPoint/log \
     && chown -R 1000:1000 /opt
