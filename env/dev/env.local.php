@@ -3,11 +3,11 @@
 /**
  * Path to Log Files directory
  */
-define("sLOG_PATH", sSYSTEM_PATH ."/log/");
+define("sLOG_PATH", "/opt/cpm/mPoint/log/");
 
 $aEnvVariables = [
     //mPoint Database setings
-    'database.mpoint.host' => 'localhost',
+    'database.mpoint.host' => 'db',
     'database.mpoint.port' => '5432',
     'database.mpoint.path' => 'mpoint',
     'database.mpoint.username' => 'postgres',
@@ -26,7 +26,7 @@ $aEnvVariables = [
 
 
     //Session Database settings
-    'database.session.host' => 'localhost',
+    'database.session.host' => 'db',
     'database.session.port' => '5432',
     'database.session.path' => 'session',
     'database.session.username' => 'session',
@@ -45,14 +45,14 @@ $aEnvVariables = [
 
     //Connection info for sending error reports to a remote host
     'http.mesb.protocol' => 'http',
-    'http.mesb.host' => 'localhost',
+    'http.mesb.host' => 'test.mesb.dev-test.cellpointmobile.com',
     'http.mesb.port' => 10080,
     'http.mesb.timeout' => 120,
     'http.mesb.path' => '/',
     'http.mesb.method' => 'POST',
     'http.mesb.contenttype' => 'text/xml',
-    'http.mesb.username' => '',
-    'http.mesb.password' => '',
+    'http.mesb.username' => 'CPMTEST',
+    'http.mesb.password' => 'DEMOisNO_2',
 
     //Connection info for sending error reports to a remote host
     'http.iemendo.protocol' => 'http',

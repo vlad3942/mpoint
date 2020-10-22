@@ -1,4 +1,5 @@
 .idea
+.project
 *.iml
 log
 *.log
@@ -6,3 +7,5 @@ log
 .gradle
 build
 *~
+vendor
+.env

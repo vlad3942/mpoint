@@ -1,33 +1,17 @@
-# TODO use official phpcomposerbuildimage from harbour when this is moved to the new jenkins
+#-----------------------FETCH TEST DEPENDENCIES------------------------
 
-#Fetch dependencies
-#TODO CTECH-3909
-FROM composer:1 as builder
-
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /tmp
-ENV COMPOSER_AUTH='{"http-basic": {"repo.t.cpm.ninja": {"username": "cpmdeploy","password": "qwe123qwe"},"satis.cellpointmobile.com": {"username": "admin","password": "70211512"}}}'
-ENV CPM_REPOLIST='git.t.cpm.dev satis.cellpointmobile.com'
-
-WORKDIR /app
-
-COPY ./docker/.ssh /root/.ssh
-
-RUN composer global require hirak/prestissimo \
-    && chmod 400 /root/.ssh/id_rsa \
-    && ssh-keyscan -t rsa $(printenv CPM_REPOLIST) > ~/.ssh/known_hosts
-    
+FROM registry.t.cpm.dev/library/phpcomposerbuildimage:master20200203174815 as devbuilder
 COPY composer.json .
-RUN composer install -vvv --prefer-dist --no-dev
+RUN composer install -v --prefer-dist
 
-# Template dockerfile for building the cellpointmobile/main:php-test container
-#-----------------------BASEIMAGE BEGIN------------------------
+#-----------------------RUN UNITTESTS-----------------------------
+# TODO Jira CMP-4547 - Unittest part of multistage dockerfile should utilize library/pgunnittestextras
+FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster as tester
 
-#TODO CTECH-3908
-FROM php:7.4.6-apache-buster
+WORKDIR /opt/cpm/mPoint
 
 RUN apt update \
-    && apt install -y postgresql-11 libpq-dev libxslt-dev less nano vim net-tools iputils-ping iproute2 acl unzip dos2unix less libpq-dev libxslt-dev jq \
+    && apt install -y postgresql-11 libpq-dev libxslt-dev acl unzip less jq \
     && docker-php-ext-install pgsql xsl \
     && docker-php-ext-install soap
 
@@ -39,43 +23,57 @@ RUN echo "Europe/Copenhagen" > /etc/timezone \
     && echo "host all all ::1/128 trust" >> /etc/postgresql/11/main/pg_hba.conf \
     && echo "local all postgres trust" >> /etc/postgresql/11/main/pg_hba.conf
 
-## Populate session database
-COPY test/db/session.sql session.sql
-RUN /etc/init.d/postgresql start \
-    && cat session.sql | psql -U postgres \
-    && /etc/init.d/postgresql stop
-
-RUN a2enmod rewrite
-
-#-----------------------BASEIMAGE END------------------------
-
-EXPOSE 80 5432
-
 # Apache vhost
-COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
-
-WORKDIR /opt/cpm/mPoint
-
-RUN mkdir /opt/cpm/mPoint/log && chmod -R 777 /opt/cpm/mPoint/log
-VOLUME ["/opt/cpm/mPoint"]
-RUN setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log
-
+COPY docker/apache.default.conf /etc/apache2/sites-available/000-default.conf
 # Project files
 COPY api api
 COPY test test
 COPY conf conf
 COPY webroot webroot
+# Runtime dependencies
+COPY --from=devbuilder /app /opt/cpm/mPoint
 
-#THIS WAS NOT RUN IN THE OLD DOCKERFILE !?
-RUN /etc/init.d/postgresql start \
+#Load db, run unittests
+RUN a2enmod rewrite \
+    && mkdir /opt/cpm/mPoint/log \
+    && chmod -R 777 /opt/cpm/mPoint/log \
+    && setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log \
+    && /etc/init.d/postgresql start \
+    # TODO CMP-4547	Unittests coredata and schema must come from liquibase
     && cat test/db/mpoint_db.sql | psql -U postgres \
-    && /etc/init.d/postgresql stop
+    # TODO CMP-4532	Library dependencies should be fetched from the vendor folder
+    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+    && echo "127.0.0.1 mpoint.local.cellpointmobile.com" >>/etc/hosts \
+    && echo "ServerName mpoint.local.cellpointmobile.com" >>/etc/apache2/ports.conf \
+    && /etc/init.d/apache2 start \
+    && php vendor/bin/phpunit test/api \
+    && /etc/init.d/postgresql stop \
+    && /etc/init.d/apache2 stop \
+    && rm -rf /opt/cpm/mPoint/webroot/_test
 
+#-----------------------FETCH PROD DEPENDENCIES -----------------
+
+FROM devbuilder as builder
+RUN composer install -v --prefer-dist --no-dev
+
+#-----------------------FINAL IMAGE-------------------------------
+FROM registry.t.cpm.dev/library/phpfpmextras:master20201020083451
+
+USER 0
+
+WORKDIR /opt/cpm/mPoint
+
+# Project files
+COPY api api
+COPY conf conf
+# webroot without _test folder
+COPY --from=tester /opt/cpm/mPoint/webroot webroot
 # Runtime dependencies
 COPY --from=builder /app /opt/cpm/mPoint
-RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api
 
-# Prepare entrypoint script
-COPY docker/docker.sh /docker.sh
-RUN dos2unix /docker.sh
-CMD ["/docker.sh"]
+# TODO CMP-4532	Library dependencies should be fetched from the vendor folder
+RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+    && mkdir /opt/cpm/mPoint/log \
+    && chown -R 1000:1000 /opt
+
+USER 1000

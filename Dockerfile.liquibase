@@ -8,6 +8,7 @@ COPY liquibase/src/main/resources/liquibase /app/resources/liquibase
 COPY liquibase/src/main/sh /app/scripts
 
 RUN chmod uog+rx /app/scripts/*.sh \
+    && mkdir /app/scripts/sql \
     && dos2unix /app/scripts/* \
     && dos2unix /app/resources/*
 
