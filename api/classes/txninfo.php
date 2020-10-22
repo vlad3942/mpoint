@@ -1293,7 +1293,7 @@ class TxnInfo
 			$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
 			$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
 			$xml .= '</initialize_amount>';
-			$xml .= '<conversion_rate>'.$this->getConversationRate().'</conversion_rate>';
+			$xml .= '<conversion_rate>'.$conversionRate.'</conversion_rate>';
 		}
 
 		$extrefArray = $this->getExternalRef();
