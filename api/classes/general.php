@@ -1422,9 +1422,9 @@ class General
             $xml = '<status code="2000">Payment authorized</status>';
         } else if ($code == "2009") {
             $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
-        } else if (strpos($code, '2005') !== false) {
+        } else if (strpos($response, '2005') !== false) {
             header("HTTP/1.1 303");
-            $xml = $code;
+            $xml = $response;
         } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);

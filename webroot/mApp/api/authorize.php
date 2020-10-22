@@ -993,7 +993,8 @@ try
                                                                                 $response = NULL;
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
-                                                                                    $code = $obj_Processor->authenticate($request);
+																					$response = $obj_Processor->authenticate($request);
+																					$code = ($response->code)?($response->code):($response->status->code);
                                                                                 } else {
                                                                                     $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                     $code = $response->code;
