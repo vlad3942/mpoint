@@ -509,6 +509,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 	    $code = 0;
 	    $subCode = 0;
+		$body = '';
 	    try
         {
             $mask =NULL;
@@ -617,9 +618,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
                     //$this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
-					$str = str_replace("<root>","",$str);
-					$code = str_replace("</root>","",$str);
+					$body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
+					$body = str_replace("<root>","",$body);
+					$body = str_replace("</root>","",$body);
 				}
 
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -645,6 +646,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		$response = new stdClass();
 		$response->code = $code;
+		$response->body = $body;
 		$response->sub_code = $subCode;
 		return $response;
 	}
@@ -1322,6 +1324,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
     public function authenticate($xml)
     {
         try {
+			$code = 0;
+			$subCode = 0;
+			$body = '';
+			
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["authenticate"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -1337,10 +1343,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
             // In case of 3D verification status code 2005 will be received
             if ($code == 2005) {
-                $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
-                $str = str_replace("<root>", "", $str);
-                $code = str_replace("</root>", "", $str);
-
+                $body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
+                $body = str_replace("<root>", "", $body);
+                $body = str_replace("</root>", "", $body);
             }
             else {
                 throw new mPointException("Authenticate failed with PSP: " . $this->obj_PSPConfig->getName() . " responded with HTTP status code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
@@ -1349,6 +1354,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             trigger_error("Authenticate failed of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
         }
 
-        return $code;
+		$response = new stdClass();
+		$response->code = $code;
+		$response->body = $body;
+		$response->sub_code = $subCode;
+        return $response;
     }
 }

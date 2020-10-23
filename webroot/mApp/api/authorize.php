@@ -993,13 +993,11 @@ try
                                                                                 $response = NULL;
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
-																					$response = $obj_Processor->authenticate($request);
-																					$code = ($response->code)?($response->code):($response->status->code);
+																					$response = $obj_Processor->authenticate($request);																					
                                                                                 } else {
                                                                                     $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
-                                                                                    $code = $response->code;
-
-                                                                                }
+																				}
+																				$code = $response->code;
 
                                                                                 $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
                                                                                 $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute);
