@@ -1421,8 +1421,8 @@ class General
         } else if ($code == "2000") {
             $xml = '<status code="2000">Payment authorized</status>';
         } else if ($code == "2009") {
-            $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
-        } else if (strpos($code, '2005') !== false) {
+			$xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
+		} else if ($code == "2005") {
             header("HTTP/1.1 303");
             $xml = $response->body;
         } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
