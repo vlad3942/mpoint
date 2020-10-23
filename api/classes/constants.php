@@ -1627,7 +1627,9 @@ abstract class Constants
 	const sSETTLEMENT_REQUEST_ERROR = "error";
 	const sSETTLEMENT_REQUEST_FAIL = "fail";
 	const sSETTLEMENT_REQUEST_ACCEPETED = "accepted";
+	const sSETTLEMENT_REQUEST_PARTIALLY_ACCEPTED = "accepted with error";
 	const sSETTLEMENT_REQUEST_OK = "OK";
+	const sSETTLEMENT_REQUEST_PROCESSING = "PROCESSING";
 	const sFileExpireThreshold = 'FILE_EXPIRY';
 
 	/*
