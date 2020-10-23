@@ -1319,9 +1319,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $aStatisticalData;
     }
 
-    public function authenticate($xml)
+    public function authenticate($xml,$obj_Card, $obj_ClientInfo= null)
     {
-        try {
+        $response = new stdClass();
+        try
+        {
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["authenticate"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -1329,26 +1331,81 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
             $obj_HTTP->disConnect();
 
-            if ($code == 200 || $code == 303) {
+            if ($code == 200 || $code == 303)
+            {
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
-                $code = $obj_XML->status["code"];
+                $code = (int)$obj_XML->status["code"];
             }
 
+
             $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+            $iSubCodeID = 0;
             // In case of 3D verification status code 2005 will be received
-            if ($code == 2005) {
+            if ($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE || $code == Constants::iPAYMENT_3DS_CARD_NOT_ENROLLED || $code == Constants::iPAYMENT_3DS_FAILURE_STATE)
+            {
                 $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
                 $str = str_replace("<root>", "", $str);
                 $code = str_replace("</root>", "", $str);
+                $iSubCodeID = (integer) $obj_XML->status["sub-code"];
+                if($iSubCodeID > 0) { $this->newMessage($this->getTxnInfo()->getID(), $iSubCodeID, ''); }
+
+                if((int)$obj_XML->status["code"] !== Constants::iPAYMENT_3DS_VERIFICATION_STATE )
+                {
+                    $response->sub_code = $iSubCodeID;
+
+                    if($obj_XML->{'info-3d-secure'})
+                    {
+                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'info-3d-secure'},$this->getPSPConfig()->getID(),$this->getTxnInfo()->getID());
+                        if($paymentSecureInfo !== null) $this->storePaymentSecureInfo($paymentSecureInfo);
+
+                    }
+
+                    if($this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+                    {
+                        $aRules = $this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty);
+                        foreach ($aRules as $value)
+                        {
+                            if (strpos($value['key'], 'mpi_rule') !== false)
+                            {
+                                $aMpiRule[] = $value['value'];
+                            }
+                        }
+                    }
+                    else if($this->$this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+                    {
+                        $aRules = $this->$this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
+                        foreach ($aRules as $value)
+                        {
+                            if (strpos($value['key'], 'mpi_rule') !== false)
+                            {
+                                $aMpiRule[] = $value['value'];
+                            }
+                        }
+                    }
+                    $bIsProceedAuth = false;
+                    if(empty($aMpiRule) === false)
+                    {
+                        $bIsProceedAuth = $this->applyRule($obj_XML->{'info-3d-secure'},$aMpiRule);
+                    }
+                    if($bIsProceedAuth === true) { return $this->authorize($this->getPSPConfig(),$obj_Card,$obj_ClientInfo); }
+
+
+                }
 
             }
-            else {
+            else
+            {
                 throw new mPointException("Authenticate failed with PSP: " . $this->obj_PSPConfig->getName() . " responded with HTTP status code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
             }
-        } catch (mPointException $e) {
+        }
+        catch (mPointException $e)
+        {
             trigger_error("Authenticate failed of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
         }
 
-        return $code;
+
+        $response->code = $code;
+
+        return $response;
     }
 }
