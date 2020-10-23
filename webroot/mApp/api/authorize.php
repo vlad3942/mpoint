@@ -168,6 +168,7 @@ require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -953,8 +954,9 @@ try
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
-                                                                                    $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
-                                                                                    $code = $obj_Processor->authenticate($requset);
+                                                                                    $request = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 } else {
                                                                                     $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
                                                                                     $code = $response->code;
@@ -993,7 +995,7 @@ try
                                                                                 $response = NULL;
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
-																					$response = $obj_Processor->authenticate($request);																					
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
                                                                                 } else {
                                                                                     $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
 																				}
