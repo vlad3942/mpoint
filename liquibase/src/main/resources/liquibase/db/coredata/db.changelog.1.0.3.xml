@@ -1,0 +1,1165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.24.sql -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-setup-v2.24">
+        
+        <!-- Update/Correct invalid country codes in the database -->
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="056" />
+            <where>alpha3code = 'BEL'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="040" />
+            <where>alpha3code = 'AUT'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="004" />
+            <where>alpha3code = 'AFG'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="008" />
+            <where>alpha3code = 'ALB'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="020" />
+            <where>alpha3code = 'AND'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="051" />
+            <where>alpha3code = 'ARM';</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="070" />
+            <where>alpha3code = 'BIH'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="028" />
+            <where>alpha3code = 'ATG'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="052" />
+            <where>alpha3code = 'BRB'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="016" />
+            <where>alpha3code = 'ASM'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="060" />
+            <where>alpha3code = 'BMU'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="044" />
+            <where>alpha3code = 'BHS'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="012" />
+            <where>alpha3code = 'DZA'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="024" />
+            <where>alpha3code = 'AGO'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="050" />
+            <where>alpha3code = 'BGD'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="072" />
+            <where>alpha3code = 'BWA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="032" />
+            <where>alpha3code = 'ARG'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="084" />
+            <where>alpha3code = 'BLZ'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="076" />
+            <where>alpha3code = 'BRA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="010" />
+            <where>alpha3code = 'ATA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="074" />
+            <where>alpha3code = 'BVT'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="036" />
+            <where>alpha3code = 'AUS'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="096" />
+            <where>alpha3code = 'BRN'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="090" />
+            <where>alpha3code = 'SLB'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="048" />
+            <where>alpha3code = 'BHR'</where>
+        </update>
+
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="031" />
+            <where>alpha3code = 'AZE'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="064" />
+            <where>alpha3code = 'BTN'</where>
+        </update>
+
+        <!-- Update/Correct the invalid country_calling_code in the database -->
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="441624" />
+            <where>alpha3code = 'IMN'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>alpha3code = 'CAN'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1264" />
+            <where>alpha3code = 'AIA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1268" />
+            <where>alpha3code = 'ATG'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1246" />
+            <where>alpha3code = 'BRB'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1284" />
+            <where>alpha3code = 'VGB'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1345" />
+            <where>alpha3code = 'CYM'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1809" />
+            <where>alpha3code = 'DOM'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1876" />
+            <where>alpha3code = 'JAM'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1684" />
+            <where>alpha3code = 'ASM'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1441" />
+            <where>alpha3code = 'BMU'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1242" />
+            <where>alpha3code = 'BHS'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="212" />
+            <where>alpha3code = 'ESH'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="672" />
+            <where>alpha3code = 'ATA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1767" />
+            <where>alpha3code = 'DMA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1473" />
+            <where>alpha3code = 'GRD'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1787" />
+            <where>alpha3code = 'PRI'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1649" />
+            <where>alpha3code = 'TCA'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1868" />
+            <where>alpha3code = 'TTO'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="61" />
+            <where>alpha3code = 'CXR'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="7" />
+            <where>alpha3code = 'KAZ'</where>
+        </update>
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="996" />
+            <where>alpha3code = 'KGZ'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1671" />
+            <where>alpha3code = 'GUM'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1670" />
+            <where>alpha3code = 'MNP'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="886" />
+            <where>alpha3code = 'TWN'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="675" />
+            <where>alpha3code = 'PGK'</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="95" />
+            <where>alpha3code = 'MMR'</where>
+        </update>
+
+        <!-- Add/Update missing standard ISO countries in the database. -->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="161"/>
+            <column name="name" value="Åland Islands"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="AX"/>
+            <column name="alpha3code" value="ALA"/>
+            <column name="code" value="248"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="358"/>
+        </insert>
+<!-- Doesn't exist in mLocator
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="67"/>
+            <column name="name" value="British Indian Ocean Territory"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="IO"/>
+            <column name="alpha3code" value="IOT"/>
+            <column name="code" value="086"/>
+            <column name="currencyid" value="840"/>
+            <column name="country_calling_code" value="246"/>
+        </insert>
+-->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="445"/>
+            <column name="name" value="French Southern Territories"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="TF"/>
+            <column name="alpha3code" value="ATF"/>
+            <column name="code" value="260"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="262"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="446"/>
+            <column name="name" value="Heard and McDonald Islands"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="HM"/>
+            <column name="alpha3code" value="HMD"/>
+            <column name="code" value="334"/>
+            <column name="currencyid" value="36"/>
+            <column name="country_calling_code" value="672"/>
+        </insert>
+<!-- Already part of mPoint dataset
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="156"/>
+            <column name="name" value="Vatican"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="VA"/>
+            <column name="alpha3code" value="VAT"/>
+            <column name="code" value="336"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="379"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="620"/>
+            <column name="name" value="Laos"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="LA"/>
+            <column name="alpha3code" value="LAO"/>
+            <column name="code" value="418"/>
+            <column name="currencyid" value="418"/>
+            <column name="country_calling_code" value="856"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="653"/>
+            <column name="name" value="Myanmar"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="MM"/>
+            <column name="alpha3code" value="MMR"/>
+            <column name="code" value="104"/>
+            <column name="currencyid" value="104"/>
+            <column name="country_calling_code" value="95"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="146"/>
+            <column name="name" value="Palestine"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="PS"/>
+            <column name="alpha3code" value="PSE"/>
+            <column name="code" value="275"/>
+            <column name="country_calling_code" value="970"/>
+        </insert>
+-->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="158"/>
+            <column name="name" value="Svalbard and Jan Mayen Islands"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="SJ"/>
+            <column name="alpha3code" value="SJM"/>
+            <column name="code" value="774"/>
+            <column name="currencyid" value="578"/>
+            <column name="country_calling_code" value="47"/>
+        </insert>
+<!-- Already part of mPoint dataset
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="350"/>
+            <column name="name" value="Eswatini"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="SZ"/>
+            <column name="alpha3code" value="SWZ"/>
+            <column name="code" value="748"/>
+            <column name="currencyid" value="748"/>
+            <column name="country_calling_code" value="268"/>
+        </insert>
+-->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="652"/>
+            <column name="name" value="Tajikistan"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="TJ"/>
+            <column name="alpha3code" value="TJK"/>
+            <column name="code" value="762"/>
+            <column name="currencyid" value="972"/>
+            <column name="country_calling_code" value="992"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="520"/>
+            <column name="name" value="Timor-Leste"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="TL"/>
+            <column name="alpha3code" value="TLS"/>
+            <column name="code" value="626"/>
+            <column name="currencyid" value="840"/>
+            <column name="country_calling_code" value="670"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="521"/>
+            <column name="name" value="Tokelau"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="TK"/>
+            <column name="alpha3code" value="TKL"/>
+            <column name="code" value="772"/>
+            <column name="currencyid" value="554"/>
+            <column name="country_calling_code" value="690"/>
+        </insert>
+<!-- Already part of mPoint dataset
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="442"/>
+            <column name="name" value="US Virgin Islands"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="VI"/>
+            <column name="alpha3code" value="VIR"/>
+            <column name="code" value="850"/>
+            <column name="currencyid" value="840"/>
+            <column name="country_calling_code" value="1"/>
+        </insert>
+-->
+<!-- Doesn't exist in mLocator
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="67"/>
+            <column name="name" value="Serbia and Montenegro"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="CS"/>
+            <column name="alpha3code" value="SCG"/>
+            <column name="code" value="891"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="381"/>
+        </insert>
+-->
+<!-- Already part of mPoint dataset
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="314"/>
+            <column name="name" value="Cote DIvoire"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="CI"/>
+            <column name="alpha3code" value="CIV"/>
+            <column name="code" value="384"/>
+            <column name="currencyid" value="952"/>
+            <column name="country_calling_code" value="225"/>
+        </insert>
+-->
+<!-- Doesn't exist in mLocator
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="67"/>
+            <column name="name" value="South Georgia and the South Sandwich Islands"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="GS"/>
+            <column name="alpha3code" value="SGS"/>
+            <column name="code" value="239"/>
+            <column name="country_calling_code" value="500"/>
+        </insert>
+-->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="219"/>
+            <column name="name" value="Saint Barthelemy"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="BL"/>
+            <column name="alpha3code" value="BLM"/>
+            <column name="code" value="652"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="590"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="443"/>
+            <column name="name" value="Bonaire, Saint Eustatius and Saba"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="BQ"/>
+            <column name="alpha3code" value="BES"/>
+            <column name="code" value="535"/>
+            <column name="currencyid" value="840"/>
+            <column name="country_calling_code" value="599"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="444"/>
+            <column name="name" value="Curacao"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="CW"/>
+            <column name="alpha3code" value="CUW"/>
+            <column name="code" value="531"/>
+            <column name="currencyid" value="532"/>
+            <column name="country_calling_code" value="599"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="159"/>
+            <column name="name" value="Guernsey"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="GG"/>
+            <column name="alpha3code" value="CGY"/>
+            <column name="code" value="831"/>
+            <column name="currencyid" value="826"/>
+            <column name="country_calling_code" value="44"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="160"/>
+            <column name="name" value="Jersey"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="JE"/>
+            <column name="alpha3code" value="JEY"/>
+            <column name="code" value="832"/>
+            <column name="currencyid" value="826"/>
+            <column name="country_calling_code" value="44"/>
+        </insert>
+<!-- Doesn't exist in mLocator
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="67"/>
+            <column name="name" value="Saint Martin"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="MF"/>
+            <column name="alpha3code" value="MAF"/>
+            <column name="code" value="663"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="590"/>
+        </insert>
+-->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="country_tbl">
+
+            <column name="id" value="359"/>
+            <column name="name" value="South Sudan"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="SS"/>
+            <column name="alpha3code" value="SSD"/>
+            <column name="code" value="728"/>
+            <column name="currencyid" value="728"/>
+            <column name="country_calling_code" value="221"/>
+        </insert>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="704" />
+            <column name="decimals" value="2" />
+            <column name="alpha2code" value="VN" />
+            <column name="alpha3code" value="VNM" />
+            <column name="country_calling_code" value="84" />
+            <where>id = 649 AND currencyid = 704</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="383" />
+            <column name="decimals" value="2" />
+            <column name="alpha2code" value="XK" />
+            <column name="alpha3code" value="XKX" />
+            <column name="country_calling_code" value="383" />
+            <where>id = 148 AND currencyid = 978</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="398" />
+            <column name="alpha2code" value="KZ" />
+            <column name="alpha3code" value="KAZ" />
+            <column name="country_calling_code" value="7" />
+            <where>id = 633 AND currencyid = 398</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="410" />
+            <column name="alpha2code" value="KR" />
+            <column name="alpha3code" value="KOR" />
+            <column name="country_calling_code" value="82" />
+            <where>id = 632 AND currencyid = 410</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="408" />
+            <column name="alpha2code" value="KP" />
+            <column name="alpha3code" value="PRK" />
+            <column name="country_calling_code" value="850" />
+            <where>id = 631 AND currencyid = 408</where>
+        </update>
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="code" value="104" />
+            <column name="decimals" value="2" />
+            <column name="alpha2code" value="BU" />
+            <column name="alpha3code" value="BUR" />
+            <column name="country_calling_code" value="95" />
+            <where>id = 625 AND currencyid = 104</where>
+        </update>
+
+        <!-- New log states for 3D Secure -->
+        <update catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004"/>
+            <column name="name" value="3ds Card Not Enrolled"/>
+            <column name="module" value="Payment"/>
+            <column name="func" value=""/>
+            <where>id = 2004</where>
+        </update>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004002"/>
+            <column name="name" value="Authentication Card Not enrolled."/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004003"/>
+            <column name="name" value="Authentication Card Not enrolled cache."/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004095"/>
+            <column name="name" value="Authentication No directory found for PAN/cardtype"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004096"/>
+            <column name="name" value="Authentication No version 2 directory found for PAN/cardtype"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2005001"/>
+            <column name="name" value="Authentication Card is enrolled Attempt authentication using 3DSv1.0"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2005002"/>
+            <column name="name" value="Authentication Card is enrolled Attempt authentication using 3DSv2.0"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2005003"/>
+            <column name="name" value="Authentication Attempt authentication by loading Unknown HTML Format"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2006001"/>
+            <column name="name" value="Authentication Fully"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2006004"/>
+            <column name="name" value="Authentication Attempt (Proof of authentication attempt, may continue to transaction)"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016000"/>
+            <column name="name" value="Not Authenticated"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016005"/>
+            <column name="name" value="Authentication grey area"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016006"/>
+            <column name="name" value="Authentication Error received (from Directory or ACS)"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016091"/>
+            <column name="name" value="Authentication Network error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016092"/>
+            <column name="name" value="Authentication Directory error (read timeout)"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016093"/>
+            <column name="name" value="Authentication Configuration error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016094"/>
+            <column name="name" value="Authentication Input Errors"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016097"/>
+            <column name="name" value="Authentication If transaction not found on continue or service query"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016099"/>
+            <column name="name" value="Authentication System error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016998"/>
+            <column name="name" value="Authentication Not Applicable"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+        
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016999"/>
+            <column name="name" value="Authentication Unknown Error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
