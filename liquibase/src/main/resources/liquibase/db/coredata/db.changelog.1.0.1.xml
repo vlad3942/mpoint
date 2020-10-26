@@ -5,14 +5,42 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <!-- Ported from setup_pg_CRS_v2.22.sql -->
     <changeSet author="Jonatan Evald Buus"
-        id="2020-09-21-template-2">
+        id="2020-10-26-setup-crs-v2.22">
 
-        <sqlFile dbms="postgresql"
-            encoding="utf8"
-            path="core_data_import.1.0.1.sql"
-            splitStatements="false"
-            relativeToChangelogFile="true" />
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="1"/>
+            <column name="name" value="Shopping Online"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="2"/>
+            <column name="name" value="Shopping Offline"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="3"/>
+            <column name="name" value="Self Service Online"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="4"/>
+            <column name="name" value="Self Service Offline"/>
+        </insert>
+
     </changeSet>
 
 </databaseChangeLog>
