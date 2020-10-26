@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.23.sql -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-setup-v2.23">
+
+        <!-- Set the sequence: System.PSPCurrency_Tbl_id_seq -->
+        <sql dbms="postgresql" endDelimiter=";"
+            splitStatements="false">
+            DO $$
+            DECLARE
+                maxid INT4;
+            BEGIN
+                maxid := (SELECT Max(id) FROM System.PSPCurrency_Tbl);
+                PERFORM Setval('System.PSPCurrency_Tbl_id_seq', maxid);
+            END
+            $$;
+        </sql>
+
+        <!-- New currencies for Modirum -->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="608"/>
+            <column name="pspid" value="47"/>
+            <column name="name" value="PHP"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="840"/>
+            <column name="pspid" value="47"/>
+            <column name="name" value="USD"/>
+        </insert>
+
+        <!-- New Card State -->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="CardState_Tbl">
+
+            <column name="id" value="6"/>
+            <column name="name" value="Disable Show"/>
+        </insert>
+
+        <!-- New Log States -->
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="3117"/>
+            <column name="name" value="Post-screening Check not attempted Due to rule matched"/>
+            <column name="module" value="Fraud"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2017"/>
+            <column name="name" value="Authorization not attempted due to rule matched"/>
+            <column name="module" value="Payment"/>
+        </insert>
+
+        <!-- Update Log State names -->
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Initiated" />
+            <where>id = 3010</where>
+        </update>
+
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Success" />
+            <where>id = 3011</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Unavbl" />
+            <where>id = 3012</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Unknown" />
+            <where>id = 3013</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Review" />
+            <where>id = 3014</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Fail" />
+            <where>id = 3015</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Pre Auth Conx Fail" />
+            <where>id = 3016</where>
+        </update>
+
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Initiated" />
+            <where>id = 3110</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Success" />
+            <where>id = 3111</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Unavbl" />
+            <where>id = 3112</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Unknown" />
+            <where>id = 3113</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Review" />
+            <where>id = 3114</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Fail" />
+            <where>id = 3115</where>
+        </update>
+        
+        <update catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="name" value="Post Auth Conx Fail" />
+            <where>id = 3116</where>
+        </update>
+
+        <!-- Grab Pay -->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSP_Tbl">
+
+            <column name="id" value="67"/>
+            <column name="name" value="GrabPay"/>
+            <column name="system_type" value="4"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="608"/>
+            <column name="pspid" value="67"/>
+            <column name="name" value="PHP"/>
+        </insert>
+        
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="Card_tbl">
+
+            <column name="id" value="94"/>
+            <column name="name" value="GrabPay"/>
+            <column name="position" value="23"/>
+            <column name="minlength" value="-1"/>
+            <column name="maxlength" value="-1"/>
+            <column name="cvclength" value="-1"/>
+            <column name="paymenttype" value="4"/>
+        </insert>
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 94, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 608
+        </sql>
+        <rollback>
+            <sql>DELETE FROM System.CardPricing_Tbl WHERE cardid = 94</sql>
+        </rollback>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="cardprefix_tbl">
+
+            <column name="cardid" value="94"/>
+            <column name="min" value="0"/>
+            <column name="max" value="0"/>
+        </insert>
+
+        <!-- Set the sequence: System.PSPCard_Tbl_id_seq -->
+        <sql dbms="postgresql" endDelimiter=";"
+            splitStatements="false">
+            DO $$
+            DECLARE
+                maxid INT4;
+            BEGIN
+                maxid := (SELECT Max(id) FROM System.PSPCard_Tbl);
+                PERFORM Setval('System.PSPCard_Tbl_id_seq', maxid);
+            END
+            $$;
+        </sql>
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="94"/>
+            <column name="pspid" value="67"/>
+        </insert>
+
+        <!-- G-Cash -->
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="Card_tbl">
+
+            <column name="id" value="93"/>
+            <column name="name" value="Gcash"/>
+            <column name="position" value="23"/>
+            <column name="minlength" value="-1"/>
+            <column name="maxlength" value="-1"/>
+            <column name="cvclength" value="-1"/>
+            <column name="paymenttype" value="4"/>
+        </insert>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="93"/>
+            <column name="pspid" value="40"/>
+        </insert>
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 93, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 608
+        </sql>
+        <rollback>
+            <sql>DELETE FROM System.CardPricing_Tbl WHERE cardid = 93</sql>
+        </rollback>
+
+        <insert catalogName="System"
+            schemaName="System"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="608"/>
+            <column name="pspid" value="40"/>
+            <column name="name" value="PHP"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
