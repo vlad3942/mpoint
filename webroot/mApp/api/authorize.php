@@ -256,6 +256,23 @@ try
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
 									}
+
+									$additionalTxnData = [];
+									$additionalTxnDataIndex = -1;
+									if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
+									{
+										for ($index = 0; $index < count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
+										{
+											$additionalTxnDataIndex++;
+											$additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+											$additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
+											$additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+										}
+									}
+									if($additionalTxnDataIndex > -1)
+									{
+										$obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+									}
 									
 									$_OBJ_DB->query("COMMIT");
 
