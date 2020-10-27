@@ -159,6 +159,7 @@ require_once(sCLASS_PATH . '/wallet_processor.php');
 require_once(sCLASS_PATH . '/payment_route.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+require_once(sCLASS_PATH .'/verification/verification.php');
 
 $aMsgCds = array();
 
@@ -314,6 +315,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                             }
 
+						}
+						// sso verification conditions checking 
+						$sso_response = Verification::verify($_OBJ_DB, $obj_ClientConfig, $obj_DOM, $i, $_OBJ_TXT);
+						if(count($sso_response) > 0 )
+						{
+							$aMsgCds[$sso_response['code']] = $sso_response['msg'] ;
 						}
 
 						// Success: Input Valid
