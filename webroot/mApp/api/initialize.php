@@ -18,7 +18,7 @@
 // Require Global Include File
 require_once("../../inc/include.php");
 
-// Require API for Simple DOM manipulation
+// Require API for Simple DOM manipulationf
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
 // Require Business logic for the End-User Account Component
@@ -73,6 +73,7 @@ require_once sCLASS_PATH . '/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once(sCLASS_PATH .'/verification/verification.php');
 
 $aMsgCds = array();
 
@@ -148,6 +149,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					  }
 					}
 					
+					// sso verification conditions checking 
+					$sso_response = Verification::verify($_OBJ_DB, $obj_ClientConfig, $obj_DOM, $i, $_OBJ_TXT);
+					if(count($sso_response) > 0 )
+					{
+						$aMsgCds[$sso_response['code']] = $sso_response['msg'] ;
+					}
 					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
