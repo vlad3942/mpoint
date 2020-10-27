@@ -169,6 +169,7 @@ require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
+require_once(sCLASS_PATH .'/verification/verification.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -425,6 +426,12 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
+                                        // sso verification conditions checking 
+										$sso_response = Verification::verify($_OBJ_DB, $obj_ClientConfig, $obj_DOM, $i, $_OBJ_TXT);
+										if(count($sso_response) > 0 )
+										{
+											$aMsgCds[$sso_response['code']] = $sso_response['msg'] ;
+										}
 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
