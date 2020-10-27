@@ -5,14 +5,19 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <!-- Ported from setup_pg_CRS_v2.22.sql -->
     <changeSet author="Jonatan Evald Buus"
-        id="2020-09-21-template-2">
+        id="2020-10-26-setup-crs-v2.22">
+        
+        <addColumn catalogName="log"
+            schemaName= "log"
+            tableName="flight_tbl">
+                
+            <column name="time_zone" 
+                type="varchar(10)" />
 
-        <sqlFile dbms="postgresql"
-            encoding="utf8"
-            path="schema_import.1.0.1.sql"
-            splitStatements="false"
-            relativeToChangelogFile="true" />
+        </addColumn>
+
     </changeSet>
 
 </databaseChangeLog>

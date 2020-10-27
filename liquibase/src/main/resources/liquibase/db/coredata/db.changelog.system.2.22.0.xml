@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Ported from setup_pg_CRS_v2.22.sql -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-setup-crs-v2.22">
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="1"/>
+            <column name="name" value="Shopping Online"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="2"/>
+            <column name="name" value="Shopping Offline"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="3"/>
+            <column name="name" value="Self Service Online"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+
+            <column name="id" value="4"/>
+            <column name="name" value="Self Service Offline"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
