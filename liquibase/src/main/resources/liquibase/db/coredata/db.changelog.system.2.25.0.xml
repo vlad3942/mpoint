@@ -8,7 +8,7 @@
 
     <!-- Ported from setup_v2.25.sql -->
     <changeSet author="Jonatan Evald Buus"
-        id="2020-10-26-setup-v2.25">
+        id="2020-10-26-setup-v2.25-system">
         
         <!-- Paymaya -->
         <insert catalogName="system"

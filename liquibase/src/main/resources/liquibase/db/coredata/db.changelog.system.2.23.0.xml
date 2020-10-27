@@ -8,7 +8,7 @@
 
     <!-- Ported from setup_v2.23.sql -->
     <changeSet author="Jonatan Evald Buus"
-        id="2020-10-26-setup-v2.23">
+        id="2020-10-26-setup-v2.23-system">
 
         <!-- Set the sequence: System.PSPCurrency_Tbl_id_seq -->
         <sql dbms="postgresql" endDelimiter=";"
@@ -50,138 +50,6 @@
             <column name="id" value="6"/>
             <column name="name" value="Disable Show"/>
         </insert>
-
-        <!-- New Log States -->
-        <insert catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="id" value="3117"/>
-            <column name="name" value="Post-screening Check not attempted Due to rule matched"/>
-            <column name="module" value="Fraud"/>
-        </insert>
-
-        <insert catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="id" value="2017"/>
-            <column name="name" value="Authorization not attempted due to rule matched"/>
-            <column name="module" value="Payment"/>
-        </insert>
-
-        <!-- Update Log State names -->
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Initiated" />
-            <where>id = 3010</where>
-        </update>
-
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Success" />
-            <where>id = 3011</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Unavbl" />
-            <where>id = 3012</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Unknown" />
-            <where>id = 3013</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Review" />
-            <where>id = 3014</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Fail" />
-            <where>id = 3015</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Pre Auth Conx Fail" />
-            <where>id = 3016</where>
-        </update>
-
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Initiated" />
-            <where>id = 3110</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Success" />
-            <where>id = 3111</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Unavbl" />
-            <where>id = 3112</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Unknown" />
-            <where>id = 3113</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Review" />
-            <where>id = 3114</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Fail" />
-            <where>id = 3115</where>
-        </update>
-        
-        <update catalogName="log"
-            schemaName="log"
-            tableName="state_tbl">
-
-            <column name="name" value="Post Auth Conx Fail" />
-            <where>id = 3116</where>
-        </update>
 
         <!-- Grab Pay -->
         <insert catalogName="System"
