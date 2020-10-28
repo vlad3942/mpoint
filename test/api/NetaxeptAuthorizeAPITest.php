@@ -12,12 +12,11 @@ class NetaxeptAuthorizeAPITest extends AuthorizeAPITest
     public function testSuccessfulAuthorize()
     {
 		/* Setup netaxept simulator, through error file mark */
-		// $config = new stdClass();
-		// $config->AmountCaptured = 0;
-		// trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(serialize($config) ) );
+		$config = new stdClass();
+		$config->AmountCaptured = 0;
+		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(serialize($config) ) );
 
-        // parent::testSuccessfulAuthorize(Constants::iNETAXEPT_PSP);
-        $this->assertTrue(true);
+        parent::testSuccessfulAuthorize(Constants::iNETAXEPT_PSP);
     }
 
 	public function testSuccessfulAuthorizeIncludingAutoCapture()
