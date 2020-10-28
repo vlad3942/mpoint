@@ -509,6 +509,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 	    $code = 0;
 	    $subCode = 0;
+		$body = '';
 	    try
         {
             $mask =NULL;
@@ -617,9 +618,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
                     //$this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
-					$str = str_replace("<root>","",$str);
-					$code = str_replace("</root>","",$str);
+					$body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
+					$body = str_replace("<root>","",$body);
+					$body = str_replace("</root>","",$body);
 				}
 
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -645,6 +646,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		$response = new stdClass();
 		$response->code = $code;
+		$response->body = $body;
 		$response->sub_code = $subCode;
 		return $response;
 	}
@@ -1324,6 +1326,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $response = new stdClass();
         try
         {
+			$code = 0;
+			$body = '';
+
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["authenticate"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -1343,9 +1348,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             // In case of 3D verification status code 2005 will be received
             if ($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE || $code == Constants::iPAYMENT_3DS_CARD_NOT_ENROLLED || $code == Constants::iPAYMENT_3DS_FAILURE_STATE)
             {
-                $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
-                $str = str_replace("<root>", "", $str);
-                $code = str_replace("</root>", "", $str);
+                $body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
+                $body = str_replace("<root>", "", $body);
+                $body = str_replace("</root>", "", $body);
                 $iSubCodeID = (integer) $obj_XML->status["sub-code"];
                 if($iSubCodeID > 0) { $this->newMessage($this->getTxnInfo()->getID(), $iSubCodeID, ''); }
 
@@ -1403,9 +1408,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             trigger_error("Authenticate failed of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
         }
 
-
-        $response->code = $code;
-
+		$response->code = $code;
+		$response->body = $body;
         return $response;
     }
 }
