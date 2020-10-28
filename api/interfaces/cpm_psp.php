@@ -1376,7 +1376,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                             }
                         }
                     }
-                    else if($this->$this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+                    else if($this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
                     {
                         $aRules = $this->$this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
                         foreach ($aRules as $value)

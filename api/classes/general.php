@@ -1425,6 +1425,8 @@ class General
 		} else if ($code == "2005") {
             header("HTTP/1.1 303");
             $xml = $response->body;
+        } else if ($code == "2016") {
+            $xml = $response->body;
         } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
