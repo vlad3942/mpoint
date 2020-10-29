@@ -64,11 +64,25 @@ class PassengerInfo {
      * Value of Country id
      */
     private $_CountryId;
-	
-	/**
-	 * Default Constructor
-	 */
-	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $Adata = null) {
+    /**
+     * Amount Paid by Passenger
+     */
+    private $_Amount;
+
+    /**
+     * Default Constructor
+     * @param $id
+     * @param $fnm
+     * @param $lnm
+     * @param $type
+     * @param $title
+     * @param $email
+     * @param $mobile
+     * @param $countryId
+     * @param $amount
+     * @param $Adata
+     */
+	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $amount, $Adata = null) {
 		$this->_iID = ( integer ) $id;
 		$this->_First_Name = $fnm;
 		$this->_Last_Name = $lnm;
@@ -78,6 +92,7 @@ class PassengerInfo {
 		$this->_Email = $email;
 		$this->_Mobile = $mobile;
 		$this->_CountryId = $countryId;
+		$this->_Amount = $amount;
 	}
 	
 	/**
@@ -157,10 +172,19 @@ class PassengerInfo {
         return $this->_CountryId;
     }
 
+    /**
+     * Returns the country of the Passenger
+     * @return integer
+     */
+    public function getAmount()
+    {
+        return $this->_Amount;
+    }
 
-	
-	public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id
+
+
+    public static function produceConfig(RDB $oDB, $id) {
+		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id,amount
 					FROM log" . sSCHEMA_POSTFIX . ".passenger_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
@@ -170,9 +194,9 @@ class PassengerInfo {
 			$RSA = $oDB->getAllNames ( $sqlA );
 			
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RSA );
+				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"],$RSA );
 			} else {
-				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"] );
+				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"]);
 			}
 		} else {
 			return null;
@@ -212,6 +236,7 @@ class PassengerInfo {
 		$xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
 		$xml .= '<last-name>' . $this->getLastName () . '</last-name>';
 		$xml .= '<type>' . $this->getType () . '</type>';
+        if ($this->getAmount() > 0) { $xml .= '<amount>' . $this->getAmount() . '</amount>'; }
         if ($this->getEmail() || $this->getMobile())
         {
             $xml .= '<contact-info>';
@@ -239,6 +264,7 @@ class PassengerInfo {
         $xml .= '<firstName>' . $this->getFirstName () . '</firstName>';
         $xml .= '<lastName>' . $this->getLastName () . '</lastName>';
         $xml .= '<type>' . $this->getType () . '</type>';
+        if ($this->getAmount() > 0) { $xml .= '<amount>' . $this->getAmount() . '</amount>'; }
         if ($this->getEmail() || $this->getMobile())
         {
             $xml .= '<contactInfo>';
