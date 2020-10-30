@@ -167,6 +167,8 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
+require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -267,7 +269,7 @@ try
 										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
 										$obj_CardValidator = new CardValidator($obj_card);
 										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
-										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE))
+										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && $isStoredCardPayment === true))
 										{
 											if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 										}
@@ -323,8 +325,7 @@ try
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1 and @walletid = '']");
 										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 										
-										if(((int)$obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
-											$obj_CardValidator->valCardNumber() !== 720)
+										if($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false && $obj_CardValidator->valCardNumber() !== 720)
 										{
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
@@ -439,8 +440,8 @@ try
                                                 }
 											}
 											// Authentication is not required for payment methods that are sending a token or Invoice
-											elseif ( (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) ||
-											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE) )
+                                            elseif (($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
+                                                (empty($obj_DOM->{'authorize-payment'}[$i]->password) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) === false))
 											{
 												$code = 10;
 											}
@@ -452,6 +453,8 @@ try
 												if ($obj_TxnInfo->getMobile() > 0) { $obj_mPoint->saveMobile($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getMobile(), true); }
 												switch ($iTypeID)
 												{
+                                                 // Not in use as of now hence commenting this code  (reference jira - CMP-4079)
+                                                /***********************
 												case (Constants::iPURCHASE_USING_EMONEY):	// Authorize Purchase using Stored Value Account
 												case (Constants::iPURCHASE_USING_POINTS):
 													$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );
@@ -485,7 +488,7 @@ try
 																//Initialise Callback to Client
 																$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_ACCEPTED_STATE);
 															}
-															catch (HTTPException $ignore) { /* Ignore */ }
+															catch (HTTPException $ignore) { // Ignore  }
 															if ($iTypeID == Constants::iPURCHASE_USING_POINTS) { $xml .= '<status code="102">Payment Authorized using Loyalty Account (Points)</status>'; }
 															else { $xml .= '<status code="101">Payment Authorized using Pre-Paid Account (E-Money)</status>'; }
 														}
@@ -507,6 +510,7 @@ try
 														header("HTTP/1.1 400 Bad Request");
 													}
 													break;
+                                                **********************************************/
 												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 												default:
 
@@ -663,7 +667,7 @@ try
 															$xml .= '<status code="99">Invoice payment not configured for client</status>';
 														}
 													} 
-													else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"] ) == Constants::iNEW_CARD_PURCHASE_TYPE)
+													else if ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false)
 													{
 																											
 														$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->addAttribute("pspid", $obj_Elem["pspid"]);
@@ -896,8 +900,8 @@ try
 
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
@@ -926,8 +930,8 @@ try
 
                                                                             $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $xml .= '<status code="100">Payment Authorized using stored card</status>';
@@ -950,10 +954,12 @@ try
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
-                                                                                    $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
-                                                                                    $code = $obj_Processor->authenticate($requset);
+                                                                                    $request = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 } else {
-                                                                                    $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 }
                                                                                 
                                                                                 // Authorization succeeded
@@ -986,16 +992,17 @@ try
                                                                         default:    // Use Payment processor for PSP.
                                                                             try {
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-
+                                                                                $response = NULL;
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
-                                                                                    $code = $obj_Processor->authenticate($request);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
                                                                                 } else {
-                                                                                    $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
-                                                                                }
+                                                                                    $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+																				}
+																				$code = $response->code;
 
                                                                                 $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
-                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute);
+                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute);
 
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);

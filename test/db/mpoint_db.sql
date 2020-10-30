@@ -8374,6 +8374,10 @@ INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3113, 'Post-screenin
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3114, 'Post-screening Result - Review', 'Fraud', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3115, 'Post-screening Result - Rejected', 'Fraud', '');
 INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3116, 'Post-screening Connection Failed', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3017, 'Pre Auth Rev Success', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3018, 'Pre Auth Rev Fail', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3118, 'Post Auth Rev Success', 'Fraud', '');
+INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3119, 'Post Auth Rev Fail', 'Fraud', '');
 
 INSERT INTO "system".processortype_tbl (id, "name") VALUES(10, 'Post Auth Fraud Gateway');
 

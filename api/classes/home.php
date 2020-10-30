@@ -1008,7 +1008,7 @@ class Home extends General
 					 WHEN EUT.typeid = ". Constants::iCARD_PURCHASE_TYPE ." THEN Txn.ip
 					 ELSE EUT.ip
 					 END) AS ip,
-					C.id AS countryid, C.currency, C.symbol, C.priceformat,
+					C.id AS countryid, CT.id as currency, CT.symbol, C.priceformat,
 					CL.id AS clientid, CL.name AS client,
 					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.countryid AS to_countryid, EUAT.mobile AS to_mobile, EUAT.countryid AS to_m, EUAT.email AS to_email,
 					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name, EUAF.countryid AS from_countryid, EUAF.mobile AS from_mobile, EUAF.email AS from_email,
@@ -1023,6 +1023,7 @@ class Home extends General
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_tbl CT ON CT.id = C.currencyid
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
 				WHERE EUT.accountid = ". intval($id);
 		if ( ($num > 0 && $offset <= 0) || $num < 0)

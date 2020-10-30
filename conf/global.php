@@ -14,7 +14,7 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  * Output method for the error handler:	
  *	0 - Store Internally
  *	1 - Output to file
- *	2 - Output to screen
+ *	2 - Output to screen2c
  *	3 - Output to file and screen
  *	4 - Send to remote server
  *	5 - Output to file and send remote server
@@ -1089,6 +1089,25 @@ $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-paymen
 $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
+
+
+/**
+ * Connection info for connecting to Paymaya
+ */
+$aHTTP_CONN_INFO["paymaya"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paymaya"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paymaya"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paymaya"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paymaya"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paymaya"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paymaya"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/apm/paymaya/initialize";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/apm/paymaya/callback";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
+
 
 /**
  * GoMobile Connection Info.
