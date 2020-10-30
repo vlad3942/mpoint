@@ -1,4 +1,4 @@
---mPoint DB Scripts :
+-- mPoint DB Scripts :
 
 --Table Name : Client.Client_Tbl
 
@@ -16,16 +16,49 @@ INSERT INTO Client.Account_Tbl (id, clientid, name, enabled, markup, businesstyp
 
 --FirstData
 
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 5, true, 62, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 5, false, 62, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
 
 --2c2p-alc
 
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, true, 40, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, true, 40, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, false, 40, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, false, 40, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
 
 --PayPal
 
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 28, true, 24, NULL, 1, NULL, false, 4, 0, 2, NULL, 0, true);
+
+--CyberSourceAMEX
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 1, false, 63, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
+
+--For WorldPay(Visa/Mastercard)
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, false, 4, 640, 1, NULL, false, 1, 0, 3, NULL, 0, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, false, 4, 640, 1, NULL, false, 1, 0, 3, NULL, 0, true);
+
+--Modirum
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, true, 47, NULL, 1, NULL, false, 6, 0, 1, NULL, 0, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, true, 47, NULL, 1, NULL, false, 6, 0, 1, NULL, 0, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 1, true, 47, NULL, 1, NULL, false, 6, 0, 1, NULL, 0, true);
+
+--Pre Fraud - CEBU-RMFSS
+
+--MasterCard
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, true, 65, NULL, 1, NULL, false, 9, 0, 1, NULL, 0, true);
+
+--Visa
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, true, 65, NULL, 1, NULL, false, 9, 0, 1, NULL, 0, true);
+
+--GrabPay
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 94, true, 67, 640, 1, NULL, false, 4, 0, 2, NULL, 0, true);
+
+--GCash
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 93, true, 40, 640, 1, NULL, false, 1, 0, 1, NULL, 0, true);
 
 
 --Table Name : Client.Keyword_Tbl
@@ -54,101 +87,6 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd,
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 24,'ACCu12.jik2Wb3kzHJgFE1palQEsAHD7wsynoTYqRcOZAX7RzupgW4sQ', 'sb-sahh431638744_api1.business.example.com', '7W56K2VQBRYF8FLX', true, null);
 
-
---Table Name : Client.MerchantSubAccount_Tbl
-
-
---2c2p-alc
-
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 40, '-1', true);
-
---FirstData
-
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 62, '-1', true);
-
---PayPal
-
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 24, '-1', true);
-
-
---Table Name : Client.Additionalproperty_Tbl
-
-INSERT INTO client.additionalproperty_tbl( key, value, externalid, type, enabled, scope) VALUES( '3DVERIFICATION', 'true', 10077, 'client', true, 2);
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('enableHppAuthentication', 'true', 10077, 'client', true, 0);
-
---2c2p-alc Additional Properties
-
-INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, type, scope) VALUES( 'mid.USD', 'CebuPacific_USD', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 40), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ( key, value, enabled, externalid, type, scope) VALUES( 'mid.PHP', 'CebuPacific_MCC', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 40), 'merchant', 2);
-
-
---FirstData Additional Properties
-
-INSERT INTO client.additionalproperty_tbl( key, value, enabled, externalid, type, scope) VALUES( '3DVERIFICATION', 'true', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 62), 'merchant', 2);
-
-
---PayPal Additional Properties
-
---PAYPAL_HKD
-
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_MID_HKD', 'A78isDTCcuwhNZKyvzOsXXSzxdUPA25dTmhkEQxH7G1T4iQSksAr-SK0', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_PASSWORD_HKD', '5QBM4GMSFPV8AHNK', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_USERNAME_HKD', 'sb-ph1ko1832308_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-
---PAYPAL_SGD
-
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_MID_SGD', 'ATG2YLmUZFFk6n5kHVGwCC2A2dsDAEAdhFEakpPDRN5lxmGq3zimTG6A', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_PASSWORD_SGD', 'B9WX2HPY9DPD6284', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_USERNAME_SGD', 'sb-mohn91867880_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-
---PAYPAL_USD
-
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_MID_USD', 'Awzp6NMJcMOsM6SlpR13Cez-7vPFAMODxiW5ZT0qx6EbatLFSrMoBKtc', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_PASSWORD_USD', '37JT6WGJFFUJFRM3', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_USERNAME_USD', 'sb-43kvng1868465_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-
---PAYPAL_MYR
-
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_PASSWORD_MYR', 'VMXEJAT9DCLCR7LQ', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_USERNAME_MYR', 'sb-ivizq1858258_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-INSERT INTO client.additionalproperty_tbl ("key", value, enabled, externalid, "type", "scope") VALUES('PAYPAL_MID_MYR', 'AJXtiLishvWwk7Jm0EnHXPmvJv1xAqMsrFcJMX8Exsbl9aQ5NJRKPyem', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
-
-
---================================================================================================================================================
---Updated mPoint Scripts
-
-
---Table Name : Client.CardAccess_Tbl
-
---Amex
-
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 1, false, 63, NULL, 1, NULL, false, 1, 0, 2, NULL, 0, true);
-
---For WorldPay(Visa/Mastercard)
-
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, false, 4, 640, 1, NULL, false, 1, 0, 3, NULL, 0, true);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, false, 4, 640, 1, NULL, false, 1, 0, 3, NULL, 0, true);
-
---Modirum
-
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, true, 47, NULL, 1, NULL, false, 6, 0, 1, NULL, 0, true);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, true, 47, NULL, 1, NULL, false, 6, 0, 1, NULL, 0, true);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 1, true, 47, NULL, 1, NULL, false, 6, 0, 1, NULL, 0, true);
-
---Pre Fraud - CEBU-RMFSS
-
---MasterCard
-
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 7, true, 65, NULL, 1, NULL, false, 9, 0, 1, NULL, 0, true);
-
---Visa
-
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 8, true, 65, NULL, 1, NULL, false, 9, 0, 1, NULL, 0, true);
-
-
-
---Table Name : Client.MerchantAccount_Tbl
-
 --Pre Fruad - CEBU-RMFSS
 
 INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 65, 'CEBU-RMFSS', 'By9AjPV6j14jgb3DXRIpW0mInOfMEafS', 'E9NBawrSH6UAtw1v', true, null);
@@ -160,6 +98,10 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd,
 --CyberSourceAMEX
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 63, 'CyberSourceAMEX', 'cebu_cellpoint_test', 'K/B7APZOVPoPCFvSIyqMpvUmeDCAyyd0aWXnIHFQqBnSBwc1PDXRVZCS8DazLnCSXZUuauffLNY0lxJpoR8/e94VJbzKVK+Dzxmhl3hkS0qnmk/ZJFcd2Huh80UK5qG2TwB2inqPacECAGBLk5steF6UlALDYuMOvJuVinUW84VEpxUJ1Dntmm4AhNpB2pUheytX4XjhoodDerjGZGg61Ps4xHxqNl29huaumNYIoCfGNchX5vkKi8uBoPwJCpbBO0ORUy9sgMQOk1w7DTNVSCvkpbF+LH3VdFV/3N8kU9z/ONKLF2zPq5aWjC861EjQo1mAqiZBjg8Afof3CsDQ0Q==', true, null);
+
+--GrabPay
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 67, 'dbb00e18-83ee-49cf-b54d-2707a069b3e4', '0112218e-dda0-4ca8-8489-65a3d28abd69', 'apWSvBQj_evmVfzY', true, null);
 
 --mVault
 
@@ -212,6 +154,17 @@ k4ZJ11Zt3Vi+LfrvtgZm0h8=
 
 --Table Name : Client.MerchantSubAccount_Tbl
 
+--2c2p-alc
+
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 40, '-1', true);
+
+--FirstData
+
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 62, '-1', true);
+
+--PayPal
+
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 24, '-1', true);
 
 --mVault
 
@@ -234,14 +187,19 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALU
 
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 47, '-1', true);
 
+--GrabPay
+
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 67, '-1', true);
+
 
 --Table Name : Client.Additionalproperty_Tbl
 
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('3DSVERSION', '1.0', true, 10077, 'client', 2);
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', true, 10077, 'client', 2);
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', true, 10077, 'client', 0);
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', true, 10077, 'client', 0);
-
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('3DVERIFICATION', 'true', 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('enableHppAuthentication', 'true', 10077, 'client', true, 0);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('3DSVERSION', '1.0', 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', 10077, 'client', true, 0);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', 10077, 'client', true, 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('webSessionTimeout', '5', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('isAutoRedirect', 'true', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('isnewcardconfig', 'true', 10077, 'client', true, 0);
@@ -250,7 +208,44 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('hppFormRedirectMethod', 'GET', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('googleAnalyticsId', '%7B%22id%22%3A%22GTM-TJHF9HX%22%2C%22auth%22%3A%220bNRJejIX9RvP164Mor_Tw%22%2C%22preview%22%3A%22env-61%22%2C%22env%22%3A%22sit%22%7D', 10077, 'client', true, 2);
 
---WorldPay
+--2c2p-alc Additional Properties
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.USD', 'CebuPacific_USD', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 40), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.PHP', 'CebuPacific_MCC', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 40), 'merchant', 2);
+
+
+--FirstData Additional Properties
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('3DVERIFICATION', 'true', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 62), 'merchant', 2);
+
+
+--PayPal Additional Properties
+
+--PAYPAL_HKD
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_MID_HKD', 'A78isDTCcuwhNZKyvzOsXXSzxdUPA25dTmhkEQxH7G1T4iQSksAr-SK0', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_PASSWORD_HKD', '5QBM4GMSFPV8AHNK', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_USERNAME_HKD', 'sb-ph1ko1832308_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+
+--PAYPAL_SGD
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_MID_SGD', 'ATG2YLmUZFFk6n5kHVGwCC2A2dsDAEAdhFEakpPDRN5lxmGq3zimTG6A', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_PASSWORD_SGD', 'B9WX2HPY9DPD6284', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_USERNAME_SGD', 'sb-mohn91867880_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+
+--PAYPAL_USD
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_MID_USD', 'Awzp6NMJcMOsM6SlpR13Cez-7vPFAMODxiW5ZT0qx6EbatLFSrMoBKtc', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_PASSWORD_USD', '37JT6WGJFFUJFRM3', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_USERNAME_USD', 'sb-43kvng1868465_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+
+--PAYPAL_MYR
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_PASSWORD_MYR', 'VMXEJAT9DCLCR7LQ', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_USERNAME_MYR', 'sb-ivizq1858258_api1.business.example.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('PAYPAL_MID_MYR', 'AJXtiLishvWwk7Jm0EnHXPmvJv1xAqMsrFcJMX8Exsbl9aQ5NJRKPyem', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 24), 'merchant', 2);
+
+--WorldPay Additional Properties
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('3DVERIFICATION', 'mpi', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 4), 'merchant', 2);
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('FareBasisCode', 'BK', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 4), 'merchant', 2);
@@ -268,17 +263,17 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 4), 'merchant', 0);
 
---2c2p-alc
+--2c2p-alc Additional Properties
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('post_fraud_rule', 'isPostFraudAttemp::=<pspid>=="40"
 pspid::=(psp-config.@id)', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 40), 'merchant', 0);
 
---FirstData
+--FirstData Additional Properties
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('post_fraud_rule', 'isPostFraudAttemp::=<status>=="1"OR<status>=="2"OR<status>=="4"
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 62), 'merchant', 0);
 
--- CYBS
+-- CYBS Additional Properties
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('3DVERIFICATION', 'mpi', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 63), 'merchant', 2);
 
@@ -301,29 +296,12 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('ISROLLBACK_ON_FRAUD_FAIL', 'true', 10077, 'client', true, 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('IS_STORE_BILLING_ADDRS', 'true', 10077, 'client', true, 0);
 
+--GrabPay
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('CLIENT_ID', '14c3e87ce4e04e82954fd78cea2b3a64', true, (SELECT ID FROM client.merchantaccount_tbl WHERE pspid = 67 and clientid = 10077), 'merchant', 1);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('CLIENT_SECRET', 'dcyDLGEYkeLZA1YM', true, (SELECT ID FROM client.merchantaccount_tbl WHERE pspid = 67 and clientid = 10077), 'merchant', 1);
+
 
 --This will support all currency to all country
+
 INSERT INTO client.countrycurrency_tbl (clientid, countryid, currencyid) VALUES(10077, 0, 1);
-
---================================================================================================================================================
-
---GrabPay
-
---INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 94, true, 67, 640, 1, NULL, false, 4, 0, 2, NULL, 0, false);
-
---GCash
-
---INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 93, true, 40, 640, 1, NULL, false, 1, 0, 1, NULL, 0, false);
-
---GrabPay
-
---INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 67, 'dbb00e18-83ee-49cf-b54d-2707a069b3e4', '0112218e-dda0-4ca8-8489-65a3d28abd69', 'apWSvBQj_evmVfzY', true, null);
-
---GrabPay
-
---INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 67, '-1', true);
-
---GrabPay
-
---INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('CLIENT_ID', '14c3e87ce4e04e82954fd78cea2b3a64', true, (SELECT ID FROM client.merchantaccount_tbl WHERE pspid = 67 and clientid = 10077), 'merchant', 1);
---INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('CLIENT_SECRET', 'dcyDLGEYkeLZA1YM', true, (SELECT ID FROM client.merchantaccount_tbl WHERE pspid = 67 and clientid = 10077), 'merchant', 1);
