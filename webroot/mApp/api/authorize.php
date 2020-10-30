@@ -927,7 +927,7 @@ try
                                                                                 $xml .= '<status code="2000">Payment authorized using card</status>';
                                                                             } else if (strpos($code, '2005') !== false) {
                                                                                 header("HTTP/1.1 303");
-                                                                                $xml .= $code;
+                                                                                $xml .= $response->body;
                                                                             } else if (is_null($token) == false) {
                                                                                 $xml .= '<status code="' . $code . '">Globalcollect returned : ' . $code . '</status>';
                                                                             } // Error: Authorization declined
