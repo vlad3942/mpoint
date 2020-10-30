@@ -1326,6 +1326,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $response = new stdClass();
         try
         {
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], null, $obj_Card->expiry, $this->getPSPConfig()->getID());
+            $this->updateTxnInfoObject();
+
 			$code = 0;
 			$body = '';
 
