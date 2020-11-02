@@ -849,7 +849,7 @@ abstract class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
+	public static function producePSP(RDB $obj_DB, ? TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
 	{
 		if (isset($obj_PSPConfig) == true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
 		else { $iPSPID = $obj_TxnInfo->getPSPID(); }
@@ -960,8 +960,11 @@ abstract class Callback extends EndUserAccount
 			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
         case (Constants::iSWISH_APM):
             return new SWISH($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["swish"]);
+        case (Constants::iPAYMAYA_WALLET):
+            return new Paymaya($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya"]);
 		case (Constants::iGRAB_PAY_PSP):
 			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

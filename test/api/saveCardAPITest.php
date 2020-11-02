@@ -10,6 +10,7 @@ class SaveCardAPITest extends baseAPITest
 
     public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 
@@ -95,7 +96,7 @@ class SaveCardAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('Card successfully saved', $sReplyBody);
+        $this->assertStringContainsString('Card successfully saved', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE enabled = '1' and email='jona@oismail.com' and mobile='28882861'");
         $this->assertTrue(is_resource($res));
@@ -273,7 +274,7 @@ class SaveCardAPITest extends baseAPITest
        $sReplyBody = $this->_httpClient->getReplyBody();
 
        $this->assertEquals(200, $iStatus);
-       $this->assertContains('Card successfully saved', $sReplyBody);
+       $this->assertStringContainsString('Card successfully saved', $sReplyBody);
 
        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE enabled = '1' and email='jona@oismail.com' and mobile='28882861'");
        $this->assertTrue(is_resource($res));

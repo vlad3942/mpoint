@@ -27,7 +27,7 @@ class MVaultException extends CallbackException { }
 class MVault extends CPMPSP
 {
     public function capture($iAmount=-1) { throw new MVaultException("Method: capture is not supported by mVault"); }
-    public function refund($iAmount=-1) { throw new MVaultException("Method: refund is not supported by mVault"); }
+    public function refund($iAmount=-1, $iStatus = NULL) { throw new MVaultException("Method: refund is not supported by mVault"); }
     public function void($iAmount=-1) { throw new MVaultException("Method: void is not supported by mVault"); }
     public function cancel() { throw new MVaultException("Method: cancel is not supported by mVault"); }
     public function status() { throw new MVaultException("Method: status is not supported by mVault"); }

@@ -9,7 +9,7 @@ include_once 'api/classes/exceptions.php';
 include_once 'api/classes/general.php';
 include_once 'api/classes/home.php';
 include_once 'api/classes/enduser_account.php';
-include_once sAPI_INTERFACE_PATH .'/classes/validate_base.php';
+require_once(sAPI_CLASS_PATH ."validate_base.php");
 include_once 'api/classes/validate.php';
 include_once 'api/classes/callback.php';
 include_once 'api/classes/basicconfig.php';

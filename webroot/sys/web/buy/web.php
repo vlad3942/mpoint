@@ -335,14 +335,14 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			/*
 			 * $iAccountID = -1;
 			 * if (array_key_exists("customer-ref", $_REQUEST) === true) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['customer-ref']); }
-			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() ); }
-			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
+			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() ); }
+			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
 			 * // Client supports global storage of payment cards
 			 * if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
 			 * {
 			 * if (array_key_exists("customer-ref", $_REQUEST) === true && strlen($_REQUEST['customer-ref']) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['customer-ref'], false); }
-			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), $_SESSION['obj_TxnInfo']->getCountryConfig(), false); }
-			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), $_SESSION['obj_TxnInfo']->getCountryConfig(), false); }
+			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), $_SESSION['obj_TxnInfo']->getCountryConfig(), false); }
+			 * if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), $_SESSION['obj_TxnInfo']->getCountryConfig(), false); }
 			 * }
 			 */
 			

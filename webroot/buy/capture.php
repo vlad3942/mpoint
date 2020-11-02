@@ -112,6 +112,8 @@ header("Content-Type: application/x-www-form-urlencoded");
 require_once(sCLASS_PATH ."/validate.php");
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 set_time_limit(120);
 
@@ -179,7 +181,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					$txnPassbookObj->addEntry($passbookEntry);
 					try {
-						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, TRUE);
 						$code = reset($codes);
 					} catch (Exception $e) {
 						trigger_error($e, E_USER_WARNING);

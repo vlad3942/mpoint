@@ -9,6 +9,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 
 	public function __construct()
 	{
+        parent::__construct();
 		$this->constHTTPClient();
 	}
 
@@ -46,7 +47,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
+		$this->assertStringContainsString("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT captured, stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -86,7 +87,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
+		$this->assertStringContainsString("Updated transaction status for mPoint id's (1001001)", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT refund, stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE t.id = 1001001 AND m.txnid = t.id");
 		$this->assertTrue(is_resource($res) );
@@ -127,7 +128,7 @@ class UpdatePaymentStatusCronTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertContains("Updated transaction status for mPoint id's ()", $sReplyBody);
+		$this->assertStringContainsString("Updated transaction status for mPoint id's ()", $sReplyBody);
 
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY created ASC");
 		$this->assertTrue(is_resource($res) );

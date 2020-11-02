@@ -160,6 +160,8 @@ require_once(sCLASS_PATH . '/payment_route.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/verification/verification.php');
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 $aMsgCds = array();
 
@@ -186,7 +188,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</pay>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -204,6 +206,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code === 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
+				
+				
 				// Client successfully authenticated
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
 					)
@@ -304,12 +308,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 if((int)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} !== (int)$obj_TxnInfo->getAmount())
                                 {
-                                    $aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                	$aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
                                 }
                             }
 						    else
 						    {
-                                $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+								$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 if ($iValResult != 10) {
                                     $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
                                 }
@@ -335,7 +339,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     } else {
                                         $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                                     }
-									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email), $obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
+									$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email), $obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
 
 									//	Create a new user as some PSP's needs our End-User Account ID for storing cards
 									if ($iAccountID < 0)
@@ -356,6 +360,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										trigger_error('Error in updating log.transaction table in pay call. Transaction id : ' . $obj_TxnInfo->getID());
 									}
 								}
+								
 								$obj_paymentProcessor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $aHTTP_CONN_INFO);
 
                                 // Standard Payment Service Provider

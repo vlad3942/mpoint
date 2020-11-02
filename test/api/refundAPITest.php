@@ -9,6 +9,7 @@ abstract class RefundAPITest extends baseAPITest
 
     public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 

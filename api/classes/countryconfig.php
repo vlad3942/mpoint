@@ -398,7 +398,7 @@ class CountryConfig extends BasicConfig
 	}
 	
 
-	public static function setISO3166Attributes(SimpleDOMElement &$obj_XMLDOM, RDB &$oDB, $countryid)
+	public static function setISO3166Attributes(SimpleXMLElement &$obj_XMLDOM, RDB &$oDB, $countryid)
 	{
 		$obj_CountryConfig = self::produceConfig($oDB, $countryid);
 

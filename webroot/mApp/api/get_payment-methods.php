@@ -70,7 +70,7 @@ $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '</get-payment-methods>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -187,8 +187,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 else
                                 {
                                     if (count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-                                    if ($iAccountID < 0 && count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-                                    if ($iAccountID < 0 && count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+                                    if ($iAccountID < 0 && count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+                                    if ($iAccountID < 0 && count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
                                     if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
                                     if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
                                 }

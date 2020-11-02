@@ -55,11 +55,8 @@ class WalletProcessor extends PaymentProcessor
         }
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo, $card_psp_id = NULL)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
     {
-        if (empty($card_psp_id) === false && $card_psp_id == Constants::iMVAULT_PSP) {
-            $iTypeId = Constants::iMVAULT_WALLET;
-        }
         if (empty(self::$aWalletConstants[$iTypeId] ) === false) {
             return new WalletProcessor($oDB, $oTxt, $oTI, $iTypeId, $aConnInfo);
         } else {

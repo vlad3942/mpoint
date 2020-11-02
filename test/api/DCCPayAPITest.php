@@ -35,7 +35,7 @@ class DCCPayAPITest extends PayAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="1">', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="1">', $sReplyBody);
         $res =  $this->queryDB("SELECT externalid FROM log.externalreference_tbl where txnid=1001011 and type=".Constants::iForeignExchange);
 
         $this->assertTrue(is_resource($res) );

@@ -33,7 +33,7 @@ header("Content-Type: text/plain");
 
 // as netaxept is setting the wrong  post type this can be removed when when they fix it on their side.
 $HTTP_RAW_POST_DATA = file_get_contents("php://input");
-$obj_JSON = json_decode($HTTP_RAW_POST_DATA);
+$obj_JSON = json_decode(file_get_contents('php://input'));
 
 $imPointID = Callback::getTxnIDFromExtID($_OBJ_DB, $obj_JSON->TransactionId, Constants::iNETAXEPT_PSP);
 try
@@ -67,8 +67,8 @@ try
 
 		if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
 		{
-			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), 2); }
-			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), 2); }
+			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), 2); }
+			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), 2); }
 
 			if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
 			{

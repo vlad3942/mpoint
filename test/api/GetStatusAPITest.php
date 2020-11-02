@@ -9,6 +9,7 @@ class GetStatusAPITest extends baseAPITest
 
 	public function __construct()
 	{
+        parent::__construct();
         $this->bIgnoreErrors = true;
 		$this->constHTTPClient();
 	}
@@ -71,7 +72,7 @@ class GetStatusAPITest extends baseAPITest
 
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('state-id="1009', $sReplyBody);
+        $this->assertStringContainsString('state-id="1009', $sReplyBody);
 
 	}
 
@@ -102,7 +103,7 @@ class GetStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('state-id="1009', $sReplyBody);
+        $this->assertStringContainsString('state-id="1009', $sReplyBody);
 	}
 
     public function testGetStatusForCapturedTransaction()
@@ -132,6 +133,6 @@ class GetStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('state-id="1009', $sReplyBody);
+        $this->assertStringContainsString('state-id="1009', $sReplyBody);
     }
 }

@@ -25,7 +25,7 @@ class MobilePayOnlineException extends CallbackException { }
 class MobilePayOnline extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new MobilePayOnlineException("Method: capture is not supported by MobilePay Online"); }
-	public function refund($iAmount=-1) { throw new MobilePayOnlineException("Method: refund is not supported by MobilePay Online"); }
+	public function refund($iAmount=-1, $iStatus = NULL) { throw new MobilePayOnlineException("Method: refund is not supported by MobilePay Online"); }
 	public function void($iAmount=-1) { throw new MobilePayOnlineException("Method: void is not supported by MobilePay Online"); }
 	public function cancel() { throw new MobilePayOnlineException("Method: cancel is not supported by MobilePay Online"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new MobilePayOnlineException("Method: getPaymentData is not supported by MobilePay Online"); }

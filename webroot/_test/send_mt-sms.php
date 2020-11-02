@@ -73,7 +73,7 @@ require_once(sAPI_CLASS_PATH ."/simpledom.php");
 // Require global configuration file
 require_once(sCONF_PATH ."/gomobile.php");
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $xml = '';
 

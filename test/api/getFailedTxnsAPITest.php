@@ -3,12 +3,13 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
-class GetFailedTransactionsAPITest extends baseAPITest
+class GetFailedTxnsAPITest extends baseAPITest
 {
 	protected $_aMPOINT_CONN_INFO;
 
 	public function __construct()
 	{
+        parent::__construct();
 		$this->constHTTPClient();
 	}
 

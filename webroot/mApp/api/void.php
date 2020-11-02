@@ -119,6 +119,8 @@ require_once (sCLASS_PATH . '/passbookentry.php');
 require_once (sCLASS_PATH . '/chase.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -139,7 +141,7 @@ $HTTP_RAW_POST_DATA .= '</root>';
 
 $xml = '';
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 for ($i=0; $i<count($obj_DOM->void); $i++)
 	{
 					

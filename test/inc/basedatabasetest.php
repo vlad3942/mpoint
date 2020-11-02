@@ -1,6 +1,6 @@
 <?php
-
-abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+abstract class BaseDatabaseTest extends TestCase
 {
     protected $mPointDBInfo;
 
@@ -19,7 +19,7 @@ abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
      */
     private $_isDBSetuped;
 
-    public function setup($isDBSetupRequired)
+    public function setup($isDBSetupRequired): void
     {
         parent::setup();
         $this->_isDBSetuped = $isDBSetupRequired;
@@ -75,7 +75,9 @@ abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
         $confDir = __DIR__. '/../../conf/';
 
         // Backup existing conf/global.php
-        @unlink($confDir. 'global.php.backup');
+        if(file_exists($confDir. 'global.php.backup')) {
+            @unlink(realpath($confDir . 'global.php.backup'));
+        }
         copy($confDir. 'global.php', $confDir. 'global.php.backup');
         touch($confDir. 'global.php.backup', filemtime($confDir. 'global.php') );
 
@@ -88,12 +90,14 @@ abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
     protected function restoreOriginalConfiguration()
     {
         $confDir = __DIR__. '/../../conf/';
-        unlink($confDir. 'global.php');
+        if(file_exists($confDir. 'global.php')) {
+            unlink(realpath($confDir . 'global.php'));
+        }
         copy($confDir. 'global.php.backup', $confDir. 'global.php');
         touch($confDir. 'global.php', filemtime($confDir. 'global.php.backup') );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->dropMpointDB();
         $this->restoreOriginalConfiguration();

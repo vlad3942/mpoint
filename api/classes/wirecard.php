@@ -73,6 +73,9 @@ class WireCard extends CPMPSP
                         $this->newMessage ( $this->getTxnInfo()->getID (), $sub_code_id, var_export ( $debug, true ) );
                     }
                 }
+                if($sub_code_id != 0) {
+						$this->newMessage ( $this->getTxnInfo->getID (), $sub_code_id, var_export ( $debug, true ) );
+                }
 			}
 		}
 		// Error: Unable to complete log for Transaction

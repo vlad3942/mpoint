@@ -48,7 +48,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
@@ -56,7 +56,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertEquals(2, count($aStates) );
@@ -109,7 +109,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status></root>', $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
@@ -117,7 +117,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
 
@@ -221,7 +221,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
 
 
         global $aMPOINT_CONN_INFO;
@@ -240,7 +240,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
@@ -292,7 +292,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
 
 
         global $aMPOINT_CONN_INFO;
@@ -312,7 +312,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
@@ -364,7 +364,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
 
 
         global $aMPOINT_CONN_INFO;
@@ -384,7 +384,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            $aStates[] = $row["stateid"];
+            $aStates[] = (int)$row["stateid"];
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );

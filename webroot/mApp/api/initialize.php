@@ -73,6 +73,7 @@ require_once sCLASS_PATH . '/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/verification/verification.php');
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 $aMsgCds = array();
 
@@ -98,7 +99,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</initialize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -302,9 +303,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]);
 
                                 if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $obj_TxnInfo->getProfileID() > 0) {
-                                    $obj_TxnInfo->setAccountID(EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getProfileID()));
+                                    $obj_TxnInfo->setAccountID(EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getProfileID()));
                                 } else {
-                                    $obj_TxnInfo->setAccountID(EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail()));
+                                    $obj_TxnInfo->setAccountID(EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail()));
                                 }
                                 // Update Transaction Log
 							$obj_mPoint->logTransaction($obj_TxnInfo);
@@ -388,7 +389,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$data['orders'][0]['product-image-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'image-url'};
 										$data['orders'][0]['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->amount;
 										$collectiveFees = 0;
-										if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee) > 0)
+										if($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee)
 										{
 											for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee); $k++ )
 											{
@@ -549,7 +550,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
 								}
 							}
-							elseif(count(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 0) && $iAttemptNumber > 1 )
+							elseif((is_object($obj_DOM->{'initialize-payment'}[$i]->transaction->orders) && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 0) && $iAttemptNumber > 1 )
                             {
                                 $aObj_OrderInfoConfigs = OrderInfo::produceConfigurationsFromOrderID($_OBJ_DB, $obj_TxnInfo);
                                 if (count($aObj_OrderInfoConfigs) > 0)
@@ -669,13 +670,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     {
                                         $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
                                         $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
-                                        $paymentMethodCount = count($obj_SR);
+                                        ksort($obj_SR, 1);
                                         $obj_XML = '<cards>';
-                                        for($p=1; $paymentMethodCount >= $p; $p++)
+                                        foreach ($obj_SR as $key => $value)
                                         {
-                                            if(($obj_SR[$p] instanceof StaticRoute) === true )
+                                            if(($value instanceof StaticRoute) === true )
                                             {
-                                                $obj_XML .= $obj_SR[$p]->toXML();
+                                                $obj_XML .= $value->toXML();
                                             }
                                         }
                                         $obj_XML .= '</cards>';

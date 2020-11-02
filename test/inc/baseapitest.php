@@ -5,7 +5,12 @@ abstract class baseAPITest extends BaseDatabaseTest
 	protected $bIgnoreErrors = false;
 	private static $aVisited = array();
 
-    public function setUp($isDBSetupRequired = true)
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function setUp($isDBSetupRequired = true):void
     {
         if (!file_exists(sLOG_PATH) )
         {
@@ -17,7 +22,7 @@ abstract class baseAPITest extends BaseDatabaseTest
 		file_put_contents(sERROR_LOG, '');
 
 		echo " ". get_class($this) ."::". $this->getName() ."()\n";
-		parent::setup($isDBSetupRequired);
+        parent::setup($isDBSetupRequired);
     }
 
     /**
@@ -48,7 +53,7 @@ abstract class baseAPITest extends BaseDatabaseTest
 		return file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		parent::tearDown();
 

@@ -142,6 +142,8 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 require_once(sCLASS_PATH .'/credit_card.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 
 
 /**
@@ -259,7 +261,8 @@ try
                 $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
                 $cryptogram->addAttribute('algorithm-id', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
 
-                $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+                $code = $response->code;
             }
             else{
                 $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
@@ -339,7 +342,7 @@ try
             // New Account automatically created when Card was saved
             else if ($iStatus == 2)
             {
-                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+                $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
                 if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
                 $obj_TxnInfo->setAccountID($iAccountID);
                 $obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
@@ -361,7 +364,7 @@ try
             $iStateID,
             $iSubCodeID,
             $fee,
-            array($HTTP_RAW_POST_DATA),
+            array(file_get_contents("php://input")),
             $sIssuingBank, $sSwishPaymentID);
         // Payment Authorized: Perform a callback to the 3rd party Wallet if required
         if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)

@@ -147,7 +147,8 @@ class StaticRoute extends Card
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aPaymentMethodsConfig = array();
-        for ($i = 0; $i < count($paymentMethods); $i++) {
+        for ($i = 0, $iMax = count($paymentMethods); $i < $iMax; $i++) {
+
             $aPaymentMethodsConfig[$paymentMethods[$i]->id] = array(
                 'psp_type' => $paymentMethods[$i]->psp_type,
                 'state_id' => $paymentMethods[$i]->state_id,

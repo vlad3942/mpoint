@@ -458,7 +458,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, TransactionTypeConfig $obj_TransactionTypeConfig=NULL)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, $obj_TransactionTypeConfig=NULL)
 	{
 		parent::__construct($id, $name);
 
@@ -611,7 +611,13 @@ class ClientConfig extends BasicConfig
      *
      * @return 	ClientCommunicationChannelsConfig
      */
-    public function getCommunicationChannelsConfig() { return $this->_obj_CommunicationChannelsConfig; }
+    public function getCommunicationChannelsConfig(RDB $oDB) {
+        if($this->_obj_CommunicationChannelsConfig === NULL)
+        {
+            $this->_obj_CommunicationChannelsConfig = ClientCommunicationChannelsConfig::produceConfig($oDB, $this->getID());
+        }
+        return $this->_obj_CommunicationChannelsConfig;
+    }
     
 
     /**
@@ -1445,9 +1451,9 @@ class ClientConfig extends BasicConfig
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
-            $iConstOfRows = count($aRS);
             if (is_array($aRS) === true && count($aRS) > 0)
             {
+                $iConstOfRows = count($aRS);
                 for ($i=0; $i < $iConstOfRows; $i++)
                 {
                 	$aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];

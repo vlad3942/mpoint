@@ -10,6 +10,7 @@ class SaveAccountAPITest extends baseAPITest
 
     public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 
@@ -75,7 +76,7 @@ class SaveAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('Account information successfully saved', $sReplyBody);
+        $this->assertStringContainsString('Account information successfully saved', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100 and enabled=true");
         $this->assertTrue(is_resource($res));
@@ -127,7 +128,7 @@ class SaveAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('Account information successfully saved', $sReplyBody);
+        $this->assertStringContainsString('Account information successfully saved', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100 and enabled=true");
         $this->assertTrue(is_resource($res));
@@ -153,7 +154,7 @@ class SaveAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('Account information successfully saved', $sReplyBody);
+        $this->assertStringContainsString('Account information successfully saved', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100 and enabled=true");
         $this->assertTrue(is_resource($res));
@@ -184,7 +185,7 @@ class SaveAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('Account information successfully saved', $sReplyBody);
+        $this->assertStringContainsString('Account information successfully saved', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100 and enabled=true");
         $this->assertTrue(is_resource($res));
@@ -210,7 +211,7 @@ class SaveAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertContains('Account information successfully saved', $sReplyBody);
+        $this->assertStringContainsString('Account information successfully saved', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE email='tes@test.com' and mobile='28882861' and countryid=100 and enabled=true");
         $this->assertTrue(is_resource($res));

@@ -93,6 +93,8 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the cybs component
 require_once(sCLASS_PATH ."/cybersource.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
@@ -103,6 +105,8 @@ require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the Paymaya component
+require_once(sCLASS_PATH .'/apm/paymaya.php');
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
@@ -127,7 +131,7 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 
 $xml = '';
 
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 for ($i=0; $i<count($obj_DOM->capture); $i++)
 {
 	$clientID=$obj_DOM->capture[$i]["client-id"];

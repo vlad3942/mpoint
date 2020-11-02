@@ -61,8 +61,8 @@ try
 		// New Account automatically created when Card was saved
 		elseif ($iStatus == 2)
 		{
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+			$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
 			$obj_TxnInfo->setAccountID($iAccountID);
 			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
 			// SMS communication enabled
@@ -79,8 +79,7 @@ try
 
 	//
 	$fee = 0;
-    $sub_code = 0;
-	$iStateID = $obj_mPoint->completeTransaction(Constants::iWANNAFIND_PSP, $_REQUEST['transact'], $_REQUEST['cardid'], ($_REQUEST['actioncode'] == 0 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $sub_code, $fee, $_REQUEST);
+	$iStateID = $obj_mPoint->completeTransaction(Constants::iWANNAFIND_PSP, $_REQUEST['transact'], $_REQUEST['cardid'], ($_REQUEST['actioncode'] == 0 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), 0, $fee, $_REQUEST);
 	// Account Top-Up
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{

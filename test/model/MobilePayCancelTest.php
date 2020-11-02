@@ -22,10 +22,10 @@ class MobilePayCancelTest extends baseAPITest
 	private $_aMPOINT_CONN_INFO;
 
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->bIgnoreErrors = true;
-		parent::setUp();
+		parent::setUp(TRUE);
 		global $aHTTP_CONN_INFO;
 		global $aMPOINT_CONN_INFO;
 
@@ -82,7 +82,7 @@ class MobilePayCancelTest extends baseAPITest
 		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[4]);
     }
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->_obj_DB->disConnect();
 		parent::tearDown();

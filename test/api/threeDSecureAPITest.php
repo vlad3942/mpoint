@@ -11,6 +11,7 @@ class ThreeDSecureAPITest extends baseAPITest
 
 	public function __construct()
     {
+        parent::__construct();
         $this->constHTTPClient();
     }
 
@@ -82,8 +83,7 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testSuccess()
 	{
 		$simulatorConf = array('error' => 0);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
-
+        trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
@@ -119,8 +119,7 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testSuccessWithoutOrderID()
 	{
 		$simulatorConf = array('error' => 0);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
-
+        trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
@@ -135,7 +134,6 @@ class ThreeDSecureAPITest extends baseAPITest
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-
 		$this->assertEquals(200, $iStatus);
 		$this->assertXmlStringEqualsXmlString($this->responseDoc(), $sReplyBody);
 
@@ -156,8 +154,7 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testUnrecognized3DSecureProvider()
 	{
 		$simulatorConf = array('error' => 91);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
-
+        trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
@@ -193,8 +190,7 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testRequiredFieldsMissing()
 	{
 		$simulatorConf = array('error' => 92);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
-
+        trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
@@ -211,27 +207,28 @@ class ThreeDSecureAPITest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(502, $iStatus);
+
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="92">Missing required fields in parsed 3dsecure challenge: - pam - pam@type</status></root>', $sReplyBody);
 
-		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
-		$this->assertTrue(is_resource($res) );
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+        $this->assertTrue(is_resource($res) );
 
-		$aStates = array();
-		while ($row = pg_fetch_assoc($res) )
-		{
-			$aStates[] = $row["stateid"];
-		}
+        $aStates = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $aStates[] = $row["stateid"];
+        }
 
-		$this->assertEquals(2, count($aStates) );
-		$this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[0]);
-		$this->assertEquals(Constants::i3D_SECURE_ACTIVATED_STATE, $aStates[1]);
+        $this->assertEquals(2, count($aStates) );
+        $this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[0]);
+        $this->assertEquals(Constants::i3D_SECURE_ACTIVATED_STATE, $aStates[1]);
+
 	}
 
 	public function testUnknownResponseFromChallengeParser()
 	{
 		$simulatorConf = array('error' => 93);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
-
+        trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
@@ -267,8 +264,7 @@ class ThreeDSecureAPITest extends baseAPITest
 	public function testMalformedResponseFromEndpoint()
 	{
 		$simulatorConf = array('error' => 94);
-		trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
-
+        trigger_error("PARSE-3DSECURE-CHALLENGE SIMULATOR ::: ". serialize($simulatorConf) );
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");

@@ -35,7 +35,7 @@ require_once(sCLASS_PATH ."/cpm.php");
 header("content-type: text/plain");
 
 // Parse received MO-SMS
-$obj_MsgInfo = GoMobileMessage::produceMessage($HTTP_RAW_POST_DATA);
+$obj_MsgInfo = GoMobileMessage::produceMessage(file_get_contents('php://input'));
 
 // Instantiate mPoint object to handle the transaction
 $obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $obj_MsgInfo);
@@ -46,8 +46,8 @@ $obj_TxnInfo = TxnInfo::produceInfo($obj_mPoint->findTxnIDFromSMS($obj_MsgInfo),
 if ($obj_TxnInfo instanceof TxnInfo === true)
 {
 	// Associate End-User Account (if exists) with Transaction
-	$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-	if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+	$iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+	if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
 	$obj_TxnInfo->setAccountID($iAccountID);
 	
 	// Transfer GoMobile Username / Password global array of GoMobile Connection Information

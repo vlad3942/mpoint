@@ -62,7 +62,7 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo = array())
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }
@@ -77,9 +77,9 @@ class PaymentProcessor
         return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem, $obj_ClientInfo);
     }
 
-    public function authenticate($obj_Elem)
+    public function authenticate($xml,$obj_Card, $obj_ClientInfo= null)
     {
-            return $this->_objPSP->authenticate( $obj_Elem);
+            return $this->_objPSP->authenticate( $xml,$obj_Card, $obj_ClientInfo);
     }
 
     public function tokenize($aConnInfo, $obj_Elem)
@@ -137,7 +137,7 @@ class PaymentProcessor
         return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);
     }
 
-    public function notifyClient($iStateId, array $vars, SurePay $surePay)
+    public function notifyClient($iStateId, array $vars, $surePay)
     {
         return $this->_objPSP->notifyClient($iStateId,$vars,$surePay);
     }

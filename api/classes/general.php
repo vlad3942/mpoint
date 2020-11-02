@@ -328,9 +328,9 @@ class General
 		{
 			switch (true)
 			{
-			case (eregi('iPhone', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
-			case (eregi('iPod', $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi('Android', $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match('/iPhone/', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
+			case (preg_match('/iPod/', $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match('/Android/', $_SERVER['HTTP_USER_AGENT']) ):
 				return (is_null($oTI) === false ? $oTI->getMarkupLanguage() : "xhtml");
 				break;
 			case ($oUA->hasXHTML() ):	// Mobile Device supports XHTML
@@ -368,20 +368,20 @@ class General
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
 	switch (true)
 		{
-		case eregi("iPod", $_SERVER['HTTP_USER_AGENT']):
-		case eregi("iPhone", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPod/i", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPhone/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPhone";
 			break;
-		case eregi("iPad", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/iPad/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPad";
 			break;
-		case eregi("Firefox", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Firefox/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Firefox";
 			break;
-		case eregi("Skyfire", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Skyfire/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Skyfire";
 			break;
-		case eregi("Android", $_SERVER['HTTP_USER_AGENT']):
+		case preg_match("/Android/i", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Android";
 			break;
 		default:
@@ -561,7 +561,8 @@ class General
 	 */
 	public function authWithAlternateRoute(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
 	{
-		$xml = "" ;
+        global $_OBJ_TXT;
+        $xml = "" ;
 		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
 	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
@@ -600,12 +601,9 @@ class General
         ********************************/
 
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
-
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
-		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-
-		return $code ;
+        return $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
 			
 	}
 
@@ -1066,44 +1064,44 @@ class General
 			switch (true)
 			{
 			// Mobile Device Vendors
-			case (eregi("Alcatel", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Amoi Electronics", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Asustek", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Audiovox", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Fujitsu", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Handspring", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("HP", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Hewlett[^a-z]Packard", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Hitachi", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("High Tech Computer Corporation", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("HTC", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Huawei", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Kyocera", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("LG", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Motorola", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("NEC", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Nokia", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Openwave", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Palm", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Panasonic", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Pantech", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("RIM", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Research In Motion", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sagem", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Samsung", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sanyo", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sharp", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Siemens", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Sony Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Toshiba", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("UTStar", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Alcatel/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Amoi Electronics/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Asustek/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Audiovox/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Ericsson/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Fujitsu/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Handspring/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/HP/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Hewlett[^a-z]Packard/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Hitachi/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/High Tech Computer Corporation/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/HTC/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Huawei/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Kyocera/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/LG/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Motorola/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/NEC/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Nokia/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Openwave/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Palm/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Panasonic/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Pantech/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/RIM/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Research In Motion/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sagem/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Samsung/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sanyo/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sharp/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Siemens/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Sony Ericsson/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Toshiba/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/UTStar/i", $_SERVER['HTTP_USER_AGENT']) ):
 			// Specific Mobile Devices
-			case (eregi("Android", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Blackberry", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("iPhone", $_SERVER['HTTP_USER_AGENT']) ):
-			case (eregi("Pocket", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
-			case (eregi("Mini", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
+			case (preg_match("/Android/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Blackberry/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/iPhone/i", $_SERVER['HTTP_USER_AGENT']) ):
+			case (preg_match("/Pocket/i", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
+			case (preg_match("/Mini/i", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
 				$sBrowser = "mobile";
 				break;
 			default:	// Web Browser
@@ -1412,23 +1410,29 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
         $xml = '';
+        $code = $response->code;
         if ($code == "100") {
             $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+        } else if ($code == "2010") {
+            $xml = '<status code="2010">Payment rejected by PSP</status>';
         } else if ($code == "2000") {
             $xml = '<status code="2000">Payment authorized</status>';
         } else if ($code == "2009") {
-            $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
-        } else if (strpos($code, '2005') !== false) {
+			$xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
+		} else if ($code == "2005") {
             header("HTTP/1.1 303");
-            $xml = $code;
+            $xml = $response->body;
+        } else if ($code == "2016") {
+            $xml = $response->body;
         } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
             if(empty($iAlternateRoute) === false) {
-                $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                $code = $response->code;
                 return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
@@ -1437,6 +1441,12 @@ class General
             $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
             header("HTTP/1.1 502 Bad Gateway");
             $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+        }
+        if($response->sub_code > 0)
+        {
+            $responseXML = simpledom_load_string($xml);
+            $responseXML['sub-code'] = $response->sub_code;
+            $xml =str_replace(["<?xml version=\"1.0\"?>", "\n"], '',  $responseXML->asXML());
         }
         return $xml;
     }
