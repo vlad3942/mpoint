@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - ${HOST_DB_PORT}:5432
+      - ${HOST_DB_PORT}:${DB_PORT}
 
   liquibase:
     container_name: debug_${PROJECT_NAME}_liquibase
