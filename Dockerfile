@@ -77,8 +77,8 @@ RUN apk add --no-cache dos2unix \
     && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && mkdir /opt/cpm/mPoint/log \
     && rm -rf /opt/cpm/mPoint/webroot/_test \
-    && chown -R www-data:www-data /opt
+    && chown -R 1000:1000 /opt
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
-USER www-data
+USER 1000
