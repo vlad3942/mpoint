@@ -235,4 +235,16 @@ $HTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
 $aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/_test/simulators/mvault/save-card.php";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-card-details"] = "/_test/simulators/mvault/get-card-details.php";
 
+/**
+ * Connection info for connecting to SSO
+ */
+$aHTTP_CONN_INFO["mconsole"]["protocol"] = "http";
+$aHTTP_CONN_INFO["mconsole"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["mconsole"]["port"] = 80;
+$aHTTP_CONN_INFO["mconsole"]["timeout"] = 120;
+$aHTTP_CONN_INFO["mconsole"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mconsole"]["method"] = "POST";
+$aHTTP_CONN_INFO["mconsole"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/_test/simulators/mconsole/single-sign-on.php";
+
 ?>

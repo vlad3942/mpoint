@@ -42,6 +42,9 @@
 									<xs:all>
 										<xs:element name="captured-amount" type="amount"/>
 										<xs:element name="authorized-amount" type="amount"/>
+										<xs:element name="initialize_amount" type="initialize_amount" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="conversion_rate" type="xs:float" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="external_refs" type="external_refs" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="amount_info" type="amount_info"/>
 										<xs:element name="fee" type="amount"/>
 										<xs:element name="price" type="xs:string"/>
@@ -346,6 +349,29 @@
 		<xs:attribute name="id" type="xs:nonNegativeInteger" use="required" />
 		<xs:attribute name="name" type="xs:string" 	use="optional" />
 		<xs:attribute name="enabled" type="xs:boolean" 	use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="initialize_amount">
+		<xs:sequence>
+			<xs:element type="xs:integer" name="amount"/>
+			<xs:element type="xs:integer" name="currency_id"/>
+			<xs:element type="xs:string" name="currency"/>
+			<xs:element type="xs:integer" name="decimals"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="external_refs">
+		<xs:sequence>
+			<xs:element name="external_ref" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:integer" name="type"/>
+						<xs:element type="xs:integer" name="pspid"/>
+						<xs:element type="xs:integer" name="reference"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
 </xs:schema>

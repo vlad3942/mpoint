@@ -279,5 +279,4 @@ abstract class AuthorizeAPITest extends baseAPITest
 		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
 		if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(5001, $row["accountid"]); }
 	}
-
 }

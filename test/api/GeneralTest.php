@@ -66,7 +66,8 @@ class GeneralTest extends baseAPITest
 
         $this->_aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth-declined.php";
         $obj_Processor = PaymentProcessor::produceConfig($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $this->_aHTTP_CONN_INFO);
-        $code = (int)$obj_Processor->authorize($obj_Elem);
+        $response = $obj_Processor->authorize($obj_Elem);
+        $code = (int)$response->code;
         $this->assertEquals(Constants::iPAYMENT_SOFT_DECLINED_STATE, $code);
         if($code === Constants::iPAYMENT_SOFT_DECLINED_STATE){
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
@@ -75,8 +76,8 @@ class GeneralTest extends baseAPITest
             $this->_aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
             $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
             if(empty($iAlternateRoute) === false){
-                $xml = (int)$obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
-                $this->assertEquals(2000, $xml);
+                $response = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
+                $this->assertEquals(2000, (int)$response->code);
             }
         }
 
@@ -87,8 +88,8 @@ class GeneralTest extends baseAPITest
         $this->assertGreaterThanOrEqual(1, $iAlternateRoute);
         $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         if(empty($iAlternateRoute) === false){
-            $xml = (int)$obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
-            $this->assertEquals(400, $xml);
+            $response= $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
+            $this->assertEquals(400, (int)$response->code);
         }
 
         $this->_aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth-declined.php";
@@ -98,8 +99,8 @@ class GeneralTest extends baseAPITest
         $this->assertGreaterThanOrEqual(1, $iAlternateRoute);
         $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         if(empty($iAlternateRoute) === false){
-            $code = (int)$obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
-            $this->assertEquals(Constants::iPAYMENT_SOFT_DECLINED_STATE, $code);
+            $response = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
+            $this->assertEquals(Constants::iPAYMENT_SOFT_DECLINED_STATE, (int)$response->code);
         }
     }
 

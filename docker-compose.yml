@@ -22,8 +22,8 @@ services:
       - DB_USER=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - APP_PASS=${APP_PASS}
-#    volumes:
-#    volume client configs in alphanumeric order here to /app/scripts/sql/ for post setup loading
+    volumes:
+      - ./env/dev/db/client.1.0.0.sql:/app/scripts/sql/client.1.0.0.sql
     depends_on:
       - db
 

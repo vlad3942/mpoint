@@ -14,3 +14,5 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'CLIENT_SECRET', 'dcyDLGEYkeLZA1YM', id, 'merchant',1 from client.merchantaccount_tbl WHERE clientid=10077 AND pspid=67;
 INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled,capture_type,psp_type) VALUES (10077, 94, 67, 640, 1, true,2,4);
 /* ========== Grab Pay Integration = STARTS ========== */
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'MAX_DOWNLOAD_FILE_LIMIT', '2', id, 'merchant', from client.merchantaccount_tbl WHERE clientid=10069 AND pspid=52;

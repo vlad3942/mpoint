@@ -18,7 +18,8 @@ abstract class CPMACQUIRER extends CPMPSP
 
     public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, $obj_ClientInfo= null)
     {
-       $code= parent::authorize($obj_PSPConfig, $obj_Card, $obj_ClientInfo);
+       $response= parent::authorize($obj_PSPConfig, $obj_Card, $obj_ClientInfo);
+       $code = $response->code;
         if($code == "100" || $code == "2000" || $code == "2005" ||$code == "2009") {
             $obj_XML = $this->_getResponse();
             $approvalCode = $obj_XML->{'approval-code'};
@@ -54,11 +55,8 @@ abstract class CPMACQUIRER extends CPMPSP
                             WHERE id = " . $this->getTxnInfo()->getID();
             $this->getDBConn()->query($sql);
         }
-        return $code;
+        return $response;
     }
 
-    public function authenticate($xml)
-    {
-        return $code= parent::authenticate($xml);
-    }
+
 }

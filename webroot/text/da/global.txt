@@ -1538,3 +1538,12 @@ msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Indtast venligst følgende overførsels kode: {CODE} på websitet for at bekræfte din overførsel.
 Koden vil automatisk udløbe om en time. @@@
 
+#: /api/classes/static_route.php:122
+msgid @@@ Stored Cards @@@
+msgstr @@@ Use Stored Card @@@
+
+#: /api/classes/static_route.php:124
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+
