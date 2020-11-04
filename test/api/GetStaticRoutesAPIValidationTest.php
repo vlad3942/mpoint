@@ -20,7 +20,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 
     public function testUnauthorized()
     {
-        $this->constHTTPClient(113);
+        $this->constHTTPClient(10099);
 
         $this->_httpClient->connect();
 
@@ -33,11 +33,11 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 
     public function testWrongUsernamePassword()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-        $this->constHTTPClient(113);
+        $this->constHTTPClient(10099);
 
         $this->_httpClient->connect();
 
@@ -80,7 +80,7 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled) VALUES (114, 1, 100, 'Test Client', true)");
 
-        $this->constHTTPClient(113);
+        $this->constHTTPClient(10099);
 
         $this->_httpClient->connect();
 
@@ -93,9 +93,9 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 
     public function testBadRequestDisabledClient()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled) VALUES (113, 1, 100, 'Test Client', false)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled) VALUES (10099, 1, 100, 'Test Client', false)");
 
-        $this->constHTTPClient(113);
+        $this->constHTTPClient(10099);
 
         $this->_httpClient->connect();
 
@@ -109,17 +109,17 @@ class GetStaticRoutesAPIValidationTest extends baseAPITest
 	public function testSuccessPaymentMethods()
     {
 		
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (113, 7, 18, 608,true, 2)");
-		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (113, 8, 18, 608,true, 2)");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (113, 7, 17, 200,true, 2)");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (113, 8, 17, 200,true, 2)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-        $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (113,200,840, true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 7, 18, 608,true, 2)");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 8, 18, 608,true, 2)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 7, 17, 200,true, 2)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 8, 17, 200,true, 2)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10099,200,840, true)");
 
 		
-        $this->constHTTPClient(113);
+        $this->constHTTPClient(10099);
 
 		$this->_httpClient->connect();
 

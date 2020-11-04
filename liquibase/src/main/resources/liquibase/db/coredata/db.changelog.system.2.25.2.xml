@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.25.sql -->
+    <changeSet author="Sagar Narayane"
+        id="2020-11-02-setup-v2.25-system">
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="7010"/>
+            <column name="name" value="Payment retried using dynamic routing"/>
+            <column name="module" value="General"/>
+            <column name="func" value="authWithAlternateRoute"/>
+        </insert>
+        
+    </changeSet>
+
+</databaseChangeLog>
