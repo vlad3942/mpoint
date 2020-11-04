@@ -322,6 +322,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						}
 
+						if($obj_CardResultSet['PAYMENTTYPE'] === Constants::iPAYMENT_TYPE_OFFLINE && (integer)$obj_DOM->pay[$i]->transaction->card->amount !== ($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
+						{
+							$aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
+						}
+
 						// Success: Input Valid
 						if (count($aMsgCds) === 0)
 						{
@@ -397,6 +402,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
 											unset($data['amount']);
 										}
+										//For Offline payment method fee is considered as holding charges required to add in actual amount
+										if($obj_CardResultSet['PAYMENTTYPE'] === Constants::iPAYMENT_TYPE_OFFLINE && $obj_TxnInfo->getFee() > 0)
+										{
+											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
+										}
 
 
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
@@ -414,7 +424,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													NULL,
 													$obj_TxnInfo->getAmount(),
 													$obj_TxnInfo->getCurrencyConfig()->getID(),
-													Constants::iAuthorizeRequested
+													Constants::iAuthorizeRequested,
+												'',
+												0,
+												'',
+												'',
+												TRUE,
+												NULL,
+												NULL,
+												$obj_TxnInfo->getClientConfig()->getID(),
+												$obj_TxnInfo->getInitializedAmount()
 											);
 											if ($txnPassbookObj instanceof TxnPassbook)
 											{
