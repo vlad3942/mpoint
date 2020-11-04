@@ -19,14 +19,7 @@
             <column name="module" value="General"/>
             <column name="func" value="authWithAlternateRoute"/>
         </insert>
-
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="pspcard_tbl">
-
-            <column name="cardid" value="15"/>
-            <column name="pspid" value="18"/>
-        </insert>
+        
     </changeSet>
 
 </databaseChangeLog>
