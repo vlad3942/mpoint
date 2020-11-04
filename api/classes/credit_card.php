@@ -233,6 +233,53 @@ class CreditCard extends EndUserAccount
         return $RS['PSPID'];
     }
 
+    /**
+     * Fetches the fraud check configuration set for a Client and card type
+     * @param $iCardID         Unique ID of the Card
+     * @param int $iFraudType  System type of the fraud check psp
+     * @return mixed
+     */
+    public function getFraudCheckRouteForSR($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    {
+        $sql = "SELECT DISTINCT PSP.id AS pspid,C.POSITION
+                FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type=".$iFraudType." AND PSP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid AND PC.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PC.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND PCD.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$iCardID." AND C.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
+                WHERE R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." 
+                AND R.enabled = '1'
+                ORDER BY C.position";
+
+        $res = $this->getDBConn()->query($sql);
+        return $res;
+    }
+
+    public function getTokenizationRouteForSR($iCardID)
+    {
+        $sql = "SELECT DISTINCT PSP.id AS pspid FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type=".Constants::iPROCESSOR_TYPE_TOKENIZATION." AND PSP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid AND PC.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PC.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND PCD.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$iCardID." AND C.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
+                WHERE R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." 
+                AND R.enabled = '1'";
+
+        $RS = $this->getDBConn()->getName($sql);
+        return $RS['PSPID'];
+    }
+
+
     /*Fetches the fraud check configuration set for a Client and card type
     * @param	integer $iCardID 	Unique ID of the CardTypeUsed
     * @return 	string

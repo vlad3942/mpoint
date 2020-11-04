@@ -350,5 +350,70 @@ class PSPConfig extends BasicConfig
 
         return false;
     }
+
+    /**
+     * Produces a new instance of a Payment Service Provider Configuration Object.
+     *
+     * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $clid 	Unique ID for the Client performing the request
+     * @param 	integer $accid 	Unique ID for the Account-id performing the request
+     * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @return 	PSPConfig
+     */
+    public static function produceConfiguration(RDB &$oDB, $clid, $accid, $pspid)
+    {
+        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON PSP.id = R.providerid AND R.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON R.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
+				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
+				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid) ;
+
+        $RS = $oDB->getName($sql);
+        if (is_array($RS) === true && count($RS) > 1)
+        {
+            $sql = "SELECT I.language, I.text
+					FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
+					INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
+					WHERE I.clientid = ". intval($clid) ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". intval($pspid) ." OR I.pspid IS NULL)";
+
+            $aRS = $oDB->getAllNames($sql);
+            $aMessages = array();
+            if (is_array($aRS) === true)
+            {
+                for ($i=0; $i<count($aRS); $i++)
+                {
+                    $aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"];
+                }
+            }
+
+            $sql  = "SELECT key,value, scope
+					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
+					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant' and enabled=true" ;
+
+            $aRS = $oDB->getAllNames($sql);
+            $aAdditionalProperties = array();
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                $iConstOfRows = count($aRS);
+                for ($i=0; $i<$iConstOfRows; $i++)
+                {
+                    $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
+                    $aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
+                    $aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
+                }
+            }
+            return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties);
+        }
+        else
+        {
+            trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid, E_USER_WARNING);
+            return null;
+        }
+    }
+
 }
 ?>

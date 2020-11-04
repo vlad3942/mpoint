@@ -36,7 +36,12 @@ class PaymentProcessor
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
-        $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        $srService = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'SR_SERVICE');
+        if(strtolower($srService) == 'true'){
+            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        }else {
+            $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        }
         $sPSPClassName = $this->_objPSPConfig->getName();
         $this->_setConnInfo($aConnInfo, $iPSPID);
         try {

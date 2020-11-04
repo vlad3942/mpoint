@@ -88,8 +88,14 @@ abstract class Callback extends EndUserAccount
         {
             throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
         }
-
-        if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
+        $srService = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'SR_SERVICE');
+        if ($oPSPConfig == null) {
+        	if(strtolower($srService) == 'true'){
+                $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+			}else {
+                $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+            }
+        }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 

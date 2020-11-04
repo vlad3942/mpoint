@@ -132,7 +132,12 @@ abstract class CPMFRAUD
      */
     public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
-        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId,$iFraudType) ;
+        $sr_service = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'SR_SERVICE');
+        if(strtolower($sr_service) == 'true') {
+            $iFSPRoutes = $obj_mCard->getFraudCheckRouteForSR($cardTypeId, $iFraudType);
+        }else{
+            $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
+        }
         $aFSPStatus = array();
         $fraudCheckResponse = new FraudResult();
         while ($RS = $obj_DB->fetchName($iFSPRoutes) )
