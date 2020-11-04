@@ -246,14 +246,14 @@ class RoutingService extends General
      *
      * @return (integer) $firstPSP	Primary route to authorize transaction
      */
-    public function getAndStorePSP(PaymentRoute $objTxnRoute)
+    public function getAndStoreRoute(PaymentRoute $objTxnRoute)
     {
         $obj_RoutingServiceResponse = $this->getRoute();
         $aRoutes = [];
         if($obj_RoutingServiceResponse instanceof RoutingServiceResponse)
         {
             $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
-            $aRoutes = $aObj_Route->psps->psp;
+            $aRoutes = $aObj_Route->routes->route;
         }
         $firstPSP = -1;
         if (count ( $aRoutes ) > 0) {
