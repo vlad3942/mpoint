@@ -14,7 +14,7 @@
         { "packagist": false }
     ],
     "require": {
-        "cellpointmobile/php5api": "dev-feature/CBS-347-mpoint-php5-to-php7-upgrade"
+        "cellpointmobile/php5api": "dev-release/v2.01"
     },
 
     "require-dev": {

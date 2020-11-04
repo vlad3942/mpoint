@@ -10,14 +10,14 @@
 									<xs:sequence>
 										<xs:element type="xs:string" name="name"/>
 										<xs:element type="xs:int" name="merchant-account"/>
-										<xs:element type="xs:byte" name="merchant-sub-account"/>
+										<xs:element type="xs:integer" name="merchant-sub-account"/>
 										<xs:element type="xs:string" name="username"/>
 										<xs:element type="xs:string" name="password"/>
 										<xs:element type="xs:string" name="messages"/>
 										<xs:element type="xs:string" name="additional-config"/>
 									</xs:sequence>
-									<xs:attribute type="xs:byte" name="id"/>
-									<xs:attribute type="xs:byte" name="type"/>
+									<xs:attribute type="xs:integer" name="id"/>
+									<xs:attribute type="xs:integer" name="type"/>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="client-config">
@@ -28,8 +28,8 @@
 										<xs:element name="max-amount">
 											<xs:complexType>
 												<xs:simpleContent>
-													<xs:extension base="xs:byte">
-														<xs:attribute type="xs:byte" name="country-id"/>
+													<xs:extension base="xs:integer">
+														<xs:attribute type="xs:integer" name="country-id"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -41,8 +41,8 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:anyURI">
-																	<xs:attribute type="xs:byte" name="id"/>
-																	<xs:attribute type="xs:byte" name="type-id"/>
+																	<xs:attribute type="xs:integer" name="id"/>
+																	<xs:attribute type="xs:integer" name="type-id"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -54,7 +54,7 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute type="xs:byte" name="id"/>
+														<xs:attribute type="xs:integer" name="id"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -66,11 +66,11 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute type="xs:byte" name="id" use="optional"/>
-																	<xs:attribute type="xs:byte" name="type-id" use="optional"/>
-																	<xs:attribute type="xs:byte" name="state-id" use="optional"/>
-																	<xs:attribute type="xs:byte" name="country-id" use="optional"/>
-																	<xs:attribute type="xs:byte" name="psp-id" use="optional"/>
+																	<xs:attribute type="xs:integer" name="id" use="optional"/>
+																	<xs:attribute type="xs:integer" name="type-id" use="optional"/>
+																	<xs:attribute type="xs:integer" name="state-id" use="optional"/>
+																	<xs:attribute type="xs:integer" name="country-id" use="optional"/>
+																	<xs:attribute type="xs:integer" name="psp-id" use="optional"/>
 																	<xs:attribute type="xs:string" name="enabled" use="optional"/>
 																	<xs:attribute type="xs:string" name="payment-type" use="optional"/>
 																	<xs:attribute type="xs:positiveInteger" name="capture-type" use="optional"/>
@@ -80,9 +80,9 @@
 														</xs:complexType>
 													</xs:element>
 												</xs:sequence>
-												<xs:attribute type="xs:byte" name="store-card"/>
+												<xs:attribute type="xs:integer" name="store-card"/>
 												<xs:attribute type="xs:string" name="show-all-cards"/>
-												<xs:attribute type="xs:byte" name="max-stored-cards"/>
+												<xs:attribute type="xs:integer" name="max-stored-cards"/>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="account-configurations">
@@ -100,11 +100,11 @@
 																			<xs:element name="payment-service-provider" maxOccurs="unbounded" minOccurs="0">
 																				<xs:complexType>
 																					<xs:sequence>
-																						<xs:element type="xs:byte" name="name"/>
+																						<xs:element type="xs:integer" name="name"/>
 																						<xs:element type="xs:dateTime" name="modified-date"/>
 																					</xs:sequence>
-																					<xs:attribute type="xs:byte" name="id" use="optional"/>
-																					<xs:attribute type="xs:byte" name="psp-id" use="optional"/>
+																					<xs:attribute type="xs:integer" name="id" use="optional"/>
+																					<xs:attribute type="xs:integer" name="psp-id" use="optional"/>
 																				</xs:complexType>
 																			</xs:element>
 																		</xs:sequence>
@@ -128,8 +128,8 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-										<xs:element type="xs:byte" name="identification"/>
-										<xs:element type="xs:byte" name="transaction-time-to-live"/>
+										<xs:element type="xs:integer" name="identification"/>
+										<xs:element type="xs:integer" name="transaction-time-to-live"/>
 										<xs:element type="xs:string" name="issuer-identification-number-ranges"/>
 										<xs:element type="xs:string" name="salt"/>
 										<xs:element type="xs:string" name="secret-key"/>
@@ -145,15 +145,15 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute type="xs:byte" name="id"/>
+									<xs:attribute type="xs:integer" name="id"/>
 									<xs:attribute type="xs:string" name="auto-capture"/>
 									<xs:attribute type="xs:string" name="enable-cvv"/>
-									<xs:attribute type="xs:byte" name="country-id"/>
+									<xs:attribute type="xs:integer" name="country-id"/>
 									<xs:attribute type="xs:string" name="language"/>
 									<xs:attribute type="xs:string" name="sms-receipt"/>
 									<xs:attribute type="xs:string" name="email-receipt"/>
-									<xs:attribute type="xs:byte" name="mode"/>
-									<xs:attribute type="xs:byte" name="masked-digits"/>
+									<xs:attribute type="xs:integer" name="mode"/>
+									<xs:attribute type="xs:integer" name="masked-digits"/>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="transaction">
@@ -162,8 +162,8 @@
 										<xs:element name="captured-amount">
 											<xs:complexType>
 												<xs:simpleContent>
-													<xs:extension base="xs:byte">
-														<xs:attribute type="xs:byte" name="country-id"/>
+													<xs:extension base="xs:integer">
+														<xs:attribute type="xs:integer" name="country-id"/>
 														<xs:attribute type="xs:string" name="currency"/>
 														<xs:attribute type="xs:string" name="symbol"/>
 														<xs:attribute type="xs:string" name="format"/>
@@ -194,8 +194,8 @@
 										<xs:element name="fee">
 											<xs:complexType>
 												<xs:simpleContent>
-													<xs:extension base="xs:byte">
-														<xs:attribute type="xs:byte" name="country-id"/>
+													<xs:extension base="xs:integer">
+														<xs:attribute type="xs:integer" name="country-id"/>
 														<xs:attribute type="xs:string" name="currency"/>
 														<xs:attribute type="xs:string" name="symbol"/>
 														<xs:attribute type="xs:string" name="format"/>
@@ -207,8 +207,8 @@
 										<xs:element name="points">
 											<xs:complexType>
 												<xs:simpleContent>
-													<xs:extension base="xs:byte">
-														<xs:attribute type="xs:byte" name="country-id"/>
+													<xs:extension base="xs:integer">
+														<xs:attribute type="xs:integer" name="country-id"/>
 														<xs:attribute type="xs:string" name="currency"/>
 														<xs:attribute type="xs:string" name="symbol"/>
 														<xs:attribute type="xs:string" name="format"/>
@@ -219,8 +219,8 @@
 										<xs:element name="reward">
 											<xs:complexType>
 												<xs:simpleContent>
-													<xs:extension base="xs:byte">
-														<xs:attribute type="xs:byte" name="country-id"/>
+													<xs:extension base="xs:integer">
+														<xs:attribute type="xs:integer" name="country-id"/>
 														<xs:attribute type="xs:string" name="currency"/>
 														<xs:attribute type="xs:string" name="symbol"/>
 														<xs:attribute type="xs:string" name="format"/>
@@ -231,8 +231,8 @@
 										<xs:element name="refund">
 											<xs:complexType>
 												<xs:simpleContent>
-													<xs:extension base="xs:byte">
-														<xs:attribute type="xs:byte" name="country-id"/>
+													<xs:extension base="xs:integer">
+														<xs:attribute type="xs:integer" name="country-id"/>
 														<xs:attribute type="xs:string" name="currency"/>
 														<xs:attribute type="xs:string" name="symbol"/>
 														<xs:attribute type="xs:string" name="format"/>
@@ -245,13 +245,13 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute type="xs:byte" name="country-id"/>
-														<xs:attribute type="xs:byte" name="country-code"/>
+														<xs:attribute type="xs:integer" name="country-id"/>
+														<xs:attribute type="xs:integer" name="country-code"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-										<xs:element type="xs:byte" name="operator"/>
+										<xs:element type="xs:integer" name="operator"/>
 										<xs:element type="xs:string" name="email"/>
 										<xs:element type="xs:string" name="device-id"/>
 										<xs:element name="logo">
@@ -285,10 +285,10 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:short">
-														<xs:attribute type="xs:byte" name="country-id"/>
+														<xs:attribute type="xs:integer" name="country-id"/>
 														<xs:attribute type="xs:short" name="currency-id"/>
 														<xs:attribute type="xs:string" name="currency"/>
-														<xs:attribute type="xs:byte" name="decimals"/>
+														<xs:attribute type="xs:integer" name="decimals"/>
 														<xs:attribute type="xs:string" name="symbol"/>
 														<xs:attribute type="xs:string" name="format"/>
 														<xs:attribute type="xs:string" name="alpha2code"/>
@@ -305,27 +305,27 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:short">
-																	<xs:attribute type="xs:byte" name="country-id"/>
+																	<xs:attribute type="xs:integer" name="country-id"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
 													</xs:element>
 													<xs:element type="xs:long" name="token"/>
 												</xs:sequence>
-												<xs:attribute type="xs:byte" name="type-id"/>
+												<xs:attribute type="xs:integer" name="type-id"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
 									<xs:attribute type="xs:int" name="id"/>
-									<xs:attribute type="xs:byte" name="type"/>
-									<xs:attribute type="xs:byte" name="gmid"/>
-									<xs:attribute type="xs:byte" name="mode"/>
+									<xs:attribute type="xs:integer" name="type"/>
+									<xs:attribute type="xs:integer" name="gmid"/>
+									<xs:attribute type="xs:integer" name="mode"/>
 									<xs:attribute type="xs:short" name="eua-id"/>
-									<xs:attribute type="xs:byte" name="attempt"/>
+									<xs:attribute type="xs:integer" name="attempt"/>
 									<xs:attribute type="xs:integer" name="product-type"/>
-									<xs:attribute type="xs:byte" name="psp-id"/>
-									<xs:attribute type="xs:byte" name="card-id"/>
-									<xs:attribute type="xs:byte" name="wallet-id"/>
+									<xs:attribute type="xs:integer" name="psp-id"/>
+									<xs:attribute type="xs:integer" name="card-id"/>
+									<xs:attribute type="xs:integer" name="wallet-id"/>
 									<xs:attribute type="xs:string" name="external-id"/>
 								</xs:complexType>
 							</xs:element>

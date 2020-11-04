@@ -16,7 +16,7 @@ class DIBSRefundAPITest extends RefundAPITest
 
 	public function testSuccessfulCancelTriggeredByRefund()
 	{
-		$this->assertTrue(true);
+        $this->markTestIncomplete();
 		//TODO: Implement this test for DIBS
 		//parent::testSuccessfulCancelTriggeredByRefund(Constants::iDIBS_PSP);
 	}
