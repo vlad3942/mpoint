@@ -30,6 +30,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 
 	public function testSuccessfulCallback()
 	{
+	     $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		// $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		// $pspID = Constants::iNETAXEPT_PSP;
 
@@ -79,6 +80,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 
 	public function testSuccessfulCallbackAndStoreCard()
 	{
+	     $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		// $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		// $pspID = Constants::iNETAXEPT_PSP;
 
@@ -140,6 +142,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 
 	public function testSuccessfulCallbackAndStoreCardExistingAccount()
 	{
+	     $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		// $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		// $pspID = Constants::iNETAXEPT_PSP;
 
