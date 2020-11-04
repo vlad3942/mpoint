@@ -93,6 +93,8 @@ header("Content-Type: application/x-www-form-urlencoded");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
+// Require specific Business logic for the CEBU Payment Center component
+require_once(sCLASS_PATH .'/apm/cebupaymentcenter.php');
 
 set_time_limit(120);
 

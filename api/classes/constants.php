@@ -1076,6 +1076,13 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMAYA_WALLET = 68;
+
+	/**
+	 * Unique PSP ID for transaction's made using CEBU Payment Center
+	 *
+	 */
+	const iCEBUPAYMENTCENTER_APM = 69;
+
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1526,7 +1533,12 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMAYA = 95;
-	
+
+	/**
+	 * Unique Card ID for transaction's made using CEBU Payment Center Offline
+	 *
+	 */
+	const iCEBUPAYMENTCENTEROFFLINE = 96;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -1700,6 +1712,7 @@ abstract class Constants
     const iPAYMENT_TYPE_CARD_TOKEN = 5;
     const iPAYMENT_TYPE_VIRTUAL = 6;
     const iPAYMENT_TYPE_ONLINE_BANKING = 7;
+	const iPAYMENT_TYPE_OFFLINE = 8;
 
     /*
 	 * Alternate routes to authorize payment  if primary fails during authorize
