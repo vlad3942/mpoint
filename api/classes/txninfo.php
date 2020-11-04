@@ -1122,6 +1122,7 @@ class TxnInfo
 		{
 			$xml .= '<initialize_amount>';
 			$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
+			$xml .= '<fees><fee>'.$this->getFee().'</fee></fees>';
 			$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
 			$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
 			$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
@@ -1289,6 +1290,7 @@ class TxnInfo
 		{
 			$xml .= '<initialize_amount>';
 			$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
+			$xml .= '<fees><fee>'.$this->getFee().'</fee></fees>';
 			$xml .= '<currency_id>'.$this->getInitializedCurrencyConfig()->getID().'</currency_id>';
 			$xml .= '<currency>'.$this->getInitializedCurrencyConfig()->getCode().'</currency>';
 			$xml .= '<decimals>'.$this->getInitializedCurrencyConfig()->getDecimals().'</decimals>';
@@ -1616,6 +1618,7 @@ class TxnInfo
 			if (array_key_exists("card-id", $misc) === false) { $misc["card-id"] = $obj->getCardID(); }
 			if (array_key_exists("wallet-id", $misc) === false) { $misc["wallet-id"] = $obj->getWalletID(); }
 			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getInitializedAmount();}
+			if (array_key_exists("fee", $misc) === false) { $misc["fee"] = $obj->getFee();}
 			if (array_key_exists("points", $misc) === false) { $misc["points"] = $obj->getPoints(); }
 			if (array_key_exists("reward", $misc) === false) { $misc["reward"] = $obj->getReward(); }
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }

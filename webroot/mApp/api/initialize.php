@@ -180,10 +180,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 								$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 							}
-//                            if ($obj_DOM->{'initialize-payment'}[$i]->transaction->fees->fee)
-//                            {
-//                                $data['fee'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->fees->fee[0];
-//                            }
+                            if ($obj_DOM->{'initialize-payment'}[$i]->transaction->fees->fee)
+                            {
+                                $data['fee'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->fees->fee[0];
+                            }
                             $data['description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->description;
 							$data['gomobileid'] = -1;
 							$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
