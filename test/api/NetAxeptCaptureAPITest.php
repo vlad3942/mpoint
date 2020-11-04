@@ -11,6 +11,7 @@ class NetAxeptCaptureAPITest extends CaptureAPITest
 {
     public function testSuccessfulCapture()
     {
+         $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		/* Setup netaxept simulator, through error file mark */
 		// $config = new stdClass();
 		// $config->AmountCaptured = 5147;
@@ -40,6 +41,7 @@ class NetAxeptCaptureAPITest extends CaptureAPITest
 
 	public function testSuccessfulCaptureInitiated()
 	{
+	     $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$this->assertTrue(true);
 	}
 }

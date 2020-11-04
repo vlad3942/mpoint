@@ -197,6 +197,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 	
 	public function testSuccessfulRefundWithDankort()
 	{
+	    $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$obj_Pay = simplexml_load_string($this->successfulPayTest(Constants::iNETAXEPT_PSP, self::sMERCHANT_ACCOUNT, self::sPSP_USERNAME, self::sPSP_PASSWORD, Constants::iDANKORT_CARD) );
 		$this->successfulAuthorizationTest($obj_Pay, "5019994001300153", 05, 21, 603);
 		$this->captureTest(200, 1000, Constants::iPAYMENT_CAPTURED_STATE);
@@ -207,6 +208,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 	}
 	public function testSuccessfulRefundWithVISA()
 	{
+	    $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$obj_Pay = simplexml_load_string($this->successfulPayTest(Constants::iNETAXEPT_PSP, self::sMERCHANT_ACCOUNT, self::sPSP_USERNAME, self::sPSP_PASSWORD, Constants::iVISA_CARD) );
 		$this->successfulAuthorizationTest($obj_Pay, "4925000000000004", 05, 21, 603);
 		$this->captureTest(200, 1000, Constants::iPAYMENT_CAPTURED_STATE);
@@ -217,6 +219,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 	}
 	public function testDeclinedRefundWithAmericanExpress()
 	{
+	    $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$obj_Pay = simplexml_load_string($this->successfulPayTest(Constants::iNETAXEPT_PSP, self::sMERCHANT_ACCOUNT, self::sPSP_USERNAME, self::sPSP_PASSWORD, Constants::iAMEX_CARD) );
 		$this->successfulAuthorizationTest($obj_Pay, "375700000000002", 05, 21, 603);
 		
@@ -228,6 +231,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 	}
 	public function testSuccessfulCancelWithMasterCard()
 	{
+	    $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$obj_Pay = simplexml_load_string($this->successfulPayTest(Constants::iNETAXEPT_PSP, self::sMERCHANT_ACCOUNT, self::sPSP_USERNAME, self::sPSP_PASSWORD, Constants::iMASTERCARD) );
 		$this->successfulAuthorizationTest($obj_Pay, "5413000000000000", 05, 21, 603);
 		$this->refundTest(200, 1001, Constants::iPAYMENT_CANCELLED_STATE);
@@ -235,6 +239,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 	}
 	public function testSuccessfulCancelWithDeclinedCaptureUsingVISA()
 	{
+	    $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$obj_Pay = simplexml_load_string($this->successfulPayTest(Constants::iNETAXEPT_PSP, self::sMERCHANT_ACCOUNT, self::sPSP_USERNAME, self::sPSP_PASSWORD, Constants::iVISA_CARD) );
 		$this->successfulAuthorizationTest($obj_Pay, "4925000000000079", 05, 21, 603);
 		
@@ -249,6 +254,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 	}
 	public function testFailedCancelWithMaestro()
 	{
+	    $this->markTestIncomplete("Skipped as the test case tests an old integration which is no longer supported by NetAxept. To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in");
 		$obj_Pay = simplexml_load_string($this->successfulPayTest(Constants::iNETAXEPT_PSP, self::sMERCHANT_ACCOUNT, self::sPSP_USERNAME, self::sPSP_PASSWORD, Constants::iMAESTRO_CARD) );
 		$this->successfulAuthorizationTest($obj_Pay, "6761638084569584", 05, 21, 603);
 		
