@@ -77,7 +77,7 @@ class CaptureLoggingTest extends baseAPITest
 		$cStates = array();
 		$aStates = array();
 		
-		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
 		$this->assertIsResource($res);
 		while ($row = pg_fetch_assoc($res) )
 		{
@@ -86,7 +86,7 @@ class CaptureLoggingTest extends baseAPITest
 		//Capture state should get logged in message table
 		$this->assertIsInt(array_search(Constants::iPAYMENT_CAPTURED_STATE, $aStates));
 		
-		$captureStateStatus = $this->queryDB("SELECT status FROM Log.Txnpassbook_Tbl WHERE transactionid = 1001001 and performedopt = 2001");
+		$captureStateStatus = $this->queryDB("SELECT status FROM Log.Txnpassbook_Tbl WHERE transactionid = 1001001 and performedopt = 2001  ORDER BY id ASC");
 		$this->assertIsResource($captureStateStatus);
 		while ($row = pg_fetch_assoc($captureStateStatus))
 		{

@@ -233,7 +233,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 		$this->assertEquals(200, $iStatus);
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
 
-		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
 		$this->assertTrue(is_resource($res) );
 
 		$aStates = array();
