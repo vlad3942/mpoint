@@ -322,10 +322,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						}
 
-						if($obj_CardResultSet['PAYMENTTYPE'] === Constants::iPAYMENT_TYPE_OFFLINE && (integer)$obj_DOM->pay[$i]->transaction->card->amount !== ($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
-						{
-							$aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
-						}
 
 						// Success: Input Valid
 						if (count($aMsgCds) === 0)
@@ -403,7 +399,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											unset($data['amount']);
 										}
 										//For Offline payment method fee is considered as holding charges required to add in actual amount
-										if($obj_CardResultSet['PAYMENTTYPE'] === Constants::iPAYMENT_TYPE_OFFLINE && $obj_TxnInfo->getFee() > 0)
+										if($obj_CardResultSet['PAYMENTTYPE'] == Constants::iPAYMENT_TYPE_OFFLINE && $obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
 										{
 											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 										}
@@ -422,8 +418,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$passbookEntry = new PassbookEntry
 											(
 													NULL,
-													$obj_TxnInfo->getAmount(),
-													$obj_TxnInfo->getCurrencyConfig()->getID(),
+												$oTI->getAmount(),
+												$oTI->getCurrencyConfig()->getID(),
 													Constants::iAuthorizeRequested,
 												'',
 												0,
@@ -432,8 +428,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												TRUE,
 												NULL,
 												NULL,
-												$obj_TxnInfo->getClientConfig()->getID(),
-												$obj_TxnInfo->getInitializedAmount()
+												$oTI->getClientConfig()->getID(),
+												$oTI->getInitializedAmount()
 											);
 											if ($txnPassbookObj instanceof TxnPassbook)
 											{
