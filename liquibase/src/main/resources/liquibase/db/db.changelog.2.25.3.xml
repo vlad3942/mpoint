@@ -9,18 +9,12 @@
     <changeSet author="Nidhi Agarwal"
                id="createpublicationmpoint-05-11-2020">
         <sql>
-            CREATE PUBLICATION mpoint_system_pub FOR TABLE
+            CREATE PUBLICATION mpoint_system_test_pub FOR TABLE
                 system.producttype_tbl, system.country_tbl, system.currency_tbl, system.flow_tbl, system.sessiontype_tbl,
                 system.psp_tbl, system.processortype_tbl, system.type_tbl, system.card_tbl, system.paymenttype_tbl,
                 system.urltype_tbl, system.iinaction_tbl, system.cardstate_tbl, system.triggerunit_tbl;
-            CREATE PUBLICATION mpoint_log_pub FOR TABLE log.message_tbl, log.transaction_tbl, log.state_tbl,
-                log.session_tbl, log.settlement_tbl, log.settlement_record_tbl, log.txnpassbook_tbl;
-            CREATE PUBLICATION mpoint_client_pub FOR TABLE client.account_tbl, client.client_tbl, client.keyword_tbl,
-                client.merchantaccount_tbl, client.cardaccess_tbl, client.iinlist_tbl, client.additionalproperty_tbl,
-                client.gatewaytrigger_tbl, client.product_tbl, client.url_tbl;
-            CREATE PUBLICATION mpoint_enduser_pub FOR TABLE enduser.account_tbl;
         </sql>
-        <comment>Added publications for DWH for system, log, client, enduser schemas</comment>
+        <comment>Added publications for DWH for system</comment>
     </changeSet>
 
 </databaseChangeLog>
