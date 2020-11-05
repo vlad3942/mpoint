@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.25.sql -->
+    <changeSet author="Sagar Narayane"
+        id="2020-11-05-setup-v2.25-system">
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="3017"/>
+            <column name="name" value="Pre Auth Rev Success"/>
+            <column name="module" value="Fraud"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="3018"/>
+            <column name="name" value="Pre Auth Rev Fail"/>
+            <column name="module" value="Fraud"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="3118"/>
+            <column name="name" value="Post Auth Rev Success"/>
+            <column name="module" value="Fraud"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="3119"/>
+            <column name="name" value="Post Auth Rev Fail"/>
+            <column name="module" value="Fraud"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010314"/>
+            <column name="name" value="Transaction rejected by Issuer / Authorization failed /Transaction Failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
