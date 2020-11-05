@@ -73,7 +73,7 @@ require_once sCLASS_PATH . '/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
-require_once(sCLASS_PATH . '/apm/cebupaymentcenter.php');
+require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 
 $aMsgCds = array();
 

@@ -108,7 +108,7 @@ require_once(sCLASS_PATH ."/grabpay.php");
 // Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
-require_once(sCLASS_PATH .'/apm/cebupaymentcenter.php');
+require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
