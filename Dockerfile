@@ -42,18 +42,16 @@ COPY liquibase/src/main/resources/liquibase/db /liquibase/db
 COPY docker/runtests.sh /sh/runtests.sh
 
 RUN mkdir /opt/cpm/mPoint/log \
-    && cd /opt/cpm/mPoint/log && touch db_exectime_.log db_error_log app_error_.log \
+    && cd /opt/cpm/mPoint/log && touch db_exectime_.log db_error_.log app_error_.log \
     && chmod -R 777 /opt/cpm/mPoint/log \
-    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api
-
-
-RUN apk add --no-cache apache2 php7-apache2 dos2unix\
+    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+    && apk add --no-cache apache2 php7-apache2 dos2unix \
     && printf "LoadModule rewrite_module modules/mod_rewrite.so" >> /etc/apache2/httpd.conf \
     && chmod +x -R /sh \
     && dos2unix /sh/*
     
 COPY docker/apache.default.conf /etc/apache2/conf.d
-    
+
 RUN /sh/runtests.sh
 
 #-----------------------FETCH PROD DEPENDENCIES -----------------
@@ -63,7 +61,7 @@ RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
 FROM registry.t.cpm.dev/library/phpfpmextras:master20201020083451
-
+    
 USER 0
 
 WORKDIR /opt/cpm/mPoint
