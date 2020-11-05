@@ -16,6 +16,6 @@ class DIBSCaptureAPITest extends CaptureAPITest
 
     public function testSuccessfulCaptureInitiated()
     {
-
+        $this->markTestIncomplete();
     }
 }

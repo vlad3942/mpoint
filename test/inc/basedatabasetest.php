@@ -2,6 +2,10 @@
 use PHPUnit\Framework\TestCase;
 abstract class BaseDatabaseTest extends TestCase
 {
+    //Cleanup after each testcase runs
+    const TRUNCATE_DB_SCHEMAS = ["'client'","'enduser'","'log'"];
+    const EXCLUDE_TRUNCATE_TABLES = ['client.infotype_tbl', 'log.operation_tbl', 'log.state_tbl'];
+        
     protected $mPointDBInfo;
 
     /**
@@ -29,7 +33,35 @@ abstract class BaseDatabaseTest extends TestCase
         $this->mPointDBInfo = $aDB_CONN_INFO["mpoint"];
         if($isDBSetupRequired === true)
         {
-            $this->setupMpointDB();
+            if (!is_resource($this->_db) )
+            {
+                $this->_db = pg_connect($this->_constDBConnString(). " dbname=". $this->mPointDBInfo['path']);
+
+                $tables = pg_query($this->_db,
+                    sprintf("SELECT table_schema, table_name
+                               FROM information_schema.tables
+                              WHERE table_schema IN (%s)
+                                AND RIGHT(table_name, 4) = '_tbl'
+                                AND count_rows(table_schema, table_name) > 0
+                           ORDER BY table_schema, table_name",
+                        implode (',',self::TRUNCATE_DB_SCHEMAS)
+                    )
+                );
+
+                foreach (($tables = pg_fetch_all($tables)) as $table) {
+                    $sSchemaTable = $table['table_schema'] . '.' . $table['table_name'];
+                    if (in_array($sSchemaTable, self::EXCLUDE_TRUNCATE_TABLES)) {
+                        continue;
+                    }
+                    $stmt  = sprintf('TRUNCATE TABLE %s RESTART IDENTITY CASCADE ', $sSchemaTable);
+                    pg_query($this->_db, $stmt);
+
+                    if (!empty($error = pg_last_error($this->_db)) )
+                    {
+                        throw new ErrorException("Truncating $sSchemaTable failed: ". $error);
+                    }
+                }
+            }
         }
     }
 
@@ -37,39 +69,7 @@ abstract class BaseDatabaseTest extends TestCase
     {
         return "host=". $this->mPointDBInfo['host']. " port=". $this->mPointDBInfo['port']. " user=". $this->mPointDBInfo['username']. " password=" . $this->mPointDBInfo['password'];
     }
-
-    private function setupMpointDB()
-    {
-        $conn = pg_connect($this->_constDBConnString() );
-        $dbName = $this->mPointDBInfo['path'];
-        $schemaOwner = $this->mPointDBInfo['username'];
-        pg_query($conn, "CREATE DATABASE $dbName OWNER = $schemaOwner");
-
-        $error = pg_last_error($conn);
-        if (!empty($error))
-        {
-            echo $error;
-            throw new ErrorException("Initialize MPoint DB for testing failed: ". $error);
-        }
-
-        $this->queryDB(file_get_contents(__DIR__. '/../db/mpoint_db.sql') );
-        pg_close($conn);
-    }
-
-    private function dropMpointDB()
-    {
-        if($this->_isDBSetuped === true)
-        {
-            if (is_resource($this->_db))
-            {
-                @pg_close($this->_db);
-            }
-            $conn = pg_connect($this->_constDBConnString());
-            pg_query($conn, "DROP DATABASE " . $this->mPointDBInfo['path']);
-            pg_close($conn);
-        }
-    }
-
+    
     protected function applyTestConfiguration()
     {
         $confDir = __DIR__. '/../../conf/';
@@ -96,11 +96,11 @@ abstract class BaseDatabaseTest extends TestCase
         copy($confDir. 'global.php.backup', $confDir. 'global.php');
         touch($confDir. 'global.php', filemtime($confDir. 'global.php.backup') );
     }
-
+    
     public function tearDown(): void
     {
-        $this->dropMpointDB();
         $this->restoreOriginalConfiguration();
+        pg_close($this->_db);
         parent::tearDown();
     }
 

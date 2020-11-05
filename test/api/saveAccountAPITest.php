@@ -60,14 +60,14 @@ class SaveAccountAPITest extends baseAPITest
 
     public function testSuccessfulSaveAccount()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'profilePass', 'testvalidsaveAcc', 'test',null);
+        $xml = $this->getSaveAccDoc(10099, 1100, 'abcExternal', 'profilePass', 'testvalidsaveAcc', 'test',null);
 
         $this->_httpClient->connect();
 
@@ -85,13 +85,13 @@ class SaveAccountAPITest extends baseAPITest
 
     public function testEUASSOFailureWithAuthUrl()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
         //Simulate error by using a actual url returning 401 or non existing url.
-        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth-error.php')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth-error.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'profilePass', null, 'test',null);
+        $xml = $this->getSaveAccDoc(10099, 1100, 'abcExternal', 'profilePass', null, 'test',null);
 
         $this->_httpClient->connect();
 
@@ -108,18 +108,18 @@ class SaveAccountAPITest extends baseAPITest
 
     public function testSuccessfulSaveAccountAfterTwoTxn()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, email, mobile, enabled) VALUES (1110, 100, 'tes@test.com', '28882861', false)");
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, email, mobile, enabled) VALUES (1111, 100,'tes@test.com', '28882861', false)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1110,5000,208)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1111,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1110,5000,208)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1111,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'profilePass', 'testvalidsaveAcc', 'test',null);
+        $xml = $this->getSaveAccDoc(10099, 1100, 'abcExternal', 'profilePass', 'testvalidsaveAcc', 'test',null);
 
         $this->_httpClient->connect();
 
@@ -140,12 +140,12 @@ class SaveAccountAPITest extends baseAPITest
 
     public function testSuccessfulSaveAccountNoTxn()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'profilePass', 'testvalidsaveAcc', 'test',null);
+        $xml = $this->getSaveAccDoc(10099, 1100, 'abcExternal', 'profilePass', 'testvalidsaveAcc', 'test',null);
 
         $this->_httpClient->connect();
 
@@ -167,16 +167,16 @@ class SaveAccountAPITest extends baseAPITest
 
     public function testSuccessfulUpdateAccountPwd()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, email, mobile, enabled) VALUES (1111, 100,'tes@test.com', '28882861', true)");
-        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 1111)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1111,5000,208)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 1111)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,euaid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,1111,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', 'authToken', 'testvalidsaveAcc', 'test',null);
+        $xml = $this->getSaveAccDoc(10099, 1100, 'abcExternal', 'authToken', 'testvalidsaveAcc', 'test',null);
 
         $this->_httpClient->connect();
 
@@ -197,13 +197,13 @@ class SaveAccountAPITest extends baseAPITest
 
     public function testSuccessfulSaveAccountPwdFlow()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveAccDoc(113, 1100, 'abcExternal', null, 'testvalidsaveAcc', 'test',null);
+        $xml = $this->getSaveAccDoc(10099, 1100, 'abcExternal', null, 'testvalidsaveAcc', 'test',null);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);

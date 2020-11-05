@@ -21,14 +21,14 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  *	6 - Output to screen and send remote server
  *	7 - Output to file & screen and send remote server
  */
-define("iOUTPUT_METHOD", 1);
+define("iOUTPUT_METHOD", env("LOG_OUTPUT_METHOD", 1));
 /**
  * General debug level for the error handler
  *	0 - Output error
  *	1 - Add stack trace for exceptions and variable scope for errors to log message
  *	2 - Add custom trace using the {TRACE <DATA>} syntax
  */
-define("iDEBUG_LEVEL", 2);
+define("iDEBUG_LEVEL", env("LOG_DEBUG_LEVEL", 2));
 /**
  * Path to the application error log
  */

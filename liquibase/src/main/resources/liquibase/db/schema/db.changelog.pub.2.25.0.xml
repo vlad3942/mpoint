@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Add count_rows function for easy filtering-->
+    <changeSet author="MartinW" id="2020-10-29-master-v2.25">
+        <createProcedure dbms="postgresql"
+                         encoding="utf8" procedureName="count_rows" relativeToChangelogFile="true" schemaName="public">
+
+            CREATE OR REPLACE FUNCTION
+            public.count_rows(schema text, tablename text) RETURNS integer
+                LANGUAGE plpgsql
+            AS
+            $$
+            DECLARE
+                result integer;
+                query varchar;
+            BEGIN
+                query := 'SELECT count(1) FROM ' || schema || '.' || tablename;
+                EXECUTE query INTO result;
+                RETURN result;
+            END;
+            $$
+            
+        </createProcedure>
+    </changeSet>
+
+</databaseChangeLog>
