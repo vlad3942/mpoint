@@ -167,10 +167,10 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
-require_once(sCLASS_PATH .'/verification/verification.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
-
+// Require Business logic for the Mobile Web module
+require_once(sCLASS_PATH ."/mobile_web.php");
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -427,11 +427,57 @@ try
                                         }
 
                                         // sso verification conditions checking 
-										$sso_response = Verification::verify($_OBJ_DB, $obj_ClientConfig, $obj_DOM, $i, $_OBJ_TXT);
-										if(count($sso_response) > 0 )
-										{
-											$aMsgCds[$sso_response['code']] = $sso_response['msg'] ;
-										}
+										$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
+										$sosPreference =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "SSO_PREFERENCE");
+					       				$sosPreference = strtoupper($sosPreference); 
+
+										// Single Sign-On
+					                    $bIsSingleSingOnPass = false;
+					                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
+										$authToken = trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
+										$bIsSingleSingOnPass = false;
+					                    $profileTypeId = null;
+					                    if (empty($authenticationURL) === false && empty($authToken)=== false)
+					                    {
+
+					                    	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}["language"]);
+					                        $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+					                        $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+
+					                        if ( $sosPreference == 'STRICT' )
+					                        {
+					                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"], $sosPreference);
+					                        } else {
+												
+													$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
+											}
+					                        if ($code == 10) {
+					                            $bIsSingleSingOnPass = true;
+					                            $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
+					                        } 
+
+					                        else {
+					                        	if ($code == 212) {
+					                                $aMsgCds[$code] = 'Mandatory fields are missing' ;
+					                          	} 
+					                          	else {
+					                          		 $aMsgCds[213] = 'Profile authentication failed' ;
+					                          	}
+					                        }
+
+					                    }  
+					                    else 
+							            {
+							            	if ( $sosPreference == 'STRICT' )
+					                        {
+								        		if (empty($authToken) === true)
+								                { 
+								                     $aMsgCds[211] = 'Auth token or SSO token not received' ;
+								                } else {
+								                     $aMsgCds[209] = 'Auth url not configured' ;
+								                }
+								            }
+							            }
 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
