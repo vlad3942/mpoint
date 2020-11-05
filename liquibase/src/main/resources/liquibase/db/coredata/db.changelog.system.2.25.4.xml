@@ -50,8 +50,692 @@
             schemaName="log"
             tableName="state_tbl">
 
+            <column name="id" value="2010102"/>
+            <column name="name" value="Card Number is invalid."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010103"/>
+            <column name="name" value="Installment field value is invalid"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010104"/>
+            <column name="name" value="Invalid Order Number value"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010105"/>
+            <column name="name" value="Missing Mandatory Fields / Data not present / invalid data field (general error code when any field is invalid)"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010106"/>
+            <column name="name" value="Invalid MerchantID"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010107"/>
+            <column name="name" value="Invalid TransactionID"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010108"/>
+            <column name="name" value="Invalid Transaction date"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010109"/>
+            <column name="name" value="Invalid CVC"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010110"/>
+            <column name="name" value="Invalid Payment Type"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010112"/>
+            <column name="name" value="Invalid Expiry Date"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010113"/>
+            <column name="name" value="Invalid 3DS Secure values"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010114"/>
+            <column name="name" value="Invalid Card type"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010115"/>
+            <column name="name" value="Invalid Request version"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010116"/>
+            <column name="name" value="Return URL is not set."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010117"/>
+            <column name="name" value="Invalid currency code."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010202"/>
+            <column name="name" value="Invalid PIN OR OTP"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010203"/>
+            <column name="name" value="Insufficient funds / over credit limit"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010204"/>
+            <column name="name" value="Expired Card"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010205"/>
+            <column name="name" value="Unable to authorize"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010206"/>
+            <column name="name" value="Exceeds withdrawal count limit OR Authentication requested"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010207"/>
+            <column name="name" value="Do Not Honor"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010208"/>
+            <column name="name" value="Transaction not permitted to user"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010209"/>
+            <column name="name" value="Transaction Aborted by user / Card Holder Abandoned 3DS/Wallet"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010210"/>
+            <column name="name" value="User Inactive or Session Expired"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010211"/>
+            <column name="name" value="Only a partial amount was approved"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010302"/>
+            <column name="name" value="Parse error / invalid Request"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010303"/>
+            <column name="name" value="Service not available."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010304"/>
+            <column name="name" value="Time out"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010305"/>
+            <column name="name" value="Payment is cancelled / Payment reversed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010306"/>
+            <column name="name" value="Waiting for upstream response"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010307"/>
+            <column name="name" value="No Routing Available"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010308"/>
+            <column name="name" value="System DB Error"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010309"/>
+            <column name="name" value="Invalid Operation / Operation Rejected"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010310"/>
+            <column name="name" value="Transaction already in progress /  Duplicate Transaction / Duplicate Order Number"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010311"/>
+            <column name="name" value="Endpoint not supported"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010312"/>
+            <column name="name" value="Transaction not permitted to terminal"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010313"/>
+            <column name="name" value="Invalid merchant account / configuration / API permission missing"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
             <column name="id" value="2010314"/>
             <column name="name" value="Transaction rejected by Issuer / Authorization failed /Transaction Failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010315"/>
+            <column name="name" value="EMI not available"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010316"/>
+            <column name="name" value="Void not supported"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010317"/>
+            <column name="name" value="Already Captured"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010318"/>
+            <column name="name" value="Retry limit exceeded"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010319"/>
+            <column name="name" value="Invalid Capture attempted"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010320"/>
+            <column name="name" value="Transaction Not Posted"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010321"/>
+            <column name="name" value="Recurring Payment Not Supported"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010322"/>
+            <column name="name" value="Stored card option is disabled."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010323"/>
+            <column name="name" value="Request Authentication Failed."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010324"/>
+            <column name="name" value="Unable to decrypt request."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010325"/>
+            <column name="name" value="Transaction ID / EP Generation Failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010326"/>
+            <column name="name" value="Installment Payment is disabled."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010327"/>
+            <column name="name" value="Ticket issue failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010328"/>
+            <column name="name" value="China Union Pay sign failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010329"/>
+            <column name="name" value="Card type is not allowed."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010330"/>
+            <column name="name" value="Issuing bank unavailable.	"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010331"/>
+            <column name="name" value="Transaction exceeds the approved limit	"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010332"/>
+            <column name="name" value="Cannot void as capture or credit is submitted	"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010333"/>
+            <column name="name" value="Cannot Refund / You requested a credit for a capture that was previously voided."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010334"/>
+            <column name="name" value="Credit amount exceeds maximum allowed for your Merchant account."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010401"/>
+            <column name="name" value="FRAUD Suspicion / Rejected"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010402"/>
+            <column name="name" value="Address verification failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010403"/>
+            <column name="name" value="Card Acceptor should contact accquirer"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010404"/>
+            <column name="name" value="Security Voilation"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010405"/>
+            <column name="name" value="Card is Blocked due to fraud"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010406"/>
+            <column name="name" value="3D Secure authentication failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010407"/>
+            <column name="name" value="Fraud Stolen Card"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010408"/>
+            <column name="name" value="Compliance ERROR"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010409"/>
+            <column name="name" value="Transaction Previously declined"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010410"/>
+            <column name="name" value="E-commerce declined"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010411"/>
+            <column name="name" value="Card restricted"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010412"/>
+            <column name="name" value="Card Function Not Supported"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010413"/>
+            <column name="name" value="Physical Card Error"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010414"/>
+            <column name="name" value="BIN check failed"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010415"/>
+            <column name="name" value="Validation Check Failed."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010416"/>
+            <column name="name" value="CVN did not match	"/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010417"/>
+            <column name="name" value="The customer matched an entry on the processor’s negative file."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010418"/>
+            <column name="name" value="Strong customer authentication (SCA) is required for this transaction."/>
+            <column name="module" value="sub-code"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="2010419"/>
+            <column name="name" value="authorization request was approved by the issuing bank but declined by Gateway/processor"/>
             <column name="module" value="sub-code"/>
         </insert>
 
