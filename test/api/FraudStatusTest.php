@@ -25,8 +25,6 @@ class FraudStatusTest extends baseAPITest
 
     public function testSuccessUpdateFraudStatus()
     {
-        //TODO Must be fixed asap
-        $this->markTestIncomplete("Throws Exception : Unable to insert new message for Transaction: 1001001 and State: 3017");
         $pspID = 2;
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -61,8 +59,6 @@ class FraudStatusTest extends baseAPITest
 
     public function testFailUpdateFraudStatus()
     {
-        //TODO Must be fixed asap
-        $this->markTestIncomplete("Throws ErrorException: Querying test MPoint DB failed: ERROR:  insert or update on table message_tbl violates foreign key constraint msg2state_fk. DETAIL:  Key (stateid)=(3118) is not present in table state_tbl");
         $pspID = 2;
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
