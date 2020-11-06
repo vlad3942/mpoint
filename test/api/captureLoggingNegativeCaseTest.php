@@ -20,7 +20,7 @@ require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
 
-class CaptureLoggingTestNegativeCase extends baseAPITest
+class CaptureLoggingNegativeCaseTest extends baseAPITest
 {
 	/**
 	 * @var RDB
@@ -82,7 +82,7 @@ class CaptureLoggingTestNegativeCase extends baseAPITest
 			$cStates = array();
 			$aStates = array();
 			
-			$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+			$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
 			$this->assertIsResource($res);
 			while ($row = pg_fetch_assoc($res) )
 			{
