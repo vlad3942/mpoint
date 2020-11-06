@@ -285,8 +285,12 @@ class CreditCard extends EndUserAccount
     * @return 	string
    */
 
-    public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY, $is_legacy = 'true')
     {
+        if(strtolower($is_legacy) == 'false') {
+            return $this->getFraudCheckRouteForSR($iCardID,$iFraudType);
+        }
+
         $sql = "SELECT DISTINCT PSP.id AS pspid,CA.POSITION FROM ". $this->_constDataSourceQuery() .
             "WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
