@@ -16,6 +16,6 @@ class MobilePayCaptureAPITest extends CaptureAPITest
 
     public function testSuccessfulCaptureInitiated()
     {
-
+        $this->markTestIncomplete();
     }
 }

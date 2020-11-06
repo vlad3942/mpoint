@@ -38,6 +38,8 @@ define("sFUNCTION_PATH", sSYSTEM_PATH ."/api/functions/");
 define("sLIB_PATH", sSYSTEM_PATH ."/api/lib/");
 // Define path to the System Configuration
 define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
+// Define path to the Environment Configuration
+define("sENV_PATH", sSYSTEM_PATH ."/env/");
 // Define Language Path Constant
 define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
@@ -67,6 +69,8 @@ require_once(sAPI_CLASS_PATH ."uaprofile.php");
 // Require API containing generic validation functions
 require_once(sAPI_CLASS_PATH ."validate_base.php");
 
+// Require Global library functions file
+require_once(sFUNCTION_PATH ."global.php");
 // Require Global function file
 require_once(sAPI_FUNCTION_PATH ."global.php");
 

@@ -37,12 +37,12 @@ class GetGoMobileConfigurationsAPITest extends baseAPITest
 
 	public function testSuccessfulGoMobileConfigResponse()
 	{
-        $iClientID = 113;
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 113, 'app')");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type) VALUES ('GOMOBILE_SMS_CHANNEL','123',113,'client')");
+        $iClientID = 10099;
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10099, 'app')");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type) VALUES ('GOMOBILE_SMS_CHANNEL','123',10099,'client')");
 
         $xml = $this->getGoMobileConfigDoc($iClientID);
 
@@ -52,7 +52,7 @@ class GetGoMobileConfigurationsAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><client-gomobile-configurations><client-config id="113"><gomobile-configuration-params><gomobile-configuration-param id="1" name="GOMOBILE_SMS_CHANNEL">123</gomobile-configuration-param></gomobile-configuration-params></client-config></client-gomobile-configurations></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><client-gomobile-configurations><client-config id="10099"><gomobile-configuration-params><gomobile-configuration-param id="1" name="GOMOBILE_SMS_CHANNEL">123</gomobile-configuration-param></gomobile-configuration-params></client-config></client-gomobile-configurations></root>', $sReplyBody);
 
         return $sReplyBody;
 	}
