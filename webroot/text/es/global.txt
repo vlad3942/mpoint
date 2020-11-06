@@ -1551,11 +1551,11 @@ msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Please enter the confirmation code: {CODE} on the website to authenticate your transfer.
 The code will automatically expire in an hour. @@@
 
-#: /api/classes/static_route.php:122
+#: /api/classes/crs/payment_method.php:127
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
-#: /api/classes/static_route.php:124
+#: /api/classes/crs/payment_method.php:129
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 

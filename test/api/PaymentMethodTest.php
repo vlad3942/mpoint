@@ -13,10 +13,10 @@ require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
 require_once __DIR__ . '/../../api/classes/card_prefix_config.php';
 require_once __DIR__ . '/../../api/classes/core/card.php';
-require_once __DIR__ . '/../../api/classes/static_route.php';
+require_once __DIR__ . '/../../api/classes/crs/payment_method.php';
 require_once __DIR__ . '/../../api/classes/routing_service_response.php';
 
-class StaticRouteTest extends baseAPITest
+class PaymentMethodTest extends baseAPITest
 {
 
     private $_OBJ_DB;
@@ -66,7 +66,7 @@ class StaticRouteTest extends baseAPITest
         if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
         {
             $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-            $obj_SR = StaticRoute::produceConfigurations($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+            $obj_SR = PaymentMethod::produceConfigurations($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
 
             $this->assertEquals(8, $obj_SR[1]->getCardTypeId());
             $this->assertEquals(11, $obj_SR[2]->getCardTypeId());
@@ -104,7 +104,7 @@ class StaticRouteTest extends baseAPITest
         if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
         {
             $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-            $obj_SR = StaticRoute::produceConfigurations($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+            $obj_SR = PaymentMethod::produceConfigurations($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
             $this->assertEmpty($obj_SR);
         }
     }
@@ -115,25 +115,21 @@ class StaticRouteTest extends baseAPITest
                     <payment_methods>
                         <payment_method>
                             <id>8</id>
-                            <psp_type>6</psp_type>
                             <preference>1</preference>
                             <state_id>1</state_id>
                         </payment_method>
                         <payment_method>
                             <id>11</id>
-                            <psp_type>6</psp_type>
                             <preference>2</preference>
                             <state_id>1</state_id>
                         </payment_method>
                         <payment_method>
                             <id>5</id>
-                            <psp_type>1</psp_type>
                             <preference>3</preference>
                             <state_id>1</state_id>
                         </payment_method>
                         <payment_method>
                             <id>7</id>
-                            <psp_type>6</psp_type>
                             <preference>4</preference>
                             <state_id>1</state_id>
                         </payment_method>

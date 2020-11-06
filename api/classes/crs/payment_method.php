@@ -99,7 +99,7 @@ class PaymentMethod extends Card
         $aObj_Configurations = array();
         $cardIds = array_keys($aPaymentMethodsConfig);
 
-        $sql = "SELECT DISTINCT ON (C.id) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, C.paymenttype AS processortype, '' AS pspid,
+        $sql = "SELECT DISTINCT ON (C.id) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, C.paymenttype AS processortype, '-1' AS pspid,
                 false AS preferred, 0 AS installment, true AS cvcmandatory, '' AS walletid, true AS dccEnabled
 				FROM System" . sSCHEMA_POSTFIX . ".Card_Tbl C
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid

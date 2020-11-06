@@ -441,7 +441,7 @@ class Home extends General
      * @param   integer $countryId
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $sr_service='false')
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $is_legacy='false')
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -471,7 +471,7 @@ class Home extends General
             }
         }
 
-        $sql = $this->getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $sr_service);
+        $sql = $this->getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $is_legacy);
 
         $result = $this->getDBConn()->getAllNames($sql);
 
@@ -539,14 +539,14 @@ class Home extends General
      * @param boolean $adc            Include Stored Cards where the card type has been disabled, defaults to false
      * @param array $aPaymentMethods  Holds list of payment methods given by CRS
      * @param integer $countryId      Hold unqiue ID cof the country
-     * @param string $sr_service      Hold a flag which will deside whether new SR serivce is enabled for the cleint or not
+     * @param string $is_legacy       Hold a flag which will deside whether to use legacy flow or not
      * @return string
      */
-	private function getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $sr_service)
+	private function getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $is_legacy)
     {
         $sql = '';
         $aCardId = array_map(function ($paymentMethod) { return $paymentMethod->id; }, $aPaymentMethods);
-        if(strtolower($sr_service) == 'true')
+        if(strtolower($is_legacy) == 'false')
         {
             $sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
 					SC.id AS typeid, SC.name AS type, SC.cvclength AS cvclength,
