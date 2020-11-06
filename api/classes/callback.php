@@ -964,6 +964,8 @@ abstract class Callback extends EndUserAccount
             return new Paymaya($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya"]);
 		case (Constants::iGRAB_PAY_PSP):
 			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+		case (Constants::iCEBUPAYMENTCENTER_APM):
+			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
 
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
