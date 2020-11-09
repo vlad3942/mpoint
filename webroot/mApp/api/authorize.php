@@ -250,11 +250,27 @@ try
                                     $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
                                     $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
                                     $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
+                                    $additionalTxnData = [];
 
 									if ($isStoredCardPayment === true)
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
+									}
+
+									if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
+									{
+										$additionalDataParamsCount = count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children());
+										for ($index = 0; $index < $additionalDataParamsCount; $index++)
+										{
+											$additionalTxnData[$index]['name'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+											$additionalTxnData[$index]['value'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
+											$additionalTxnData[$index]['type'] = (string)'Transaction';
+										}
+									}
+									if(count($additionalTxnData) > 0)
+									{
+										$obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
 									}
 									
 									$_OBJ_DB->query("COMMIT");
