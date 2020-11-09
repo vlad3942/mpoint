@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Create partitions for clients that are not part of the configuration data in Production -->
+    <changeSet author="Jona" id="2020-11-09-master-v2.25">
+        <sql dbms="postgresql" endDelimiter=";">
+            <!-- DSB (Test) -->
+            CREATE TABLE log.txnpassbook_tbl_10014 PARTITION OF log.txnpassbook_tbl
+            FOR VALUES IN (10014);
+            <!-- SGA -->
+            CREATE TABLE log.txnpassbook_tbl_10019 PARTITION OF log.txnpassbook_tbl
+            FOR VALUES IN (10019);
+            <!-- Internal Payment Client -->
+            CREATE TABLE log.txnpassbook_tbl_10048 PARTITION OF log.txnpassbook_tbl
+            FOR VALUES IN (10048);
+            <!-- Philipines Airlines -->
+            CREATE TABLE log.txnpassbook_tbl_10055 PARTITION OF log.txnpassbook_tbl
+            FOR VALUES IN (10055);
+            <!-- automatedCebu -->
+            CREATE TABLE log.txnpassbook_tbl_10063 PARTITION OF log.txnpassbook_tbl
+            FOR VALUES IN (10063);
+            <!-- automatedummy -->
+            CREATE TABLE log.txnpassbook_tbl_10064 PARTITION OF log.txnpassbook_tbl
+            FOR VALUES IN (10064);
+        </sql>
+    </changeSet>
+ 
+</databaseChangeLog>
