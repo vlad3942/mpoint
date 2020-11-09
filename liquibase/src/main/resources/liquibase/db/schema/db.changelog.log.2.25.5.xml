@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <!-- Create partitions for clients that are not part of the configuration data in Production -->
-    <changeSet author="Jona" id="2020-11-09-master-v2.25">
+    <changeSet author="Jonatan Evald Buus" id="2020-11-09-master-v2.25">
         <sql dbms="postgresql" endDelimiter=";">
             <!-- DSB (Test) -->
             CREATE TABLE log.txnpassbook_tbl_10014 PARTITION OF log.txnpassbook_tbl
