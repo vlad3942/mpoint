@@ -169,9 +169,7 @@ require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
-require_once(sCLASS_PATH .'/verification/verification.php');
-// Require Business logic for the Mobile Web module
-require_once(sCLASS_PATH ."/mobile_web.php");
+
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -428,46 +426,60 @@ try
                                         }
 
                                         // sso verification conditions checking 
-										$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 										$sosPreference =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "SSO_PREFERENCE");
 					       				$sosPreference = strtoupper($sosPreference); 
 
 										// Single Sign-On
-					                    $bIsSingleSingOnPass = false;
 					                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 										$authToken = trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
-										$bIsSingleSingOnPass = false;
-					                    $profileTypeId = null;
-					                    if (empty($authenticationURL) === false && empty($authToken)=== false)
-					                    {
 
-					                    	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}["language"]);
-					                        $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-					                        $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
 
-					                        if ( $sosPreference == 'STRICT' )
-					                        {
-					                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"], $sosPreference);
-					                        } else {
-												
-													$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
-											}
-					                        if ($code == 10) {
-					                            $bIsSingleSingOnPass = true;
-					                            $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
-					                        } 
+										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
+										{
+											$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
+											if(empty($obj_CustomerInfo) === false) {
+                                                $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                                if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
+                                                    $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
+                                                }
+                                                if (floatval($obj_TxnInfo->getMobile()) > 0) {
+                                                    $obj_Customer->mobile = $obj_TxnInfo->getMobile();
+                                                    $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
+                                                    $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+                                                }
+                                                if (strlen($obj_TxnInfo->getEMail()) > 0) {
+                                                    $obj_Customer->email = $obj_TxnInfo->getEMail();
+                                                }
+                                                $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
 
-					                        else {
-					                        	if ($code == 212) {
-					                                $aMsgCds[$code] = 'Mandatory fields are missing' ;
-					                          	} 
-					                          	else {
-					                          		 $aMsgCds[213] = 'Profile authentication failed' ;
-					                          	}
-					                        }
+                                                if ( $sosPreference == 'STRICT' )
+						                        {
+						                        	$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"], $sosPreference);
 
-					                    }  
-					                    else 
+						                        	if ($code == 212) 
+														{
+						                                	$aMsgCds[$code] = 'Mandatory fields are missing' ;
+						                          	} 
+						                          	else {
+						                          		 $aMsgCds[213] = 'Profile authentication failed' ;
+						                          	}
+						                        } 
+						                        else {
+													
+													$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
+												}
+
+                                            }
+											else{
+											    //Account Not Found
+											    if ( $sosPreference != 'STRICT' )
+						                        {
+									        		$code = 5;
+									            }
+											    
+                                            }
+										}
+										else 
 							            {
 							            	if ( $sosPreference == 'STRICT' )
 					                        {
@@ -480,36 +492,13 @@ try
 								            }
 							            }
 
+					                    
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
-											// Single Sign-On
-											if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
-											{
-												$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-												if(empty($obj_CustomerInfo) === false) {
-                                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                                                    if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
-                                                        $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
-                                                    }
-                                                    if (floatval($obj_TxnInfo->getMobile()) > 0) {
-                                                        $obj_Customer->mobile = $obj_TxnInfo->getMobile();
-                                                        $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
-                                                        $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
-                                                    }
-                                                    if (strlen($obj_TxnInfo->getEMail()) > 0) {
-                                                        $obj_Customer->email = $obj_TxnInfo->getEMail();
-                                                    }
-                                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                                    $code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
-                                                }
-												else{
-												    //Account Not Found
-												    $code = 5;
-                                                }
-											}
+											
 											// Authentication is not required for payment methods that are sending a token or Invoice
-                                            elseif (($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
+                                            if (($code != 5) && ($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
                                                 (empty($obj_DOM->{'authorize-payment'}[$i]->password) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) === false))
 											{
 												$code = 10;
