@@ -260,7 +260,8 @@ try
 
 									if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
 									{
-										for ($index = 0; $index < count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
+										$additionalDataParamsCount = count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children());
+										for ($index = 0; $index < $additionalDataParamsCount; $index++)
 										{
 											$additionalTxnData[$index]['name'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
 											$additionalTxnData[$index]['value'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
