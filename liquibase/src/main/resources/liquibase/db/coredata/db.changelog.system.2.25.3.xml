@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Gaorav Vishnoi"
+        id="2020-11-03-setup-v2.25-system">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="paymenttype_tbl">
+
+            <column name="id" value="8"/>
+            <column name="name" value="Offline Payment"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+
+            <column name="id" value="96"/>
+            <column name="name" value="CEBU Payment Center Offline"/>
+            <column name="paymenttype" value="8"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="psp_tbl">
+
+            <column name="id" value="69"/>
+            <column name="name" value="CEBU Payment Center"/>
+            <column name="enabled" value="true"/>
+            <column name="system_type" value="4"/>
+            <column name="supportedpartialoperations" value="0"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcard_tbl">
+
+            <column name="cardid" value="96"/>
+            <column name="pspid" value="69"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="69"/>
+            <column name="currencyid" value="608"/>
+            <column name="name" value="PHP"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="69"/>
+            <column name="currencyid" value="784"/>
+            <column name="name" value="AED"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="cardpricing_tbl">
+
+            <column name="pricepointid" value="-608"/>
+            <column name="cardid" value="96"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="cardpricing_tbl">
+
+            <column name="pricepointid" value="-784"/>
+            <column name="cardid" value="96"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
