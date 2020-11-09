@@ -92,7 +92,7 @@ class CustomerInfo
 		$this->_sCustomerRef = trim($cr);
 		$this->_sFullName = trim($name);
 		$this->_sLanguage = trim($lang);
-        $this->_iProfileID = trim($profileid);
+        $this->_iProfileID = (integer) $profileid;
 	}
 
 	public function getID() { return $this->_iID; }
@@ -111,7 +111,7 @@ class CustomerInfo
 		$xml  = '<customer';
 		if ($this->_iID > 0) { $xml .= ' id="'. $this->_iID .'"'; }
 		if (strlen($this->_sCustomerRef) > 0) { $xml .= ' customer-ref="'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'"'; }
-		if (strlen($this->_iProfileID) > 0 ) { $xml .= ' profile-id="'.htmlspecialchars($this->_iProfileID, ENT_NOQUOTES) .'"' ;}
+		if ($this->_iProfileID > 0 ) { $xml .= ' profile-id="'.htmlspecialchars($this->_iProfileID, ENT_NOQUOTES) .'"' ;}
 		$xml  .= '>';
 		if (strlen($this->_sFullName) > 0) { $xml .= '<full-name>'. htmlspecialchars($this->_sFullName, ENT_NOQUOTES) .'</full-name>'; }
 		if ($this->_lMobile > 0) { $xml .= '<mobile country-id="'. $this->_iCountryID .'">'. $this->_lMobile .'</mobile>'; }
