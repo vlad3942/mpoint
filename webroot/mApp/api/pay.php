@@ -327,10 +327,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
        				$sosPreference = strtoupper($sosPreference); 
 
 					// Single Sign-On
-                    $bIsSingleSingOnPass = false;
                     $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 					$authToken = trim($obj_DOM->{'pay'}[$i]->{'auth-token'});
-					$bIsSingleSingOnPass = false;
                     $profileTypeId = null;
                     if (empty($authenticationURL) === false && empty($authToken)=== false)
                     {
@@ -348,7 +346,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 
                         if ($code == 10) {
-                            $bIsSingleSingOnPass = true;
                             $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
                         } 
 
