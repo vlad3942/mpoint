@@ -161,7 +161,6 @@ require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH ."/grabpay.php");
 // Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/apm/paymaya.php');
-require_once(sCLASS_PATH .'/verification/verification.php');
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
 $aMsgCds = array();
@@ -329,39 +328,32 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Single Sign-On
                     $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 					$authToken = trim($obj_DOM->{'pay'}[$i]->{'auth-token'});
-                    $profileTypeId = null;
+                    $clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ;
                     if (empty($authenticationURL) === false && empty($authToken)=== false)
                     {
 
                     	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'pay'}[$i]->{'client-info'}->email, $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'pay'}[$i]->{'client-info'}["language"]);
-                        $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                        $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-
-                        if ( $sosPreference == 'STRICT' )
+                        
+                        if ( $sosPreference === 'STRICT' )
                         {
-                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'pay'}[$i]["client-id"], $sosPreference);
-                        } else {
-							
-								$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'pay'}[$i]["client-id"]);
-						}
+                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
 
-                        if ($code == 10) {
-                            $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
-                        } 
-
-                        else {
                         	if ($code == 212) {
                                 $aMsgCds[$code] = 'Mandatory fields are missing' ;
                           	} 
                           	else {
                           		 $aMsgCds[213] = 'Profile authentication failed' ;
                           	}
-                        }
+
+                        } else {
+							
+								$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, $clientId);
+						}
 
                     }  
                     else 
 		            {	
-		            	if ( $sosPreference == 'STRICT' )
+		            	if ( $sosPreference === 'STRICT' )
                         {
 			        		if (empty($authToken) === true)
 			                { 
