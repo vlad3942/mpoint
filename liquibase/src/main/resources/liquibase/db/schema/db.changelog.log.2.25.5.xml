@@ -5,28 +5,116 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <!-- Create partitions for clients that are not part of the configuration data in Production -->
+    <!-- Create default partition for clients that are not part of the configuration data in Production or does no have a partition defined-->
     <changeSet author="Jonatan Evald Buus" id="2020-11-09-master-v2.25">
         <sql dbms="postgresql" endDelimiter=";">
-            <!-- DSB (Test) -->
-            CREATE TABLE log.txnpassbook_tbl_10014 PARTITION OF log.txnpassbook_tbl
-            FOR VALUES IN (10014);
-            <!-- SGA -->
-            CREATE TABLE log.txnpassbook_tbl_10019 PARTITION OF log.txnpassbook_tbl
-            FOR VALUES IN (10019);
-            <!-- Internal Payment Client -->
-            CREATE TABLE log.txnpassbook_tbl_10048 PARTITION OF log.txnpassbook_tbl
-            FOR VALUES IN (10048);
-            <!-- Philipines Airlines -->
-            CREATE TABLE log.txnpassbook_tbl_10055 PARTITION OF log.txnpassbook_tbl
-            FOR VALUES IN (10055);
-            <!-- automatedCebu -->
-            CREATE TABLE log.txnpassbook_tbl_10063 PARTITION OF log.txnpassbook_tbl
-            FOR VALUES IN (10063);
-            <!-- automatedummy -->
-            CREATE TABLE log.txnpassbook_tbl_10064 PARTITION OF log.txnpassbook_tbl
-            FOR VALUES IN (10064);
+            -- Create default partition
+            CREATE TABLE Log.TxnPassbook_Tbl_Default PARTITION OF Log.TxnPassbook_Tbl DEFAULT;
+            
+            -- Move data for low volume clients into default partition
+            INSERT INTO Log.TxnPassbook_Tbl_Default SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid IN (SELECT clientid FROM Log.TxnPassBook_Tbl GROUP BY clientid HAVING Count(*) &lt; 200000);
+
+            -- Drop partitions for low volume or non-existan clients
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10021; -- SGA
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10022; -- Ethiopian Airlines
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10060; -- Music Planet Live
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10061; -- Sunrise Airways
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10062; -- MiRide
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10065; -- MiMeeting
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10066; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10067; -- E-Visa
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10070; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10071; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10072; -- Ethiopian Holidays
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10073; -- GOL Airways
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10074; -- Viva Airways Colombia
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10075; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10076; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10077; -- CEBU Pacific Air
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10078; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10079; -- UATP_Test_Client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10080; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10081; -- Viva Airways Peru
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10089; -- Non-Existant client
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10098; -- Farah Experiences
+            DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10099; -- CPM Live
         </sql>
+        <rollback>
+            <sql>
+                -- SGA
+                CREATE TABLE log.txnpassbook_tbl_10021 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10021);
+                INSERT INTO Log.txnpassbook_tbl_10021 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10021;
+                -- Ethiopian Airlines
+                CREATE TABLE log.txnpassbook_tbl_10022 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10022);
+                INSERT INTO Log.txnpassbook_tbl_10022 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10022;
+                -- Music Planet Live
+                CREATE TABLE log.txnpassbook_tbl_10060 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10060);
+                INSERT INTO Log.txnpassbook_tbl_10060 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10060;
+                -- Sunrise Airways
+                CREATE TABLE log.txnpassbook_tbl_10061 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10061);
+                INSERT INTO Log.txnpassbook_tbl_10061 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10061;
+                -- MiRide
+                CREATE TABLE log.txnpassbook_tbl_10062 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10062);
+                INSERT INTO Log.txnpassbook_tbl_10062 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10062;
+                -- MiMeeting
+                CREATE TABLE log.txnpassbook_tbl_10065 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10065);
+                INSERT INTO Log.txnpassbook_tbl_10065 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10065;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10066 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10066);
+                INSERT INTO Log.txnpassbook_tbl_10066 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10066;
+                -- E-Visa
+                CREATE TABLE log.txnpassbook_tbl_10067 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10067);
+                INSERT INTO Log.txnpassbook_tbl_10067 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10067;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10070 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10070);
+                INSERT INTO Log.txnpassbook_tbl_10070 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10070;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10071 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10071);
+                INSERT INTO Log.txnpassbook_tbl_10071 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10071;
+                -- Ethiopian Holidays
+                CREATE TABLE log.txnpassbook_tbl_10072 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10072);
+                INSERT INTO Log.txnpassbook_tbl_10072 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10072;
+                -- GOL Airways
+                CREATE TABLE log.txnpassbook_tbl_10073 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10073);
+                INSERT INTO Log.txnpassbook_tbl_10073 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10073;
+                -- Viva Airways Colombia
+                CREATE TABLE log.txnpassbook_tbl_10074 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10074);
+                INSERT INTO Log.txnpassbook_tbl_10074 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10074;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10075 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10075);
+                INSERT INTO Log.txnpassbook_tbl_10075 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10075;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10076 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10076);
+                INSERT INTO Log.txnpassbook_tbl_10076 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10076;
+                -- CEBU Pacific Air
+                CREATE TABLE log.txnpassbook_tbl_10077 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10077);
+                INSERT INTO Log.txnpassbook_tbl_10077 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10077;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10078 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10078);
+                INSERT INTO Log.txnpassbook_tbl_10078 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10078;
+                -- UATP_Test_Client
+                CREATE TABLE log.txnpassbook_tbl_10079 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10079);
+                INSERT INTO Log.txnpassbook_tbl_10079 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10079;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10080 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10080);
+                INSERT INTO Log.txnpassbook_tbl_10080 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10080;
+                -- Viva Airways Peru
+                CREATE TABLE log.txnpassbook_tbl_10081 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10081);
+                INSERT INTO Log.txnpassbook_tbl_10081 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10081;
+                -- Non-Existant client
+                CREATE TABLE log.txnpassbook_tbl_10089 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10089);
+                INSERT INTO Log.txnpassbook_tbl_10089 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10089;
+                -- Farah Experiences
+                CREATE TABLE log.txnpassbook_tbl_10098 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10098);
+                INSERT INTO Log.txnpassbook_tbl_10098 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10009;
+                -- CPM Live
+                CREATE TABLE log.txnpassbook_tbl_10099 PARTITION OF Log.TxnPassbook_tbl FOR VALUES IN (10099);
+                INSERT INTO Log.txnpassbook_tbl_10099 SELECT * FROM Log.TxnPassbook_Tbl WHERE clientid = 10099;
+
+                -- Drop default partition
+                DROP TABLE Log.TxnPassbook_Tbl_Default;
+            </sql>
+        </rollback>
     </changeSet>
  
 </databaseChangeLog>
