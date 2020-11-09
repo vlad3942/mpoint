@@ -49,7 +49,7 @@ RUN mkdir /opt/cpm/mPoint/log \
     && printf "LoadModule rewrite_module modules/mod_rewrite.so" >> /etc/apache2/httpd.conf \
     && chmod +x -R /sh \
     && dos2unix /sh/*
-    
+
 COPY docker/apache.default.conf /etc/apache2/conf.d
 
 RUN /sh/runtests.sh
@@ -61,7 +61,7 @@ RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
 FROM registry.t.cpm.dev/library/phpfpmextras:master20201020083451
-    
+
 USER 0
 
 WORKDIR /opt/cpm/mPoint
