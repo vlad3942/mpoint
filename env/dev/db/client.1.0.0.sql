@@ -305,3 +305,8 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 --This will support all currency to all country
 
 INSERT INTO client.countrycurrency_tbl (clientid, countryid, currencyid) VALUES(10077, 0, 1);
+
+--CEBU Payment Center
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_type, walletid, capture_method, dccenabled) VALUES(10077, 96, true, 69, NULL, 1, NULL, false, 4, 0, 2, NULL, 0, false);
+INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 69, 'CEBU Payment Center', '', '', true, null);
+INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100770, 69, '-1', true);
