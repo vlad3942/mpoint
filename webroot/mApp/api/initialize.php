@@ -149,6 +149,56 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					  }
 					}
 					
+					// sso verification conditions checking 
+					$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
+					$sosPreference =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "SSO_PREFERENCE");
+       				$sosPreference = strtoupper($sosPreference); 
+
+					// Single Sign-On
+                    $bIsSingleSingOnPass = false;
+                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
+					$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
+                    $profileTypeId = null;
+                    $clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
+                    if (empty($authenticationURL) === false && empty($authToken)=== false)
+                    {
+
+                    	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"]);
+                        
+                        if ( $sosPreference === 'STRICT' )
+                        {
+                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
+
+                        	if ($code == 212) {
+                                $aMsgCds[212] = 'Mandatory fields are missing' ;
+                          	} 
+                          	if ($code == 1) {
+                          		 $aMsgCds[213] = 'Profile authentication failed' ;
+                          	}
+
+                        } else {
+							
+								$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, $clientId);
+						}
+
+                        if ($code == 10) {
+                            $bIsSingleSingOnPass = true;
+                            $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
+                        } 
+
+                    }  
+                    else 
+		            {
+		            	if ( $sosPreference === 'STRICT' )
+                        {
+			        		if (empty($authToken) === true)
+			                { 
+			                     $aMsgCds[211] = 'Auth token or SSO token not received' ;
+			                } else {
+			                     $aMsgCds[209] = 'Auth url not configured' ;
+			                }
+			            }
+		            }
 					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
