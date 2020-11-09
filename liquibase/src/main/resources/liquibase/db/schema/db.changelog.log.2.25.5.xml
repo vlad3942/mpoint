@@ -5,8 +5,616 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <!-- Temporarily drop event trigger to enable changes to replicated tables -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-09-master-v2.25-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
     <!-- Create default partition for clients that are not part of the configuration data in Production or does no have a partition defined-->
-    <changeSet author="Jonatan Evald Buus" id="2020-11-09-master-v2.25">
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-09-master-v2.25">
+
+        <!-- Redefine foreign keys for log.settlement_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="settlement_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="settlement_tbl_client_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="client_id"
+            baseTableCatalogName="log"
+            baseTableName="settlement_tbl"
+            baseTableSchemaName="log"
+            constraintName="settlement2client_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="settlement_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="settlement_tbl_psp_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="psp_id"
+            baseTableCatalogName="log"
+            baseTableName="settlement_tbl"
+            baseTableSchemaName="log"
+            constraintName="settlement2psp_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="psp_tbl"
+            referencedTableSchemaName="system" />
+
+        <!-- Redefine foreign keys for log.externalreference_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="externalreference_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="externalref2psp_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="pspid"
+            baseTableCatalogName="log"
+            baseTableName="externalreference_tbl"
+            baseTableSchemaName="log"
+            constraintName="externalreference2psp_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="psp_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="externalreference_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="externalreferencetype_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="type"
+            baseTableCatalogName="log"
+            baseTableName="externalreference_tbl"
+            baseTableSchemaName="log"
+            constraintName="externalreference2externalreferencetype_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="externalreferencetype_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="externalreference_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="externalref2txn_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="txnid"
+            baseTableCatalogName="log"
+            baseTableName="externalreference_tbl"
+            baseTableSchemaName="log"
+            constraintName="externalref2transaction_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="transaction_tbl"
+            referencedTableSchemaName="log" />
+
+        <!-- Redefine foreign keys for log.paymentroute_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="paymentroute_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="pspid" />
+        <addForeignKeyConstraint
+            baseColumnNames="pspid"
+            baseTableCatalogName="log"
+            baseTableName="paymentroute_tbl"
+            baseTableSchemaName="log"
+            constraintName="paymentroute2psp_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="psp_tbl"
+            referencedTableSchemaName="system" />
+
+        <!-- Redefine foreign keys for log.order_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="order_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="order2txn_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="txnid"
+            baseTableCatalogName="log"
+            baseTableName="order_tbl"
+            baseTableSchemaName="log"
+            constraintName="order2transaction_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="transaction_tbl"
+            referencedTableSchemaName="log" />
+
+        <!-- Redefine foreign keys for log.transaction_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="transaction_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="convertedcurrency_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="convertedcurrencyid"
+            baseTableCatalogName="log"
+            baseTableName="transaction_tbl"
+            baseTableSchemaName="log"
+            constraintName="transaction2convertedcurrency_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="currency_tbl"
+            referencedTableSchemaName="system" />
+        
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="transaction_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="transaction_tbl_producttype_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="producttype"
+            baseTableCatalogName="log"
+            baseTableName="transaction_tbl"
+            baseTableSchemaName="log"
+            constraintName="transaction2producttype_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="producttype_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="transaction_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="transaction_tbl_session_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="sessionid"
+            baseTableCatalogName="log"
+            baseTableName="transaction_tbl"
+            baseTableSchemaName="log"
+            constraintName="transaction2session_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="session_tbl"
+            referencedTableSchemaName="log" />
+
+        <!-- Redefine foreign keys for log.session_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="session_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="session_tbl_account_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="accountid"
+            baseTableCatalogName="log"
+            baseTableName="session_tbl"
+            baseTableSchemaName="log"
+            constraintName="session2account_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="account_tbl"
+            referencedTableSchemaName="client" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="session_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="session_tbl_client_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="clientid"
+            baseTableCatalogName="log"
+            baseTableName="session_tbl"
+            baseTableSchemaName="log"
+            constraintName="session2client_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="session_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="session_tbl_country_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="countryid"
+            baseTableCatalogName="log"
+            baseTableName="session_tbl"
+            baseTableSchemaName="log"
+            constraintName="session2country_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="country_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="session_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="session_tbl_currency_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="currencyid"
+            baseTableCatalogName="log"
+            baseTableName="session_tbl"
+            baseTableSchemaName="log"
+            constraintName="session2currency_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="currency_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="session_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="session_tbl_sessiontype_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="sessiontypeid"
+            baseTableCatalogName="log"
+            baseTableName="session_tbl"
+            baseTableSchemaName="log"
+            constraintName="session2sessiontype_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="sessiontype_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="session_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="session_tbl_state_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="stateid"
+            baseTableCatalogName="log"
+            baseTableName="session_tbl"
+            baseTableSchemaName="log"
+            constraintName="session2state_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="state_tbl"
+            referencedTableSchemaName="system" />
+
+        <!-- Redefine foreign keys for log.txnpassbook_tbl -->
+        <addForeignKeyConstraint
+            baseColumnNames="clientid"
+            baseTableCatalogName="log"
+            baseTableName="txnpassbook_tbl"
+            baseTableSchemaName="log"
+            constraintName="txnpassbook2client_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
+        <addForeignKeyConstraint
+            baseColumnNames="transactionid"
+            baseTableCatalogName="log"
+            baseTableName="txnpassbook_tbl"
+            baseTableSchemaName="log"
+            constraintName="txnpassbook2transaction_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="transaction_tbl"
+            referencedTableSchemaName="log" />
+
+        <!-- Redefine foreign keys for log.flight_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="flight_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="arrival_countryid_country_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="arrival_countryid"
+            baseTableCatalogName="log"
+            baseTableName="flight_tbl"
+            baseTableSchemaName="log"
+            constraintName="arrival_country2country_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="country_tbl"
+            referencedTableSchemaName="system" />
+        
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="flight_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="departure_countryid_country_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="departure_countryid"
+            baseTableCatalogName="log"
+            baseTableName="flight_tbl"
+            baseTableSchemaName="log"
+            constraintName="departure_country2country_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="country_tbl"
+            referencedTableSchemaName="system" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="flight_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="order_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="order_id"
+            baseTableCatalogName="log"
+            baseTableName="flight_tbl"
+            baseTableSchemaName="log"
+            constraintName="flight2order_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="order_tbl"
+            referencedTableSchemaName="log" />
+
+        <!-- Redefine foreign keys for log.settlement_record_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="settlement_record_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="settlement_record_tbl_settlement_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="settlementid"
+            baseTableCatalogName="log"
+            baseTableName="settlement_record_tbl"
+            baseTableSchemaName="log"
+            constraintName="settlement_record2settlement_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="settlement_tbl"
+            referencedTableSchemaName="log" />
+
+        <dropForeignKeyConstraint
+            baseTableCatalogName="log"  
+            baseTableName="settlement_record_tbl"  
+            baseTableSchemaName="log"  
+            constraintName="settlement_record_tbl_transaction_tbl_id_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="transactionid"
+            baseTableCatalogName="log"
+            baseTableName="settlement_record_tbl"
+            baseTableSchemaName="log"
+            constraintName="settlement_record2transaction_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="transaction_tbl"
+            referencedTableSchemaName="log" />
+
+        <!-- Redefine foreign keys for Client.gatewaystat_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="gatewaystat_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="gatewaystat_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="gatewayid"
+            baseTableCatalogName="client"
+            baseTableName="gatewaystat_tbl"
+            baseTableSchemaName="client"
+            constraintName="gatewaystat2psp_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="psp_tbl"
+            referencedTableSchemaName="system" />
+            
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="gatewaystat_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="stattype_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="statetypeid"
+            baseTableCatalogName="client"
+            baseTableName="gatewaystat_tbl"
+            baseTableSchemaName="client"
+            constraintName="gatewaystat2statisticstype_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="statisticstype_tbl"
+            referencedTableSchemaName="system" />
+        
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="gatewaystat_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="clientstat_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="clientid"
+            baseTableCatalogName="client"
+            baseTableName="gatewaystat_tbl"
+            baseTableSchemaName="client"
+            constraintName="gatewaystat2client_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
+        <!-- Redefine foreign keys for Client.gatewaytrigger_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="gatewaytrigger_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="gateway_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="gatewayid"
+            baseTableCatalogName="client"
+            baseTableName="gatewaytrigger_tbl"
+            baseTableSchemaName="client"
+            constraintName="gatewaytrigger2psp_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="psp_tbl"
+            referencedTableSchemaName="system" />
+            
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="gatewaytrigger_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="atriggerunit_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="aggregationtriggerunit"
+            baseTableCatalogName="client"
+            baseTableName="gatewaytrigger_tbl"
+            baseTableSchemaName="client"
+            constraintName="gatewaytrigger2triggerunit_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="triggerunit_tbl"
+            referencedTableSchemaName="system" />
+        
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="gatewaytrigger_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="triggeclient_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="clientid"
+            baseTableCatalogName="client"
+            baseTableName="gatewaytrigger_tbl"
+            baseTableSchemaName="client"
+            constraintName="gatewaytrigger2client_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
+        <!-- Redefine foreign keys for Client.producttype_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="producttype_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="product_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="productid"
+            baseTableCatalogName="client"
+            baseTableName="producttype_tbl"
+            baseTableSchemaName="client"
+            constraintName="producttype2producttype_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="producttype_tbl"
+            referencedTableSchemaName="system" />
+        
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="producttype_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="client_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="clientid"
+            baseTableCatalogName="client"
+            baseTableName="producttype_tbl"
+            baseTableSchemaName="client"
+            constraintName="producttype2client_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
+        <!-- Redefine foreign keys for Client.retrial_tbl -->
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="retrial_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="retrialtype_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="typeid"
+            baseTableCatalogName="client"
+            baseTableName="retrial_tbl"
+            baseTableSchemaName="client"
+            constraintName="retrial2retrialtype_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="retrialtype_tbl"
+            referencedTableSchemaName="system" />
+        
+        <dropForeignKeyConstraint
+            baseTableCatalogName="client"  
+            baseTableName="retrial_tbl"  
+            baseTableSchemaName="client"  
+            constraintName="client_fk" />
+        <addForeignKeyConstraint
+            baseColumnNames="clientid"
+            baseTableCatalogName="client"
+            baseTableName="retrial_tbl"
+            baseTableSchemaName="client"
+            constraintName="retrial2client_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="client"
+            referencedTableName="client_tbl"
+            referencedTableSchemaName="client" />
+
         <sql dbms="postgresql" endDelimiter=";">
             -- Create default partition
             CREATE TABLE Log.TxnPassbook_Tbl_Default PARTITION OF Log.TxnPassbook_Tbl DEFAULT;
@@ -116,5 +724,21 @@
             </sql>
         </rollback>
     </changeSet>
+
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-09-master-v2.25-post-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+    </changeSet>
+
  
 </databaseChangeLog>
