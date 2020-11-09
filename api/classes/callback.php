@@ -194,9 +194,13 @@ abstract class Callback extends EndUserAccount
 		{
             $sql .= ", authoriginaldata = '".$sSwishPaymentID."'";
 		}
+		if(intval($fee) > 0)
+		{
+			$sql .= ", fee = ".intval($fee);
+		}
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
+				SET pspid = ". intval($pspid) .", cardid = ". intval($cid). $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID();
 	//	if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
 	//	echo $sql ."\n";
@@ -240,10 +244,7 @@ abstract class Callback extends EndUserAccount
 	public function completeCapture($amount, $fee=0, array $debug=null)
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET fee = (CASE
-						   WHEN captured = 0 THEN ".intval($fee) ." 
-						   ELSE ".intval($fee) ." + fee
-						   END), 
+				SET fee = ".intval($fee) ." + fee, 
 					captured = ". intval($amount) ." + captured
 				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
 //		echo $sql ."\n";
