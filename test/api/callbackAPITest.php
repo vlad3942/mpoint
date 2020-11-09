@@ -101,7 +101,7 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
         $this->assertIsResource($res);
 
         $aStates = array();
@@ -146,7 +146,7 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
         $this->assertTrue(is_resource($res) );
 
         $aStates = array();
@@ -211,7 +211,7 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
         $this->assertTrue(is_resource($res) );
 
         $aStates = array();
@@ -267,7 +267,7 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
         $this->assertTrue(is_resource($res) );
 
         $aStates = array();
@@ -361,5 +361,4 @@ class CallbackAPITest extends baseAPITest
         }
 		$this->assertEquals(6, $affectedRows);
     }
-
 }

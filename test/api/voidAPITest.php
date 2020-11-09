@@ -70,7 +70,7 @@ abstract class VoidAPITest extends baseAPITest
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><transactions client-id="10099"><transaction id="1001001" order-no="1513-2001" order-ref="123456"><status code="1000"></status></transaction></transactions></root>',$sReplyBody);
 
 		//log.message table should contain refund state
-		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
 		$this->assertTrue(is_resource($res) );
 
 		$aStates = array();
@@ -134,7 +134,7 @@ abstract class VoidAPITest extends baseAPITest
     	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><transactions client-id="10099"><transaction id="1001001" order-no="1513-2001" order-ref="123456"><status code="1000"></status></transaction></transactions></root>',$sReplyBody);
 
     	//log.message table should contain cancel state
-    	$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+    	$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
     	$this->assertTrue(is_resource($res));
     	$aStates = array();
     	$cStates = array();

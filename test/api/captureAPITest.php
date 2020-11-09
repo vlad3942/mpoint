@@ -50,7 +50,7 @@ abstract class CaptureAPITest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals("msg=1000", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
         $this->assertTrue(is_resource($res) );
 
         $aStates = array();
