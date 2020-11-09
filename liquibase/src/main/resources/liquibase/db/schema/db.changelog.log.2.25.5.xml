@@ -308,9 +308,9 @@
             onDelete="RESTRICT"
             onUpdate="CASCADE"
             referencedColumnNames="id"
-            referencedTableCatalogName="system"
+            referencedTableCatalogName="log"
             referencedTableName="state_tbl"
-            referencedTableSchemaName="system" />
+            referencedTableSchemaName="log" />
 
         <!-- Redefine foreign keys for log.txnpassbook_tbl -->
         <addForeignKeyConstraint
