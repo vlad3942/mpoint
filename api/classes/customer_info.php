@@ -93,6 +93,7 @@ class CustomerInfo
 		$this->_sFullName = trim($name);
 		$this->_sLanguage = trim($lang);
         $this->_iProfileID = (integer) $profileid;
+
 	}
 
 	public function getID() { return $this->_iID; }

@@ -157,18 +157,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $bIsSingleSingOnPass = false;
                     $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 					$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
-					$bIsSingleSingOnPass = false;
                     $profileTypeId = null;
+                    $clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
                     if (empty($authenticationURL) === false && empty($authToken)=== false)
                     {
 
                     	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"]);
-                        $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                        $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-
-                        if ( $sosPreference == 'STRICT' )
+                        
+                        if ( $sosPreference === 'STRICT' )
                         {
-                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"], $sosPreference);
+                        	$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
 
                         	if ($code == 212) {
                                 $aMsgCds[212] = 'Mandatory fields are missing' ;
@@ -179,7 +177,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         } else {
 							
-								$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+								$code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, $clientId);
 						}
 
                         if ($code == 10) {
@@ -190,7 +188,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     }  
                     else 
 		            {
-		            	if ( $sosPreference == 'STRICT' )
+		            	if ( $sosPreference === 'STRICT' )
                         {
 			        		if (empty($authToken) === true)
 			                { 
