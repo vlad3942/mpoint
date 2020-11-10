@@ -70,14 +70,18 @@ WORKDIR /opt/cpm/mPoint
 COPY api api
 COPY conf conf
 COPY webroot webroot
-# Runtime dependencies
 COPY --from=builder /app /opt/cpm/mPoint
+COPY docker/entrypoint.sh /entrypoint.sh
 
-# TODO CMP-4532	Library dependencies should be fetched from the vendor folder
-RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+RUN apk add --no-cache dos2unix \
+    && dos2unix /entrypoint.sh \
+    && chmod +x /entrypoint.sh \
+    # TODO CMP-4532	Library dependencies should be fetched from the vendor folder
+    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && mkdir /opt/cpm/mPoint/log \
-    && chown -R 1000:1000 /opt \
-# webroot must be without _test folder
-    && rm -rf /opt/cpm/mPoint/webroot/_test
+    && rm -rf /opt/cpm/mPoint/webroot/_test \
+    && chown -R 1000:1000 /opt
 
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["php-fpm"]
 USER 1000
