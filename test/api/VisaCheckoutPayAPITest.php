@@ -5,7 +5,7 @@ class VisaCheckoutPayAPITest extends PayAPITest
 {
     public function testSuccessfulPay()
     {
-        parent::testSuccessfulPay(Constants::iVISA_CHECKOUT_PSP, Constants::iVISA_CARD, Constants::iPROCESSOR_TYPE_WALLET,  Constants::iPROCESSOR_TYPE_WALLET);
+        parent::testSuccessfulPay(Constants::iVISA_CHECKOUT_PSP, Constants::iVISA_CARD, Constants::iPROCESSOR_TYPE_WALLET,  Constants::iPROCESSOR_TYPE_WALLET, 200, 840);
         $res =  $this->queryDB('SELECT walletid from Log.Transaction_Tbl WHERE id = 1001001');
 		$this->assertTrue(is_resource($res) );
 

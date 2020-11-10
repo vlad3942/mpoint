@@ -1,31 +1,73 @@
 version: "3"
 
 services:
-  app:
-    container_name: mpoint_app
+  db:
+    container_name: debug_${PROJECT_NAME}_db
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${HOST_DB_PORT}:${DB_PORT}
+
+  liquibase:
+    container_name: debug_${PROJECT_NAME}_liquibase
     build:
       context: .
-    dns: 1.1.1.1
-    command: /docker.sh
-    entrypoint: bash
-    ports:
-      - 15432:5432
-      - 8080:80
+      dockerfile: Dockerfile.liquibase
     environment:
-      - DB_HOST=host.docker.internal
-      - DB_PORT=5432
-      - DB_USERNAME=mpoint
-      - DB_PASSWORD=hspzr735abl
-      - DB_PASS_PATH=/secrets/database/password
-      - debug=true
-     #- XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9000 remote_host=docker.host.internal
-     #- PHP_IDE_CONFIG=serverName=mpoint_app
+      - DB_HOST=${DB_HOST}
+      - DB_DBNAME=${DB_DATABASE}
+      - DB_USER=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - APP_PASS=${APP_PASS}
     volumes:
-      - ./api:/opt/cpm/mPoint/api
-      - ./test:/opt/cpm/mPoint/test
-      - ./conf:/opt/cpm/mPoint/conf
-      - ./webroot:/opt/cpm/mPoint/webroot
-      - ./vendor/cellpointmobile/php5api:/opt/php5api
-      - ./docker/000-default.conf:/etc/apache2/sites-available/000-default.conf
-      - ./docker/docker.sh:/docker.sh
+      - ./env/dev/db/client.1.0.0.sql:/app/scripts/sql/client.1.0.0.sql
+    depends_on:
+      - db
 
+  app:
+    container_name: debug_${PROJECT_NAME}_app
+    #image: registry.t.cpm.dev/library/mpoint
+    build:
+      #context: .
+      context: docker/php-fpm-alpine-debug
+    environment:
+      - APP_ENV=${APP_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9001 remote_host=${HOST_IP}
+      - PHP_IDE_CONFIG=serverName=mpoint.local.cellpointmobile.com
+    env_file:
+      - ./env/dev/env.docker-compose.local
+    # volumed codebase for easy debugging and development. Comment out all volumes when testing final image
+    volumes: 
+      - ./api:/opt/cpm/mPoint/api
+      - ./conf:/opt/cpm/mPoint/conf
+      - ./log:/opt/cpm/mPoint/log
+      - ./test:/opt/cpm/mPoint/test
+      - ./vendor:/opt/cpm/mPoint/vendor
+      - ./vendor/cellpointmobile/php5api:/opt/php5api
+      - ./webroot:/opt/cpm/mPoint/webroot
+  
+  web:
+    container_name: debug_${PROJECT_NAME}_web
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./docker/nginx.default.conf:/etc/nginx/conf.d/default.conf
+      - ./webroot/wsdl:/opt/cpm/mPoint/webroot/wsdl
+    ports:
+      - ${HOST_HTTP_PORT}:80
+    depends_on:
+      - app
+
+  composer:
+    container_name: debug_${PROJECT_NAME}_composer
+    image: registry.t.cpm.dev/library/phpcomposerbuildimage:latest
+    entrypoint: [ "sh","-c" ]
+    volumes:
+      - .:/app

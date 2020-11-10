@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.25.sql -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-setup-v2.25-system">
+        
+        <!-- Paymaya -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSP_Tbl">
+
+            <column name="id" value="68"/>
+            <column name="name" value="paymaya"/>
+            <column name="system_type" value="4"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="608"/>
+            <column name="pspid" value="68"/>
+            <column name="name" value="PHP"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="Card_tbl">
+
+            <column name="id" value="95"/>
+            <column name="name" value="paymaya"/>
+            <column name="position" value="23"/>
+            <column name="minlength" value="-1"/>
+            <column name="maxlength" value="-1"/>
+            <column name="cvclength" value="-1"/>
+            <column name="paymenttype" value="4"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="cardprefix_tbl">
+
+            <column name="cardid" value="95"/>
+            <column name="min" value="0"/>
+            <column name="max" value="0"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="95"/>
+            <column name="pspid" value="68"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="CardPricing_Tbl">
+
+            <column name="cardid" value="95"/>
+            <column name="pricepointid" value="-608"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
