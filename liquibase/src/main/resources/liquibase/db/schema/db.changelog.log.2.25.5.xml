@@ -725,6 +725,21 @@
         </rollback>
     </changeSet>
 
+    <!-- Create index for default partition -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-10-master-v2.25-CMP-4673">
+
+        <createIndex
+            catalogName="log"
+            indexName="idx_txnpassbook_tbl_default"
+            schemaName="log"  
+            tableName="txnpassbook_tbl_default"> 
+
+            <column name="clientid" />
+            <column name="transactionid" />
+        </createIndex>  
+    </changeSet>
+
     <!-- Recreate event trigger to disable changes to replicated tables -->
     <changeSet author="Jonatan Evald Buus"
         id="2020-11-09-master-v2.25-post-process">
@@ -739,6 +754,5 @@
             ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
         </sql>
     </changeSet>
-
  
 </databaseChangeLog>
