@@ -9,8 +9,15 @@ $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 if ($obj_XML->validate(dirname(__FILE__). '/../xsd/auth.xsd') )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
-
+if((string)$obj_XML->authorize->account->password === 'profilePassSubCode')
+{
+    echo '<?xml version="1.0" encoding="UTF-8"?><root><status code="2000" sub-code="2000123">Payment authorized</status></root>';
+}
+else
+{
     echo '<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>';
+}
+
 }
 else
 {

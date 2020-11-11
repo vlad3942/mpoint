@@ -473,7 +473,7 @@ class General
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
 					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType()).",
 					convertedamount = ". $oTI->getConvertedAmount() .",convertedcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
-					conversionrate = ". $oTI->getConversationRate();
+					conversionrate = ". $oTI->getConversationRate().", fee = ".$oTI->getFee();
 
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
@@ -603,9 +603,7 @@ class General
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
-		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-
-		return $code ;
+        return $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
 			
 	}
 
@@ -1412,23 +1410,29 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
         $xml = '';
+        $code = $response->code;
         if ($code == "100") {
             $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+        } else if ($code == "2010") {
+            $xml = '<status code="2010">Payment rejected by PSP</status>';
         } else if ($code == "2000") {
             $xml = '<status code="2000">Payment authorized</status>';
         } else if ($code == "2009") {
-            $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
-        } else if (strpos($code, '2005') !== false) {
+			$xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
+		} else if ($code == "2005") {
             header("HTTP/1.1 303");
-            $xml = $code;
+            $xml = $response->body;
+        } else if ($code == "2016") {
+            $xml = $response->body;
         } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
             if(empty($iAlternateRoute) === false) {
-                $code = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                $code = $response->code;
                 return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
@@ -1437,6 +1441,12 @@ class General
             $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
             header("HTTP/1.1 502 Bad Gateway");
             $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+        }
+        if($response->sub_code > 0)
+        {
+            $responseXML = simpledom_load_string($xml);
+            $responseXML['sub-code'] = $response->sub_code;
+            $xml =str_replace(["<?xml version=\"1.0\"?>", "\n"], '',  $responseXML->asXML());
         }
         return $xml;
     }

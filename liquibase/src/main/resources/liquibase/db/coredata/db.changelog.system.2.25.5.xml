@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Nitin Gaikwad"
+        id="2020-11-10-setup-v2.25.5-log">
+
+		<addColumn catalogName="log"  
+				schemaName= "log"
+				tableName="passenger_tbl" >
+			<column name="amount" 
+				type="int8"
+				defaultValue="0"/>  
+		</addColumn>  
+
+    </changeSet>
+
+	<changeSet author="Sagar Narayane"
+        id="2020-11-11-setup-v2.25.5-log">
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="AUD"/>
+            <column name="currencyid" value="36"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="BHD"/>
+            <column name="currencyid" value="48"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="BND"/>
+            <column name="currencyid" value="96"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="CAD"/>
+            <column name="currencyid" value="124"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="LKR"/>
+            <column name="currencyid" value="144"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="CNY"/>
+            <column name="currencyid" value="156"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="DKK"/>
+            <column name="currencyid" value="208"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="HKD"/>
+            <column name="currencyid" value="344"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="INR"/>
+            <column name="currencyid" value="356"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="IDR"/>
+            <column name="currencyid" value="360"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="JPY"/>
+            <column name="currencyid" value="392"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="KRW"/>
+            <column name="currencyid" value="410"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="KWD"/>
+            <column name="currencyid" value="414"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="MOP"/>
+            <column name="currencyid" value="446"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="MYR"/>
+            <column name="currencyid" value="458"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="NZD"/>
+            <column name="currencyid" value="554"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="NOK"/>
+            <column name="currencyid" value="578"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="PHP"/>
+            <column name="currencyid" value="608"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="QAR"/>
+            <column name="currencyid" value="634"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="SAR"/>
+            <column name="currencyid" value="682"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="SGD"/>
+            <column name="currencyid" value="702"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="VND"/>
+            <column name="currencyid" value="704"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="SEK"/>
+            <column name="currencyid" value="752"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="CHF"/>
+            <column name="currencyid" value="756"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="THB"/>
+            <column name="currencyid" value="764"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="AED"/>
+            <column name="currencyid" value="784"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="GBP"/>
+            <column name="currencyid" value="826"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="USD"/>
+            <column name="currencyid" value="840"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="TWD"/>
+            <column name="currencyid" value="901"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="pspcurrency_tbl">
+
+            <column name="pspid" value="64"/>
+            <column name="name" value="EUR"/>
+            <column name="currencyid" value="978"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

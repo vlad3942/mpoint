@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Temporarily drop event trigger to enable changes to replicated tables -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-master-v2.23-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
+    <!-- Ported from master_pg_v2.23.sql -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-master-v2.23-1">
+
+        <modifyDataType catalogName="log"
+            schemaName= "log"
+            tableName="state_tbl"
+            columnName="name"  
+            newDataType="varchar(255)" />
+        
+        <createTable catalogName="log"
+            schemaName="log"
+            tableName="paymentsecureinfo_tbl"
+            remarks="Data table for storing secure payment info from 3D Secure transactions">
+
+            <column name="id"
+                type="bigserial"
+                remarks="CellPoint Digital's internal ID for the secure payment info"
+                autoIncrement="true">
+
+                <constraints nullable="false" />
+            </column>
+
+            <column name="txnid"
+                type="int"
+                remarks="CellPoint Digital's unique ID for the associated payment transaction in">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="pspid"
+                type="int"
+                remarks="CellPoint Digital's unique ID the upstream PSP throught which the transaction was processed">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status"
+                type="int4"
+                remarks="" />
+
+            <column name="msg"
+                type="text"
+                remarks="" />
+
+            <column name="veresenrolledstatus"
+                    type="text"
+                    remarks="The enrollment status from the Verifying Enrollment Response" /> 
+
+            <column name="parestxstatus"
+                    type="text"
+                    remarks="The transaction status from the Payer Authentication Response" /> 
+
+            <column name="eci"
+                    type="int4"
+                    remarks="The e-commerce indicator from the Payer Authentication Response" /> 
+
+            <column name="cavv"
+                    type="text"
+                    remarks="The Cardholder Authentication Verification Value from the Payer Authentication Response" /> 
+
+            <column name="cavvalgorithm"
+                    type="int4"
+                    remarks="The algorithim used to create the Cardholder Authentication Verification Value in the the Payer Authentication Response" /> 
+
+            <column name="protocol"
+                    type="text"
+                    remarks="" /> 
+
+            <column name="created"
+                type="timestamp with time zone"
+                remarks="Timestamp identifying when the secure payment info was originally created"
+                defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                type="timestamp with time zone"
+                remarks="Timestamp identifying when the secure payment info was last modified"
+                defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="enabled"
+                type="boolean"
+                remarks="Flag indicating whether the secure payment info is considered active"
+                defaultValueBoolean="true">
+
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- A unique index is automatically created by postgres, when creating a primaryKey -->
+        <addPrimaryKey catalogName="log"
+            schemaName="log"
+            tableName="paymentsecureinfo_tbl"
+            columnNames="id"
+            constraintName="paymentsecureinfo_fk "/>
+
+        <addForeignKeyConstraint baseColumnNames="txnid"
+            baseTableCatalogName="log"
+            baseTableName="paymentsecureinfo_tbl"
+            baseTableSchemaName="log"
+            constraintName="paymentsecureinfo2transaction_fk"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="log"
+            referencedTableName="transaction_tbl"
+            referencedTableSchemaName="log" />
+
+        <addForeignKeyConstraint baseColumnNames="pspid"
+            baseTableCatalogName="log"
+            baseTableName="paymentsecureinfo_tbl"
+            baseTableSchemaName="log"
+            constraintName="paymentsecureinfo2psp_fk"
+            onDelete="RESTRICT"
+            onUpdate="CASCADE"
+            referencedColumnNames="id"
+            referencedTableCatalogName="system"
+            referencedTableName="psp_tbl"
+            referencedTableSchemaName="system" />
+
+        <createIndex catalogName="log"
+            schemaName="log"
+            tableName="paymentsecureinfo_tbl"
+            indexName="paymentsecure_txn_uq"
+            unique="true">
+
+            <column name="txnid"/>
+        </createIndex>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE TRIGGER modify_paymentsecureinfo
+            BEFORE INSERT OR UPDATE
+            ON log.paymentsecureinfo_tbl FOR EACH ROW
+            EXECUTE PROCEDURE public.update_table_proc()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE log.paymentsecureinfo_tbl TO mpoint
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            GRANT SELECT, UPDATE ON SEQUENCE log.paymentsecureinfo_tbl_id_seq TO mpoint
+        </sql>
+
+        <addColumn catalogName="log"
+            schemaName= "log"
+            tableName="address_tbl">
+                
+            <column name="mobile_country_id" 
+                type="varchar(4)"
+                remarks="The unique ID of the country the customer's mobile number is registered in" />
+
+            <column name="mobile"  
+                type="varchar(15)"
+                remarks="The customers mobile number" />
+
+            <column name="email"  
+                type="varchar(50)"
+                remarks="The customers email address" />
+
+        </addColumn>
+
+        <modifyDataType catalogName="log"
+            schemaName= "log"
+            tableName="additional_data_tbl"
+            columnName="value"  
+            newDataType="text" />
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP INDEX IF EXISTS log.externalreference_transaction_idx
+        </sql>
+
+    </changeSet>
+
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-master-v2.23-2"
+        runInTransaction="false">
+
+        <!-- Use plain SQL rather than Liquibase XML syntax to create the index concurrently -->
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE INDEX CONCURRENTLY externalreference_transaction_idx ON log.externalreference_tbl (txnid, externalid, pspid, type)
+        </sql>
+        <rollback>
+            <sql>DROP INDEX log.externalreference_transaction_idx</sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-master-v2.23-3"
+        runInTransaction="false">
+
+        <!-- Use plain SQL rather than Liquibase XML syntax to create the index concurrently -->
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE INDEX CONCURRENTLY passenger_orderid_idx ON log.passenger_tbl (order_id)
+        </sql>
+        <rollback>
+            <sql>DROP INDEX log.passenger_orderid_idx</sql>
+        </rollback>
+        
+    </changeSet>
+    
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-master-v2.23-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

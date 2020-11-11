@@ -7,3 +7,5 @@ RENAME COLUMN convetredcurrencyid TO convertedcurrencyid;
 
 -- Change the amount column datatype to bigint from integer
 ALTER TABLE log.txnpassbook_tbl ALTER COLUMN amount TYPE BIGINT USING amount::BIGINT;
+
+ALTER TABLE log.passenger_tbl ADD amount int8 default 0;

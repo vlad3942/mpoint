@@ -10,6 +10,7 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | 
  * Path to Log Files directory
  */
 define("sLOG_PATH", sSYSTEM_PATH ."/log/");
+
 /**
  * Output method for the error handler:	
  *	0 - Store Internally
@@ -22,16 +23,16 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  *	7 - Output to file & screen and send remote server
  *  8 - Output to SAPI logging handler in json format
  */
-
 define("iOUTPUT_METHOD", env('LOG_OUTPUT_METHOD', 8));
+
 /**
  * General debug level for the error handler
  *	0 - Output error
  *	1 - Add stack trace for exceptions and variable scope for errors to log message
  *	2 - Add custom trace using the {TRACE <DATA>} syntax
  */
-
 define("iDEBUG_LEVEL", env('LOG_DEBUG_LEVEL', 2));
+
 /**
  * Path to the application error log
  */
@@ -1092,6 +1093,25 @@ $aHTTP_CONN_INFO["swish"]["paths"]["auth"] = "/mpoint/apm/swish/authorize-paymen
 $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
+
+
+/**
+ * Connection info for connecting to Paymaya
+ */
+$aHTTP_CONN_INFO["paymaya"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paymaya"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paymaya"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paymaya"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paymaya"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paymaya"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paymaya"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/apm/paymaya/initialize";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["callback"] = "/mpoint/apm/paymaya/callback";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["void"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
+
 
 /**
  * GoMobile Connection Info.

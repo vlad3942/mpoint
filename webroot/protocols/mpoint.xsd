@@ -295,6 +295,7 @@
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
+									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
@@ -1609,6 +1610,7 @@
    <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
+   <xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
    <xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
