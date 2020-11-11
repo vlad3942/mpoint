@@ -73,8 +73,8 @@ $aDB_CONN_INFO["mpoint"]["errorhandling"] = env("database.mpoint.errorhandling",
 $aDB_CONN_INFO["mpoint"]["exectime"] = env("database.mpoint.exectime", 0.3);
 $aDB_CONN_INFO["mpoint"]["execpath"] = env("database.mpoint.execpath", sLOG_PATH ."db_exectime_".".log");
 $aDB_CONN_INFO["mpoint"]["keycase"] = env("database.mpoint.keycase", CASE_UPPER);
-$aDB_CONN_INFO["mpoint"]["debuglevel"] = env("database.mpoint.debuglevel", 2);
-$aDB_CONN_INFO["mpoint"]["method"] = env("database.mpoint.method", 1);
+$aDB_CONN_INFO["mpoint"]["debuglevel"] = iDEBUG_LEVEL;
+$aDB_CONN_INFO["mpoint"]["method"] = iOUTPUT_METHOD;
 
 /**
  * Database settings for Session database
@@ -93,8 +93,8 @@ $aDB_CONN_INFO["session"]["errorhandling"] = env("database.session.errorhandling
 $aDB_CONN_INFO["session"]["exectime"] = env("database.session.exectime", 0.3);
 $aDB_CONN_INFO["session"]["execpath"] = env("database.session.execpath", sLOG_PATH ."db_exectime_".".log");
 $aDB_CONN_INFO["session"]["keycase"] = env("database.session.keycase", CASE_UPPER);
-$aDB_CONN_INFO["session"]["debuglevel"] = env("database.session.debuglevel", 2);
-$aDB_CONN_INFO["session"]["method"] = env("database.session.method", 1);
+$aDB_CONN_INFO["session"]["debuglevel"] = iDEBUG_LEVEL;
+$aDB_CONN_INFO["session"]["method"] = iOUTPUT_METHOD;
 
 
 /**
