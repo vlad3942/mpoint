@@ -30,8 +30,6 @@ ENV DB_PASSWORD=postgres
 # mPoint specific
 ENV LOG_OUTPUT_METHOD=1
 
-ENV LOG_OUTPUT_METHOD=0
-
 WORKDIR /opt/cpm/mPoint
 
 COPY api api
