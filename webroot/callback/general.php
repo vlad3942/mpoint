@@ -202,6 +202,7 @@ try
     }else{
         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]));
     }
+
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
 

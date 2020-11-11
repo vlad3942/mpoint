@@ -284,9 +284,9 @@ class CreditCard extends EndUserAccount
     * @param	integer $iCardID 	Unique ID of the CardTypeUsed
     * @return 	string
    */
-
     public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY, $is_legacy = 'true')
     {
+        // Call new SR logic if legacy flow is off
         if(strtolower($is_legacy) == 'false') {
             return $this->getFraudCheckRouteForSR($iCardID,$iFraudType);
         }
