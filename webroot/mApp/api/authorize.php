@@ -426,6 +426,9 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
+                                        // sso verification conditions checking 
+										$sosPreference =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "SSO_PREFERENCE");
+					       				$sosPreference = strtoupper($sosPreference); 
 
 										// Single Sign-On
 					                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
@@ -488,38 +491,14 @@ try
 								                     $aMsgCds[209] = 'Auth url not configured' ;
 								                }
 								            }
-							            }
-
+							            }	
+					                    
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
-											// Single Sign-On
-											if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
-											{
-												$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-												if(empty($obj_CustomerInfo) === false) {
-                                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                                                    if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
-                                                        $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
-                                                    }
-                                                    if (floatval($obj_TxnInfo->getMobile()) > 0) {
-                                                        $obj_Customer->mobile = $obj_TxnInfo->getMobile();
-                                                        $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
-                                                        $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
-                                                    }
-                                                    if (strlen($obj_TxnInfo->getEMail()) > 0) {
-                                                        $obj_Customer->email = $obj_TxnInfo->getEMail();
-                                                    }
-                                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                                    $code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
-                                                }
-												else{
-												    //Account Not Found
-												    $code = 5;
-                                                }
-											}
+											
 											// Authentication is not required for payment methods that are sending a token or Invoice
-                                            elseif (($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
+                                            if (($code != 5) && ($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
                                                 (empty($obj_DOM->{'authorize-payment'}[$i]->password) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) === false))
 											{
 												$code = 10;
