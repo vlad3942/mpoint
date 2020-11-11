@@ -5,7 +5,6 @@ COPY composer.json .
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
-# TODO Clean this up MartinW
 #Run unittests
 FROM registry.t.cpm.dev/library/pgunittestextras:master20201027200551
 
@@ -44,7 +43,6 @@ COPY docker/runtests.sh /sh/runtests.sh
 RUN mkdir /opt/cpm/mPoint/log \
     && cd /opt/cpm/mPoint/log && touch db_exectime_.log db_error_.log app_error_.log \
     && chmod -R 777 /opt/cpm/mPoint/log \
-    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && apk add --no-cache apache2 php7-apache2 dos2unix \
     && printf "LoadModule rewrite_module modules/mod_rewrite.so" >> /etc/apache2/httpd.conf \
     && chmod +x -R /sh \
@@ -76,8 +74,6 @@ COPY docker/entrypoint.sh /entrypoint.sh
 RUN apk add --no-cache dos2unix \
     && dos2unix /entrypoint.sh \
     && chmod +x /entrypoint.sh \
-    # TODO CMP-4532	Library dependencies should be fetched from the vendor folder
-    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && mkdir /opt/cpm/mPoint/log \
     && rm -rf /opt/cpm/mPoint/webroot/_test \
     && chown -R 1000:1000 /opt
