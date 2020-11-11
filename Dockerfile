@@ -8,6 +8,8 @@ RUN composer install -v --prefer-dist
 # TODO Jira CMP-4547 - Unittest part of multistage dockerfile should utilize library/pgunnittestextras
 FROM registry.t.cpm.dev/library/php:7.4.6-apache-buster as tester
 
+ENV LOG_OUTPUT_METHOD=0
+
 WORKDIR /opt/cpm/mPoint
 
 RUN apt update \
