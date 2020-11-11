@@ -615,7 +615,7 @@
             referencedTableName="client_tbl"
             referencedTableSchemaName="client" />
 
-        <sql dbms="postgresql" endDelimiter=";">
+        <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
             -- Create default partition
             CREATE TABLE Log.TxnPassbook_Tbl_Default PARTITION OF Log.TxnPassbook_Tbl DEFAULT;
             
@@ -739,6 +739,34 @@
             <column name="transactionid" />
         </createIndex>  
     </changeSet>
+
+    <!-- Create additional partitions for Southwest -->
+    <sql dbms="postgresql" endDelimiter=";">
+        DO $$
+        DECLARE
+            sql TEXT;
+        BEGIN
+            FOR counter IN 20..99 LOOP
+                sql := 'CREATE TABLE IF NOT EXISTS Log.TxnPassbook_Tbl_10069_'|| counter ||'000001_'|| (counter + 1) ||'000001 PARTITION OF Log.TxnPassbook_Tbl_10069 FOR VALUES FROM ('|| counter ||'000001) TO ('|| (counter + 1) ||'000001)';
+                EXECUTE sql;
+            END LOOP;
+        END
+        $$;
+    </sql>
+    <rollback>
+        <sql>
+            DO $$
+            DECLARE
+                sql TEXT;
+            BEGIN
+                FOR counter IN 20..99 LOOP
+                    sql := 'DROP TABLE Log.TxnPassbook_Tbl_10069_'|| counter ||'000001_'|| (counter + 1) ||'000001';
+                    EXECUTE sql;
+                END LOOP;
+            END
+            $$;
+        </sql>
+    </rollback>
 
     <!-- Recreate event trigger to disable changes to replicated tables -->
     <changeSet author="Jonatan Evald Buus"
