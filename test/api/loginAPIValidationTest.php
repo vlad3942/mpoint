@@ -52,16 +52,16 @@ class LoginAPIValidationTest extends baseAPITest
 
 	public function testSuccessfulLogin()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'profilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'profilePass');
 
 		$this->_httpClient->connect();
 
@@ -69,21 +69,21 @@ class LoginAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="" format="{PRICE} {CURRENCY}">0</balance><funds>0,00 </funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="113" store-card="0">Test Client</client></clients>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="Kr." format="{PRICE} {CURRENCY}">0</balance><funds>0,00 Kr.</funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="10099" store-card="0">Test Client</client></clients>', $sReplyBody);
 	}
 
 	public function testUnSuccessfulLogin()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'WrongprofilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'WrongprofilePass');
 
 		$this->_httpClient->connect();
 
@@ -134,16 +134,16 @@ class LoginAPIValidationTest extends baseAPITest
 
 	public function testAttemptsReset()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'WrongprofilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'WrongprofilePass');
 
 		$this->_httpClient->connect();
 
@@ -159,7 +159,7 @@ class LoginAPIValidationTest extends baseAPITest
 		$this->assertTrue($row["attempts"] == 1);
 
 		// Now we will test that the number of login attempts gets a reset on the user profile
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'profilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'profilePass');
 
 		$this->constHTTPClient();
 		$this->_httpClient->connect();
@@ -168,7 +168,7 @@ class LoginAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="" format="{PRICE} {CURRENCY}">0</balance><funds>0,00 </funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="113" store-card="0">Test Client</client></clients>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><account id="5001" country-id="100"><first-name></first-name><last-name></last-name><mobile country-id="100" verified="true">29612109</mobile><email></email><password mask="***********">profilePass</password><balance country-id="100" currency="DKK" symbol="Kr." format="{PRICE} {CURRENCY}">0</balance><funds>0,00 Kr.</funds><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">0</points><clients><client id="10099" store-card="0">Test Client</client></clients>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT attempts FROM EndUser.Account_Tbl WHERE id = 5001");
 		$this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
@@ -180,16 +180,16 @@ class LoginAPIValidationTest extends baseAPITest
 	{
 		$authTime = date('c', time() - 1800); //-30 minutes
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime ."', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime ."', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'WrongprofilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'WrongprofilePass');
 
 		$this->_httpClient->connect();
 
@@ -224,20 +224,20 @@ class LoginAPIValidationTest extends baseAPITest
 	{
 		$authTime = date('c', time() - 1800); //-30 minutes
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 1000)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 1000)");
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (114, 1, 100, 'Test Client', 'Tuser1', 'Tpass1', 3600)");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1101, 114)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (2, 114, 'CPM1', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (114, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime ."', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime ."', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'WrongprofilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'WrongprofilePass');
 
 		$this->_httpClient->connect();
 
@@ -272,16 +272,16 @@ class LoginAPIValidationTest extends baseAPITest
 	{
 		$authTime = date('c', time() - 3660); //-61 minutes
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime ."', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime ."', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'WrongprofilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'WrongprofilePass');
 
 		$this->_httpClient->connect();
 
@@ -316,17 +316,17 @@ class LoginAPIValidationTest extends baseAPITest
 	{
 		$authTime = date('c', time() - 1800); //-30 minutes
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', TRUE,5000)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, enabled,convertedamount) VALUES (1001001, 100, 10099, 1100, 5001, 100, 5000, '127.0.0.1', TRUE,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ", '". $authTime ."')");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
 
-		$xml = $this->getLoginDoc(113, 'abcExternal', 'WrongprofilePass');
+		$xml = $this->getLoginDoc(10099, 'abcExternal', 'WrongprofilePass');
 
 		$this->_httpClient->connect();
 

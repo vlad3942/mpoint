@@ -61,7 +61,7 @@ class Home extends General
 		$sBody = $this->getText()->_("mPoint - Send One Time Password");
 		$sBody = str_replace("{OTP}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
 
-		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
+		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getClientConfig()->getId(), -1);
 
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oCC->getID(), $oCC->getID()*100, $oCC->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - OTP");
@@ -889,19 +889,27 @@ class Home extends General
                           FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
                           WHERE txnid = ".$txnid." and M.enabled = true";
 
+        $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
+        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
       //  mode param is optional when populated with value 1 then status code will return only after session is closed and
      // only final payment status code will be returned to avoid extra checks at API consumer side
         if($mode === 1)
         {
+            $state = "";
+            if($objPaymentMethod->PaymentType == Constants::iPAYMENT_TYPE_OFFLINE)
+            {
+                $state = ",".Constants::iPAYMENT_INIT_WITH_PSP_STATE;
+            }
             $sql = "WITH WT1 as
                    (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
                     WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
                     ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",".Constants::iPAYMENT_WITH_VOUCHER_STATE.",
                     ".Constants::iPAYMENT_WITH_ACCOUNT_STATE.",".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
                     ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_DECLINED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
-                    ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.")) s where s.rank=1
+                    ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.")) s where s.rank=1
                     ),
-                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.") limit 1)
+                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.$state.") limit 1)
                     UNION
                     SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
                     ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
@@ -912,7 +920,6 @@ class Home extends General
 
 		   $RSMsg = $this->getDBConn()->query($sql);
 
-           $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
 
             $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
             $objCountryConf = $obj_TxnInfo->getCountryConfig();
@@ -932,7 +939,6 @@ class Home extends General
 
             $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
             $pendingAmount = intval($obj_paymentSession->getPendingAmount());
-            $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
             $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
 
             $amount = $obj_TxnInfo->getAmount();

@@ -1,0 +1,25 @@
+#The build image, which makes sure, that it will work, even if build on Windows
+FROM registry.t.cpm.dev/library/alpine:latest as builder
+
+# dos2unix is need to make build work on Windows
+RUN apk add --no-cache dos2unix
+
+COPY liquibase/src/main/resources/liquibase /app/resources/liquibase
+COPY liquibase/src/main/sh /app/scripts
+
+RUN chmod uog+rx /app/scripts/*.sh \
+    && mkdir /app/scripts/sql \
+    && dos2unix /app/scripts/* \
+    && dos2unix /app/resources/*
+
+#Build the actual image
+FROM registry.t.cpm.dev/library/liquibase:1.5.1
+
+USER 0
+
+# Get app from the builder
+COPY --from=builder app/ /app
+
+RUN chown -R 1000:1000 /app
+
+USER 1000

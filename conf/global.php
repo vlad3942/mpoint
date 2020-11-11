@@ -2,8 +2,10 @@
 /**
  * Set error types that are to be reported by the error handler
  * Both errors and warnings are reported, notices however are not
+ * TODO CMP-4527 Extend logging functionality to support json formatted logging to std. out
  */
-error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
+error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
+
 /**
  * Path to Log Files directory
  */
@@ -19,18 +21,19 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  *	6 - Output to screen and send remote server
  *	7 - Output to file & screen and send remote server
  */
-define("iOUTPUT_METHOD", 1);
+define("iOUTPUT_METHOD", env("LOG_OUTPUT_METHOD", 1));
 /**
  * General debug level for the error handler
  *	0 - Output error
  *	1 - Add stack trace for exceptions and variable scope for errors to log message
  *	2 - Add custom trace using the {TRACE <DATA>} syntax
  */
-define("iDEBUG_LEVEL", 2);
+define("iDEBUG_LEVEL", env("LOG_DEBUG_LEVEL", 2));
 /**
  * Path to the application error log
  */
-define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
+define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
+
 
 /**
  * Database settings for mPoint's database
@@ -53,104 +56,83 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 
-function env($key, $default=null) {
-    $value = getenv($key);
-    return isset($value) ? $value : $default;
-}
-
-$aDB_CONN_INFO["mpoint"]["host"] = env('DB_HOST', "host.docker.internal");
-$aDB_CONN_INFO["mpoint"]["port"] = env('DB_PORT',5432);
-$aDB_CONN_INFO["mpoint"]["username"] = env('DB_USERNAME',"mpoint");
-$aDB_CONN_INFO["mpoint"]["password"] = env('DB_PASSWORD',"hspzr735abl");
-$aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
-$aDB_CONN_INFO["mpoint"]["timeout"] = 10;
-$aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
-$aDB_CONN_INFO["mpoint"]["connmode"] = "normal";
-$aDB_CONN_INFO["mpoint"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
-$aDB_CONN_INFO["mpoint"]["errorhandling"] = 3;
-$aDB_CONN_INFO["mpoint"]["exectime"] = 0.3;
-$aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") .".log";
-$aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
-$aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
-$aDB_CONN_INFO["mpoint"]["method"] = 1;
-
+$aDB_CONN_INFO["mpoint"]["host"] = env("database.mpoint.host", "localhost");
+$aDB_CONN_INFO["mpoint"]["port"] = env("database.mpoint.port", 5432);
+$aDB_CONN_INFO["mpoint"]["path"] = env("database.mpoint.path", "mpoint");
+$aDB_CONN_INFO["mpoint"]["username"] = env("database.mpoint.username", "mpoint");
+$aDB_CONN_INFO["mpoint"]["password"] = env("database.mpoint.password", "");
+$aDB_CONN_INFO["mpoint"]["class"] = env("database.mpoint.class", "PostGreSQL");
+$aDB_CONN_INFO["mpoint"]["timeout"] = env("database.mpoint.timeout", 10);
+$aDB_CONN_INFO["mpoint"]["charset"] = env("database.mpoint.charset", "UTF8");
+$aDB_CONN_INFO["mpoint"]["connmode"] = env("database.mpoint.connmode", "normal");
+$aDB_CONN_INFO["mpoint"]["errorpath"] = env("database.mpoint.errorpath", sLOG_PATH ."db_error_".".log");
+$aDB_CONN_INFO["mpoint"]["errorhandling"] = env("database.mpoint.errorhandling", 3);
+$aDB_CONN_INFO["mpoint"]["exectime"] = env("database.mpoint.exectime", 0.3);
+$aDB_CONN_INFO["mpoint"]["execpath"] = env("database.mpoint.execpath", sLOG_PATH ."db_exectime_".".log");
+$aDB_CONN_INFO["mpoint"]["keycase"] = env("database.mpoint.keycase", CASE_UPPER);
+$aDB_CONN_INFO["mpoint"]["debuglevel"] = env("database.mpoint.debuglevel", 2);
+$aDB_CONN_INFO["mpoint"]["method"] = env("database.mpoint.method", 1);
 
 /**
  * Database settings for Session database
  */
-$aDB_CONN_INFO["session"]["host"] = "localhost";
-$aDB_CONN_INFO["session"]["port"] = 5432;
-$aDB_CONN_INFO["session"]["path"] = "session";
-$aDB_CONN_INFO["session"]["username"] = "session";
-$aDB_CONN_INFO["session"]["password"] = "2a2ac8447e";
-$aDB_CONN_INFO["session"]["timeout"] = 10;
-$aDB_CONN_INFO["session"]["charset"] = "ISO8859_1";
-$aDB_CONN_INFO["session"]["class"] = "PostGreSQL";
-$aDB_CONN_INFO["session"]["connmode"] = "normal";
-$aDB_CONN_INFO["session"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
-$aDB_CONN_INFO["session"]["errorhandling"] = 3;
-$aDB_CONN_INFO["session"]["exectime"] = 0.3;
-$aDB_CONN_INFO["session"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") .".log";
-$aDB_CONN_INFO["session"]["keycase"] = CASE_UPPER;
-$aDB_CONN_INFO["session"]["debuglevel"] = 2;
-$aDB_CONN_INFO["session"]["method"] = 1;
+$aDB_CONN_INFO["session"]["host"] = env("database.session.host", "localhost");
+$aDB_CONN_INFO["session"]["port"] = env("database.session.port", 5432);
+$aDB_CONN_INFO["session"]["path"] = env("database.session.path", "session");
+$aDB_CONN_INFO["session"]["username"] = env("database.session.username", "session");
+$aDB_CONN_INFO["session"]["password"] = env("database.session.password", "");
+$aDB_CONN_INFO["session"]["timeout"] = env("database.session.timeout", 10);
+$aDB_CONN_INFO["session"]["charset"] = env("database.session.charset", "ISO8859_1");
+$aDB_CONN_INFO["session"]["class"] = env("database.session.class", "PostGreSQL");
+$aDB_CONN_INFO["session"]["connmode"] = env("database.session.connmode", "normal");
+$aDB_CONN_INFO["session"]["errorpath"] = env("database.session.errorpath", sLOG_PATH ."db_error_".".log");
+$aDB_CONN_INFO["session"]["errorhandling"] = env("database.session.errorhandling", 3);
+$aDB_CONN_INFO["session"]["exectime"] = env("database.session.exectime", 0.3);
+$aDB_CONN_INFO["session"]["execpath"] = env("database.session.execpath", sLOG_PATH ."db_exectime_".".log");
+$aDB_CONN_INFO["session"]["keycase"] = env("database.session.keycase", CASE_UPPER);
+$aDB_CONN_INFO["session"]["debuglevel"] = env("database.session.debuglevel", 2);
+$aDB_CONN_INFO["session"]["method"] = env("database.session.method", 1);
 
 
 /**
  * Connection info for sending error reports to a remote host
+ * TODO CMP-4529 All mESB URLs must be configurable via env
  */
-$aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
-//$aHTTP_CONN_INFO["mesb"]["host"] = "213.173.252.92";
-$aHTTP_CONN_INFO["mesb"]["host"] = "localhost";
-$aHTTP_CONN_INFO["mesb"]["port"] = 10080;
-$aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
-$aHTTP_CONN_INFO["mesb"]["path"] = "/";
-$aHTTP_CONN_INFO["mesb"]["method"] = "POST";
-$aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["mesb"]["username"] = "";
-$aHTTP_CONN_INFO["mesb"]["password"] = "";
+$aHTTP_CONN_INFO["mesb"]["protocol"] = env("http.mesb.protocol", "http");
+$aHTTP_CONN_INFO["mesb"]["host"] = env("http.mesb.host", "localhost");
+$aHTTP_CONN_INFO["mesb"]["port"] = env("http.mesb.port", 10080);
+$aHTTP_CONN_INFO["mesb"]["timeout"] = env("http.mesb.timeout", 120);
+$aHTTP_CONN_INFO["mesb"]["path"] = env("http.mesb.path", "/");
+$aHTTP_CONN_INFO["mesb"]["method"] = env("http.mesb.method", "POST");
+$aHTTP_CONN_INFO["mesb"]["contenttype"] = env("http.mesb.contenttype", "text/xml");
+$aHTTP_CONN_INFO["mesb"]["username"] = env("http.mesb.username", "");
+$aHTTP_CONN_INFO["mesb"]["password"] = env("http.mesb.password", "");
 
 /**
  * Connection info for sending error reports to a remote host
  */
-$aHTTP_CONN_INFO["iemendo"]["protocol"] = "http";
-$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.test.cellpointmobile.com";
-$aHTTP_CONN_INFO["iemendo"]["port"] = 80;
-$aHTTP_CONN_INFO["iemendo"]["timeout"] = 20;
-$aHTTP_CONN_INFO["iemendo"]["path"] = "/api/receive_report.php";
-$aHTTP_CONN_INFO["iemendo"]["method"] = "POST";
-$aHTTP_CONN_INFO["iemendo"]["contenttype"] = "text/xml";
-//$aHTTP_CONN_INFO["iemendo"]["username"] = "";
-//$aHTTP_CONN_INFO["iemendo"]["password"] = "";
+$aHTTP_CONN_INFO["iemendo"]["protocol"] = env("http.iemendo.protocol", "http");
+$aHTTP_CONN_INFO["iemendo"]["host"] = env("http.iemendo.host", "iemendo.test.cellpointmobile.com");
+$aHTTP_CONN_INFO["iemendo"]["port"] = env("http.iemendo.port", 80);
+$aHTTP_CONN_INFO["iemendo"]["timeout"] = env("http.iemendo.timeout", 20);
+$aHTTP_CONN_INFO["iemendo"]["path"] = env("http.iemendo.path", "/api/receive_report.php");
+$aHTTP_CONN_INFO["iemendo"]["method"] = env("http.iemendo.method", "POST");
+$aHTTP_CONN_INFO["iemendo"]["contenttype"] = env("http.iemendo.contenttype", "text/xml");
+
 
 /**
  * Connection info for identifying a mobile device by sending its UA Profile information to iEmendo
  */
-$aUA_CONN_INFO["protocol"] = "http";
-$aUA_CONN_INFO["host"] = "iemendo.test.cellpointmobile.com";
-$aUA_CONN_INFO["port"] = 80;
-$aUA_CONN_INFO["timeout"] = 20;
-$aUA_CONN_INFO["path"] = "/api/uaprofile.php";
-$aUA_CONN_INFO["method"] = "POST";
-$aUA_CONN_INFO["contenttype"] = "text/xml";
+$aUA_CONN_INFO["protocol"] = env("ua.iemendo.protocol", "http");
+$aUA_CONN_INFO["host"] = env("ua.iemendo.host", "iemendo.test.cellpointmobile.com");
+$aUA_CONN_INFO["port"] = env("ua.iemendo.port", 80);
+$aUA_CONN_INFO["timeout"] = env("ua.iemendo.timeout", 20);
+$aUA_CONN_INFO["path"] = env("ua.iemendo.path", "/api/uaprofile.php");
+$aUA_CONN_INFO["method"] = env("ua.iemendo.method", "POST");
+$aUA_CONN_INFO["contenttype"] = env("ua.iemendo.contenttype", "text/xml");
 
 //$aUA_CONN_INFO["username"] = "";
 //$aUA_CONN_INFO["password"] = "";
-
-/**
- * HTTP Connection Information for using Interflora's Lookup Service in Denmark
- */
-$aHTTP_CONN_INFO[100]["protocol"] = "http";
-$aHTTP_CONN_INFO[100]["host"] = "www.interflora.dk";
-$aHTTP_CONN_INFO[100]["port"] = 80;
-$aHTTP_CONN_INFO[100]["timeout"] = 20;
-$aHTTP_CONN_INFO[100]["path"] = "/rpc/tdc_lookup.php";
-$aHTTP_CONN_INFO[100]["method"] = "GET";
-$aHTTP_CONN_INFO[100]["contenttype"] = "application/www-url-form-encoded";
-//$aHTTP_CONN_INFO[100]["username"] = "";
-//$aHTTP_CONN_INFO[100]["password"] = "";
-
 
 /**
  * Connection info for connecting to DIBS
@@ -191,68 +173,59 @@ $aHTTP_CONN_INFO["worldpay"]["paths"]["refund"] = "/mpoint/worldpay/refund";
 /**
  * Connection info for connecting to PayEx
  */
-$aHTTP_CONN_INFO["payex"]["protocol"] = "https";
-$aHTTP_CONN_INFO["payex"]["host"] = "external.payex.com";
-$aHTTP_CONN_INFO["payex"]["port"] = 443;
-$aHTTP_CONN_INFO["payex"]["timeout"] = 120;
-$aHTTP_CONN_INFO["payex"]["path"] = "/PxOrder/Pxorder.asmx?WSDL";
-$aHTTP_CONN_INFO["payex"]["method"] = "POST";
-$aHTTP_CONN_INFO["payex"]["contenttype"] = "text/xml";
-//$aHTTP_CONN_INFO["payex"]["username"] = "";	// Set from the Client Configuration 
-$aHTTP_CONN_INFO["payex"]["password"] = "b9ppZDPbRcJNEgHM57BV";
+$aHTTP_CONN_INFO["payex"]["protocol"] = env("http.payex.protocol", "https");
+$aHTTP_CONN_INFO["payex"]["host"] = env("http.payex.host", "external.payex.com");
+$aHTTP_CONN_INFO["payex"]["port"] = env("http.payex.port", 443);
+$aHTTP_CONN_INFO["payex"]["timeout"] = env("http.payex.timeout", 120);
+$aHTTP_CONN_INFO["payex"]["path"] = env("http.payex.path", "/PxOrder/Pxorder.asmx?WSDL");
+$aHTTP_CONN_INFO["payex"]["method"] = env("http.payex.method", "POST");
+$aHTTP_CONN_INFO["payex"]["contenttype"] = env("http.payex.contenttype", "text/xml");
+$aHTTP_CONN_INFO["payex"]["password"] = env("http.payex.password", "");
 
 /**
  * Connection info for connecting to CPG
  */
-$aHTTP_CONN_INFO["cpg"]["protocol"] = "https";
-$aHTTP_CONN_INFO["cpg"]["host"] = "pgstaging.emirates.com";
-$aHTTP_CONN_INFO["cpg"]["port"] = 443;
-$aHTTP_CONN_INFO["cpg"]["timeout"] = 120;
-$aHTTP_CONN_INFO["cpg"]["path"] = "/cpg/Order.jsp";
-$aHTTP_CONN_INFO["cpg"]["method"] = "POST";
-$aHTTP_CONN_INFO["cpg"]["contenttype"] = "text/xml";
-//$aHTTP_CONN_INFO["emirates"]["username"] = "";	// Set from the Client Configuration
-//$aHTTP_CONN_INFO["emirates"]["password"] = "";
+$aHTTP_CONN_INFO["cpg"]["protocol"] = env("http.cpg.protocol", "https");
+$aHTTP_CONN_INFO["cpg"]["host"] = env("http.cpg.host", "pgstaging.emirates.com");
+$aHTTP_CONN_INFO["cpg"]["port"] = env("http.cpg.port", 443);
+$aHTTP_CONN_INFO["cpg"]["timeout"] = env("http.cpg.timeout", 120);
+$aHTTP_CONN_INFO["cpg"]["path"] = env("http.cpg.path", "/cpg/Order.jsp");
+$aHTTP_CONN_INFO["cpg"]["method"] = env("http.cpg.method", "POST");
+$aHTTP_CONN_INFO["cpg"]["contenttype"] = env("http.cpg.contenttype", "text/xml");
 
 /**
  * Connection info for connecting to Authorize.Net
  */
-$aHTTP_CONN_INFO["authorize.net"]["protocol"] = "https";
-$aHTTP_CONN_INFO["authorize.net"]["host"] = "secure.authorize.net";
-$aHTTP_CONN_INFO["authorize.net"]["port"] = 443;
-$aHTTP_CONN_INFO["authorize.net"]["timeout"] = 120;
-$aHTTP_CONN_INFO["authorize.net"]["path"] = "/gateway/transact.dll";
-$aHTTP_CONN_INFO["authorize.net"]["method"] = "POST";
-$aHTTP_CONN_INFO["authorize.net"]["contenttype"] = "application/x-www-form-urlencoded";
-//$aHTTP_CONN_INFO["authorize.net"]["username"] = "";	// Set from the Client Configuration 
-//$aHTTP_CONN_INFO["authorize.net"]["password"] = "";	// Set from the Client Configuration
+$aHTTP_CONN_INFO["authorize.net"]["protocol"] = env("http.authorize.net.protocol", "https");
+$aHTTP_CONN_INFO["authorize.net"]["host"] = env("http.authorize.net.host", "secure.authorize.net");
+$aHTTP_CONN_INFO["authorize.net"]["port"] = env("http.authorize.net.port", 443);
+$aHTTP_CONN_INFO["authorize.net"]["timeout"] = env("http.authorize.net.timeout", 120);
+$aHTTP_CONN_INFO["authorize.net"]["path"] = env("http.authorize.net.path", "/gateway/transact.dll");
+$aHTTP_CONN_INFO["authorize.net"]["method"] = env("http.authorize.net.method", "POST");
+$aHTTP_CONN_INFO["authorize.net"]["contenttype"] = env("http.authorize.net.contenttype", "application/x-www-form-urlencoded");
 
 
 /**
  * Connection info for connecting to WannaFind
  */
-$aHTTP_CONN_INFO["wannafind"]["protocol"] = "https";
-$aHTTP_CONN_INFO["wannafind"]["host"] = "betaling.wannafind.dk";
-$aHTTP_CONN_INFO["wannafind"]["port"] = 443;
-$aHTTP_CONN_INFO["wannafind"]["timeout"] = 120;
-$aHTTP_CONN_INFO["wannafind"]["path"] = "/auth.php";
-$aHTTP_CONN_INFO["wannafind"]["method"] = "POST";
-$aHTTP_CONN_INFO["wannafind"]["contenttype"] = "application/x-www-form-urlencoded";
-//$aHTTP_CONN_INFO["wannafind"]["username"] = "";	// Set from the Client Configuration 
-//$aHTTP_CONN_INFO["wannafind"]["password"] = "";	// Set from the Client Configuration 
+$aHTTP_CONN_INFO["wannafind"]["protocol"] = env("http.wannafind.protocol", "https");
+$aHTTP_CONN_INFO["wannafind"]["host"] = env("http.wannafind.host", "betaling.wannafind.dk");
+$aHTTP_CONN_INFO["wannafind"]["port"] = env("http.wannafind.port", 443);
+$aHTTP_CONN_INFO["wannafind"]["timeout"] = env("http.wannafind.timeout", 120);
+$aHTTP_CONN_INFO["wannafind"]["path"] = env("http.wannafind.path", "/auth.php");
+$aHTTP_CONN_INFO["wannafind"]["method"] = env("http.wannafind.method", "POST");
+$aHTTP_CONN_INFO["wannafind"]["contenttype"] = env("http.wannafind.contenttype", "application/x-www-form-urlencoded");
 
 /**
  * Connection info for connecting to NetAxept
  */
-$aHTTP_CONN_INFO["netaxept"]["protocol"] = "https";
-$aHTTP_CONN_INFO["netaxept"]["host"] = "epayment-test.bbs.no";
-$aHTTP_CONN_INFO["netaxept"]["port"] = 443;
-$aHTTP_CONN_INFO["netaxept"]["timeout"] = 120;
-$aHTTP_CONN_INFO["netaxept"]["path"] = "/netaxept.svc?wsdl";
-$aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
-$aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
-//$aHTTP_CONN_INFO["netaxept"]["username"] = "";	// Set from the Client Configuration 
-//$aHTTP_CONN_INFO["netaxept"]["password"] = "";	// Set from the Client Configuration 
+$aHTTP_CONN_INFO["netaxept"]["protocol"] = env("http.netaxept.protocol", "https");
+$aHTTP_CONN_INFO["netaxept"]["host"] = env("http.netaxept.host", "epayment-test.bbs.no");
+$aHTTP_CONN_INFO["netaxept"]["port"] = env("http.netaxept.port", 443);
+$aHTTP_CONN_INFO["netaxept"]["timeout"] = env("http.netaxept.timeout", 120);
+$aHTTP_CONN_INFO["netaxept"]["path"] = env("http.netaxept.path", "/netaxept.svc?wsdl");
+$aHTTP_CONN_INFO["netaxept"]["method"] = env("http.netaxept.method", "POST");
+$aHTTP_CONN_INFO["netaxept"]["contenttype"] = env("http.netaxept.contenttype", "application/x-www-form-urlencoded");
 
 /**
  * Connection info for connecting to MobilePay
@@ -1108,7 +1081,7 @@ $aHTTP_CONN_INFO["swish"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["swish"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["swish"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO["swish"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["swish"]["path"] = "";  // Set by calling class
+$aHTTP_CONN_INFO["swish"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["swish"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["swish"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["swish"]["paths"]["initialize"] = "/mpoint/apm/swish/initialize";
@@ -1164,33 +1137,34 @@ $aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
  *
  * @global 	array $aGM_CONN_INFO
  */
-$aGM_CONN_INFO["protocol"] = "http";
-$aGM_CONN_INFO["host"] = "gomobile.cellpointmobile.com";
-$aGM_CONN_INFO["port"] = 8000;
-$aGM_CONN_INFO["timeout"] = 20;	// In seconds
-$aGM_CONN_INFO["path"] = "/";
-$aGM_CONN_INFO["method"] = "POST";
-$aGM_CONN_INFO["contenttype"] = "text/xml";
-$aGM_CONN_INFO["username"] = "";		// Set from the Client Configuration
-$aGM_CONN_INFO["password"] = "";		// Set from the Client Configuration
-$aGM_CONN_INFO["logpath"] = sLOG_PATH;
+$aGM_CONN_INFO["protocol"] = env("gomobile.protocol", "http");
+$aGM_CONN_INFO["host"] = env("gomobile.host", "gomobile.cellpointmobile.com");
+$aGM_CONN_INFO["port"] = env("gomobile.port", 8000);
+$aGM_CONN_INFO["timeout"] = env("gomobile.timeout", 20);	// In seconds
+$aGM_CONN_INFO["path"] = env("gomobile.path", "/");
+$aGM_CONN_INFO["method"] = env("gomobile.method", "POST");
+$aGM_CONN_INFO["contenttype"] = env("gomobile.contenttype", "text/xml");
+$aGM_CONN_INFO["username"] = env("gomobile.username", "");		// Set from the Client Configuration
+$aGM_CONN_INFO["password"] = env("gomobile.password", "");		// Set from the Client Configuration
+$aGM_CONN_INFO["logpath"] = env("gomobile.logpath", sLOG_PATH);
 /**
  * 1 - Write log entry to file
  * 2 - Output log entry to screen
  * 3 - Write log entry to file and output to screen
  *
  */
-$aGM_CONN_INFO["mode"] = 1;
+$aGM_CONN_INFO["mode"] = env("gomobile.mode", 1);
 
-$aCPM_CONN_INFO["protocol"] = "http";
-$aCPM_CONN_INFO["host"] = "mpoint.local.cellpointmobile.com";
-$aCPM_CONN_INFO["port"] = 80;
-$aCPM_CONN_INFO["timeout"] = 20;
-$aCPM_CONN_INFO["path"] = "/callback/cpm.php";
-$aCPM_CONN_INFO["method"] = "POST";
-$aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
-//$aCPM_CONN_INFO["username"] = "";
-//$aCPM_CONN_INFO["password"] = "";
+
+//Connection info connecting to the same host, used while running unit tests
+$aCPM_CONN_INFO["protocol"] = env("mpoint.protocol", "http");
+$aCPM_CONN_INFO["host"] = env("mpoint.host", "mpoint.local.cellpointmobile.com");
+$aCPM_CONN_INFO["port"] = env("mpoint.port", 80);
+$aCPM_CONN_INFO["timeout"] = env("mpoint.timeout", 20);
+$aCPM_CONN_INFO["path"] = env("mpoint.path", "/callback/cpm.php");
+$aCPM_CONN_INFO["method"] = env("mpoint.method", "POST");
+$aCPM_CONN_INFO["contenttype"] = env("mpoint.contenttype", "application/x-www-form-urlencoded");
+
 
 /**
  *
@@ -1284,4 +1258,5 @@ define("sSCHEMA_POSTFIX","");
  *	will be expire. When set to "0" No logs will be purged. 
  */
 define("iPURGED_DAYS", 30);
+
 ?>

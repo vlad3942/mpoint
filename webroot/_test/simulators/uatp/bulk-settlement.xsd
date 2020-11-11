@@ -25,7 +25,7 @@
                     <xs:element type="xs:string" name="sms-receipt"/>
                     <xs:element type="xs:string" name="email-receipt"/>
                     <xs:element type="xs:string" name="auto-capture"/>
-                    <xs:element type="xs:byte" name="store-card"/>
+                    <xs:element type="xs:integer" name="store-card"/>
                     <xs:element type="xs:string" name="salt"/>
                     <xs:element type="xs:string" name="secret-key"/>
                     <xs:element type="xs:string" name="ip-list"/>
@@ -46,11 +46,11 @@
                     </xs:element>
                     <xs:element type="xs:string" name="show-all-cards"/>
                   </xs:sequence>
-                  <xs:attribute type="xs:byte" name="id"/>
-                  <xs:attribute type="xs:byte" name="flow-id"/>
-                  <xs:attribute type="xs:byte" name="mode"/>
-                  <xs:attribute type="xs:byte" name="max-cards"/>
-                  <xs:attribute type="xs:byte" name="identification"/>
+                  <xs:attribute type="xs:integer" name="id"/>
+                  <xs:attribute type="xs:integer" name="flow-id"/>
+                  <xs:attribute type="xs:integer" name="mode"/>
+                  <xs:attribute type="xs:integer" name="max-cards"/>
+                  <xs:attribute type="xs:integer" name="identification"/>
                   <xs:attribute type="xs:string" name="masked-digits"/>
                 </xs:complexType>
               </xs:element>
@@ -58,8 +58,8 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="name"/>
-                    <xs:element type="xs:byte" name="merchant-account"/>
-                    <xs:element type="xs:byte" name="merchant-sub-account"/>
+                    <xs:element type="xs:integer" name="merchant-account"/>
+                    <xs:element type="xs:integer" name="merchant-sub-account"/>
                     <xs:element type="xs:string" name="username"/>
                     <xs:element type="xs:string" name="password"/>
                     <xs:element type="xs:string" name="messages"/>
@@ -69,7 +69,7 @@
                           <xs:element name="property" maxOccurs="unbounded" minOccurs="0">
                             <xs:complexType>
                               <xs:simpleContent>
-                                <xs:extension base="xs:byte">
+                                <xs:extension base="xs:integer">
                                   <xs:attribute type="xs:string" name="name" use="optional"/>
                                 </xs:extension>
                               </xs:simpleContent>
@@ -79,8 +79,8 @@
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute type="xs:byte" name="id"/>
-                  <xs:attribute type="xs:byte" name="type"/>
+                  <xs:attribute type="xs:integer" name="id"/>
+                  <xs:attribute type="xs:integer" name="type"/>
                 </xs:complexType>
               </xs:element>
               <xs:element name="settlement-in-progress" maxOccurs="1" minOccurs="1">
@@ -90,7 +90,7 @@
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
-                            <xs:attribute type="xs:byte" name="id" use="optional"/>
+                            <xs:attribute type="xs:integer" name="id" use="optional"/>
                             <xs:attribute type="xs:string" name="file-reference-number" use="optional"/>
                             <xs:attribute type="xs:int" name="file_sequence_number" use="optional"/>
                             <xs:attribute type="xs:string" name="description" use="optional"/>
@@ -109,7 +109,7 @@
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
-                            <xs:attribute type="xs:byte" name="id" use="optional"/>
+                            <xs:attribute type="xs:integer" name="id" use="optional"/>
                             <xs:attribute type="xs:int" name="file-id" use="optional"/>
                             <xs:attribute type="xs:int" name="record-id" use="optional"/>
                             <xs:attribute type="xs:string" name="type" use="optional"/>
@@ -122,7 +122,7 @@
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute type="xs:byte" name="client-id"/>
+            <xs:attribute type="xs:integer" name="client-id"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>

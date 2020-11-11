@@ -11,7 +11,7 @@ class AMEXCaptureAPITest extends CaptureAPITest
 {
 	public function testSuccessfulCapture()
 	{
-
+        $this->markTestIncomplete();
 	}
 
 	public function testSuccessfulCaptureInitiated()

@@ -473,7 +473,7 @@ class General
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
 					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType()).",
 					convertedamount = ". $oTI->getConvertedAmount() .",convertedcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
-					conversionrate = ". $oTI->getConversationRate();
+					conversionrate = ". $oTI->getConversationRate().", fee = ".$oTI->getFee();
 
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }

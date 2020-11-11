@@ -46,7 +46,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
     public function testBadRequestInvalidRequestBody()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled, username, passwd) VALUES (113, 1, 100, 'Test Client', true, 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled, username, passwd) VALUES (10099, 1, 100, 'Test Client', true, 'Tuser', 'Tpass')");
 
 		$this->_httpClient->connect();
 
@@ -59,9 +59,9 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
     public function testBadRequestDisabledClient()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled, username, passwd) VALUES (113, 1, 100, 'Test Client', false, 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled, username, passwd) VALUES (10099, 1, 100, 'Test Client', false, 'Tuser', 'Tpass')");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -74,10 +74,10 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
     public function testDisabledAccount()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled, username, passwd) VALUES (113, 1, 100, 'Test Client', true, 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, enabled) VALUES (1100, 113, false)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled, username, passwd) VALUES (10099, 1, 100, 'Test Client', true, 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, enabled) VALUES (1100, 10099, false)");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -90,11 +90,11 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
     public function testUndefinedTransaction()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -107,14 +107,14 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
 	public function testTransactionInWrongStateAuthorized()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,5000)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,convertedamount) VALUES (1001001, 100, 10099, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE .")");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -122,21 +122,21 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="40">Transaction not in right state. mPoint ID: 1001001 Client ID: 113</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="40">Transaction not in right state. mPoint ID: 1001001 Client ID: 10099</status></root>', $sReplyBody);
 	}
 
 	public function testTransactionInWrongStateRefunded()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,5000)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,convertedamount) VALUES (1001001, 100, 10099, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE .")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE .")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REFUNDED_STATE .")");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -144,7 +144,7 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(400, $iStatus);
-		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="37">Transaction not in right state. mPoint ID: 1001001 Client ID: 113</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="37">Transaction not in right state. mPoint ID: 1001001 Client ID: 10099</status></root>', $sReplyBody);
 	}
 
 	public function testUnauthorized()
@@ -162,11 +162,11 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
 	public function testWrongUsernamePassword()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -179,13 +179,13 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
 	public function testWrongContentType()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,5000)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,convertedamount) VALUES (1001001, 100, 10099, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,5000)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 
-		$xml = $this->getRequestDoc(113, 1100, '1001001', '1/2');
+		$xml = $this->getRequestDoc(10099, 1100, '1001001', '1/2');
 
 		$this->_httpClient->connect();
 
@@ -198,13 +198,13 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
 	public function testWrongURL()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 10099, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 
-		$xml = $this->getRequestDoc(113, 1100, '1001001', 'text/html', 'http://');
+		$xml = $this->getRequestDoc(10099, 1100, '1001001', 'text/html', 'http://');
 
 		$this->_httpClient->connect();
 
@@ -217,13 +217,13 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 
 	public function testNotConfiguredForClient()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 10099, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 
-		$xml = $this->getRequestDoc(113, 1100);
+		$xml = $this->getRequestDoc(10099, 1100);
 
 		$this->_httpClient->connect();
 
@@ -231,6 +231,6 @@ class ThreeDSecureAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(405, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="51">Mobile Optimized 3D secure not configured for client: 113</status></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="51">Mobile Optimized 3D secure not configured for client: 10099</status></root>', $sReplyBody);
 	}
 }

@@ -22,7 +22,7 @@ class PayAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
 	}
 
-	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false,$currencyid=-1,$amount=100,$hmac=null,$aDccParams=null)
+	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false, $contryid=100, $currencyid=-1,$amount=100,$hmac=null,$aDccParams=null)
 	{
 		$sStore = $store ? 'true' : 'false';
 
@@ -32,7 +32,7 @@ class PayAPITest extends baseAPITest
 		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'"';
 		$xml .='>';
 		$xml .= '<card type-id="'. $card .'">';
-        $xml .= '<amount country-id="100"';
+        $xml .= '<amount country-id="'.$contryid.'"';
         if($currencyid>0) $xml .= ' currency-id="'.$currencyid.'"';
         $xml .= '>'.$amount.'</amount>';
 		$xml .= '</card>';
@@ -65,22 +65,21 @@ class PayAPITest extends baseAPITest
 		return $xml;
 	}
 
-	protected function testSuccessfulPay($pspID, $cardID,$typeId=1, $pspType = 1)
+	protected function testSuccessfulPay($pspID, $cardID,$typeId=1, $pspType = 1, $countryid=100,$currencyid=208)
 	{
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 113, 'app')");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
-		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '4216310')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10099, 'app')");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
-		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,psp_type) VALUES (113, $cardID, $pspID, $pspType)");
-		$this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.currencyid * -1 AS pricepointid, $cardID FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,psp_type) VALUES (10099, $cardID, $pspID, $pspType)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, ".$currencyid.", ".$countryid .", 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, ".$countryid .", $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
 
-		$xml = $this->getPayDoc(113, 1100, 1001001, $cardID);
+		$xml = $this->getPayDoc(10099, 1100, 1001001, $cardID, false, $countryid, $currencyid);
 
 		$this->_httpClient->connect();
 

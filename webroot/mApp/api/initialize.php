@@ -73,6 +73,7 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
+require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 
 $aMsgCds = array();
 
@@ -179,8 +180,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 								$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 							}
-	
-							$data['description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->description;
+                            if ($obj_DOM->{'initialize-payment'}[$i]->transaction->fees->fee)
+                            {
+                                $data['fee'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->fees->fee[0];
+                            }
+                            $data['description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->description;
 							$data['gomobileid'] = -1;
 							$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
 
@@ -497,7 +501,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['passenger']['first_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'first-name'};
 											$data['passenger']['last_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'last-name'};
 											$data['passenger']['type'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'type'};
-											$data['passenger']['order_id'] = $order_id;
+                                            $data['passenger']['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'amount'};
+                                            $data['passenger']['order_id'] = $order_id;
                                             $data['passenger']['title'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'title'};
                                             $data['passenger']['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->email;
                                             $data['passenger']['mobile'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile;
@@ -715,6 +720,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$walletsXML = '<wallets>';
 							$apmsXML = '<apms>';
 							$aggregatorsXML = '<aggregators>';
+							$offlineXML = '<offline>';
 							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 							    $cardXML = '';
@@ -768,15 +774,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                 if($isnewcardconfig === TRUE)
                                 {
-                                    switch ((int)$obj_XML->item[$j]["processor-type"]) {
-                                        case Constants::iPROCESSOR_TYPE_WALLET;
+                                    switch ((int)$obj_XML->item[$j]["payment-type"]) {
+                                        case Constants::iPAYMENT_TYPE_WALLET;
                                             $walletsXML .= $cardXML;
                                             break;
-                                        case Constants::iPROCESSOR_TYPE_APM;
+                                        case Constants::iPAYMENT_TYPE_APM;
+
                                             $apmsXML .= $cardXML;
                                             break;
-                                        case Constants::iPROCESSOR_TYPE_GATEWAY;
+                                        case Constants::iPAYMENT_TYPE_ONLINE_BANKING;
                                             $aggregatorsXML .= $cardXML;
+                                            break;
+                                        case Constants::iPAYMENT_TYPE_OFFLINE;
+                                            $offlineXML .= $cardXML;
                                             break;
                                         default:
                                             $cardsXML .= $cardXML;
@@ -796,12 +806,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $walletsXML .= '</wallets>';
                             $apmsXML .= '</apms>';
                             $aggregatorsXML .= '</aggregators>';
+                            $offlineXML .= '</offline>';
 
                             $xml .= $cardsXML;
                             $xml .= $walletsXML;
                             if ($isnewcardconfig === TRUE) {
                                 $xml .= $apmsXML;
                                 $xml .= $aggregatorsXML;
+                                $xml .= $offlineXML;
                             }
 
 							for ($j=0, $jMax = count($aPSPs); $j< $jMax; $j++)

@@ -1700,6 +1700,7 @@ class TxnInfo
 			if (array_key_exists("converted-amount", $misc) === false) { $misc["converted-amount"] = $obj->getConvertedAmount(); }
 			if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = -1; }
+			if (array_key_exists("fee", $misc) === false) { $misc["fee"] = 0; }
 
 			if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
@@ -1712,7 +1713,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,0,0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"");
+            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"");
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -2103,8 +2104,8 @@ class TxnInfo
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
 	
 				
-						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id)
-						VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."')";
+						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount)
+						VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."',". $aPassengerData["amount"] .")";
 				// Error: Unable to insert a new passenger record in the Passenger Table
 						$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				if (is_resource($obj_DB->query($sql) ) === false)
