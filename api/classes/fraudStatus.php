@@ -64,10 +64,9 @@ class FraudStatus
         return $xml;
     }
 
-    public function SSOCheck($aHCINFO)
+    public function SSOCheck()
     {
         $aClientIDs = array($this->_iClientId);
-        $this->_aHTTP_CONN_INFO["mesb"] = $aHCINFO;
         $this->_aHTTP_CONN_INFO["mesb"]["path"]  = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
         $this->_aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
         $this->_aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
