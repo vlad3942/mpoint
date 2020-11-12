@@ -323,4 +323,16 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Sagar Narayane"
+        id="2020-11-12-setup-v2.25.5-log">
+
+        <update catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+
+            <column name="paymenttype" value="3" />
+            <where>id = 93</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
