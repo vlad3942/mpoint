@@ -18,7 +18,7 @@
 // Require Global Include File
 require_once("../../inc/include.php");
 
-// Require API for Simple DOM manipulationf
+// Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
 // Require Business logic for the End-User Account Component
