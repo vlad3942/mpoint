@@ -1,6 +1,6 @@
 #!/bin/sh
 #This script is running unittests, and is to be executed as part of the docker build process.
-set -ex
+set -x
 
 echo "start postgres daemon process..."
 /docker-entrypoint.sh postgres >/dev/null 2>&1 &
@@ -31,3 +31,13 @@ fi
 
 #execute phpunit
 php $PHPUNIT_EXEC_PATH -c $PHPUNIT_CONFIG_PATH
+exitval=$?
+
+#output logs if testing failed
+if [ $exitval -ne 0 ]; then
+  echo; echo; echo "###################### LOG OUTPUT ###########################"; echo; echo;
+  rm /opt/cpm/mPoint/log/access.log
+  tail -n +1 /opt/cpm/mPoint/log/*
+fi
+
+exit $exitval
