@@ -740,38 +740,22 @@
         </createIndex>  
     </changeSet>
 
-    <!-- Create additional partitions for Southwest -->
+    <!-- Create default partition for Southwest -->
     <changeSet author="Jonatan Evald Buus"
         id="2020-11-11-master-v2.25-CMP-4694">
 
         <sql dbms="postgresql" endDelimiter=";"
             splitStatements="false">
 
-            DO $$
-            DECLARE
-                sql TEXT;
-            BEGIN
-                FOR counter IN 20..99 LOOP
-                    sql := 'CREATE TABLE IF NOT EXISTS Log.TxnPassbook_Tbl_10069_'|| counter ||'000001_'|| (counter + 1) ||'000001 PARTITION OF Log.TxnPassbook_Tbl_10069 FOR VALUES FROM ('|| counter ||'000001) TO ('|| (counter + 1) ||'000001)';
-                    EXECUTE sql;
-                END LOOP;
-            END
-            $$;
+            -- Create default partition for Southwest
+            CREATE TABLE Log.TxnPassbook_Tbl_10069_Default PARTITION OF Log.TxnPassbook_Tbl_10069 DEFAULT;
         </sql>
         <rollback>
             <sql dbms="postgresql" endDelimiter=";"
                 splitStatements="false">
-                
-                DO $$
-                DECLARE
-                    sql TEXT;
-                BEGIN
-                    FOR counter IN 20..99 LOOP
-                        sql := 'DROP TABLE IF EXISTS Log.TxnPassbook_Tbl_10069_'|| counter ||'000001_'|| (counter + 1) ||'000001';
-                        EXECUTE sql;
-                    END LOOP;
-                END
-                $$;
+
+                -- Drop default partition for Southwest
+                DROP TABLE Log.TxnPassbook_Tbl_10069_Default;
             </sql>
         </rollback>
     </changeSet>
