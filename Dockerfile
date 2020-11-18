@@ -5,7 +5,6 @@ COPY composer.json .
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
-# TODO Clean this up MartinW
 #Run unittests
 FROM registry.t.cpm.dev/library/pgunittestextras:master20201027200551
 
@@ -44,7 +43,6 @@ COPY docker/runtests.sh /sh/runtests.sh
 RUN mkdir /opt/cpm/mPoint/log \
     && cd /opt/cpm/mPoint/log && touch db_exectime_.log db_error_.log app_error_.log \
     && chmod -R 777 /opt/cpm/mPoint/log \
-    && cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
     && apk add --no-cache apache2 php7-apache2 dos2unix \
     && printf "LoadModule rewrite_module modules/mod_rewrite.so" >> /etc/apache2/httpd.conf \
     && chmod +x -R /sh \
@@ -70,14 +68,16 @@ WORKDIR /opt/cpm/mPoint
 COPY api api
 COPY conf conf
 COPY webroot webroot
-# Runtime dependencies
 COPY --from=builder /app /opt/cpm/mPoint
+COPY docker/entrypoint.sh /entrypoint.sh
 
-# TODO CMP-4532	Library dependencies should be fetched from the vendor folder
-RUN cp -R /opt/cpm/mPoint/vendor/cellpointmobile/php5api /opt/php5api \
+RUN apk add --no-cache dos2unix \
+    && dos2unix /entrypoint.sh \
+    && chmod +x /entrypoint.sh \
     && mkdir /opt/cpm/mPoint/log \
-    && chown -R 1000:1000 /opt \
-# webroot must be without _test folder
-    && rm -rf /opt/cpm/mPoint/webroot/_test
+    && rm -rf /opt/cpm/mPoint/webroot/_test \
+    && chown -R 1000:1000 /opt
 
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["php-fpm"]
 USER 1000
