@@ -4,7 +4,7 @@ FROM registry.t.cpm.dev/library/alpine:latest as builder
 # dos2unix is need to make build work on Windows
 RUN apk add --no-cache dos2unix
 
-COPY liquibase/src/main/resources/liquibase /app/resources/liquibase
+COPY liquibase/src/main/resources /app/resources
 COPY liquibase/src/main/sh /app/scripts
 
 RUN chmod uog+rx /app/scripts/*.sh \
