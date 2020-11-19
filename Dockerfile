@@ -1,7 +1,7 @@
 #-----------------------FETCH TEST DEPENDENCIES------------------------
 
 FROM registry.t.cpm.dev/library/phpcomposerbuildimage:latest as devbuilder
-COPY composer.json .
+COPY composer.json composer.lock* ./
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
