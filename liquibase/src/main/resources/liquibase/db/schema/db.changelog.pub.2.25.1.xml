@@ -9,8 +9,7 @@
     <changeSet author="Nidhi" id="2020-11-19-master-v2.25">
         <sql>
             ALTER PUBLICATION mpoint_client_pub ADD TABLE client.countrycurrency_tbl;
-            ALTER PUBLICATION mpoint_log_pub ADD TABLE
-            log.additional_data_tbl, log.txnpassbook_tbl_default, log.paymentsecureinfo_tbl;
+            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.additional_data_tbl, log.paymentsecureinfo_tbl;
         </sql>
     </changeSet>
 
