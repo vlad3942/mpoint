@@ -121,8 +121,9 @@ class FlightInfoTest extends baseAPITest
                 }
             }
         }
-        $this->assertEquals(2, count($objFlightData));
-        $this->assertStringContainsString('<flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>CEB</departure-airport><arrival-airport>BCD</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-16 10:45:00</departure-date><arrival-date>2020-05-16 12:00:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail><flight-detail tag="1" trip-count="1" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>MNL</departure-airport><arrival-airport>CEB</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-16 18:55:00</departure-date><arrival-date>2020-05-16 19:45:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail>', $xml);
+        $this->assertCount(2, $objFlightData);
+        $this->assertStringContainsString('<flight-detail tag="1" trip-count="1" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>MNL</departure-airport><arrival-airport>CEB</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-16 18:55:00</departure-date><arrival-date>2020-05-16 19:45:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail>', $xml);
+        $this->assertStringContainsString('<flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>CEB</departure-airport><arrival-airport>BCD</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-16 10:45:00</departure-date><arrival-date>2020-05-16 12:00:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail>', $xml);
     }
 
     public function testSuccessSetFlightDetails()
