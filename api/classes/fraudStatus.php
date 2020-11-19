@@ -67,10 +67,10 @@ class FraudStatus
     public function SSOCheck()
     {
         $aClientIDs = array($this->_iClientId);
-        $this->_aHTTP_CONN_INFO["mconsole"]["path"] = $this->_aHTTP_CONN_INFO["mconsole"]["paths"]['single-sign-on'];
-        $this->_aHTTP_CONN_INFO["mconsole"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
-        $this->_aHTTP_CONN_INFO["mconsole"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
-        $obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aHTTP_CONN_INFO["mconsole"]);
+        $this->_aHTTP_CONN_INFO["mesb"]["path"]  = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
+        $this->_aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
+        $this->_aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
+        $obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aHTTP_CONN_INFO["mesb"]);
         $code = $this->_obj_mConsole->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, $aClientIDs, $_SERVER['HTTP_VERSION']);
         return $code;
     }

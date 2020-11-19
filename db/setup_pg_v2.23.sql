@@ -8,12 +8,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 VALUES('3DSVERSION', '2.0', true, <client ID>, 'client', 2);
 -------------------------- Property TO enable 3DS2.0 FOR a client id -------------------------------------
 
-------------------------- Card prefix range for VISA/Dankort -------------------------------------
-UPDATE system.cardprefix_tbl SET cardid=37 WHERE cardid=2 AND min=5019 AND max=5019;
-
-------------------------- Add new state id into system.cardstate_tbl -------------------------------------
-
-INSERT INTO System.CardState_Tbl (id, name) VALUES (6, 'Disable Show');
 ------Worldpay-Modirum-----
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('3DVERIFICATION', 'mpi', true, <merchant-id>, 'merchant', 2);
 ----------------------
@@ -23,9 +17,6 @@ SET value = 'mpi'
 WHERE key = '3DVERIFICATION' and externalid = <AMEX merchant-id> ;
 ----------------------
 -------CYBS AMEX Modirum 3ds 1.0
---insert into required currency
-INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (608,47,'PHP');
-INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,47,'USD');
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10077, 47, 'MODIRUM MPI', '9449005362', '-----BEGIN PRIVATE KEY-----
 MIIG/QIBADANBgkqhkiG9w0BAQEFAASCBucwggbjAgEAAoIBgQDQJJV0P2r0cSly
@@ -80,12 +71,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 VALUES('3DSVERSION', '2.0', true, <client ID>, 'client', 2);
 -------------------------- Property TO enable 3DS2.0 FOR a client id -------------------------------------
 
-------------------------- Card prefix range for VISA/Dankort -------------------------------------
-UPDATE system.cardprefix_tbl SET cardid=37 WHERE cardid=2 AND min=5019 AND max=5019;
-
-------------------------- Add new state id into system.cardstate_tbl -------------------------------------
-
-INSERT INTO System.CardState_Tbl (id, name) VALUES (6, 'Disable Show');
 ------Worldpay-Modirum-----
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('3DVERIFICATION', 'mpi', true, <merchant-id>, 'merchant', 2);
 ----------------------
@@ -95,10 +80,6 @@ SET value = 'mpi'
 WHERE key = '3DVERIFICATION' and externalid = <AMEX merchant-id> ;
 ----------------------
 
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(3117, 'Post-screening Check not attempted Due to rule matched', 'Fraud', '');
-INSERT INTO log.state_tbl(id, "name", "module", func)VALUES(2017, 'Authorization not attempted due to rule matched', 'Payment', '');
-
-
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'RestrictedTicket', '1', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'FareBasisCode', 'BK', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'TravelAgencyName', 'CebuPacificair', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=4;
@@ -106,34 +87,8 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) s
 
 -- CMP-4296
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', true, 10077, 'client', 0);
---------------------------------------------------------------------------------
-----  Update fraud state descriptions
---------------------------------------------------------------------------------
-UPDATE log.state_tbl SET name='Pre Auth Initiated' WHERE id=3010;
-UPDATE log.state_tbl SET name='Pre Auth Success' WHERE id=3011;
-UPDATE log.state_tbl SET name='Pre Auth Unavbl' WHERE id=3012;
-UPDATE log.state_tbl SET name='Pre Auth Unknown' WHERE id=3013;
-UPDATE log.state_tbl SET name='Pre Auth Review' WHERE id=3014;
-UPDATE log.state_tbl SET name='Pre Auth Fail' WHERE id=3015;
-UPDATE log.state_tbl SET name='Pre Auth Conx Fail' WHERE id=3016;
-
-UPDATE log.state_tbl SET name='Post Auth Initiated' WHERE id=3110;
-UPDATE log.state_tbl SET name='Post Auth Success' WHERE id=3111;
-UPDATE log.state_tbl SET name='Post Auth Unavbl' WHERE id=3112;
-UPDATE log.state_tbl SET name='Post Auth Unknown' WHERE id=3113;
-UPDATE log.state_tbl SET name='Post Auth Review' WHERE id=3114;
-UPDATE log.state_tbl SET name='Post Auth Fail' WHERE id=3115;
-UPDATE log.state_tbl SET name='Post Auth Conx Fail' WHERE id=3116;
-
 
 /* ========== Grab Pay Integration = STARTS ========== */
-INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES ( 67, 'GrabPay',4);
-INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (608,67,'PHP');
-INSERT INTO system.Card_tbl (id, name, position, minlength, maxlength, cvclength, paymenttype) VALUES (94, 'GrabPay', 23, -1, -1, -1, 4);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 94, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 608;
-INSERT INTO system.cardprefix_tbl (cardid, min, max) VALUES (94, 0, 0);
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (94, 67);
-
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (<clientid>, 67, 'dbb00e18-83ee-49cf-b54d-2707a069b3e4', '0112218e-dda0-4ca8-8489-65a3d28abd69', 'apWSvBQj_evmVfzY');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>, 67, '-1');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) select 'CLIENT_ID', '14c3e87ce4e04e82954fd78cea2b3a64', id, 'merchant',1 from client.merchantaccount_tbl WHERE clientid=<> AND pspid=67;
@@ -168,13 +123,10 @@ update client.cardaccess_tbl set enabled = false where psp_type in (9,10) and ca
 
 -------------G-CASH 2C2P-ALC FOR CEBU START------------
 
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT 10077, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type) SELECT <client ID>, PC.cardid, PC.pspid, 3 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
--------------G-CASH 2C2P-ALC SYSTEM------------
-INSERT INTO system.card_tbl (id, name, position, minlength, maxlength, cvclength, paymenttype) VALUES (93, 'Gcash', 23, -1, -1, -1, 3);
-INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (40, 93);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 93, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 608;
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (608,40,'PHP');
-
-
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type,capture_type) SELECT 10077, PC.cardid, PC.pspid, 3, 2 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, psp_type,capture_type) SELECT <client ID>, PC.cardid, PC.pspid, 3, 2 FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid IN (93,40) AND PC.pspid ='40' GROUP BY PC.cardid, PC.pspid;
 -------------G-CASH 2C2P-ALC FOR CEBU END------------
+
+--CMP-4471 [Chase Payment] Limit process file additional property	CMP-4471[Chase Payment] Limit process file additional property--
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'MAX_DOWNLOAD_FILE_LIMIT', '2', id, 'merchant',2 from client.merchantaccount_tbl WHERE clientid=10069 AND pspid=52;
+--END CMP-4471 [Chase Payment] Limit process file additional property	CMP-4471[Chase Payment] Limit process file additional property---------------G-CASH 2C2P-ALC FOR CEBU END------------

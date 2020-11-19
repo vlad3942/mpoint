@@ -37,9 +37,9 @@ abstract class CPMMPI extends CPMACQUIRER
             {
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 
-                $code = $obj_XML->status["code"];
+                $code = (int)$obj_XML->status["code"];
                 // In case of 3D verification status code 2005 will be received
-                if($code == 2005)
+                if($code === Constants::iPAYMENT_3DS_VERIFICATION_STATE || $code === Constants::iPAYMENT_3DS_CARD_NOT_ENROLLED || $code === Constants::iPAYMENT_3DS_FAILURE_STATE)
                 {
                     $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
                     $str = str_replace("<root>","",$str);

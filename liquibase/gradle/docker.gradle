@@ -1,0 +1,32 @@
+apply plugin: 'com.palantir.docker'
+apply plugin: 'com.palantir.docker-run'
+
+
+task dockerFilesCopy (type: Copy) {
+    from("src/main/resources/"){
+        into "resources"
+    }
+
+    from("src/main/sh/"){
+        into "scripts"
+    }
+
+    into "build/app"
+}
+
+docker {
+    dependsOn build
+    dependsOn dockerFilesCopy
+
+    name "${rootProject.name}.${project.name}:${project.version}"
+    tag "CellPointRegistry", "${dockerRegistryPush}/${rootProject.name}.${project.name}:${project.version}"
+
+    dockerfile file('src/main/docker/Dockerfile')
+
+    copySpec.from(tasks.dockerFilesCopy.outputs).into("app")
+}
+
+dockerRun {
+    name  "${project.name}"
+    image "${dockerRegistryPush}/${rootProject.name}.${project.name}:${project.version}"
+}

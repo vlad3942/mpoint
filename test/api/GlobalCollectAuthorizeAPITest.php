@@ -12,30 +12,28 @@ class GlobalCollectAuthorizeAPITest extends AuthorizeAPITest
 		
     public function testSuccessfulAuthorize()
     {
+        $this->markTestIncomplete();
 		//TODO: Implement test case that works
 
     	/*$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
     	
-    	//$this->queryDB("INSERT INTO System.PSP_Tbl (id, name) VALUES (20, 'GlobalCollect')");
-    	$this->queryDB("INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 20, name FROM System.PSPCurrency_Tbl WHERE pspid = 4");
-    	$this->queryDB("INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 20 FROM System.PSPCard_Tbl WHERE pspid = 4");
-    	$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-    	$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
-    	$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
-    	$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
-		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (113, 20, '337', '35e849953d7a4b5e', 'zGMYB+75ieEbehRxAF89Pnuek3mDp3xAd0/VofCIDIc=')");
+    	$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+    	$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+    	$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+    	$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10099, 20, '337', '35e849953d7a4b5e', 'zGMYB+75ieEbehRxAF89Pnuek3mDp3xAd0/VofCIDIc=')");
     	$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 20, '-1')");
-    	$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 8, 20, true)"); //Authorize must be possible even with disabled cardac
+    	$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, 8, 20, true)"); //Authorize must be possible even with disabled cardac
     	$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '30206172', TRUE, 'profilePass', TRUE)");
-    	$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-    	$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 8, 20, '501910******3742', '06/24', TRUE, 113, NULL, '33713514-1fc9-4b8e-b1c8-dbe759242bde', NULL)");
-    	$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1,  20, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+    	$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+    	$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 8, 20, '501910******3742', '06/24', TRUE, 10099, NULL, '33713514-1fc9-4b8e-b1c8-dbe759242bde', NULL)");
+    	$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 10099, 1100, 1,  20, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
     	
-    	//$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+    	//$xml = $this->getAuthDoc(10099, 1100, 1001001, 100, 'profilePass');
     	
     	$xml = '<?xml version="1.0" encoding="UTF-8"?>
 				<root>
-				  <authorize-payment account="1100" client-id="113">
+				  <authorize-payment account="1100" client-id="10099">
 				    <transaction type-id="1009" id="1001001">
 				      <card type-id="8" id="61775">
 				        <amount country-id="100">10025</amount>
@@ -95,11 +93,12 @@ class GlobalCollectAuthorizeAPITest extends AuthorizeAPITest
 	public function testSuccessfulAuthorizeIncludingAutoCapture()
 	{
 		//TODO: Implement test case
-		$this->assertTrue(true);
+        $this->markTestIncomplete();
 	}
 
     public function testSuccessfulAuthorizeWithCurrency()
     {
+        $this->markTestIncomplete();
      //   parent::testSuccessfulAuthorizeWithCurrency($pspID); // TODO: Change the autogenerated stub
     }
 }

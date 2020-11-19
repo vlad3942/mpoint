@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.24.sql -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-10-26-setup-v2.24-log">
+        
+        <!-- New log states for 3D Secure -->
+        <update catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004"/>
+            <column name="name" value="3ds Card Not Enrolled"/>
+            <column name="module" value="Payment"/>
+            <column name="func" value=""/>
+            <where>id = 2004</where>
+        </update>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004002"/>
+            <column name="name" value="Authentication Card Not enrolled."/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004003"/>
+            <column name="name" value="Authentication Card Not enrolled cache."/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004095"/>
+            <column name="name" value="Authentication No directory found for PAN/cardtype"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2004096"/>
+            <column name="name" value="Authentication No version 2 directory found for PAN/cardtype"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2005001"/>
+            <column name="name" value="Authentication Card is enrolled Attempt authentication using 3DSv1.0"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2005002"/>
+            <column name="name" value="Authentication Card is enrolled Attempt authentication using 3DSv2.0"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2005003"/>
+            <column name="name" value="Authentication Attempt authentication by loading Unknown HTML Format"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2006001"/>
+            <column name="name" value="Authentication Fully"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2006004"/>
+            <column name="name" value="Authentication Attempt (Proof of authentication attempt, may continue to transaction)"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016000"/>
+            <column name="name" value="Not Authenticated"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016005"/>
+            <column name="name" value="Authentication grey area"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016006"/>
+            <column name="name" value="Authentication Error received (from Directory or ACS)"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016091"/>
+            <column name="name" value="Authentication Network error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016092"/>
+            <column name="name" value="Authentication Directory error (read timeout)"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016093"/>
+            <column name="name" value="Authentication Configuration error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016094"/>
+            <column name="name" value="Authentication Input Errors"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016097"/>
+            <column name="name" value="Authentication If transaction not found on continue or service query"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016099"/>
+            <column name="name" value="Authentication System error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016998"/>
+            <column name="name" value="Authentication Not Applicable"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+        
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2016999"/>
+            <column name="name" value="Authentication Unknown Error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

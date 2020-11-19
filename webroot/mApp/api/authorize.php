@@ -167,6 +167,8 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
+require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -248,11 +250,27 @@ try
                                     $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
                                     $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
                                     $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
+                                    $additionalTxnData = [];
 
 									if ($isStoredCardPayment === true)
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
+									}
+
+									if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
+									{
+										$additionalDataParamsCount = count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children());
+										for ($index = 0; $index < $additionalDataParamsCount; $index++)
+										{
+											$additionalTxnData[$index]['name'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+											$additionalTxnData[$index]['value'] = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
+											$additionalTxnData[$index]['type'] = (string)'Transaction';
+										}
+									}
+									if(count($additionalTxnData) > 0)
+									{
+										$obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
 									}
 									
 									$_OBJ_DB->query("COMMIT");
@@ -408,37 +426,79 @@ try
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
+                                        // sso verification conditions checking 
+										$sosPreference =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "SSO_PREFERENCE");
+					       				$sosPreference = strtoupper($sosPreference); 
 
+										// Single Sign-On
+					                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
+										$authToken = trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
+										$clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
+
+										if (strlen($authToken) == 1 && strlen($authenticationURL) > 0)
+										{
+											$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
+											if(empty($obj_CustomerInfo) === false) {
+                                                $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                                if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
+                                                    $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
+                                                }
+                                                if (float($obj_TxnInfo->getMobile()) > 0) {
+                                                    $obj_Customer->mobile = $obj_TxnInfo->getMobile();
+                                                    $obj_Customer->mobile["country-id"] = int($obj_TxnInfo->getCountryConfig()->getID());
+                                                    $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+                                                }
+                                                if (strlen($obj_TxnInfo->getEMail()) > 0) {
+                                                    $obj_Customer->email = $obj_TxnInfo->getEMail();
+                                                }
+                                                $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+
+                                                if ( $sosPreference === 'STRICT' )
+						                        {
+						                        	$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
+
+						                        	if ($code == 212) 
+														{
+						                                	$aMsgCds[$code] = 'Mandatory fields are missing' ;
+						                          	} 
+						                          	else {
+						                          		 $aMsgCds[213] = 'Profile authentication failed' ;
+						                          	}
+						                        } 
+						                        else {
+													
+													$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId);
+												}
+
+                                            }
+											else{
+											    //Account Not Found
+											    if ( $sosPreference !== 'STRICT' )
+						                        {
+									        		$code = 5;
+									            }
+											    
+                                            }
+										}
+										else 
+							            {
+							            	if ( $sosPreference === 'STRICT' )
+					                        {
+								        		if (empty($authToken) === true)
+								                { 
+								                     $aMsgCds[211] = 'Auth token or SSO token not received' ;
+								                } else {
+								                     $aMsgCds[209] = 'Auth url not configured' ;
+								                }
+								            }
+							            }	
+					                    
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
-											// Single Sign-On
-											if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
-											{
-												$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-												if(empty($obj_CustomerInfo) === false) {
-                                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                                                    if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
-                                                        $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
-                                                    }
-                                                    if (floatval($obj_TxnInfo->getMobile()) > 0) {
-                                                        $obj_Customer->mobile = $obj_TxnInfo->getMobile();
-                                                        $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
-                                                        $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
-                                                    }
-                                                    if (strlen($obj_TxnInfo->getEMail()) > 0) {
-                                                        $obj_Customer->email = $obj_TxnInfo->getEMail();
-                                                    }
-                                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                                    $code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'authorize-payment'}[$i]["client-id"]);
-                                                }
-												else{
-												    //Account Not Found
-												    $code = 5;
-                                                }
-											}
+											
 											// Authentication is not required for payment methods that are sending a token or Invoice
-                                            elseif (($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
+                                            if (($code != 5) && ($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
                                                 (empty($obj_DOM->{'authorize-payment'}[$i]->password) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) === false))
 											{
 												$code = 10;
@@ -898,8 +958,8 @@ try
 
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
@@ -910,7 +970,7 @@ try
                                                                                 $xml .= '<status code="2000">Payment authorized using card</status>';
                                                                             } else if (strpos($code, '2005') !== false) {
                                                                                 header("HTTP/1.1 303");
-                                                                                $xml .= $code;
+                                                                                $xml .= $response->body;
                                                                             } else if (is_null($token) == false) {
                                                                                 $xml .= '<status code="' . $code . '">Globalcollect returned : ' . $code . '</status>';
                                                                             } // Error: Authorization declined
@@ -928,8 +988,8 @@ try
 
                                                                             $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-
+                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
+                                                                            $code = $response->code;
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
                                                                                 $xml .= '<status code="100">Payment Authorized using stored card</status>';
@@ -952,10 +1012,12 @@ try
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
-                                                                                    $requset = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
-                                                                                    $code = $obj_Processor->authenticate($requset);
+                                                                                    $request = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 } else {
-                                                                                    $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                    $code = $response->code;
                                                                                 }
                                                                                 
                                                                                 // Authorization succeeded
@@ -991,12 +1053,11 @@ try
                                                                                 $response = NULL;
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
-                                                                                    $code = $obj_Processor->authenticate($request);
+                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
                                                                                 } else {
                                                                                     $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
-                                                                                    $code = $response->code;
-
-                                                                                }
+																				}
+																				$code = $response->code;
 
                                                                                 $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
                                                                                 $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute);

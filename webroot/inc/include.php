@@ -21,12 +21,13 @@ else
 	define("sSYSTEM_PATH", substr($sPath, 0, strlen($sPath)-1) );
 }
 /* ========== Define System path End ========== */
+define ('sAPI_PATH', sSYSTEM_PATH . '/vendor/cellpointmobile/php5api');
 // Define path to the General API classes
-define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/classes/");
+define("sAPI_CLASS_PATH", sAPI_PATH . '/classes/');
 // Define path to the General API interfaces
-define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/interfaces/");
+define("sAPI_INTERFACE_PATH", sAPI_PATH . '/interfaces/');
 // Define path to the General API functions
-define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/functions/");
+define("sAPI_FUNCTION_PATH", sAPI_PATH . '/functions/');
 
 // Define path to the System classes
 define("sCLASS_PATH", sSYSTEM_PATH ."/api/classes/");
@@ -38,6 +39,8 @@ define("sFUNCTION_PATH", sSYSTEM_PATH ."/api/functions/");
 define("sLIB_PATH", sSYSTEM_PATH ."/api/lib/");
 // Define path to the System Configuration
 define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
+// Define path to the Environment Configuration
+define("sENV_PATH", sSYSTEM_PATH ."/env/");
 // Define Language Path Constant
 define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
@@ -67,6 +70,8 @@ require_once(sAPI_CLASS_PATH ."uaprofile.php");
 // Require API containing generic validation functions
 require_once(sAPI_CLASS_PATH ."validate_base.php");
 
+// Require Global library functions file
+require_once(sFUNCTION_PATH ."global.php");
 // Require Global function file
 require_once(sAPI_FUNCTION_PATH ."global.php");
 
