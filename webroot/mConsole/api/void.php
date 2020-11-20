@@ -133,8 +133,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					for ($j=0; $j<count($obj_DOM->{'void'}->transactions[$i]->transaction); $j++)
 					{
 						$xml .= '<transaction id="'. intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"]) .'" order-no="'. htmlspecialchars($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"], ENT_NOQUOTES) .'">';
-						
-						$aMsgCodes = $obj_mPoint->void(HTTPConnInfo::produceConnInfo("http://". $_SERVER["HTTP_HOST"] ."/buy/refund.php"),
+
+						$aMsgCodes = $obj_mPoint->void(HTTPConnInfo::produceConnInfo($_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER["HTTP_HOST"] .'/buy/refund.php'),
 													  (integer) $obj_DOM->{'void'}->transactions[$i]["client-id"],
 													  $obj_ClientConfig->getUsername(),
 													  $obj_ClientConfig->getPassword(),
