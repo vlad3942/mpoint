@@ -17,7 +17,7 @@
 
     <!-- Detach partitions -->
     <changeSet author="Jonatan Evald Buus"
-        id="2020-11-20-master-v2.25-CMP-4673">
+        id="2020-11-20-master-v2.25-CMP-4673-1">
 
         <sql dbms="postgresql" endDelimiter=";">
             ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10021; -- SGA
@@ -821,7 +821,7 @@
 
     <!-- Create primary keys for new default partition -->
     <changeSet author="Jonatan Evald Buus"
-        id="2020-11-20-master-v2.25-CMP-4673">
+        id="2020-11-20-master-v2.25-CMP-4673-2">
 
         <!-- A unique index is automatically created by postgres, when creating a primaryKey -->
         <addPrimaryKey catalogName="log"
