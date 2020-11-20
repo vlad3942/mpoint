@@ -792,6 +792,47 @@
         </rollback>
     </changeSet>
 
+    <!-- Create primary keys for new default partition for Southwest -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-20-master-v2.25-CMP-4694">
+
+        <!-- A unique index is automatically created by postgres, when creating a primaryKey -->
+        <addPrimaryKey catalogName="log"
+                       schemaName="log"
+                       tableName="TxnPassbook_Tbl_10069_Default"
+                       columnNames="id"
+                       constraintName="TxnPassbook_10069_Default_PK"/>
+
+        <createIndex
+            catalogName="log"
+            indexName="idx_txnpassbook_tbl_10069_default"
+            schemaName="log"  
+            tableName="txnpassbook_tbl_10069_default"> 
+
+            <column name="clientid" />
+            <column name="transactionid" />
+        </createIndex>
+
+        <sql dbms="postgresql" endDelimiter=";"
+            splitStatements="false">
+
+            -- Create trigger for default Southwest partition
+            CREATE TRIGGER update_txnpassbook_tbl_10069_default
+            BEFORE UPDATE 
+            ON log.txnpassbook_tbl_10069_default
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_table_proc();
+        </sql>
+        <rollback>
+            <sql dbms="postgresql" endDelimiter=";"
+                splitStatements="false">
+
+                -- Drop trigger for default Southwest partition
+                DROP TRIGGER update_txnpassbook_tbl_10069_default ON log.txnpassbook_tbl_10069_default;
+            </sql>
+        </rollback>
+    </changeSet>
+
     <!-- Recreate event trigger to disable changes to replicated tables -->
     <changeSet author="Jonatan Evald Buus"
         id="2020-11-09-master-v2.25-post-process">
