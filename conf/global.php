@@ -10,25 +10,29 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | 
  * Path to Log Files directory
  */
 define("sLOG_PATH", sSYSTEM_PATH ."/log/");
+
 /**
  * Output method for the error handler:	
  *	0 - Store Internally
  *	1 - Output to file
- *	2 - Output to screen2c
+ *	2 - Output to screen
  *	3 - Output to file and screen
  *	4 - Send to remote server
  *	5 - Output to file and send remote server
  *	6 - Output to screen and send remote server
  *	7 - Output to file & screen and send remote server
+ *  8 - Output to SAPI logging handler in json format
  */
-define("iOUTPUT_METHOD", env("LOG_OUTPUT_METHOD", 1));
+define("iOUTPUT_METHOD", env('LOG_OUTPUT_METHOD', 8));
+
 /**
  * General debug level for the error handler
  *	0 - Output error
  *	1 - Add stack trace for exceptions and variable scope for errors to log message
  *	2 - Add custom trace using the {TRACE <DATA>} syntax
  */
-define("iDEBUG_LEVEL", env("LOG_DEBUG_LEVEL", 2));
+define("iDEBUG_LEVEL", env('LOG_DEBUG_LEVEL', 2));
+
 /**
  * Path to the application error log
  */
@@ -70,8 +74,8 @@ $aDB_CONN_INFO["mpoint"]["errorhandling"] = env("database.mpoint.errorhandling",
 $aDB_CONN_INFO["mpoint"]["exectime"] = env("database.mpoint.exectime", 0.3);
 $aDB_CONN_INFO["mpoint"]["execpath"] = env("database.mpoint.execpath", sLOG_PATH ."db_exectime_".".log");
 $aDB_CONN_INFO["mpoint"]["keycase"] = env("database.mpoint.keycase", CASE_UPPER);
-$aDB_CONN_INFO["mpoint"]["debuglevel"] = env("database.mpoint.debuglevel", 2);
-$aDB_CONN_INFO["mpoint"]["method"] = env("database.mpoint.method", 1);
+$aDB_CONN_INFO["mpoint"]["debuglevel"] = iDEBUG_LEVEL;
+$aDB_CONN_INFO["mpoint"]["method"] = iOUTPUT_METHOD;
 
 /**
  * Database settings for Session database
@@ -90,8 +94,8 @@ $aDB_CONN_INFO["session"]["errorhandling"] = env("database.session.errorhandling
 $aDB_CONN_INFO["session"]["exectime"] = env("database.session.exectime", 0.3);
 $aDB_CONN_INFO["session"]["execpath"] = env("database.session.execpath", sLOG_PATH ."db_exectime_".".log");
 $aDB_CONN_INFO["session"]["keycase"] = env("database.session.keycase", CASE_UPPER);
-$aDB_CONN_INFO["session"]["debuglevel"] = env("database.session.debuglevel", 2);
-$aDB_CONN_INFO["session"]["method"] = env("database.session.method", 1);
+$aDB_CONN_INFO["session"]["debuglevel"] = iDEBUG_LEVEL;
+$aDB_CONN_INFO["session"]["method"] = iOUTPUT_METHOD;
 
 
 /**

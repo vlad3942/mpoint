@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- Ported from setup_v2.25.sql -->
+    <changeSet author="Karishan kumar"
+        id="2020-11-12-setup-v2.25-system">
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="211"/>
+            <column name="name" value="Auth token or SSO token not received"/>
+            <column name="module" value="verification"/>
+            <column name="func" value="verify"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="212"/>
+            <column name="name" value="Mandatory fields are missing"/>
+            <column name="module" value="verification"/>
+            <column name="func" value="verify"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="log"
+            schemaName="log"
+            tableName="state_tbl">
+
+            <column name="id" value="213"/>
+            <column name="name" value="Profile authentication failed"/>
+            <column name="module" value="verification"/>
+            <column name="func" value="verify"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

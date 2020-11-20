@@ -1,0 +1,24 @@
+{
+  "slots": {
+    "system": {
+      "database": "mpoint",
+      "plugin": "pgoutput",
+      "type": "logical"
+    },
+    "log": {
+      "database": "mpoint",
+      "plugin": "pgoutput",
+      "type": "logical"
+    },
+    "client": {
+      "database": "mpoint",
+      "plugin": "pgoutput",
+      "type": "logical"
+    },
+    "enduser": {
+      "database": "mpoint",
+      "plugin": "pgoutput",
+      "type": "logical"
+    }
+  }
+}
