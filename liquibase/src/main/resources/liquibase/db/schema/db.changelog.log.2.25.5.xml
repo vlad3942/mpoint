@@ -3,7 +3,8 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
     <!-- Temporarily drop event trigger to enable changes to replicated tables -->
     <changeSet author="Jonatan Evald Buus"
@@ -756,6 +757,37 @@
 
                 -- Drop default partition for Southwest
                 DROP TABLE Log.TxnPassbook_Tbl_10069_Default;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <!-- Create primary keys for new default partition -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-20-master-v2.25-CMP-CMP-4673">
+
+        <!-- A unique index is automatically created by postgres, when creating a primaryKey -->
+        <addPrimaryKey catalogName="log"
+                       schemaName="log"
+                       tableName="TxnPassbook_Tbl_Default"
+                       columnNames="id"
+                       constraintName="TxnPassbook_Default_PK"/>
+
+        <sql dbms="postgresql" endDelimiter=";"
+            splitStatements="false">
+
+            -- Create trigger for default partition
+            CREATE TRIGGER update_txnpassbook_tbl_default
+            BEFORE UPDATE 
+            ON log.txnpassbook_tbl_default
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_table_proc();
+        </sql>
+        <rollback>
+            <sql dbms="postgresql" endDelimiter=";"
+                splitStatements="false">
+
+                -- Drop trigger for default partition
+                DROP TRIGGER update_txnpassbook_tbl_default ON log.txnpassbook_tbl_default;
             </sql>
         </rollback>
     </changeSet>
