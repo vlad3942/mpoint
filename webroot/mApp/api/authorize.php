@@ -435,7 +435,7 @@ try
 										$authToken = trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
 										$clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
 
-										if (strlen($authToken) == 1 && strlen($authenticationURL) > 0)
+										if (empty($authenticationURL) === false && empty($authToken)=== false)
 										{	
 											$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}["language"], $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}["profileid"]);
 
