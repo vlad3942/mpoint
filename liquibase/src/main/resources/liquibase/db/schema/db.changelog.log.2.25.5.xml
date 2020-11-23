@@ -19,6 +19,14 @@
     <changeSet author="Jonatan Evald Buus"
         id="2020-11-20-master-v2.25-CMP-4673-1">
 
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists catalogName="log"
+                    schemaName= "log"
+                    tableName="TxnPassbook_Tbl_Default" />
+            </not>
+        </preConditions>
+
         <sql dbms="postgresql" endDelimiter=";">
             ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10021; -- SGA
             ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10022; -- Ethiopian Airlines
