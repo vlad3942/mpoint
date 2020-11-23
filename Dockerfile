@@ -42,7 +42,7 @@ FROM devbuilder as builder
 RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
-FROM registry.t.cpm.dev/library/phpfpmextras:master20201120102401
+FROM registry.t.cpm.dev/library/phpfpmextras:master20201120175816
 
 USER 0
 
@@ -62,6 +62,4 @@ RUN apk add --no-cache dos2unix \
     && rm -rf /opt/cpm/mPoint/webroot/_test \
     && chown -R 1000:1000 /opt
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
 USER 1000
