@@ -331,11 +331,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Single Sign-On
                     $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 					$authToken = trim($obj_DOM->{'pay'}[$i]->{'auth-token'});
-                    $clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ;
+                    $clientId = (integer)$obj_DOM->{'pay'}[$i]["client-id"] ;
                     if (empty($authenticationURL) === false && empty($authToken)=== false)
                     {
 
-                    	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'pay'}[$i]->{'client-info'}->email, $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'pay'}[$i]->{'client-info'}["language"],$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["profileid"]);
+                    	$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'pay'}[$i]->{'client-info'}->email, $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'pay'}[$i]->{'client-info'}["language"],$obj_DOM->{'pay'}[$i]->{'client-info'}["profileid"]);
                         
                         if ( $sosPreference === 'STRICT' )
                         {
@@ -344,7 +344,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         	if ($code == 212) {
                                 $aMsgCds[$code] = 'Mandatory fields are missing' ;
                           	} 
-                          	else {
+                          	if ($code == 1) {
                           		 $aMsgCds[213] = 'Profile authentication failed' ;
                           	}
 

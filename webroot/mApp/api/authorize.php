@@ -449,7 +449,7 @@ try
 														{
 						                                	$aMsgCds[$code] = 'Mandatory fields are missing' ;
 						                          	} 
-						                          	else {
+						                          	if ($code == 1) {
 						                          		 $aMsgCds[213] = 'Profile authentication failed' ;
 						                          	}
 						                        } 
