@@ -1506,5 +1506,25 @@ class General
     {
         return substr($cardno, 0, 6);
     }
+
+    /**
+     * @return string
+     */
+    public static function getProtocol(): string
+    {
+        if (array_key_exists("HTTPS", $_SERVER) && 'on' === $_SERVER["HTTPS"]) {
+            return 'https';
+        }
+        if (array_key_exists("SERVER_PORT", $_SERVER) && 443 === (int)$_SERVER["SERVER_PORT"]) {
+            return 'https';
+        }
+        if (array_key_exists("HTTP_X_FORWARDED_SSL", $_SERVER) && 'on' === $_SERVER["HTTP_X_FORWARDED_SSL"]) {
+            return 'https';
+        }
+        if (array_key_exists("HTTP_X_FORWARDED_PROTO", $_SERVER) && 'https' === $_SERVER["HTTP_X_FORWARDED_PROTO"]) {
+            return 'https';
+        }
+        return 'http';
+    }
 }
 ?>
