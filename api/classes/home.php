@@ -132,6 +132,21 @@ class Home extends General
 			}
 			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
+		case (5):		
+
+			if ( strlen($aArgs[1]->getCustomerRef()) > 0  ||  floatval($aArgs[1]->getMobile()) > 0 || strlen($aArgs[1]->getEMail()) > 0 || $aArgs[1]->getProfileID() > 0 ) 
+	        {   
+	        	if ( ($aArgs[0] instanceof ClientConfig) === true)
+				{
+					return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+				}
+				else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+	        } 
+	        else {
+	        	return 212 ; 
+	        }
+			
+			break;
 		default:
 			break;
 		}
