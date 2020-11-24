@@ -56,8 +56,7 @@
         <createIndex catalogName="system"
                      schemaName="system"
                      tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_id_idx"
-                     unique="true">
+                     indexName="routefeature_tbl_id_idx">
 
             <column name="id"/>
         </createIndex>
@@ -124,8 +123,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_clientid_idx"
-                     unique="true">
+                     indexName="routefeature_tbl_clientid_idx">
 
             <column name="clientid"/>
         </createIndex>
@@ -133,8 +131,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_featureid_idx"
-                     unique="true">
+                     indexName="routefeature_tbl_featureid_idx">
 
             <column name="featureid"/>
         </createIndex>
@@ -142,8 +139,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_routeconfigid_idx"
-                     unique="true">
+                     indexName="routefeature_tbl_routeconfigid_idx">
 
             <column name="routeconfigid"/>
         </createIndex>
@@ -178,7 +174,6 @@
                     type="int4"
                     remarks="Hold capture type of the route">
 
-                <constraints nullable="false"/>
             </column>
 
             <column name="mid"
@@ -245,8 +240,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="routeconfig_tbl"
-                     indexName="routeconfig_tbl_countryid_idx"
-                     unique="true">
+                     indexName="routeconfig_tbl_countryid_idx">
 
             <column name="countryid"/>
         </createIndex>
@@ -254,8 +248,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="routeconfig_tbl"
-                     indexName="routeconfig_tbl_currencyid_idx"
-                     unique="true">
+                     indexName="routeconfig_tbl_currencyid_idx">
 
             <column name="currencyid"/>
         </createIndex>
@@ -263,8 +256,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="routeconfig_tbl"
-                     indexName="routeconfig_tbl_routeid_idx"
-                     unique="true">
+                     indexName="routeconfig_tbl_routeid_idx">
 
             <column name="routeid"/>
         </createIndex>
@@ -324,8 +316,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="route_tbl"
-                     indexName="route_tbl_clientid_idx"
-                     unique="true">
+                     indexName="route_tbl_clientid_idx">
 
             <column name="clientid"/>
         </createIndex>
@@ -333,8 +324,7 @@
         <createIndex catalogName="client"
                      schemaName="client"
                      tableName="route_tbl"
-                     indexName="route_tbl_providerid_idx"
-                     unique="true">
+                     indexName="route_tbl_providerid_idx">
 
             <column name="providerid"/>
         </createIndex>
