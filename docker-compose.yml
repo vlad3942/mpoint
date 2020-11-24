@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - ${HOST_DB_PORT}:5432
+      - ${HOST_DB_PORT}:${DB_PORT}
 
   liquibase:
     container_name: debug_${PROJECT_NAME}_liquibase
@@ -59,6 +59,7 @@ services:
     restart: always
     volumes:
       - ./docker/nginx.default.conf:/etc/nginx/conf.d/default.conf
+      - ./webroot/wsdl:/opt/cpm/mPoint/webroot/wsdl
     ports:
       - ${HOST_HTTP_PORT}:80
     depends_on:

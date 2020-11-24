@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 abstract class BaseDatabaseTest extends TestCase
 {
     //Cleanup after each testcase runs
-    const TRUNCATE_DB_SCHEMAS     = ["'admin'", "'client'", "'enduser'", "'log'"];
+    const TRUNCATE_DB_SCHEMAS     = ["'client'", "'enduser'", "'log'"];
     const EXCLUDE_TRUNCATE_TABLES = ["'client.infotype_tbl'", "'log.operation_tbl'", "'log.state_tbl'"];
     
     protected $mPointDBInfo;
@@ -51,15 +51,17 @@ abstract class BaseDatabaseTest extends TestCase
                     )
                 );
                 
-                //disables all foreign key checks
-                $stmt = "SET session_replication_role = 'replica';\n";
+                
                 $tables = pg_fetch_all($tables);
                 
                 if ($tables !== false) {
+                    //disables all foreign key checks
+                    $stmt = "SET session_replication_role = 'replica';\n";
                     foreach ($tables as $table) {
                         $stmt .= "DELETE FROM " . $table['table_schema'] . '.' . $table['table_name'] . ";\n";
                         $stmt .= "SELECT SetVal('" . $table['table_schema'] . '.' . $table['table_name'] . "_id_seq', 1, false);\n";
                     }
+                    $stmt .= "SET session_replication_role = 'origin';\n";                    
                     pg_query($this->_db, $stmt);
                     
                     

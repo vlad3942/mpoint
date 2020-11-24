@@ -5,10 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <!-- TODO CMP-4528	Production core data and schema must be fully available in Liquibase
- 
+    <!-- 
     All sets of updates are added as a new changelog version
- 
     NEVER EVER change an existing configuration, only append
 
     mPoint's database contains the following types of entities
@@ -31,7 +29,8 @@
     <include file="db.changelog.2.25.2.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.25.3.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.25.4.xml" relativeToChangelogFile="true"/>
-
+    <include file="db.changelog.2.25.5.xml" relativeToChangelogFile="true"/>
+    <include file="db.changelog.2.25.6.xml" relativeToChangelogFile="true"/>
     <!-- Add new change log files, for each release
     <include file="db.changelog.1.1.0.xml" relativeToChangelogFile="true"/>
     -->
