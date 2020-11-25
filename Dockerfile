@@ -53,7 +53,6 @@ COPY api api
 COPY conf conf
 COPY webroot webroot
 COPY --from=builder /app /opt/cpm/mPoint
-COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN apk add --no-cache dos2unix \
     && dos2unix /entrypoint.sh \
