@@ -435,8 +435,8 @@ class CreditCard extends EndUserAccount
     {
        $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
 					C.paymenttype, true AS cvcmandatory, false AS dccEnabled
-                FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
-                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+                FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON RC.routeid = R.id AND R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." AND R.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY.",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.") AND PSP.enabled = '1'
@@ -445,9 +445,10 @@ class CreditCard extends EndUserAccount
                     INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$cardTypeId." AND C.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
-                WHERE R.id = ".$routeId." 
-                AND R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." 
-                AND R.enabled = '1'
+                WHERE RC.routeid = ".$routeId."
+                AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()."
+                AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL)
+                AND RC.enabled = '1'
                 ORDER BY C.position ASC, C.name ASC";
 
                 $result = $this->getDBConn()->getName($sql);
