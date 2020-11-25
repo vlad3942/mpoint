@@ -314,26 +314,23 @@ try
 
                                         $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
-                                        if($obj_card->getPaymentType() === 1) {
-                                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
-                                            if (strtolower($drService) == 'true') {
-                                                $iPSPId = $obj_TxnInfo->getPSPID();
-                                                if($iPSPId <=0)
+                                        $obj_CardXML = '';
+                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
+                                        if (strtolower($is_legacy) == 'false') {
+                                            $iPSPId = $obj_TxnInfo->getPSPID();
+                                            if($iPSPId <=0)
+                                            {
+                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $issuerIdentificationNumber, $obj_card->getCardName());
+                                                if($obj_RS instanceof RoutingService)
                                                 {
-                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $issuerIdentificationNumber, $obj_card->getCardName());
-                                                    if($obj_RS instanceof RoutingService)
-                                                    {
-                                                        $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                                        $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-                                                    }
+                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
                                                 }
                                             }
-                                        }
-
-                                        $obj_CardXML = '';
-                                        if($iPSPId > 0 ){
-                                            $objRoute = new Route($_OBJ_DB, $obj_DOM->{'authorize-payment'}[$i]["client-id"]);
-                                            $iPrimaryRoute = $objRoute->getRouteID($iPSPId);
+                                            if($iPSPId > 0 ){
+                                                $objRoute = new Route($_OBJ_DB, $obj_DOM->{'authorize-payment'}[$i]["client-id"]);
+                                                $iPrimaryRoute = $objRoute->getRouteID($iPSPId);
+                                            }
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
@@ -341,7 +338,7 @@ try
 
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
-                                        if(strtolower($drService) == 'true') {
+                                        if(strtolower($is_legacy) == 'false') {
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . "]");
                                         }else{
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . " and @state-id=1 and @walletid = '']");
@@ -1095,7 +1092,7 @@ try
 																				$code = $response->code;
 
                                                                                 $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
-                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute);
+                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute);
 
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);

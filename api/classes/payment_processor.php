@@ -36,8 +36,8 @@ class PaymentProcessor
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
-        $srService = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'SR_SERVICE');
-        if(strtolower($srService) == 'true'){
+        $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+        if(strtolower($is_legacy) == 'false'){
             $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
         }else {
             $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);

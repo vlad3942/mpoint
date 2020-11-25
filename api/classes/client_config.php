@@ -563,8 +563,8 @@ class ClientConfig extends BasicConfig
     public function getMerchantAccounts(RDB &$oDB = NULL)
     {
         if ($this->_aObj_MerchantAccounts === NULL && $oDB !== NULL) {
-            $sr_service = $this->getAdditionalProperties (Constants::iInternalProperty, 'SR_SERVICE');
-            if(strtolower($sr_service) == 'true') {
+            $is_legacy = $this->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+            if(strtolower($is_legacy) == 'false') {
                 $this->_aObj_MerchantAccounts = ClientMerchantAccountConfig::getConfigurations($oDB, $this->getID());
             }else{
                 $this->_aObj_MerchantAccounts = ClientMerchantAccountConfig::produceConfigurations($oDB, $this->getID());
@@ -583,8 +583,8 @@ class ClientConfig extends BasicConfig
     public function getPaymentMethods(RDB &$oDB = NULL)
     {
         if ($this->_aObj_PaymentMethodConfigurations === NULL && $oDB !== NULL ) {
-            $sr_service = $this->getAdditionalProperties (Constants::iInternalProperty, 'SR_SERVICE');
-            if(strtolower($sr_service) == 'true') {
+            $is_legacy = $this->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+            if(strtolower($is_legacy) == 'false') {
                 $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::getConfigurations($oDB, $this->getID());
             }else{
                 $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $this->getID());
