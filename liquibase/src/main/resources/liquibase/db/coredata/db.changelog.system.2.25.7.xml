@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet author="Sagar Badave"
+        id="2020-11-24-setup-v2.25-system">
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="country_tbl">
+            <column name="id" value="220"/>
+            <column name="name" value="Saint Martin"/>
+            <column name="minmob" value="1000"/>
+            <column name="maxmob" value="9999999999"/>
+            <column name="channel" value="123"/>
+            <column name="priceformat" value=""/>
+            <column name="decimals" value="2"/>
+            <column name="alpha2code" value="MF"/>
+            <column name="alpha3code" value="MAF"/>
+            <column name="code" value="663"/>
+            <column name="currencyid" value="978"/>
+            <column name="country_calling_code" value="590"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
