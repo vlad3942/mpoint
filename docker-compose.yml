@@ -29,10 +29,7 @@ services:
 
   app:
     container_name: debug_${PROJECT_NAME}_app
-    #image: registry.t.cpm.dev/library/mpoint
-    build:
-      #context: .
-      context: docker/php-fpm-alpine-debug
+    image: registry.t.cpm.dev/library/phpfpmextrasplusdebug:latest
     environment:
       - APP_ENV=${APP_ENV}
       - DB_HOST=${DB_HOST}
