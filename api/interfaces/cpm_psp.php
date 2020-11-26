@@ -446,7 +446,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
-		if ($authToken != null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
+		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
 		{ 
