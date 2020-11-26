@@ -107,6 +107,7 @@
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="order-attempt" type="xs:byte" minOccurs="0" />
+							<xs:element name="auth-token" type="xs:string"  minOccurs="0" maxOccurs="1" />
 							<xs:element name="card" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>

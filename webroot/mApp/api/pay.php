@@ -623,7 +623,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) === 1) {
 													$billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
 												}
-												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']));
+												$authToken = (trim($obj_DOM->{'pay'}[$i]->{'auth-token'}))?(trim($obj_DOM->{'pay'}[$i]->{'auth-token'})):(NULL);
+												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']), $authToken);
 												if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === TRUE) {
 													$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "");
 												}
