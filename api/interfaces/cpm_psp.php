@@ -275,7 +275,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel()
+	public function cancel($amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
