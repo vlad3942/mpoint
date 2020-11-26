@@ -30,6 +30,8 @@ services:
   app:
     container_name: debug_${PROJECT_NAME}_app
     image: registry.t.cpm.dev/library/phpfpmextrasplusdebug:latest
+    extra_hosts:
+      - 'mpoint.local.cellpointmobile.com:127.0.0.1'
     environment:
       - APP_ENV=${APP_ENV}
       - DB_HOST=${DB_HOST}
