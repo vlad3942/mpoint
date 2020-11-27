@@ -913,5 +913,14 @@
             ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
         </sql>
     </changeSet>
+
+    <!-- Add default partitioned tables in publication -->
+    <changeSet author="Nidhi Agarwal"
+               id="2020-11-23-master-v2.25-add-tables-in-publication">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.txnpassbook_tbl_default, log.txnpassbook_tbl_10069_default;
+        </sql>
+    </changeSet>
  
 </databaseChangeLog>
