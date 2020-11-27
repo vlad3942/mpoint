@@ -416,6 +416,7 @@
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
+									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="foreign-exchange-info" minOccurs="0" maxOccurs="1">
 										<xs:complexType>
