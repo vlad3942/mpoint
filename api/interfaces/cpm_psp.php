@@ -325,7 +325,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					}
 
 					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
-					$passbookState = Constants::sPassbookStatusDone;
+					$passbookState = Constants::sPassbookStatusError;
 					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
@@ -337,9 +337,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
 						$retStatusCode = 1001;
 						$updateStatusCode = $iUpdateStatusCode;
-					}
+                        $passbookState = Constants::sPassbookStatusDone;
+                    }
 
-					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
+					$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
 					return $retStatusCode;
