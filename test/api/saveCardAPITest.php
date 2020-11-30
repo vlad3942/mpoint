@@ -190,7 +190,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass','');
 
         $this->_httpClient->connect();
 
