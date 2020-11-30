@@ -5,6 +5,15 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <!-- Temporarily drop event trigger to enable changes to replicated tables -->
+    <changeSet author="Sagar Narayane"
+        id="2020-11-30-master-v2.25_1-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
     <changeSet author="Sagar Narayane" id="2020-11-30-master-v2.25_1">
           <modifyDataType  catalogName="enduser"
                            schemaName="enduser"
@@ -13,5 +22,22 @@
                            newDataType="varchar(50)"
             />
     </changeSet>
+
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Sagar Narayane"
+        id="2020-11-30-master-v2.25_1-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
+    </changeSet>
+
 
 </databaseChangeLog>
