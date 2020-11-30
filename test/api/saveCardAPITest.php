@@ -179,6 +179,7 @@ class SaveCardAPITest extends baseAPITest
      */
     public function testGetProfileFailsSaveAccCardSuccess()
     {
+        $this->markTestIncomplete('Default value of profile id is changed from -1 to empty so that alternate flow covered in this test case will not execute');
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
         //Simulate error by using a actual url returning 401 or non existing url.
         $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
