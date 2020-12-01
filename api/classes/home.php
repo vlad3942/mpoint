@@ -1241,7 +1241,7 @@ class Home extends General
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 					(id, countryid, mobile, passwd, email, externalid, pushid, enabled, profileid)
 				VALUES
-					(". $RS["ID"] .", ". (int)$cid .", ". ((float)$mob > 0 ? "'". (float)$mob ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". ($email !== '' ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". ($pid != '' ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . ($profileid !== '' ? ", ". $profileid : ", NULL").")";
+					(". $RS["ID"] .", ". (int)$cid .", ". ((float)$mob > 0 ? "'". (float)$mob ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". ($email !== '' ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". ($pid != '' ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . ($profileid !== '' ? ", '". $profileid . "'" : ", NULL").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

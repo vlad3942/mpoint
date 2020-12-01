@@ -41,9 +41,9 @@ try {
         $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $RS["CLIENTID"], $RS['ACCOUNTID']);
         $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
         $profileId = $obj_mPoint->saveProfile($obj_ClientConfig, $cid, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], "true");
-        if ($profileId > 0) {
+        if ($profileId !== '') {
             try {
-                $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET EMAIL=NULL, mobile=NULL, operatorid=NULL, customer_ref=NULL, profileid = " . $profileId . " WHERE id= " . intval($RS["ID"]);
+                $updateQuery = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET EMAIL=NULL, mobile=NULL, operatorid=NULL, customer_ref=NULL, profileid = '" . $profileId . "' WHERE id= " . intval($RS["ID"]);
                 $result = $_OBJ_DB->query($updateQuery);
             } catch (Exception $e) {
                 trigger_error("Failed to update profile for txn id =" . $RS["ID"], E_USER_ERROR);
