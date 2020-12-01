@@ -482,7 +482,7 @@ class General
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
         if ($oTI->getProfileID() !== '') {
-            $sql .= " , profileid = ". $oTI->getProfileID();
+            $sql .= " , profileid = '". $oTI->getProfileID() ."'";
         }
         if ($oTI->getWalletID() !== -1) {
             $sql .= ", walletid = ". $oTI->getWalletID();
