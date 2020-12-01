@@ -840,10 +840,18 @@ try
                                                                                 $aBillingAddr['billing_address'][0]['first_name'] = $obj_Elem->address->{'first-name'};
                                                                                 $aBillingAddr['billing_address'][0]['last_name'] = $obj_Elem->address->{'last-name'} ;
                                                                             }
-                                                                            $aBillingAddr['billing_address'][0]['mobile'] = (string) $obj_Elem->address->{'contact-details'}->mobile;
-                                                                            $aBillingAddr['billing_address'][0]['email'] = (string) $obj_Elem->address->{'contact-details'}->email;
-                                                                            $aBillingAddr['billing_address'][0]['mobile_country_id'] = $obj_Elem->address->{'contact-details'}->{'mobile'}['country-id'];
 
+                                                                            if (empty($obj_Elem->address->{'contact-details'}->mobile) === false &&
+                                                                                empty($obj_Elem->address->{'contact-details'}->email) === false) {
+                                                                                $aBillingAddr['billing_address'][0]['mobile'] = (string)$obj_Elem->address->{'contact-details'}->mobile;
+                                                                                $aBillingAddr['billing_address'][0]['email'] = (string)$obj_Elem->address->{'contact-details'}->email;
+                                                                                $aBillingAddr['billing_address'][0]['mobile_country_id'] = $obj_Elem->address->{'contact-details'}->{'mobile'}['country-id'];
+                                                                            } else {
+                                                                                $aBillingAddr['billing_address'][0]['mobile'] = "";
+                                                                                $aBillingAddr['billing_address'][0]['email'] = "";
+                                                                                $aBillingAddr['billing_address'][0]['mobile_country_id'] = "";
+                                                                            }
+                                                                            
                                                                             $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $aBillingAddr['billing_address']);
                                                                         }
                                                                     }
