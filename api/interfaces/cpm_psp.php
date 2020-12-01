@@ -547,6 +547,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+        {
+            $b .= $obj_PSPConfig->toRouteConfigXML();
+        }
+
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;
         $b .= $this->_constOrderDetails($this->getTxnInfo()) ;

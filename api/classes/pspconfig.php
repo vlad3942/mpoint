@@ -68,6 +68,18 @@ class PSPConfig extends BasicConfig
     private $_aAdditionalProperties=array();
 
     /**
+     * Hold uniquir ID of the route configuration
+     * @var integer
+     */
+    private $_iRouteConfigId;
+
+    /**
+     * Hold list of route features
+     * @var array
+     */
+    private $_aRouteFeature;
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 	Unique ID for the Payment Service Provider in mPoint
@@ -78,7 +90,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
 	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
 	 */
-	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array(),$aAdditionalProperties=array() )
+	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array(),$aAdditionalProperties=array(), $routeConfigId = -1,  $aRouteFeature = array())
 	{
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
@@ -88,6 +100,8 @@ class PSPConfig extends BasicConfig
 		$this->_sPassword = trim($pw);
 		$this->_aMessages = $aMsgs;
 		$this->_aAdditionalProperties =$aAdditionalProperties;
+        $this->_iRouteConfigId = $routeConfigId;
+        $this->_aRouteFeature = $aRouteFeature;
 	}
 
 	/**
@@ -132,6 +146,13 @@ class PSPConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getMessage($lang) { return @$this->_aMessages[strtolower($lang)]; }
+
+    /**
+     * Returns unique route configuration ID
+     *
+     * @return 	integer
+     */
+	public function getRouteConfigId() { return $this->_iRouteConfigId; }
 
 	public function toXML($propertyScope=2, $aMerchantAccountDetails = array())
 	{
@@ -239,6 +260,33 @@ class PSPConfig extends BasicConfig
         }
         $xml .= '</additionalConfig>';
         $xml .= '</pspConfig>';
+
+        return $xml;
+    }
+
+    public function toRouteConfigXML()
+    {
+        $xml = '<route_configuration>';
+        $xml .= '<id>'. $this->getRouteConfigId() .'</id>';
+        $xml .= '<route_id>'. $this->getID() .'</route_id>';
+        $xml .= '<name>'. $this->getName() .'</name>';
+        $xml .= '<mid>'. $this->getMerchantAccount() .'</mid>';
+        $xml .= '<username>'. $this->getUsername() .'</username>';
+        $xml .= '<password>'. $this->getPassword() .'</password>';
+        $xml .= '<route_features>';
+        if(empty($this->_aRouteFeature) === false && count($this->_aRouteFeature) > 0)
+        {
+            foreach ($this->_aRouteFeature as $feature)
+            {
+                $xml .= '<route_feature>';
+                $xml .= '<id>'. $feature['ID'] .'</id>';
+                $xml .= '<name>'. $feature['FEATURENAME'] .'</name>';
+                $xml .= '<value>'.  General::bool2xml($feature['ENABLED']) .'</value>';
+				$xml .= '</route_feature>';
+            }
+        }
+        $xml .= '</route_features>';
+        $xml .= '</route_configuration>';
 
         return $xml;
     }
@@ -362,7 +410,7 @@ class PSPConfig extends BasicConfig
      */
     public static function produceConfiguration(RDB &$oDB, $clid, $accid, $pspid)
     {
-        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId
+        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON PSP.id = R.providerid AND R.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1'
@@ -406,7 +454,16 @@ class PSPConfig extends BasicConfig
                     $aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
                 }
             }
-            return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties);
+
+            //Get route feature
+            $sql  = "SELECT CRF.id, CRF.enabled, SRF.featurename
+					 FROM Client". sSCHEMA_POSTFIX .".RouteFeature_Tbl CRF
+					 INNER JOIN System". sSCHEMA_POSTFIX .".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
+					 WHERE routeconfigid = ". intval($RS["ROUTECONFIGID"]);
+
+            $aRouteFeature = $oDB->getAllNames($sql);
+
+            return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature);
         }
         else
         {
