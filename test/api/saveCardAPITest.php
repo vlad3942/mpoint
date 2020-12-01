@@ -246,7 +246,7 @@ class SaveCardAPITest extends baseAPITest
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE profileid=12345 and enabled = '1'");
+        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE profileid='12345' and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
        /* $row = pg_fetch_row($res);
