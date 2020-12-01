@@ -90,6 +90,16 @@ class ClientPaymentMethodConfig extends BasicConfig
 
 		return $xml;
 	}
+
+	public function toPaymnetMethodAsXML()
+    {
+        $xml = '<payment_method>';
+        $xml .= '<id>'. $this->getID() .'</id>';
+        $xml .= '<type_id>'. $this->getCardType() .'</type_id>';
+		$xml .= '<name>'. $this->getName() .'</name>';
+        $xml .= '</payment_method>';
+        return $xml;
+    }
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
@@ -143,6 +153,24 @@ class ClientPaymentMethodConfig extends BasicConfig
             $aObj_Configurations[] = new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], 1, $RS["PROVIDERID"], $RS["ENABLED"], $RS['PAYMENTTYPE'], $RS['CAPTURETYPE'],$RS['WALLETID']);
         }
 
+        return $aObj_Configurations;
+    }
+
+    public static function producePaymentMethodConfig(RDB $oDB, $clientid)
+    {
+        $sql = "SELECT DISTINCT ON (C.id) C.id, R.providerid, C.enabled, C.id AS cardid, C.name, C.paymenttype
+				FROM Client ". sSCHEMA_POSTFIX .".Client_Tbl CL 
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R  ON CL.id = R.clientid	
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON R.providerid = PCD.pspid AND PCD.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON PCD.cardid = C.id AND C.enabled = '1'
+				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1'";
+
+        $aObj_Configurations = array();
+        $res = $oDB->query($sql);
+        while ($RS = $oDB->fetchName($res) )
+        {
+            $aObj_Configurations[] = new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], -1, 1, $RS["PROVIDERID"], $RS["ENABLED"], $RS['PAYMENTTYPE'], -1, false);
+        }
         return $aObj_Configurations;
     }
 
