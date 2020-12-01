@@ -134,7 +134,7 @@ class Home extends General
 			break;
 		case (5):		
 
-			if ( strlen($aArgs[1]->getCustomerRef()) > 0  ||  floatval($aArgs[1]->getMobile()) > 0 || strlen($aArgs[1]->getEMail()) > 0 || $aArgs[1]->getProfileID() > 0 ) 
+			if ( strlen($aArgs[1]->getCustomerRef()) > 0  ||  floatval($aArgs[1]->getMobile()) > 0 || strlen($aArgs[1]->getEMail()) > 0 || $aArgs[1]->getProfileID() !== '' )
 	        {   
 	        	if ( ($aArgs[0] instanceof ClientConfig) === true)
 				{
@@ -1220,24 +1220,28 @@ class Home extends General
 		return $sHeaders;
 	}
 
-	/**
-	 * Creates a new End-User Account.
-	 *
-	 * @param	integer $cid 	ID of the country the End-User Account should be created in
-	 * @param	string $mob 	End-User's mobile number (optional)
-	 * @param 	string $pwd 	Password for the created End-User Account (optional)
-	 * @param 	string $email	End-User's e-mail address (optional)
-	 * @param 	string $cr		the Client's Reference for the Customer (optional)
-	 * @return	integer 		The unique ID of the created End-User Account
-	 */
-	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
+    /**
+     * Creates a new End-User Account.
+     *
+     * @param integer $cid ID of the country the End-User Account should be created in
+     * @param string $mob End-User's mobile number (optional)
+     * @param string $pwd Password for the created End-User Account (optional)
+     * @param string $email End-User's e-mail address (optional)
+     * @param string $cr the Client's Reference for the Customer (optional)
+     * @param string $pid
+     * @param bool $enable
+     * @param string $profileid
+     * @return    integer        The unique ID of the created End-User Account
+     * @throws SQLQueryException
+     */
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = '')
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 					(id, countryid, mobile, passwd, email, externalid, pushid, enabled, profileid)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . (intval($profileid) > 0 ? ", ".intval($profileid) : ", NULL").")";
+					(". $RS["ID"] .", ". (int)$cid .", ". ((float)$mob > 0 ? "'". (float)$mob ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". ($email !== '' ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". ($pid != '' ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . ($profileid !== '' ? ", ". $profileid : ", NULL").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
@@ -1293,7 +1297,8 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'save-customer-profile'}->{'profile'}) > 0)
             {
-                return (int)$response->{'save-customer-profile'}->{'profile'}["id"];
+                $profileid=(string)$response->{'save-customer-profile'}->{'profile'}["id"];
+                return trim($profileid);
             }
             else
             {
@@ -1304,7 +1309,7 @@ class Home extends General
         {
             trigger_error("mProfile Save Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
-        return -1;
+        return '';
     }
 
 
@@ -1347,7 +1352,8 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'get-profile'}->{'profile'}) > 0)
             {
-                return (int)$response->{'get-profile'}->{'profile'}["id"];
+                $profileid= $response->{'get-profile'}->{'profile'}["id"];
+                return trim($profileid);
             }
             else
             {
@@ -1358,7 +1364,7 @@ class Home extends General
         {
             trigger_error("mProfile get Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
-        return -1;
+        return '';
     }
 
 

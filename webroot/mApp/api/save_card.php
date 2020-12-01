@@ -131,7 +131,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if (count($aMsgCds) == 0)
 						{
 						    //get enduseraccount
-                                $iProfileID = -1;
+                                $iProfileID = '';
                                 if ($iAccountID < 0) {
                                     if ((is_array($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION"))
                                         && count($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION")) == 0 )
@@ -159,17 +159,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 //Get profile from mProfile based on client info details
                                                 $obj_mProfile = new Home($_OBJ_DB, $_OBJ_TXT);
                                                 $iProfileID = $obj_mProfile->getProfile($obj_ClientConfig, $obj_CountryConfig->getID(), $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'});
-                                                if ($iProfileID < 0) {
+                                                if ($iProfileID === '') {
                                                     //if not found save profile as validated registered profile
                                                     $iProfileID = $obj_mProfile->saveProfile($obj_ClientConfig, $obj_CountryConfig->getID(), $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, "false");
-                                                    if ($iProfileID < 0) {
+                                                    if ($iProfileID === '') {
                                                         header("HTTP/1.1 500 Internal Server Error");
 
                                                         $xml = '<status code="90">Unable to create new account</status>';
                                                     }
                                                 }
                                             } else {
-                                                $iProfileID = (integer)$obj_DOM->{'save-card'}[$i]->{'client-info'}["profileid"];
+                                                $iProfileID = (string)$obj_DOM->{'save-card'}[$i]->{'client-info'}["profileid"];
                                             }
                                         }
                                         $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $iProfileID);

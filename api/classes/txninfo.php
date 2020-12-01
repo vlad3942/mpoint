@@ -228,9 +228,9 @@ class TxnInfo
 	/**
 	 * Unique ID for the profile created and associated with this Transaction
 	 *
-	 * @var integer
+	 * @var string
 	 */
-	private $_iProfileID = -1;
+	private $_iProfileID = '';
 
 	/**
 	 * The Client's Reference for the Customer
@@ -524,7 +524,14 @@ class TxnInfo
 		$this->_eAutoCapture = (int) $ac;
 
 		$this->_iAccountID = (integer) $accid;
-		$this->_iProfileID = (integer) $profileid;
+		if(empty(trim($profileid)))
+		{
+			$this->_iProfileID = '';
+		}
+		else
+		{
+			$this->_iProfileID = (string) $profileid;
+		}
 		$this->_sCustomerRef = trim($cr);
 		$this->_iGoMobileID = (integer) $gmid;
 		$this->_bAutoStoreCard = (bool) $asc;
@@ -827,7 +834,7 @@ class TxnInfo
 	/**
 	 * Returns the profile id associated with the Transaction.
 	 *
-	 * @return 	integer		Unique Profile id or -1 if no account has been associated
+	 * @return 	string		Unique Profile id or empty if no account has been associated
 	 */
 	public function getProfileID() { return $this->_iProfileID; }
 
@@ -907,11 +914,22 @@ class TxnInfo
 
 	/**
 	 * Associates an mProfile id with the Transaction.
-	 * Set to -1 if not present for the transaction.
+	 * Set to empty if not present for the transaction.
 	 *
-	 * @param 	integer $profileID 	Unique ID for the mProfile
+	 * @param 	string $profileID 	Unique ID for the mProfile
 	 */
-	public function setProfileID($profileID) { $this->_iProfileID = (integer) $profileID; }
+	public function setProfileID($profileID): void
+	{
+		if(empty(trim($profileID)))
+		{
+			$this->_iProfileID = '';
+		}
+		else
+		{
+			$this->_iProfileID = (string) $profileID;
+		}
+
+	}
 
 	/**
 	 * Updates the issuer approaval code
@@ -1243,7 +1261,7 @@ class TxnInfo
             $xml .= '<installment><value>'.htmlspecialchars($this->_iInstallmentValue, ENT_NOQUOTES).'</value></installment>';
 		}
 
-		if($this->getProfileID() > 0)
+		if($this->getProfileID() !== '')
 		{
 			$xml .= '<profileid>'.htmlspecialchars($this->getProfileID(), ENT_NOQUOTES).'</profileid>';
 		}
@@ -1500,7 +1518,7 @@ class TxnInfo
 			$xml .= '<installment><value>'.htmlspecialchars($this->_iInstallmentValue, ENT_NOQUOTES).'</value></installment>';
 		}
 
-		if($this->getProfileID() > 0)
+		if($this->getProfileID() !== '')
 		{
 			$xml .= '<profileid>'.htmlspecialchars($this->getProfileID(), ENT_NOQUOTES).'</profileid>';
 		}

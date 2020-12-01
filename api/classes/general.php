@@ -481,7 +481,7 @@ class General
 		if($oTI->getInstallmentValue()>0) {
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
-        if ($oTI->getProfileID() > 0) {
+        if ($oTI->getProfileID() !== '') {
             $sql .= " , profileid = ". $oTI->getProfileID();
         }
         if ($oTI->getWalletID() !== -1) {
