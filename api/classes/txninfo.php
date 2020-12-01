@@ -491,7 +491,7 @@ class TxnInfo
 	 * @param	array $_aBillingAddr	 Billing Address
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid=-1, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
