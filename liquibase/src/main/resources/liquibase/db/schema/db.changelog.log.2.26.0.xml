@@ -62,6 +62,7 @@
 			<column name="card_id"/>
 			<column name="sale_currency_id"/>
 		</createIndex>
+		<sql>ALTER TABLE client.card_currency_mapping_tbl OWNER TO mpoint</sql>
     </changeSet>
 
 </databaseChangeLog>
