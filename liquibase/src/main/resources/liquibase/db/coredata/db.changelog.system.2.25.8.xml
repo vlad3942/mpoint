@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet author="Sagar Badave"
+        id="2020-12-01-setup-v2.25-system">
+
+        <update catalogName="system"
+                schemaName="system"
+                tableName="Card_tbl">
+            <column name="name" value="GCash" />
+            <where>id = 93</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
