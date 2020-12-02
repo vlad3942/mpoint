@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Add new table card_currency_mapping_tbl -->
+    <changeSet author="Abhinav Shaha" id="2020-12-02-master-v2.26">
+		<createTable  schemaName="client" tableName="card_currency_mapping_tbl">  
+            <column  name="id"  type="serial" autoIncrement="true">  
+                <constraints  primaryKey="true"  nullable="false" primaryKeyName="pk_client_card_currency_mapping_id"/>  
+            </column>
+            <column  name="client_id"  type="integer">  
+                <constraints nullable="false" 
+                	foreignKeyName="client_id_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="client"
+		            referencedTableName="client_tbl"
+		            referencedTableSchemaName="client"/>  
+            </column>
+            <column  name="card_id"  type="integer">  
+                <constraints nullable="false" 
+                	foreignKeyName="card_currency_mapping_card_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="system"
+		            referencedTableName="card_tbl"
+		            referencedTableSchemaName="system"/>  
+            </column>
+            <column  name="sale_currency_id"  type="integer">  
+                <constraints nullable="false" 
+                	foreignKeyName="card_currency_mapping_sale_currency_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="system"
+		            referencedTableName="currency_tbl"
+		            referencedTableSchemaName="system"/>  
+            </column> 
+            <column  name="is_presentment"  type="boolean" defaultValueBoolean="false">  
+                <constraints nullable="false" />  
+            </column> 
+            <column  name="settlement_currency_id"  type="integer">  
+                <constraints nullable="false" 
+                	foreignKeyName="card_currency_mapping_settlement_currency_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="system"
+		            referencedTableName="currency_tbl"
+		            referencedTableSchemaName="system"/>  
+            </column> 
+            <column  name="created"  type="timestamp" defaultValueComputed="now()">  
+                <constraints nullable="true" />  
+            </column>
+            <column  name="modified"  type="timestamp" defaultValueComputed="now()">  
+                <constraints nullable="true" />  
+            </column>
+        </createTable>
+		<createIndex indexName="cardcurrencymapping_idx" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl">
+			<column name="client_id"/>
+			<column name="card_id"/>
+			<column name="sale_currency_id"/>
+		</createIndex>
+    </changeSet>
+
+</databaseChangeLog>

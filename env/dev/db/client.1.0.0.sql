@@ -314,3 +314,16 @@ INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALU
 --CEBU CIAM additional property 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES( 'SSO_PREFERENCE', 'LOOSE',true,  10077,'client',2)
 
+-- Cebu Icer : Set dcc enabled to true for PayPal
+UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 28 ;
+
+-- Cebu Icer : Add sale currency and presentment currency configuration for PayPal
+INSERT into client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,156,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,360,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,901,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,36,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,96,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,446,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,784,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,410,608,'true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment) VALUES (28,10077,764,608,'true');

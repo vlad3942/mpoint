@@ -136,7 +136,7 @@ class CreditCard extends EndUserAccount
 				} else {
 					$pspId = $iRoute;
 				}
-				
+
 				// Construct XML Document with card data
                 $enabled = true;
 				if(in_array($RS['ID'], $aDiabledPMs) === true ) { $enabled = false; }
@@ -380,5 +380,28 @@ class CreditCard extends EndUserAccount
         return isset($res[0])?$res[0]:FALSE;
     }
 
+    public function getPresentmentCurrencies($CardID)
+    {
+		$presentmentCurrencies = array ();
+
+		$sql = "SELECT CCMT.Settlement_Currency_Id
+				FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
+				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CCMT.card_id = CA.cardid
+				WHERE CCMT.client_id = " . $this->_obj_TxnInfo->getClientConfig ()->getID () . "
+				AND CA.dccenabled = '1'
+				AND CCMT.is_presentment = '1'
+				AND CCMT.card_id = " . $CardID . "
+				AND CCMT.sale_currency_id = " . $this->_obj_TxnInfo->getCurrencyConfig ()->getID () . "";
+
+		//echo $sql ."\n";die;
+		$res = $this->getDBConn ()->query ( $sql );
+
+		while ( $RS = $this->getDBConn ()->fetchName ( $res ) ) {
+			$settlementCurrencyId = $RS ['SETTLEMENT_CURRENCY_ID'];
+			array_push ( $presentmentCurrencies, $settlementCurrencyId );
+		}
+
+		return $presentmentCurrencies;
+	}
 }
 ?>
