@@ -433,7 +433,7 @@ try
 										// Single Sign-On
 					                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 										$authToken = trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
-										$clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
+										$clientId = $obj_ClientConfig->getID(); 
                                         $userAuthenticationCode = -1;
 										if (empty($authenticationURL) === false && empty($authToken)=== false)
 										{	
