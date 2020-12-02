@@ -175,7 +175,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             //check if account already exists
                             $iAccountID = EndUserAccount::getAccountID_Static($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}["profileid"]);
 
-                            $iProfileID = -1;
+                            $iProfileID = '';
                             //If data anonymization is enabled for the client
                             if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true") {
                                 //if request does not contain clientinfo/@profileid - registered user profile id then

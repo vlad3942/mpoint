@@ -37,7 +37,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
       - XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9001 remote_host=${HOST_IP}
-      - PHP_IDE_CONFIG=serverName=mpoint.local.cellpointmobile.com
+      - PHP_IDE_CONFIG=serverName=mpoint_docker
     env_file:
       - ./env/dev/env.docker-compose.local
     # volumed codebase for easy debugging and development. Comment out all volumes when testing final image
