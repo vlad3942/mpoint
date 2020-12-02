@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+     <changeSet author="Sagar Badave"
+               id="2020-12-02-setup-v2.25-system-1">
+
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 41, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid in (36,48,68,124,156,344,356,360,392,410,414,446,458,484,554,598,608,634,682,702,764,784,901,949,986)
+        </sql>
+        <rollback>
+            <sql>DELETE FROM System.CardPricing_Tbl WHERE cardid = 41 and  pricepointid  in (SELECT id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid in (36,48,68,124,156,344,356,360,392,410,414,446,458,484,554,598,608,634,682,702,764,784,901,949,986))</sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Sagar Badave"
+               id="2020-12-02-setup-v2.25-system-2">
+
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO System.PSPCurrency_tbl (pspid, currencyid) SELECT 44, id FROM System.currency_tbl WHERE id in (36,48,68,124,156,344,356,360,392,410,414,446,458,484,554,598,608,634,682,702,764,784,901,949,986)
+        </sql>
+        <rollback>
+            <sql>DELETE FROM System.PSPCurrency_tbl WHERE pspid = 44 and  currencyid  in (36,48,68,124,156,344,356,360,392,410,414,446,458,484,554,598,608,634,682,702,764,784,901,949,986)</sql>
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>
