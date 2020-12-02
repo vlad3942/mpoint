@@ -6,7 +6,7 @@ RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
 #Run unittests
-FROM registry.t.cpm.dev/library/pgunittestextras:master20201118102316
+FROM registry.t.cpm.dev/library/pgunittestextras:master20201202121918
 
 #Overrides baseimage envs
 ENV POSTGRES_DB=mpoint
@@ -42,7 +42,7 @@ FROM devbuilder as builder
 RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
-FROM registry.t.cpm.dev/library/phpfpmextras:master20201120175816
+FROM registry.t.cpm.dev/library/phpfpmextras:master20201127121317       
 
 USER 0
 
