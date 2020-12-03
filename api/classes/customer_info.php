@@ -61,9 +61,9 @@ class CustomerInfo
 
     /**
      * The profile id of registered or guest user associated with the transaction
-     * @var integer
+     * @var string
      */
-    private $_iProfileID = -1;
+    private $_iProfileID;
 
     /**
      * Hold customer profile type id
@@ -71,19 +71,19 @@ class CustomerInfo
      */
     private $_iprofileTypeId;
 
-	/**
-	 * Default constructor
-	 * 
-	 * @param integer $id		Unique ID for the Customer
-	 * @param integer $cid		GoMobile's ID for the Customer's Country
-	 * @param long $mob			Customer's Mobile Number (MSISDN)
-	 * @param string $email		Customer's E-Mail Address
-	 * @param string $cr		The Client's Reference for the Customer
-	 * @param string $name		The customer's full name
-	 * @param string $lang		The language that all payment pages should be rendered in by default for the Client
-     * @param integer $profileid The profile id associated with the transaction, registered or guest user
-	 */
-	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid=-1)
+    /**
+     * Default constructor
+     *
+     * @param integer $id Unique ID for the Customer
+     * @param integer $cid GoMobile's ID for the Customer's Country
+     * @param long $mob Customer's Mobile Number (MSISDN)
+     * @param string $email Customer's E-Mail Address
+     * @param string $cr The Client's Reference for the Customer
+     * @param string $name The customer's full name
+     * @param string $lang The language that all payment pages should be rendered in by default for the Client
+     * @param string $profileid The profile id associated with the transaction, registered or guest user
+     */
+	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid='')
 	{ 
 		$this->_iID =  (integer) $id;
 		$this->_iCountryID = (integer) $cid;
@@ -92,7 +92,14 @@ class CustomerInfo
 		$this->_sCustomerRef = trim($cr);
 		$this->_sFullName = trim($name);
 		$this->_sLanguage = trim($lang);
-        $this->_iProfileID = (integer) $profileid;
+        if(empty(trim($profileid)))
+		{
+			$this->_iProfileID = '';
+		}
+		else
+		{
+			$this->_iProfileID = (string)$profileid;
+		}
 
 	}
 
@@ -112,7 +119,7 @@ class CustomerInfo
 		$xml  = '<customer';
 		if ($this->_iID > 0) { $xml .= ' id="'. $this->_iID .'"'; }
 		if (strlen($this->_sCustomerRef) > 0) { $xml .= ' customer-ref="'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'"'; }
-		if ($this->_iProfileID > 0 ) { $xml .= ' profile-id="'.htmlspecialchars($this->_iProfileID, ENT_NOQUOTES) .'"' ;}
+		if (empty($this->_iProfileID) === false ) { $xml .= ' profile-id="'.htmlspecialchars($this->_iProfileID, ENT_NOQUOTES) .'"' ;}
 		$xml  .= '>';
 		if (strlen($this->_sFullName) > 0) { $xml .= '<full-name>'. htmlspecialchars($this->_sFullName, ENT_NOQUOTES) .'</full-name>'; }
 		if ($this->_lMobile > 0) { $xml .= '<mobile country-id="'. $this->_iCountryID .'">'. $this->_lMobile .'</mobile>'; }

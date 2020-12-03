@@ -98,7 +98,7 @@ class mProfile extends General
 
     public function getProfile()
     {
-        if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() > 0) {
+        if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() !== '') {
             $b = '<?xml version="1.0" encoding="UTF-8"?>
                 <root>
                     <get-profile id = "' . $this->_obj_CustomerInfo->getProfileID() . '" />
@@ -138,7 +138,7 @@ class mProfile extends General
                 $this->_setMProfileID(($response->{'get-profile'}->{'profile'}["id"]) );
                 $this->_setPlatformID(intval($response->{'get-profile'}->{'profile'}->{'device-id'}['platform-id']) );
 
-                if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() > 0)
+                if ($this->_obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true" && $this->_obj_CustomerInfo->getProfileID() !== '')
                 {
                     $this->setObjCustomerInfo(new CustomerInfo($this->getObjCustomerInfo()->getID(), $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}["country-id"],
                         $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'mobile'}, $response->{'get-profile'}->{'profile'}->{'contacts'}->{'contact'}->{'email'},

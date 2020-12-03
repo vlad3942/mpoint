@@ -135,18 +135,21 @@ class EndUserAccount extends Home
 		return $iCode;
 	}
 
-	/**
-	 * Creates a new End-User Account.
-	 * Depending on the Client Configuration the End-User account may be linked to the specific Client
-	 *
-	 * @param	integer $cid 	ID of the country the End-User Account should be created in
-	 * @param	string $mob 	End-User's mobile number
-	 * @param 	string $pwd 	Password for the created End-User Account (optional)
-	 * @param 	string $email	End-User's e-mail address (optional)
-	 * @param 	string $cr		the Client's Reference for the Customer (optional)
-	 * @return	integer 		The unique ID of the created End-User Account
-	 */
-	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
+    /**
+     * Creates a new End-User Account.
+     * Depending on the Client Configuration the End-User account may be linked to the specific Client
+     *
+     * @param integer $cid ID of the country the End-User Account should be created in
+     * @param string $mob End-User's mobile number
+     * @param string $pwd Password for the created End-User Account (optional)
+     * @param string $email End-User's e-mail address (optional)
+     * @param string $cr the Client's Reference for the Customer (optional)
+     * @param string $pid
+     * @param bool $enable
+     * @param string $profileid
+     * @return    integer        The unique ID of the created End-User Account
+     */
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = '')
 	{
 		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable, $profileid);
 
@@ -758,19 +761,19 @@ class EndUserAccount extends Home
 			// Both Mobile No. and E-Mail address must match
 			if ( ($obj_ClientConfig->getIdentification() & 8) == 8)
 			{
-				if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+				if ((float)$lMobile > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 				if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 				if ($iMobileAccountID == $iEMailAccountID) { $iAccountID = $iMobileAccountID; }
 			}
 			// Client supports global storage of payment cards
 			if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
 			{
-				if (floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
+				if ((float)$lMobile > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
 				if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
 				// Both Mobile No. and E-Mail address must match
 				if ( ($obj_ClientConfig->getIdentification() & 8) == 8)
 				{
-					if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
+					if ((float)$lMobile > 0) { $iMobileAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
 					if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
 					if ($iMobileAccountID == $iEMailAccountID) { $iAccountID = $iMobileAccountID; }
 				}
@@ -780,7 +783,7 @@ class EndUserAccount extends Home
             case (7):
                 list($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail, $iProfileID) = $aArgs;
                 $iAccountID = -1;
-                if (isset($iProfileID) === false || $iProfileID < 0)
+                if (isset($iProfileID) === false || $iProfileID === '')
                 {
                     $iAccountID = EndUserAccount::getAccountID_Static($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail);
                 } else {
@@ -1160,7 +1163,7 @@ class EndUserAccount extends Home
     {
         $sql = "SELECT id
 				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-				WHERE profileid = ". intval($profileid);
+				WHERE profileid = '". $profileid ."'";
 
 //		echo $sql ."\n";
         $RS = $oDB->getName($sql);

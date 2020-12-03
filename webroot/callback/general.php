@@ -577,7 +577,7 @@ try
 
                         $obj_mVaultPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mVaultPSPConfig);
                         $obj_CardElem = $obj_mVaultPSP->getCardDetails();
-                        if($paymentSecureInfo !== null)
+                        if($paymentSecureInfo !== null && $obj_CardElem !== null)
                         {
                             $paymentSecureInfo->attachPaymentSecureNode($obj_CardElem);
                         }

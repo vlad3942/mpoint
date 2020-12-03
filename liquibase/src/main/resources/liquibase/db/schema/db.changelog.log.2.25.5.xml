@@ -3,7 +3,8 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
     <!-- Temporarily drop event trigger to enable changes to replicated tables -->
     <changeSet author="Jonatan Evald Buus"
@@ -12,6 +13,72 @@
         <sql dbms="postgresql" endDelimiter=";">
             DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
         </sql>
+    </changeSet>
+
+    <!-- Detach partitions -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-20-master-v2.25-CMP-4673-1">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists catalogName="log"
+                    schemaName= "log"
+                    tableName="TxnPassbook_Tbl_Default" />
+            </not>
+        </preConditions>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10021; -- SGA
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10022; -- Ethiopian Airlines
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10060; -- Music Planet Live
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10061; -- Sunrise Airways
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10062; -- MiRide
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10065; -- MiMeeting
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10066; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10067; -- E-Visa
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10070; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10071; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10072; -- Ethiopian Holidays
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10073; -- GOL Airways
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10074; -- Viva Airways Colombia
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10075; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10076; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10077; -- CEBU Pacific Air
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10078; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10079; -- UATP_Test_Client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10080; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10081; -- Viva Airways Peru
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10089; -- Non-Existant client
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10098; -- Farah Experiences
+            ALTER TABLE Log.TxnPassbook_Tbl DETACH PARTITION Log.TxnPassbook_Tbl_10099; -- CPM Live
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10021 FOR VALUES IN (10021); -- SGA
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10022 FOR VALUES IN (10022); -- Ethiopian Airlines
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10060 FOR VALUES IN (10060); -- Music Planet Live
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10061 FOR VALUES IN (10061); -- Sunrise Airways
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10062 FOR VALUES IN (10062); -- MiRide
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10065 FOR VALUES IN (10065); -- MiMeeting
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10066 FOR VALUES IN (10066); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10067 FOR VALUES IN (10067); -- E-Visa
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10070 FOR VALUES IN (10070); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10071 FOR VALUES IN (10071); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10072 FOR VALUES IN (10072); -- Ethiopian Holidays
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10073 FOR VALUES IN (10073); -- GOL Airways
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10074 FOR VALUES IN (10074); -- Viva Airways Colombia
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10075 FOR VALUES IN (10075); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10076 FOR VALUES IN (10076); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10077 FOR VALUES IN (10077); -- CEBU Pacific Air
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10078 FOR VALUES IN (10078); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10079 FOR VALUES IN (10079); -- UATP_Test_Client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10080 FOR VALUES IN (10080); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10081 FOR VALUES IN (10081); -- Viva Airways Peru
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10089 FOR VALUES IN (10089); -- Non-Existant client
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10098 FOR VALUES IN (10098); -- Farah Experiences
+                ALTER TABLE Log.TxnPassbook_Tbl ATTACH PARTITION Log.TxnPassbook_Tbl_10099 FOR VALUES IN (10099); -- CPM Live
+            </sql>
+        </rollback>
     </changeSet>
 
     <!-- Create default partition for clients that are not part of the configuration data in Production or does no have a partition defined-->
@@ -760,6 +827,78 @@
         </rollback>
     </changeSet>
 
+    <!-- Create primary keys for new default partition -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-20-master-v2.25-CMP-4673-2">
+
+        <!-- A unique index is automatically created by postgres, when creating a primaryKey -->
+        <addPrimaryKey catalogName="log"
+                       schemaName="log"
+                       tableName="TxnPassbook_Tbl_Default"
+                       columnNames="id"
+                       constraintName="TxnPassbook_Default_PK"/>
+
+        <sql dbms="postgresql" endDelimiter=";"
+            splitStatements="false">
+
+            -- Create trigger for default partition
+            CREATE TRIGGER update_txnpassbook_tbl_default
+            BEFORE UPDATE 
+            ON log.txnpassbook_tbl_default
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_table_proc();
+        </sql>
+        <rollback>
+            <sql dbms="postgresql" endDelimiter=";"
+                splitStatements="false">
+
+                -- Drop trigger for default partition
+                DROP TRIGGER update_txnpassbook_tbl_default ON log.txnpassbook_tbl_default;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <!-- Create primary keys for new default partition for Southwest -->
+    <changeSet author="Jonatan Evald Buus"
+        id="2020-11-20-master-v2.25-CMP-4694">
+
+        <!-- A unique index is automatically created by postgres, when creating a primaryKey -->
+        <addPrimaryKey catalogName="log"
+                       schemaName="log"
+                       tableName="TxnPassbook_Tbl_10069_Default"
+                       columnNames="id"
+                       constraintName="TxnPassbook_10069_Default_PK"/>
+
+        <createIndex
+            catalogName="log"
+            indexName="idx_txnpassbook_tbl_10069_default"
+            schemaName="log"  
+            tableName="txnpassbook_tbl_10069_default"> 
+
+            <column name="clientid" />
+            <column name="transactionid" />
+        </createIndex>
+
+        <sql dbms="postgresql" endDelimiter=";"
+            splitStatements="false">
+
+            -- Create trigger for default Southwest partition
+            CREATE TRIGGER update_txnpassbook_tbl_10069_default
+            BEFORE UPDATE 
+            ON log.txnpassbook_tbl_10069_default
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_table_proc();
+        </sql>
+        <rollback>
+            <sql dbms="postgresql" endDelimiter=";"
+                splitStatements="false">
+
+                -- Drop trigger for default Southwest partition
+                DROP TRIGGER update_txnpassbook_tbl_10069_default ON log.txnpassbook_tbl_10069_default;
+            </sql>
+        </rollback>
+    </changeSet>
+
     <!-- Recreate event trigger to disable changes to replicated tables -->
     <changeSet author="Jonatan Evald Buus"
         id="2020-11-09-master-v2.25-post-process">
@@ -772,6 +911,15 @@
 
         <sql dbms="postgresql" endDelimiter=";">
             ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+    </changeSet>
+
+    <!-- Add default partitioned tables in publication -->
+    <changeSet author="Nidhi Agarwal"
+               id="2020-11-23-master-v2.25-add-tables-in-publication">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.txnpassbook_tbl_default, log.txnpassbook_tbl_10069_default;
         </sql>
     </changeSet>
  

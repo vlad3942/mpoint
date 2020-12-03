@@ -88,7 +88,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
 
 
-                        $iProfileID = -1;
+                        $iProfileID = '';
                         //If data anonymization is enabled for the client
                         if ($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ENABLE_PROFILE_ANONYMIZATION") == "true") {
                             //if request does not contain clientinfo/@profileid - registered user profile id then

@@ -275,7 +275,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel()
+	public function cancel($amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -325,7 +325,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					}
 
 					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
-					$passbookState = Constants::sPassbookStatusDone;
+					$passbookState = Constants::sPassbookStatusError;
 					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
@@ -337,9 +337,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
 						$retStatusCode = 1001;
 						$updateStatusCode = $iUpdateStatusCode;
-					}
+                        $passbookState = Constants::sPassbookStatusDone;
+                    }
 
-					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
+					$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
 					return $retStatusCode;
@@ -420,7 +421,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -446,6 +447,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
+		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
 		{ 
