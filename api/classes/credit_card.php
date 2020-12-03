@@ -384,7 +384,8 @@ class CreditCard extends EndUserAccount
     {
 		$presentmentCurrencies = array ();
 
-		$sql = "SELECT CCMT.Settlement_Currency_Id
+		//Added Distinct clause as one card-id may have multiple pspid hence to avoid occurence of duplicate settlement-currency-id
+		$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
 				FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CCMT.card_id = CA.cardid
 				WHERE CCMT.client_id = " . $this->_obj_TxnInfo->getClientConfig ()->getID () . "
