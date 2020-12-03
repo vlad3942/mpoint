@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet author="Anna Lagad"
+               id="2020-11-23-setup-v2.26.0-system">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="1"/>
+            <column name="featurename" value="Pre-Auth"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="2"/>
+            <column name="featurename" value="Delayed Capture"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="3"/>
+            <column name="featurename" value="Batch Capture"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="4"/>
+            <column name="featurename" value="Partial Capture"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="5"/>
+            <column name="featurename" value="Refund"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="6"/>
+            <column name="featurename" value="Partial Refund"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="7"/>
+            <column name="featurename" value="Settlement"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="8"/>
+            <column name="featurename" value="Recurring"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="9"/>
+            <column name="featurename" value="3DS"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="10"/>
+            <column name="featurename" value="Installment"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="11"/>
+            <column name="featurename" value="Store Card"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="12"/>
+            <column name="featurename" value="Channel Mobile"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="13"/>
+            <column name="featurename" value="Channel Web"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="14"/>
+            <column name="featurename" value="Channel Others"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="15"/>
+            <column name="featurename" value="Pre-auth Fraud"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="16"/>
+            <column name="featurename" value="Post-Auth Fraud"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="17"/>
+            <column name="featurename" value="Voids"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet author="Anna Lagad"
+               id="2020-11-25-setup-v2.26.0-system">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.route_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routeconfig_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routefeature_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.routefeature_tbl OWNER TO mpoint;
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
