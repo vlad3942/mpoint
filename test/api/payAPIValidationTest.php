@@ -23,7 +23,7 @@ class PayAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getPayDoc($client, $account, $txn=1, $amount = 200)
+	protected function getPayDoc($client, $account, $txn=1, $amount = 200, $authToken = null)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -33,6 +33,9 @@ class PayAPIValidationTest extends baseAPITest
 		$xml .= '<amount country-id="100">'.$amount.'</amount>';
 		$xml .= '</card>';
 		$xml .= '</transaction>';
+		if($authToken !== null){
+			$xml .= '<auth-token>'.$authToken.'</auth-token>';
+		}
 		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
 		$xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 		$xml .= '<email>jona@oismail.com</email>';

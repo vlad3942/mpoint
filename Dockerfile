@@ -1,32 +1,24 @@
 #-----------------------FETCH TEST DEPENDENCIES------------------------
 
-FROM registry.t.cpm.dev/library/phpcomposerbuildimage:master20200203174815 as devbuilder
-COPY composer.json .
+FROM registry.t.cpm.dev/library/phpcomposerbuildimage:latest as devbuilder
+COPY composer.json composer.lock* ./
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
 #Run unittests
-FROM registry.t.cpm.dev/library/pgunittestextras:master20201027200551
+FROM registry.t.cpm.dev/library/pgunittestextras:master20201202121918
 
+#Overrides baseimage envs
+ENV POSTGRES_DB=mpoint
 ENV APPROOT=/opt/cpm/mPoint
 ENV WEBROOT=$APPROOT/webroot
 ENV PHPUNIT_EXEC_PATH=$APPROOT/vendor/bin/phpunit
 ENV PHPUNIT_CONFIG_PATH=$APPROOT/phpunit.xml
 ENV LIQUIBASE_CHANGELOG_ROOT=/liquibase/db
+ENV SERVER_NAME=mpoint.local.cellpointmobile.com
+ENV APP_LOG_FOLDER_PATH=/opt/cpm/mPoint/log
 
-#postgres specific
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=postgres
-ENV POSTGRES_DB=mpoint
-
-#liquibase specific
-ENV DB_HOST=localhost
-ENV DB_PORT=5432
-ENV DB_DATABASE=mpoint
-ENV DB_USERNAME=postgres
-ENV DB_PASSWORD=postgres
-
-# mPoint specific
+# mPoint specific: log to files (filenames defined in global config file)
 ENV LOG_OUTPUT_METHOD=1
 
 WORKDIR /opt/cpm/mPoint
@@ -38,19 +30,11 @@ COPY webroot webroot
 COPY phpunit.xml phpunit.xml
 COPY --from=devbuilder /app /opt/cpm/mPoint
 COPY liquibase/src/main/resources/liquibase/db /liquibase/db
-COPY docker/runtests.sh /sh/runtests.sh
 
-RUN mkdir /opt/cpm/mPoint/log \
-    && cd /opt/cpm/mPoint/log && touch db_exectime_.log db_error_.log app_error_.log \
-    && chmod -R 777 /opt/cpm/mPoint/log \
-    && apk add --no-cache apache2 php7-apache2 dos2unix \
-    && printf "LoadModule rewrite_module modules/mod_rewrite.so" >> /etc/apache2/httpd.conf \
-    && chmod +x -R /sh \
-    && dos2unix /sh/*
-
-COPY docker/apache.default.conf /etc/apache2/conf.d
-
-RUN /sh/runtests.sh
+RUN mkdir "$APP_LOG_FOLDER_PATH" && cd "$APP_LOG_FOLDER_PATH" \
+    && touch db_exectime_.log db_error_.log app_error_.log \
+    && chmod -R 777 "$APP_LOG_FOLDER_PATH" \
+    && /sh/runtests.sh
 
 #-----------------------FETCH PROD DEPENDENCIES -----------------
 
@@ -58,7 +42,7 @@ FROM devbuilder as builder
 RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
-FROM registry.t.cpm.dev/library/phpfpmextras:master20201020083451
+FROM registry.t.cpm.dev/library/phpfpmextras:master20201127121317       
 
 USER 0
 
@@ -69,7 +53,6 @@ COPY api api
 COPY conf conf
 COPY webroot webroot
 COPY --from=builder /app /opt/cpm/mPoint
-COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN apk add --no-cache dos2unix \
     && dos2unix /entrypoint.sh \
@@ -78,6 +61,4 @@ RUN apk add --no-cache dos2unix \
     && rm -rf /opt/cpm/mPoint/webroot/_test \
     && chown -R 1000:1000 /opt
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
 USER 1000

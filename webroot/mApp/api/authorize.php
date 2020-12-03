@@ -433,41 +433,29 @@ try
 										// Single Sign-On
 					                    $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 										$authToken = trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
-										$clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
+										$clientId = $obj_ClientConfig->getID(); 
+                                        $userAuthenticationCode = -1;
+										if (empty($authenticationURL) === false && empty($authToken)=== false)
+										{	
+											$obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}["language"], $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}["profileid"]);
 
-										if (strlen($authToken) == 1 && strlen($authenticationURL) > 0)
-										{
-											$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
 											if(empty($obj_CustomerInfo) === false) {
-                                                $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                                                if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
-                                                    $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
-                                                }
-                                                if (float($obj_TxnInfo->getMobile()) > 0) {
-                                                    $obj_Customer->mobile = $obj_TxnInfo->getMobile();
-                                                    $obj_Customer->mobile["country-id"] = int($obj_TxnInfo->getCountryConfig()->getID());
-                                                    $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
-                                                }
-                                                if (strlen($obj_TxnInfo->getEMail()) > 0) {
-                                                    $obj_Customer->email = $obj_TxnInfo->getEMail();
-                                                }
-                                                $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-
+                                                
                                                 if ( $sosPreference === 'STRICT' )
 						                        {
-						                        	$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
+						                        	$userAuthcode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
 
-						                        	if ($code == 212) 
+						                        	if ($userAuthenticationCode == 212)
 														{
-						                                	$aMsgCds[$code] = 'Mandatory fields are missing' ;
+						                                	$aMsgCds[$userAuthenticationCode] = 'Mandatory fields are missing' ;
 						                          	} 
-						                          	else {
+						                          	if ($userAuthenticationCode == 1) {
 						                          		 $aMsgCds[213] = 'Profile authentication failed' ;
 						                          	}
 						                        } 
 						                        else {
 													
-													$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId);
+													$userAuthenticationCode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId);
 												}
 
                                             }
@@ -475,7 +463,7 @@ try
 											    //Account Not Found
 											    if ( $sosPreference !== 'STRICT' )
 						                        {
-									        		$code = 5;
+									        		$userAuthenticationCode = 5;
 									            }
 											    
                                             }
@@ -496,15 +484,18 @@ try
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
-											
-											// Authentication is not required for payment methods that are sending a token or Invoice
-                                            if (($code != 5) && ($isStoredCardPayment === false || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE) ||
-                                                (empty($obj_DOM->{'authorize-payment'}[$i]->password) === true && empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) === false))
-											{
-												$code = 10;
-											}
-											else { $code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password); }
-											// Authentication succeeded											
+											//Authentication is required if third party sso is enable and payment is stored card or request is containing password
+                                            //Invoice payment type is not in use hence removed it from condition.
+                                            if(($isStoredCardPayment === true || empty($obj_DOM->{'authorize-payment'}[$i]->password) === false) && $userAuthenticationCode === -1 )
+                                            {
+                                                $code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
+                                            }
+                                            else
+                                            {
+                                                $code = $userAuthenticationCode === -1 ? 10 : $userAuthenticationCode;
+                                            }
+
+											// Authentication succeeded
 											if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 											{
 												
