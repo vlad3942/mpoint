@@ -491,57 +491,58 @@ class Home extends General
         $result = $this->getDBConn()->getAllNames($sql);
 
 		$xml = '<stored-cards accountid="'. $id .'">';
-        foreach ($result as $RS)
-		{
-            // Set stateid given by CRS into resultset
-		    if(empty($aPaymentMethodsConfig)) {
-                $aCardConfig = isset($aPaymentMethodsConfig[$RS['CARDID']]) ? $aPaymentMethodsConfig[$RS['CARDID']] : NULL;
-                $RS['STATEID'] = isset($aCardConfig['state_id']) ? $aCardConfig['state_id'] : 1;
+        if (is_array($result) === true && count($result) > 0) {
+            foreach ($result as $RS) {
+                // Set stateid given by CRS into resultset
+                if (empty($aPaymentMethodsConfig)) {
+                    $aCardConfig = isset($aPaymentMethodsConfig[$RS['CARDID']]) ? $aPaymentMethodsConfig[$RS['CARDID']] : NULL;
+                    $RS['STATEID'] = isset($aCardConfig['state_id']) ? $aCardConfig['state_id'] : 1;
+                }
+
+                if (($oCC instanceof ClientConfig) === true) {
+                    // Replace up 0-4 of the last 4-digits in the masked card number with *
+                    $sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits()), -4, 4 - $oCC->getNumberOfMaskedDigits());
+                } else {
+                    $sMaskedCardNumber = trim($RS["MASK"]);
+                }
+
+                // set card expired status
+                $aExpiry = explode('/', $RS['EXPIRY']);
+                $bIsExpired = "false";
+                $expiryMonth = trim($aExpiry[0]);
+                $expiryYear = trim($aExpiry[1]);
+                if (empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false) {
+                    $bIsExpired = "true";
+                }
+
+                // Construct XML Document with data for saved cards
+                $xml .= '<card id="' . $RS["ID"] . '" type-id="' . $RS["CARDID"] . '" pspid="' . $RS["PSPID"] . '" preferred="' . General::bool2xml($RS["PREFERRED"]) . '" state-id="' . $RS["STATEID"] . '" charge-type-id="' . $RS["CHARGETYPEID"] . '" cvc-length="' . $RS["CVCLENGTH"] . '" expired="' . $bIsExpired . '" cvcmandatory = "' . General::bool2xml($RS['CVCMANDATORY']) . '" dcc = "' . General::bool2xml($RS["DCCENABLED"]) . '">';
+                $xml .= '<client id="' . $RS["CLIENTID"] . '">' . htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) . '</client>';
+                $xml .= '<type id="' . $RS["TYPEID"] . '">' . $RS["TYPE"] . '</type>';
+                $xml .= '<name>' . htmlspecialchars($RS["NAME"], ENT_NOQUOTES) . '</name>';
+                $xml .= '<mask>' . chunk_split($sMaskedCardNumber, 4, " ") . '</mask>';
+                $xml .= '<expiry>' . $RS["EXPIRY"] . '</expiry>';
+                $xml .= '<enabled>' . General::bool2xml($RS["PREFERRED"]) . '</enabled>';
+                $xml .= '<ticket>' . $RS["TICKET"] . '</ticket>';
+                $xml .= '<card-holder-name>' . htmlspecialchars($RS["CARD_HOLDER_NAME"], ENT_NOQUOTES) . '</card-holder-name>';
+                $xml .= '<logo-width>' . $iWidth . '</logo-width>';
+                $xml .= '<logo-height>' . $iHeight . '</logo-height>';
+
+                if (intval($RS["COUNTRYID"]) > 0) {
+                    $xml .= '<address country-id="' . $RS["COUNTRYID"] . '">';
+                    $xml .= '<first-name>' . htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) . '</first-name>';
+                    $xml .= '<last-name>' . htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) . '</last-name>';
+                    $xml .= '<street>' . htmlspecialchars($RS["STREET"], ENT_NOQUOTES) . '</street>';
+                    $xml .= '<postal-code>' . $RS["POSTALCODE"] . '</postal-code>';
+                    $xml .= '<city>' . htmlspecialchars($RS["CITY"], ENT_NOQUOTES) . '</city>';
+                    if ((empty($RS["CODE"]) === false && $RS["CODE"] != "N/A") || empty($RS["STATE"]) === false) {
+                        $xml .= '<state code="' . htmlspecialchars($RS["CODE"], ENT_NOQUOTES) . '">' . htmlspecialchars($RS["STATE"], ENT_NOQUOTES) . '</state>';
+                    }
+                    $xml .= '</address>';
+                }
+                $xml .= '</card>';
             }
-
-			if ( ($oCC  instanceof ClientConfig) === true)
-			{
-				// Replace up 0-4 of the last 4-digits in the masked card number with *
-				$sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits() ), -4, 4 - $oCC->getNumberOfMaskedDigits() );
-			}
-			else { $sMaskedCardNumber = trim($RS["MASK"]); }
-
-			// set card expired status
-            $aExpiry = explode('/', $RS['EXPIRY']);
-            $bIsExpired = "false";
-            $expiryMonth = trim($aExpiry[0]);
-            $expiryYear = trim($aExpiry[1]);
-            if(empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false )
-            {
-                $bIsExpired = "true";
-            }
-
-            // Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'" dcc = "'.General::bool2xml($RS["DCCENABLED"]).'">';
-			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
-			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
-			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
-			$xml .= '<mask>'. chunk_split($sMaskedCardNumber, 4, " ") .'</mask>';
-			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
-			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
-			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
-			$xml .= '<card-holder-name>'. htmlspecialchars($RS["CARD_HOLDER_NAME"], ENT_NOQUOTES) .'</card-holder-name>';
-			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
-			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
-
-			if (intval($RS["COUNTRYID"]) > 0)
-			{
-				$xml .= '<address country-id="'. $RS["COUNTRYID"].'">';
-				$xml .= '<first-name>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</first-name>';
-				$xml .= '<last-name>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</last-name>';
-				$xml .= '<street>'. htmlspecialchars($RS["STREET"], ENT_NOQUOTES) .'</street>';
-				$xml .= '<postal-code>'. $RS["POSTALCODE"] .'</postal-code>';
-				$xml .= '<city>'. htmlspecialchars($RS["CITY"], ENT_NOQUOTES) .'</city>';
-				if ( (empty($RS["CODE"]) === false && $RS["CODE"] != "N/A") || empty($RS["STATE"]) === false) { $xml .= '<state code="'. htmlspecialchars($RS["CODE"], ENT_NOQUOTES) .'">'. htmlspecialchars($RS["STATE"], ENT_NOQUOTES) .'</state>'; }
-				$xml .= '</address>';
-			}
-			$xml .= '</card>';
-		}
+        }
 		$xml .= '</stored-cards>';
 		return $xml;
 	}

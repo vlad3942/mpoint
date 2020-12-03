@@ -15,7 +15,6 @@ require_once sAPI_CLASS_PATH . 'simpledom.php';
 require_once __DIR__ . '/../../api/classes/clientinfo.php';
 require_once __DIR__ . '/../../api/classes/core/card.php';
 require_once __DIR__ . '/../../api/classes/routing_service.php';
-require_once __DIR__ . '/../../api/classes/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH . '/payment_route.php');
@@ -240,7 +239,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(18, $iPrimaryRoute);
         }
     }
@@ -268,7 +267,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(-1, $iPrimaryRoute);
         }
     }
@@ -296,7 +295,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
-            $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(18, $iPrimaryRoute);
         }
     }
