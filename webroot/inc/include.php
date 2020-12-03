@@ -70,8 +70,6 @@ require_once(sAPI_CLASS_PATH ."uaprofile.php");
 // Require API containing generic validation functions
 require_once(sAPI_CLASS_PATH ."validate_base.php");
 
-// Require Global library functions file
-require_once(sFUNCTION_PATH ."global.php");
 // Require Global function file
 require_once(sAPI_FUNCTION_PATH ."global.php");
 
