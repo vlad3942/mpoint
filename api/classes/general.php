@@ -1535,7 +1535,8 @@ class General
      * @param  $salecurrencyid 	integer  currency-id
      * @return array
      */
-    public static function getPresentmentCurrencies(RDB &$oDB, $clientid, $cardid, $salecurrencyid) {
+    public static function getPresentmentCurrencies(RDB &$oDB, $clientid, $cardid, $salecurrencyid) : ?array
+    {
 		$presentmentCurrencies = array ();
 
 		if ($oDB instanceof RDB) {
