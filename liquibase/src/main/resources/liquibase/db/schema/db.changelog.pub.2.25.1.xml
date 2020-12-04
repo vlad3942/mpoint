@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Add count_rows function for easy filtering-->
+    <changeSet author="Nidhi" id="2020-11-19-master-v2.25">
+        <sql>
+            ALTER PUBLICATION mpoint_client_pub ADD TABLE client.countrycurrency_tbl;
+            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.additional_data_tbl, log.paymentsecureinfo_tbl;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

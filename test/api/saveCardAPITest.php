@@ -89,7 +89,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'successtoken',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'successtoken','');
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -120,7 +120,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass','');
 
         $this->_httpClient->connect();
 
@@ -153,7 +153,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass','');
 
         $this->_httpClient->connect();
 
@@ -179,6 +179,7 @@ class SaveCardAPITest extends baseAPITest
      */
     public function testGetProfileFailsSaveAccCardSuccess()
     {
+        $this->markTestIncomplete('Default value of profile id is changed from -1 to empty so that alternate flow covered in this test case will not execute');
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
         //Simulate error by using a actual url returning 401 or non existing url.
         $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 10099, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth.php')");
@@ -190,7 +191,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass','');
 
         $this->_httpClient->connect();
 
@@ -231,7 +232,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass',12345);//,'testemail@test.com',123456677);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', null,'profilePass','12345');//,'testemail@test.com',123456677);
         //printf($xml);
         $this->_httpClient->connect();
 
@@ -245,7 +246,7 @@ class SaveCardAPITest extends baseAPITest
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE profileid=12345 and enabled = '1'");
+        $res = $this->queryDB("SELECT * FROM EndUser.Account_Tbl WHERE profileid='12345' and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
        /* $row = pg_fetch_row($res);
@@ -267,7 +268,7 @@ class SaveCardAPITest extends baseAPITest
        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-       $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', '123456','',-1);
+       $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', '123456','','');
        $this->_httpClient->connect();
 
        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -297,7 +298,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 100, 5000, '127.0.0.1', TRUE, 208,5000,208)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', '123456','',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', '123456','','');
 
         $this->_httpClient->connect();
 
@@ -328,7 +329,7 @@ class SaveCardAPITest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
 
-        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', '123456','',-1);
+        $xml = $this->getSaveCardDoc(10099, 1100, 'abcExternal', '123456','','');
 
         $this->_httpClient->connect();
 

@@ -29,10 +29,7 @@ services:
 
   app:
     container_name: debug_${PROJECT_NAME}_app
-    #image: registry.t.cpm.dev/library/mpoint
-    build:
-      #context: .
-      context: docker/php-fpm-alpine-debug
+    image: registry.t.cpm.dev/library/phpfpmextrasplusdebug:latest
     environment:
       - APP_ENV=${APP_ENV}
       - DB_HOST=${DB_HOST}
@@ -40,7 +37,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
       - XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9001 remote_host=${HOST_IP}
-      - PHP_IDE_CONFIG=serverName=mpoint.local.cellpointmobile.com
+      - PHP_IDE_CONFIG=serverName=mpoint_docker
     env_file:
       - ./env/dev/env.docker-compose.local
     # volumed codebase for easy debugging and development. Comment out all volumes when testing final image

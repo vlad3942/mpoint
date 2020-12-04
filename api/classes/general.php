@@ -481,8 +481,8 @@ class General
 		if($oTI->getInstallmentValue()>0) {
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
-        if ($oTI->getProfileID() > 0) {
-            $sql .= " , profileid = ". $oTI->getProfileID();
+        if ($oTI->getProfileID() !== '') {
+            $sql .= " , profileid = '". $oTI->getProfileID() ."'";
         }
         if ($oTI->getWalletID() !== -1) {
             $sql .= ", walletid = ". $oTI->getWalletID();
@@ -1505,6 +1505,26 @@ class General
     public static function getIssuerIdentificationNumber($cardno)
     {
         return substr($cardno, 0, 6);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getProtocol(): string
+    {
+        if (array_key_exists("HTTPS", $_SERVER) && 'on' === $_SERVER["HTTPS"]) {
+            return 'https';
+        }
+        if (array_key_exists("SERVER_PORT", $_SERVER) && 443 === (int)$_SERVER["SERVER_PORT"]) {
+            return 'https';
+        }
+        if (array_key_exists("HTTP_X_FORWARDED_SSL", $_SERVER) && 'on' === $_SERVER["HTTP_X_FORWARDED_SSL"]) {
+            return 'https';
+        }
+        if (array_key_exists("HTTP_X_FORWARDED_PROTO", $_SERVER) && 'https' === $_SERVER["HTTP_X_FORWARDED_PROTO"]) {
+            return 'https';
+        }
+        return 'http';
     }
 }
 ?>
