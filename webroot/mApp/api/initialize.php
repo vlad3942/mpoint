@@ -747,13 +747,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $aPSPs[] = intval($obj_XML->item[$j]["pspid"]);
                                     }
 
-                                    // Get list of presentment currencies
+                                    //Get list of presentment currencies
                                     $presentmentCurrency = false;
                                     $presentmentCurrencies = array();
-                                    $presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($obj_XML->item[$j]["id"]);
-                                    if(is_array($presentmentCurrencies) === true && count($presentmentCurrencies) > 0){
-										$presentmentCurrency = true;
-                                    }
+                                    if (General::bool2xml($obj_XML->item [$j] ["dcc"]))
+                                    {
+										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), $obj_XML->item[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
+										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
+											$presentmentCurrency = true;
+										}
+									}
 
                                     $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
@@ -875,9 +878,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// Get list of presentment currencies
 									$presentmentCurrency = false;
 									$presentmentCurrencies = array();
-									$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($aObj_XML[$j]["id"]);
-									if(is_array($presentmentCurrencies) === true && count($presentmentCurrencies) > 0){
-										$presentmentCurrency = true;
+									if (General::bool2xml($aObj_XML [$j] ["dcc"]))
+									{
+										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), $aObj_XML[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
+										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
+											$presentmentCurrency = true;
+										}
 									}
 
 									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . $aObj_XML[$j]["dcc"] .'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
