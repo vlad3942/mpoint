@@ -410,6 +410,19 @@ class CountryConfig extends BasicConfig
 		$obj_XMLDOM->addAttribute("alpha3code", $alpha3code);
 		if($obj_CountryConfig->getNumericCode() > 0 && isset($obj_XMLDOM["code"]) === false)
 		$obj_XMLDOM->addAttribute("code", $obj_CountryConfig->getNumericCode());
+
+		if(isset($obj_XMLDOM["idc"]) === false && $obj_CountryConfig->getCountryCode() > 0)
+		{
+            $obj_XMLDOM->addAttribute("idc", $obj_CountryConfig->getCountryCode());
+        }
+
+		$obj_MobileCountryConfig = self::produceConfig($oDB, $obj_XMLDOM->{'contact-details'}->{'mobile'}['country-id']);
+
+		if($obj_MobileCountryConfig->getCountryCode() > 0)
+		{
+            $obj_XMLDOM->{'contact-details'}->{'mobile'}->addAttribute("idc", $obj_MobileCountryConfig->getCountryCode());
+        }
+
 	}
 }
 ?>
