@@ -136,7 +136,6 @@ class CreditCard extends EndUserAccount
 				} else {
 					$pspId = $iRoute;
 				}
-
 				// Construct XML Document with card data
                 $enabled = true;
 				if(in_array($RS['ID'], $aDiabledPMs) === true ) { $enabled = false; }
@@ -379,5 +378,6 @@ class CreditCard extends EndUserAccount
         }
         return isset($res[0])?$res[0]:FALSE;
     }
+
 }
 ?>
