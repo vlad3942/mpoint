@@ -7,11 +7,12 @@
 
     <!-- Add new table card_currency_mapping_tbl -->
     <changeSet author="Abhinav Shaha" id="2020-12-02-master-v2.26">
-		<createTable  schemaName="client" tableName="card_currency_mapping_tbl">  
-            <column  name="id"  type="serial" autoIncrement="true">  
-                <constraints  primaryKey="true"  nullable="false" primaryKeyName="pk_client_card_currency_mapping_id"/>  
+		<createTable catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"
+					 remarks="This table store the Presentment configuration">
+            <column  name="id"  type="serial" autoIncrement="true" remarks="This column is primary key">
+                <constraints  primaryKey="true"  nullable="false" primaryKeyName="pk_client_card_currency_mapping_id"/>
             </column>
-            <column  name="client_id"  type="integer">  
+            <column  name="client_id"  type="integer" remarks="This column is to store client-id">
                 <constraints nullable="false" 
                 	foreignKeyName="client_id_fk"
 		            deleteCascade="true"
@@ -20,7 +21,7 @@
 		            referencedTableName="client_tbl"
 		            referencedTableSchemaName="client"/>  
             </column>
-            <column  name="card_id"  type="integer">  
+            <column  name="card_id"  type="integer" remarks="This column is to store card-id">
                 <constraints nullable="false" 
                 	foreignKeyName="card_currency_mapping_card_fk"
 		            deleteCascade="true"
@@ -29,7 +30,7 @@
 		            referencedTableName="card_tbl"
 		            referencedTableSchemaName="system"/>  
             </column>
-            <column  name="sale_currency_id"  type="integer">  
+            <column  name="sale_currency_id"  type="integer" remarks="This column is to store sale-currency-id">
                 <constraints nullable="false" 
                 	foreignKeyName="card_currency_mapping_sale_currency_fk"
 		            deleteCascade="true"
@@ -38,10 +39,10 @@
 		            referencedTableName="currency_tbl"
 		            referencedTableSchemaName="system"/>  
             </column> 
-            <column  name="is_presentment"  type="boolean" defaultValueBoolean="false">  
+            <column  name="is_presentment"  type="boolean" defaultValueBoolean="true" remarks="This column indicates settlement-currency-id is applicable to given sale-currency or not">  
                 <constraints nullable="false" />  
             </column> 
-            <column  name="settlement_currency_id"  type="integer">  
+            <column  name="settlement_currency_id"  type="integer" remarks="This column is to store settlement-currency-id">
                 <constraints nullable="false" 
                 	foreignKeyName="card_currency_mapping_settlement_currency_fk"
 		            deleteCascade="true"
@@ -50,13 +51,19 @@
 		            referencedTableName="currency_tbl"
 		            referencedTableSchemaName="system"/>  
             </column> 
-            <column  name="created"  type="timestamp" defaultValueComputed="now()">  
+            <column  name="created"  type="timestamp" defaultValueComputed="now()" remarks="This column is to store current time">
                 <constraints nullable="true" />  
             </column>
-            <column  name="modified"  type="timestamp" defaultValueComputed="now()">  
+            <column  name="modified"  type="timestamp" defaultValueComputed="now()" remarks="This column is to store modified time">
                 <constraints nullable="true" />  
+            </column>
+            <column  name="enabled"  type="boolean" defaultValueBoolean="true" remarks="This column is to enable/disable presentment configuration">  
+                <constraints nullable="false" />
             </column>
         </createTable>
+		<rollback>
+			<dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"/>
+		</rollback>
 		<createIndex indexName="cardcurrencymapping_idx" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl">
 			<column name="client_id"/>
 			<column name="card_id"/>

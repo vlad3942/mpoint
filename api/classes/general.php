@@ -1535,7 +1535,7 @@ class General
      * @param  $salecurrencyid 	integer  currency-id
      * @return array
      */
-    public static function getPresentmentCurrencies(RDB &$oDB, $clientid, $cardid, $salecurrencyid) : ?array
+    public static function getPresentmentCurrencies(RDB &$oDB, int $clientid, int $cardid, int $salecurrencyid) : array
     {
 		$presentmentCurrencies = array ();
 
@@ -1545,6 +1545,7 @@ class General
 			$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
 					FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
 					WHERE CCMT.client_id = " . $clientid . "
+					AND CCMT.enabled = '1'
 					AND CCMT.is_presentment = '1'
 					AND CCMT.card_id = " . $cardid . "
 					AND CCMT.sale_currency_id = " . $salecurrencyid . "";
