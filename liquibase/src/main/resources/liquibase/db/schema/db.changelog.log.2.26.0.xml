@@ -61,15 +61,19 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
-		<rollback>
-			<dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"/>
-		</rollback>
+		<sql>
+			ALTER TABLE client.card_currency_mapping_tbl OWNER TO mpoint;
+			CREATE TRIGGER Update_Card_Currency_Mapping BEFORE UPDATE ON Client.card_currency_mapping_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+		</sql>
 		<createIndex indexName="cardcurrencymapping_idx" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl">
 			<column name="client_id"/>
 			<column name="card_id"/>
 			<column name="sale_currency_id"/>
 		</createIndex>
-		<sql>ALTER TABLE client.card_currency_mapping_tbl OWNER TO mpoint</sql>
+		<rollback>
+			<sql>DROP TRIGGER Update_Card_Currency_Mapping IF EXISTS ON client.card_currency_mapping_tbl CASCADE TRUE;</sql>
+			<dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"/>
+		</rollback>
     </changeSet>
 
 </databaseChangeLog>
