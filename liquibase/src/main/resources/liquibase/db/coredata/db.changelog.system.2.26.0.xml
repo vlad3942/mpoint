@@ -148,25 +148,4 @@
 
     </changeSet>
 
-    <changeSet author="Anna Lagad"
-               id="2020-11-25-setup-v2.26.0-system">
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.route_tbl OWNER TO mpoint;
-        </sql>
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.routeconfig_tbl OWNER TO mpoint;
-        </sql>
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.routefeature_tbl OWNER TO mpoint;
-        </sql>
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE system.routefeature_tbl OWNER TO mpoint;
-        </sql>
-
-    </changeSet>
-
 </databaseChangeLog>

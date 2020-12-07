@@ -60,6 +60,10 @@
             <column name="id"/>
         </createIndex>
 
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="routefeature_tbl"/>
+        </rollback>
+
         <createTable  catalogName="client"
                       schemaName="client"
                       tableName="routefeature_tbl"
@@ -142,6 +146,10 @@
 
             <column name="routeconfigid"/>
         </createIndex>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routefeature_tbl"/>
+        </rollback>
 
         <createTable  catalogName="client"
                       schemaName="client"
@@ -260,6 +268,10 @@
             <column name="routeid"/>
         </createIndex>
 
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routeconfig_tbl"/>
+        </rollback>
+
         <createTable  catalogName="client"
                       schemaName="client"
                       tableName="route_tbl"
@@ -327,6 +339,31 @@
 
             <column name="providerid"/>
         </createIndex>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="route_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Anna Lagad"
+               id="2020-12-07-setup-v2.26.0-system">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.route_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routeconfig_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routefeature_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.routefeature_tbl OWNER TO mpoint;
+        </sql>
 
     </changeSet>
 
