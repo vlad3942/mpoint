@@ -10,7 +10,6 @@
     <changeSet author="Chaitenya Yadav" id="2020-12-07-setup-v2.25-system">
 
         <insert catalogName="System" schemaName="System" tableName="cardprefix_tbl">
-                <column name="id" value="272"/>
                 <column name="cardid" value="7"/>
                 <column name="min" value="222100"/>
                 <column name="max" value="272099"/>
