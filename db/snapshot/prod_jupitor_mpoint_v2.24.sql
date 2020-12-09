@@ -20,11 +20,7 @@ status::=(additional-data.param[@name=''status''])', id, 'merchant' from client.
 UPDATE Client.Client_Tbl SET maxamount = 999999999900 WHERE id = 10020;
 
 -- Configure CIAM with LOOSE
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES( 'SSO_PREFERENCE', 'LOOSE',true,  10077,'client',2)
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES( 'SSO_PREFERENCE', 'LOOSE',true,  10077,'client',2);
 
 --- If any client using the cybersource api then as per cybersource documentation compulsary businesstype is 2(airline) for airline transaction
 update client.account_tbl set businesstype = 2 where clientid = 10020;
-
-
--- Remove Duplicate entry from database 
-DELETE FROM client.additionalproperty_tbl WHERE id=390 and key='3DSVERSION' and externalid= 10077;  
