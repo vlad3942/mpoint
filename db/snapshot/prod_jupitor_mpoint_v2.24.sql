@@ -24,3 +24,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 --- If any client using the cybersource api then as per cybersource documentation compulsary businesstype is 2(airline) for airline transaction
 update client.account_tbl set businesstype = 2 where clientid = 10020;
+
+
+-- Remove Duplicate entry from database 
+DELETE FROM client.additionalproperty_tbl WHERE id=390 and key='3DSVERSION' and externalid= 10077;  
