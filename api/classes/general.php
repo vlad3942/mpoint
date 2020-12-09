@@ -1526,5 +1526,44 @@ class General
         }
         return 'http';
     }
+
+    /**
+     * Returns the list of settlement currencies for given client-id, card-id and salecurrency-id
+     * @param  $RDB 			Object   Database object reference
+     * @param  $clientid 		integer  client-id
+     * @param  $cardid	 		integer  card-id
+     * @param  $salecurrencyid 	integer  currency-id
+     * @return array
+     */
+    public static function getPresentmentCurrencies(RDB &$oDB, int $clientid, int $cardid, int $salecurrencyid) : array
+    {
+		$presentmentCurrencies = array ();
+
+		if ($oDB instanceof RDB) {
+
+			// Added Distinct clause as one card-id may have multiple pspid hence to avoid occurence of duplicate settlement-currency-id
+			$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
+					FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
+					WHERE CCMT.client_id = " . $clientid . "
+					AND CCMT.enabled = '1'
+					AND CCMT.is_presentment = '1'
+					AND CCMT.card_id = " . $cardid . "
+					AND CCMT.sale_currency_id = " . $salecurrencyid . "";
+
+			//echo $sql ."\n";die;
+			$aRS = $oDB->getAllNames($sql);
+
+			if (is_array($aRS) === true && count($aRS) > 0)
+			{
+				for ($i = 0; $i < count($aRS); $i++)
+				{
+					$settlementCurrencyId = $aRS[$i]['SETTLEMENT_CURRENCY_ID'];
+					array_push($presentmentCurrencies, $settlementCurrencyId);
+				}
+			}
+		}
+
+		return $presentmentCurrencies;
+	}
 }
 ?>
