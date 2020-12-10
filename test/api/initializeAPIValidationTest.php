@@ -23,7 +23,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0", $orderAid = false)
+	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0")
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -33,10 +33,6 @@ class InitializeAPIValidationTest extends baseAPITest
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'.$amount.'</amount>';
-		if(isset($orderAid) === true){
-			$xml .= $this->getOrderAid();
-		}
-
 		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
 		$xml .= '</transaction>';
@@ -80,10 +76,6 @@ class InitializeAPIValidationTest extends baseAPITest
 		$xml .= '</root>';
 
 		return $xml;
-	}
-
-	public function getOrderAid(){
-		return '<orders><line-item><product sku="product-ticket"><name>ONE WAY</name><description>ONE WAY</description><airline-data><flight-detail service-level="3" trip-count="1" tag="1"><service-class>A</service-class><flight-number>961</flight-number><departure-airport>MNL</departure-airport><arrival-airport>DVO</arrival-airport><airline-code>5J</airline-code><departure-date>2021-06-09T04:30:00</departure-date><arrival-date>2021-06-09T06:30:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone>+08:00</time-zone></flight-detail><passenger-detail><title>Mr</title><first-name>fname</first-name><last-name>lname</last-name><contact-info><email>demo@cellpointmobile.com</email><mobile country-id="640">639123123123</mobile></contact-info></passenger-detail></airline-data></product><amount>100</amount><quantity>1</quantity></line-item></orders>';
 	}
 
     public function testBadRequestInvalidRequestBody()
