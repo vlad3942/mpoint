@@ -426,11 +426,23 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	    // save ext id in database
         if($card_type_id !== -1)
         {
-            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                SET pspid = " . $obj_PSPConfig->getID() . "
-                , cardid = ". intval($card_type_id) . "
-                WHERE id = " . $this->getTxnInfo()->getID();
-            $this->getDBConn()->query($sql);
+            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            {
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                        SET pspid = " . $obj_PSPConfig->getID() . ", 
+                            cardid = " . intval($card_type_id) . ",
+                            routeconfigid = " . $this->getTxnInfo()->getRouteConfigID() . "
+                        WHERE id = " . $this->getTxnInfo()->getID();
+                $this->getDBConn()->query($sql);
+            }
+            else
+            { // Remove this block of code when we get rid of legacy flow
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                        SET pspid = " . $obj_PSPConfig->getID() . ", 
+                            cardid = " . intval($card_type_id) . "
+                        WHERE id = " . $this->getTxnInfo()->getID();
+                $this->getDBConn()->query($sql);
+            }
         }
 
         $this->updateTxnInfoObject();

@@ -446,6 +446,13 @@ class TxnInfo
 	private $_aBillingAddr;
 
     /**
+     * Route configuration id chosen for the specific transaction
+     *
+     * @var integer
+     */
+	private $_iRouteConfigId;
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
@@ -580,7 +587,7 @@ class TxnInfo
         $this->_fconversionRate = (float)$fconversionRate;
         $this->_sIssuingBank = trim($sIssuingBank);
         $this->_aBillingAddr = $aBillingAddr;
-
+        $this->_iRouteConfigId = -1;
         }
 
 	/**
@@ -911,6 +918,18 @@ class TxnInfo
 	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
 	 */
 	public function setAccountID($id) { $this->_iAccountID = (integer) $id; }
+
+    /**
+	 * Set route configuration id chosen for the transaction
+     * @param int $routeConfigId
+     */
+    public function setRouteConfigID(int $routeConfigId) { $this->_iRouteConfigId =  $routeConfigId; }
+
+    /**
+	 * Function return route configuration id chosen for the transaction
+     * @return int
+     */
+    public function getRouteConfigID() :int { return $this->_iRouteConfigId; }
 
 	/**
 	 * Associates an mProfile id with the Transaction.
@@ -2302,6 +2321,10 @@ class TxnInfo
            if(empty($mask) ===false && empty($expiry) === false)
            {
 			   $sql .= " ,mask = '" . $mask . "' , expiry = '" . $expiry . "'";
+		   }
+           if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+		   {
+               $sql .= " ,routeconfigid = ". $this->getRouteConfigID();
 		   }
 			$sql .= " WHERE id=". $this->getID();
            $obj_DB->query($sql);

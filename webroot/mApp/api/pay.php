@@ -262,6 +262,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
 							}
                             if($iPrimaryRoute > 0){
+                                $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
                                 $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( (integer) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
                             }
 						}else{
