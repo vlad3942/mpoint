@@ -73,7 +73,51 @@ class OrderInfoTest extends baseAPITest
         $obj_OrderInfo = $aObj_OrderInfoConfigs[0];
         
         $this->assertIsObject($obj_OrderInfo);
+        $this->assertInstanceOf(OrderInfo::class, $obj_OrderInfo);
         $this->assertObjectHasAttribute('_iID', $obj_OrderInfo);
+    }
+
+
+    public function testProduceOrderConfigEmpty()
+    {
+        $iTxnID = 1001001;
+        $iClientID = 10099;
+        $iAccountID = 1100;
+        $iCurrencyID = 840;
+        $iAmount = 5000;
+        $sOrderId = 'CY361';
+        
+        $data = array();
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES ($iClientID, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES ($iClientID, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES ($iAccountID, $iClientID)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, $iClientID, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, $iClientID, 18, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES ($iAccountID, 18, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES ($iClientID, 2, 18, true, 1)");
+        $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES ($iClientID,100,$iCurrencyID, true)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES ($iClientID, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 18, '5019********3742', '06/24', TRUE, $iClientID, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, $iClientID, $iAccountID, 208, 100, 4001, '103-1418291', $iAmount, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid) VALUES ($iTxnID, 100, $iClientID, $iAccountID, 1,  18, 5001, 100, '". $sOrderId. "', 'test.com', $iAmount, '127.0.0.1', TRUE,10)");
+
+        $obj_ClientConfig = ClientConfig::produceConfig($this->_OBJ_DB, (int) $iClientID, (int) $iAccountID);
+        $obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_OBJ_DB, (integer) $iCurrencyID);
+        
+        $data['typeid']= 1 ;
+        $data['amount']= $iAmount ;
+        $data['converted-amount']= $iAmount ;
+        $data['currency-config']= $obj_CurrencyConfig ;
+        $data['converted-currency-config']= $obj_CurrencyConfig ;
+        $data['conversion-rate']= 1 ;
+        $data['orderid']= $sOrderId;
+
+        $this->_OBJ_TXNINFO = TxnInfo::produceInfo((int)$iTxnID,$this->_OBJ_DB, $obj_ClientConfig, $data);
+        $aObj_OrderInfoConfigs = OrderInfo::produceConfigurationsFromOrderID($this->_OBJ_DB, $this->_OBJ_TXNINFO);
+
+        $this->assertEmpty($aObj_OrderInfoConfigs);
     }
 
     public function tearDown():void
