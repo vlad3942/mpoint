@@ -210,8 +210,7 @@ final class PaymentSession
             } elseif ($iPendingAmt != 0) {
                 if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true ||
-                    $this->getTransactionStates(Constants::iPAYMENT_3DS_FAILURE_STATE) === true) {
+                } elseif ($this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
                     $stateId = Constants::iSESSION_FAILED;
                 }
             } elseif ($iPendingAmt != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {

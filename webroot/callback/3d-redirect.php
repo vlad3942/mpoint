@@ -317,6 +317,10 @@ try
                             WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
             //echo $sql ."\n";
             $_OBJ_DB->query($sql);
+
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
+
             $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 
             $xml .= '<status code="'.$iStateID.'">3D verification status : '.$obj_XML->{'threed-redirect'}->status.'</status>';
@@ -324,6 +328,9 @@ try
     }
     else
     {
+        $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
+        $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
+
         $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 
         $status = $obj_XML->{'threed-redirect'}->{'status'};
