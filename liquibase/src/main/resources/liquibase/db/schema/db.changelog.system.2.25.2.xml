@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+
+
+    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.2-system">
+
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="routefeature_tbl"
+                      remarks="Hold list of all available route feature">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="featurename"
+                    type="varchar(150)"
+                    remarks="Hold route feature name supported by CellPoint Digital">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying when the route feature was originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying when the route feature was last modified"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating whether the route feature is considered active"
+                    defaultValueBoolean="true">
+
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createIndex catalogName="system"
+                     schemaName="system"
+                     tableName="routefeature_tbl"
+                     indexName="routefeature_tbl_id_idx">
+
+            <column name="id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="routefeature_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Anna Lagad"
+               id="2020-12-07-setup-v2.25.2-system">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.routefeature_tbl OWNER TO mpoint;
+        </sql>
+
+    </changeSet>
+
+
+</databaseChangeLog>

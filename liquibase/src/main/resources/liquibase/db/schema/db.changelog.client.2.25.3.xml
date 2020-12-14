@@ -5,71 +5,8 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet author="Anna Lagad"
-               id="2020-12-09-master-v2.26-pre-process">
-        <sql dbms="postgresql" endDelimiter=";">
-            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
-        </sql>
-    </changeSet>
 
-    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.26.0-system">
-
-        <createTable  catalogName="system"
-                      schemaName="system"
-                      tableName="routefeature_tbl"
-                      remarks="Hold list of all available route feature">
-
-            <column name="id"
-                    type="bigserial"
-                    autoIncrement="true">
-
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-
-            <column name="featurename"
-                    type="varchar(150)"
-                    remarks="Hold route feature name supported by CellPoint Digital">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="created"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the route feature was originally created"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="modified"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the route feature was last modified"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="enabled"
-                    type="boolean"
-                    remarks="Flag indicating whether the route feature is considered active"
-                    defaultValueBoolean="true">
-
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-
-        <createIndex catalogName="system"
-                     schemaName="system"
-                     tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_id_idx">
-
-            <column name="id"/>
-        </createIndex>
-
-        <rollback>
-            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="routefeature_tbl"/>
-        </rollback>
+    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.3-client">
 
         <createTable  catalogName="client"
                       schemaName="client"
@@ -157,6 +94,11 @@
         <rollback>
             <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routefeature_tbl"/>
         </rollback>
+
+    </changeSet>
+
+
+    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.3.1-client">
 
         <createTable  catalogName="client"
                       schemaName="client"
@@ -279,6 +221,10 @@
             <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routeconfig_tbl"/>
         </rollback>
 
+    </changeSet>
+
+    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.3.2-client">
+
         <createTable  catalogName="client"
                       schemaName="client"
                       tableName="route_tbl"
@@ -353,8 +299,8 @@
 
     </changeSet>
 
-    <changeSet author="Anna Lagad"
-               id="2020-12-07-setup-v2.26.0-system">
+
+    <changeSet author="Anna Lagad" id="2020-12-07-setup-v2.25.3-system">
 
         <sql dbms="postgresql" endDelimiter=";">
             ALTER TABLE client.route_tbl OWNER TO mpoint;
@@ -368,38 +314,6 @@
             ALTER TABLE client.routefeature_tbl OWNER TO mpoint;
         </sql>
 
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE system.routefeature_tbl OWNER TO mpoint;
-        </sql>
-
-    </changeSet>
-
-    <changeSet author="Anna Lagad"
-               id="2020-12-09-setup-v2.26.0-log">
-
-        <addColumn catalogName="log"
-                   schemaName= "log"
-                   tableName="transaction_tbl">
-
-            <column name="routeconfigid"
-                    type="int"
-                    remarks="Hold route configration id chosen for the specific transaction" />
-
-        </addColumn>
-
-    </changeSet>
-
-    <!-- Recreate event trigger to disable changes to replicated tables -->
-    <changeSet author="Anna Lagad"
-               id="2020-12-09-master-v2.26-postprocess">
-        <sql dbms="postgresql" endDelimiter=";">
-            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
-            WHEN TAG IN ('ALTER TABLE')
-            EXECUTE FUNCTION public.no_ddl()
-        </sql>
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
-        </sql>
     </changeSet>
 
 </databaseChangeLog>
