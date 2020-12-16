@@ -966,7 +966,8 @@ class Home extends General
 					$xml .= '</country>';
                 }
                 if (empty($aShippingAddress['mobile']) === false){
-                    $xml .= '<mobile idc="' . $obj_CountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+                    $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                    $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
                 }
                 if (empty($aShippingAddress['email']) === false){
                     $xml .= '<email>' . $aShippingAddress['email'] . '</email>';
