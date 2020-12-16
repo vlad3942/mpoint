@@ -99,18 +99,6 @@ abstract class Callback extends EndUserAccount
 		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
 	}
 
-	protected function updateTxnInfoObjectUsingId(int $id)
-	{
-		$oldPSPId = $this->_obj_TxnInfo->getPSPID();
-		$this->_obj_TxnInfo = TxnInfo::produceInfo( $id, $this->getDBConn());
-		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
-
-		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
-			$this->_obj_PSPConfig = PSPConfig::produceConfig($oDB, $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getPSPID());
-		}
-		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
-	}
-
 	/**
 	 * Returns the Data object with the Transaction Information.
 	 *
@@ -1207,6 +1195,18 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 		return $this->_iCaptureMethod;
+	}
+
+	protected function updateTxnInfoObjectUsingId(int $id)
+	{
+		$oldPSPId = $this->_obj_TxnInfo->getPSPID();
+		$this->_obj_TxnInfo = TxnInfo::produceInfo( $id, $this->getDBConn());
+		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
+
+		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
+			$this->_obj_PSPConfig = PSPConfig::produceConfig($oDB, $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getPSPID());
+		}
+		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}
 }
 ?>
