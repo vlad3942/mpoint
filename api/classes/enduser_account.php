@@ -48,6 +48,15 @@ class EndUserAccount extends Home
 		$this->_obj_ClientConfig = $oCI;
 	}
 
+	protected function setClientConfig(ClientConfig $clientConfig): void
+    {
+        if($this->_obj_ClientConfig->getID() !== $clientConfig->getID())
+        {
+            $this->_obj_ClientConfig = $clientConfig;
+            $this->_obj_CountryConfig = $clientConfig->getCountryConfig();
+        }
+    }
+
 	/**
 	 * Returns a reference to the data object with the Client's configuration
 	 *
