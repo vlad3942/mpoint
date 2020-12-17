@@ -456,23 +456,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	    // save ext id in database
         if($card_type_id !== -1)
         {
-            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
-            {
-                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                        SET pspid = " . $obj_PSPConfig->getID() . ", 
-                            cardid = " . intval($card_type_id) . ",
-                            routeconfigid = " . $this->getTxnInfo()->getRouteConfigID() . "
-                        WHERE id = " . $this->getTxnInfo()->getID();
-                $this->getDBConn()->query($sql);
-            }
-            else
-            { // Remove this block of code when we get rid of legacy flow
-                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                        SET pspid = " . $obj_PSPConfig->getID() . ", 
-                            cardid = " . intval($card_type_id) . "
-                        WHERE id = " . $this->getTxnInfo()->getID();
-                $this->getDBConn()->query($sql);
-            }
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                    SET pspid = " . $obj_PSPConfig->getID() . ", 
+                        cardid = " . intval($card_type_id) . ",
+                        routeconfigid = " . $this->getTxnInfo()->getRouteConfigID() . "
+                    WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
         }
 
         $this->updateTxnInfoObject();
@@ -573,6 +562,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             }
             //In case of wallet payment flow mPoint get real card and card id in authorization
             $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry, $obj_PSPConfig->getID());
+            $this->logTransaction($this->getTxnInfo());
             $this->updateTxnInfoObject();
         }
         catch (Exception $e)
@@ -1394,6 +1384,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         try
         {
             $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], null, $obj_Card->expiry, $this->getPSPConfig()->getID());
+            $this->logTransaction($this->getTxnInfo());
             $this->updateTxnInfoObject();
 
 			$code = 0;

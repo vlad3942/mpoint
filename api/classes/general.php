@@ -487,6 +487,9 @@ class General
         if ($oTI->getWalletID() !== -1) {
             $sql .= ", walletid = ". $oTI->getWalletID();
         }
+        if ($oTI->getRouteConfigID() > 0) {
+            $sql .= ", routeconfigid = ". $oTI->getRouteConfigID();
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
