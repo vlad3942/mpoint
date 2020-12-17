@@ -100,10 +100,12 @@ class PaymentMethod extends Card
         $cardIds = array_keys($aPaymentMethodsConfig);
 
         $sql = "SELECT DISTINCT ON (C.id) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, C.paymenttype AS processortype, '-1' AS pspid,
-                false AS preferred, 0 AS installment, true AS cvcmandatory, '' AS walletid, true AS dccEnabled
+                false AS preferred, 0 AS installment, SRLC.cvcmandatory, '' AS walletid, CA.dccenabled
 				FROM System" . sSCHEMA_POSTFIX . ".Card_Tbl C
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.currencyid = " . $oTI->getCurrencyConfig()->getID() . " AND PP.amount = -1 AND PP.enabled = '1'
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CA.cardid = C.id AND CA.clientid = ".$oTI->getClientConfig()->getID()."
+				LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE C.id IN (" . implode(',', $cardIds) . ")
 				AND C.paymenttype NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.")
 				AND C.enabled = '1'";
