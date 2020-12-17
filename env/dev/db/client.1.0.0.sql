@@ -198,8 +198,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('enableHppAuthentication', 'true', 10077, 'client', true, 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('3DSVERSION', '1.0', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', 10077, 'client', true, 2);
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', 10077, 'client', true, 0);
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', 10077, 'client', true, 0);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule', 'invoiceid ::= (psp-config/@id)=="24"OR(psp-config/@id)=="40"=(transaction.@id)', 10077, 'client', true, 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('webSessionTimeout', '5', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('isAutoRedirect', 'true', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('isnewcardconfig', 'true', 10077, 'client', true, 0);
