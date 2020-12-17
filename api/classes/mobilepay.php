@@ -33,7 +33,7 @@ class MobilePay extends CPMPSP
 	 * 
 	 * @see		ClientConfig#getMESBURL();
 	 */
-	public function initialize(PSPConfig $obj_PSP)
+	public function initialize(PSPConfig $obj_PSP,$euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -44,9 +44,9 @@ class MobilePay extends CPMPSP
 		return simplexml_load_string($xml);
 	}
 
-	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
+	public function auth($ticket=null, $apiKey=null, $cardID=null, $storecard=null)  { /* no operation */ }
 
-	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
+	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
 
 	public function getPSPID() { return Constants::iMOBILEPAY_PSP; }
 }

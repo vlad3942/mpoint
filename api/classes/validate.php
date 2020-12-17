@@ -250,7 +250,7 @@ class Validate extends ValidateBase
 	 * @param	string $email 	E-Mail address to validate
 	 * @return	integer
 	 */
-	public function valEMail($email) :int
+	public function valEMail($email,$min=3, $max=254, $pattern=self::EMAIL_REGEX) :int
 	{
 		return parent::valEmail($email);
 	}
