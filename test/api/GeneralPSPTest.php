@@ -83,11 +83,6 @@ class GeneralPSPTest extends baseAPITest
         }
     }
 
-    public function test__construct()
-    {
-
-    }
-
     public function testStatus()
     {
         try {
