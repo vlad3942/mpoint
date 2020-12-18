@@ -332,6 +332,7 @@ try
                                                 $iPrimaryRoute = $objRoute->getRouteID($iPSPId);
                                             }
                                             $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
