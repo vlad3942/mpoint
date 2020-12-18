@@ -8,7 +8,7 @@ INSERT INTO client.cardaccess_tbl (id, clientid, cardid, enabled, pspid, country
 SELECT (select max(id)+1 from client.cardaccess_tbl), 10077, 8, true, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, true;
 
 INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name, username, passwd, enabled, stored_card) 
-SELECT (select max(id)+1 from client.MerchantAccount_Tbl), 64, 'CyberSourceFraud', 'cebupacific' ,
+SELECT (select max(id)+1 from client.MerchantAccount_Tbl),10077, 64, 'CyberSourceFraud', 'cebupacific' ,
 '+h47/kx47rCpe64cFG24WJw/MKiWLpNzodO1DAJx0uWDsHrif7w0tzlv9CfChqEzHwGJLK52J+H2kcWMj0eE0W6a5oZmv9ep8uSNsrwnTWKw8JpWdn0CjZLLOcmABvnVEG/hKX8lZiVdbB8p3ccDoapRfxboVGuzXOEoAsQ++nsIhTa/cpROp7rbrX9FsT+60YtYAOfixGsRfrTenYvoq4XgkF/h70e3ODO5IWOKsCjDTtTPTgP3SeqctmYsLG9r1Yrm+Ho8ZMrKlmwC1FjaQVuF9ZOGQGwdSvyELT4Ioa2hGRL5W3G0xRHunwZB7UwFCZuiUjCAFd8x6UBjWabv6A==', 
 true, null;
 
