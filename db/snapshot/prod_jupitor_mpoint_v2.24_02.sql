@@ -4,7 +4,7 @@
 INSERT INTO client.cardaccess_tbl (id, clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) 
 SELECT (select max(id)+1 from client.cardaccess_tbl), 10077, 7, true, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, true;
 
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) 
+INSERT INTO client.cardaccess_tbl (id, clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) 
 SELECT (select max(id)+1 from client.cardaccess_tbl), 10077, 8, true, 64, NULL, 1, NULL, false, 10, 0, 0, 1, NULL, true;
 
 INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name, username, passwd, enabled, stored_card) 
