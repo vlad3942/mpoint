@@ -432,8 +432,8 @@ class CreditCard extends EndUserAccount
 
     public function getCardConfigurationObject($amount, $cardTypeId, $routeId)
     {
-       $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
-					C.paymenttype, true AS cvcmandatory, false AS dccEnabled
+       $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.capturetype, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
+					C.paymenttype, SRLC.cvcmandatory, CA.dccenabled
                 FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC 
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON RC.routeid = R.id AND R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." AND R.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
@@ -444,6 +444,8 @@ class CreditCard extends EndUserAccount
                     INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$cardTypeId." AND C.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
+                    LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CA.cardid = C.id AND CA.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()."
+                    LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
                 WHERE RC.id = ".$routeId."
                 AND (RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." OR RC.countryid IS NULL)
                 AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL)
@@ -509,6 +511,7 @@ class CreditCard extends EndUserAccount
                 $xml .= '<account>' . $RS["ACCOUNT"] . '</account>';
                 $xml .= '<subaccount>' . $RS["SUBACCOUNT"] . '</subaccount>';
                 $xml .= '<currency>' . $RS["CURRENCY"] . '</currency>';
+                $xml .= '<capture_type>'. $RS["CAPTURETYPE"] .'</capture_type>';
                 if (is_array($aRS) === true && count($aRS) > 0) {
                     $xml .= '<prefixes>';
                     for ($i = 0; $i < count($aRS); $i++) {
