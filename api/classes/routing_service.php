@@ -80,6 +80,13 @@ class RoutingService extends General
     private $_obj_FailedPaymentMethods;
 
     /**
+     * Hold unique id of wallet being chosen for payment
+     *
+     * @var FailedPaymentMethodConfig
+     */
+    private $_iWalletId;
+
+    /**
      * Default Constructor
      *
      * @param	ClientConfig $clientConfig 		Reference to the Data object with the client information
@@ -87,7 +94,7 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
     {
         $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
@@ -100,6 +107,7 @@ class RoutingService extends General
         $this->_iIssuerIdentificationNumber = $issuerIdentificationNumber;
         $this->_sCardName = $cardName;
         $this->_obj_FailedPaymentMethods = $obj_FailedPaymentMethod;
+        $this->_iWalletId = $walletId;
     }
 
     /**
@@ -214,6 +222,10 @@ class RoutingService extends General
         $b .= '</amount>';
         $b .= '<issuer_identification_number>'.$this->_iIssuerIdentificationNumber.'</issuer_identification_number>';
         $b .= '</card>';
+        if(empty($this->_iWalletId)===false)
+        {
+            $b .= '<wallet_id>'.$this->_iWalletId.'</wallet_id>';
+        }
         $b .= '</transaction>';
         $b .= '<client_info>';
         $b .=  $this->_obj_ClientInfo->toAttributeLessXML();
