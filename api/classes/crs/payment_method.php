@@ -117,7 +117,6 @@ class PaymentMethod extends Card
             foreach ($result as $aRS) {
                 // Set processor type and stateid given by CRS into resultset
                 $aCardConfig = $aPaymentMethodsConfig[$aRS['ID']];
-                $aRS['PROCESSORTYPE'] = $aCardConfig['psp_type'];
                 $aRS['STATEID'] = $aCardConfig['state_id'];
                 $preference = $aCardConfig['preference'];
 
@@ -157,7 +156,6 @@ class PaymentMethod extends Card
         for ($i = 0, $iMax = count($paymentMethods); $i < $iMax; $i++) {
 
             $aPaymentMethodsConfig[$paymentMethods[$i]->id] = array(
-                'psp_type' => $paymentMethods[$i]->psp_type,
                 'state_id' => $paymentMethods[$i]->state_id,
                 'preference' => $paymentMethods[$i]->preference
             );
