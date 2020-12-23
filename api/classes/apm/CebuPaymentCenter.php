@@ -46,7 +46,9 @@ class CebuPaymentCenter extends CPMPSP
      *    <1000 Refund failed
      *
      * @param int $iAmount
+     * @param null $iStatus
      * @return int
+     * @throws mPointException
      */
     public function refund($iAmount=-1,$iStatus=null)
     {

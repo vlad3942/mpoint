@@ -11,7 +11,7 @@
 * @version 1.00
 */
 
-/* ==================== PAYU xception Classes Start ==================== */
+/* ==================== PAYU exception Classes Start ==================== */
 /**
  * Super class for all PAYU Exceptions
 */
