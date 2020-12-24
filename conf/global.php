@@ -840,6 +840,7 @@ $aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
 $aHTTP_CONN_INFO["uatp"]["paths"]["process-settlement"] = "/mpsp/uatp/bulk-settlement";
 $aHTTP_CONN_INFO["uatp"]["paths"]["callback"] = "/mpoint/uatp/notify-client";
+$aHTTP_CONN_INFO["uatp"]["paths"]["cancel"] = "/mpoint/uatp/cancel-suvtp";
 
 
 /**

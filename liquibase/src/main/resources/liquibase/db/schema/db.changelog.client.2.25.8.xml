@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+	<changeSet author="Jonatan Evald Buus"
+        id="2020-12-10-master-v2.25-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
+	<changeSet author="Sagar Narayane" id="2020-12-10-master-v2.25">
+		<createTable catalogName="client" schemaName="client" tableName="autovoidconfig_tbl"
+					 remarks="This table store the configuration to Voiding Orphaned Authorized Transaction">
+
+			<column name="id" type="serial" autoIncrement="true" remarks="This column is primary key">
+				<constraints primaryKey="true" nullable="false" primaryKeyName="auth_void_config_tbl_pk"/>
+			</column>
+
+			<column name="clientid" type="integer" remarks="Client id: primary key of client.client_tbl">
+				<constraints nullable="false"
+							 foreignKeyName="auth_void_config_tbl_client_tbl_id_fk"
+							 deleteCascade="true"
+							 referencedColumnNames="id"
+							 referencedTableCatalogName="client"
+							 referencedTableName="client_tbl"
+							 referencedTableSchemaName="client"/>
+			</column>
+
+			<column name="pspid" type="integer" remarks="PSP id: primary key of system.psp_tbl\n PSPid null means configuration is enabled for PSP">
+				<constraints nullable="true"
+							 foreignKeyName="auth_void_config_tbl_psp_tbl_id_fk"
+							 deleteCascade="true"
+							 referencedColumnNames="id"
+							 referencedTableCatalogName="system"
+							 referencedTableName="psp_tbl"
+							 referencedTableSchemaName="system"/>
+			</column>
+
+			<column name="expiry" type="varchar(20)" remarks="This columns store the expiry of transaction. \n
+			This expiry is from authorization data time. \n
+			format expr unit  -- Value is same as INTERVAL in SQL \n
+			e.g. \n
+			30 minutes \n
+			1 day">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="created" type="timestamp without time zone " defaultValueComputed="now()"
+					remarks="This column is to store current time">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="modified" type="timestamp without time zone" defaultValueComputed="now()"
+					remarks="This column is to store modified time">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="enabled" type="boolean" defaultValueBoolean="true"
+					remarks="This column is to enable/disable presentment configuration">
+				<constraints nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<sql>
+			ALTER TABLE client.autovoidconfig_tbl OWNER TO mpoint;
+			CREATE TRIGGER Update_auto_void_config BEFORE UPDATE ON Client.autovoidconfig_tbl FOR EACH ROW EXECUTE
+			PROCEDURE Public.Update_Table_Proc();
+		</sql>
+
+		<createIndex indexName="auth_void_config_tbl_clientid_pspid_index" catalogName="client" schemaName="client"
+					 tableName="autovoidconfig_tbl">
+			<column name="clientid"/>
+			<column name="pspid"/>
+		</createIndex>
+
+		<rollback>
+			<sql>DROP TRIGGER Update_auto_void_config IF EXISTS ON client.card_currency_mapping_tbl CASCADE TRUE;</sql>
+			<dropTable cascadeConstraints="true" catalogName="client" schemaName="client"
+					   tableName="autovoidconfig_tbl"/>
+		</rollback>
+
+	</changeSet>
+
+	<!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Sagar Narayane"
+        id="2020-12-10-master-v2.25-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

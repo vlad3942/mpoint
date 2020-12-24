@@ -5,8 +5,16 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+	<changeSet author="Sagar Narayane"
+        id="2020-12-09-master-v2.25-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
     <!-- Add new table card_currency_mapping_tbl -->
-    <changeSet author="Abhinav Shaha" id="2020-12-02-master-v2.26">
+    <changeSet author="Abhinav Shaha" id="2020-12-02-master-v2.25">
 		<createTable catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"
 					 remarks="This table store the Presentment configuration">
             <column  name="id"  type="serial" autoIncrement="true" remarks="This column is primary key">
@@ -74,6 +82,22 @@
 			<sql>DROP TRIGGER Update_Card_Currency_Mapping IF EXISTS ON client.card_currency_mapping_tbl CASCADE TRUE;</sql>
 			<dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"/>
 		</rollback>
+    </changeSet>
+
+	<!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Sagar Narayane"
+        id="2020-12-09-master-v2.25-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
     </changeSet>
 
 </databaseChangeLog>

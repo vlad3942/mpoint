@@ -247,4 +247,6 @@ $aHTTP_CONN_INFO["mconsole"]["method"] = "POST";
 $aHTTP_CONN_INFO["mconsole"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/_test/simulators/mconsole/single-sign-on.php";
 
+$aHTTP_CONN_INFO["uatp"]["paths"]["cancel"] = "/_test/simulators/uatp/cancel-suvtp.php";
+
 ?>
