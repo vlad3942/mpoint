@@ -26,6 +26,6 @@ class Qiwi extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new QiwiException("Method: capture is not supported by Qiwi"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new QiwiException("Method: getPaymentData is not supported by Qiwi"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new QiwiException("Method: authorize is not supported by Qiwi"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new QiwiException("Method: authorize is not supported by Qiwi"); }
 	public function getPSPID() { return Constants::iQIWI_PSP; }
 }

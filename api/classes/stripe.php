@@ -27,7 +27,7 @@ class Stripe_PSP extends Callback
 		
 	}
 	
-	public function auth($ticket, $apiKey, $cardID, $storecard)
+	public function auth($ticket=null, $apiKey=null, $cardID=null, $storecard=null)
 	{		
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();

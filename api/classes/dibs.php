@@ -67,11 +67,13 @@ class DIBS extends Callback implements Captureable, Refundable
 		}
 	}
 
-	/**
-	 * (non-PHPdoc)
-	 * @see api/classes/EndUserAccount#delTicket($pspid, $ticket)
-	 */
-	public function delTicket($ticket)
+    /**
+     * (non-PHPdoc)
+     * @see api/classes/EndUserAccount#delTicket($pspid, $ticket)
+     * @param null $pspid
+     * @param $ticket
+     */
+	public function delTicket($pspid=null,$ticket)
 	{
 		$h = $this->constHTTPHeaders();
 //		$h .= "authorization: Basic ". base64_encode($this->_obj_ConnInfo->getUsername() .":". $this->_obj_ConnInfo->getPassword() ) .HTTPClient::CRLF;

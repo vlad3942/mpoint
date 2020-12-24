@@ -204,7 +204,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if (count($aMsgCds) == 0)
 					{
 					
-						$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
+						$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig,Constants::iPURCHASE_VIA_APP);
 						try
 						{
 							// Update Transaction State
