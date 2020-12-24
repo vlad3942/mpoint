@@ -219,22 +219,39 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         {
             foreach ($client as $pspid)
             {
-                $xml .= '<settlements>';
                 $obj_Settlement = SettlementFactory::create($_OBJ_TXT, $clientid, $pspid, $aHTTP_CONN_INFO);
                 if($obj_Settlement != NULL)
                 {
                     $obj_Settlement->capture($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
+                    if($obj_Settlement->getSettlementTxnAmount() > 0)
+                    {
+                        $xml .= '<settlement>';
+                        $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
+                        $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
+                        $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
+                        $xml .= '<psp-id>'.$pspid.'</psp-id>';
+                        $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
+                        $xml .= '</settlement>';
+
+                    }
+
                     $obj_Settlement->refund($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
                     $obj_Settlement->createBulkSettlementEntry($_OBJ_DB);
-                    $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
-                    $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
-                    $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
-                    $xml .= '<psp-id>'.$pspid.'</psp-id>';
-                    $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
+
+                    if($obj_Settlement->getSettlementTxnAmount() > 0)
+                    {
+                        $xml .= '<settlement>';
+                        $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
+                        $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
+                        $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
+                        $xml .= '<psp-id>'.$pspid.'</psp-id>';
+                        $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
+                        $xml .= '</settlement>';
+
+                    }
                 }
-                $xml .= '</settlements>';
             }
         }
         $xml .= '</settlement-info>';
