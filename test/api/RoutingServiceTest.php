@@ -243,7 +243,7 @@ class RoutingServiceTest extends baseAPITest
         {
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
-            $this->assertEquals(-1, $iPrimaryRoute);
+            $this->assertEquals(18, $iPrimaryRoute);
         }
     }
 
@@ -300,7 +300,7 @@ class RoutingServiceTest extends baseAPITest
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
 
-            $this->assertEquals(-1, $iPrimaryRoute);
+            $this->assertEquals(18, $iPrimaryRoute);
         }
     }
 
