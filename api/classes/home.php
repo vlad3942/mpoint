@@ -24,7 +24,7 @@ class Home extends General
 	 *
 	 * @var CountryConfig
 	 */
-	private $_obj_CountryConfig;
+	protected $_obj_CountryConfig;
 
 	/**
 	 * Default Constructor.
@@ -61,7 +61,7 @@ class Home extends General
 		$sBody = $this->getText()->_("mPoint - Send One Time Password");
 		$sBody = str_replace("{OTP}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
 
-		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
+		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getClientConfig()->getId(), -1);
 
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oCC->getID(), $oCC->getID()*100, $oCC->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - OTP");
@@ -131,6 +131,21 @@ class Home extends General
 				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
 			}
 			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+			break;
+		case (5):		
+
+			if ( strlen($aArgs[1]->getCustomerRef()) > 0  ||  floatval($aArgs[1]->getMobile()) > 0 || strlen($aArgs[1]->getEMail()) > 0 || $aArgs[1]->getProfileID() !== '' )
+	        {   
+	        	if ( ($aArgs[0] instanceof ClientConfig) === true)
+				{
+					return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+				}
+				else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+	        } 
+	        else {
+	        	return 212 ; 
+	        }
+			
 			break;
 		default:
 			break;
@@ -824,19 +839,27 @@ class Home extends General
                           FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
                           WHERE txnid = ".$txnid." and M.enabled = true";
 
+        $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
+        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
       //  mode param is optional when populated with value 1 then status code will return only after session is closed and
      // only final payment status code will be returned to avoid extra checks at API consumer side
         if($mode === 1)
         {
+            $state = "";
+            if($objPaymentMethod->PaymentType == Constants::iPAYMENT_TYPE_OFFLINE)
+            {
+                $state = ",".Constants::iPAYMENT_INIT_WITH_PSP_STATE;
+            }
             $sql = "WITH WT1 as
                    (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
                     WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
                     ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",".Constants::iPAYMENT_WITH_VOUCHER_STATE.",
                     ".Constants::iPAYMENT_WITH_ACCOUNT_STATE.",".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
                     ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_DECLINED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
-                    ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.")) s where s.rank=1
+                    ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.")) s where s.rank=1
                     ),
-                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.") limit 1)
+                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.$state.") limit 1)
                     UNION
                     SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
                     ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
@@ -847,7 +870,6 @@ class Home extends General
 
 		   $RSMsg = $this->getDBConn()->query($sql);
 
-           $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
 
             $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
             $objCountryConf = $obj_TxnInfo->getCountryConfig();
@@ -867,7 +889,6 @@ class Home extends General
 
             $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
             $pendingAmount = intval($obj_paymentSession->getPendingAmount());
-            $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
             $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
 
             $amount = $obj_TxnInfo->getAmount();
@@ -914,7 +935,11 @@ class Home extends General
             $xml .= '<status>' . $sStatusMessagesXML . '</status>';
             $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
             //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
-            $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '">';
+			$xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
+			if ($obj_TxnInfo->getProfileID() !== '') {
+				$xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"';
+			}
+			$xml .= '>';
             $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
             $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
             $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
@@ -1008,7 +1033,7 @@ class Home extends General
 					 WHEN EUT.typeid = ". Constants::iCARD_PURCHASE_TYPE ." THEN Txn.ip
 					 ELSE EUT.ip
 					 END) AS ip,
-					C.id AS countryid, C.currency, C.symbol, C.priceformat,
+					C.id AS countryid, CT.id as currency, CT.symbol, C.priceformat,
 					CL.id AS clientid, CL.name AS client,
 					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.countryid AS to_countryid, EUAT.mobile AS to_mobile, EUAT.countryid AS to_m, EUAT.email AS to_email,
 					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name, EUAF.countryid AS from_countryid, EUAF.mobile AS from_mobile, EUAF.email AS from_email,
@@ -1023,6 +1048,7 @@ class Home extends General
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_tbl CT ON CT.id = C.currencyid
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
 				WHERE EUT.accountid = ". intval($id);
 		if ( ($num > 0 && $offset <= 0) || $num < 0)
@@ -1198,24 +1224,28 @@ class Home extends General
 		return $sHeaders;
 	}
 
-	/**
-	 * Creates a new End-User Account.
-	 *
-	 * @param	integer $cid 	ID of the country the End-User Account should be created in
-	 * @param	string $mob 	End-User's mobile number (optional)
-	 * @param 	string $pwd 	Password for the created End-User Account (optional)
-	 * @param 	string $email	End-User's e-mail address (optional)
-	 * @param 	string $cr		the Client's Reference for the Customer (optional)
-	 * @return	integer 		The unique ID of the created End-User Account
-	 */
-	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
+    /**
+     * Creates a new End-User Account.
+     *
+     * @param integer $cid ID of the country the End-User Account should be created in
+     * @param string $mob End-User's mobile number (optional)
+     * @param string $pwd Password for the created End-User Account (optional)
+     * @param string $email End-User's e-mail address (optional)
+     * @param string $cr the Client's Reference for the Customer (optional)
+     * @param string $pid
+     * @param bool $enable
+     * @param string $profileid
+     * @return    integer        The unique ID of the created End-User Account
+     * @throws SQLQueryException
+     */
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = '')
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 					(id, countryid, mobile, passwd, email, externalid, pushid, enabled, profileid)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . (intval($profileid) > 0 ? ", ".intval($profileid) : ", NULL").")";
+					(". $RS["ID"] .", ". (int)$cid .", ". ((float)$mob > 0 ? "'". (float)$mob ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". ($email !== '' ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". ($pid != '' ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . ($profileid !== '' ? ", '". $profileid . "'" : ", NULL").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
@@ -1271,7 +1301,8 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'save-customer-profile'}->{'profile'}) > 0)
             {
-                return (int)$response->{'save-customer-profile'}->{'profile'}["id"];
+                $profileid=(string)$response->{'save-customer-profile'}->{'profile'}["id"];
+                return trim($profileid);
             }
             else
             {
@@ -1282,7 +1313,7 @@ class Home extends General
         {
             trigger_error("mProfile Save Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
-        return -1;
+        return '';
     }
 
 
@@ -1325,7 +1356,8 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'get-profile'}->{'profile'}) > 0)
             {
-                return (int)$response->{'get-profile'}->{'profile'}["id"];
+                $profileid= $response->{'get-profile'}->{'profile'}["id"];
+                return trim($profileid);
             }
             else
             {
@@ -1336,7 +1368,7 @@ class Home extends General
         {
             trigger_error("mProfile get Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
-        return -1;
+        return '';
     }
 
 
@@ -1507,6 +1539,60 @@ class Home extends General
 	
 		return is_resource($this->getDBConn()->query($sql) );
 	}
+
+    public function getOrphanAuthorizedTransactionList(int $clientid, string $interval, ?int $pspid = NULL): array
+    {
+        $sql = "SELECT transactionid as id
+                    FROM (
+                             SELECT DISTINCT ON (transactionid) transactionid,
+                                                                performedopt
+                             FROM log.txnpassbook_tbl passbook
+                             {INNER_JOIN}
+                             WHERE passbook.clientid = $clientid
+                               AND passbook.enabled = true
+                               AND passbook.status = '". Constants::sPassbookStatusDone ."'
+                               AND performedopt is NOT null
+                               AND performedopt <> ". Constants::iINPUT_VALID_STATE ."
+                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval' 
+                               AND passbook.modified < now() - INTERVAL '$interval'
+                               {INNER_JOIN_CONDITION}
+                             ORDER BY transactionid, passbook.created DESC                             
+                         ) sub
+                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE .";";
+
+        if (isset($pspid) === FALSE) {
+            $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}'],'', $sql);
+        } else {
+            $sql = str_replace('{INNER_JOIN}'," INNER JOIN log.transaction_tbl txn on passbook.transactionid = txn.id and pspid= $pspid ", $sql);
+            $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}']," AND txn.clientid = $clientid AND txn.enabled = true AND txn.created > now() - INTERVAL '$interval' - INTERVAL '1 DAY' ", $sql);
+        }
+        $aTransactionIds = $this->getDBConn()->getAllNames($sql);
+        if (is_array($aTransactionIds)) {
+            return $aTransactionIds;
+        }
+
+        return [];
+    }
+
+    public function getAutoVoidConfig(?int $clientid = NULL, ?int $pspid = NULL): array
+    {
+        $sql = 'SELECT clientid, pspid, expiry FROM CLIENT' . sSCHEMA_POSTFIX . '.AUTOVOIDCONFIG_TBL WHERE ENABLED=TRUE';
+        if ($clientid !== NULL) {
+            $sql .= " AND clientid = $clientid";
+        }
+        if ($pspid !== NULL) {
+            $sql .= " AND pspid = $pspid";
+        }
+        $sql .= ' ORDER BY clientid ASC';
+
+        $aAutoVoidConfig = $this->getDBConn()->getAllNames($sql);
+        if (is_array($aAutoVoidConfig)) {
+            return $aAutoVoidConfig;
+        }
+        return [];
+    }
+
+
 }
 
 ?>

@@ -275,7 +275,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 *
 	 * @return int
 	 */
-	public function cancel()
+	public function cancel($amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -313,6 +313,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+
+				if($this->getPSPConfig()->getProcessorType() === 8)
+                {
+                    return (int)$obj_XML["code"];
+                }
+
                 $this->_obj_ResponseXML =$obj_XML;
 				// Expect there is only one transaction in the reply
 				$obj_Txn = $obj_XML->transactions->transaction;
@@ -325,7 +331,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					}
 
 					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
-					$passbookState = Constants::sPassbookStatusDone;
+					$passbookState = Constants::sPassbookStatusError;
 					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
@@ -337,9 +343,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
 						$retStatusCode = 1001;
 						$updateStatusCode = $iUpdateStatusCode;
-					}
+                        $passbookState = Constants::sPassbookStatusDone;
+                    }
 
-					$txnPassbookObj->updateInProgressOperations($amount, $paymentState, $passbookState);
+					$txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, $passbookState);
 					$this->newMessage($this->getTxnInfo()->getID(),$updateStatusCode, utf8_encode($obj_HTTP->getReplyBody() ) );
 					$this->notifyClient($paymentState, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
 					return $retStatusCode;
@@ -420,7 +427,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -446,6 +453,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
+		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
 		{ 
@@ -509,6 +517,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 	    $code = 0;
 	    $subCode = 0;
+		$body = '';
 	    try
         {
             $mask =NULL;
@@ -617,9 +626,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
                     //$this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
-					$str = str_replace("<root>","",$str);
-					$code = str_replace("</root>","",$str);
+					$body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
+					$body = str_replace("<root>","",$body);
+					$body = str_replace("</root>","",$body);
 				}
 
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -645,6 +654,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		$response = new stdClass();
 		$response->code = $code;
+		$response->body = $body;
 		$response->sub_code = $subCode;
 		return $response;
 	}
@@ -1319,9 +1329,17 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $aStatisticalData;
     }
 
-    public function authenticate($xml)
+    public function authenticate($xml,$obj_Card, $obj_ClientInfo= null)
     {
-        try {
+        $response = new stdClass();
+        try
+        {
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], null, $obj_Card->expiry, $this->getPSPConfig()->getID());
+            $this->updateTxnInfoObject();
+
+			$code = 0;
+			$body = '';
+
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["authenticate"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -1329,26 +1347,80 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
             $obj_HTTP->disConnect();
 
-            if ($code == 200 || $code == 303) {
+            if ($code == 200 || $code == 303)
+            {
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
-                $code = $obj_XML->status["code"];
+                $code = (int)$obj_XML->status["code"];
             }
+
 
             $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+            $iSubCodeID = 0;
             // In case of 3D verification status code 2005 will be received
-            if ($code == 2005) {
-                $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
-                $str = str_replace("<root>", "", $str);
-                $code = str_replace("</root>", "", $str);
+            if ($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE || $code == Constants::iPAYMENT_3DS_CARD_NOT_ENROLLED || $code == Constants::iPAYMENT_3DS_FAILURE_STATE)
+            {
+                $body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "", $obj_HTTP->getReplyBody());
+                $body = str_replace("<root>", "", $body);
+                $body = str_replace("</root>", "", $body);
+                $iSubCodeID = (integer) $obj_XML->status["sub-code"];
+                if($iSubCodeID > 0) { $this->newMessage($this->getTxnInfo()->getID(), $iSubCodeID, ''); }
+
+                if((int)$obj_XML->status["code"] !== Constants::iPAYMENT_3DS_VERIFICATION_STATE )
+                {
+                    $response->sub_code = $iSubCodeID;
+
+                    if($obj_XML->{'info-3d-secure'})
+                    {
+                        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'info-3d-secure'},$this->getPSPConfig()->getID(),$this->getTxnInfo()->getID());
+                        if($paymentSecureInfo !== null) $this->storePaymentSecureInfo($paymentSecureInfo);
+
+                    }
+
+                    if($this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+                    {
+                        $aRules = $this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty);
+                        foreach ($aRules as $value)
+                        {
+                            if (strpos($value['key'], 'mpi_rule') !== false)
+                            {
+                                $aMpiRule[] = $value['value'];
+                            }
+                        }
+                    }
+                    else if($this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+                    {
+                        $aRules = $this->$this->getTxnInfo()->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
+                        foreach ($aRules as $value)
+                        {
+                            if (strpos($value['key'], 'mpi_rule') !== false)
+                            {
+                                $aMpiRule[] = $value['value'];
+                            }
+                        }
+                    }
+                    $bIsProceedAuth = false;
+                    if(empty($aMpiRule) === false)
+                    {
+                        $bIsProceedAuth = $this->applyRule($obj_XML->{'info-3d-secure'},$aMpiRule);
+                    }
+                    if($bIsProceedAuth === true) { return $this->authorize($this->getPSPConfig(),$obj_Card,$obj_ClientInfo); }
+
+
+                }
 
             }
-            else {
+            else
+            {
                 throw new mPointException("Authenticate failed with PSP: " . $this->obj_PSPConfig->getName() . " responded with HTTP status code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
             }
-        } catch (mPointException $e) {
+        }
+        catch (mPointException $e)
+        {
             trigger_error("Authenticate failed of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
         }
 
-        return $code;
+		$response->code = $code;
+		$response->body = $body;
+        return $response;
     }
 }

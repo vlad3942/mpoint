@@ -204,9 +204,13 @@ abstract class Callback extends EndUserAccount
 		{
             $sql .= ", authoriginaldata = '".$sSwishPaymentID."'";
 		}
+		if(intval($fee) > 0)
+		{
+			$sql .= ", fee = ".intval($fee);
+		}
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
+				SET pspid = ". intval($pspid) .", cardid = ". intval($cid). $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID();
 	//	if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
 	//	echo $sql ."\n";
@@ -250,10 +254,7 @@ abstract class Callback extends EndUserAccount
 	public function completeCapture($amount, $fee=0, array $debug=null)
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET fee = (CASE
-						   WHEN captured = 0 THEN ".intval($fee) ." 
-						   ELSE ".intval($fee) ." + fee
-						   END), 
+				SET fee = ".intval($fee) ." + fee, 
 					captured = ". intval($amount) ." + captured
 				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
 //		echo $sql ."\n";
@@ -888,8 +889,13 @@ abstract class Callback extends EndUserAccount
 			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
         case (Constants::iSWISH_APM):
             return new SWISH($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["swish"]);
+        case (Constants::iPAYMAYA_WALLET):
+            return new Paymaya($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya"]);
 		case (Constants::iGRAB_PAY_PSP):
 			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+		case (Constants::iCEBUPAYMENTCENTER_APM):
+			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
@@ -1104,6 +1110,18 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 		return $this->_iCaptureMethod;
+	}
+
+	protected function updateTxnInfoObjectUsingId(int $id)
+	{
+		$oldPSPId = $this->_obj_TxnInfo->getPSPID();
+		$this->_obj_TxnInfo = TxnInfo::produceInfo( $id, $this->getDBConn());
+		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
+
+		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
+			$this->_obj_PSPConfig = PSPConfig::produceConfig($oDB, $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getPSPID());
+		}
+		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}
 
 

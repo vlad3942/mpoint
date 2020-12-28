@@ -166,6 +166,8 @@ class ChaseSettlement extends mPointSettlement
                         ORDER BY id DESC LIMIT 1 ";
 
                 $res = $_OBJ_DB->getName($sql);
+
+                $bErrorEncountered  = false;
                 if (is_array($res) === true && count($res) > 0)
                 {
                     $fileId = $res["ID"];
@@ -182,6 +184,9 @@ class ChaseSettlement extends mPointSettlement
                         if (is_array($aRS) === true && count($aRS) > 0)
                         {
                             foreach ($aRS as $rs) {
+                                try
+                                {
+
                                 $pId = $rs["ID"];
                                 $txnId = $rs["TRANSACTIONID"];
                                 $description = $rs["DESCRIPTION"];
@@ -294,6 +299,13 @@ class ChaseSettlement extends mPointSettlement
 
                                 }
                             }
+                           catch (Exception $e)
+                           {
+                               $bErrorEncountered = true;
+                               trigger_error("Failed to updated record for SettlementId:".$fileId." With Error Code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+
+                           }
+                        }
                         }
                     }
                     else
@@ -326,9 +338,14 @@ class ChaseSettlement extends mPointSettlement
 
                     if (is_resource($resource) === true)
                     {
+                        $status = $file["status"];
+                        if($bErrorEncountered === true)
+                        {
+                            $status = $file["status"].' with error';
+                        }
                         $aParam = array(
                             $file["tracking-number"],
-                            $file["status"],
+                            $status,
                             $fileId
                         );
 

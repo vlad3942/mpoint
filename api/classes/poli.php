@@ -27,8 +27,8 @@ class Poli extends CPMPSP
 	public function capture($iAmount=-1) { throw new PoliException("Method: capture is not supported by POLi"); }
 	public function refund($iAmount=-1, $iStatus = NULL) { throw new PoliException("Method: refund is not supported by POLi"); }
 	public function void($iAmount=-1) { throw new PoliException("Method: void is not supported by POLi"); }
-	public function cancel() { throw new PoliException("Method: cancel is not supported by POLi"); }
+	public function cancel($amount = -1) { throw new PoliException("Method: cancel is not supported by POLi"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PoliException("Method: getPaymentData is not supported by POLi"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new PoliException("Method: authorize is not supported by POLi"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new PoliException("Method: authorize is not supported by POLi"); }
 	public function getPSPID() { return Constants::iPOLI_PSP; }
 }

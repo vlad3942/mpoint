@@ -147,7 +147,7 @@ abstract class mPointSettlement
                                                         SETTLEMENT.CLIENT_ID = TRANSACTION.CLIENTID AND
                                                         SETTLEMENT.PSP_ID = TRANSACTION.PSPID
                                  WHERE SETTLEMENT.RECORD_TYPE = '".$this->_sRecordType."'
-                                   AND SETTLEMENT.STATUS = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
+                                   AND SETTLEMENT.STATUS IN ('".Constants::sSETTLEMENT_REQUEST_WAITING."','".Constants::sSETTLEMENT_REQUEST_PARTIALLY_ACCEPTED."')
                                    AND SETTLEMENT_RECORD.TRANSACTIONID = TRANSACTION.ID)
                 ORDER BY TRANSACTION.ID ASC;";
 
@@ -282,6 +282,11 @@ abstract class mPointSettlement
                 else
                 {
                     $this->_updateSettlementState($_OBJ_DB, Constants::sSETTLEMENT_REQUEST_FAIL);
+                    if(isset($replyBody->settlement->file))
+                    {
+                       $this->_updateDescription($_OBJ_DB, $replyBody);
+                    }
+
                 }
             }
         } catch (Exception $e) {
@@ -496,7 +501,7 @@ abstract class mPointSettlement
 
 		$sql = "SELECT id, file_sequence_number, record_tracking_number, record_type, status
                            FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                           WHERE status IN ('".Constants::sSETTLEMENT_REQUEST_ACCEPETED."','".Constants::sSETTLEMENT_REQUEST_OK."')
+                           WHERE status IN ('".Constants::sSETTLEMENT_REQUEST_ACCEPETED."','".Constants::sSETTLEMENT_REQUEST_PARTIALLY_ACCEPTED."','".Constants::sSETTLEMENT_REQUEST_OK."')
                            and client_id= ".$this->_objClientConfig->getID(). '
                            and psp_id = ' .$this->_iPspId.'
 						   and created >= now()-INTERVAL '.'\''.$fileExpireThreshold.' DAY'.'\' 
@@ -550,5 +555,13 @@ abstract class mPointSettlement
     public function getSettlementId()
     {
         return $this->_iSettlementId;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getSettlementTxnAmount()
+    {
+        return $this->_iTotalTransactionAmount;
     }
 }

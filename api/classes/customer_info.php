@@ -62,9 +62,9 @@ class CustomerInfo implements JsonSerializable
 
     /**
      * The profile id of registered or guest user associated with the transaction
-     * @var integer
+     * @var string
      */
-    private $_iProfileID = -1;
+    private $_iProfileID;
 
     /**
      * Hold customer profile type id
@@ -94,7 +94,7 @@ class CustomerInfo implements JsonSerializable
 	 * @param string $lang		The language that all payment pages should be rendered in by default for the Client
      * @param integer $profileid The profile id associated with the transaction, registered or guest user
 	 */
-	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid=-1)
+	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid=='')
 	{
 	    if($id>-1)
         {
@@ -125,9 +125,13 @@ class CustomerInfo implements JsonSerializable
             $this->_sLanguage = trim($lang);
         }
 
-		if($profileid > -1) {
-            $this->_iProfileID = (integer)$profileid;
-        }
+		if(empty(trim($profileid)))
+		{
+			$this->_iProfileID = '';
+		}
+		else
+		{
+			
 	}
 
 	public function getID() { return $this->_iID; }
@@ -146,6 +150,7 @@ class CustomerInfo implements JsonSerializable
 		$xml  = '<customer';
 		if ($this->_iID > 0) { $xml .= ' id="'. $this->_iID .'"'; }
 		if (strlen($this->_sCustomerRef) > 0) { $xml .= ' customer-ref="'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'"'; }
+		if (empty($this->_iProfileID) === false ) { $xml .= ' profile-id="'.htmlspecialchars($this->_iProfileID, ENT_NOQUOTES) .'"' ;}
 		$xml  .= '>';
 		if (strlen($this->_sFullName) > 0) { $xml .= '<full-name>'. htmlspecialchars($this->_sFullName, ENT_NOQUOTES) .'</full-name>'; }
 		if ($this->_lMobile > 0) { $xml .= '<mobile country-id="'. $this->_iCountryID .'">'. $this->_lMobile .'</mobile>'; }
@@ -187,14 +192,15 @@ class CustomerInfo implements JsonSerializable
 		else { return null; }
 	}
 	private static function _produceInfoFromXML(SimpleXMLElement $obj_XML)
-	{
+	{ 
 		return new CustomerInfo( (integer) @$obj_XML["id"],
 								 (integer) @$obj_XML->mobile["country-id"],
 								 (float) @$obj_XML->mobile,
 								 @trim($obj_XML->email),
 								 trim($obj_XML["customer-ref"]),
 								 @trim($obj_XML->{'full-name'}),
-								 @trim($obj_XML["language"]) );
+								 @trim($obj_XML["language"]), 
+								 @trim($obj_XML["profile-id"]) );
 	}
 
     /**

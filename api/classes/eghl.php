@@ -26,9 +26,9 @@ class EGHL extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new EGHLException("Method: capture is not supported for eGHL-FPX."); }
 	/* eGHL reversal requires txn status query and txn can be reversed only if not yet settled. */
-	public function cancel() { throw new EGHLException("Method: cancel is not supported by eGHL-FPX"); }
+	public function cancel($amount = -1) { throw new EGHLException("Method: cancel is not supported by eGHL-FPX"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new EGHLException("Method: getPaymentData is not supported by eGHL-FPX"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new EGHLException("Method: authorize is not supported by eGHL-FPX"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new EGHLException("Method: authorize is not supported by eGHL-FPX"); }
 	public function getPSPID() { return Constants::iEGHL_PSP; }
     public function refund($iAmount=-1, $iStatus = NULL) { throw new EGHLException("Method: refund is not supported by eGHL-FPX"); }
     public function getPaymentMethods(PSPConfig $obj_PSPConfig)

@@ -2,17 +2,18 @@
 
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
 $aDB_CONN_INFO["mpoint"]["port"] = 5432;
-$aDB_CONN_INFO["mpoint"]["path"] = "mpoint_". TESTDB_TOKEN;
+//$aDB_CONN_INFO["mpoint"]["path"] = "mpoint_". TESTDB_TOKEN;
+$aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["password"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
 $aDB_CONN_INFO["mpoint"]["connmode"] = "normal";
-$aDB_CONN_INFO["mpoint"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
+$aDB_CONN_INFO["mpoint"]["errorpath"] = sLOG_PATH ."db_error_".".log";
 $aDB_CONN_INFO["mpoint"]["errorhandling"] = 3;
 $aDB_CONN_INFO["mpoint"]["exectime"] = 0.3;
-$aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") .".log";
+$aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_".".log";
 $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
 $aDB_CONN_INFO["mpoint"]["method"] = 1;
@@ -233,6 +234,20 @@ $aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
 $HTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
 $aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/_test/simulators/mvault/save-card.php";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-card-details"] = "/_test/simulators/mvault/get-card-details.php";
+
+/**
+ * Connection info for connecting to SSO
+ */
+$aHTTP_CONN_INFO["mconsole"]["protocol"] = "http";
+$aHTTP_CONN_INFO["mconsole"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["mconsole"]["port"] = 80;
+$aHTTP_CONN_INFO["mconsole"]["timeout"] = 120;
+$aHTTP_CONN_INFO["mconsole"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mconsole"]["method"] = "POST";
+$aHTTP_CONN_INFO["mconsole"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/_test/simulators/mconsole/single-sign-on.php";
+
+$aHTTP_CONN_INFO["uatp"]["paths"]["cancel"] = "/_test/simulators/uatp/cancel-suvtp.php";
 
 /**
  * Message Queue Provider Information

@@ -14,10 +14,14 @@
         { "packagist": false }
     ],
     "require": {
-        "cellpointmobile/php5api": "dev-feature/CBS-347-mpoint-php5-to-php7-upgrade",
+        "cellpointmobile/php5api": "dev-release/v2.01"
+    },
+
+    "require-dev": {
         "phpunit/phpunit": "9.*",
         "google/cloud-pubsub": "^1.27"
     },
+    
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
@@ -30,3 +34,4 @@
     "minimum-stability": "dev",
     "prefer-stable": true
 }
+
