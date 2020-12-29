@@ -28,8 +28,8 @@
         "optimize-autoloader": false
     },
     "autoload": {
-        "psr-4": {"api\\": "/opt/cpm/mPoint/api"},
-        "classmap": ["/opt/cpm/mPoint/api"]
+        "psr-4": {"api\\": "./api"},
+        "classmap": ["./api/"]
     },
     "minimum-stability": "dev",
     "prefer-stable": true
