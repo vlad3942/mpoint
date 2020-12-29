@@ -94,7 +94,7 @@ class CustomerInfo implements JsonSerializable
 	 * @param string $lang		The language that all payment pages should be rendered in by default for the Client
      * @param integer $profileid The profile id associated with the transaction, registered or guest user
 	 */
-	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid=='')
+	public function __construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid='')
 	{
 	    if($id>-1)
         {
@@ -130,8 +130,9 @@ class CustomerInfo implements JsonSerializable
 			$this->_iProfileID = '';
 		}
 		else
-		{
-			
+        {
+            $this->_iProfileID = trim($profileid);
+        }
 	}
 
 	public function getID() { return $this->_iID; }
