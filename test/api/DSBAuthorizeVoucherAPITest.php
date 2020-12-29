@@ -106,10 +106,11 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(1991, $aStates[2]);
 		$this->assertEquals(1992, $aStates[3]);
 		$this->assertEquals(1990, $aStates[4]);
-		$this->assertEquals(4030, $aStates[5]);
-		$this->assertEquals(1991, $aStates[6]);
-		$this->assertEquals(1992, $aStates[7]);
-		$this->assertEquals(1990, $aStates[8]);
+		$this->assertEquals(1990, $aStates[5]);
+		$this->assertEquals(4030, $aStates[6]);
+		$this->assertEquals(1991, $aStates[7]);
+		$this->assertEquals(1992, $aStates[8]);
+		$this->assertEquals(1990, $aStates[9]);
 	}
 
 	public function testVoucherRedemptionDeniedByIssuer()
@@ -163,7 +164,8 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(1991, $aStates[1]);
 		$this->assertEquals(1992, $aStates[2]);
 		$this->assertEquals(1990, $aStates[3]);
-		$this->assertEquals(4020, $aStates[4]);
+		$this->assertEquals(1990, $aStates[4]);
+		$this->assertEquals(4020, $aStates[5]);
 	}
 
 }
