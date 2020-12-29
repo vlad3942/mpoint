@@ -18,22 +18,31 @@
  */
 class MobilePay extends CPMPSP
 {
-	/**
-	 * (non-PHPdoc)
-	 * @see CPMPSP::initialize()
-	 * 
-	 * Returns the XML document in the following format:
-	 * {code}
-	 * 	<?xml version="1.0" encoding="UTF-8"?>
-	 * 	<root>
-	 * 		<url method="app" />
-	 * 		<callback-url>[STRING]</callback-url>
-	 * 	</root>
-	 * {code}
-	 * 
-	 * @see		ClientConfig#getMESBURL();
-	 */
-	public function initialize(PSPConfig $obj_PSP)
+    /**
+     * (non-PHPdoc)
+     * @param PSPConfig $obj_PSP
+     * @param int $euaid
+     * @param bool $sc
+     * @param int $card_type_id
+     * @param string $card_token
+     * @param null $obj_BillingAddress
+     * @param ClientInfo|null $obj_ClientInfo
+     * @param null $authToken
+     * @return SimpleXMLElement
+     * @see        CPMPSP::initialize()
+     *
+     * Returns the XML document in the following format:
+     * {code}
+     *    <?xml version="1.0" encoding="UTF-8"?>
+     *    <root>
+     *        <url method="app" />
+     *        <callback-url>[STRING]</callback-url>
+     *    </root>
+     * {code}
+     *
+     * @see        ClientConfig#getMESBURL();
+     */
+	public function initialize(PSPConfig $obj_PSP,$euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -44,9 +53,9 @@ class MobilePay extends CPMPSP
 		return simplexml_load_string($xml);
 	}
 
-	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
+	public function auth($ticket=null, $apiKey=null, $cardID=null, $storecard=null)  { /* no operation */ }
 
-	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
+	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
 
 	public function getPSPID() { return Constants::iMOBILEPAY_PSP; }
 }

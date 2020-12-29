@@ -38,9 +38,9 @@ class CIAMpayPayAPITest extends PayAPITest
 	// 	parent::testSuccessfulPayWithSSOStrict_ValidCIAM(Constants::iALIPAY_PSP, Constants::iALIPAY_WALLET, Constants::iPROCESSOR_TYPE_APM,Constants::iPROCESSOR_TYPE_APM, 200,840,'STRICT');
 	// }
 
-	public function testSuccessfulPayWithSSOStrict_InvalidCIAM()
-	{
-		parent::testSuccessfulPayWithSSOStrict_InvalidCIAM(Constants::iALIPAY_PSP, Constants::iALIPAY_WALLET, Constants::iPROCESSOR_TYPE_APM,Constants::iPROCESSOR_TYPE_APM, 200,840,'STRICT');
-	}
+	// public function testSuccessfulPayWithSSOStrict_InvalidCIAM()
+	// {
+	// 	parent::testSuccessfulPayWithSSOStrict_InvalidCIAM(Constants::iALIPAY_PSP, Constants::iALIPAY_WALLET, Constants::iPROCESSOR_TYPE_APM,Constants::iPROCESSOR_TYPE_APM, 200,840,'STRICT');
+	// }
 
 }

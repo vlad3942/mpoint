@@ -11,7 +11,7 @@
 * @version 1.00
 */
 
-/* ==================== PAYU xception Classes Start ==================== */
+/* ==================== PAYU exception Classes Start ==================== */
 /**
  * Super class for all PAYU Exceptions
 */
@@ -26,7 +26,7 @@ class PayU extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new PayUException("Method: capture is not supported by PayU"); }
     public function void($iAmount=-1) { throw new PayUException("Method: void is not supported by PayU"); }
-    public function cancel() { throw new PayUException("Method: cancel is not supported by PayU"); }
+    public function cancel($amount = -1) { throw new PayUException("Method: cancel is not supported by PayU"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayUException("Method: getPaymentData is not supported by PayU."); }
 
 	public function getPSPID() { return Constants::iPAYU_PSP; }

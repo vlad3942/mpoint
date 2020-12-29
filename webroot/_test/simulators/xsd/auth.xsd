@@ -152,6 +152,7 @@
                                     <xs:attribute name="alpha2code" type="xs:string" use="required" />
                                     <xs:attribute name="alpha3code" type="xs:string" use="required" />
                                     <xs:attribute name="code" type="xs:positiveInteger" use="required" />
+                                    <xs:attribute name="idc" type="xs:positiveInteger" use="required" />
                                 </xs:complexType>
                             </xs:element>
 							<xs:element name="account" minOccurs="0" maxOccurs="1">

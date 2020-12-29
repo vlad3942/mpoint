@@ -183,7 +183,9 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
+            if($obj_PaymentMethodResponse instanceof RoutingServiceResponse) {
+                $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
+            }
         }
 
     }
@@ -297,6 +299,7 @@ class RoutingServiceTest extends baseAPITest
         {
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+
             $this->assertEquals(18, $iPrimaryRoute);
         }
     }

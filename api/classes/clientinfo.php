@@ -78,9 +78,9 @@ class ClientInfo
 
     /**
      * The profile id of registered user
-     * @var integer
+     * @var string
 	 */
-	private $_iProfileID = -1;
+	private $_iProfileID;
 	
 	/**
 	 * The SDKVersion of SDK
@@ -118,7 +118,7 @@ class ClientInfo
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid=-1, $sdkversion=0, $appversion=0, $profileTypeId=null, $locale=null, $customerRef=null)
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="", $profileid='', $sdkversion=0, $appversion=0, $profileTypeId=null, $locale=null, $customerRef=null)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -129,7 +129,14 @@ class ClientInfo
 		$this->_sDeviceID = trim($dvc);
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
-		$this->_iProfileID = $profileid;
+		if(empty(trim($profileid)))
+		{
+			$this->_iProfileID = '';
+		}
+		else
+		{
+			$this->_iProfileID = (string) $profileid;
+		}
 		$this->_fAppVersion = $appversion;
 		$this->_fSDKVersion = $sdkversion;
 		$this->_iprofileTypeID = $profileTypeId;
@@ -197,9 +204,10 @@ class ClientInfo
     /**
      * Returns the profile id of the registered user
      *
-     * @return 	integer
+     * @return 	string|null
      */
-    public function getProfileID() { return $this->_iProfileID; }
+    public function getProfileID()
+    { return $this->_iProfileID; }
     
     /**
      * Returns the Client SDK Version: v1.00, v2.00, v2.10 etc.
@@ -236,7 +244,7 @@ class ClientInfo
 	public function toXML()
 	{
 		$xml = '<client-info app-id="'. $this->_iAppID .'" platform="'. htmlspecialchars($this->_sPlatform, ENT_NOQUOTES) .'" version="'. number_format($this->_fVersion, 2) .'" language="'. htmlspecialchars($this->_sLanguage, ENT_NOQUOTES).'"' ;
-		if ($this->getProfileID() > 0) {
+		if ($this->getProfileID() !== '') {
 		    $xml .= ' profileid="'.$this->getProfileID().'"';
         }
         

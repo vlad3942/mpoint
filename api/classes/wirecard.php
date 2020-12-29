@@ -26,25 +26,30 @@ class WireCard extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new WireCardException("Method: getPaymentData is not supported by Wire Card"); }
 
-	/**
-	 * Completes the Transaction by updating the Transaction Log with the final details for the Payment.
-	 * The method will verify that the transaction hasn't accidentally been duplicated by the Payment Service Provider due to
-	 * bugs or network issues.
-	 * Additionally the method will insert a final entry in the Message Log with the provided debug data.
-	 * The method will throw a Callback Exception wit code 1001 if the update fails.
-	 *
-	 * @see 	General::newMessage()
-	 *
-	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider (PSP) mPoint used to clear the transaction
-	 * @param 	string $txnid 	Transaction ID returned by the PSP
-	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
-	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
-	 * @param 	integer $fee	The amount the customer will pay in fees for the Transaction. Default value 0
-	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
-	 * @return	integer
-	 * @throws 	CallbackException
-	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null)
+    /**
+     * Completes the Transaction by updating the Transaction Log with the final details for the Payment.
+     * The method will verify that the transaction hasn't accidentally been duplicated by the Payment Service Provider due to
+     * bugs or network issues.
+     * Additionally the method will insert a final entry in the Message Log with the provided debug data.
+     * The method will throw a Callback Exception wit code 1001 if the update fails.
+     *
+     * @param integer $pspid Unique ID for the Payment Service Provider (PSP) mPoint used to clear the transaction
+     * @param string $txnid Transaction ID returned by the PSP
+     * @param integer $cid Unique ID for the Credit Card the customer used to pay for the Purchase
+     * @param integer $sid Unique ID indicating that final state of the Transaction
+     * @param int $sub_code_id Unique ID indicating sub error code of the failed Transaction
+     * @param integer $fee The amount the customer will pay in fees for the Transaction. Default value 0
+     * @param array $debug Array of Debug data which should be logged for the state (optional)
+     * @param null $issuingbank
+     * @param null $sSwishPaymentID
+     * @return    integer
+     * @throws CallbackException
+     * @throws SQLQueryException
+     * @throws mPointException
+     * @see    General::newMessage()
+     *
+     */
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null,$sSwishPaymentID=null)
 	{
 		if (empty($txnid) == true) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }

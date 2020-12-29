@@ -24,7 +24,7 @@ class Home extends General
 	 *
 	 * @var CountryConfig
 	 */
-	private $_obj_CountryConfig;
+	protected $_obj_CountryConfig;
 
 	/**
 	 * Default Constructor.
@@ -134,7 +134,7 @@ class Home extends General
 			break;
 		case (5):		
 
-			if ( strlen($aArgs[1]->getCustomerRef()) > 0  ||  floatval($aArgs[1]->getMobile()) > 0 || strlen($aArgs[1]->getEMail()) > 0 || $aArgs[1]->getProfileID() > 0 ) 
+			if ( strlen($aArgs[1]->getCustomerRef()) > 0  ||  floatval($aArgs[1]->getMobile()) > 0 || strlen($aArgs[1]->getEMail()) > 0 || $aArgs[1]->getProfileID() !== '' )
 	        {   
 	        	if ( ($aArgs[0] instanceof ClientConfig) === true)
 				{
@@ -935,7 +935,11 @@ class Home extends General
             $xml .= '<status>' . $sStatusMessagesXML . '</status>';
             $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
             //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
-            $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '">';
+			$xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
+			if ($obj_TxnInfo->getProfileID() !== '') {
+				$xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"';
+			}
+			$xml .= '>';
             $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
             $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
             $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
@@ -1220,24 +1224,28 @@ class Home extends General
 		return $sHeaders;
 	}
 
-	/**
-	 * Creates a new End-User Account.
-	 *
-	 * @param	integer $cid 	ID of the country the End-User Account should be created in
-	 * @param	string $mob 	End-User's mobile number (optional)
-	 * @param 	string $pwd 	Password for the created End-User Account (optional)
-	 * @param 	string $email	End-User's e-mail address (optional)
-	 * @param 	string $cr		the Client's Reference for the Customer (optional)
-	 * @return	integer 		The unique ID of the created End-User Account
-	 */
-	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = -1)
+    /**
+     * Creates a new End-User Account.
+     *
+     * @param integer $cid ID of the country the End-User Account should be created in
+     * @param string $mob End-User's mobile number (optional)
+     * @param string $pwd Password for the created End-User Account (optional)
+     * @param string $email End-User's e-mail address (optional)
+     * @param string $cr the Client's Reference for the Customer (optional)
+     * @param string $pid
+     * @param bool $enable
+     * @param string $profileid
+     * @return    integer        The unique ID of the created End-User Account
+     * @throws SQLQueryException
+     */
+	public function newAccount($cid, $mob = '', $pwd = '', $email = '', $cr = '', $pid = '', $enable = true, $profileid = '')
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 					(id, countryid, mobile, passwd, email, externalid, pushid, enabled, profileid)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . (intval($profileid) > 0 ? ", ".intval($profileid) : ", NULL").")";
+					(". $RS["ID"] .", ". (int)$cid .", ". ((float)$mob > 0 ? "'". (float)$mob ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". ($email !== '' ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". ($pid != '' ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true") . ($profileid !== '' ? ", '". $profileid . "'" : ", NULL").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
@@ -1293,7 +1301,8 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'save-customer-profile'}->{'profile'}) > 0)
             {
-                return (int)$response->{'save-customer-profile'}->{'profile'}["id"];
+                $profileid=(string)$response->{'save-customer-profile'}->{'profile'}["id"];
+                return trim($profileid);
             }
             else
             {
@@ -1304,7 +1313,7 @@ class Home extends General
         {
             trigger_error("mProfile Save Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
-        return -1;
+        return '';
     }
 
 
@@ -1347,7 +1356,8 @@ class Home extends General
 
             if(intval($HTTPResponseCode) == 200 && count($response->{'get-profile'}->{'profile'}) > 0)
             {
-                return (int)$response->{'get-profile'}->{'profile'}["id"];
+                $profileid= $response->{'get-profile'}->{'profile'}["id"];
+                return trim($profileid);
             }
             else
             {
@@ -1358,7 +1368,7 @@ class Home extends General
         {
             trigger_error("mProfile get Profile Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
         }
-        return -1;
+        return '';
     }
 
 
@@ -1529,6 +1539,60 @@ class Home extends General
 	
 		return is_resource($this->getDBConn()->query($sql) );
 	}
+
+    public function getOrphanAuthorizedTransactionList(int $clientid, string $interval, ?int $pspid = NULL): array
+    {
+        $sql = "SELECT transactionid as id
+                    FROM (
+                             SELECT DISTINCT ON (transactionid) transactionid,
+                                                                performedopt
+                             FROM log.txnpassbook_tbl passbook
+                             {INNER_JOIN}
+                             WHERE passbook.clientid = $clientid
+                               AND passbook.enabled = true
+                               AND passbook.status = '". Constants::sPassbookStatusDone ."'
+                               AND performedopt is NOT null
+                               AND performedopt <> ". Constants::iINPUT_VALID_STATE ."
+                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval' 
+                               AND passbook.modified < now() - INTERVAL '$interval'
+                               {INNER_JOIN_CONDITION}
+                             ORDER BY transactionid, passbook.created DESC                             
+                         ) sub
+                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE .";";
+
+        if (isset($pspid) === FALSE) {
+            $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}'],'', $sql);
+        } else {
+            $sql = str_replace('{INNER_JOIN}'," INNER JOIN log.transaction_tbl txn on passbook.transactionid = txn.id and pspid= $pspid ", $sql);
+            $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}']," AND txn.clientid = $clientid AND txn.enabled = true AND txn.created > now() - INTERVAL '$interval' - INTERVAL '1 DAY' ", $sql);
+        }
+        $aTransactionIds = $this->getDBConn()->getAllNames($sql);
+        if (is_array($aTransactionIds)) {
+            return $aTransactionIds;
+        }
+
+        return [];
+    }
+
+    public function getAutoVoidConfig(?int $clientid = NULL, ?int $pspid = NULL): array
+    {
+        $sql = 'SELECT clientid, pspid, expiry FROM CLIENT' . sSCHEMA_POSTFIX . '.AUTOVOIDCONFIG_TBL WHERE ENABLED=TRUE';
+        if ($clientid !== NULL) {
+            $sql .= " AND clientid = $clientid";
+        }
+        if ($pspid !== NULL) {
+            $sql .= " AND pspid = $pspid";
+        }
+        $sql .= ' ORDER BY clientid ASC';
+
+        $aAutoVoidConfig = $this->getDBConn()->getAllNames($sql);
+        if (is_array($aAutoVoidConfig)) {
+            return $aAutoVoidConfig;
+        }
+        return [];
+    }
+
+
 }
 
 ?>

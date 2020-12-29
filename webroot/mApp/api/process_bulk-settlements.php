@@ -395,6 +395,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $data['passenger']['email'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->email;
                                             $data['passenger']['mobile'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile;
                                             $data['passenger']['country_id'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile["country-id"];
+                                            $data['passenger']['amount'] = 0;
 
                                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}) > 0) {
                                                 for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->children()); $l++) {

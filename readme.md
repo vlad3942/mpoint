@@ -81,7 +81,10 @@ docker-compose.yml - Setup for easy debugging and developing. Runs a minimum via
 3. Volume local client setups in alphanumeric order in docker-compose file to liquibase:/app/scripts/sql (see comment).
 4. Change in docker-compose file in app service: comment out all volumes.
 5. Change in docker-compose file in app service: "context: docker/php-fpm-alpine-debug" to "context: .".  
-6. Run docker-compose up --build.
+6. Run docker-compose up --build`.
+
+## Run all testcases
+1. Run `docker-compose run composer "composer install" && docker-compose -f docker-compose-unittest.yml run app`
 
 
 

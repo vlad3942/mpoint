@@ -128,6 +128,98 @@ class HomeTest extends baseAPITest
         $this->assertEmpty($getTxnStatusResponse);
     }
 
+    public function testGetOrphanAuthorizedTransactionList(): void
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client1', 'Tusername1', 'Tpassword1')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4030, '900-55150298', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, 18, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001002, '900-55150298', 100, 10099, 1100, 100, 18, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001003, '900-55150298', 100, 10099, 1100, 100, 4, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001004, '900-55150298', 100, 10099, 1100, 100, 18, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001005, '900-55150298', 100, 10099, 1100, 100, 18, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001003, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001004, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001001, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
+
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001002, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001003, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001003, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001003, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001003, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001003, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
+
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001004, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001004, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001004, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001004, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
+
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001005, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001005, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001005, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001005, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (1001005, 5000,208,". Constants::iCaptureRequested. ",NULL,'done',10099)");
+		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (1001005, 5000,208,NULL,". Constants::iPAYMENT_CAPTURED_STATE. ",'done',104,10099)");
+
+         $obj_mPoint = new Home($this->_OBJ_DB, $this->_OBJ_TXT );
+         sleep(2);
+         $result = $obj_mPoint->getOrphanAuthorizedTransactionList(10099, '1 Second');
+
+         $this->assertIsArray($result);
+         $this->assertCount(3,$result);
+
+         $result = $obj_mPoint->getOrphanAuthorizedTransactionList(10099, '5 minute');
+
+         $this->assertIsArray($result);
+         $this->assertCount(0,$result);
+
+         $result = $obj_mPoint->getOrphanAuthorizedTransactionList(10099, '1 Second', 4);
+
+         $this->assertIsArray($result);
+         $this->assertCount(1,$result);
+
+    }
+
+    public function testGetAutoVoidConfig(): void
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client1', 'Tuser1', 'Tpass1')");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10077, 1, 100, 'Test Client2', 'Tuser2', 'Tpass2')");
+        $this->queryDB("INSERT INTO Client.AUTOVOIDCONFIG_TBL (id, clientid, pspid, expiry) VALUES (1, 10099, 18, '1 DAY')");
+        $this->queryDB("INSERT INTO Client.AUTOVOIDCONFIG_TBL (id, clientid, pspid, expiry) VALUES (2, 10077, 18, '2 DAY')");
+        $this->queryDB("INSERT INTO Client.AUTOVOIDCONFIG_TBL (id, clientid, pspid, expiry) VALUES (3, 10099, 4, '3 DAY')");
+
+        $obj_mPoint = new Home($this->_OBJ_DB, $this->_OBJ_TXT );
+
+        $result = $obj_mPoint->getAutoVoidConfig();
+        $this->assertIsArray($result);
+        $this->assertCount(3,$result);
+
+        $result = $obj_mPoint->getAutoVoidConfig(10099);
+        $this->assertIsArray($result);
+        $this->assertCount(2,$result);
+
+        $result = $obj_mPoint->getAutoVoidConfig(10077, 18);
+        $this->assertIsArray($result);
+        $this->assertCount(1,$result);
+        $this->assertEquals(10077, $result[0]['CLIENTID']);
+        $this->assertEquals(18, $result[0]['PSPID']);
+        $this->assertEquals('2 DAY', $result[0]['EXPIRY']);
+
+        $result = $obj_mPoint->getAutoVoidConfig(10077, 4);
+        $this->assertIsArray($result);
+        $this->assertCount(0,$result);
+
+    }
+
+
     public function tearDown():void
     {
         $this->_OBJ_DB->disConnect();

@@ -28,7 +28,7 @@ class CallCentre extends SMS_Purchase
 	 * @param 	array $aPrices 		Reference to the list of Product Prices
 	 * @param 	array $aLogos 		Reference to the list of URLs to the Logo for each Product
 	 */
-	public function logProducts(array &$aNames, array &$aQuantities, array &$aPrices, array &$aLogos)
+	public function logProducts(array &$aNames=null, array &$aQuantities=null, array &$aPrices=null, array &$aLogos=null)
 	{
 		// Construct list of Products
 		$aProducts = array("names" => $aNames,

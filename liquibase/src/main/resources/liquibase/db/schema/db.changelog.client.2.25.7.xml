@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+	<changeSet author="Sagar Narayane"
+        id="2020-12-09-master-v2.25-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
+    <!-- Add new table card_currency_mapping_tbl -->
+    <changeSet author="Abhinav Shaha" id="2020-12-02-master-v2.25">
+		<createTable catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"
+					 remarks="This table store the Presentment configuration">
+            <column  name="id"  type="serial" autoIncrement="true" remarks="This column is primary key">
+                <constraints  primaryKey="true"  nullable="false" primaryKeyName="pk_client_card_currency_mapping_id"/>
+            </column>
+            <column  name="client_id"  type="integer" remarks="This column is to store client-id">
+                <constraints nullable="false" 
+                	foreignKeyName="client_id_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="client"
+		            referencedTableName="client_tbl"
+		            referencedTableSchemaName="client"/>  
+            </column>
+            <column  name="card_id"  type="integer" remarks="This column is to store card-id">
+                <constraints nullable="false" 
+                	foreignKeyName="card_currency_mapping_card_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="system"
+		            referencedTableName="card_tbl"
+		            referencedTableSchemaName="system"/>  
+            </column>
+            <column  name="sale_currency_id"  type="integer" remarks="This column is to store sale-currency-id">
+                <constraints nullable="false" 
+                	foreignKeyName="card_currency_mapping_sale_currency_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="system"
+		            referencedTableName="currency_tbl"
+		            referencedTableSchemaName="system"/>  
+            </column> 
+            <column  name="is_presentment"  type="boolean" defaultValueBoolean="true" remarks="This column indicates settlement-currency-id is applicable to given sale-currency or not">  
+                <constraints nullable="false" />  
+            </column> 
+            <column  name="settlement_currency_id"  type="integer" remarks="This column is to store settlement-currency-id">
+                <constraints nullable="false" 
+                	foreignKeyName="card_currency_mapping_settlement_currency_fk"
+		            deleteCascade="true"
+		            referencedColumnNames="id"
+		            referencedTableCatalogName="system"
+		            referencedTableName="currency_tbl"
+		            referencedTableSchemaName="system"/>  
+            </column> 
+            <column  name="created"  type="timestamp" defaultValueComputed="now()" remarks="This column is to store current time">
+                <constraints nullable="true" />  
+            </column>
+            <column  name="modified"  type="timestamp" defaultValueComputed="now()" remarks="This column is to store modified time">
+                <constraints nullable="true" />  
+            </column>
+            <column  name="enabled"  type="boolean" defaultValueBoolean="true" remarks="This column is to enable/disable presentment configuration">  
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+		<sql>
+			ALTER TABLE client.card_currency_mapping_tbl OWNER TO mpoint;
+			CREATE TRIGGER Update_Card_Currency_Mapping BEFORE UPDATE ON Client.card_currency_mapping_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+		</sql>
+		<createIndex indexName="cardcurrencymapping_idx" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl">
+			<column name="client_id"/>
+			<column name="card_id"/>
+			<column name="sale_currency_id"/>
+		</createIndex>
+		<rollback>
+			<sql>DROP TRIGGER Update_Card_Currency_Mapping IF EXISTS ON client.card_currency_mapping_tbl CASCADE TRUE;</sql>
+			<dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="card_currency_mapping_tbl"/>
+		</rollback>
+    </changeSet>
+
+	<!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Sagar Narayane"
+        id="2020-12-09-master-v2.25-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
