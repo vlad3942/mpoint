@@ -1,7 +1,6 @@
 #-----------------------FETCH TEST DEPENDENCIES------------------------
 
 FROM registry.t.cpm.dev/library/phpcomposerbuildimage:latest as devbuilder
-WORKDIR /opt/cpm/mPoint
 COPY api api
 COPY composer.json composer.lock* ./
 RUN composer install -v --prefer-dist
@@ -25,7 +24,6 @@ ENV LOG_OUTPUT_METHOD=1
 
 WORKDIR /opt/cpm/mPoint
 
-COPY --from=devbuilder api /opt/cpm/mPoint/api
 COPY test test
 COPY conf conf
 COPY webroot webroot
