@@ -108,13 +108,16 @@ class RoutingServiceTest extends baseAPITest
         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
         $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}["client-id"], $obj_DOM->{'initialize-payment'}->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
 
+        $this->assertInstanceOf(RoutingService::class, $obj_RS);
+
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
 
+            $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
+
             if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
             {
-
                 $aObjPaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
                 $this->assertEquals(2, count($aObjPaymentMethods->payment_methods->payment_method) );
 
@@ -132,6 +135,7 @@ class RoutingServiceTest extends baseAPITest
                 $this->assertContains(2, $aPSPType);
             }
         }
+
     }
 
     public function testEmptyGetPaymentMethods()
@@ -180,6 +184,9 @@ class RoutingServiceTest extends baseAPITest
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
         $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}["client-id"], $obj_DOM->{'initialize-payment'}->transaction->amount["country-id"], null, $obj_DOM->{'initialize-payment'}->transaction->amount);
+
+        $this->assertInstanceOf(RoutingService::class, $obj_RS);
+
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
