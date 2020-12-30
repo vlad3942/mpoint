@@ -632,6 +632,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= trim($obj_Elem->asXML());
 												}
 
+												if($obj_DOM->pay[$i]->transaction->card["type-id"] == 93 ) {
+													$xml .= '<auth-token>Auth-Token</auth-token>' ;	
+												}
+
 										}
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
