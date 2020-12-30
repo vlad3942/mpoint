@@ -42,7 +42,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $xml .= '</states>';
 
     } else {
-        $xml = $obj_mConsole->getSSOValidationError($code);
+        $response = $obj_mConsole->getSSOValidationError($code);
+        header($response['http_message']);
+        $xml = $response['response'];
+
     }
 } else {
     header("HTTP/1.1 401 Unauthorized");
@@ -55,4 +58,3 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
-?>

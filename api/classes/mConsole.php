@@ -1672,31 +1672,40 @@ class mConsole extends Admin
 
     /**
      * @param $code
-     * @return string
+     * @return array
      */
-    public function getSSOValidationError($code): string
+    public function getSSOValidationError($code): array
       {
+
+       $result = [];
         switch ($code)
         {
             case self::iSERVICE_CONNECTION_TIMEOUT_ERROR:
-                header("HTTP/1.1 504 Gateway Timeout");
-                return '<status code="'. $code .'">Single Sign-On Service is unreachable</status>';
+                $result['http_message'] = "HTTP/1.1 504 Gateway Timeout";
+                $result['response'] = '<status code="'. $code .'">Single Sign-On Service is unreachable</status>';
+                break;
             case self::iSERVICE_READ_TIMEOUT_ERROR:
-                header("HTTP/1.1 502 Bad Gateway");
-                return '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
+                $result['http_message']="HTTP/1.1 502 Bad Gateway";
+                $result['response']= '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
+                break;
             case self::iUNAUTHORIZED_USER_ACCESS_ERROR:
-                header("HTTP/1.1 401 Unauthorized");
-                return '<status code="'. $code .'">Unauthorized User Access</status>';
+                $result['http_message']="HTTP/1.1 401 Unauthorized";
+                $result['response'] ='<status code="'. $code .'">Unauthorized User Access</status>';
+                break;
             case self::iINSUFFICIENT_USER_PERMISSIONS_ERROR:
-                header("HTTP/1.1 403 Forbidden");
-                return '<status code="'. $code .'">Insufficient User Permissions</status>';
+                $result['http_message']="HTTP/1.1 403 Forbidden";
+                $result['response'] ='<status code="'. $code .'">Insufficient User Permissions</status>';
+                break;
             case self::iINSUFFICIENT_CLIENT_LICENSE_ERROR:
-                header("HTTP/1.1 402 Payment Required");
-                return '<status code="'. $code .'">Insufficient Client License</status>';
+                $result['http_message']="HTTP/1.1 402 Payment Required";
+                $result['response'] = '<status code="'. $code .'">Insufficient Client License</status>';
+                break;
             default:
-                header("HTTP/1.1 500 Internal Server Error");
-                return '<status code="'. $code .'">Internal Error</status>';
+                $result['http_message'] = "HTTP/1.1 500 Internal Server Error";
+                $result['response']= '<status code="'. $code .'">Internal Error</status>';
+                break;
         }
+        return $result;
     }
 
     /**

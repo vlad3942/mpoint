@@ -1113,7 +1113,7 @@ $aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
 
-
+$aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/mconsole/single-sign-on";
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
