@@ -307,7 +307,7 @@ try
                                         // Call get payment data API for wallet and stored card payment
                                         $card_psp_id = -1;
                                         if ($isStoredCardPayment === true){
-                                            $card_psp_id = $obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                            $card_psp_id = (int)$obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
                                         }
 
                                         $walletId = NULL;
