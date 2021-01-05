@@ -70,7 +70,7 @@ INSERT INTO Client.Keyword_Tbl(clientid, name, standard, enabled) VALUES (10077,
 
 INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 2, 'http://mpoint.dev-01.cellpoint.dev/_test/simulators/login.php', true );
 INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 14, 'https://cpd-hpp2-devassests.s3.eu-central-1.amazonaws.com/10077/', true);
-INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 4, 'http://5j.mesb.dev-01.cellpoint.dev', true );
+INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 4, 'http://5j.mesb.dev.cpm.dev', true );
 
 
 --Table Name : Client.MerchantAccount_Tbl
