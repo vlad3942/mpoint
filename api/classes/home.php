@@ -859,7 +859,7 @@ class Home extends General
                     ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_DECLINED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
                     ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.")) s where s.rank=1
                     ),
-                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.$state.") limit 1)
+                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.") limit 1)
                     UNION
                     SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
                     ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
@@ -966,7 +966,8 @@ class Home extends General
 					$xml .= '</country>';
                 }
                 if (empty($aShippingAddress['mobile']) === false){
-                    $xml .= '<mobile>' . $aShippingAddress['mobile'] . '</mobile>';
+                    $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                    $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
                 }
                 if (empty($aShippingAddress['email']) === false){
                     $xml .= '<email>' . $aShippingAddress['email'] . '</email>';
