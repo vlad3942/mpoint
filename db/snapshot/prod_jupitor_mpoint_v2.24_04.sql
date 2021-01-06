@@ -29,36 +29,19 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('GlobalPayment.Wallet.PASSWORD.14', '/BqAFHYCws3429A/Ath80pUhtYDC58+8jV117Q7aTWSWL9DVY8gGzAgZHXjuK6kk7UZ11L+koxRW6+UUCHv24WORAwCeVG/+0+QySr3La/T8RHNCTD3+3m0t+4yEhAwplhbxSq8WMkGNOrTcHgJkCTR21+bIAeB2bldx8PAMAdbkL/bu3QxW/eiAr3cCC+d6eir5ZB40gFq1BzDTMGcy8ZQuTQ3wQSU9aGM5NMZqJjSgdECTvAGN0zjACI7WjdTsYxqHca/3gh+JtwUfoUDdDxrTzFL27K/OpoRSz9N1c4BoJYDEFlzugb1qJrMQUQEpJMG2Jsvs4nfQmQjuwSjX2Q==', true, (SELECT ID FROM client.merchantaccount_tbl WHERE pspid = 56 and clientid = 10020), 'merchant', 2);
 
---================================================================================================================================================
---MESB :
+-- June to Sep
+update log.transaction_tbl set callbackurl = 'https://mpoint.prod-01.cellpoint.cloud/uatp/callback.php'
+where clientid = 10069 and callbackurl in ('http://wn.velocity.cellpointmobile.net:10080/mpoint/uatp/callback','http://mpoint.cellpointmobile.net/uatp/callback.php') 
+and created > '2020-06-01 00:00:00' and  created < '2020-09-01 00:00:00';
 
---client.group_tbl
+-- March to June
+update log.transaction_tbl set callbackurl = 'https://mpoint.prod-01.cellpoint.cloud/uatp/callback.php'
+where clientid = 10069 and callbackurl in ('http://wn.velocity.cellpointmobile.net:10080/mpoint/uatp/callback','http://mpoint.cellpointmobile.net/uatp/callback.php') 
+and created > '2020-03-01 00:00:00' and created < '2020-06-01 00:00:00';
 
-INSERT INTO client.group_tbl (id, clientid, name, note, enabled) values(77, 10020, 'Group for PR ApplePay', 'Group for PR ApplePay', true);
+-- Jan to March
+update log.transaction_tbl set callbackurl = 'https://mpoint.prod-01.cellpoint.cloud/uatp/callback.php'
+where clientid = 10069 and callbackurl in ('http://wn.velocity.cellpointmobile.net:10080/mpoint/uatp/callback','http://mpoint.cellpointmobile.net/uatp/callback.php') 
+and created > '2020-01-01 00:00:00' and created < '2020-03-01 00:00:00';
 
---Keystore
-
-update client.group_tbl 
-set properties = 'keystore.type=pkcs12
-keystore.password=Skokie2)administrator
-keystore.alias.password=Skokie2)administrator
-keystore.alias_applepay=applepay' 
-where id = 77 and clientid = 10020;
-
---ApplePay Endpoint
-
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/apple-pay/initialize'), 'basic');
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/apple-pay/get-payment-data'), 'basic');
-
---Global Payment
-
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/global-payments/initialize'), 'basic');
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/global-payments/capture'), 'basic');
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/global-payments/refund'), 'basic');
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/global-payments/cancel'), 'basic');
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/global-payments/threed-redirect'), 'none');
-INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALUES(77, (select id from system.endpoint_tbl where path='/mpoint/global-payments/authorize-payment'), 'basic');
-
-
---===========================================================================================================================
 
