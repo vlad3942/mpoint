@@ -62,20 +62,3 @@ INSERT INTO client.endpointaccess_tbl (groupid, endpointid, authentication) VALU
 
 --===========================================================================================================================
 
-
--- June to Sep
-update log.transaction_tbl set callbackurl = 'https://mpoint.prod-01.cellpoint.cloud/uatp/callback.php'
-where clientid = 10069 and callbackurl in ('http://wn.velocity.cellpointmobile.net:10080/mpoint/uatp/callback','http://mpoint.cellpointmobile.net/uatp/callback.php') 
-and created > '2020-06-01 00:00:00' and  created < '2020-09-01 00:00:00';
-
--- March to June
-update log.transaction_tbl set callbackurl = 'https://mpoint.prod-01.cellpoint.cloud/uatp/callback.php'
-where clientid = 10069 and callbackurl in ('http://wn.velocity.cellpointmobile.net:10080/mpoint/uatp/callback','http://mpoint.cellpointmobile.net/uatp/callback.php') 
-and created > '2020-03-01 00:00:00' and created < '2020-06-01 00:00:00';
-
--- Jan to March
-update log.transaction_tbl set callbackurl = 'https://mpoint.prod-01.cellpoint.cloud/uatp/callback.php'
-where clientid = 10069 and callbackurl in ('http://wn.velocity.cellpointmobile.net:10080/mpoint/uatp/callback','http://mpoint.cellpointmobile.net/uatp/callback.php') 
-and created > '2020-01-01 00:00:00' and created < '2020-03-01 00:00:00';
-
-
