@@ -10,13 +10,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
 
-	public function notifyClient($iStateId, array $vars, $surePay)
-    {
-        if(isset($vars["expiry"]) === false ){$vars["expiry"] = null; }
-        if(isset($vars["additionaldata"]) === false ){$vars["additionaldata"] = ""; }
-        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"], $surePay);
-    }
-
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
      * The method will return one the following status codes:
@@ -336,7 +329,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
-							'card-id'=>0);
+							'cardid'=>0);
 
 					if ($iStatusCode == 1000)
 					{

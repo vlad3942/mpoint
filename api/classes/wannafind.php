@@ -18,29 +18,6 @@
  */
 class WannaFind extends Callback implements Captureable
 {
-/**
-	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
-	 * The method will re-construct the data received from WannaFind after having removed the following mPoint specific fields:
-	 * 	- width
-	 * 	- height
-	 * 	- format
-	 * 	- PHPSESSID (found using PHP's session_name() function)
-	 * 	- language
-	 * 	- cardid
-	 * Additionally the method will add mPoint's Unique ID for the Transaction.
-	 *
-	 * @see 	Callback::notifyClient()
-	 * @see 	Callback::send()
-	 * @see 	Callback::getVariables()
-	 *
-	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
-	 * @param 	array $_post 	Array of data received from WannaFind via HTTP POST
-	 */
-	public function notifyClient($sid, array $_post)
-	{
-		parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
-	}
-	
 	/**
 	 * Authorises a payment with WannaFind for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.
