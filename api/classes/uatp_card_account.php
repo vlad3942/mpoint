@@ -14,7 +14,7 @@ class UATPCardAccount extends CPMPSP
        return Constants::iUATP_CARD_ACCOUNT;
     }
 
-    public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid, $performedOptArray, TxnPassbook $txnPassbookObj)
+    public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid, $performedOptArray=null, TxnPassbook $txnPassbookObj=null)
     {
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 

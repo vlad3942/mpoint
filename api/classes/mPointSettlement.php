@@ -556,4 +556,12 @@ abstract class mPointSettlement
     {
         return $this->_iSettlementId;
     }
+
+    /**
+     * @return integer
+     */
+    public function getSettlementTxnAmount()
+    {
+        return $this->_iTotalTransactionAmount;
+    }
 }

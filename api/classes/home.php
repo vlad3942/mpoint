@@ -24,7 +24,7 @@ class Home extends General
 	 *
 	 * @var CountryConfig
 	 */
-	private $_obj_CountryConfig;
+	protected $_obj_CountryConfig;
 
 	/**
 	 * Default Constructor.
@@ -1605,6 +1605,60 @@ class Home extends General
 	
 		return is_resource($this->getDBConn()->query($sql) );
 	}
+
+    public function getOrphanAuthorizedTransactionList(int $clientid, string $interval, ?int $pspid = NULL): array
+    {
+        $sql = "SELECT transactionid as id
+                    FROM (
+                             SELECT DISTINCT ON (transactionid) transactionid,
+                                                                performedopt
+                             FROM log.txnpassbook_tbl passbook
+                             {INNER_JOIN}
+                             WHERE passbook.clientid = $clientid
+                               AND passbook.enabled = true
+                               AND passbook.status = '". Constants::sPassbookStatusDone ."'
+                               AND performedopt is NOT null
+                               AND performedopt <> ". Constants::iINPUT_VALID_STATE ."
+                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval' 
+                               AND passbook.modified < now() - INTERVAL '$interval'
+                               {INNER_JOIN_CONDITION}
+                             ORDER BY transactionid, passbook.created DESC                             
+                         ) sub
+                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE .";";
+
+        if (isset($pspid) === FALSE) {
+            $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}'],'', $sql);
+        } else {
+            $sql = str_replace('{INNER_JOIN}'," INNER JOIN log.transaction_tbl txn on passbook.transactionid = txn.id and pspid= $pspid ", $sql);
+            $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}']," AND txn.clientid = $clientid AND txn.enabled = true AND txn.created > now() - INTERVAL '$interval' - INTERVAL '1 DAY' ", $sql);
+        }
+        $aTransactionIds = $this->getDBConn()->getAllNames($sql);
+        if (is_array($aTransactionIds)) {
+            return $aTransactionIds;
+        }
+
+        return [];
+    }
+
+    public function getAutoVoidConfig(?int $clientid = NULL, ?int $pspid = NULL): array
+    {
+        $sql = 'SELECT clientid, pspid, expiry FROM CLIENT' . sSCHEMA_POSTFIX . '.AUTOVOIDCONFIG_TBL WHERE ENABLED=TRUE';
+        if ($clientid !== NULL) {
+            $sql .= " AND clientid = $clientid";
+        }
+        if ($pspid !== NULL) {
+            $sql .= " AND pspid = $pspid";
+        }
+        $sql .= ' ORDER BY clientid ASC';
+
+        $aAutoVoidConfig = $this->getDBConn()->getAllNames($sql);
+        if (is_array($aAutoVoidConfig)) {
+            return $aAutoVoidConfig;
+        }
+        return [];
+    }
+
+
 }
 
 ?>

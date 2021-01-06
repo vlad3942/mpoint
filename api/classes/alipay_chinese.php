@@ -26,8 +26,8 @@ class AliPayChinese extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new AliPayException("Method: capture is not supported by AliPay Chinese"); }
 	public function void($iAmount=-1) { throw new AliPayException("Method: void is not supported by AliPay Chinese"); }
-	public function cancel() { throw new AliPayException("Method: cancel is not supported by AliPay Chinese"); }
+	public function cancel($amount = -1) { throw new AliPayException("Method: cancel is not supported by AliPay Chinese"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new AliPayException("Method: getPaymentData is not supported by AliPay Chinese"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new AliPayException("Method: authorize is not supported by AliPay Chinese"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new AliPayException("Method: authorize is not supported by AliPay Chinese"); }
 	public function getPSPID() { return Constants::iALIPAY_CHINESE_PSP; }
 }

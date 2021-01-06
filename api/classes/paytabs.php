@@ -26,8 +26,8 @@ class PayTabs extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new PayTabsException("Method: capture is not supported by PayTabs"); }
 	public function void($iAmount=-1) { throw new PayTabsException("Method: void is not supported by PayTabs"); }
-	public function cancel() { throw new PayTabsException("Method: cancel is not supported by PayTabs"); }
+	public function cancel($amount = -1) { throw new PayTabsException("Method: cancel is not supported by PayTabs"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayTabsException("Method: getPaymentData is not supported by PayTabs"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new PayTabsException("Method: authorize is not supported by PayTabs"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new PayTabsException("Method: authorize is not supported by PayTabs"); }
 	public function getPSPID() { return Constants::iPAY_TABS_PSP; }
 }

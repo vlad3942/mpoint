@@ -142,7 +142,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 * @return	String
 	 * @throws	E_USER_WARNING
 	 */
-	public function auth(HTTPConnInfo &$oCI, $merchant, $transactionID)
+	public function auth(HTTPConnInfo &$oCI=null, $merchant=null, $transactionID=null)
 	{
 		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost(). $oCI->getPath(), array("trace" => true,
 																						"exceptions" => true) );

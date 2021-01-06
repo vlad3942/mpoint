@@ -337,6 +337,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+
+				if($this->getPSPConfig()->getProcessorType() === 8)
+                {
+                    return (int)$obj_XML["code"];
+                }
+
                 $this->_obj_ResponseXML =$obj_XML;
 				// Expect there is only one transaction in the reply
 				$obj_Txn = $obj_XML->transactions->transaction;

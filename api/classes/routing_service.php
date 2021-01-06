@@ -168,13 +168,15 @@ class RoutingService extends General
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $body);
             $obj_HTTP->disConnect();
             $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-            return RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
+            if($obj_XML instanceof SimpleDOMElement){
+                return RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
+            }
         }
         catch (Exception $e)
         {
             trigger_error("construct XML failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-            return $obj_XML;
         }
+        return $obj_XML;
     }
 
     /**
@@ -243,13 +245,15 @@ class RoutingService extends General
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
             $obj_HTTP->disConnect();
             $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
-            return RoutingServiceResponse::produceGetRouteResponse($obj_XML);
+            if($obj_XML instanceof SimpleDOMElement){
+                return RoutingServiceResponse::produceGetRouteResponse($obj_XML);
+            }
         }
         catch (Exception $e)
         {
             trigger_error("construct XML failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-            return $obj_XML;
         }
+        return $obj_XML;
     }
 
     /**
@@ -272,7 +276,7 @@ class RoutingService extends General
             $aAlternateRoutes = array();
             foreach ($aRoutes as $oRoute) {
                 if(empty($oRoute->preference) === false){
-                    if ($oRoute->preference === 1) {
+                    if ($oRoute->preference == 1) {
                         $firstPSP = $oRoute->id;
                     }
                     $aAlternateRoutes[] = array(

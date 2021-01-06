@@ -17,7 +17,7 @@ class ModirumMPI extends CPMMPI
         Constants::iMODIRUM_MPI;
     }
 
-    public function authenticate()
+    public function authenticate($xml=null,$obj_Card=null, $obj_ClientInfo= null)
     {
         $clientInfo = $this->getClientInfo();
 

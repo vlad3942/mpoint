@@ -29,8 +29,8 @@ class MasterPass extends CPMPSP
 	public function capture($iAmount=-1) { throw new MasterPassException("Method: capture is not supported by Master Pass"); }
 	public function refund($iAmount=-1, $iStatus = NULL) { throw new MasterPassException("Method: refund is not supported by Master Pass"); }
 	public function void($iAmount=-1) { throw new MasterPassException("Method: void is not supported by Master Pass"); }
-	public function cancel() { throw new MasterPassException("Method: cancel is not supported by Master Pass"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new MasterPassException("Method: authorize is not supported by Master Pass"); }
+	public function cancel($amount = -1) { throw new MasterPassException("Method: cancel is not supported by Master Pass"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new MasterPassException("Method: authorize is not supported by Master Pass"); }
 	public function status() { throw new MasterPassException("Method: status is not supported by Master Pass"); }
 	public function getPSPID() { return Constants::iMASTER_PASS_PSP; }
 }

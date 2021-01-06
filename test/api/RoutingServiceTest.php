@@ -182,7 +182,9 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
+            if($obj_PaymentMethodResponse instanceof RoutingServiceResponse) {
+                $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
+            }
         }
 
     }
