@@ -64,7 +64,12 @@ class FraudResponse
 
         //Fraud Check endpoint will return result status code PRE or POST auth need be determine
         //30 for pre-auth and 31 for post-auth if service return 11 and $iFraudType id pre it become 3011 represents pre-auth fraud Accepted
-        if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+        if($iStatusCode <= 1)
+        {
+            if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) { $this->_iStatusCode = Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE; }
+            else { $this->_iStatusCode = Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE; }
+        }
+        else if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
         {
             $this->_iStatusCode = (int) (substr((string)Constants::iPRE_FRAUD_CHECK_INITIATED_STATE,0,2).$iStatusCode);
         }
