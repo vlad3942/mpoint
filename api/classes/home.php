@@ -456,7 +456,7 @@ class Home extends General
      * @param   integer $countryId
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null)
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $is_legacy='true')
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -477,8 +477,123 @@ class Home extends General
 		}
 		/* ========== Calculate Logo Dimensions End ========== */
 
-		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
+        if(empty($aPaymentMethods) === false) {
+            $aPaymentMethodsConfig = array();
+            foreach ($aPaymentMethods as $paymentMethod) {
+                $aPaymentMethodsConfig[$paymentMethod->id] = array(
+                    'state_id' => $paymentMethod->state_id,
+                    'preference' => $paymentMethod->preference);
+            }
+        }
+
+        $sql = $this->getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $is_legacy);
+
+        $result = $this->getDBConn()->getAllNames($sql);
+
+		$xml = '<stored-cards accountid="'. $id .'">';
+        if (is_array($result) === true && count($result) > 0) {
+            foreach ($result as $RS) {
+                // Set stateid given by CRS into resultset
+                if (empty($aPaymentMethodsConfig)) {
+                    $aCardConfig = isset($aPaymentMethodsConfig[$RS['CARDID']]) ? $aPaymentMethodsConfig[$RS['CARDID']] : NULL;
+                    $RS['STATEID'] = isset($aCardConfig['state_id']) ? $aCardConfig['state_id'] : 1;
+                }
+
+                if (($oCC instanceof ClientConfig) === true) {
+                    // Replace up 0-4 of the last 4-digits in the masked card number with *
+                    $sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits()), -4, 4 - $oCC->getNumberOfMaskedDigits());
+                } else {
+                    $sMaskedCardNumber = trim($RS["MASK"]);
+                }
+
+                // set card expired status
+                $aExpiry = explode('/', $RS['EXPIRY']);
+                $bIsExpired = "false";
+                $expiryMonth = trim($aExpiry[0]);
+                $expiryYear = trim($aExpiry[1]);
+                if (empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false) {
+                    $bIsExpired = "true";
+                }
+
+                // Construct XML Document with data for saved cards
+                $xml .= '<card id="' . $RS["ID"] . '" type-id="' . $RS["CARDID"] . '" pspid="' . $RS["PSPID"] . '" preferred="' . General::bool2xml($RS["PREFERRED"]) . '" state-id="' . $RS["STATEID"] . '" charge-type-id="' . $RS["CHARGETYPEID"] . '" cvc-length="' . $RS["CVCLENGTH"] . '" expired="' . $bIsExpired . '" cvcmandatory = "' . General::bool2xml($RS['CVCMANDATORY']) . '" dcc = "' . General::bool2xml($RS["DCCENABLED"]) . '">';
+                $xml .= '<client id="' . $RS["CLIENTID"] . '">' . htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) . '</client>';
+                $xml .= '<type id="' . $RS["TYPEID"] . '">' . $RS["TYPE"] . '</type>';
+                $xml .= '<name>' . htmlspecialchars($RS["NAME"], ENT_NOQUOTES) . '</name>';
+                $xml .= '<mask>' . chunk_split($sMaskedCardNumber, 4, " ") . '</mask>';
+                $xml .= '<expiry>' . $RS["EXPIRY"] . '</expiry>';
+                $xml .= '<enabled>' . General::bool2xml($RS["PREFERRED"]) . '</enabled>';
+                $xml .= '<ticket>' . $RS["TICKET"] . '</ticket>';
+                $xml .= '<card-holder-name>' . htmlspecialchars($RS["CARD_HOLDER_NAME"], ENT_NOQUOTES) . '</card-holder-name>';
+                $xml .= '<logo-width>' . $iWidth . '</logo-width>';
+                $xml .= '<logo-height>' . $iHeight . '</logo-height>';
+
+                if (intval($RS["COUNTRYID"]) > 0) {
+                    $xml .= '<address country-id="' . $RS["COUNTRYID"] . '">';
+                    $xml .= '<first-name>' . htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) . '</first-name>';
+                    $xml .= '<last-name>' . htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) . '</last-name>';
+                    $xml .= '<street>' . htmlspecialchars($RS["STREET"], ENT_NOQUOTES) . '</street>';
+                    $xml .= '<postal-code>' . $RS["POSTALCODE"] . '</postal-code>';
+                    $xml .= '<city>' . htmlspecialchars($RS["CITY"], ENT_NOQUOTES) . '</city>';
+                    if ((empty($RS["CODE"]) === false && $RS["CODE"] != "N/A") || empty($RS["STATE"]) === false) {
+                        $xml .= '<state code="' . htmlspecialchars($RS["CODE"], ENT_NOQUOTES) . '">' . htmlspecialchars($RS["STATE"], ENT_NOQUOTES) . '</state>';
+                    }
+                    $xml .= '</address>';
+                }
+                $xml .= '</card>';
+            }
+        }
+		$xml .= '</stored-cards>';
+		return $xml;
+	}
+
+    /**
+     * Used to get list of all stored card for the particular cleint
+     *
+     * @param integer $id             Unqiue ID of the End-User's Account
+     * @param $ClientConfig oCC       Hold object of ClientConfig class
+     * @param boolean $adc            Include Stored Cards where the card type has been disabled, defaults to false
+     * @param array $aPaymentMethods  Holds list of payment methods given by CRS
+     * @param integer $countryId      Hold unqiue ID cof the country
+     * @param string $is_legacy       Hold a flag which will deside whether to use legacy flow or not
+     * @return string
+     */
+	private function getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $is_legacy)
+    {
+        $sql = '';
+        $aCardId = array_map(function ($paymentMethod) { return $paymentMethod->id; }, $aPaymentMethods);
+        if(strtolower($is_legacy) == 'false')
+        {
+            $sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
+					SC.id AS typeid, SC.name AS type, SC.cvclength AS cvclength,
+					CL.id AS clientid, CL.name AS client,
+					EUAD.countryid, EUAD.firstname, EUAD.lastname,
+					EUAD.company, EUAD.street,
+					EUAD.postalcode, EUAD.city,
+                    true  AS cvcmandatory,
+					true As dccenabled
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
+				WHERE EUC.accountid = ". (int)$id;
+
+            if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aCardId).")"; }
+            if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
+            if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
+            {
+                $sql .= " AND (CLA.clientid = CL.id OR NOT EXISTS (SELECT id FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl WHERE accountid = EUA.id) )";
+            }
+            $sql .= " ORDER BY EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, SC.name ASC";
+            $resultset = $this->getDBConn()->getAllNames($sql);
+        }
+        else
+        {
+            // Select all active cards that are not yet expired
+            $sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
 					SC.id AS typeid, SC.name AS type, CA.stateid, SC.cvclength AS cvclength,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
@@ -497,72 +612,23 @@ class Home extends General
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE EUC.accountid = ". (int)$id;
-         if($countryId !== NULL)
-        {
-            $sql .= " AND (CA.countryid = ". $countryId ." OR CA.countryid IS NULL)";
-        }
-        if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aPaymentMethods).")"; }
-		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
-		if ($adc === false) { $sql .= "  AND CA.enabled = '1'"; }
-		if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
-		{
-			$sql .= " AND (CLA.clientid = CL.id OR NOT EXISTS (SELECT id
+            if($countryId !== NULL)
+            {
+                $sql .= " AND (CA.countryid = ". $countryId ." OR CA.countryid IS NULL)";
+            }
+            if(empty($aPaymentMethods) === false){ $sql .= " AND SC.id IN (". implode(',', $aCardId).")"; }
+            if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
+            if ($adc === false) { $sql .= "  AND CA.enabled = '1'"; }
+            if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
+            {
+                $sql .= " AND (CLA.clientid = CL.id OR NOT EXISTS (SELECT id
 														       FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 														       WHERE accountid = EUA.id) )";
-		}
-		$sql .= " ORDER BY EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, CA.position ASC NULLS LAST, SC.name ASC";
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
-
-		$xml = '<stored-cards accountid="'. $id .'">';
-		while ($RS = $this->getDBConn()->fetchName($res) )
-		{
-			if ( ($oCC  instanceof ClientConfig) === true)
-			{
-				// Replace up 0-4 of the last 4-digits in the masked card number with *
-				$sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits() ), -4, 4 - $oCC->getNumberOfMaskedDigits() );
-			}
-			else { $sMaskedCardNumber = trim($RS["MASK"]); }
-
-			// set card expired status
-            $aExpiry = explode('/', $RS['EXPIRY']);
-            $bIsExpired = "false";
-            $expiryMonth = trim($aExpiry[0]);
-            $expiryYear = trim($aExpiry[1]);
-            if(empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false )
-            {
-                $bIsExpired = "true";
             }
-
-            // Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'" cvcmandatory = "'. General::bool2xml($RS['CVCMANDATORY']).'" dcc = "'.General::bool2xml($RS["DCCENABLED"]).'">';
-			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
-			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
-			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
-			$xml .= '<mask>'. chunk_split($sMaskedCardNumber, 4, " ") .'</mask>';
-			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
-			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
-			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
-			$xml .= '<card-holder-name>'. htmlspecialchars($RS["CARD_HOLDER_NAME"], ENT_NOQUOTES) .'</card-holder-name>';
-			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
-			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
-
-			if (intval($RS["COUNTRYID"]) > 0)
-			{
-				$xml .= '<address country-id="'. $RS["COUNTRYID"].'">';
-				$xml .= '<first-name>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</first-name>';
-				$xml .= '<last-name>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</last-name>';
-				$xml .= '<street>'. htmlspecialchars($RS["STREET"], ENT_NOQUOTES) .'</street>';
-				$xml .= '<postal-code>'. $RS["POSTALCODE"] .'</postal-code>';
-				$xml .= '<city>'. htmlspecialchars($RS["CITY"], ENT_NOQUOTES) .'</city>';
-				if ( (empty($RS["CODE"]) === false && $RS["CODE"] != "N/A") || empty($RS["STATE"]) === false) { $xml .= '<state code="'. htmlspecialchars($RS["CODE"], ENT_NOQUOTES) .'">'. htmlspecialchars($RS["STATE"], ENT_NOQUOTES) .'</state>'; }
-				$xml .= '</address>';
-			}
-			$xml .= '</card>';
-		}
-		$xml .= '</stored-cards>';
-		return $xml;
-	}
+            $sql .= " ORDER BY EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, CA.position ASC NULLS LAST, SC.name ASC";
+        }
+        return $sql;
+    }
 
 
     private function _cardNotExpired($month, $year) {

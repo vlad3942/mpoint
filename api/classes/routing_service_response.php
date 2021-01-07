@@ -36,7 +36,7 @@ class RoutingServiceResponse
         {
             $this->_aObj_PaymentMethods = $aObjRoutingServiceResponse;
         }
-        if (empty($aObjRoutingServiceResponse->psps) === false)
+        if (empty($aObjRoutingServiceResponse->routes) === false)
         {
             $this->_aObj_Route = $aObjRoutingServiceResponse;
         }
@@ -53,12 +53,12 @@ class RoutingServiceResponse
         if (($aObj_XML instanceof SimpleXMLElement) === true)
         {
             $aObjRoute = new \stdClass();
-            $aObjRoute->psps = new \stdClass();
-            for ($i = 0; $i < count($aObj_XML->psps->psp); $i++)
+            $aObjRoute->routes = new \stdClass();
+            for ($i = 0; $i < count($aObj_XML->routes->route); $i++)
             {
-                $aObjRoute->psps->psp[$i] = new \stdClass();
-                $aObjRoute->psps->psp[$i]->id = (int)$aObj_XML->psps->psp[$i]->id;
-                $aObjRoute->psps->psp[$i]->preference = (int)$aObj_XML->psps->psp[$i]->preference;
+                $aObjRoute->routes->route[$i] = new \stdClass();
+                $aObjRoute->routes->route[$i]->id = (int)$aObj_XML->routes->route[$i]->id;
+                $aObjRoute->routes->route[$i]->preference = (int)$aObj_XML->routes->route[$i]->preference;
             }
             return new RoutingServiceResponse($aObjRoute);
         }

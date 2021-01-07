@@ -84,6 +84,20 @@
 		</rollback>
     </changeSet>
 
+	<changeSet author="Anna Lagad" id="2020-12-09-setup-v2.25.7-log">
+
+		<addColumn catalogName="log"
+				   schemaName= "log"
+				   tableName="transaction_tbl">
+
+			<column name="routeconfigid"
+					type="int"
+					remarks="Hold route configration id chosen for the specific transaction" />
+
+		</addColumn>
+
+	</changeSet>
+
 	<!-- Recreate event trigger to disable changes to replicated tables -->
     <changeSet author="Sagar Narayane"
         id="2020-12-09-master-v2.25-postprocess">
