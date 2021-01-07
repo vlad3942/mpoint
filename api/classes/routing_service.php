@@ -243,7 +243,7 @@ class RoutingService extends General
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-            $obj_HTTP->disConnect(); print_r($obj_HTTP->getReplyBody());exit;
+            $obj_HTTP->disConnect();
             $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
             if($obj_XML instanceof SimpleXMLElement){
                 return RoutingServiceResponse::produceGetRouteResponse($obj_XML);
