@@ -2230,15 +2230,16 @@ class TxnInfo
 	    return $this->_obj_PaymentSession->toXML();
     }
 
-    /**
-     * Function to update the transaction amount
-     *
-     * @param $obj_DB     Database object
-     * @param $amount     New amount of transaction
-     *
-     */
+	/**
+	 * Function to update the transaction amount
+	 *
+	 * @param \RDB $obj_DB     Database object
+	 * @param      $amount     New amount of transaction
+	 *
+	 * @throws \SQLQueryException
+	 */
     function updateTransactionAmount(RDB $obj_DB,$amount){
-        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount." and convertedamount = ".$amount."  WHERE id = " . $this->_iID;
+        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount.", convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
     }
 
