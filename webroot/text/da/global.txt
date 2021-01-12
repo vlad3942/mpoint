@@ -1408,7 +1408,7 @@ msgstr @@@ Gem kort informationer @@@
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør Betaling @@@
 
-#: /api/classes/callback.php:145
+#: /api/classes/callback.php:141
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
@@ -1538,11 +1538,11 @@ msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Indtast venligst følgende overførsels kode: {CODE} på websitet for at bekræfte din overførsel.
 Koden vil automatisk udløbe om en time. @@@
 
-#: /api/classes/static_route.php:122
+#: /api/classes/crs/payment_method.php:127
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
-#: /api/classes/static_route.php:124
+#: /api/classes/crs/payment_method.php:129
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 

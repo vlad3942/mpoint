@@ -110,7 +110,7 @@ try
 
 		// Notify client about Authorized/Declined state
 		$aCallbackArgs = array('amount' => $iAmount,
-							   'card-id' => (integer)$obj_TxnData["card-id"],
+							   'cardid' => (integer)$obj_TxnData["card-id"],
 							   'transact' => $obj_TxnData["external-id"] );
 		$obj_PSP->notifyClient($iStateID, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 

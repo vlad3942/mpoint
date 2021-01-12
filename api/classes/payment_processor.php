@@ -36,7 +36,12 @@ class PaymentProcessor
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
-        $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+        if(strtolower($is_legacy) == 'false'){
+            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        }else {
+            $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        }
         $sPSPClassName = $this->_objPSPConfig->getName();
         $this->_setConnInfo($aConnInfo, $iPSPID);
         try {
@@ -137,8 +142,8 @@ class PaymentProcessor
         return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);
     }
 
-    public function notifyClient($iStateId, array $vars, $surePay)
+    public function notifyClient($iStateId, array $vars, ?SurePayConfig $obj_SurePay=null)
     {
-        return $this->_objPSP->notifyClient($iStateId,$vars,$surePay);
+        return $this->_objPSP->notifyClient($iStateId,$vars,$obj_SurePay);
     }
 }

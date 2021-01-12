@@ -92,30 +92,6 @@ class FraudStatusTest extends baseAPITest
         $this->assertStringContainsString('<status code="422">Invalid Operation</status>', $xml);
     }
 
-    public function testSSOValidationErrors()
-    {
-        $iClientId = 113;
-        $iTransactionId = 1001001;
-        $iStatusId = Constants::iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE;
-        $sComment = 'phpunit test';
-        $obj_mConsole = new mConsole($this->_OBJ_DB, $this->_OBJ_TXT);
-        $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
-        $objFraudStatus = new FraudStatus($this->_aHTTP_CONN_INFO, $this->_OBJ_DB, $obj_mPoint, $obj_mConsole, $iClientId, $iTransactionId, $iStatusId,  $sComment);
-
-        $xml = $objFraudStatus->getSSOValidationError(mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR);
-        $this->assertStringContainsString('<status code="2">Single Sign-On Service is unreachable</status>', $xml);
-        $xml = $objFraudStatus->getSSOValidationError(mConsole::iSERVICE_READ_TIMEOUT_ERROR);
-        $this->assertStringContainsString('<status code="3">Single Sign-On Service is unavailable</status>', $xml);
-        $xml = $objFraudStatus->getSSOValidationError(mConsole::iUNAUTHORIZED_USER_ACCESS_ERROR);
-        $this->assertStringContainsString('<status code="4">Unauthorized User Access</status>', $xml);
-        $xml = $objFraudStatus->getSSOValidationError(mConsole::iINSUFFICIENT_USER_PERMISSIONS_ERROR);
-        $this->assertStringContainsString('<status code="5">Insufficient User Permissions</status>', $xml);
-        $xml = $objFraudStatus->getSSOValidationError(mConsole::iINSUFFICIENT_CLIENT_LICENSE_ERROR);
-        $this->assertStringContainsString('<status code="6">Insufficient Client License</status>', $xml);
-        $xml = $objFraudStatus->getSSOValidationError(11);
-        $this->assertStringContainsString('<status code="11">Internal Error</status>', $xml);
-    }
-
     public function testRequestValidationErrors()
     {
         $iClientId = 113;

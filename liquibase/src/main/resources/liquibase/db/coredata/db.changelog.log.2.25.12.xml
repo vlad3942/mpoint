@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+		objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+	<changeSet author="Sagar Narayane"
+			   id="2020-12-29-setup-v2.25-system">
+
+		<update catalogName="log"
+				schemaName="log"
+				tableName="state_tbl">
+			<column name="func" value="completeTransaction"/>
+			<where>id in (2000, 2001, 2002, 2003, 2011, 2019, 2010101, 2010102, 2010103, 2010104, 2010105, 2010106,
+				2010107, 2010108, 2010109, 2010110, 2010112, 2010113, 2010114, 2010115, 2010116, 2010117, 2010201,
+				2010202, 2010203, 2010204, 2010205, 2010206, 2010207, 2010208, 2010209, 2010210, 2010211, 2010301,
+				2010302, 2010303, 2010304, 2010305, 2010306, 2010307, 2010308, 2010309, 2010310, 2010311, 2010312,
+				2010313, 2010314, 2010315, 2010316, 2010317, 2010318, 2010319, 2010320, 2010321, 2010322, 2010323,
+				2010324, 2010325, 2010326, 2010327, 2010328, 2010329, 2010330, 2010331, 2010332, 2010333, 2010334,
+				2010401, 2010402, 2010403, 2010404, 2010405, 2010406, 2010407, 2010408, 2010409, 2010410, 2010411,
+				2010412, 2010413, 2010414, 2010415, 2010416, 2010417, 2010418, 2010419)
+			</where>
+		</update>
+
+		<update catalogName="log"
+				schemaName="log"
+				tableName="state_tbl">
+			<column name="func" value="Session"/>
+			<where>id in (4010, 4020, 4030, 4031)</where>
+		</update>
+
+		<update catalogName="log"
+				schemaName="log"
+				tableName="state_tbl">
+			<column name="module" value="sub-code"/>
+			<where>id in (2010101, 2010201, 2010301)</where>
+		</update>
+
+	</changeSet>
+
+</databaseChangeLog>

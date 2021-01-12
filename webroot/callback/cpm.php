@@ -66,7 +66,10 @@ if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_mPoint->getTxnInfo()
 if ($obj_mPoint->getTxnInfo()->getReward() > 0 && $obj_mPoint->getTxnInfo()->getAccountID() > 0) { $obj_mPoint->topup($obj_mPoint->getTxnInfo()->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_mPoint->getTxnInfo()->getID(), $obj_mPoint->getTxnInfo()->getReward() ); }
 
 // Callback URL has been defined for Client
-$obj_mPoint->notifyClient($iStateID, $_POST['gomobileid']);
-// Notify client of automatic capture
-$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']);
+if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
+{
+	$obj_mPoint->notifyToClient($iStateID, $_POST['gomobileid']);
+	// Notify client of automatic capture
+	$obj_mPoint->notifyToClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']);
+}
 ?>

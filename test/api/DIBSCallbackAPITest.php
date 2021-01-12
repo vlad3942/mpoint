@@ -18,6 +18,7 @@ class DIBSCallbackAPITest extends baseAPITest
         global $aMPOINT_CONN_INFO;
         $aMPOINT_CONN_INFO['path'] = "/callback/dibs.php";
         $aMPOINT_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
+        $aMPOINT_CONN_INFO["method"] = "POST";
         $this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }

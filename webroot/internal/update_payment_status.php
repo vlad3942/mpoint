@@ -103,7 +103,7 @@ foreach ($aTxns as $txn)
 			    $iStatus,
                 array('transact'=>$obj_TxnInfo->getExternalID(),
                     'amount'=>$obj_TxnInfo->getAmount(),
-                    'card-id'=>0
+                    'cardid'=>0
                 ),
                 null
             );
