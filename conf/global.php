@@ -1188,7 +1188,7 @@ $aMessage_Queue_Provider_info['provider'] = env("messagequeue.provider", "google
 $aMessage_Queue_Provider_info['keyfile'] = env("messagequeue.keyfile", "");
 $aMessage_Queue_Provider_info['keyfilepath'] = env("messagequeue.keyfilepath", "");
 $aMessage_Queue_Provider_info['projectid'] =  env("messagequeue.projectid", "");
-$aMessage_Queue_Provider_info['topicname'] = env("CLUSTER_NAME", "") . "-" . env("messagequeue.topicname", "");
+$aMessage_Queue_Provider_info['topicname'] = env("CLUSTER_NAME", "") . "-" . env("messagequeue.topicname", "mpoint");
 
 
 
