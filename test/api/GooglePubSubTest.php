@@ -29,6 +29,10 @@ class GooglePubSubTest extends baseAPITest
 
     public function testSuccessfulPublish()
     {
+        if(env('APP_ENV') === 'local')
+        {
+            $this->markTestSkipped('Local PubSub credentials are not available on local');
+        }
         $keyFile = $this->_aMessage_Queue_Provider_info['keyfile'];
         $projectId = $this->_aMessage_Queue_Provider_info['projectid'];
         $topicName = $this->_aMessage_Queue_Provider_info['topicname'];

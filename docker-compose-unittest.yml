@@ -8,6 +8,7 @@ services:
     environment:
       - POSTGRES_DB=mpoint
       - APPROOT=$APP_ROOT
+      - APP_ENV=${APP_ENV}
       - WEBROOT=$APP_ROOT/webroot
       - PHPUNIT_EXEC_PATH=$APP_ROOT/vendor/bin/phpunit
       - PHPUNIT_CONFIG_PATH=$APP_ROOT/phpunit.xml

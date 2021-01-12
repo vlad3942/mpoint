@@ -27,9 +27,7 @@ namespace api\interfaces\messagequeue {
          */
         public function __construct(?string $keyFile, string $projectId, string $topicName)
         {
-            if(empty($keyFile) == FALSE) {
-                $this->_keyFile = json_decode($keyFile, TRUE);
-            }
+            $this->_keyFile = empty($keyFile) === FALSE ? json_decode($keyFile, TRUE) : [];
             $this->_projectId = $projectId;
             $this->_topicName = $topicName;
         }
