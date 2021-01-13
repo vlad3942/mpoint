@@ -22,7 +22,7 @@ require_once(sLIB_PATH ."stripe/Stripe.php");
 class Stripe_PSP extends Callback
 {
 
-	public function notifyClient($sid, array $_post)
+	public function notifyClient($sid, array $_post, SurePayConfig &$obj_SurePay=null)
 	{
 		
 	}

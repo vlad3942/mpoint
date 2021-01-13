@@ -193,8 +193,10 @@ final class PaymentSession
 
     public function updateState($stateId = null)
     {
-        if ($stateId == null) {
-            if ($this->getPendingAmount() == 0) {
+        if ($stateId == null)
+        {
+            $iPendingAmt = $this->getPendingAmount();
+            if ($iPendingAmt == 0) {
 
                 $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE);
 
@@ -205,13 +207,13 @@ final class PaymentSession
                 } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
                 }
-            } elseif ($this->getPendingAmount() != 0) {
+            } elseif ($iPendingAmt != 0) {
                 if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
                 } elseif ($this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
                     $stateId = Constants::iSESSION_FAILED;
                 }
-            } elseif ($this->getPendingAmount() != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {
+            } elseif ($iPendingAmt != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {
                 $stateId = Constants::iSESSION_EXPIRED;
             }
         }

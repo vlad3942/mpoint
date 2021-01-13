@@ -13,16 +13,16 @@ if(empty($obj_DOM->client_info->client_id) === false && empty($obj_DOM->transact
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 
     $xml = '<payment_route_search_response>';
-    $xml .= '<psps>';
-    $xml .= '<psp>';
+    $xml .= '<routes>';
+    $xml .= '<route>';
     $xml .= '<id>18</id>';
     $xml .= '<preference>1</preference>';
-    $xml .= '</psp>';
-    $xml .= '<psp>';
+    $xml .= '</route>';
+    $xml .= '<route>';
     $xml .= '<id>17</id>';
     $xml .= '<preference>2</preference>';
-    $xml .= '</psp>';
-    $xml .= '</psps>';
+    $xml .= '</route>';
+    $xml .= '</routes>';
     $xml .= '</payment_route_search_response>';
 
     echo $xml;

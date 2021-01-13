@@ -1646,5 +1646,96 @@ class mConsole extends Admin
 		return $sReponseXML ;
 	}
 
+    /**
+     * @param $obj_mConsoleConnInfo
+     * @param $clientId
+     * @return int|null
+     */
+    public function SSOCheck($obj_mConsoleConnInfo, $clientId): ?int
+    {
+        $aClientIDs = array($clientId);
+        $obj_mConsoleConnInfo["path"] = $obj_mConsoleConnInfo["paths"]['single-sign-on'];
+        $obj_mConsoleConnInfo["username"] = trim($_SERVER['PHP_AUTH_USER']);
+        $obj_mConsoleConnInfo["password"] = trim($_SERVER['PHP_AUTH_PW']);
+        try {
+            $obj_ConnInfo = HTTPConnInfo::produceConnInfo($obj_mConsoleConnInfo);
+            return $this->singleSignOn($obj_ConnInfo,
+                $_SERVER['HTTP_X_AUTH_TOKEN'],
+                self::sPERMISSION_GET_CLIENTS,
+                $aClientIDs,
+                $_SERVER['HTTP_VERSION']);
+        } catch (HTTPInvalidConnInfoException $e) {
+            return  null;
+        }
+
     }
+
+    /**
+     * @param $code
+     * @return array
+     */
+    public function getSSOValidationError($code): array
+      {
+
+       $result = [];
+        switch ($code)
+        {
+            case self::iSERVICE_CONNECTION_TIMEOUT_ERROR:
+                $result['http_message'] = "HTTP/1.1 504 Gateway Timeout";
+                $result['response'] = '<status code="'. $code .'">Single Sign-On Service is unreachable</status>';
+                break;
+            case self::iSERVICE_READ_TIMEOUT_ERROR:
+                $result['http_message']="HTTP/1.1 502 Bad Gateway";
+                $result['response']= '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
+                break;
+            case self::iUNAUTHORIZED_USER_ACCESS_ERROR:
+                $result['http_message']="HTTP/1.1 401 Unauthorized";
+                $result['response'] ='<status code="'. $code .'">Unauthorized User Access</status>';
+                break;
+            case self::iINSUFFICIENT_USER_PERMISSIONS_ERROR:
+                $result['http_message']="HTTP/1.1 403 Forbidden";
+                $result['response'] ='<status code="'. $code .'">Insufficient User Permissions</status>';
+                break;
+            case self::iINSUFFICIENT_CLIENT_LICENSE_ERROR:
+                $result['http_message']="HTTP/1.1 402 Payment Required";
+                $result['response'] = '<status code="'. $code .'">Insufficient Client License</status>';
+                break;
+            default:
+                $result['http_message'] = "HTTP/1.1 500 Internal Server Error";
+                $result['response']= '<status code="'. $code .'">Internal Error</status>';
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * @return State[]
+     */
+    public function getStates(): array
+    {
+        $sql = "SELECT ID, substring(ID::TEXT, 1, 4) AS CODE, NAME, MODULE
+                FROM LOG." . sSCHEMA_POSTFIX . "STATE_TBL
+                WHERE FUNC IN ('completeTransaction', 'Session')
+                ORDER BY ID ASC;";
+        $aStates = [];
+        try {
+            $res = $this->getDBConn()->query($sql);
+            if (is_resource($res) === true) {
+                while ($RS = $this->getDBConn()->fetchName($res)) {
+                    if ($RS['MODULE'] !== 'sub-code' && array_key_exists($RS["ID"], $aStates) === false) {
+                        $objState = new State($RS["ID"], $RS["NAME"]);
+                        $aStates[$RS["ID"]] = $objState;
+                    } elseif ($RS['MODULE'] === 'sub-code' && array_key_exists($RS["CODE"], $aStates) === true) {
+                        $objState = new State($RS["ID"], $RS["NAME"]);
+                        $aStates[$RS["CODE"]]->addSubState($objState);
+                    }
+                }
+            }
+        } catch (SQLQueryException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+        }
+        return $aStates;
+    }
+
+}
 ?>

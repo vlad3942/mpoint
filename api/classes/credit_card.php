@@ -232,14 +232,64 @@ class CreditCard extends EndUserAccount
         return $RS['PSPID'];
     }
 
+    /**
+     * Fetches the fraud check configuration set for a Client and card type
+     * @param $iCardID         Unique ID of the Card
+     * @param int $iFraudType  System type of the fraud check psp
+     * @return mixed
+     */
+    public function getFraudCheckRouteForSR($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    {
+        $sql = "SELECT DISTINCT PSP.id AS pspid,C.POSITION
+                FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type=".$iFraudType." AND PSP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid AND PC.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PC.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND PCD.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$iCardID." AND C.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
+                WHERE R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." 
+                AND R.enabled = '1'
+                ORDER BY C.position";
+
+        $res = $this->getDBConn()->query($sql);
+        return $res;
+    }
+
+    public function getTokenizationRouteForSR($iCardID)
+    {
+        $sql = "SELECT DISTINCT PSP.id AS pspid FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type=".Constants::iPROCESSOR_TYPE_TOKENIZATION." AND PSP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid AND PC.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PC.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND PCD.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$iCardID." AND C.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
+                WHERE R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." 
+                AND R.enabled = '1'";
+
+        $RS = $this->getDBConn()->getName($sql);
+        return $RS['PSPID'];
+    }
+
 
     /*Fetches the fraud check configuration set for a Client and card type
     * @param	integer $iCardID 	Unique ID of the CardTypeUsed
     * @return 	string
    */
-
-    public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public function getFraudCheckRoute($iCardID,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY, $is_legacy = 'true')
     {
+        // Call new SR logic if legacy flow is off
+        if(strtolower($is_legacy) == 'false') {
+            return $this->getFraudCheckRouteForSR($iCardID,$iFraudType);
+        }
+
         $sql = "SELECT DISTINCT PSP.id AS pspid,CA.POSITION FROM ". $this->_constDataSourceQuery() .
             "WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
@@ -377,6 +427,109 @@ class CreditCard extends EndUserAccount
             $res = $this->getCardsQueryForDR($amount, $typeid, null, $walletid);
         }
         return isset($res[0])?$res[0]:FALSE;
+    }
+
+
+    public function getCardConfigurationObject($amount, $cardTypeId, $routeId)
+    {
+       $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.capturetype, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
+					C.paymenttype, SRLC.cvcmandatory, CA.dccenabled
+                FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON RC.routeid = R.id AND R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." AND R.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY.",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.") AND PSP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid AND PC.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PC.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND PCD.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON C.id = PCD.cardid AND C.id = ".$cardTypeId." AND C.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
+                    INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.currencyid = " . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). " AND PP.amount IN (-1, ".(int)$amount.") AND PP.enabled = '1'
+                    LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CA.cardid = C.id AND CA.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()."
+                    LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
+                WHERE RC.id = ".$routeId."
+                AND (RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." OR RC.countryid IS NULL)
+                AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL)
+                AND RC.enabled = '1'
+                ORDER BY C.position ASC, C.name ASC";
+
+                $result = $this->getDBConn()->getName($sql);
+                return $result;
+    }
+
+    public function getCardConfigurationXML($amount, $cardTypeId, $routeId)
+    {
+        /* ========== Calculate Logo Dimensions Start ========== */
+        if ( ($this->_obj_UA instanceof UAProfile) === true)
+        {
+            $iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
+            $iHeight = $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100;
+
+            if ($iWidth / 180 > $iHeight / 115) { $fScale = $iHeight / 115; }
+            else { $fScale = $iWidth / 180; }
+
+            $iWidth = intval($fScale * 180);
+            $iHeight = intval($fScale * 115);
+        }
+        else
+        {
+            $iWidth = 180;
+            $iHeight = 115;
+        }
+        /* ========== Calculate Logo Dimensions End ========== */
+
+        $RS = $this->getCardConfigurationObject($amount, $cardTypeId, $routeId);
+
+        $xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
+        if (is_array($RS) === true && count($RS) > 0) {
+            $aRS = array();
+            // Transaction instantiated via SMS or "Card" is NOT Premium SMS
+            if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10) {
+                // My Account
+                if ($RS["ID"] == 11) {
+                    // Only use Stored Cards (e-money based prepaid account will be unavailable)
+                    if (($this->_obj_TxnInfo->getClientConfig()->getStoreCard() & 1) == 1) {
+                        $sName = $this->getText()->_("Stored Cards");
+                    } else {
+                        $sName = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $this->getText()->_("My Account"));
+                    }
+                } else {
+                    $sql = "SELECT min, \"max\"
+                        FROM System" . sSCHEMA_POSTFIX . ".CardPrefix_Tbl
+                        WHERE cardid = " . $RS["ID"];
+                    $aRS = $this->getDBConn()->getAllNames($sql);
+                }
+
+                if (empty($iProviderId) === true) {
+                    $iProviderId = $RS ["PSPID"];
+                }
+
+                // Construct XML Document with card data
+                $xml .= '<item id="' . $RS["ID"] . '" type-id="' . $RS["ID"] . '" pspid="' . $iProviderId . '" min-length="' . $RS["MINLENGTH"] . '" max-length="' . $RS["MAXLENGTH"] . '" cvc-length="' . $RS["CVCLENGTH"] . '" enabled = "' . General::bool2xml(true) . '"' . ' cvcmandatory = "' . General::bool2xml($RS['CVCMANDATORY']) . '" dcc="' . General::bool2xml($RS["DCCENABLED"]) . '" >';
+                $xml .= '<name>' . htmlspecialchars($RS["NAME"], ENT_NOQUOTES) . '</name>';
+                $xml .= '<logo-width>' . $iWidth . '</logo-width>';
+                $xml .= '<logo-height>' . $iHeight . '</logo-height>';
+                $xml .= '<account>' . $RS["ACCOUNT"] . '</account>';
+                $xml .= '<subaccount>' . $RS["SUBACCOUNT"] . '</subaccount>';
+                $xml .= '<currency>' . $RS["CURRENCY"] . '</currency>';
+                $xml .= '<capture_type>'. $RS["CAPTURETYPE"] .'</capture_type>';
+                if (is_array($aRS) === true && count($aRS) > 0) {
+                    $xml .= '<prefixes>';
+                    for ($i = 0; $i < count($aRS); $i++) {
+                        $xml .= '<prefix>';
+                        $xml .= '<min>' . $aRS[$i]["MIN"] . '</min>';
+                        $xml .= '<max>' . $aRS[$i]["MAX"] . '</max>';
+                        $xml .= '</prefix>';
+                    }
+                    $xml .= '</prefixes>';
+                } else {
+                    $xml .= '<prefixes />';
+                }
+                $xml .= '</item>';
+            }
+        }
+        $xml .= '</cards>';
+
+        return $xml;
     }
 
 }

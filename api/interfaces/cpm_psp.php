@@ -10,13 +10,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
 
-	public function notifyClient($iStateId, array $vars, $surePay)
-    {
-        if(isset($vars["expiry"]) === false ){$vars["expiry"] = null; }
-        if(isset($vars["additionaldata"]) === false ){$vars["additionaldata"] = ""; }
-        parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"], $surePay);
-    }
-
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
      * The method will return one the following status codes:
@@ -51,6 +44,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '</additional-config>';
             $b .= '</client-config>';
             $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            {
+                $b .= $this->getPSPConfig()->toRouteConfigXML();
+            }
+
             $b .= '<transactions>';
             $b .= $this->_constTxnXML($iAmount);
             $b .= '</transactions>';
@@ -136,6 +135,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '</additional-config>';
             $b .= '</client-config>';
 			$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            {
+                $b .= $this->getPSPConfig()->toRouteConfigXML();
+            }
+
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
 			$b .= '</transactions>';
@@ -228,6 +233,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</additional-config>';
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        {
+            $b .= $this->getPSPConfig()->toRouteConfigXML();
+        }
+
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
 		$b .= '</transactions>';
@@ -292,6 +303,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</additional-config>';
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        {
+            $b .= $this->getPSPConfig()->toRouteConfigXML();
+        }
+
 		$b .= '<transactions>';
 		if($amount <= 0) {
             $amount = $this->getTxnInfo()->getAmount();
@@ -336,7 +353,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
-							'card-id'=>0);
+							'cardid'=>0);
 
 					if ($iStatusCode == 1000)
 					{
@@ -384,6 +401,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</additional-config>';
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        {
+            $b .= $this->getPSPConfig()->toRouteConfigXML();
+        }
+
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -433,9 +456,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         if($card_type_id !== -1)
         {
             $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                SET pspid = " . $obj_PSPConfig->getID() . "
-                , cardid = ". intval($card_type_id) . "
-                WHERE id = " . $this->getTxnInfo()->getID();
+                    SET pspid = " . $obj_PSPConfig->getID() . ", 
+                        cardid = " . intval($card_type_id) . ",
+                        routeconfigid = " . $this->getTxnInfo()->getRouteConfigID() . "
+                    WHERE id = " . $this->getTxnInfo()->getID();
             $this->getDBConn()->query($sql);
         }
 
@@ -451,6 +475,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
         $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        {
+            $b .= $obj_PSPConfig->toRouteConfigXML();
+        }
+
         $b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
@@ -554,6 +584,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+        {
+            $b .= $obj_PSPConfig->toRouteConfigXML();
+        }
 
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;
@@ -667,6 +702,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<root>';
         $b .= '<tokenize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        {
+            $b .= $obj_PSPConfig->toRouteConfigXML();
+        }
+
         $b .= $this->_constTxnXML();
         $b .= $this->_constNewCardAuthorizationRequest($obj_Card);
         $b .= '</tokenize>';
@@ -882,6 +923,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<root>';
 		$b .= '<get-payment-data mode="'. $mode .'">';
 		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+
+        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        {
+            $b .= $obj_PSPConfig->toRouteConfigXML();
+        }
+
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</get-payment-data>';

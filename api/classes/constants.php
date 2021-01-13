@@ -1740,6 +1740,12 @@ abstract class Constants
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
     const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
 
+   /*
+    * Defines unique ID of the State that indicates payment decline due to
+    * authentication failed
+    */
+    const iAUTHENTICATION_DECLINED_SUB_CODE = 2010406;
+
 	/*
      * Define substatus code of 2004 status code
      */

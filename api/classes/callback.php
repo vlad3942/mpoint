@@ -88,8 +88,14 @@ abstract class Callback extends EndUserAccount
         {
             throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
         }
-
-        if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
+        $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+        if ($oPSPConfig == null) {
+        	if(strtolower($is_legacy) == 'false'){
+                $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+			}else {
+                $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+            }
+        }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
@@ -350,34 +356,112 @@ abstract class Callback extends EndUserAccount
 
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
+	 * The method will re-construct the data received from NetAxept after having removed the following mPoint specific fields:
+	 *    - width
+	 *    - height
+	 *    - format
+	 *    - PHPSESSID (found using PHP's session_name() function)
+	 *    - language
+	 *    - cardid
+	 * Additionally the method will add mPoint's Unique ID for the Transaction.
+	 *
+	 * @param integer             $sid         Unique ID of the State that the Transaction terminated in
+	 * @param array               $vars
+	 * @param \SurePayConfig|null $obj_SurePay SurePay Configuration Object. Default value null
+	 *
+	 * @see    Callback::send()
+	 * @see    Callback::getVariables()
+	 *
+	 */
+
+	public function notifyClient(int $sid, array $vars, ?SurePayConfig $obj_SurePay=null)
+	{
+		$pspId=  "";
+		$amount =(int)$vars["amount"];
+		$sAdditionalData = "";
+		$exp = null;
+		$cardNo = 0;
+		$fee = 0;
+		$cardId = 0;
+
+		if(isset($vars["transact"]) === TRUE ){
+			$pspId = $vars["transact"];
+		}
+
+		if(isset($vars["expiry"]) === TRUE ){
+			$exp = $vars["expiry"];
+		}
+
+        if(isset($vars["additionaldata"]) === TRUE ){
+        	$sAdditionalData = $vars["additionaldata"];
+        }
+
+        if(isset($vars["cardnomask"]) === TRUE )
+		{
+			if(isset($vars['cardprefix']) === TRUE)
+			{
+			$cardno= $vars['cardprefix'] . str_replace("X", "*", substr($vars['cardnomask'], strlen($vars['cardprefix']) ) );
+			}
+			elseif(strpos($vars["cardnomask"], 'X'))
+			{
+				 $cardno = str_replace("X", "*", $vars["cardnomask"]);
+			}
+			else
+			{
+				$cardno = $vars["cardnomask"];
+			}
+		}
+
+        if(isset($vars["fee"]) === TRUE )
+        {
+        	$fee = (int)$vars["fee"];
+        }
+
+        if(isset($vars["cardid"]) === TRUE )
+        {
+        	$cardId = (int)$vars["cardid"];
+        }
+        elseif(isset($vars["card-id"]) === TRUE)
+		{
+			$cardId = (int)$vars["card-id"];
+		}
+
+		$this->notifyToClient($sid, $pspId, $amount, $cardNo, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
+	}
+
+	/**
+	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
 	 * The method will construct the default mPoint callback:
-	 *	mpoint-id={UNIQUE ID FOR THE TRANSACTION}
-	 *	&orderid={CLIENT'S ORDER ID FOR THE TRANSACTION}
-	 *	&status={STATUS CODE FOR THE TRANSACTION}
-	 *	&amount={TOTAL AMOUNT THE CUSTOMER WAS CHARGED FOR THE TRANSACTION without fee}
-	 *	&currency={CURRENCY AMOUNT IS CHARGED IN}
-	 *	&mobile={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
-	 *	&email={CUSTOMER'S EMAIL ADDRESS WHERE ORDER STATUS CAN BE SENT TO}
-	 *	&operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
-	 *	&fee={AMOUNT THE USER HAS TO PAY IN FEE�S}
+	 *    mpoint-id={UNIQUE ID FOR THE TRANSACTION}
+	 *    &orderid={CLIENT'S ORDER ID FOR THE TRANSACTION}
+	 *    &status={STATUS CODE FOR THE TRANSACTION}
+	 *    &amount={TOTAL AMOUNT THE CUSTOMER WAS CHARGED FOR THE TRANSACTION without fee}
+	 *    &currency={CURRENCY AMOUNT IS CHARGED IN}
+	 *    &mobile={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
+	 *    &email={CUSTOMER'S EMAIL ADDRESS WHERE ORDER STATUS CAN BE SENT TO}
+	 *    &operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
+	 *    &fee={AMOUNT THE USER HAS TO PAY IN FEE�S}
 	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request
 	 * as well as the following Customer Input:
-	 * 	- Purchased Products
-	 * 	- Delivery Information
-	 * 	- Shipping Information
+	 *    - Purchased Products
+	 *    - Delivery Information
+	 *    - Shipping Information
 	 *
-	 * @see 	Callback::send()
-	 * @see 	Callback::getVariables()
+	 * @param integer             $sid    Unique ID of the State that the Transaction terminated in
+	 * @param string              $pspid  The Payment Service Provider's (PSP) unique ID for the transaction
+	 * @param integer             $amt    Total amount the customer will pay for the Transaction without fee
+	 * @param string              $cardno The masked card number for the card that was used for the payment
+	 * @param integer             $cardid mPoint's unique ID for the card type
+	 * @param null                $exp
+	 * @param string              $sAdditionalData
+	 * @param \SurePayConfig|null $obj_SurePay
+	 * @param integer             $fee    The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 *
-	 * @param 	integer $sid 				Unique ID of the State that the Transaction terminated in
-	 * @param 	string $pspid 				The Payment Service Provider's (PSP) unique ID for the transaction
-	 * @param 	integer $amt				Total amount the customer will pay for the Transaction without fee
-	 * @param 	integer $cardid				mPoint's unique ID for the card type
-	 * @param 	string $cardno 				The masked card number for the card that was used for the payment
-	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
-	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
+	 * @throws \Exception
+	 * @see    Callback::send()
+	 * @see    Callback::getVariables()
 	 */
-	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
+	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0): void
 	{
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();

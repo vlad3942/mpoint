@@ -375,31 +375,6 @@ class NetAxept extends Callback implements Captureable, Refundable
 	}
 
 	/**
-	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
-	 * The method will re-construct the data received from NetAxept after having removed the following mPoint specific fields:
-	 * 	- width
-	 * 	- height
-	 * 	- format
-	 * 	- PHPSESSID (found using PHP's session_name() function)
-	 * 	- language
-	 * 	- cardid
-	 * Additionally the method will add mPoint's Unique ID for the Transaction.
-	 *
-	 * @see 	Callback::notifyClient()
-	 * @see 	Callback::send()
-	 * @see 	Callback::getVariables()
-	 *
-	 * @param 	integer			$sid 			Unique ID of the State that the Transaction terminated in
-	 * @param 	array			$_post 			Response retrived from NetAxept.
-	 * @param 	SurePayConfig	$obj_SurePay 	SurePay Configuration Object. Default value null
-
-	 */
-	public function notifyClient($sid, array $_post, SurePayConfig &$obj_SurePay=null)
-	{		
-		parent::notifyClient($sid, $_post["transact"],$_post["amount"], $_post['cardid'], $_post['cardnomask'], null,"", $obj_SurePay, intval($_post['fee'] ) );
-	}
-	
-	/**
 	 * Authorises a payment with NetAxept for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.
 	 * This method will return either a NetAxept transaction id or on failures a negated NetAxept error code.
