@@ -1183,7 +1183,7 @@ $aHTTP_CONN_INFO["hpp"]["protocol"] = "https";
  * Message Queue Provider Information
  *
  */
-$aMessage_Queue_Provider_info['provider'] = env("messagequeue.provider", "googlepusbub");
+$aMessage_Queue_Provider_info['provider'] = env("messagequeue.provider", "googlepubsub");
 //First Preference to KeyFile
 $aMessage_Queue_Provider_info['keyfile'] = env("messagequeue.keyfile", "");
 $aMessage_Queue_Provider_info['keyfilepath'] = env("messagequeue.keyfilepath", "");
