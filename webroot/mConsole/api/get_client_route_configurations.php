@@ -19,7 +19,7 @@ require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/route_feature.php");
-require_once(sCLASS_PATH ."/ClientRouteConfigurations.php");
+require_once(sCLASS_PATH ."/crs/ClientRouteConfigurations.php");
 
 $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
@@ -36,50 +36,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
         $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
-        $code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, array($clientId), $_SERVER['HTTP_VERSION']);
+        global $aHTTP_CONN_INFO;
+        $code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
 
-        switch ($code)
-        {
-            case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
-                header("HTTP/1.1 504 Gateway Timeout");
-                $xml = '<status code="'. $code .'">Single Sign-On Service is unreachable</status>';
-                break;
-            case (mConsole::iSERVICE_READ_TIMEOUT_ERROR):
-                header("HTTP/1.1 502 Bad Gateway");
-                $xml = '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
-                break;
-            case (mConsole::iUNAUTHORIZED_USER_ACCESS_ERROR):
-                header("HTTP/1.1 401 Unauthorized");
-                $xml = '<status code="'. $code .'">Unauthorized User Access</status>';
-                break;
-            case (mConsole::iINSUFFICIENT_USER_PERMISSIONS_ERROR):
-                header("HTTP/1.1 403 Forbidden");
-                $xml = '<status code="'. $code .'">Insufficient User Permissions</status>';
-                break;
-            case (mConsole::iINSUFFICIENT_CLIENT_LICENSE_ERROR):
-                header("HTTP/1.1 402 Payment Required");
+        if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL) {
 
-                $xml = '<status code="'. $code .'">Insufficient Client License</status>';
-                break;
-            case (mConsole::iAUTHORIZATION_SUCCESSFUL):
+            $obj_Config = ClientRouteConfigurations::produceConfig($_OBJ_DB, $clientId);
+            if ($obj_Config instanceof ClientRouteConfigurations)
+            {
+                $xml = $obj_Config->toXML();
+            }
 
-                $obj_Config = ClientRouteConfigurations::produceConfig($_OBJ_DB, $clientId);
-
-                if ($obj_Config instanceof ClientRouteConfigurations)
-                {
-                    $xml = $obj_Config->toXML();
-                }
-                // No Client Configurations found
-                if (empty($xml) === true)
-                {
-                    header("HTTP/1.1 404 Not Found");
-                    $xml = '<status code="404">Configuration not found for clients: '. $clientId .'</status>';
-                }
-                break;
-            default:
-                header("HTTP/1.1 500 Internal Server Error");
-                $xml = '<status code="'. $code .'">Internal Error</status>';
-                break;
+        } else {
+            $response = $obj_mConsole->getSSOValidationError($code);
+            header($response['http_message']);
+            $xml = $response['response'];
         }
     }
     elseif ($code === 2)

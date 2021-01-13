@@ -30,13 +30,14 @@ class ClientRouteConfigurations
      * Returns the XML payload of client route feature configuration
      * @return 	String
      */
-    private function getRouteFeatureAsXML($features)
+    private function getRouteFeatureAsXML(array $features): String
     {
         $xml = '<route_features>';
         foreach ($features as $feature)
         {
-            if(!$feature instanceof RouteFeature) { continue; }
-            $xml .= $feature->toXML();
+            if($feature instanceof RouteFeature) {
+                $xml .= $feature->toXML();
+            }
         }
         $xml .= '</route_features>';
 
@@ -47,7 +48,7 @@ class ClientRouteConfigurations
      * Prepare XML string
      * @return string
      */
-    public function toXML()
+    public function toXML(): String
     {
         $xml = '<route_configurations>';
         foreach ($this->_obj_ClientRouteConfigurations as $valClientRouteConfigurations)
@@ -82,13 +83,13 @@ class ClientRouteConfigurations
      * @param 	integer $clientId 	Unique ID for the Client performing the request
      * @return 	ClientRouteConfigurations
      */
-    public static function produceConfig(RDB &$oDB, $clientId)
+    public static function produceConfig(RDB $oDB, int $clientId): ClientRouteConfigurations
     {
         $sql = 'SELECT R.id as routeid, R.providerid, RC.id AS routeconfigid, RC.name AS routename, RC.username, 
                 RC.password, RC.countryid, RC.currencyid, RC.mid, RC.capturetype, RC.enabled AS routeconfigenabled
                 FROM client'.sSCHEMA_POSTFIX. '.routeconfig_tbl RC
                 LEFT JOIN client' .sSCHEMA_POSTFIX. '.route_tbl R ON RC.routeid = R.id
-                WHERE R.clientid = '.intval($clientId);
+                WHERE R.clientid = '. $clientId;
 
         $res = $oDB->query($sql);
         $aObj_RouteConfigurations = array();
