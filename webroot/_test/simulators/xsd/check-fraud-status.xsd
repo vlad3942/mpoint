@@ -22,6 +22,7 @@
 										<xs:element type="xs:byte" name="walletId"/>
 										<xs:element type="xs:byte" name="productType"/>
 										<xs:element type="xs:string" name="externalId"/>
+										<xs:element name="exchangeserviceinfo" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="initialize_amount" type="initialize_amount" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="conversion_rate" type="xs:float" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="external_refs" type="external_refs" minOccurs="0" maxOccurs="1"/>
