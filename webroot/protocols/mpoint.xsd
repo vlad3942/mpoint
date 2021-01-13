@@ -54,6 +54,7 @@
 								</xs:all>
 								<xs:attribute name="order-no" type="order-no" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
+								<xs:attribute name="exchangeserviceinfo-id" type="xs:positiveInteger" use="optional" />
                                 <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
 								<xs:attribute name="product-type" type="xs:positiveInteger" use="optional" default="100" />
 								<xs:attribute name="booking-ref" type="xs:string" use="optional" />
@@ -136,6 +137,7 @@
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
+								<xs:attribute name="exchangeserviceinfo-id" type="xs:positiveInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="auth-token" type="auth-token" minOccurs="0" maxOccurs="1" />
@@ -302,6 +304,7 @@
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
+								<xs:attribute name="exchangeserviceinfo-id" type="xs:positiveInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>

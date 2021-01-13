@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Temporarily drop event trigger to enable changes to replicated tables -->
+    <changeSet author="Priya Alamwar" id="2020-12-28-master-v2.25-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
+    <!-- Add column in transaction_tbl  -->
+    <changeSet author="Priya Alamwar"
+        id="2020-12-28-master-v2.25.7">
+
+        <sql dbms="postgresql" endDelimiter=";">
+             alter table log.transaction_tbl add exchangeinfoid integer;
+        </sql>
+
+       <addForeignKeyConstraint
+           baseColumnNames="exchangeinfoid"
+           baseTableCatalogName="log"
+           baseTableName="transaction_tbl"
+           baseTableSchemaName="log"
+           constraintName="transaction2exchangeinfoid_fk"
+           onDelete="RESTRICT"
+           onUpdate="CASCADE"
+           referencedColumnNames="id"
+           referencedTableCatalogName="system"
+           referencedTableName="exchangeinfo_tbl"
+           referencedTableSchemaName="system" />
+
+
+        <createIndex indexName="exchangeinfoid_idx" catalogName="log" schemaName="log" tableName="transaction_tbl">
+            <column name="exchangeinfoid"/>
+        </createIndex>
+
+    </changeSet>
+
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Priya Alamwar"
+               id="2020-12-30-master-v2.25-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

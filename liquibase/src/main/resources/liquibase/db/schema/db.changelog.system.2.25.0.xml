@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+	<!-- Temporarily drop event trigger to enable changes to replicated tables -->
+	<changeSet author="Priya Alamwar" id="2020-12-28-master-v2.25-pre-process">
+
+		<sql dbms="postgresql" endDelimiter=";">
+			DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+		</sql>
+	</changeSet>
+
+	<changeSet author="Priya Alamwar" id="2020-12-28-v2.25_1-pre-process">
+		<createTable catalogName="system" schemaName="system" tableName="exchangeinfo_tbl"
+					 remarks="This table is required to store the master data of FX services (DCC, MCP, PCC  and etc) and services is opted or not.">
+
+			<column name="id" type="serial" autoIncrement="false" remarks="" >
+				<constraints primaryKey="true" nullable="false" primaryKeyName="exchangeinfo_tbl_pk"/>
+			</column>
+
+			<column name="name" type="varchar(100)"  remarks="Name of exchangeinfo">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="enabled" type="boolean" defaultValueBoolean="true"
+					remarks="This column is to enable/disable presentment configuration">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="created" type="timestamp without time zone" defaultValueComputed="now()"
+					remarks="This column is to store current time">
+				<constraints nullable="false"/>
+			</column>
+
+			<column  name="modified"  type="timestamp without time zone" defaultValueComputed="now()" remarks="This column is to store modified time">
+				<constraints nullable="false" />
+			</column>
+
+		</createTable>
+
+		<sql>
+			ALTER TABLE system.exchangeinfo_tbl OWNER TO mpoint;
+			CREATE TRIGGER Update_exchangeinfo BEFORE UPDATE ON system.exchangeinfo_tbl FOR EACH ROW EXECUTE
+			PROCEDURE Public.Update_Table_Proc();
+		</sql>
+
+		<rollback>
+			<sql>DROP TRIGGER Update_exchangeinfo IF EXISTS ON system.exchangeinfo_tbl CASCADE TRUE;</sql>
+			<dropTable cascadeConstraints="true" catalogName="system" schemaName="system"
+					   tableName="exchangeinfo_tbl"/>
+		</rollback>
+
+	</changeSet>
+
+	<!-- Recreate event trigger to disable changes to replicated tables -->
+	<changeSet author="Priya Alamwar"
+			   id="2020-12-30-master-v2.25-postprocess">
+
+		<sql dbms="postgresql" endDelimiter=";">
+			CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+			WHEN TAG IN ('ALTER TABLE')
+			EXECUTE FUNCTION public.no_ddl()
+		</sql>
+
+		<sql dbms="postgresql" endDelimiter=";">
+			ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>
