@@ -419,6 +419,18 @@ try
                                         	}
                                         }
 
+                                        // Validate exchange service info id if explicitly passed in request
+                                        $exchangeServiceInfo = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction["exchangeserviceinfo-id"];
+                                        if($exchangeServiceInfo > 0){
+                                            if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) != 10 ){
+                                                $aMsgCds[57] = "Invalid exchange service information id :".intval($exchangeServiceInfo) ;
+                                            }
+                                        }
+                                        if ($exchangeServiceInfo)
+                                        {
+                                            $data['exchangeserviceinfo'] = (integer) $exchangeServiceInfo;
+                                        }
+
                                         if (isset($obj_Elem->capture_type) > 0)
                                         {
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
