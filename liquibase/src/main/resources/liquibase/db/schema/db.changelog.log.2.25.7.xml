@@ -17,11 +17,15 @@
     <changeSet author="Priya Alamwar"
         id="2020-12-28-master-v2.25.7">
 
-        <sql dbms="postgresql" endDelimiter=";">
-             alter table log.transaction_tbl add exchangeinfoid integer;
-        </sql>
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="transaction_tbl" >
+            <column name="exchangeinfoid"
+                    type="int"
+                    remarks="exchange service info id for the specific transaction" />
+        </addColumn>
 
-       <addForeignKeyConstraint
+        <addForeignKeyConstraint
            baseColumnNames="exchangeinfoid"
            baseTableCatalogName="log"
            baseTableName="transaction_tbl"

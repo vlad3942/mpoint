@@ -17,7 +17,7 @@
 		<createTable catalogName="system" schemaName="system" tableName="exchangeinfo_tbl"
 					 remarks="This table is required to store the master data of FX services (DCC, MCP, PCC  and etc) and services is opted or not.">
 
-			<column name="id" type="serial" autoIncrement="false" remarks="" >
+			<column name="id" type="integer" autoIncrement="false" remarks="" >
 				<constraints primaryKey="true" nullable="false" primaryKeyName="exchangeinfo_tbl_pk"/>
 			</column>
 

@@ -64,7 +64,7 @@
                 tableName="exchangeinfo_tbl">
 
             <column name="id" value="41"/>
-            <column name="name" value="PCC Not opt"/>
+            <column name="name" value="PCC Opt"/>
         </insert>
 
         <insert catalogName="system"

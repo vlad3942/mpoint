@@ -6,18 +6,11 @@ require_once __DIR__ . '/../inc/testinclude.php';
 
 class ValidateTest extends baseAPITest
 {
-
     private $_OBJ_DB;
-    protected $_aHTTP_CONN_INFO;
-
     public function setUp() : void
     {
         parent::setUp(TRUE);
-        global $aHTTP_CONN_INFO;
-        $this->bIgnoreErrors = true;
-        $this->_aHTTP_CONN_INFO = $aHTTP_CONN_INFO;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
-        $this->_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
     }
 
     public function testSuccessfulValExchangeServiceInfo()
