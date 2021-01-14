@@ -80,5 +80,35 @@ class RouteFeature
         return $aObj_Configurations;
     }
 
+
+    /**
+     * Produces a new instance of a Route Configuration Object from Route config ID.
+     *
+     * @param 	RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $clientId 	Unique ID for the Client performing the request
+     * @return 	RouteFeature Object Array
+     */
+    public static function produceConfigByRouteConfigID(RDB $oDB, int $routeConfigID): array
+    {
+        $aObj_Configurations = array();
+
+        $RouteFeature_SQL = "SELECT CRF.id as featureid, SRF.featurename
+                         FROM Client" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl CRF
+                         INNER JOIN System" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
+                         WHERE CRF.routeconfigid = " . $routeConfigID .
+				        "ORDER BY CRF.featureid";
+
+        try {
+            $res = $oDB->query($RouteFeature_SQL);
+
+            while ($RS = $oDB->fetchName($res)) {
+                $aObj_Configurations[] = new RouteFeature ($RS["FEATUREID"], $RS["FEATURENAME"]);
+            }
+        } catch (SQLQueryException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+        }
+        return $aObj_Configurations;
+    }
+
 }
 ?>

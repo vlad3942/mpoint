@@ -12,35 +12,45 @@ class ClientRouteConfigurations
 {
     /**
      * Configuration for the client route configuration
-     * @var ClientRouteConfigurations
+     * @var RouteConfig
      */
-    private $_obj_ClientRouteConfigurations;
+    private $_obj_RouteConfig;
+
+    /**
+     * Configuration for the route Feature
+     * @var RouteFeature
+     */
+    private $_obj_RouteFeatures;
 
     /**
      * Default Constructor
      *
-     * @param 	ClientRouteConfig $aObj_ClientRouteConfigurations 	Hold Configuration for the client route configuration
+     * @param 	array $aObj_RouteConfigs 	Hold Configuration for the client route configuration
+     * @param 	array $aObj_RouteFeatures 	Hold Configuration for the client route Features
      */
-    public function __construct($aObj_ClientRouteConfigurations)
+    public function __construct(array $aObj_RouteConfigs, array $aObj_RouteFeatures)
     {
-        $this->_obj_ClientRouteConfigurations = $aObj_ClientRouteConfigurations;
+        $this->_obj_RouteConfig = $aObj_RouteConfigs;
+        $this->_obj_RouteFeatures = $aObj_RouteFeatures;
     }
 
     /**
-     * Returns the XML payload of client route feature configuration
+     * Returns the XML of route feature
+     * @param  Int routeConfigID Hold Route config ID
      * @return 	String
      */
-    private function getRouteFeatureAsXML(array $features): String
+    private function getRouteFeatureAsXML(int $routeConfigID): String
     {
-        $xml = '<route_features>';
-        foreach ($features as $feature)
-        {
-            if($feature instanceof RouteFeature) {
-                $xml .= $feature->toXML();
+        $xml = '';
+        if(empty($this->_obj_RouteFeatures[$routeConfigID]) === false) {
+            $xml = '<route_features>';
+            foreach ($this->_obj_RouteFeatures[$routeConfigID] as $feature) {
+                if ($feature instanceof RouteFeature) {
+                    $xml .= $feature->toXML();
+                }
             }
+            $xml .= '</route_features>';
         }
-        $xml .= '</route_features>';
-
         return $xml;
     }
 
@@ -51,25 +61,23 @@ class ClientRouteConfigurations
     public function toXML(): String
     {
         $xml = '<route_configurations>';
-        foreach ($this->_obj_ClientRouteConfigurations as $valClientRouteConfigurations)
+        foreach ($this->_obj_RouteConfig as $valRouteConfig)
         {
             $xml .= '<route_configuration>';
-            $xml .= '<id>'. $valClientRouteConfigurations['ROUTECONFIGID'] .'</id>';
-            $xml .= '<provider_id>'. $valClientRouteConfigurations['PROVIDERID'] .'</provider_id>';
-            $xml .= '<country_id>'. $valClientRouteConfigurations['COUNTRYID'] .'</country_id>';
-            $xml .= '<currency_id>'. $valClientRouteConfigurations['CURRENCYID'] .'</currency_id>';
-            $xml .= '<mid>'. $valClientRouteConfigurations['MID'] .'</mid>';
-            $xml .= '<route_name>'. $valClientRouteConfigurations['ROUTENAME'] .'</route_name>';
-            $xml .= '<username>'. $valClientRouteConfigurations['USERNAME'] .'</username>';
-            $xml .= '<password>'. $valClientRouteConfigurations['PASSWORD'] .'</password>';
-            $xml .= '<capture_type>'. $valClientRouteConfigurations['CAPTURETYPE'] .'</capture_type>';
+            $xml .= '<id>'. $valRouteConfig['ROUTECONFIGID'] .'</id>';
+            $xml .= '<provider_id>'. $valRouteConfig['PROVIDERID'] .'</provider_id>';
+            $xml .= '<country_id>'. $valRouteConfig['COUNTRYID'] .'</country_id>';
+            $xml .= '<currency_id>'. $valRouteConfig['CURRENCYID'] .'</currency_id>';
+            $xml .= '<mid>'. $valRouteConfig['MID'] .'</mid>';
+            $xml .= '<route_name>'. $valRouteConfig['ROUTENAME'] .'</route_name>';
+            $xml .= '<username>'. $valRouteConfig['USERNAME'] .'</username>';
+            $xml .= '<password>'. $valRouteConfig['PASSWORD'] .'</password>';
+            $xml .= '<capture_type>'. $valRouteConfig['CAPTURETYPE'] .'</capture_type>';
+            $xml .= '<enabled>'. General::bool2xml($valRouteConfig['ROUTECONFIGENABLED']) .'</enabled>';
 
-            if(is_array($valClientRouteConfigurations['ROUTE_FEATURES'])
-                && count($valClientRouteConfigurations['ROUTE_FEATURES']) > 0)
-            {
-                $xml .= $this->getRouteFeatureAsXML($valClientRouteConfigurations['ROUTE_FEATURES']);
+            if($this->_obj_RouteFeatures[(int)$valRouteConfig['ROUTECONFIGID']]) {
+                $xml .= $this->getRouteFeatureAsXML((int)$valRouteConfig['ROUTECONFIGID']);
             }
-            $xml .= '<enabled>'. General::bool2xml($valClientRouteConfigurations['ROUTECONFIGENABLED']) .'</enabled>';
             $xml .= '</route_configuration>';
         }
         $xml .= '</route_configurations>';
@@ -87,37 +95,28 @@ class ClientRouteConfigurations
     {
         $sql = 'SELECT R.id as routeid, R.providerid, RC.id AS routeconfigid, RC.name AS routename, RC.username, 
                 RC.password, RC.countryid, RC.currencyid, RC.mid, RC.capturetype, RC.enabled AS routeconfigenabled
-                FROM client'.sSCHEMA_POSTFIX. '.routeconfig_tbl RC
-                LEFT JOIN client' .sSCHEMA_POSTFIX. '.route_tbl R ON RC.routeid = R.id
+                FROM client'.sSCHEMA_POSTFIX. '.route_tbl R
+                INNER JOIN client' .sSCHEMA_POSTFIX. '.routeconfig_tbl RC ON RC.routeid = R.id
                 WHERE R.clientid = '. $clientId;
 
-        $res = $oDB->query($sql);
-        $aObj_RouteConfigurations = array();
+        try {
+            $res = $oDB->query($sql);
 
-        while ($RS = $oDB->fetchName($res)) {
+            $aObj_RouteConfigurations = array();
+            $aObj_RouteFeatures = array();
 
-            $aObj_RouteConfigurations[$RS["ROUTECONFIGID"]] = $RS;
-            //Get route feature
-            $RouteFeature_SQL = "SELECT CRF.id as featureid, SRF.featurename
-					 FROM Client" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl CRF
-					 LEFT JOIN System" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
-					 WHERE routeconfigid = " . intval($RS["ROUTECONFIGID"]);
-
-            $aRouteFeature = $oDB->getAllNames($RouteFeature_SQL);
-
-            if(is_array($aRouteFeature) && count($aRouteFeature)) {
-                $Obj_aRouteFeatures = array();
-                foreach ($aRouteFeature as $valRouteFeature) {
-                    $Obj_aRouteFeatures[$valRouteFeature["FEATUREID"]] = new RouteFeature ($valRouteFeature["FEATUREID"], $valRouteFeature["FEATURENAME"]);
-                }
-                $aObj_RouteConfigurations[$RS["ROUTECONFIGID"]]['ROUTE_FEATURES'] = $Obj_aRouteFeatures;
-
-                # Reset variable;
-                $aRouteFeature = '';
-                $Obj_aRouteFeatures = '';
+            while ($RS = $oDB->fetchName($res)) {
+                $aObj_RouteConfigurations[$RS["ROUTECONFIGID"]] = $RS;
+                # Get Route Feature
+                $routeConfigID = (int) $RS["ROUTECONFIGID"];
+                $aObj_RouteFeatures[$routeConfigID] = RouteFeature::produceConfigByRouteConfigID($oDB, $routeConfigID);
             }
         }
-        return new ClientRouteConfigurations($aObj_RouteConfigurations);
+        catch (SQLQueryException $e){
+            trigger_error($e->getMessage(), E_USER_ERROR);
+        }
+
+        return new ClientRouteConfigurations($aObj_RouteConfigurations, $aObj_RouteFeatures);
     }
 }
 ?>
