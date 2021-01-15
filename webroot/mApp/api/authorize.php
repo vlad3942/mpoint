@@ -465,7 +465,7 @@ try
                                         $exchangeServiceInfo = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction["exchangeserviceinfo-id"];
                                         if($exchangeServiceInfo > 0){
                                             if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
-                                                $aMsgCds[57] = "Invalid exchange service information id :".intval($exchangeServiceInfo) ;
+                                                $aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo;
                                             }
                                         }
                                         if ($exchangeServiceInfo)
