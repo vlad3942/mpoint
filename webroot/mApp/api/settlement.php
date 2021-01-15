@@ -36,7 +36,7 @@ $HTTP_RAW_POST_DATA .= '</root>';*/
 // <editor-fold defaultstate="collapsed" desc="all required files">
 
 // Require Global Include File
-require_once("../../inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH . "simpledom.php");
@@ -140,8 +140,17 @@ require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 // </editor-fold>
 ini_set('max_execution_time', 1200);
+global $paymentSettlementRequest;
+$obj_DOM = null;
+if(isset($paymentSettlementRequest) === true)
+{
+    $obj_DOM = simpledom_load_string($paymentSettlementRequest);
+}
+else
+{
+    $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
+}
 
-$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
