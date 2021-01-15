@@ -249,7 +249,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$exchangeServiceInfo = (integer)$obj_DOM->pay[$i]->transaction["exchangeserviceinfo-id"];
 						if($exchangeServiceInfo > 0){
 							if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
-								$aMsgCds[57] = "Invalid exchange service information id :".intval($exchangeServiceInfo) ;
+								$aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo;
 							}
 						}
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
