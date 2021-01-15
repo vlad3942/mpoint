@@ -1,16 +1,16 @@
 <?php
 
 if (PHP_SAPI == "cli") {
-    if ($argc < 3) {
-        echo "Expected 2 arguments, but got " . ($argc - 1) . PHP_EOL;
-        echo "Syntax : php auto-void-transactions.php <ClientId> <mPointHost> <optional : PSPId>" . PHP_EOL;
+    if ($argc < 2) {
+        echo "Expected 1 arguments, but got " . ($argc - 1) . PHP_EOL;
+        echo "Syntax : php auto-void-transactions.php <ClientId> <optional : PSPId>" . PHP_EOL;
         die();
     }
 
-    if ($argc === 4) {
-        [$filePath, $mPointHost, $clientid, $pspid] = $argv;
+    if ($argc === 3) {
+        [$filePath, $clientid, $pspid] = $argv;
     } else {
-        [$filePath, $mPointHost, $clientid] = $argv;
+        [$filePath, $clientid] = $argv;
         $pspid = NULL;
     }
     $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
