@@ -203,8 +203,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     // Validate exchange service info id if explicitly passed in request
                     $exchangeServiceInfo = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction["exchangeserviceinfo-id"];
                     if($exchangeServiceInfo > 0){
-                        if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) != 10 ){
-                            $aMsgCds[57] = "Invalid exchange service information id :".intval($exchangeServiceInfo) ;
+                        if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
+                            $aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo ;
                         }
                     }
 
@@ -228,7 +228,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             if ($exchangeServiceInfo)
                             {
-                                $data['exchangeserviceinfo'] = (integer) $exchangeServiceInfo;
+                                $data['exchangeserviceinfo'] = $exchangeServiceInfo;
                             }
 
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;

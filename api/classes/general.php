@@ -482,7 +482,7 @@ class General
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
 
-        if ($oTI->getExchangeServiceInfoID() !== 0) {
+        if ($oTI->getExchangeServiceInfoID() > 0) {
             $sql .= " , exchangeinfoid = '". $oTI->getExchangeServiceInfoID() ."'";
         }
         if ($oTI->getProfileID() !== '') {

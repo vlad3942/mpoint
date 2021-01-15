@@ -46,7 +46,7 @@ class TxnInfo
 	/**
 	 * Exchange Service info id
 	 *
-	 * @var integer
+	 * @var integer|null
 	 */
 	private $_ExchangeServiceInfoID;
 	/**
@@ -519,9 +519,9 @@ class TxnInfo
      * @param string $sIssuingBank
      * @param array $aBillingAddr
      * @param int|null $routeConfigId
-     * @param int $exchangeserviceinfo
+     * @param int|null $exchangeserviceinfo
      */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,$exchangeserviceinfo=0)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,?int $exchangeserviceinfo=0)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -611,14 +611,7 @@ class TxnInfo
         $this->_sIssuingBank = trim($sIssuingBank);
         $this->_aBillingAddr = $aBillingAddr;
         $this->_iRouteConfigId = $routeConfigId;
-
-        if($exchangeserviceinfo === null)
-        {
-            $this->_ExchangeServiceInfoID = 0;
-        }
-        else {
-            $this->_ExchangeServiceInfoID =  (integer) $exchangeserviceinfo;
-        }
+		$this->_ExchangeServiceInfoID = $exchangeserviceinfo;
     }
 
 	/**
@@ -645,7 +638,9 @@ class TxnInfo
 	 *
 	 * @return 	integer
 	 */
-	public function getExchangeServiceInfoID() { return $this->_ExchangeServiceInfoID; }
+	public function getExchangeServiceInfoID() : ?int { return $this->_ExchangeServiceInfoID; }
+
+
 	/**
 	 * Returns the Configuration for the Client who owns the Transaction.
 	 *
@@ -1653,8 +1648,9 @@ class TxnInfo
             else{
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
-
-            $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr, $RS['ROUTECONFIGID'],$RS["EXCHANGEINFOID"]);
+			$exchangeinfoid = null;
+			if(intval($RS["EXCHANGEINFOID"])>0) $exchangeinfoid = $RS["EXCHANGEINFOID"];
+            $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr, $RS['ROUTECONFIGID'],$exchangeinfoid);
 		}
 		return $obj_TxnInfo;
 	}
