@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false">
-    <testsuites>
-        <testsuite name="Application Test Suite">
-            <directory suffix="Test.php">./test/api</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
+		 backupStaticAttributes="false"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 processIsolation="false"
+		 stopOnFailure="false">
+	<testsuites>
+		<testsuite name="Application Test Suite">
+			<directory suffix="Test.php">./test/api</directory>
+		</testsuite>
+	</testsuites>
+	<coverage includeUncoveredFiles="true"
+              processUncoveredFiles="false"
+              ignoreDeprecatedCodeUnits="true"
+              disableCodeCoverageIgnore="true">
+        <include>
             <directory suffix=".php">./api</directory>
-        </whitelist>
-    </filter>
-    <php>
-        <ini name="display_errors" value="true"/>
-        <env name="APP_ENV" value="testing"/>
-    </php>
+        </include>
+		<report>
+			<html outputDirectory="./log/Coverage_report" lowUpperBound="50" highLowerBound="90"/>
+			<text outputFile="./log/zzzzzCoverageSummary.txt" showUncoveredFiles="true" showOnlySummary="true"/>
+		</report>
+	</coverage>
+	<php>
+		<ini name="display_errors" value="true"/>
+		<env name="APP_ENV" value="testing"/>
+	</php>
 </phpunit>
