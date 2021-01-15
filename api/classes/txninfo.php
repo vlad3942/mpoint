@@ -519,9 +519,9 @@ class TxnInfo
      * @param string $sIssuingBank
      * @param array $aBillingAddr
      * @param int|null $routeConfigId
-     * @param int|null $exchangeserviceinfo
+     * @param int $exchangeserviceinfo
      */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,?int $exchangeserviceinfo=0)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,int $exchangeserviceinfo=0)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -1648,7 +1648,7 @@ class TxnInfo
             else{
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
-			$exchangeinfoid = null;
+			$exchangeinfoid = 0;
 			if(intval($RS["EXCHANGEINFOID"])>0) $exchangeinfoid = $RS["EXCHANGEINFOID"];
             $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr, $RS['ROUTECONFIGID'],$exchangeinfoid);
 		}
@@ -1676,6 +1676,7 @@ class TxnInfo
 	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null )
 	{
 		$obj_TxnInfo = null;
+		$exchangeinfoid = 0;
 		switch (true)
 		{
 		case ($obj instanceof TxnInfo):	// Instantiate from array of new Transaction Information
@@ -1749,10 +1750,10 @@ class TxnInfo
             }
             if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = $obj->getInstallmentValue(); }
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = $obj->getProfileID(); }
-
+			if(intval($misc["exchangeserviceinfo"])>0) $exchangeinfoid = $misc["exchangeserviceinfo"];
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
-					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"],null,$misc["exchangeserviceinfo"]);
+					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"],null,$exchangeinfoid);
 
 
 			break;
@@ -1788,8 +1789,8 @@ class TxnInfo
             else{
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
-
-            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"",array(),null,$misc["exchangeserviceinfo"]);
+			if(intval($misc["exchangeserviceinfo"])>0) $exchangeinfoid = $misc["exchangeserviceinfo"];
+            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"",array(),null,$exchangeinfoid);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
