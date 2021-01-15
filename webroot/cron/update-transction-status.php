@@ -17,9 +17,7 @@ if (PHP_SAPI == "cli") {
         die();
     }
 
-    if ($argc === 2) {
-        [$filePath, $interval] = $argv;
-    }
+    [$filePath, $interval] = $argv;
     $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
     $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
 }else{

@@ -4,13 +4,11 @@ $interval = '15 MINUTE ';
 if (PHP_SAPI == "cli") {
     if ($argc < 4) {
         echo "Expected 3 arguments, but got " . ($argc - 1) . PHP_EOL;
-        echo "Syntax : php update-transaction-profile-id.php <interval> <clientid> <limit>" . PHP_EOL;
+        echo "Syntax : php update-transaction-profile-id.php <clientid> <interval> <limit>" . PHP_EOL;
         die();
     }
 
-    if ($argc === 2) {
-        [$filePath, $interval,$clientid,$limit] = $argv;
-    }
+    [$filePath, $interval,$clientid,$limit] = $argv;
     $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
     $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
 }else{

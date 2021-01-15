@@ -3,11 +3,11 @@
 if (PHP_SAPI == "cli") {
     if ($argc < 3) {
         echo "Expected 2 arguments, but got " . ($argc - 1) . PHP_EOL;
-        echo "Syntax : php auto-void-transactions.php <mPointHost> <ClientId> <optional : PSPId>" . PHP_EOL;
+        echo "Syntax : php auto-void-transactions.php <ClientId> <mPointHost> <optional : PSPId>" . PHP_EOL;
         die();
     }
 
-    if ($argc === 6) {
+    if ($argc === 4) {
         [$filePath, $mPointHost, $clientid, $pspid] = $argv;
     } else {
         [$filePath, $mPointHost, $clientid] = $argv;
