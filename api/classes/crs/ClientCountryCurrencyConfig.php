@@ -30,13 +30,13 @@ class ClientCountryCurrencyConfig
 	 * @param 	string $countryName 	Hold client supported country name
 	 * @param	integer $currencyCode	Hold client supported currency code
 	 */
-	public function __construct($aCountryConfig, $aCurrencyConfig)
+	public function __construct(?array $aCountryConfig = null, ?array $aCurrencyConfig = null)
 	{
         $this->_aCountry = $aCountryConfig;
         $this->_aCurrency = $aCurrencyConfig;
 	}
 
-	public function toCountryAsXML()
+	public function toCountryAsXML() : string
 	{
         $xml = '';
 		if(empty($this->_aCountry) == false && count($this->_aCountry) > 0){
@@ -50,7 +50,7 @@ class ClientCountryCurrencyConfig
 		return $xml;
 	}
 
-    public function toCurrencyAsXML()
+    public function toCurrencyAsXML() : string
     {
         $xml = '';
         if(empty($this->_aCurrency) == false && count($this->_aCurrency) > 0){
@@ -70,27 +70,32 @@ class ClientCountryCurrencyConfig
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $id 	Unique ID for the Country the request is performed in
-	 * @return 	CountryConfig
+	 * @return 	ClientCountryCurrencyConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $clientId)
+	public static function produceConfig(RDB &$oDB, $clientId) : array
 	{
+        $aObj_Configurations = array();
+        $aCountryConfig = array();
+        $aCurrencyConfig = array();
+
 		$sql = "SELECT DISTINCT ON (CCT.countryid, CCT.currencyid) CCT.countryid, CCT.currencyid, CNT.name as countryname, CUR.code AS currencycode
 				FROM Client".sSCHEMA_POSTFIX.".Countrycurrency_Tbl CCT
 				INNER JOIN System".sSCHEMA_POSTFIX.".Country_tbl CNT ON CCT.countryid = CNT.id AND CNT.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CUR ON CCT.currencyid = CUR.id AND CUR.enabled = '1'
 				WHERE CCT.clientid = ". $clientId ." 
 				AND CCT.enabled = '1'";
+        try {
+            $res = $oDB->query($sql);
+            while ($RS = $oDB->fetchName($res)) {
+                $aCountryConfig[$RS['COUNTRYID']] = $RS['COUNTRYNAME'];
+                $aCurrencyConfig[$RS['CURRENCYID']] = $RS['CURRENCYCODE'];
 
-        $res = $oDB->query($sql);
-        $aCountryConfig = array();
-        $aCurrencyConfig = array();
-        while ($RS = $oDB->fetchName($res) )
-        {
-            $aCountryConfig[$RS['COUNTRYID']] = $RS['COUNTRYNAME'];
-            $aCurrencyConfig[$RS['CURRENCYID']] = $RS['CURRENCYCODE'];
-
+            }
+            $aObj_Configurations[] = new ClientCountryCurrencyConfig($aCountryConfig, $aCurrencyConfig);
+        }catch (SQLQueryException $e){
+            trigger_error($e->getMessage(), E_USER_ERROR);
         }
-		return new ClientCountryCurrencyConfig($aCountryConfig, $aCurrencyConfig);
+        return $aObj_Configurations;
 	}
 	
 

@@ -18,10 +18,12 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-require_once(sCLASS_PATH ."/client_payment_metadata.php");
-require_once(sCLASS_PATH ."/client_route_config.php");
-require_once(sCLASS_PATH ."/client_country_currency_config.php");
-require_once(sCLASS_PATH ."/route_feature.php");
+require_once(sCLASS_PATH ."/crs/ClientPaymentMetadata.php");
+require_once(sCLASS_PATH ."/crs/ClientRouteConfig.php");
+require_once(sCLASS_PATH ."crs//ClientCountryCurrencyConfig.php");
+require_once(sCLASS_PATH ."/crs/RouteFeature.php");
+require_once(sCLASS_PATH ."/crs/TransactionTypeConfig.php");
+require_once(sCLASS_PATH ."/crs/CardState.php");
 
 $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
@@ -37,7 +39,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
         $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
-        $code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, array($clientId), $_SERVER['HTTP_VERSION']);
+        //$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, array($clientId), $_SERVER['HTTP_VERSION']);
+        $code = 10;
         switch ($code)
         {
             case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):

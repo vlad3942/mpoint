@@ -37,10 +37,9 @@ class ClientRouteConfig
      *
      * @param 	integer $providerId 	Unique ID for the Payment Service Provider in mPoint
      * @param 	string $providerName	Payment Service Provider's name in mPoint
-     * @param 	string $routeId 		Unique ID for the Client Route Configuration
-     * @param 	string $routeName		Client Route Configuration name
+     * @param 	string $aRouteConfig 	Hold List of Route Configuration
      */
-	public function __construct($providerId, $providerName, $aRouteConfig)
+	public function __construct(int $providerId, ?string $providerName = null, ?array $aRouteConfig = null)
 	{
         $this->_iProviderId = $providerId;
         $this->_sProviderName = $providerName;
@@ -52,17 +51,23 @@ class ClientRouteConfig
      *
      * @return 	integer
      */
-	public function getProviderId() { return $this->_iProviderId; }
+	public function getProviderId() : int
+    {
+        return $this->_iProviderId;
+    }
 
     /**
      * Returns the name of Payment Service Provider
      *
      * @return 	string
      */
-	public function getProviderName() { return $this->_sProviderName; }
+	public function getProviderName() : string
+    {
+        return $this->_sProviderName;
+    }
 
 
-    public function toXML()
+    public function toXML() : string
     {
       $xml = '<payment_provider>';
       $xml .= '<id>'. $this->getProviderId() .'</id>';
@@ -88,8 +93,9 @@ class ClientRouteConfig
      * @param 	integer $clientId 	Unique ID for the Client performing the request
      * @return 	ClientRouteConfig
      */
-    public static function produceConfig(RDB &$oDB, $clientId)
+    public static function produceConfig(RDB &$oDB, $clientId) : array
     {
+        $aObj_Configurations = array();
 
         $sql = "SELECT R.id, R.providerid, PSP.name AS providername
 				FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R
@@ -101,17 +107,19 @@ class ClientRouteConfig
 				WHERE R.clientid = ". intval($clientId) ." AND R.enabled = '1'
 				ORDER BY providername";
 
-        $res = $oDB->query($sql);
-        $aObj_Configurations = array();
-        while ($RS = $oDB->fetchName($res) )
-        {
-            $sql = "SELECT RC.id AS routeid, RC.name AS routename
-                    FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC
-                    WHERE RC.routeid = ". $RS["ID"] ." AND RC.enabled = '1'
+        try {
+            $res = $oDB->query($sql);
+            while ($RS = $oDB->fetchName($res)) {
+                $sql = "SELECT RC.id AS routeid, RC.name AS routename
+                    FROM Client" . sSCHEMA_POSTFIX . ".Routeconfig_Tbl RC
+                    WHERE RC.routeid = " . $RS["ID"] . " AND RC.enabled = '1'
                     ORDER BY RC.id";
 
-            $aRouteConfig = $oDB->getAllNames($sql);
-            $aObj_Configurations[] = new ClientRouteConfig ($RS["PROVIDERID"], $RS["PROVIDERNAME"], $aRouteConfig);
+                $aRouteConfig = (array)$oDB->getAllNames($sql);
+                $aObj_Configurations[] = new ClientRouteConfig ($RS["PROVIDERID"], $RS["PROVIDERNAME"], $aRouteConfig);
+            }
+        }catch (SQLQueryException $e){
+            trigger_error($e->getMessage(), E_USER_ERROR);
         }
         return $aObj_Configurations;
     }

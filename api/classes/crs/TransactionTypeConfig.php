@@ -66,6 +66,16 @@ class TransactionTypeConfig
         $xml = '<transaction-type  id="'.$this->getID().'" name="'.$this->getName().'" enabled="'.General::bool2xml($this->getEnabled()).'" />';
 		return $xml;
 	}
+
+    public function toAttributelessXML() : string
+    {
+        $xml = '<transaction_type>';
+        $xml .= '<id>'.$this->getID() .'</id>';
+        $xml .= '<name>'.$this->getName().'</name>';
+        $xml .= '<enabled>'.General::bool2xml($this->getEnabled()).'</enabled>';
+        $xml .= '</transaction_type>';
+        return $xml;
+    }
 	
 
 	/**
