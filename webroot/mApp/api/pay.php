@@ -209,7 +209,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			// Validate basic information
 			if(($code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]) )!== 100)
 			{
-				$aMsgCds[$code] = "Client ID / Account doesn\'t match";
+				$aMsgCds[$code] = "Client ID / Account doesn't match";
 			}
 			else
 			{
