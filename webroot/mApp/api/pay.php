@@ -204,14 +204,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			// Set Global Defaults
 			if (empty($obj_DOM->pay[$i]["account"]) === true || (int)$obj_DOM->pay[$i]["account"] < 1) { $obj_DOM->pay[$i]["account"] = -1; }
 
-			$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
+			$obj_TxnInfo = null;
 
 			// Validate basic information
 			if($code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]) !== 100)
 			{
 				$aMsgCds[$code] = "Client ID / Account doesn\'t match";
 			}
-			if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === true)
+			else
+			{
+				$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
+			}
+			if(count($aMsgCds) === 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === true)
 			{
 				$aMsgCds[103] = "Authorization already in progress";
 			}
