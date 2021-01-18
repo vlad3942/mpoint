@@ -17,14 +17,10 @@ class CardStateTest extends baseAPITest
 {
 
     private $_OBJ_DB;
-    protected $_aHTTP_CONN_INFO;
 
     public function setUp() : void
     {
         parent::setUp(true);
-        global $aHTTP_CONN_INFO;
-        $this->bIgnoreErrors = true;
-        $this->_aHTTP_CONN_INFO = $aHTTP_CONN_INFO;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
     }
 
@@ -34,6 +30,8 @@ class CardStateTest extends baseAPITest
         $xml = '<card_states>';
         foreach ($aObj_CardStateConfig as $obj_CardState)
         {
+            $this->assertInstanceOf(CardState::class, $obj_CardState);
+
             if ( ($obj_CardState instanceof CardState) === true)
             {
                 $xml .= $obj_CardState->toXML();
@@ -43,8 +41,6 @@ class CardStateTest extends baseAPITest
 
         $this->assertStringContainsString('<card_states><card_state><id>1</id><name>Enabled</name><enabled>true</enabled></card_state><card_state><id>2</id><name>Disabled By Merchant</name><enabled>true</enabled></card_state><card_state><id>3</id><name>Disabled By PSP</name><enabled>true</enabled></card_state><card_state><id>4</id><name>Prerequisite not Met</name><enabled>true</enabled></card_state><card_state><id>5</id><name>Temporarily Unavailable</name><enabled>true</enabled></card_state><card_state><id>6</id><name>Disable Show</name><enabled>true</enabled></card_state></card_states>', $xml);
     }
-
-
 
     public function tearDown() : void
     {

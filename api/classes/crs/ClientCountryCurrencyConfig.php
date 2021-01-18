@@ -14,13 +14,13 @@ class ClientCountryCurrencyConfig
      * Hold an array of client supported country
      * @var integer
      */
-	private $_aCountry;
+	private array $_aCountry;
 
     /**
      * Hold an array of client supported currency
      * @var integer
      */
-	private $_aCurrency;
+	private array $_aCurrency;
 
 	/**
 	 * Default Constructor
@@ -30,7 +30,7 @@ class ClientCountryCurrencyConfig
 	 * @param 	string $countryName 	Hold client supported country name
 	 * @param	integer $currencyCode	Hold client supported currency code
 	 */
-	public function __construct(?array $aCountryConfig = null, ?array $aCurrencyConfig = null)
+	public function __construct(array $aCountryConfig, array $aCurrencyConfig)
 	{
         $this->_aCountry = $aCountryConfig;
         $this->_aCurrency = $aCurrencyConfig;
@@ -72,7 +72,7 @@ class ClientCountryCurrencyConfig
 	 * @param 	integer $id 	Unique ID for the Country the request is performed in
 	 * @return 	ClientCountryCurrencyConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $clientId) : array
+	public static function produceConfig(RDB $oDB, $clientId) : array
 	{
         $aObj_Configurations = array();
         $aCountryConfig = array();

@@ -16,21 +16,21 @@ class ClientRouteConfig
 	 *
 	 * @var integer
 	 */
-	private $_iProviderId;
+	private int $_iProviderId;
 
     /**
      * The name of service provider
      *
      * @var string
      */
-	private $_sProviderName;
+	private string $_sProviderName;
 
     /**
      * Hold list of route configurations
      *
      * @var array
      */
-    private $_aRouteConfig;
+    private array $_aRouteConfig;
 
     /**
      * Default Constructor
@@ -39,7 +39,7 @@ class ClientRouteConfig
      * @param 	string $providerName	Payment Service Provider's name in mPoint
      * @param 	string $aRouteConfig 	Hold List of Route Configuration
      */
-	public function __construct(int $providerId, ?string $providerName = null, ?array $aRouteConfig = null)
+	public function __construct(int $providerId, string $providerName, array $aRouteConfig)
 	{
         $this->_iProviderId = $providerId;
         $this->_sProviderName = $providerName;
@@ -93,7 +93,7 @@ class ClientRouteConfig
      * @param 	integer $clientId 	Unique ID for the Client performing the request
      * @return 	ClientRouteConfig
      */
-    public static function produceConfig(RDB &$oDB, $clientId) : array
+    public static function produceConfig(RDB $oDB, $clientId) : array
     {
         $aObj_Configurations = array();
 

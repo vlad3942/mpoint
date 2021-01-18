@@ -14,13 +14,13 @@ class RouteFeature
      * Hold an unique ID for the route feature
      * @var integer
      */
-    private $_iFeatureId;
+    private int $_iFeatureId;
 
     /**
      * Holds name of the route feature
      * @var string
      */
-    private $_sFeatureName;
+    private string $_sFeatureName;
 
     /**
      * Default Constructor
@@ -28,7 +28,7 @@ class RouteFeature
      * @param 	integer $featureid 	Unique ID for the route feature
      * @param 	string $featurename	Holds name of the route feature
      */
-	public function __construct(?int $featureid = null, ?string $featurename = null)
+	public function __construct(int $featureid, string $featurename)
 	{
         $this->_iFeatureId = $featureid;
         $this->_sFeatureName = $featurename;

@@ -19,21 +19,21 @@ class CardState
      *
      * @var integer
      */
-   private $_iID;
+   private int $_iID;
     /**
      * Hold name of the card state
      *
      * @var integer
      */
-   private $_iName;
+   private string $_iName;
     /**
      * Hold card state status
      *
      * @var boolean
      */
-   private $_bEnabled;
+   private bool $_bEnabled;
 
-	public function __construct(int $id, ?string $name=null, ?bool $enabled=false)
+	public function __construct(int $id, string $name, bool $enabled)
 	{
 	    $this->_iID = $id;
 	    $this->_iName = $name;

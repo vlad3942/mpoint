@@ -14,41 +14,41 @@ class ClientPaymentMetadata
      * Configuration for the client payment route
      * @var ClientRouteConfig
      */
-    private $_obj_ClientRouteConfig;
+    private array $_obj_ClientRouteConfig;
 
     /**
      * Configuration for the client payment route country currency
      * @var ClientCountryCurrencyConfig
      */
-    private $_obj_ClientCountryCurrencyConfig;
+    private array $_obj_ClientCountryCurrencyConfig;
 
     /**
      * Configuration for the client supported payment methods
      * @var ClientPaymentMethodConfig
      */
-    private $_obj_ClientPaymentMethodConfig;
+    private array $_obj_ClientPaymentMethodConfig;
 
     /**
      * Configuration for the client route feature
      * @var RouteFeature
      */
-    private $_obj_ClientRouteFeatureConfig;
+    private array $_obj_ClientRouteFeatureConfig;
 
     /**
      * Object that holds the transaction type configurations
      *
      * @var TransactionTypeConfig
      */
-    private $_obj_TransactionTypeConfig;
+    private array $_obj_TransactionTypeConfig;
 
     /**
      * Object that holds the card state configurations
      *
      * @var CardState
      */
-    private $_obj_CardStateConfig;
+    private array $_obj_CardStateConfig;
 
-    private $_obj_AccountsConfigurations;
+    private array $_obj_AccountsConfigurations;
 
     /**
      * Default Constructor
@@ -58,7 +58,7 @@ class ClientPaymentMetadata
      * @param 	ClientPaymentMethodConfig $aObj_ClientPaymentMethodConfig 		 Hold Configuration for the client supported payment methods
      * @param 	RouteFeature $aObj_ClientRouteFeatureConfig 					 Hold Configuration for the client route feature
      */
-	public function __construct(?array $aObj_ClientRouteConfig = null, ?array $aObj_ClientCountryCurrencyConfig = null, ?array $aObj_ClientPaymentMethodConfig = null, ?array $aObj_ClientRouteFeatureConfig = null, ?array $aObj_AccountsConfigurations = null, ?array $obj_TransactionTypeConfig = null, ?array $aObj_CardStateConfig = null)
+	public function __construct(array $aObj_ClientRouteConfig, array $aObj_ClientCountryCurrencyConfig, array $aObj_ClientPaymentMethodConfig, array $aObj_ClientRouteFeatureConfig, array $aObj_AccountsConfigurations, array $obj_TransactionTypeConfig, array $aObj_CardStateConfig)
 	{
         $this->_obj_ClientRouteConfig = $aObj_ClientRouteConfig;
         $this->_obj_ClientCountryCurrencyConfig = $aObj_ClientCountryCurrencyConfig;
@@ -74,7 +74,7 @@ class ClientPaymentMetadata
      *
      * @return 	String
      */
-    private function getAccountsConfigurationsAsXML()
+    private function getAccountsConfigurationsAsXML() : string
     {
         $xml = '<account_configurations>';
         foreach ($this->_obj_AccountsConfigurations as $obj_AccountConfig)
