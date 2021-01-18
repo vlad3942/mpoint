@@ -892,11 +892,13 @@ class TxnInfo
 	 * @return 	string		Message Authentication Code
 	 */
 	public function getHMAC() { 
-		$iForeignExchangeId = $this->getExternalRef(Constants::iForeignExchange, $this->getPSPID());
-		if(empty($iForeignExchangeId) === false){
-			$hashString = $this->_obj_ClientConfig->getID() . trim($this->_sOrderID) . $this->getAmount() . $this->_obj_CountryConfig->getID() . $this->_sMobile . $this->getMobileCountry() . $this->_sEMail . $this->_sDeviceID . $this->_obj_ClientConfig->getSalt() . $this->getInitializedAmount() . $this->getInitializedCurrencyConfig()->getID().$iForeignExchangeId;
-		}else{
-			$hashString = $this->_obj_ClientConfig->getID() . $this->_sOrderID . $this->_lAmount . $this->_obj_CountryConfig->getID() . $this->_sMobile . $this->getMobileCountry() . $this->_sEMail . $this->_sDeviceID . $this->_obj_ClientConfig->getSalt();	
+
+		$hashString = $this->_obj_ClientConfig->getID() . trim($this->_sOrderID) . $this->getAmount() . $this->_obj_CountryConfig->getID() . $this->_sMobile . $this->getMobileCountry() . $this->_sEMail . $this->_sDeviceID . $this->_obj_ClientConfig->getSalt();
+	
+		if($this->getAmount() != $this->getInitializedAmount())
+		{
+			$iForeignExchangeId = $this->getExternalRef(Constants::iForeignExchange, $this->getPSPID());
+			$hashString .= $this->getInitializedAmount() . $this->getInitializedCurrencyConfig()->getID().$iForeignExchangeId;
 		}
 		return hash('sha512', $hashString);
 	}
