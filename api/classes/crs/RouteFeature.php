@@ -14,13 +14,13 @@ class RouteFeature
      * Hold an unique ID for the route feature
      * @var integer
      */
-    private $_iFeatureId;
+    private int $_iFeatureId;
 
     /**
      * Holds name of the route feature
      * @var string
      */
-    private $_sFeatureName;
+    private string $_sFeatureName;
 
     /**
      * Default Constructor
@@ -28,7 +28,7 @@ class RouteFeature
      * @param 	integer $featureid 	Unique ID for the route feature
      * @param 	string $featurename	Holds name of the route feature
      */
-	public function __construct($featureid, $featurename)
+	public function __construct(int $featureid, string $featurename)
 	{
         $this->_iFeatureId = $featureid;
         $this->_sFeatureName = $featurename;
@@ -38,15 +38,21 @@ class RouteFeature
      * Unique ID for the client supported route feature
      * @return integer
      */
-	public function getFeatureId(){ return $this->_iFeatureId; }
+	public function getFeatureId() : int
+    {
+        return $this->_iFeatureId;
+    }
 
     /**
      * Name of the client supported route feature
      * @return integer
      */
-	public function getFeatureName() { return $this->_sFeatureName; }
+	public function getFeatureName() : string
+    {
+        return $this->_sFeatureName;
+    }
 
-    public function toXML()
+    public function toXML() : string
     {
       $xml  = '<route_feature>';
       $xml .= '<id>'. $this->getFeatureId() .'</id>';
@@ -62,20 +68,23 @@ class RouteFeature
      * @param 	integer $clientId 	Unique ID for the Client performing the request
      * @return 	RouteFeature
      */
-    public static function produceConfig(RDB &$oDB, $clientId)
+    public static function produceConfig(RDB &$oDB, $clientId) : array
     {
+        $aObj_Configurations = array();
+
         $sql = "SELECT CRF.featureid, SRF.featurename
 				FROM Client".sSCHEMA_POSTFIX.".Routefeature_Tbl CRF
 				INNER JOIN System".sSCHEMA_POSTFIX.".Routefeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
 				WHERE CRF.clientid = ". $clientId ." 
 				AND CRF.enabled = '1'
 				ORDER BY CRF.featureid";
-
-        $res = $oDB->query($sql);
-        $aObj_Configurations = array();
-        while ($RS = $oDB->fetchName($res) )
-        {
-            $aObj_Configurations[] = new RouteFeature ($RS["FEATUREID"], $RS["FEATURENAME"]);
+        try {
+            $res = $oDB->query($sql);
+            while ($RS = $oDB->fetchName($res)) {
+                $aObj_Configurations[] = new RouteFeature ($RS["FEATUREID"], $RS["FEATURENAME"]);
+            }
+        }catch (SQLQueryException $e){
+            trigger_error($e->getMessage(), E_USER_ERROR);
         }
         return $aObj_Configurations;
     }

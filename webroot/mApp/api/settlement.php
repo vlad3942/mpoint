@@ -249,7 +249,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $obj_Settlement->sendRequest($_OBJ_DB);
                     $obj_Settlement->createBulkSettlementEntry($_OBJ_DB);
 
-                    if($obj_Settlement->getSettlementTxnAmount() > 0)
+                    if($obj_Settlement->getSettlementTxnAmount() > 0 || ($obj_Settlement->getSettlementId() !== null))
                     {
                         $xml .= '<settlement>';
                         $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
