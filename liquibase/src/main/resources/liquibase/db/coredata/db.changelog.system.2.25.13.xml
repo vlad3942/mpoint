@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Karishan Kumar"
+        id="2021-01-15-setup-v2.25-system">
+        
+        <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="44" />
+            <where>id = 103 AND name = 'UK'</where>
+        </update>
+        
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 144 AND name = 'Monserrat'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 216 AND name = 'Johnston Island'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 217 AND name = 'Midway Island'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 218 AND name = 'United States Minor Outlying Islands'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="218" />
+            <where>id = 338 AND name = 'Libyan Arab Jamahiriya'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="243" />
+            <where>id = 357 AND name = 'Zaire'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 414 AND name = 'Carriacou'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="599" />
+            <where>id = 415 AND name = 'Netherlands Antilles'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="55" />
+            <where>id = 416 AND name = 'Bouvet Island'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="64" />
+            <where>id = 417 AND name = 'Scott Base'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="500" />
+            <where>id = 422 AND name = 'South Georgia And IS'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="246" />
+            <where>id = 423 AND name = 'British International Ocean Territory'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 424 AND name = 'St. Christopher (St. Kitts) Nevis'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 425 AND name = 'St. Lucia'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="64" />
+            <where>id = 430 AND name = 'Pitcairn Island'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="590" />
+            <where>id = 436 AND name = 'St. Maarten'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 440 AND name = 'St. Vincent and The Grenadines'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="1" />
+            <where>id = 442 AND name = 'Virgin Islands, United States'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="61" />
+            <where>id = 507 AND name = 'Cocos (Keeling) Islands'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="672" />
+            <where>id = 510 AND name = 'Norfolk Island'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="971" />
+            <where>id = 600 AND name = 'Abu Dhabi'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="971" />
+            <where>id = 602 AND name = 'Dubai'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="246" />
+            <where>id = 626 AND name = 'Diego Garcia'</where>
+        </update>
+         <update catalogName="system"
+            schemaName="system"
+            tableName="country_tbl">
+
+            <column name="country_calling_code" value="262" />
+            <where>id = 629 AND name = 'Kerguelen Archipelago'</where>
+        </update>
+         
+    </changeSet>
+
+</databaseChangeLog>
