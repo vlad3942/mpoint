@@ -18,7 +18,7 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-require_once(sCLASS_PATH ."/route_feature.php");
+require_once(sCLASS_PATH ."/crs/RouteFeature.php");
 require_once(sCLASS_PATH ."/crs/ClientRouteConfigurations.php");
 
 $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
