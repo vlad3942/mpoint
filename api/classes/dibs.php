@@ -39,7 +39,7 @@ class DIBS extends Callback implements Captureable, Refundable
      * @see    Callback::getVariables()
      *
      */
-	public function notifyClient($sid, array $_post, SurePayConfig &$obj_SurePay=null)
+	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")

@@ -1,7 +1,13 @@
-<?php 
+<?php
+if (PHP_SAPI == "cli") {
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
+}
 
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
 // Require Global Include File
-require_once("inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
+require_once(sCLASS_PATH ."/my_account.php");
 
 $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, 100);
 $obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
