@@ -487,6 +487,9 @@ class General
         if ($oTI->getWalletID() !== -1) {
             $sql .= ", walletid = ". $oTI->getWalletID();
         }
+        if ($oTI->getRouteConfigID() > 0) {
+            $sql .= ", routeconfigid = ". $oTI->getRouteConfigID();
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
@@ -1410,7 +1413,7 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
     {
         $xml = '';
         $code = $response->code;
@@ -1427,13 +1430,13 @@ class General
             $xml = $response->body;
         } else if ($code == "2016") {
             $xml = $response->body;
-        } else if (($code == "20103" || $code == "504") && strtolower($drService) == 'true' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
+        } else if (($code == "20103" || $code == "504") && strtolower($is_legacy) == 'false' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
             if(empty($iAlternateRoute) === false) {
                 $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                 $code = $response->code;
-                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $drService, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
+                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $is_legacy, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
             }
@@ -1526,5 +1529,44 @@ class General
         }
         return 'http';
     }
+
+    /**
+     * Returns the list of settlement currencies for given client-id, card-id and salecurrency-id
+     * @param  $RDB 			Object   Database object reference
+     * @param  $clientid 		integer  client-id
+     * @param  $cardid	 		integer  card-id
+     * @param  $salecurrencyid 	integer  currency-id
+     * @return array
+     */
+    public static function getPresentmentCurrencies(RDB &$oDB, int $clientid, int $cardid, int $salecurrencyid) : array
+    {
+		$presentmentCurrencies = array ();
+
+		if ($oDB instanceof RDB) {
+
+			// Added Distinct clause as one card-id may have multiple pspid hence to avoid occurence of duplicate settlement-currency-id
+			$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
+					FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
+					WHERE CCMT.client_id = " . $clientid . "
+					AND CCMT.enabled = '1'
+					AND CCMT.is_presentment = '1'
+					AND CCMT.card_id = " . $cardid . "
+					AND CCMT.sale_currency_id = " . $salecurrencyid . "";
+
+			//echo $sql ."\n";die;
+			$aRS = $oDB->getAllNames($sql);
+
+			if (is_array($aRS) === true && count($aRS) > 0)
+			{
+				for ($i = 0; $i < count($aRS); $i++)
+				{
+					$settlementCurrencyId = $aRS[$i]['SETTLEMENT_CURRENCY_ID'];
+					array_push($presentmentCurrencies, $settlementCurrencyId);
+				}
+			}
+		}
+
+		return $presentmentCurrencies;
+	}
 }
 ?>

@@ -49,14 +49,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
     if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'update-fraud-status'}) > 0)
     {
-        $code = $objFraudStatus->SSOCheck();
-        if($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
+        $code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $iClientId);
+        if($code === mConsole::iAUTHORIZATION_SUCCESSFUL)
         {
             $xml = $objFraudStatus->updateFraudStatus();
         }
         else
         {
-            $xml = $objFraudStatus->getSSOValidationError($code);
+            $xml = $obj_mConsole->getSSOValidationError($code);
         }
     }
     else

@@ -68,8 +68,8 @@ if ($obj_mPoint->getTxnInfo()->getReward() > 0 && $obj_mPoint->getTxnInfo()->get
 // Callback URL has been defined for Client
 if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
 {
-	$obj_mPoint->notifyClient($iStateID, $_POST['gomobileid']);
+	$obj_mPoint->notifyToClient($iStateID, $_POST['gomobileid']);
 	// Notify client of automatic capture
-	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']);
+	$obj_mPoint->notifyToClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']);
 }
 ?>

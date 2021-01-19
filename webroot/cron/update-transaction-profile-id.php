@@ -1,20 +1,25 @@
 <?php
-require_once("../inc/include.php");
-set_time_limit(-1);
-
 //default time interval
 $interval = '15 MINUTE ';
-if (isset($_GET["interval"])) {
+if (PHP_SAPI == "cli") {
+    if ($argc < 4) {
+        echo "Expected 3 arguments, but got " . ($argc - 1) . PHP_EOL;
+        echo "Syntax : php update-transaction-profile-id.php <clientid> <interval> <limit>" . PHP_EOL;
+        die();
+    }
+
+    [$filePath, $interval,$clientid,$limit] = $argv;
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
+}else{
     $interval = urldecode($_GET["interval"]);
-}
-
-if (isset($_GET["clientid"])) {
     $clientid = $_GET["clientid"];
+    $limit    = $_GET["limit"];
 }
 
-if (isset($_GET["limit"])) {
-    $limit = $_GET["limit"];
-}
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
+set_time_limit(-1);
 
 $sql = "SELECT txn.id, txn.clientid, txn.accountid, txn.countryid, txn.mobile, txn.operatorid, txn.email, txn.customer_ref FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn WHERE";
 $sql .= " txn.clientid in (select prop.externalid from client" . sSCHEMA_POSTFIX . ".additionalproperty_tbl prop where prop.key='ENABLE_PROFILE_ANONYMIZATION' and prop.value='true'";

@@ -91,7 +91,7 @@ else
 		// Username / Password validated
 		if (empty($xml) === true)
 		{
-			$code = $obj_mPoint->sendLink($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->email);
+			$code = $obj_mPoint->sendEmail($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->email);
 			
 			// Activation code sent
 			if ($code === true)
