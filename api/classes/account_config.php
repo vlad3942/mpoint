@@ -106,6 +106,19 @@ class AccountConfig extends BasicConfig
 
 		return $xml;
 	}
+
+    public function toAttributeLessXML() : string
+    {
+        $xml = '<account_config>';
+        $xml .= '<id>'. $this->getID() .'</id>';
+        $xml .= '<client_id>'. $this->_iClientID .'</client_id>';
+        $xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+        $xml .= '<markup>'. htmlspecialchars($this->getMarkupLanguage(), ENT_NOQUOTES).'</markup>';
+        $xml .= '<mobile>'. $this->_sMobile .'</mobile>';
+        $xml .= '</account_config>';
+
+        return $xml;
+    }
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
