@@ -12,7 +12,7 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
-require_once __DIR__ . '/../../api/classes/route_feature.php';
+require_once __DIR__ . '/../../api/classes/crs/RouteFeature.php';
 require_once __DIR__ . '/../../api/classes/crs/ClientRouteConfigurations.php';
 
 class ClientRouteConfigurationsTest extends baseAPITest
