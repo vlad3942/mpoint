@@ -58,5 +58,10 @@ class AuthorizeNet extends Callback
 	
 	    return ($raw_output) ? pack($pack, $output) : $output;
 	}
+
+    public function getPSPID()
+    {
+        Constants::iANET_PSP;
+    }
 }
 ?>
