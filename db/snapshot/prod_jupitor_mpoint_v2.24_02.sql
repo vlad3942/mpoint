@@ -31,7 +31,7 @@ INSERT INTO client.cardaccess_tbl (id,clientid, cardid, enabled, pspid, countryi
 --Macau - MOP
 INSERT INTO client.cardaccess_tbl (id,clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES((SELECT max(id)+1 from client.cardaccess_tbl), 10020, 15, true, 56, 636, 1, NULL, false, 3, 0, 0, 2, NULL, false);
 INSERT INTO client.cardaccess_tbl (id,clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES((SELECT max(id)+1 from client.cardaccess_tbl), 10020, 7, true, 56, 636, 1, NULL, false, 1, 0, 0, 2, 14, false);
-INSERT INTO client.cardaccess_tbl (id,clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES((SELECT max(id)+1 from client.cardaccess_tbl), 0020, 8, true, 56, 636, 1, NULL, false, 1, 0, 0, 2, 14, false);
+INSERT INTO client.cardaccess_tbl (id,clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES((SELECT max(id)+1 from client.cardaccess_tbl), 10020, 8, true, 56, 636, 1, NULL, false, 1, 0, 0, 2, 14, false);
 
 --UK - GBP
 INSERT INTO client.cardaccess_tbl (id,clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES((SELECT max(id)+1 from client.cardaccess_tbl), 10020, 15, true, 56, 103, 1, NULL, false, 3, 0, 0, 2, NULL, false);
