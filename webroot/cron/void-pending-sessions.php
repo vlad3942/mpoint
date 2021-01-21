@@ -1,5 +1,11 @@
 <?php
-require_once("../inc/include.php");
+
+if (PHP_SAPI == "cli") {
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
+}
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 
 $sql = "SELECT sn.id, sn.amount
           FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn

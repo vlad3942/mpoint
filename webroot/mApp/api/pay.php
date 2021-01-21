@@ -204,9 +204,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			// Set Global Defaults
 			if (empty($obj_DOM->pay[$i]["account"]) === true || (int)$obj_DOM->pay[$i]["account"] < 1) { $obj_DOM->pay[$i]["account"] = -1; }
 
+			$obj_TxnInfo = null;
+
 			// Validate basic information
-			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-			if ($code === 100)
+			if(($code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]) )!== 100)
+			{
+				$aMsgCds[$code] = "Client ID / Account doesn't match";
+			}
+			else
+			{
+				$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
+			}
+			if(count($aMsgCds) === 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === true)
+			{
+				$aMsgCds[103] = "Authorization already in progress";
+			}
+			if (count($aMsgCds) === 0)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 				
@@ -217,7 +230,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				{
 
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-					$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 					$aObj_PSPConfigs = array();
 					for ($j=0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j< $jMax; $j++)
 					{
@@ -248,30 +260,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
-                        $payment_type = $obj_card->getPaymentType();
 
+                        $obj_CardResultSet = FALSE;
 						$aRoutes = array();
                         $iPrimaryRoute = 0 ;
-						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
+                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 
-						if ($payment_type == Constants::iPAYMENT_TYPE_CARD && strtolower($drService) == 'true') {
-							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+						if (strtolower($is_legacy) == 'false') {
                             $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
                             if($obj_RS instanceof RoutingService)
 							{
                                 $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
+                                $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
 							}
-						}
-
-                        $obj_CardResultSet = array();
-						if($iPrimaryRoute > 0){
-                            $empty = array();
-                            $obj_CardResultSet = $obj_mPoint->getCardsObjectForDR( (integer) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $empty, $iPrimaryRoute, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], -1);
-                            $obj_CardResultSet['PSPID'] = (empty($obj_CardResultSet)===FALSE)?$iPrimaryRoute:FALSE;
+                            if($iPrimaryRoute > 0){
+                                $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                                $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( (integer) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
+                            }
 						}else{
                             $obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
-						}
+                        }
 
                         if ($obj_CardResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
 
@@ -688,7 +696,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				header("HTTP/1.1 400 Bad Request");
 
-				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
+				foreach ($aMsgCds as $code => $data)
+				{
+					$xml .= '<status code="'. $code .'">'. htmlspecialchars($data, ENT_NOQUOTES) .'</status>';
+				}
 			}
 		}
 	}

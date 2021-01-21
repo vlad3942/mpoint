@@ -7,11 +7,15 @@
     
     <include file="coredata/db.changelog.system.2.25.7.xml" relativeToChangelogFile="true"/>
 	<include file="schema/db.changelog.log.2.25.6.xml" relativeToChangelogFile="true"/>
+	<include file="schema/db.changelog.system.2.25.2.xml" relativeToChangelogFile="true"/>
 	<include file="schema/db.changelog.enduser.2.25.0.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.8.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.9.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.10.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.13.xml" relativeToChangelogFile="true"/>
+	<include file="schema/db.changelog.client.2.25.7.xml" relativeToChangelogFile="true"/>
+	<include file="schema/db.changelog.client.2.25.8.xml" relativeToChangelogFile="true"/>
+	<include file="coredata/db.changelog.system.2.25.11.xml" relativeToChangelogFile="true"/>
+	<include file="schema/db.changelog.client.2.25.3.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.14.xml" relativeToChangelogFile="true"/>
-
 </databaseChangeLog>

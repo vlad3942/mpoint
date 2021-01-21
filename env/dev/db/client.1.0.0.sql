@@ -70,7 +70,7 @@ INSERT INTO Client.Keyword_Tbl(clientid, name, standard, enabled) VALUES (10077,
 
 INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 2, 'http://mpoint.dev-01.cellpoint.dev/_test/simulators/login.php', true );
 INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 14, 'https://cpd-hpp2-devassests.s3.eu-central-1.amazonaws.com/10077/', true);
-INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 4, 'http://5j.mesb.dev-01.cellpoint.dev', true );
+INSERT INTO client.url_tbl(clientid, urltypeid, url, enabled) Values (10077, 4, 'http://5j.mesb.dev.cpm.dev', true );
 
 
 --Table Name : Client.MerchantAccount_Tbl
@@ -198,8 +198,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('enableHppAuthentication', 'true', 10077, 'client', true, 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('3DSVERSION', '1.0', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('PAYPAL_ORDER_NUMBER_PREFIX', 'Cebu Pacific Air - ', 10077, 'client', true, 2);
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule_PAYPAL_CEBU', 'invoiceid ::= (psp-config/@id)=="24"=(transaction.@id)', 10077, 'client', true, 0);
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule_CCPP_CEBU', 'invoiceid ::= (psp-config/@id)=="40"=(transaction.@id)', 10077, 'client', true, 0);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('invoiceidrule', 'invoiceid ::= (psp-config/@id)=="24"OR(psp-config/@id)=="40"=(transaction.@id)', 10077, 'client', true, 0);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('webSessionTimeout', '5', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('isAutoRedirect', 'true', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES('isnewcardconfig', 'true', 10077, 'client', true, 0);
@@ -314,3 +313,16 @@ INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALU
 --CEBU CIAM additional property 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES( 'SSO_PREFERENCE', 'LOOSE',true,  10077,'client',2)
 
+-- Cebu Icer : Set dcc enabled to true for PayPal
+UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 28 ;
+
+-- Cebu Icer : Add sale currency and presentment currency configuration for PayPal
+INSERT into client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,156,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,360,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,901,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,36,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,96,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,446,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,784,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,410,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,764,608,'true','true');

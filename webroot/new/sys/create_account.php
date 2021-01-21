@@ -237,7 +237,7 @@ case "form":
 			if ($code === true)
 			{
 				$aErrCd["mobile"] = $obj_mPoint->sendCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, (string) $obj_XML->form->mobile);
-				$aErrCd["email"] = $obj_mPoint->sendLink($iAccountID, (string) $obj_XML->form->email);
+				$aErrCd["email"] = $obj_mPoint->sendEmail($iAccountID, (string) $obj_XML->form->email);
 				
 				if ($aErrCd["mobile"] == 200 && $aErrCd["email"] === true)
 				{

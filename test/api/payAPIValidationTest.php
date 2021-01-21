@@ -75,7 +75,7 @@ class PayAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(200, $iStatus); //TODO: Correct when CMP-236 is solved
+        $this->assertEquals(400, $iStatus); //TODO: Correct when CMP-236 is solved
         //$this->assertEquals("msg=173", $sReplyBody); //TODO: Correct when CMP-236 is solved
     }
 
@@ -154,11 +154,17 @@ class PayAPIValidationTest extends baseAPITest
 
 	public function testWrongUsernamePassword()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $pspID = 2;
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-		$xml = $this->getPayDoc(10099, 1100);
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid,  countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE,208, 1,5000,208)");
+
+
+		$xml = $this->getPayDoc(10099, 1100,1001001);
 
 		$this->_httpClient->connect();
 

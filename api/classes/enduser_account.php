@@ -1191,5 +1191,13 @@ class EndUserAccount extends Home
         return NULL;
     }
 
+    protected function setClientConfig(ClientConfig $clientConfig): void
+    {
+        if($this->_obj_ClientConfig->getID() !== $clientConfig->getID())
+        {
+            $this->_obj_ClientConfig = $clientConfig;
+            $this->_obj_CountryConfig = $clientConfig->getCountryConfig();
+        }
+    }
 }
 ?>

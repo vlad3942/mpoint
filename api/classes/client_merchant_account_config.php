@@ -90,6 +90,24 @@ class ClientMerchantAccountConfig extends BasicConfig
 		}
 		
 		return $aObj_Configurations;		
-	}	
+	}
+
+    public static function getConfigurations(RDB $oDB, $id)
+    {
+        $sql = "SELECT RC.id, RC.mid, RC.username, RC.password, R.providerid
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R  ON CL.id = R.clientid	
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON RC.routeid = R.id		
+				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
+        //echo $sql ."\n";
+        $aObj_Configurations = array();
+        $res = $oDB->query($sql);
+        while ($RS = $oDB->fetchName($res) )
+        {
+            $aObj_Configurations[] = new ClientMerchantAccountConfig($RS["ID"], $RS["MID"], $RS["USERNAME"], $RS["PASSWORD"], $RS["PROVIDERID"], false);
+        }
+        return $aObj_Configurations;
+    }
+
 }
 ?>

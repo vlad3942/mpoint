@@ -13,7 +13,7 @@
 // <editor-fold defaultstate="collapsed" desc="all required files">
 
 // Require Global Include File
-require_once("../../inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH . "simpledom.php");
