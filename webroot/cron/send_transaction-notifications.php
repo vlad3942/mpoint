@@ -12,9 +12,27 @@
  pspid:52
  cut-off-time:02:00
  */
+$interval = '1 Day ';
+$cutofftime = '00:00';
+$pspid = 50;
+if (PHP_SAPI == "cli") {
+    if ($argc < 4) {
+        echo "Expected 3 arguments, but got " . ($argc - 1) . PHP_EOL;
+        echo "Syntax : php send_transaction-notifications.php <clientid> <pspid> <cutofftime>" . PHP_EOL;
+        die();
+    }
 
+    [$filePath, $clientid,$inputPSPID,$cutofftime] = $argv;
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
+}else{
+    $clientid = $_REQUEST['clientid'];
+    $inputPSPID = $_REQUEST['pspid'];
+    $cutofftime = $_REQUEST['cut-off-time'];
+}
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
 // Require Global Include File
-require_once("../inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require API for txnpassbook
@@ -47,16 +65,6 @@ require_once(sCLASS_PATH ."/chase.php");
 $aMsgCds = array();
 ignore_user_abort(true);
 set_time_limit(120);
-
-$interval = '1 Day ';
-$cutofftime = '00:00';
-$inputPSPID = $_REQUEST['pspid'];
-$pspid = 50;
-$clientid = $_REQUEST['clientid'];
-if(isset($_REQUEST['cut-off-time']))
-{
-	$cutofftime = $_REQUEST['cut-off-time'];
-}
 
 $query = "SELECT tt.id, tp.extref, tp.status, tp.performedopt
 			FROM log.transaction_tbl tt
