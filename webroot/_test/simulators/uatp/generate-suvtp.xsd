@@ -23,6 +23,7 @@
 							<xs:element name="transaction" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:all>
+										<xs:element name="exchangeserviceinfo" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="captured-amount" type="amount"/>
 										<xs:element name="authorized-amount" type="amount"/>
 										<xs:element name="initialize_amount" type="initialize_amount" minOccurs="0" maxOccurs="1"/>

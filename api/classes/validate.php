@@ -1588,5 +1588,33 @@ class Validate extends ValidateBase
 				else { $code = 1 ; } 
 				return $code;
 	}
+	/**
+	 * Performs validation on the exchangeserviceinfo id used for the transaction
+	 * Should have a mapping present in the System.exchangeinfo_tbl
+	 * Will return code as -
+	 *
+	 * 10.success
+	 * 1. No mapping found (default)
+	 *
+	 * @param RDB $oDB   Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param integer $exchangeServiceInfo  ID of the record in database table: System.exchangeinfo_tbl
+	 *
+	 * @return integer
+	 */
+	public function valExchangeServiceInfo(RDB $oDB,int $exchangeServiceInfo) : int
+	{
+		$code = 1;
+		$sql = "SELECT id
+                    FROM System". sSCHEMA_POSTFIX .".exchangeinfo_tbl
+                    WHERE id = ". $exchangeServiceInfo;
+//		echo $sql;exit;
+		$RS = $oDB->getName($sql);
+	 	if (is_array($RS) === true) {
+			if ($RS["ID"] == $exchangeServiceInfo) {
+				$code = 10;
+			}// Success
+		}
+		return $code;
+	}
 }
 ?>
