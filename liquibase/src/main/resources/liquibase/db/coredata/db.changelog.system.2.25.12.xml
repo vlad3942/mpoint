@@ -12,14 +12,14 @@
         <update catalogName="system"
                 schemaName="system"
                 tableName="PSP_Tbl">
-            <column name="name" value="Paymaya" />
+            <column name="name" value="PayMaya" />
             <where>id = 68</where>
         </update>
 
         <update catalogName="system"
                 schemaName="system"
                 tableName="Card_tbl">
-            <column name="name" value="Paymaya" />
+            <column name="name" value="PayMaya" />
             <where>id = 95</where>
         </update>
 
