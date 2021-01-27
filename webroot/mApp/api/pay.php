@@ -257,6 +257,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
+						// Validate exchange service info id if explicitly passed in request
+						$exchangeServiceInfo = (integer)$obj_DOM->pay[$i]->transaction["exchangeserviceinfo-id"];
+						if($exchangeServiceInfo > 0){
+							if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
+								$aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo;
+							}
+						}
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
@@ -458,8 +465,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 										}
-
-
+										if ($exchangeServiceInfo)
+										{
+											$data['exchangeserviceinfo'] = $exchangeServiceInfo;
+										}
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
