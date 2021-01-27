@@ -142,8 +142,8 @@ class PaymentProcessor
         return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);
     }
 
-    public function notifyClient($iStateId, array $vars, $surePay)
+    public function notifyClient(int $iStateId, array $vars, ?SurePayConfig $obj_SurePay=null)
     {
-        return $this->_objPSP->notifyClient($iStateId,$vars,$surePay);
+        return $this->_objPSP->notifyClient($iStateId,$vars,$obj_SurePay);
     }
 }

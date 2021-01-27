@@ -80,7 +80,7 @@ class MyAccount extends Home
 	 * @param	string $email 	End-User's new E-Mail address
 	 * @return	boolean
 	 */
-	public function sendLink($id, $email)
+	public function sendEmail($id, $email)
 	{
 		$sSubject = $this->getText()->_("mPoint - Activation Link Subject");
 		$sBody = $this->getText()->_("mPoint - Activation Link Body");

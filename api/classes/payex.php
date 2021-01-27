@@ -18,30 +18,31 @@
  */
 class PayEx extends Callback
 {
-	/**
-	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
-	 * The method will re-construct the data received from DIBS after having removed the following mPoint specific fields:
-	 * 	- width
-	 * 	- height
-	 * 	- format
-	 * 	- PHPSESSID (found using PHP's session_name() function)
-	 * 	- language
-	 * 	- cardid
-	 * Additionally the method will add mPoint's Unique ID for the Transaction.
-	 *
-	 * @see 	Callback::notifyClient()
-	 * @see 	Callback::send()
-	 * @see 	Callback::getVariables()
-	 *
-	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
-	 * @param 	array $_post 	Array of data received from DIBS via HTTP POST
-	 */
-	public function notifyClient($sid, array $_post)
+    /**
+     * Notifies the Client of the Payment Status by performing a callback via HTTP.
+     * The method will re-construct the data received from DIBS after having removed the following mPoint specific fields:
+     *    - width
+     *    - height
+     *    - format
+     *    - PHPSESSID (found using PHP's session_name() function)
+     *    - language
+     *    - cardid
+     * Additionally the method will add mPoint's Unique ID for the Transaction.
+     *
+     * @param integer $sid Unique ID of the State that the Transaction terminated in
+     * @param array $_post Array of data received from DIBS via HTTP POST
+     * @param SurePayConfig|null $obj_SurePay
+     * @see    Callback::notifyClient()
+     * @see    Callback::send()
+     * @see    Callback::getVariables()
+     *
+     */
+	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			parent::notifyClient($sid, $_post["transact"], $this->getTxnInfo()->getAmount() );
+			parent::notifyClient($sid, $_POST, $obj_SurePay);
 		}
 		// Client is configured to use DIBS' protocol
 		else
