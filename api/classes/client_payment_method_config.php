@@ -138,10 +138,11 @@ class ClientPaymentMethodConfig extends BasicConfig
 
     public static function getConfigurations(RDB $oDB, $clientid)
     {
-        $sql = "SELECT C.id, Coalesce(RC.countryid, -1) AS countryid, R.providerid, C.enabled, RC.capturetype, C.id AS cardid, C.name, C.paymenttype, P.id AS walletid	
+        $sql = "SELECT C.id, Coalesce(RCON.countryid, -1) AS countryid, R.providerid, C.enabled, RC.capturetype, C.id AS cardid, C.name, C.paymenttype, P.id AS walletid	
 				FROM Client ". sSCHEMA_POSTFIX .".Client_Tbl CL 
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R  ON CL.id = R.clientid	
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON RC.routeid = R.id		
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON RC.routeid = R.id
+				INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'						
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON R.providerid = PCD.pspid AND PCD.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON PCD.cardid = C.id AND C.enabled = '1'
 				LEFT OUTER JOIN System.PSP_Tbl P ON  P.id = PCD.pspid AND P.system_type = ".Constants::iPROCESSOR_TYPE_WALLET."
