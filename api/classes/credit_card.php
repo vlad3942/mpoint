@@ -242,7 +242,10 @@ class CreditCard extends EndUserAccount
     {
         $sql = "SELECT DISTINCT PSP.id AS pspid,C.POSITION
                 FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
-                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+ 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RCON.routeconfigid = RC.routeid AND RCON.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND RCON.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RCUR.routeconfigid = RC.routeid AND (RCUR.currencyid = ".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RCUR.currencyid IS NULL) AND RCUR.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type=".$iFraudType." AND PSP.enabled = '1'
@@ -262,7 +265,9 @@ class CreditCard extends EndUserAccount
     public function getTokenizationRouteForSR($iCardID)
     {
         $sql = "SELECT DISTINCT PSP.id AS pspid FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R 
-                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL) AND RC.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1' 
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RCON.routeconfigid = RC.routeid AND RCON.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." AND RCON.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RCUR.routeconfigid = RC.routeid AND (RCUR.currencyid = ".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RCUR.currencyid IS NULL) AND RCUR.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
                     INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type=".Constants::iPROCESSOR_TYPE_TOKENIZATION." AND PSP.enabled = '1'
@@ -434,7 +439,9 @@ class CreditCard extends EndUserAccount
     {
        $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.capturetype, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
 					C.paymenttype, SRLC.cvcmandatory, CA.dccenabled
-                FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC 
+                FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RC.id = RCUR.routeconfigid AND RCUR.enabled = '1' 
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON RC.routeid = R.id AND R.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()." AND R.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON R.clientid = A.clientid AND A.id = " . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . " AND A.enabled = '1'
                     INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
@@ -447,8 +454,8 @@ class CreditCard extends EndUserAccount
                     LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CA.cardid = C.id AND CA.clientid = ".$this->_obj_TxnInfo->getClientConfig()->getID()."
                     LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
                 WHERE RC.id = ".$routeId."
-                AND (RC.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." OR RC.countryid IS NULL)
-                AND (RC.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL)
+                AND (RCON.countryid = ".$this->_obj_TxnInfo->getCountryConfig()->getID()." OR RCON.countryid IS NULL)
+                AND (RCUR.currencyid =".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RCUR.currencyid IS NULL)
                 AND RC.enabled = '1'
                 ORDER BY C.position ASC, C.name ASC";
 
