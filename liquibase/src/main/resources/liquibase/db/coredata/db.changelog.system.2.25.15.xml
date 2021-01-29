@@ -13,7 +13,7 @@
           schemaName="system"
           tableName="cardpricing_tbl">
 
-            <column name="pricepointid" value="608"/>
+            <column name="pricepointid" value="-608"/>
             <column name="cardid" value="88"/>
             <column name="enabled" value="true"/>
         </insert>
