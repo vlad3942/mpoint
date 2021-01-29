@@ -494,7 +494,7 @@ class Home extends General
         if (is_array($result) === true && count($result) > 0) {
             foreach ($result as $RS) {
                 // Set stateid given by CRS into resultset
-                if (empty($aPaymentMethodsConfig)) {
+                if (empty($aPaymentMethodsConfig) === false) {
                     $aCardConfig = isset($aPaymentMethodsConfig[$RS['CARDID']]) ? $aPaymentMethodsConfig[$RS['CARDID']] : NULL;
                     $RS['STATEID'] = isset($aCardConfig['state_id']) ? $aCardConfig['state_id'] : 1;
                 }
