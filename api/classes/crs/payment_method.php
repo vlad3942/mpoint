@@ -107,7 +107,6 @@ class PaymentMethod extends Card
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CA.cardid = C.id AND CA.clientid = ".$oTI->getClientConfig()->getID()."
 				LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE C.id IN (" . implode(',', $cardIds) . ")
-				AND C.paymenttype NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.")
 				AND C.enabled = '1'";
 
         $result = $oDB->getAllNames($sql);
