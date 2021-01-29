@@ -208,7 +208,7 @@ class RoutingService extends General
         $b .= '</amount>';
         $b .= '<card>';
         $b .= '<id>'.$this->_iCardTypeId.'</id>';
-        $b .= '<type_id>VISA</type_id>';
+        $b .= '<type_id>'.$this->_sCardName.'</type_id>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
