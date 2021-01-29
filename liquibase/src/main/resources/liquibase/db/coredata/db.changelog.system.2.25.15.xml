@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet author="Abhijit Nalavade" id="12-30-2021-01-28-setup-v2.25-system">
+
+        <insert catalogName="system"
+          schemaName="system"
+          tableName="cardpricing_tbl">
+
+            <column name="pricepointid" value="608"/>
+            <column name="cardid" value="88"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
