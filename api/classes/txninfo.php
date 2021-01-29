@@ -1988,9 +1988,9 @@ class TxnInfo
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
 							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type, mobile_country_id, mobile, email)
 						VALUES
-							(". $RS["ID"] .", '". $aShippingObj["first_name"] ."','". $aShippingObj["last_name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
-							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."', '". $aShippingObj["mobile_country_id"] ."', '". $aShippingObj["mobile"] ."', '". $aShippingObj["email"] ."' )";
-				//echo $sql ."\n";exit;
+							(". $RS["ID"] .", '". $obj_DB->escStr($aShippingObj["first_name"]) ."','". $obj_DB->escStr($aShippingObj["last_name"]) ."', '". $obj_DB->escStr($aShippingObj["street"]) ."', '". $obj_DB->escStr($aShippingObj["street2"]) ."', '". $obj_DB->escStr($aShippingObj["city"]) ."', '". $obj_DB->escStr($aShippingObj["state"]) ."',
+							 '". $obj_DB->escStr($aShippingObj["zip"]) ."', '". $obj_DB->escStr($aShippingObj["country"]) ."', '". $obj_DB->escStr($aShippingObj["reference_id"]) ."', '". $obj_DB->escStr($aShippingObj["reference_type"]) ."', '". $obj_DB->escStr($aShippingObj["mobile_country_id"]) ."', '". $obj_DB->escStr($aShippingObj["mobile"]) ."', '". $obj_DB->escStr($aShippingObj["email"]) ."' )";
+				// echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
 				{
