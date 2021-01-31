@@ -313,18 +313,18 @@ try
                                         $walletId = NULL;
                                         $wallet_Processor = NULL;
                                         $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
-                                        if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP)
+                                        $iPaymentType = $obj_card->getPaymentType();
+                                        if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                         {
                                             if($card_psp_id == Constants::iMVAULT_PSP) {
                                                 $typeId = Constants::iMVAULT_WALLET;
                                             }
-
+                                            $walletId = $typeId;
                                             if ($typeId > 0)
                                             {
                                                 $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $typeId , $aHTTP_CONN_INFO);
                                                 if(empty($wallet_Processor) === false && is_object($wallet_Processor) == true)
                                                 {
-                                                    $walletId = $typeId;
                                                     $obj_PaymentDataXML = simpledom_load_string($wallet_Processor->getPaymentData($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
                                                     if (count($obj_PaymentDataXML->{'payment-data'}) == 1)
                                                     {
@@ -353,7 +353,7 @@ try
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
-                                            if($iPSPId <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP)
+                                            if($iPSPId <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                             {
                                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
                                                 if($obj_RS instanceof RoutingService)
