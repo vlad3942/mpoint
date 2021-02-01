@@ -201,6 +201,25 @@ abstract class CPMFRAUD
             $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $response->getStatusCode(), 'No card details passed');
             return $response->getStatusCode();
         }
+        try
+        {
+            $mask =NULL;
+            if(isset($obj_Card->{'card-number'}))
+            {
+                $mask = General::getMaskCardNumber($obj_Card->{'card-number'});
+            }
+            else if(isset($obj_Card->mask) && empty($obj_Card->mask) === false)
+            {
+                $mask=str_replace(" ", "", $obj_Card->mask);
+            }
+            //In case of wallet payment flow mPoint get real card and card id in authorization
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry);
+        }
+        catch (Exception $e)
+        {
+            trigger_error("Failed to update card details", E_USER_ERROR);
+        }
+
         $this->getTxnInfo()->produceOrderConfig($this->getDBConn());
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $iStatusCode = 0;

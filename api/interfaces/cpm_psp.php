@@ -1382,7 +1382,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $response = new stdClass();
         try
         {
-            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], null, $obj_Card->expiry, $this->getPSPConfig()->getID());
+            $mask =NULL;
+            if(isset($obj_Card->{'card-number'}))
+            {
+                $mask = self::getMaskCardNumber($obj_Card->{'card-number'});
+            }
+            else if(isset($obj_Card->mask) && empty($obj_Card->mask) === false)
+            {
+                $mask=str_replace(" ", "", $obj_Card->mask);
+            }
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry, $this->getPSPConfig()->getID());
             $this->updateTxnInfoObject();
 
 			$code = 0;

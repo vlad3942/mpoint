@@ -2327,7 +2327,11 @@ class TxnInfo
     {
        try
        {
-           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid) .", pspid = ". $pspId;
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid) ;
+           if($pspId !== null)
+		   {
+		   	$sql .=" , pspid = ". $pspId;
+		   }
 
            if(empty($mask) ===false && empty($expiry) === false)
            {
