@@ -76,4 +76,13 @@
     
     </changeSet>
 
+    <changeSet author="Sagar Badave" id="2021-01-28-setup-v2.25-system">
+        <update catalogName="log"
+                schemaName="log"
+                tableName="state_tbl">
+
+            <column name="name" value="Post Auth Screen Skip - Business Rules" />
+            <where>id = 3117</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
