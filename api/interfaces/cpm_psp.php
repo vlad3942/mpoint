@@ -561,12 +561,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             }
             //In case of wallet payment flow mPoint get real card and card id in authorization
             $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry, $obj_PSPConfig->getID());
-            $this->updateTxnInfoObject();
         }
         catch (Exception $e)
         {
             trigger_error("Failed to update card details", E_USER_ERROR);
         }
+        $this->updateTxnInfoObject();
+        $this->genInvoiceId(NULL);
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
