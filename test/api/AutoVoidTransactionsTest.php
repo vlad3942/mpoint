@@ -90,7 +90,7 @@ class AutoVoidTransactionsTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (103,1001001, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
 
         $this->_httpClient->connect();
-        $this->bIgnoreErrors = true; // In case of failure mPoint will throw the expection
+        $this->bIgnoreErrors = true; // In case of failure mPoint will throw the exception
         sleep(1);
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'));
         $sReplyBody = $this->_httpClient->getReplyBody();
