@@ -114,22 +114,33 @@ if ($obj_ClientConfig !== NULL)
                 if(empty($externalRef) === FALSE)
                 {
                     $obj_uatpPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $objTxnInfo, 50, $aHTTP_CONN_INFO);
-                    $externalRefCancelStatus = $obj_uatpPSP->cancel();
+                    try {
+                        $externalRefCancelStatus = $obj_uatpPSP->cancel();
+                    }
+                    catch (Exception $e)
+                    {
+                        $externalRefCancelStatus = 500;
+                    }
                 }
 
                 if($externalRefCancelStatus === 100)
                 {
-                    $response = $objGeneralPSP->voidTransaction($objGeneralPSP->getTxnInfo()->getAmount(), 'Void triggered from Auto Void Cron');
-                    $statusCode = array_key_first($response);
+                    try {
+                        $response = $objGeneralPSP->voidTransaction($objGeneralPSP->getTxnInfo()->getAmount(), 'Void triggered from Auto Void Cron');
+                        $statusCode = array_key_first($response);
+                    }
+                    catch (Exception $e)
+                    {
+                        $statusCode = 500;
+                    }
+
                     $xml .= "<transaction id ='".$transactionId['ID']."'><status code='$statusCode'>". $response[$statusCode] ."</status></transaction>";
                 }
                 else
                 {
                     $xml .= "<transaction id ='".$transactionId['ID']."'><status code='$externalRefCancelStatus'>Unable to cancel transaction for PSP : 50 </status></transaction>";
                 }
-
             }
-
         }
     }
 }
