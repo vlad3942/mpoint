@@ -106,7 +106,7 @@ if ($obj_ClientConfig !== NULL)
 
             foreach ($aTransactionId as $transactionId) {
                 $objGeneralPSP->setTxnInfo($transactionId['ID']);
-
+                $objTxnInfo = $objGeneralPSP->getTxnInfo();
                 $externalRefCancelStatus = 100;
 
                 // Cancel SUVTP
