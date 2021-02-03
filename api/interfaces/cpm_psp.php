@@ -278,14 +278,15 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 	}
 
-	/**
-	 * Performs a cancel operation with CPM PSP for the provided transaction.
-	 * The method will return one the following status codes:
-	 *    >=1000 Cancel succeeded
-	 *    <1000 Cancel failed
-	 *
-	 * @return int
-	 */
+    /**
+     * Performs a cancel operation with CPM PSP for the provided transaction.
+     * The method will return one the following status codes:
+     *    >=1000 Cancel succeeded
+     *    <1000 Cancel failed
+     *
+     * @return int
+     * @throws \Exception
+     */
 	public function cancel($amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
@@ -369,16 +370,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					return $retStatusCode;
 				}
 				else {
-				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+				    if($this->getPSPConfig()->getProcessorType() !== 8) {
+                        $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+                    }
 				    throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
 			}
 			else {
-			    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+			    if($this->getPSPConfig()->getProcessorType() !== 8) {
+                    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+                }
 			    throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
-		    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+		    if($this->getPSPConfig()->getProcessorType() !== 8) {
+                $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+            }
 			trigger_error("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 			return $e->getCode();
 		}
@@ -1101,7 +1108,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		if($obj_Card->expiry)
 		{
-			list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+			[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 			$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
 		}
 
@@ -1114,7 +1121,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
                 
         if($obj_Card->{'valid-from'}) {
-            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            [$valid_from_month, $valid_from_year] = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
             $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
@@ -1165,7 +1172,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)
 	{
-		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+		[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 		
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
 		$b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
@@ -1174,7 +1181,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<token>'. $obj_Card->ticket .'</token>';
                 
         if($obj_Card->{'valid-from'}) {
-            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            [$valid_from_month, $valid_from_year] = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
             $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';

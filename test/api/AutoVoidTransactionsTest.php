@@ -90,12 +90,13 @@ class AutoVoidTransactionsTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (103,1001001, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
 
         $this->_httpClient->connect();
+        $this->bIgnoreErrors = true; // In case of failure mPoint will throw the exception
         sleep(1);
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'));
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><transaction id ='1001001'><status code='99'>Unable to cancel transaction for PSP : 50 </status></transaction></root>", $sReplyBody);
+        $this->assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><transaction id ='1001001'><status code='400'>Unable to cancel transaction for PSP : 50 </status></transaction></root>", $sReplyBody);
 
 
 	}
