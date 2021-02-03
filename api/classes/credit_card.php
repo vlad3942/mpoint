@@ -437,7 +437,7 @@ class CreditCard extends EndUserAccount
 
     public function getCardConfigurationObject($amount, $cardTypeId, $routeId)
     {
-       $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.capturetype, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
+       $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.capturetype as capture_type, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
 					C.paymenttype, SRLC.cvcmandatory, CA.dccenabled
                 FROM Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC
                     INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'
@@ -518,7 +518,7 @@ class CreditCard extends EndUserAccount
                 $xml .= '<account>' . $RS["ACCOUNT"] . '</account>';
                 $xml .= '<subaccount>' . $RS["SUBACCOUNT"] . '</subaccount>';
                 $xml .= '<currency>' . $RS["CURRENCY"] . '</currency>';
-                $xml .= '<capture_type>'. $RS["CAPTURETYPE"] .'</capture_type>';
+                $xml .= '<capture_type>'. $RS["CAPTURE_TYPE"] .'</capture_type>';
                 if (is_array($aRS) === true && count($aRS) > 0) {
                     $xml .= '<prefixes>';
                     for ($i = 0; $i < count($aRS); $i++) {
