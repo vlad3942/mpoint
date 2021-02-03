@@ -126,40 +126,59 @@ class Admin extends General
 				WHERE accountid = ". intval($accountid);
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
-	public function saveAccount(&$accountid, $clientid, $name, $markup)
-	{	
-        $newaccount = false;
-		if ($accountid > 0)
-		{
-			$sql = "UPDATE Client".sSCHEMA_POSTFIX.".Account_Tbl
-					SET name = '". $this->getDBConn()->escStr($name)."', markup='". $this->getDBConn()->escStr($markup)."'
-					WHERE id = ". intval($accountid)." AND clientid = ".intval($clientid)."";
-			$res = $this->getDBConn()->query($sql);
-		}
-		else
-		{
-			$sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl 
-						(clientid, name, markup)
+
+    public function saveAccount($clientid, $name, $markup, $id = -1)
+    {
+
+        if(empty($id) === true )
+        {
+            //Entry exists but is disabled.
+            $sqlSelect = "SELECT id FROM Client". sSCHEMA_POSTFIX .".Account_Tbl
+						WHERE name = '". $this->getDBConn()->escStr($name) ."'
+						AND markup = '". $this->getDBConn()->escStr($markup) ."'
+						AND clientid = ". intval($clientid);
+
+            $RSONE = $this->getDBConn()->getName($sqlSelect);
+
+            $id = $RSONE["ID"];
+        }
+
+        if ($id > 0)
+        {
+            $sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
+					SET name = '". $this->getDBConn()->escStr($name) ."', markup='". $this->getDBConn()->escStr($markup) ."', enabled = '1'
+					WHERE id = ". intval($id) ." AND (name != '". $this->getDBConn()->escStr($name) ."' OR markup !='". $this->getDBConn()->escStr($markup) ."')";
+            $res = $this->getDBConn()->query($sql);
+
+            if($this->getDBConn()->countAffectedRows($res) > 0)
+            {
+                //This query will force trigger to update modified date to same date where account_tbl is updated.
+                $sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
+						SET accountid = '". intval($id)."'
+						WHERE accountid = ". intval($id);
+
+                $res = $this->getDBConn()->query($sql);
+            }
+        }
+        else
+        {
+            $sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".Account_Tbl_id_seq') AS id";
+            $RS = $this->getDBConn()->getName($sql);
+            $id = $RS["ID"];
+
+            $sql =  "INSERT INTO Client". sSCHEMA_POSTFIX .".Account_Tbl 
+						(id, clientid, name, markup)
 					 VALUES
-						(". intval($clientid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($markup) ."')";
-//			echo $sql ."\n";	
-			if (is_resource($this->getDBConn()->query($sql) ) === true)
-			{
-				$sql = "SELECT Max(id) AS ID
-						FROM Client".sSCHEMA_POSTFIX.".Account_Tbl";
-//				echo $sql ."\n";	
-				$RS = $this->getDBConn()->getName($sql);
-		
-				if (is_array($RS) === true)
-				{
-					$accountid = $RS["ID"];
-					$newaccount = true;
-				}
-			}
-		}
-		return $newaccount == true ? true : is_resource($res);
-	}
+						(". $id .", ". intval($clientid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($markup) ."')";
+            $res = $this->getDBConn()->query($sql);
+        }
+        //echo $sql ."\n";
+
+        // Unable execute SQL query
+        if (is_resource($res) === false) { $id = -1; }
+
+        return $id;
+    }
 	
 	public function deleteAccount($clientid)
 	{
@@ -193,18 +212,59 @@ class Admin extends General
 				WHERE clientid = ". intval($clientid)."";
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
-	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password)
-	{		
-		$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
-					(clientid, pspid, name, username, passwd )
-				VALUES
-					( ". intval($clientid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."')";
-//		echo $sql ."\n";	
-		return is_resource($this->getDBConn()->query($sql) );
-	}
-	
-	public function deleteMerchantAccount($clientid)
+
+    public function saveMerchantAccount($clientid, $pspid, $name, $username, $password, $storedcard, $id = -1)
+    {
+
+        if (empty($storedcard) === true )
+        {
+            $storedcard = "NULL" ;
+            $storedcardClause = "stored_card IS NULL";
+
+        }
+        else
+        {
+            $storedcard = "'". intval($storedcard) ."'";
+            $storedcardClause = "stored_card = ". $storedcard ;
+        }
+
+        if(empty($id) === true )
+        {
+            //Entry exists but is disabled.
+            $sqlSelect = "SELECT id FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
+						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid) ." AND ". $storedcardClause;
+            $RSONE = $this->getDBConn()->getName($sqlSelect);
+            $id = $RSONE["ID"];
+        }
+
+        if (intval($id) > 0)
+        {
+            $sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
+					SET name = '". $this->getDBConn()->escStr($name) ."', username ='". $this->getDBConn()->escStr($username) ."', passwd ='". $this->getDBConn()->escStr($password) ."',
+						pspid = ". intval($pspid) .", stored_card = ". $storedcard .", enabled = '". intval(true) ."'
+					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);
+        }
+        else
+        {
+            $sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl_id_seq') AS id";
+            $RS = $this->getDBConn()->getName($sql);
+            $id = $RS["ID"];
+
+            $sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
+						(id, clientid, pspid, name, username, passwd, stored_card )
+					VALUES
+						(". $id .", ". intval($clientid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."', ". $storedcard .")";
+        }
+        //echo $sql ."\n";
+        $res = $this->getDBConn()->query($sql);
+        //Unable execute SQL query
+        if (is_resource($res) === false) { $id = -1; }
+
+        return $id;
+    }
+
+
+    public function deleteMerchantAccount($clientid)
 	{
 		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
 				WHERE clientid = ". intval($clientid)."";
@@ -227,41 +287,36 @@ class Admin extends General
 				WHERE clientid = ". intval($clientid)."";
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
-	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password)
-	{
-        $newclient = false;
-		if ($clientid > 0)
-		{
-			$sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-					SET store_card = ".intval($storecard) .", name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
-					WHERE id = ". intval($clientid)."";
-			$res = $this->getDBConn()->query($sql);
-		}
-		else
-		{
-			$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
-						(store_card, name, username, passwd, countryid, flowid)
+
+    public function saveClient($cc, $storecard, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
+    {
+        if ($id > 0)
+        {
+            $sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
+					SET store_card = ". intval($storecard) .", name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
+						maxamount = ". intval($maxamt) .", lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
+						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = '". $this->getDBConn()->escStr($salt) ."', communicationchannels = ". intval($channels) ."
+					WHERE id = ". intval($id);
+        }
+        else
+        {
+            $sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".Client_Tbl_id_seq') AS id";
+            $RS = $this->getDBConn()->getName($sql);
+            $id = $RS["ID"];
+
+            $sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".Client_Tbl
+						(id, store_card, auto_capture, name, username, passwd, countryid, flowid, maxamount, lang, smsrcpt, emailrcpt, mode, method, send_pspid, identification, transaction_ttl, salt)
 					VALUES
-						(". intval($storecard).",'". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
-//			echo $sql ."\n";		
-			$res = $this->getDBConn()->query($sql);
-			if (is_resource($res))
-			{
-				$sql = "SELECT MAX(id) AS ID
-						FROM Client".sSCHEMA_POSTFIX.".Client_Tbl";
-//				echo $sql ."\n";
-				$RS = $this->getDBConn()->getName($sql);
-								
-				if (is_array($RS) === true)
-				{
-					$clientid = $RS["ID"];						
-					$newclient = true;				
-				}
-			}
-		}
-		return $newclient == true ? true : is_resource($res);
-	}
+						(". $id .", ". intval($storecard) .",'". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
+						 ". intval($maxamt) .", '". $this->getDBConn()->escStr($lang) ."', '". intval($smsrcpt) ."', '". intval($emailrcpt) ."' ,". intval($mode) .",'". $this->getDBConn()->escStr($method) ."','". intval($send_pspid) ."',". intval($identification) .",". intval($transaction_ttl) .", ". $this->getDBConn()->escStr($salt) .")";
+        }
+//		echo $sql ."\n";
+        $res = $this->getDBConn()->query($sql);
+        // Unable execute SQL query
+        if (is_resource($res) === false) { $id = -1; }
+
+        return $id;
+    }
 		
 	public function deleteCardAccess($clientid)
 	{

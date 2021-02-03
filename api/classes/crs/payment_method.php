@@ -1,6 +1,14 @@
 <?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Anna Lagad
+ * Copyright: Cellpoint Digital
+ * Link: http://www.cellpointdigital.com
+ * Project: server
+ * File Name:payment_method.php
+ */
 
-class StaticRoute extends Card
+class PaymentMethod extends Card
 {
     private $_obj_TxnInfo = '';
     private $_iProcessorType = '';
@@ -91,16 +99,14 @@ class StaticRoute extends Card
         $aObj_Configurations = array();
         $cardIds = array_keys($aPaymentMethodsConfig);
 
-        $sql = "SELECT DISTINCT ON (C.id) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, CA.psp_type AS processortype, CA.pspid,
-                CA.stateid, CA.preferred, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid, CA.dccEnabled
+        $sql = "SELECT DISTINCT ON (C.id) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, C.paymenttype, C.paymenttype AS processortype, '-1' AS pspid,
+                false AS preferred, 0 AS installment, SRLC.cvcmandatory, '' AS walletid, CA.dccenabled
 				FROM System" . sSCHEMA_POSTFIX . ".Card_Tbl C
-				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid AND CA.clientid = ".$oTI->getClientConfig()->getID()."
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.currencyid = " . $oTI->getCurrencyConfig()->getID() . " AND PP.amount = -1 AND PP.enabled = '1'
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CA.cardid = C.id AND CA.clientid = ".$oTI->getClientConfig()->getID()."
 				LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'
 				WHERE C.id IN (" . implode(',', $cardIds) . ")
-				AND CA.psp_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.")
-                AND CA.walletid IS NULL
 				AND C.enabled = '1'";
 
         $result = $oDB->getAllNames($sql);
@@ -110,7 +116,6 @@ class StaticRoute extends Card
             foreach ($result as $aRS) {
                 // Set processor type and stateid given by CRS into resultset
                 $aCardConfig = $aPaymentMethodsConfig[$aRS['ID']];
-                $aRS['PROCESSORTYPE'] = $aCardConfig['psp_type'];
                 $aRS['STATEID'] = $aCardConfig['state_id'];
                 $preference = $aCardConfig['preference'];
 
@@ -127,7 +132,7 @@ class StaticRoute extends Card
 
                     $aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $aRS['ID']);
 
-                    $aObj_Configurations[$preference] = new StaticRoute($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
+                    $aObj_Configurations[$preference] = new PaymentMethod($oTI, $oDB, $aPrefixes, $aRS, $aRS['PROCESSORTYPE'], $aRS['PSPID'], $aRS['STATEID'], $aRS['PREFERRED'], $aRS['INSTALLMENT'], $aRS['CAPTURE_TYPE'], $aRS['CVCMANDATORY'], $aRS['WALLETID'], $aRS['DCCENABLED']);
                 }
             }
         }
@@ -150,7 +155,6 @@ class StaticRoute extends Card
         for ($i = 0, $iMax = count($paymentMethods); $i < $iMax; $i++) {
 
             $aPaymentMethodsConfig[$paymentMethods[$i]->id] = array(
-                'psp_type' => $paymentMethods[$i]->psp_type,
                 'state_id' => $paymentMethods[$i]->state_id,
                 'preference' => $paymentMethods[$i]->preference
             );
@@ -159,3 +163,5 @@ class StaticRoute extends Card
     }
 
 }
+
+?>

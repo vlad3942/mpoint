@@ -169,6 +169,7 @@ require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
+require_once(sCLASS_PATH . '/route.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -251,6 +252,7 @@ try
                                     $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
                                     $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
                                     $additionalTxnData = [];
+                                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 
 									if ($isStoredCardPayment === true)
 									{
@@ -278,9 +280,9 @@ try
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
+                                        $oUA = null;
+										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, array(), $obj_TxnInfo->getCountryConfig()->getID(), $is_legacy) );
 
-										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
-	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
 										$obj_CardValidator = new CardValidator($obj_card);
@@ -302,6 +304,41 @@ try
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
+                                        // Call get payment data API for wallet and stored card payment
+                                        $card_psp_id = -1;
+                                        if ($isStoredCardPayment === true){
+                                            $card_psp_id = (int)$obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                        }
+
+                                        $walletId = NULL;
+                                        $wallet_Processor = NULL;
+                                        $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
+                                        $iPaymentType = $obj_card->getPaymentType();
+                                        if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                        {
+                                            if($card_psp_id == Constants::iMVAULT_PSP) {
+                                                $typeId = Constants::iMVAULT_WALLET;
+                                            }
+                                            $walletId = $typeId;
+                                            if ($typeId > 0)
+                                            {
+                                                $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $typeId , $aHTTP_CONN_INFO);
+                                                if(empty($wallet_Processor) === false && is_object($wallet_Processor) == true)
+                                                {
+                                                    $obj_PaymentDataXML = simpledom_load_string($wallet_Processor->getPaymentData($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
+                                                    if (count($obj_PaymentDataXML->{'payment-data'}) == 1)
+                                                    {
+                                                        $paymentCardTypeId = (int) $obj_PaymentDataXML->{'payment-data'}->card["type-id"];
+                                                        if($paymentCardTypeId > 0)
+                                                        {
+                                                            $typeId = $paymentCardTypeId;
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+                                        }
+
                                         $issuerIdentificationNumber = NULL;
                                         if($isStoredCardPayment === true){
                                             $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
@@ -312,35 +349,40 @@ try
 
                                         $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
-                                        if($obj_card->getPaymentType() === 1) {
-                                            $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
-                                            if (strtolower($drService) == 'true') {
-                                                $iPrimaryRoute = $obj_TxnInfo->getPSPID();
-                                                if($iPrimaryRoute <=0)
+                                        $obj_CardXML = '';
+                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
+                                        if (strtolower($is_legacy) == 'false') {
+                                            $iPSPId = $obj_TxnInfo->getPSPID();
+                                            if($iPSPId <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                            {
+                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
+                                                if($obj_RS instanceof RoutingService)
                                                 {
-                                                    $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $issuerIdentificationNumber, $obj_card->getCardName());
-                                                    if($obj_RS instanceof RoutingService)
-                                                    {
-                                                        $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                                        $iPrimaryRoute = $obj_RS->getAndStorePSP($objTxnRoute);
-                                                    }
+                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
                                                 }
                                             }
-                                        }
-
-                                        $obj_CardXML = '';
-                                        if($iPrimaryRoute > 0 ){
-                                            $empty = array();
-                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardsForDR( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $empty, $iPrimaryRoute, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) );
+                                            else
+                                            {
+                                                $objRoute = new Route($_OBJ_DB, $obj_TxnInfo, $obj_DOM->{'authorize-payment'}[$i]["client-id"]);
+                                                $iPrimaryRoute = $objRoute->getRouteID($iPSPId);
+                                            }
+                                            $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }
 
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
-										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1 and @walletid = '']");
-										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
-										
+                                        if(strtolower($is_legacy) == 'false') {
+                                            $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . "]");
+                                        }else{
+                                            $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . " and @state-id=1 and @walletid = '']");
+                                        }
+										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
+
 										if($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false && $obj_CardValidator->valCardNumber() !== 720)
 										{
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
@@ -479,8 +521,8 @@ try
 								                     $aMsgCds[209] = 'Auth url not configured' ;
 								                }
 								            }
-							            }	
-					                    
+							            }
+
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
@@ -563,35 +605,26 @@ try
 												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 												default:
 
-                                                    $card_psp_id = $obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
 													// 3rd Party Wallet
-													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || intval($card_psp_id)== Constants::iMVAULT_PSP)
+													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || $card_psp_id === Constants::iMVAULT_PSP)
 													{
-													    $typeId = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
-													    if(intval($card_psp_id)== Constants::iMVAULT_PSP)
-                                                        {
-                                                            $typeId = Constants::iMVAULT_WALLET;
-                                                        }
-                                                        if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) > 0) {
-                                                            $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $typeId , $aHTTP_CONN_INFO);
-                                                            if (empty($wallet_Processor) === true) {
-                                                                $obj_XML = simpledom_load_string($obj_mCard->getCards((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount));
+                                                        if (empty($wallet_Processor) === true) {
+                                                            $obj_XML = simpledom_load_string($obj_mCard->getCards((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount));
 
-                                                                if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) {
-                                                                    $obj_Elem->cvc = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
-                                                                }
+                                                            if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) {
+                                                                $obj_Elem->cvc = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
+                                                            }
 
-                                                                if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) {
-                                                                    $obj_Elem->ticket = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
-                                                                }
+                                                            if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) {
+                                                                $obj_Elem->ticket = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
                                                             }
                                                         }
+
 														if(isset($wallet_Processor) == true && is_object($wallet_Processor) == true)
 														{
-															$obj_XML = simpledom_load_string($wallet_Processor->getPaymentData($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
-															if (count($obj_XML->{'payment-data'}) == 1)
+															if (count($obj_PaymentDataXML->{'payment-data'}) == 1)
 															{
-																$obj_Elem = $obj_XML->{'payment-data'}->card;
+																$obj_Elem = $obj_PaymentDataXML->{'payment-data'}->card;
 																// Add billing address from request as no billing address was returned by the 3rd party wallet
 																if (count($obj_Elem->address) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
 																{
@@ -660,19 +693,21 @@ try
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
 
+                                                                if(strtolower($is_legacy) == 'false') {
+                                                                    $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = " . (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] . "]");
+                                                                }else{
                                                                     $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$wallet_Processor->getPSPConfig()->getID()."]");
-                                                                    if (count($obj_XML) == 0)
-                                                                    {
-                                                                        $code = 5;
-                                                                        $xml = '<status code="24">The selected payment card is not available</status>';
-                                                                    } // Card disabled
-																	if ($iPrimaryRoute > 0) {
-																		$obj_Elem ["pspid"] = $iPrimaryRoute;
-																	} else {
-																		$obj_Elem ["pspid"] = (int) $obj_XML["pspid"];
-																	}
-																	$obj_Elem ["wallet-type-id"] = intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] );
-																}
+                                                                }
+
+                                                                if (count($obj_XML) == 0)
+                                                                {
+                                                                    $code = 5;
+                                                                    $xml = '<status code="24">The selected payment card is not available</status>';
+                                                                } // Card disabled
+
+                                                                $obj_Elem ["pspid"] = (int) $obj_XML["pspid"];
+                                                                $obj_Elem ["wallet-type-id"] = intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] );
+															}
 															// 3rd Party Wallet returned error	
 															elseif (count($obj_XML->status) == 1)
 															{
@@ -697,7 +732,11 @@ try
 	
 														if ($iPSPID > 0)
 														{
-															$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                                            if(strtolower($is_legacy) == 'false') {
+                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                                            }else{
+                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                                            }
 															$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 															$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 															$iInvoiceStatus = $obj_Authorize->invoice($obj_DOM->{'authorize-payment'}[$i]->transaction->description);
@@ -754,7 +793,11 @@ try
 														try
 														{
 														    if($obj_Elem["pspid"] > 0) {
-																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+                                                                if(strtolower($is_legacy) == 'false') {
+                                                                    $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+                                                                }else{
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+                                                                }
 																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
                                                                 $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
@@ -789,10 +832,13 @@ try
                                                                 $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
                                                                 if ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)
                                                                 {
-                                                                    if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
+                                                                    if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY, $is_legacy)) > 0)
                                                                     {
-                                                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-
+                                                                        if(strtolower($is_legacy) == 'false') {
+                                                                            $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
+                                                                        }else{
+                                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
+                                                                        }
                                                                         $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                                                         $obj_PSP->saveCard($obj_Elem);
                                                                     }
@@ -831,10 +877,18 @@ try
                                                                                 $aBillingAddr['billing_address'][0]['first_name'] = $obj_Elem->address->{'first-name'};
                                                                                 $aBillingAddr['billing_address'][0]['last_name'] = $obj_Elem->address->{'last-name'} ;
                                                                             }
-                                                                            $aBillingAddr['billing_address'][0]['mobile'] = (string) $obj_Elem->address->{'contact-details'}->mobile;
-                                                                            $aBillingAddr['billing_address'][0]['email'] = (string) $obj_Elem->address->{'contact-details'}->email;
-                                                                            $aBillingAddr['billing_address'][0]['mobile_country_id'] = $obj_Elem->address->{'contact-details'}->{'mobile'}['country-id'];
 
+                                                                            if (empty($obj_Elem->address->{'contact-details'}->mobile) === false &&
+                                                                                empty($obj_Elem->address->{'contact-details'}->email) === false) {
+                                                                                $aBillingAddr['billing_address'][0]['mobile'] = (string)$obj_Elem->address->{'contact-details'}->mobile;
+                                                                                $aBillingAddr['billing_address'][0]['email'] = (string)$obj_Elem->address->{'contact-details'}->email;
+                                                                                $aBillingAddr['billing_address'][0]['mobile_country_id'] = $obj_Elem->address->{'contact-details'}->{'mobile'}['country-id'];
+                                                                            } else {
+                                                                                $aBillingAddr['billing_address'][0]['mobile'] = "";
+                                                                                $aBillingAddr['billing_address'][0]['email'] = "";
+                                                                                $aBillingAddr['billing_address'][0]['mobile_country_id'] = "";
+                                                                            }
+                                                                            
                                                                             $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $aBillingAddr['billing_address']);
                                                                         }
                                                                     }
@@ -910,7 +964,11 @@ try
                                                                             }
                                                                             break;
                                                                         case (Constants::iNETAXEPT_PSP): // NetAxept
-                                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+                                                                            if(strtolower($is_legacy) == 'false') {
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+                                                                            }else{
+                                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+                                                                            }
                                                                             $obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"], $obj_PSPConfig);
 
                                                                             if ($obj_TxnInfo->getMode() > 0) {
@@ -935,8 +993,11 @@ try
                                                                             break;
                                                                         case (Constants::iCPG_PSP):
                                                                             $obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["cpg"]);
-                                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
-
+                                                                            if(strtolower($is_legacy) == 'false') {
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
+                                                                            }else{
+                                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
+                                                                            }
                                                                             $aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
                                                                             $aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
                                                                             $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);
@@ -944,9 +1005,11 @@ try
                                                                                 $xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
                                                                             break;
                                                                         case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
-
-                                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
-
+                                                                            if(strtolower($is_legacy) == 'false') {
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
+                                                                            }else{
+                                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
+                                                                            }
                                                                             $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 
                                                                             $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
@@ -975,8 +1038,11 @@ try
                                                                             break;
 
                                                                         case (Constants::iCHUBB_PSP): // CHUBB
-                                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
-
+                                                                            if(strtolower($is_legacy) == 'false') {
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
+                                                                            }else{
+                                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
+                                                                            }
                                                                             $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
                                                                             $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
@@ -999,7 +1065,7 @@ try
                                                                             break;
                                                                         case (Constants::iSWISH_APM): // SWISH
                                                                             try {
-                                                                                
+
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 
                                                                                 if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
@@ -1051,7 +1117,7 @@ try
 																				$code = $response->code;
 
                                                                                 $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
-                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $drService, $paymentRetryWithAlternateRoute);
+                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute);
 
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
@@ -1068,7 +1134,7 @@ try
                                                                 {
                                                                     $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_Elem["pspid"], $aHTTP_CONN_INFO);
                                                                     $aCallbackArgs = array("amount" => $obj_TxnInfo->getAmount(),
-                                                                        "card-id" =>  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]);
+                                                                        "cardid" =>  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]);
                                                                     if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
 
 
@@ -1082,8 +1148,12 @@ try
                                                             /*Complete Tokenization after successful authorization*/
                                                             if ($code >= Constants::iPAYMENT_ACCEPTED_STATE and $code < Constants::iPAYMENT_REJECTED_STATE)
                                                             {
+                                                                if(strtolower($is_legacy) == 'false') {
+                                                                    $iTokenzationProcessor = intval($obj_mCard->getTokenizationRouteForSR(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
+                                                                }else{
+                                                                    $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
+                                                                }
 
-                                                                $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
                                                                     $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
@@ -1184,7 +1254,11 @@ try
 
 										if ($iPSPID > 0)
 										{
-											$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                            if(strtolower($is_legacy) == 'false') {
+                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                            }else{
+                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                            }
 											$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 											$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 

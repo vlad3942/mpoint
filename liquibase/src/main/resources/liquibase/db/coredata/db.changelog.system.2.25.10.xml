@@ -18,4 +18,144 @@
 
     </changeSet>
 
+    <changeSet author="Anna Lagad" id="2020-12-14-setup-v2.25.10-system">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="1"/>
+            <column name="featurename" value="Pre-Auth"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="2"/>
+            <column name="featurename" value="Delayed Capture"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="3"/>
+            <column name="featurename" value="Batch Capture"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="4"/>
+            <column name="featurename" value="Partial Capture"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="5"/>
+            <column name="featurename" value="Refund"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="6"/>
+            <column name="featurename" value="Partial Refund"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="7"/>
+            <column name="featurename" value="Settlement"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="8"/>
+            <column name="featurename" value="Recurring"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="9"/>
+            <column name="featurename" value="3DS"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="10"/>
+            <column name="featurename" value="Installment"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="11"/>
+            <column name="featurename" value="Store Card"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="12"/>
+            <column name="featurename" value="Channel Mobile"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="13"/>
+            <column name="featurename" value="Channel Web"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="14"/>
+            <column name="featurename" value="Channel Others"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="15"/>
+            <column name="featurename" value="Pre-auth Fraud"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="16"/>
+            <column name="featurename" value="Post-Auth Fraud"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="routefeature_tbl">
+
+            <column name="id" value="17"/>
+            <column name="featurename" value="Voids"/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>

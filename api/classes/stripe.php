@@ -22,12 +22,12 @@ require_once(sLIB_PATH ."stripe/Stripe.php");
 class Stripe_PSP extends Callback
 {
 
-	public function notifyClient($sid, array $_post)
+	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null)
 	{
 		
 	}
 	
-	public function auth($ticket, $apiKey, $cardID, $storecard)
+	public function auth($ticket=null, $apiKey=null, $cardID=null, $storecard=null)
 	{		
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();

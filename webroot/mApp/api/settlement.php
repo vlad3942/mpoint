@@ -36,7 +36,7 @@ $HTTP_RAW_POST_DATA .= '</root>';*/
 // <editor-fold defaultstate="collapsed" desc="all required files">
 
 // Require Global Include File
-require_once("../../inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH . "simpledom.php");
@@ -140,12 +140,21 @@ require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 // </editor-fold>
 ini_set('max_execution_time', 1200);
+global $paymentSettlementRequest;
+$obj_DOM = null;
+if(isset($paymentSettlementRequest) === true)
+{
+    $obj_DOM = simpledom_load_string($paymentSettlementRequest);
+}
+else
+{
+    $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
+}
 
-$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
-if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true || true)
+if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
     if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'payment-settlements'}) > 0)
     {
@@ -219,22 +228,39 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         {
             foreach ($client as $pspid)
             {
-                $xml .= '<settlements>';
                 $obj_Settlement = SettlementFactory::create($_OBJ_TXT, $clientid, $pspid, $aHTTP_CONN_INFO);
                 if($obj_Settlement != NULL)
                 {
                     $obj_Settlement->capture($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
+                    if($obj_Settlement->getSettlementTxnAmount() > 0)
+                    {
+                        $xml .= '<settlement>';
+                        $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
+                        $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
+                        $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
+                        $xml .= '<psp-id>'.$pspid.'</psp-id>';
+                        $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
+                        $xml .= '</settlement>';
+
+                    }
+
                     $obj_Settlement->refund($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
                     $obj_Settlement->createBulkSettlementEntry($_OBJ_DB);
-                    $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
-                    $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
-                    $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
-                    $xml .= '<psp-id>'.$pspid.'</psp-id>';
-                    $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
+
+                    if($obj_Settlement->getSettlementTxnAmount() > 0 || ($obj_Settlement->getSettlementId() !== null))
+                    {
+                        $xml .= '<settlement>';
+                        $xml .= '<settlement-id>'.$obj_Settlement->getSettlementId().'</settlement-id>';
+                        $xml .= '<record-type>'.$obj_Settlement->getRecordType().'</record-type>';
+                        $xml .= '<created-time>'.$obj_Settlement->getFileCreatedDate().'</created-time>';
+                        $xml .= '<psp-id>'.$pspid.'</psp-id>';
+                        $xml .= '<file-status>'.$obj_Settlement->getFileStatus().'</file-status>';
+                        $xml .= '</settlement>';
+
+                    }
                 }
-                $xml .= '</settlements>';
             }
         }
         $xml .= '</settlement-info>';

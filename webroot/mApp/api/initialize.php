@@ -69,10 +69,10 @@ require_once sCLASS_PATH . '/passbookentry.php';
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/card_prefix_config.php");
 require_once sCLASS_PATH . '/routing_service.php';
-require_once sCLASS_PATH . '/static_route.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 
 $aMsgCds = array();
@@ -204,7 +204,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if (count($aMsgCds) == 0)
 					{
 					
-						$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
+						$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig,Constants::iPURCHASE_VIA_APP);
 						try
 						{
 							// Update Transaction State
@@ -657,32 +657,37 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
-                            $fopSelection = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'FOP_SELECTION');
-                            if (strtolower($fopSelection) == 'true') {
+                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                            if (strtolower($is_legacy) == 'false') {
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                                if(empty($sessionId)===false){
+                                if (empty($sessionId) === false) {
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                 }
-
+                                // Call mProfile to get customer type
+                                if (empty($authenticationURL) === false && empty($authToken) === false && empty($profileTypeId) === true) {
+                                    $obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"]);
+                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+                                    $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+                                    if ($code == 10) {
+                                        $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
+                                    }
+                                }
 
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
+                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
                                 $obj_PaymentMethodResponse = null;
-                                if($obj_RS instanceof RoutingService)
-                                {
+                                if ($obj_RS instanceof RoutingService) {
                                     $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
 
-                                    if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
-                                    {
+                                    if ($obj_PaymentMethodResponse instanceof RoutingServiceResponse) {
                                         $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                                        $obj_SR = StaticRoute::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
-                                        ksort($obj_SR, 1);
+                                        $obj_PM = PaymentMethod::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+                                        ksort($obj_PM, 1);
                                         $obj_XML = '<cards>';
-                                        foreach ($obj_SR as $key => $value)
-                                        {
-                                            if(($value instanceof StaticRoute) === true )
-                                            {
+                                        foreach ($obj_PM as $key => $value) {
+                                            if (($value instanceof PaymentMethod) === true) {
                                                 $obj_XML .= $value->toXML();
                                             }
                                         }
@@ -690,15 +695,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $obj_XML = simplexml_load_string($obj_XML, "SimpleXMLElement", LIBXML_COMPACT);
                                     }
                                 }
-                                // Fallback machanisam if routing service fails to return eligible payment methods
-                                if(empty($obj_PaymentMethodResponse) === true )
-                                {
-                                    $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
-                                }
-                            }
-                            else
-                            {
-                                $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
+                            } else {
+                                $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray), "SimpleXMLElement", LIBXML_COMPACT);
                             }
 
 							// End-User already has an account and payment with Account enabled
@@ -707,15 +705,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
                                 if(empty($obj_PaymentMethods) === false){
                                     $oUA = null;
-                                    $aPaymentMethods = array_map(function ($paymentMethod) { return $paymentMethod->id; }, $obj_PaymentMethods->payment_methods->payment_method);
-                                    $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, $aPaymentMethods, $obj_TxnInfo->getCountryConfig()->getID()), "SimpleXMLElement", LIBXML_COMPACT);
+                                    $aPaymentMethods = $obj_PaymentMethods->payment_methods->payment_method;
+                                    $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, $aPaymentMethods, $obj_TxnInfo->getCountryConfig()->getID(), $is_legacy), "SimpleXMLElement", LIBXML_COMPACT);
                                 }else{
                                     $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, FALSE,$oUA, array(), $obj_TxnInfo->getCountryConfig()->getID() ), "SimpleXMLElement", LIBXML_COMPACT);
                                 }
-								if ($obj_ClientConfig->getStoreCard() <= 3) { $aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]"); }
-								else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
+								if ($obj_ClientConfig->getStoreCard() <= 3) {
+								    $aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
+								}
+								else {
+								    $aObj_XML = $aObj_XML->xpath("/stored-cards/card");
+								}
 							}
-							else { $aObj_XML = array(); }
+							else {
+							    $aObj_XML = array();
+							}
 
 							$version = 1;
 							$isnewcardconfig = FALSE;
@@ -746,8 +750,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     {
                                         $aPSPs[] = intval($obj_XML->item[$j]["pspid"]);
                                     }
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'">';
+
+                                    //Get list of presentment currencies
+                                    $presentmentCurrency = false;
+                                    $presentmentCurrencies = array();
+                                    if (General::bool2xml($obj_XML->item [$j] ["dcc"]))
+                                    {
+										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$obj_XML->item[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
+										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
+											$presentmentCurrency = true;
+										}
+									}
+
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
+
+									if($presentmentCurrency)
+                                    {
+										$cardXML .= '<settlement-currencies>';
+										for($k = 0; $k < count($presentmentCurrencies); $k++)
+										{
+											$cardXML .= '<settlement-currency>';
+											$cardXML .= '<id>'.$presentmentCurrencies[$k].'</id>';
+											$cardXML .= '</settlement-currency>';
+										}
+										$cardXML .= '</settlement-currencies>';
+									}
+
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
                                     if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
@@ -835,7 +864,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								switch ($aPSPs[$j])
 								{
 								case (Constants::iDSB_PSP):
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+                                    if(strtolower($is_legacy) == 'false') {
+                                        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+                                    }else{
+                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+                                    }
 									$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
 									$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
 									break;
@@ -850,8 +883,32 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<stored-cards>';
 								for ($j=0, $jMax = count($aObj_XML); $j< $jMax; $j++)
 								{
-									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . $aObj_XML[$j]["dcc"] .'">';
+									// Get list of presentment currencies
+									$presentmentCurrency = false;
+									$presentmentCurrencies = array();
+									if (General::bool2xml($aObj_XML [$j] ["dcc"]))
+									{
+										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$aObj_XML[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
+										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
+											$presentmentCurrency = true;
+										}
+									}
+
+									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . $aObj_XML[$j]["dcc"] .'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
+
+									if($presentmentCurrency)
+									{
+										$xml .= '<settlement-currencies>';
+										for($k = 0; $k < count($presentmentCurrencies); $k++)
+										{
+											$xml .= '<settlement-currency>';
+											$xml .= '<id>'.$presentmentCurrencies[$k].'</id>';
+											$xml .= '</settlement-currency>';
+										}
+										$xml .= '</settlement-currencies>';
+									}
+
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
 									if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
