@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-93-v2.25-system">
+
+        <!-- Delete Before Insert -->
+        <sql>
+            DELETE FROM system.cardpricing_tbl cp WHERE cp.cardid = 93 AND cp.pricepointid IN (SELECT id FROM system.pricepoint_tbl WHERE currencyid IN (156, 360, 901, 36, 96, 446, 784, 410, 764, 344, 458, 702, 392, 840))
+        </sql>
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO system.cardpricing_tbl (cardid, pricepointid) SELECT 93, id FROM system.pricepoint_tbl WHERE currencyid IN (156, 360, 901, 36, 96, 446, 784, 410, 764, 344, 458, 702, 392, 840)
+        </sql>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-94-v2.25-system">
+        <!-- 94 Delete Before Insert -->
+        <sql>
+            DELETE FROM system.cardpricing_tbl cp WHERE cp.cardid = 94 AND cp.pricepointid IN (SELECT id FROM system.pricepoint_tbl WHERE currencyid IN (156, 360, 901, 36, 96, 446, 784, 410, 764, 344, 458, 702, 392, 840));
+        </sql>
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO system.cardpricing_tbl (cardid, pricepointid) SELECT 94, id FROM system.pricepoint_tbl WHERE currencyid IN (156, 360, 901, 36, 96, 446, 784, 410, 764, 344, 458, 702, 392, 840)
+        </sql>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-95-v2.25-system">
+
+        <!-- 95 Delete Before Insert -->
+        <sql>
+            DELETE FROM system.cardpricing_tbl cp WHERE cp.cardid = 95 AND cp.pricepointid IN (SELECT id FROM system.pricepoint_tbl WHERE currencyid IN (156, 360, 901, 36, 96, 446, 784, 410, 764, 344, 458, 702, 392, 840))
+        </sql>
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO system.cardpricing_tbl (cardid, pricepointid) SELECT 95, id FROM system.pricepoint_tbl WHERE currencyid IN (156, 360, 901, 36, 96, 446, 784, 410, 764, 344, 458, 702, 392, 840)
+        </sql>
+    </changeSet>
+
+    <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-96-v2.25-system">
+
+        <!-- 96 Delete Before Insert -->
+        <sql>
+            DELETE FROM system.cardpricing_tbl cp WHERE cp.cardid = 96 AND cp.pricepointid IN (SELECT id FROM system.pricepoint_tbl WHERE currencyid IN (36, 96, 156, 410, 446, 764, 901, 344, 458, 702, 392, 840, 784, 608))
+        </sql>
+        <!-- Use plain SQL rather than Liquibase XML syntax to do a INSERT INTO SELECT -->
+        <sql dbms="postgresql" endDelimiter=";">
+            INSERT INTO system.cardpricing_tbl (cardid, pricepointid) SELECT 96, id FROM system.pricepoint_tbl WHERE currencyid IN (36, 96, 156, 410, 446, 764, 901, 344, 458, 702, 392, 840, 784, 608)
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
