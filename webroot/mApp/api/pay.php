@@ -273,6 +273,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 
 						if (strtolower($is_legacy) == 'false') {
+
                             $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
                             if($obj_RS instanceof RoutingService)
 							{
@@ -281,6 +282,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
                             if($iPrimaryRoute > 0){
                                 $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+								$obj_mPoint->logTransaction($obj_TxnInfo);
                                 $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( (integer) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
                             }
 						}else{
