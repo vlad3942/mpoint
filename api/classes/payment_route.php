@@ -67,7 +67,7 @@ class PaymentRoute
             foreach ($aAlternateRoutes as $aRoute)
             {
                 $sql = 'INSERT INTO Log' . sSCHEMA_POSTFIX . '.PaymentRoute_tbl 
-                    (sessionid, pspid, preference)                                                         
+                    (sessionid, routeconfigid, preference)                                                         
                 VALUES 
                     ($1, $2, $3)';
 
@@ -113,7 +113,7 @@ class PaymentRoute
      */
     public function getRoutes()
     {
-        $sql = 'SELECT pspid, preference FROM Log.' . sSCHEMA_POSTFIX . 'PaymentRoute_tbl WHERE sessionid = $1';
+        $sql = 'SELECT routeconfigid, preference FROM Log.' . sSCHEMA_POSTFIX . 'PaymentRoute_tbl WHERE sessionid = $1';
         $res = $this->getDBConn()->prepare($sql);
         if (is_resource($res) === TRUE) {
             $aParams = array(
@@ -124,7 +124,7 @@ class PaymentRoute
 
             if (is_resource($result) === TRUE) {
                 while ($RS = $this->getDBConn()->fetchName($result)) {
-                    $this->_aRoutes[$RS['PREFERENCE']] = $RS['PSPID'];
+                    $this->_aRoutes[$RS['PREFERENCE']] = $RS['ROUTECONFIGID'];
                 }
             }
         }else{
