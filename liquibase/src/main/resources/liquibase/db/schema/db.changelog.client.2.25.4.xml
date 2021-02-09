@@ -33,4 +33,22 @@
                       oldColumnName="pspid"
                       newColumnName="routeconfigid" />
     </changeSet>
+
+
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.3-02-client">
+
+        <addForeignKeyConstraint
+                baseTableCatalogName="log"
+                baseTableSchemaName="log"
+                baseTableName="paymentroute_tbl"
+                baseColumnNames="routeconfigid"
+                constraintName="paymentroute2routeconfig_fk"
+                onDelete="RESTRICT"
+                onUpdate="CASCADE"
+                referencedColumnNames="id"
+                referencedTableCatalogName="client"
+                referencedTableName="routeconfig_tbl"
+                referencedTableSchemaName="client" />
+    </changeSet>
 </databaseChangeLog>
