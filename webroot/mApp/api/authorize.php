@@ -230,7 +230,7 @@ try
 						try
 						{
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
-						
+
 							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 							
 						}
@@ -280,6 +280,7 @@ try
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
+
                                         $oUA = null;
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, array(), $obj_TxnInfo->getCountryConfig()->getID(), $is_legacy) );
 
@@ -314,6 +315,7 @@ try
                                         $wallet_Processor = NULL;
                                         $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
                                         $iPaymentType = $obj_card->getPaymentType();
+
                                         if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                         {
                                             if($card_psp_id == Constants::iMVAULT_PSP) {
@@ -354,6 +356,7 @@ try
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
                                             $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
+
                                             if($iPrimaryRoute <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                             {
                                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
@@ -366,13 +369,12 @@ try
                                                     $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
                                             }
-
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }
 
-										//Check if card or payment method is enabled or disabled by merchant
+                                        //Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
                                         if(strtolower($is_legacy) == 'false') {
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . "]");
@@ -603,6 +605,9 @@ try
 												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 												default:
 
+												    # Get Transaction Object
+                                                    $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
+
 													// 3rd Party Wallet
 													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || $card_psp_id === Constants::iMVAULT_PSP)
 													{
@@ -796,6 +801,7 @@ try
                                                                 }else{
                                                                     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
                                                                 }
+
 																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
                                                                 $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
