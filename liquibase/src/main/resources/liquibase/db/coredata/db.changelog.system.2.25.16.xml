@@ -565,24 +565,6 @@
             <column name="enabled" value="true"/>
         </insert>
 
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="cardpricing_tbl">
-
-            <column name="pricepointid" value="-784"/>
-            <column name="cardid" value="96"/>
-            <column name="enabled" value="true"/>
-        </insert>
-
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="cardpricing_tbl">
-
-            <column name="pricepointid" value="-608"/>
-            <column name="cardid" value="96"/>
-            <column name="enabled" value="true"/>
-        </insert>
-
     </changeSet>
 
 </databaseChangeLog>
