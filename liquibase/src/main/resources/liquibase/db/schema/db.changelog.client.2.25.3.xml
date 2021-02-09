@@ -5,315 +5,50 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.01-client">
 
-    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.3-client">
-
-        <createTable  catalogName="client"
-                      schemaName="client"
-                      tableName="routefeature_tbl"
-                      remarks="Hold route feature configured for the client">
-
-            <column name="id"
-                    type="bigserial"
-                    autoIncrement="true">
-
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-
-            <column name="clientid"
-                    type="int"
-                    remarks="Hold unique client id">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="routeconfigid"
-                    type="int"
-                    remarks="Hold unique id of route configuration">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="featureid"
-                    type="int"
-                    remarks="Hold unique id of route feature">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="enabled"
-                    type="boolean"
-                    remarks="Flag indicating whether the route feature is considered active"
-                    defaultValueBoolean="true">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="created"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the route feature was originally created"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="modified"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the route feature was last modified"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_clientid_idx">
-
-            <column name="clientid"/>
-        </createIndex>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_featureid_idx">
-
-            <column name="featureid"/>
-        </createIndex>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="routefeature_tbl"
-                     indexName="routefeature_tbl_routeconfigid_idx">
-
-            <column name="routeconfigid"/>
-        </createIndex>
-
-        <rollback>
-            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routefeature_tbl"/>
-        </rollback>
+        <!-- Redefine foreign keys for log.paymentroute_tbl -->
+        <dropForeignKeyConstraint
+                baseTableCatalogName="log"
+                baseTableName="paymentroute_tbl"
+                baseTableSchemaName="log"
+                constraintName="paymentroute2psp_fk" />
 
     </changeSet>
 
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.3.01-client">
 
-    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.3.1-client">
+        <preConditions onFail="MARK_RAN">
+            <columnExists catalogName="log"
+                          schemaName= "log"
+                          tableName="paymentroute_tbl"
+                          columnName="pspid" />
+        </preConditions>
 
-        <createTable  catalogName="client"
-                      schemaName="client"
-                      tableName="routeconfig_tbl"
-                      remarks="Hold route specific configuration">
-
-            <column name="id"
-                    type="bigserial"
-                    autoIncrement="true">
-
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-
-            <column name="routeid"
-                    type="int"
-                    remarks="Hold unique route id">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="name"
-                    type="text"
-                    remarks="Hold user defined name for the route">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="capturetype"
-                    type="int4"
-                    remarks="Hold capture type of the route">
-
-            </column>
-
-            <column name="mid"
-                    type="text"
-                    remarks="Hold route specific merchant id">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="countryid"
-                    type="int"
-                    remarks="Hold unique id of country">
-
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="currencyid"
-                    type="int"
-                    remarks="Hold unique id of the currency">
-
-                <constraints nullable="true"/>
-            </column>
-
-            <column name="username"
-                    type="text"
-                    remarks="Hold username">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="password"
-                    type="text"
-                    remarks="Hold password">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="enabled"
-                    type="boolean"
-                    remarks="Flag indicating whether the route configuration is considered active"
-                    defaultValueBoolean="true">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="created"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the route configuration was originally created"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="modified"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the route configuration was last modified"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="routeconfig_tbl"
-                     indexName="routeconfig_tbl_countryid_idx">
-
-            <column name="countryid"/>
-        </createIndex>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="routeconfig_tbl"
-                     indexName="routeconfig_tbl_currencyid_idx">
-
-            <column name="currencyid"/>
-        </createIndex>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="routeconfig_tbl"
-                     indexName="routeconfig_tbl_routeid_idx">
-
-            <column name="routeid"/>
-        </createIndex>
-
-        <rollback>
-            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routeconfig_tbl"/>
-        </rollback>
-
-    </changeSet>
-
-    <changeSet author="Anna Lagad" id="2020-11-15-setup-v2.25.3.2-client">
-
-        <createTable  catalogName="client"
-                      schemaName="client"
-                      tableName="route_tbl"
-                      remarks="Hold client route">
-
-            <column name="id"
-                    type="bigserial"
-                    autoIncrement="true">
-
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-
-            <column name="clientid"
-                    type="int"
-                    remarks="Hold unique client id">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="providerid"
-                    type="int"
-                    remarks="Hold unique provider id">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="created"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the client route was originally created"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="modified"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying when the client route was last modified"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="enabled"
-                    type="boolean"
-                    remarks="Flag indicating whether the client route is considered active"
-                    defaultValueBoolean="true">
-
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="route_tbl"
-                     indexName="route_tbl_clientid_idx">
-
-            <column name="clientid"/>
-        </createIndex>
-
-        <createIndex catalogName="client"
-                     schemaName="client"
-                     tableName="route_tbl"
-                     indexName="route_tbl_providerid_idx">
-
-            <column name="providerid"/>
-        </createIndex>
-
-        <rollback>
-            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="route_tbl"/>
-        </rollback>
-
+        <renameColumn catalogName="log"
+                      schemaName= "log"
+                      tableName="paymentroute_tbl"
+                      oldColumnName="pspid"
+                      newColumnName="routeconfigid" />
     </changeSet>
 
 
-    <changeSet author="Anna Lagad" id="2020-12-07-setup-v2.25.3-system">
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.3-02-client">
 
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.route_tbl OWNER TO mpoint;
-        </sql>
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.routeconfig_tbl OWNER TO mpoint;
-        </sql>
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.routefeature_tbl OWNER TO mpoint;
-        </sql>
-
+        <addForeignKeyConstraint
+                baseTableCatalogName="log"
+                baseTableSchemaName="log"
+                baseTableName="paymentroute_tbl"
+                baseColumnNames="routeconfigid"
+                constraintName="paymentroute2routeconfig_fk"
+                onDelete="RESTRICT"
+                onUpdate="CASCADE"
+                referencedColumnNames="id"
+                referencedTableCatalogName="client"
+                referencedTableName="routeconfig_tbl"
+                referencedTableSchemaName="client" />
     </changeSet>
-
 </databaseChangeLog>
