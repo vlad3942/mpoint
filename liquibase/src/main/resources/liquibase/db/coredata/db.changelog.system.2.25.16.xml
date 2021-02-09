@@ -9,17 +9,11 @@
 
     <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-93-v2.25-system">
 
-        <!-- Delete Before Insert -->
+        <!-- This is not rquired based, As per Card (ID, 93) Currency Mapping  -->
         <delete  catalogName="system"
                  schemaName="system"
                  tableName="cardpricing_tbl">
             <where>cardid = 93 AND pricepointid = -608</where>
-        </delete>
-
-        <delete  catalogName="system"
-                 schemaName="system"
-                 tableName="cardpricing_tbl">
-            <where>cardid = 93 AND pricepointid = -840</where>
         </delete>
 
         <insert catalogName="system"
@@ -163,7 +157,8 @@
 
     </changeSet>
     <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-94-v2.25-system">
-        <!-- 94 Delete Before Insert -->
+
+        <!-- This is not rquired based, As per Card (ID, 94) Currency Mapping  -->
         <delete  catalogName="system"
                  schemaName="system"
                  tableName="cardpricing_tbl">
@@ -312,7 +307,7 @@
     </changeSet>
     <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-95-v2.25-system">
 
-        <!-- 95 Delete Before Insert -->
+        <!-- This is not rquired based, As per Card (ID, 95) Currency Mapping  -->
         <delete  catalogName="system"
                  schemaName="system"
                  tableName="cardpricing_tbl">
@@ -461,20 +456,6 @@
     </changeSet>
 
     <changeSet author="Vikas Gupta" id="2021-02-03-setup-cardpricing-96-v2.25-system">
-
-        <!-- 96 Delete Before Insert -->
-        <delete  catalogName="system"
-                 schemaName="system"
-                 tableName="cardpricing_tbl">
-            <where>cardid = 96 AND pricepointid = -608</where>
-        </delete>
-
-        <delete  catalogName="system"
-                 schemaName="system"
-                 tableName="cardpricing_tbl">
-            <where>cardid = 96 AND pricepointid = -784</where>
-        </delete>
-
 
         <insert catalogName="system"
                 schemaName="system"
