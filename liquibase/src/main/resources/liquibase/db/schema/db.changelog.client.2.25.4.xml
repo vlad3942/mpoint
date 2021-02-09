@@ -8,9 +8,7 @@
     <changeSet author="Vikas Gupta"
                id="CMR-5014-2021-02-08-setup-v2.25.01-client">
 
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="paymentroute2psp_fk" />
-        </preConditions>
+        <!-- Redefine foreign keys for log.paymentroute_tbl -->
         <dropForeignKeyConstraint
                 baseTableCatalogName="log"
                 baseTableName="paymentroute_tbl"
@@ -39,10 +37,6 @@
 
     <changeSet author="Vikas Gupta"
                id="CMR-5014-2021-02-08-setup-v2.25.3-02-client">
-
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="paymentroute2routeconfig_fk" />
-        </preConditions>
 
         <addForeignKeyConstraint
                 baseTableCatalogName="log"
