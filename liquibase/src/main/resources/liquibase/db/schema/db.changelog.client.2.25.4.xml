@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.01-client">
+
+        <!-- Redefine foreign keys for log.paymentroute_tbl -->
+        <dropForeignKeyConstraint
+                baseTableCatalogName="log"
+                baseTableName="paymentroute_tbl"
+                baseTableSchemaName="log"
+                constraintName="paymentroute2psp_fk" />
+
+    </changeSet>
+
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.3.01-client">
+
+        <preConditions onFail="MARK_RAN">
+            <columnExists catalogName="log"
+                          schemaName= "log"
+                          tableName="paymentroute_tbl"
+                          columnName="pspid" />
+        </preConditions>
+
+        <renameColumn catalogName="log"
+                      schemaName= "log"
+                      tableName="paymentroute_tbl"
+                      oldColumnName="pspid"
+                      newColumnName="routeconfigid" />
+    </changeSet>
+
+
+    <changeSet author="Vikas Gupta"
+               id="CMR-5014-2021-02-08-setup-v2.25.3-02-client">
+
+        <addForeignKeyConstraint
+                baseTableCatalogName="log"
+                baseTableSchemaName="log"
+                baseTableName="paymentroute_tbl"
+                baseColumnNames="routeconfigid"
+                constraintName="paymentroute2routeconfig_fk"
+                onDelete="RESTRICT"
+                onUpdate="CASCADE"
+                referencedColumnNames="id"
+                referencedTableCatalogName="client"
+                referencedTableName="routeconfig_tbl"
+                referencedTableSchemaName="client" />
+    </changeSet>
+</databaseChangeLog>
