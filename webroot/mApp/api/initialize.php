@@ -74,6 +74,7 @@ require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
+require_once(sCLASS_PATH . '/payment_route.php');
 
 $aMsgCds = array();
 
@@ -99,6 +100,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</initialize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
+global $aHTTP_CONN_INFO;
 $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -109,6 +111,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'initialize-payment'}); $i++)
 		{
+		    $obj_ClientInfo = null;
 			// Set Global Defaults
 			if (empty($obj_DOM->{'initialize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'initialize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'initialize-payment'}[$i]["account"] = -1; }
 
@@ -781,7 +784,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
                                         try {
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]["pspid"], $aHTTP_CONN_INFO);
+                                            $pspId = (int)$obj_XML->item[$j]['pspid'];
+                                            if (strtolower($is_legacy) == 'false') {
+                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $obj_XML->item[$j]["id"], NULL, $obj_XML->item[$j]->name);
+                                                if ($obj_RS instanceof RoutingService) {
+                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute();
+                                                    $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( $obj_TxnInfo->getAmount(), $obj_XML->item[$j]["id"] , $iPrimaryRoute);
+                                                    $pspId = (int)$obj_CardResultSet['PSPID'];
+                                                }
+                                            }
+
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
