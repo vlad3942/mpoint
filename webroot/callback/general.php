@@ -521,7 +521,7 @@ try
                 || ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)))
             {
                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-                if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY, $is_legacy)) > 0)
+                if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
                     $bIsSkipFraud = false;
