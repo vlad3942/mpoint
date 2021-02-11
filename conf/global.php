@@ -38,6 +38,11 @@ define("iDEBUG_LEVEL", env('LOG_DEBUG_LEVEL', 2));
  */
 define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
 
+/**
+ * Offline Payment Methods Card and PSP id mapping
+ */
+define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM));
+
 
 /**
  * Database settings for mPoint's database
