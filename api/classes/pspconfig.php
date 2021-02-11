@@ -472,7 +472,7 @@ class PSPConfig extends BasicConfig
         }
         else
         {
-            trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid, E_USER_WARNING);
+            trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
             return null;
         }
     }
