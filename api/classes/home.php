@@ -1615,7 +1615,8 @@ class Home extends General
         $sql = "SELECT transactionid as id
                     FROM (
                              SELECT DISTINCT ON (transactionid) transactionid,
-                                                                performedopt
+                                                                performedopt, 
+                                                                passbook.modified
                              FROM log.txnpassbook_tbl passbook
                              {INNER_JOIN}
                              WHERE passbook.clientid = $clientid
@@ -1623,12 +1624,11 @@ class Home extends General
                                AND passbook.status = '". Constants::sPassbookStatusDone ."'
                                AND performedopt is NOT null
                                AND performedopt <> ". Constants::iINPUT_VALID_STATE ."
-                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval' 
-                               AND passbook.modified < now() - INTERVAL '$interval'
+                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval'                                
                                {INNER_JOIN_CONDITION}
                              ORDER BY transactionid, passbook.created DESC                             
                          ) sub
-                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE .";";
+                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE ." and modified < now() - INTERVAL '$interval' ";
 
         if (isset($pspid) === FALSE) {
             $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}'],'', $sql);

@@ -260,9 +260,11 @@ class RoutingService extends General
      * Store all alternate payment routes to authorize transaction if psp1 fails during authorize
      * and return primary route to authorize transaction
      *
-     * @return (integer) $firstPSP	Primary route to authorize transaction
+     * @param \PaymentRoute|null $objTxnRoute
+     *
+     * @return int (integer) $firstPSP    Primary route to authorize transaction
      */
-    public function getAndStoreRoute(PaymentRoute $objTxnRoute)
+    public function getAndStoreRoute(?PaymentRoute $objTxnRoute = NULL): int
     {
         $obj_RoutingServiceResponse = $this->getRoute();
         $aRoutes = [];
@@ -276,7 +278,7 @@ class RoutingService extends General
             $aAlternateRoutes = array();
             foreach ($aRoutes as $oRoute) {
                 if(empty($oRoute->preference) === false){
-                    if ($oRoute->preference == 1) {
+                    if ($oRoute->preference === 1) {
                         $firstPSP = $oRoute->id;
                     }
                     $aAlternateRoutes[] = array(
@@ -287,10 +289,15 @@ class RoutingService extends General
                     $firstPSP = $oRoute->id;
                 }
             }
-            // Store alternate routes to authorize transaction if psp1 fails during authorize
-            $objTxnRoute->setAlternateRoute($aAlternateRoutes);
+
+            //If Route route is called from init API no need to store alternate routes
+            if($objTxnRoute !== NULL)
+            {
+                // Store alternate routes to authorize transaction if psp1 fails during authorize
+                $objTxnRoute->setAlternateRoute($aAlternateRoutes);
+            }
         }
-        return (int)$firstPSP;
+        return $firstPSP;
     }
 
     private function toAttributeLessOrderDataXML()
