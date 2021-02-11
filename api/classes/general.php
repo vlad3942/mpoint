@@ -1568,5 +1568,34 @@ class General
 
 		return $presentmentCurrencies;
 	}
+
+    /**
+     * @param \RDB $obj_DB
+     * @param int  $pspId
+     *
+     * @return int
+     */
+    public static function getPSPType(RDB $obj_DB, int $pspId) : int
+	{
+		try
+        {
+            $query = "SELECT system_type FROM system" . sSCHEMA_POSTFIX . ".psp_tbl WHERE id = " . $pspId;
+
+            $resultSet = $obj_DB->getName($query);
+            if (is_array($resultSet) === true)
+            {
+                $processorType = (int)$resultSet['SYSTEM_TYPE'];
+                if($processorType !== null && $processorType !== 0)
+                {
+                    return $processorType;
+                }
+            }
+        }
+        catch (Exception $mPointException)
+        {
+            trigger_error("Unable to fetch System Type of PSP : " . $pspId, E_USER_WARNING);
+        }
+        return -1;
+	}
 }
 ?>
