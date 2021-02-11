@@ -406,9 +406,11 @@ class PSPConfig extends BasicConfig
      * @param 	integer $clid 	Unique ID for the Client performing the request
      * @param 	integer $accid 	Unique ID for the Account-id performing the request
      * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @param 	integer $routeconfigid 	Unique ID for the Route Config ID
+     *
      * @return 	PSPConfig
      */
-    public static function produceConfiguration(RDB $oDB, $clid, $accid, $pspid, $oTxn)
+    public static function produceConfiguration(RDB $oDB, $clid, $accid, $pspid, $routeconfigid)
     {
         $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
@@ -420,10 +422,11 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id
-				WHERE CL.id = ". intval($clid) ." AND PSP.enabled = '1' 
-				    AND Acc.id = ". intval($accid) ." AND RC.id = ".$oTxn->getRouteConfigID();
+				WHERE CL.id = ". (int)$clid ." AND PSP.enabled = '1' 
+				    AND Acc.id = ". (int)$accid ." AND RC.id = ". (int)$routeconfigid;
 
         $RS = $oDB->getName($sql);
+
         if (is_array($RS) === true && count($RS) > 1)
         {
             $sql = "SELECT I.language, I.text
@@ -465,7 +468,6 @@ class PSPConfig extends BasicConfig
 					 WHERE routeconfigid = ". intval($RS["ROUTECONFIGID"]);
 
             $aRouteFeature = $oDB->getAllNames($sql);
-
             return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature);
         }
         else

@@ -736,7 +736,7 @@ try
 														if ($iPSPID > 0)
 														{
                                                             if(strtolower($is_legacy) == 'false') {
-                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo);
+                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                                             }else{
                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                                                             }
@@ -797,7 +797,7 @@ try
 														{
 														    if($obj_Elem["pspid"] > 0) {
                                                                 if(strtolower($is_legacy) == 'false') {
-                                                                    $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]), $obj_TxnInfo);
+                                                                    $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]), $obj_TxnInfo->getRouteConfigID());
                                                                 }else{
                                                                     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
                                                                 }
@@ -966,7 +966,7 @@ try
                                                                             break;
                                                                         case (Constants::iNETAXEPT_PSP): // NetAxept
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP, $obj_TxnInfo);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
                                                                             }
@@ -995,7 +995,7 @@ try
                                                                         case (Constants::iCPG_PSP):
                                                                             $obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["cpg"]);
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP, $obj_TxnInfo);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
                                                                             }
@@ -1007,7 +1007,7 @@ try
                                                                             break;
                                                                         case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP, $obj_TxnInfo);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
                                                                             }
@@ -1040,7 +1040,7 @@ try
 
                                                                         case (Constants::iCHUBB_PSP): // CHUBB
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP, $obj_TxnInfo);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
                                                                             }
@@ -1252,7 +1252,7 @@ try
 										if ($iPSPID > 0)
 										{
                                             if(strtolower($is_legacy) == 'false') {
-                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo);
+                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                             }else{
                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                                             }

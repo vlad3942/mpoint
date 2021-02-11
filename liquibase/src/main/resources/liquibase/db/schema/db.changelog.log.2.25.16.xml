@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Vikas Gupta"
-               id="CMR-5014-2021-02-08-setup-v2.25.01-client">
+               id="CMR-5014-2021-02-08-setup-v2.25.01-log">
 
         <!-- Redefine foreign keys for log.paymentroute_tbl -->
         <dropForeignKeyConstraint
@@ -18,7 +18,7 @@
     </changeSet>
 
     <changeSet author="Vikas Gupta"
-               id="CMR-5014-2021-02-08-setup-v2.25.3.01-client">
+               id="CMR-5014-2021-02-08-setup-v2.25.3.01-log">
 
         <preConditions onFail="MARK_RAN">
             <columnExists catalogName="log"
@@ -36,7 +36,7 @@
 
 
     <changeSet author="Vikas Gupta"
-               id="CMR-5014-2021-02-08-setup-v2.25.3-02-client">
+               id="CMR-5014-2021-02-08-setup-v2.25.3-02-log">
 
         <addForeignKeyConstraint
                 baseTableCatalogName="log"

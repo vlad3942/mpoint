@@ -41,7 +41,7 @@ class PaymentProcessor
         $this->_setConnInfo($aConnInfo, $iPSPID);
 
         if (strtolower($is_legacy) == 'false') {
-            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI);
+            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI->getRouteConfigID());
         } else {
             $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
         }

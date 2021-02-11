@@ -567,13 +567,7 @@ class General
         global $_OBJ_TXT;
         $xml = "" ;
 
-        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-        if(strtolower($is_legacy) == 'false') {
-            $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo);
-        }else{
-            $obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
-        }
-
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo->getRouteConfigID());
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
 	    $data = array();

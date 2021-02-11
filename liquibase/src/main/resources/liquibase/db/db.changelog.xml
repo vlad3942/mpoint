@@ -35,7 +35,6 @@
     <include file="db.changelog.2.25.12.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.25.15.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.25.16.xml" relativeToChangelogFile="true"/>
-    <include file="db.changelog.2.25.17.xml" relativeToChangelogFile="true"/>
     <!-- Add new change log files, for each release
     <include file="db.changelog.1.1.0.xml" relativeToChangelogFile="true"/>
     -->
