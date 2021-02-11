@@ -146,7 +146,8 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/safetypay.php");
 
 /**
  * Input XML format

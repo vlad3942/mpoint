@@ -1082,6 +1082,11 @@ abstract class Constants
 	 *
 	 */
 	const iCEBUPAYMENTCENTER_APM = 69;
+	/**
+	 * Unique ID for the Net banking aggregator : SAFETYPAY
+	 *
+	 */
+	const iSAFETYPAY_AGGREGATOR = 70;
 
     /**
 	 * Unique ID for the Electronic Payment Flow
