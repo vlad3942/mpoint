@@ -174,7 +174,13 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
-										<xs:element name="exchangeserviceinfo" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="foreign-exchange-info" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:all>
+													<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="1" maxOccurs="1" />
+												</xs:all>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="initialize_amount" type="initialize_amount" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="conversion_rate" type="xs:float" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="external_refs" type="external_refs" minOccurs="0" maxOccurs="1"/>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Rename table name in system schema  -->
+    <changeSet author="Priya Alamwar" id="2021-02-11-master-v2.24-1">
+        <preConditions onFail="MARK_RAN">
+            <tableExists   catalogName="system"
+                          schemaName= "system"
+                          tableName="exchangeinfo_tbl"/>
+        </preConditions>
+
+        <renameTable  catalogName="system"
+                      schemaName= "system"
+                      oldTableName="exchangeinfo_tbl"
+                      newTableName="fxservicetype_tbl" />
+    </changeSet>
+</databaseChangeLog>

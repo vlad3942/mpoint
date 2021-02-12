@@ -257,11 +257,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
-						// Validate exchange service info id if explicitly passed in request
-						$exchangeServiceInfo = (integer)$obj_DOM->pay[$i]->transaction["exchangeserviceinfo-id"];
-						if($exchangeServiceInfo > 0){
-							if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
-								$aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo;
+						// Validate foreign exchange service type id if explicitly passed in request
+						$fxServiceTypeId =  (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+						if($fxServiceTypeId > 0){
+							if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+								$aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
 							}
 						}
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -465,9 +465,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 										}
-										if ($exchangeServiceInfo)
+										if ($fxServiceTypeId)
 										{
-											$data['exchangeserviceinfo'] = $exchangeServiceInfo;
+											$data['fxservicetypeid'] = $fxServiceTypeId;
 										}
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);

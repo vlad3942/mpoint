@@ -461,16 +461,16 @@ try
                                         	}
                                         }
 
-                                        // Validate exchange service info id if explicitly passed in request
-                                        $exchangeServiceInfo = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction["exchangeserviceinfo-id"];
-                                        if($exchangeServiceInfo > 0){
-                                            if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
-                                                $aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo;
+                                        // Validate service type id if explicitly passed in request
+                                        $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                                        if($fxServiceTypeId > 0){
+                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
                                             }
                                         }
-                                        if ($exchangeServiceInfo)
+                                        if ($fxServiceTypeId)
                                         {
-                                            $data['exchangeserviceinfo'] = $exchangeServiceInfo;
+                                            $data['fxservicetypeid'] = $fxServiceTypeId;
                                         }
 
                                         if (isset($obj_Elem->capture_type) > 0)

@@ -23,21 +23,20 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null,$exchangeinfoid=0)
+	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null,$fxservicetypeid=0)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<authorize-payment client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction id="'. $txn .'"';
-        if(isset($exchangeinfoid) === true)
-            $xml .= ' exchangeserviceinfo-id="'.$exchangeinfoid.'"';
-        $xml .= '>';
+		$xml .= '<transaction id="'. $txn .'">';
 		$xml .= '<card id="61775" type-id="2">';
 		$xml .= '<amount country-id="100">'. $amount .'</amount>';
 //		$xml .= '<card-number>5272342200069702</card-number>';
 //		$xml .= '<expiry>03/31</expiry>';
 //		$xml .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
 		$xml .= '</card>';
+        if($fxservicetypeid > 0)
+            $xml .= '<foreign-exchange-info><id>546</id><service-type-id>'.$fxservicetypeid.'</service-type-id></foreign-exchange-info>';
 		$xml .= '</transaction>';
 		if ($intAccountId > 0)
 		{
@@ -563,7 +562,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $this->assertStringContainsString('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
     }
 
-    public function testInvalidExchangeServiceInfoID()
+    public function testInvalidFXServiceTypeID()
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -578,7 +577,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019**********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid,exchangeinfoid) VALUES (1001001, 100, 10099, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,11)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid,fxservicetypeid) VALUES (1001001, 100, 10099, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,11)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
 
 		$xml = $this->getAuthDoc(10099, 1100, 1001001, 5000, 'profilePass',0,'',null,null,null,null,null,13);
@@ -588,10 +587,10 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="57">Invalid exchange service information id :13</status>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="57">Invalid service type id :13</status>', $sReplyBody);
     }
 
-    public function testStoredExchangeInfoID()
+    public function testStoredFXServiceTypeID()
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -618,22 +617,22 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
 
-        $res =  $this->queryDB('SELECT exchangeinfoid from Log.Transaction_Tbl WHERE id = 1001001');
+        $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1001001');
         $this->assertTrue(is_resource($res) );
 
-        $exchangeinfoid = 0;
+        $fxservicetypeid = 0;
         while ($row = pg_fetch_assoc($res) )
         {
-            $exchangeinfoid = (int)$row["exchangeinfoid"];
+            $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(11, $exchangeinfoid);
+        $this->assertEquals(11, $fxservicetypeid);
     }
 
     /**
-     * Check if exchange service info id is already passed in a init transaction
+     * Check if foreign exchange service type id is already passed in a init transaction
      * If passed then if try to send some other id in pay it should not update
      */
-    public function testAlreadyStoredExchangeInfoID()
+    public function testAlreadyStoredFXServiceTypeID()
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -648,7 +647,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019**********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid,exchangeinfoid) VALUES (1001001, 100, 10099, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,11)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid,fxservicetypeid) VALUES (1001001, 100, 10099, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,11)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
 
         $xml = $this->getAuthDoc(10099, 1100, 1001001, 5000, 'profilePass',0,'',null,null,null,null,null,12);
@@ -660,15 +659,15 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
 
-        $res =  $this->queryDB('SELECT exchangeinfoid from Log.Transaction_Tbl WHERE id = 1001001');
+        $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1001001');
         $this->assertTrue(is_resource($res) );
 
-        $exchangeinfoid = 0;
+        $fxservicetypeid = 0;
         while ($row = pg_fetch_assoc($res) )
         {
-            $exchangeinfoid = (int)$row["exchangeinfoid"];
+            $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(11, $exchangeinfoid);
+        $this->assertEquals(11, $fxservicetypeid);
     }
 
  //  	public function testCIAMSSOPreferenceNotEnabled()
