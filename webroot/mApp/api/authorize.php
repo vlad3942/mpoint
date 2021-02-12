@@ -230,7 +230,7 @@ try
 						try
 						{
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
-						
+
 							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 							
 						}
@@ -280,6 +280,7 @@ try
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
+
                                         $oUA = null;
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true, $oUA, array(), $obj_TxnInfo->getCountryConfig()->getID(), $is_legacy) );
 
@@ -314,6 +315,7 @@ try
                                         $wallet_Processor = NULL;
                                         $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
                                         $iPaymentType = $obj_card->getPaymentType();
+
                                         if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                         {
                                             if($card_psp_id == Constants::iMVAULT_PSP) {
@@ -353,28 +355,26 @@ try
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
-                                            if($iPSPId <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                            $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
+
+                                            if($iPrimaryRoute <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                             {
                                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
                                                 if($obj_RS instanceof RoutingService)
                                                 {
                                                     $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
                                                     $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+                                                    # Update routeconfig ID in log.transaction table
+                                                    $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
                                             }
-                                            else
-                                            {
-                                                $objRoute = new Route($_OBJ_DB, $obj_TxnInfo, $obj_DOM->{'authorize-payment'}[$i]["client-id"]);
-                                                $iPrimaryRoute = $objRoute->getRouteID($iPSPId);
-                                            }
-                                            $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                            $obj_mPoint->logTransaction($obj_TxnInfo);
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }
 
-										//Check if card or payment method is enabled or disabled by merchant
+                                        //Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
                                         if(strtolower($is_legacy) == 'false') {
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . "]");
@@ -733,7 +733,7 @@ try
 														if ($iPSPID > 0)
 														{
                                                             if(strtolower($is_legacy) == 'false') {
-                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                                             }else{
                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                                                             }
@@ -794,10 +794,11 @@ try
 														{
 														    if($obj_Elem["pspid"] > 0) {
                                                                 if(strtolower($is_legacy) == 'false') {
-                                                                    $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
+                                                                    $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]), $obj_TxnInfo->getRouteConfigID());
                                                                 }else{
                                                                     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem["pspid"]));
                                                                 }
+
 																//For processorType 4 and 7, we trigger authorize passbook entry from pay.php itself
                                                                 $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
@@ -962,7 +963,7 @@ try
                                                                             break;
                                                                         case (Constants::iNETAXEPT_PSP): // NetAxept
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
                                                                             }
@@ -991,7 +992,7 @@ try
                                                                         case (Constants::iCPG_PSP):
                                                                             $obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["cpg"]);
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
                                                                             }
@@ -1003,7 +1004,7 @@ try
                                                                             break;
                                                                         case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
                                                                             }
@@ -1036,7 +1037,7 @@ try
 
                                                                         case (Constants::iCHUBB_PSP): // CHUBB
                                                                             if(strtolower($is_legacy) == 'false') {
-                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
+                                                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP, $obj_TxnInfo->getRouteConfigID());
                                                                             }else{
                                                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
                                                                             }
@@ -1248,7 +1249,7 @@ try
 										if ($iPSPID > 0)
 										{
                                             if(strtolower($is_legacy) == 'false') {
-                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                             }else{
                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                                             }

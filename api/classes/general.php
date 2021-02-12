@@ -566,8 +566,9 @@ class General
 	{
         global $_OBJ_TXT;
         $xml = "" ;
-		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
-	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
+
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo->getRouteConfigID());
+        $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
 	    $data = array();
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
