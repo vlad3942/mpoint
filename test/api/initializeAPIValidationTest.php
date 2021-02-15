@@ -403,8 +403,8 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 1, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid,countryid) VALUES (10099, 2, $pspID, true, 2,100)");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid,countryid) VALUES (10099, 11, 1, true, 2,100)");
-		//$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
-		//$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (2, true);");
+		$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
+		$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (2, true);");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled, email) VALUES (5001, 100, 'abcExternal', '288828610', TRUE, 'profilePass', TRUE, 'jona@oismail.com')");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -526,7 +526,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 2, $pspID, true, 2)");
-		//$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
+		$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -565,7 +565,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 51, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, psp_type) VALUES (10099, 73, 51, true, 1, 7)");
 
-		//$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
+		$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -939,7 +939,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 51, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, psp_type) VALUES (10099, 73, 51, true, 1, 7)");
 
-		//$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
+		$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -982,7 +982,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 51, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, psp_type) VALUES (10099, 73, 51, true, 1, 7)");
 
-		//$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
+		$this->queryDB("INSERT INTO client.staticroutelevelconfiguration (cardaccessid, cvcmandatory) VALUES (1, true);");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
