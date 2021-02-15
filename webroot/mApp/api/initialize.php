@@ -16,6 +16,8 @@
  */
 
 // Require Global Include File
+use api\classes\splitpayment\config\Configuration;
+
 require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation
@@ -648,6 +650,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $euaId = $obj_TxnInfo->getAccountID();
                             }
+							if($sessionType > 1)
+                            {
+                                try {
+                                    $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
+                                    if($splitPaymentConfig instanceof Configuration) {
+                                        $xml .= "<splitPayment>";
+                                        $xml .= $splitPaymentConfig->toXML();
+                                        $xml .= "</splitPayment>";
+                                    }
+                                }
+                                catch (JsonException $e) {
+                                    trigger_error("SplitPayment Configuration for client id $clientId invalid, Please check SplitPaymentConfig in client.additionalproperty_tbl" , E_USER_WARNING);
+                                }
+                            }
 							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
 							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
@@ -753,7 +769,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$apmsXML = '<apms>';
 							$aggregatorsXML = '<aggregators>';
 							$offlineXML = '<offline>';
-							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
+
+							$splitPaymentFOPConfig = null;
+							if($sessionType > 1)
+                            {
+                                $splitPaymentFOPConfig = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"SplitPaymentFOPConfig");
+
+                                if (isset($splitPaymentFOPConfig) === true) {
+                                    $splitPaymentFOPConfig = json_decode($splitPaymentFOPConfig, TRUE, 512, JSON_THROW_ON_ERROR);
+                                }
+                            }
+
+
+                            for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 							    $cardXML = '';
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
@@ -776,7 +804,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 									}
 
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
+                                    $processorType = (int)$obj_XML->item[$j]['payment-type'] ;
+                                    $cardId = (int)$obj_XML->item[$j]["id"];
+                                    $splittable = "false";
+                                    if(isset($splitPaymentFOPConfig) && array_key_exists($processorType, $splitPaymentFOPConfig) === TRUE) {
+                                        if (is_array($splitPaymentFOPConfig[$processorType]) === FALSE || in_array($cardId, $splitPaymentFOPConfig[$processorType], TRUE) === TRUE) {
+                                            $splittable = "true";
+                                        }
+                                    }
+
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'" splittable="'.$splittable.'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
 
 									if($presentmentCurrency)

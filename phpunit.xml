@@ -10,17 +10,19 @@
 	<testsuites>
 		<testsuite name="Application Test Suite">
 			<directory suffix="Test.php">./test/api</directory>
+			<directory suffix="Test.php">./test/classes/</directory>
 		</testsuite>
 	</testsuites>
 	<coverage includeUncoveredFiles="true"
-              processUncoveredFiles="false"
+              processUncoveredFiles="true"
               ignoreDeprecatedCodeUnits="true"
               disableCodeCoverageIgnore="true">
         <include>
             <directory suffix=".php">./api</directory>
+			<directory suffix=".php">./classes</directory>
         </include>
 		<report>
-			<html outputDirectory="./log/Coverage_report" lowUpperBound="50" highLowerBound="90"/>
+			<html outputDirectory="./CoverageReport" lowUpperBound="50" highLowerBound="90"/>
 			<text outputFile="./log/zzzzzCoverageSummary.txt" showUncoveredFiles="true" showOnlySummary="true"/>
 		</report>
 	</coverage>

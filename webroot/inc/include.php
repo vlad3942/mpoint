@@ -43,7 +43,7 @@ define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
 define("sENV_PATH", sSYSTEM_PATH ."/env/");
 // Define Language Path Constant
 define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
-
+require_once(sSYSTEM_PATH . '/vendor/autoload.php');
 // Require API for defining the Database interface
 require_once(sAPI_INTERFACE_PATH ."database.php");
 
