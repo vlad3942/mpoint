@@ -53,7 +53,7 @@ class ConfigurationTest extends baseAPITest
 
     public function testToXML(): void
     {
-        $this->assertEquals('<configuration><splitCount>2</splitCount><combinations><combination><paymentType><id>1</id><index>1</index></paymentType><paymentType><id>3</id><index>2</index></paymentType></combination></combinations></configuration>', $this->configuration->toXML());
+        $this->assertEquals('<configuration><split_count>2</split_count><combinations><combination><payment_type><id>1</id><index>1</index><is_clubbable>false</is_clubbable></payment_type><payment_type><id>3</id><index>2</index><is_clubbable>false</is_clubbable></payment_type></combination></combinations></configuration>', $this->configuration->toXML());
     }
 
     public function test__construct(): void
@@ -70,8 +70,8 @@ class ConfigurationTest extends baseAPITest
 
     public function testProduceConfig(): void
     {
-        $configuration =  Configuration::ProduceConfig('{"splitCount":2,"combinations":[{"combination":[{"index":1,"id":3},{"index":2,"id":4}]},{"combination":[{"index":1,"id":5},{"index":2,"id":6}]}]}');
-        $this->assertEquals('<configuration><splitCount>2</splitCount><combinations><combination><paymentType><id>1</id><index>3</index></paymentType><paymentType><id>2</id><index>4</index></paymentType></combination><combination><paymentType><id>1</id><index>5</index></paymentType><paymentType><id>2</id><index>6</index></paymentType></combination></combinations></configuration>', $configuration->toXML());
+        $configuration =  Configuration::ProduceConfig('{"split_count":2,"combinations":[{"combination":[{"index":1,"id":3,"is_clubbable":false},{"index":2,"id":4,"is_clubbable":false}]},{"combination":[{"index":1,"id":5,"is_clubbable":false},{"index":2,"id":6,"is_clubbable":false}]}]}');
+        $this->assertEquals('<configuration><split_count>2</split_count><combinations><combination><payment_type><id>1</id><index>3</index><is_clubbable>false</is_clubbable></payment_type><payment_type><id>2</id><index>4</index><is_clubbable>false</is_clubbable></payment_type></combination><combination><payment_type><id>1</id><index>5</index><is_clubbable>false</is_clubbable></payment_type><payment_type><id>2</id><index>6</index><is_clubbable>false</is_clubbable></payment_type></combination></combinations></configuration>', $configuration->toXML());
 
     }
 
