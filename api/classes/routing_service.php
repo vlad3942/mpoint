@@ -206,6 +206,11 @@ class RoutingService extends General
         }
         $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $b .= '</amount>';
+        if($this->_obj_TxnInfo->getFXServiceTypeID()>0) {
+            $b .= '<foreign_exchange_info>';
+            $b .= '<service_type_id>'.$this->_obj_TxnInfo->getFXServiceTypeID() .'</service_type_id>';
+            $b .= '</foreign_exchange_info>';
+        }
         $b .= '<card>';
         $b .= '<id>'.$this->_iCardTypeId.'</id>';
         $b .= '<type_id>VISA</type_id>';
