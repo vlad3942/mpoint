@@ -5,10 +5,21 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <!-- Temporarily drop event trigger to enable changes to replicated tables -->
+    <changeSet author="Priya Alamwar"
+               id="2021-02-11-master-v2.24-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
     <!-- Rename table name in system schema  -->
-    <changeSet author="Priya Alamwar" id="2021-02-11-master-v2.24-1">
+    <changeSet author="Priya Alamwar"
+               id="2021-02-11-master-v2.24-1">
+
         <preConditions onFail="MARK_RAN">
-            <tableExists   catalogName="system"
+            <tableExists  catalogName="system"
                           schemaName= "system"
                           tableName="exchangeinfo_tbl"/>
         </preConditions>
@@ -17,5 +28,23 @@
                       schemaName= "system"
                       oldTableName="exchangeinfo_tbl"
                       newTableName="fxservicetype_tbl" />
+
     </changeSet>
+
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Priya Alamwar"
+               id="2021-02-11-master-v2.24-postprocess">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
+    </changeSet>
+
 </databaseChangeLog>
