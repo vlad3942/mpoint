@@ -635,7 +635,7 @@
 			</xs:element>
 			<xs:element name="get-status">
 				<xs:complexType>
-					<xs:all>
+					<xs:choice minOccurs="1" maxOccurs="1">
 						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
@@ -648,8 +648,8 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
-					</xs:all>
+						<xs:element type="xs:integer" name="session_id"/>
+					</xs:choice>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 					<xs:attribute name="test" type="xs:boolean" use="optional" default="false"/>
@@ -1119,9 +1119,12 @@
 							transaction search
 						</xs:documentation>
 					</xs:annotation>
-					<xs:all>
+					<xs:sequence>
 						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="1"/>
-						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+						<xs:element type="xs:integer" name="mode" minOccurs="0" maxOccurs="1"/>
+						<xs:choice minOccurs="1" maxOccurs="1">
+							<xs:element type="xs:integer" name="session_id"/>
+							<xs:element name="transactions">
 							<xs:annotation>
 								<xs:documentation>
 									Contains the list of unique IDs for the transaction
@@ -1138,18 +1141,12 @@
 												configuration should be fetched
 											</xs:documentation>
 										</xs:annotation>
-										<xs:complexType>
-											<xs:simpleContent>
-												<xs:extension base="xs:integer">
-													<xs:attribute name="mode" default="0" use="optional"/>
-												</xs:extension>
-											</xs:simpleContent>
-										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-					</xs:all>
+						</xs:choice>
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<!--  Get Transaction Status -->
