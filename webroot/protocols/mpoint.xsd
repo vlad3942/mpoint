@@ -1133,8 +1133,7 @@
 							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="transaction-id"
-												minOccurs="1" maxOccurs="unbounded">
+									<xs:element name="transaction-id" type="xs:integer" minOccurs="1" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>
 												The unique ID for the transaction  whose
