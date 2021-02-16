@@ -16,11 +16,13 @@ class PaymentType
 {
     private int $id;
     private int $index;
+    private bool $isClubbable;
 
-    public function __construct(int $id, int $index)
+    public function __construct(int $id, int $index, bool $isClubbable = FALSE)
     {
         $this->id = $id;
         $this->index = $index;
+        $this->isClubbable = $isClubbable;
     }
 
     /**
@@ -60,6 +62,22 @@ class PaymentType
      */
     public function toXML(): string
     {
-        return "<paymentType><id>$this->id</id><index>$this->index</index></paymentType>";
+        return "<payment_type><id>$this->id</id><index>$this->index</index><is_clubbable>". ($this->isClubbable ? 'true' : 'false') ."</is_clubbable></payment_type>";
+    }
+
+    /**
+     * @return bool
+     */
+    public function isClubbable(): bool
+    {
+        return $this->isClubbable;
+    }
+
+    /**
+     * @param bool $isClubbable
+     */
+    public function setIsClubbable(bool $isClubbable): void
+    {
+        $this->isClubbable = $isClubbable;
     }
 }

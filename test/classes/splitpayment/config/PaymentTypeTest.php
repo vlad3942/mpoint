@@ -39,7 +39,7 @@ class PaymentTypeTest extends baseAPITest
     public function testToXML(): void
     {
         $paymentType = new PaymentType(1, 2);
-        $this->assertEquals('<paymentType><id>1</id><index>2</index></paymentType>', $paymentType->toXML());
+        $this->assertEquals('<payment_type><id>1</id><index>2</index><is_clubbable>false</is_clubbable></payment_type>', $paymentType->toXML());
     }
 
     public function testSetId(): void
@@ -61,4 +61,20 @@ class PaymentTypeTest extends baseAPITest
         $paymentType->setIndex(1);
         $this->assertEquals(1, $paymentType->getIndex());
     }
+
+    public function testSetIsClubbable(): void
+    {
+        $paymentType = new PaymentType(1, 2);
+        $paymentType->setIsClubbable(TRUE);
+        $this->assertTrue( $paymentType->isClubbable());
+    }
+
+    public function testClubbable(): void
+    {
+        $paymentType = new PaymentType(1, 2, TRUE);
+        $this->assertTrue( $paymentType->isClubbable());
+        $paymentType->setIsClubbable(FALSE);
+        $this->assertFalse( $paymentType->isClubbable());
+    }
+
 }

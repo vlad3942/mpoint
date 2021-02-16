@@ -655,9 +655,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 try {
                                     $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
                                     if($splitPaymentConfig instanceof Configuration) {
-                                        $xml .= "<splitPayment>";
+                                        $xml .= "<split_payment>";
                                         $xml .= $splitPaymentConfig->toXML();
-                                        $xml .= "</splitPayment>";
+                                        $xml .= "</split_payment>";
                                     }
                                 }
                                 catch (JsonException $e) {
