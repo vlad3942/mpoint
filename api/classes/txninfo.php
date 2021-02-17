@@ -2288,6 +2288,8 @@ class TxnInfo
      *
      */
     function updateTransactionAmount(RDB $obj_DB,$amount){
+    	$this->_lAmount = $amount;
+    	$this->_lConvertedAmount = $amount;
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount.", convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
     }

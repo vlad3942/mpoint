@@ -507,7 +507,7 @@ class General
 	public function newAssociatedTransaction(TxnInfo &$oTI)
 	{
 		$iTxnID = $this->newTransaction($oTI->getClientConfig(), $oTI->getTypeID());
-		
+
 		$iSessionId = $oTI->getSessionId() ;
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -528,6 +528,72 @@ class General
         }
 		return $iTxnID ;
 	}
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int      $newAmount
+     * @param bool     $isInitiateTxn
+     * @param array    $additionalTxnData
+     *
+     * @return \TxnInfo|null
+     * @throws \SQLQueryException
+     * @throws \mPointException
+     */
+    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, array $additionalTxnData = []): ?TxnInfo
+    {
+        $iAssociatedTxnId =  $this->newTransaction($txnInfo->getClientConfig(), $txnInfo->getTypeID());
+		$iSessionId = $txnInfo->getSessionId() ;
+
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET sessionid = ".$iSessionId." WHERE id=".$iAssociatedTxnId ;
+
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			throw new mPointException("Unable to update associated transaction: ". $iAssociatedTxnId. " of original transaction: ".$oTI->getID(), 1004);
+		}
+		else{
+		    try {
+                $data = [];
+                $data["card-id"] = '';
+                $data["wallet-id"] = '';
+                $data["amount"] = $newAmount;
+                $data["extid"] = '';
+                $data["psp-id"] = '';
+                $data["captured-amount"] = '';
+                $data["externalref"] = '';
+                $data["converted-amount"] = $newAmount;
+                $data["conversion-rate"] = 1;
+                $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
+                if (count($additionalTxnData) > 0) {
+                    $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
+                }
+                $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
+                $this->logTransaction($obj_AssociatedTxnInfo);
+
+                $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $txnInfo->getClientConfig()->getID());
+                if($isInitiateTxn === true) {
+                    $passbookEntry = new PassbookEntry
+                    (
+                        NULL,
+                        $newAmount,
+                        $obj_AssociatedTxnInfo->getCurrencyConfig()->getID(),
+                        Constants::iInitializeRequested
+                    );
+                    if ($txnPassbookObj instanceof TxnPassbook) {
+                        $txnPassbookObj->addEntry($passbookEntry);
+                        $txnPassbookObj->performPendingOperations();
+                    }
+                }
+                return $obj_AssociatedTxnInfo;
+            }
+            catch (Exception $e)
+            {
+                trigger_error("Error while creating new transaction ($iAssociatedTxnId). Transaction is rollback - " .$e->getMessage() , E_USER_ERROR);
+            }
+        }
+		return NULL;
+    }
+
 
 	/**
 	 * Adds a new entry to the Message log with the provided debug data.

@@ -23,6 +23,14 @@ abstract class Constants
 	 *
 	 */
 	const iUNSUPPORTED_OPERATOR = 44;
+
+	/**
+	 * Defines the ID of the State that should be logged when the Transaction is created by mPoint
+	 * This state define that transaction is created and in order to data for futuristic authorization
+	 *
+	 */
+	const iTRANSACTION_CREATED = 1000;
+
 	/**
 	 * Defines the ID of the State that should be logged when the Client Input has been successfully validate
 	 *

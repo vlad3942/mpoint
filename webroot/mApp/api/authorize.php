@@ -246,8 +246,138 @@ try
 							$_OBJ_DB->query("START TRANSACTION");
 							if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === false)
 							{
-								if (is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
+
+							    $isVoucherRedeem = FALSE;
+							    $isVoucherRedeemStatus = -1;
+                                $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
+							    if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher) > 0) // Authorize voucher payment
 								{
+								    $isVoucherPreferred = $obj_ClientConfig->getAdditionalProperties(0,'isVoucherPreferred');
+
+                                    $cardNode = $obj_DOM->{'authorize-payment'}[$i]->transaction->card;
+
+                                    $iAmount = (int)$obj_TxnInfo->getAmount();
+                                    if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher->amount) === TRUE)
+                                    {
+                                        $iAmount = (int) $obj_DOM->{'authorize-payment'}[$i]->transaction->voucher->amount;
+                                    }
+
+                                    $iPSPID = -1;
+                                    $aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
+                                    foreach ($aPaymentMethods as $m) {
+                                        if ($m->getPaymentMethodID() === Constants::iVOUCHER_CARD) {
+                                            $iPSPID = $m->getPSPID();
+                                        }
+                                    }
+                                    $isVoucherErrorFound = FALSE;
+								    if($iPSPID > 1 && $sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0 )
+                                    {
+                                        foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
+                                        {
+                                            $additionalTxnData = [];
+                                            $additionalTxnData[0]['name'] = 'voucherid';
+                                            $additionalTxnData[0]['value'] = $voucher['id'];
+                                            $additionalTxnData[0]['type'] = 'Transaction';
+
+                                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, $additionalTxnData);
+                                            if ($txnObj !== NULL) {
+                                                $_OBJ_DB->query('COMMIT');
+                                                $_OBJ_DB->query('START TRANSACTION');
+                                            } else {
+                                                $_OBJ_DB->query('ROLLBACK');
+                                            }
+                                             $isVoucherErrorFound = TRUE; //TO Bypass error flow
+                                        }
+                                    }
+                                   elseif ($sessiontype > 1 && $iPSPID > 0) {
+                                        $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+                                        if ($iAmount > $pendingAmount) {
+                                            $aMsgCds[53] = "Amount is more than pending amount: " . $iAmount;
+                                            $xml .= '<status code="53">Amount is more than pending amount:  '. $iAmount . '</status>';
+                                            $isVoucherErrorFound = TRUE;
+                                        } else {
+                                            $obj_TxnInfo->updateTransactionAmount($_OBJ_DB, $iAmount);
+                                        }
+                                        $isVoucherRedeem = TRUE;
+                                    }
+                                    else if((int)$obj_TxnInfo->getAmount() !== $iAmount)
+                                    {
+                                        $aMsgCds[52] = "Amount is more than pending amount: " . $iAmount;
+                                        $isVoucherErrorFound = TRUE;
+                                        $xml .= '<status code="52">Amount is more than pending amount:  '. $iAmount . '</status>';
+                                        $isVoucherRedeem = TRUE;
+                                    }
+
+                                    if($iPSPID > 0 && $isVoucherErrorFound === FALSE && $isVoucherPreferred !== "false" ) {
+                                        foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
+                                            $isVoucherRedeem = TRUE;
+                                            if (strtolower($is_legacy) == 'false') {
+                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                            } else {
+                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                                            }
+                                            $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                                            $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+
+
+                                            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                                            $passbookEntry = new PassbookEntry
+                                            (
+                                                NULL,
+                                                $iAmount,
+                                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                                Constants::iAuthorizeRequested
+                                            );
+                                            if ($txnPassbookObj instanceof TxnPassbook) {
+                                                $txnPassbookObj->addEntry($passbookEntry);
+                                                $txnPassbookObj->performPendingOperations();
+                                            }
+
+                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((int)$voucher["id"], $iAmount);
+                                            if ($isVoucherRedeemStatus === 100) {
+                                                $xml .= '<status code="100">Payment authorized using Voucher</status>';
+                                            } elseif ($isVoucherRedeemStatus === 43) {
+                                                header("HTTP/1.1 402 Payment Required");
+                                                $xml .= '<status code="43">Insufficient balance on voucher</status>';
+                                            } elseif ($isVoucherRedeemStatus === 45) {
+                                                header("HTTP/1.1 401 Unauthorized");
+                                                $xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
+                                            } elseif ($isVoucherRedeemStatus ===48) {
+                                                header("HTTP/1.1 423 Locked");
+                                                $xml .= '<status code="48">Voucher payment temporarily locked</status>';
+                                            } else {
+                                                header("HTTP/1.1 502 Bad Gateway");
+                                                $xml .= '<status code="92">Payment rejected by voucher issuer</status>';
+                                            }
+                                        }
+                                    }
+								    else if( $isVoucherErrorFound === FALSE){
+                                        header("HTTP/1.1 412 Precondition Failed");
+
+                                        $isVoucherRedeemStatus = 99;
+                                        $xml .= '<status code="99">Voucher payment not configured for client</status>';
+
+                                    }
+								}
+
+
+								if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
+								{
+
+                                    if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) {
+
+                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                        if ($txnObj !== NULL) {
+
+                                            $obj_TxnInfo = $txnObj;
+                                            $_OBJ_DB->query('COMMIT');
+                                            $_OBJ_DB->query('START TRANSACTION');
+                                        } else {
+                                            $_OBJ_DB->query('ROLLBACK');
+                                        }
+                                    }
+
                                     $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
                                     $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
                                     $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
@@ -1098,9 +1228,8 @@ try
                                                                                 }
                                                                                 
                                                                                 // Authorization succeeded
-                                                                                if ($code == "2001") {
-                                                                                    $xml .= '<status code="2001">Payment Captured</status>';
-                                                                                } else if ($code == "2000") {
+                                                                                //2001 is not expected response code for any request
+                                                                                if ($code == "2000" || $code == "2001") {
                                                                                     $xml .= '<status code="2000">Payment authorized</status>';
                                                                                 } // Error: Authorization declined'
                                                                                 else if ($code == "2010") {
@@ -1137,7 +1266,7 @@ try
 																				$code = $response->code;
 
                                                                                 $paymentRetryWithAlternateRoute = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PAYMENT_RETRY_WITH_ALTERNATE_ROUTE');
-                                                                                $xml .= $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute);
+                                                                                $xml = $obj_mPoint->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute);
 
                                                                             } catch (PaymentProcessorException $e) {
                                                                                 $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
@@ -1261,76 +1390,13 @@ try
 										}
 									}	// End card loop
 								}
-								else if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher) > 0) // Authorize voucher payment
-								{
-									foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
-									{
-										$iPSPID = -1;
-										$aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
-										foreach ($aPaymentMethods as $m)
-										{
-											if ($m->getPaymentMethodID() == Constants::iVOUCHER_CARD) { $iPSPID = $m->getPSPID(); }
-										}
-
-										if ($iPSPID > 0)
-										{
-                                            if(strtolower($is_legacy) == 'false') {
-                                                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
-                                            }else{
-                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
-                                            }
-											$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-											$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-
-											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
-											$passbookEntry = new PassbookEntry
-											(
-													NULL,
-													$obj_TxnInfo->getAmount(),
-													$obj_TxnInfo->getCurrencyConfig()->getID(),
-													Constants::iAuthorizeRequested
-											);
-											if ($txnPassbookObj instanceof TxnPassbook) {
-												$txnPassbookObj->addEntry($passbookEntry);
-												$txnPassbookObj->performPendingOperations();
-											}
-
-											$code = $obj_Authorize->redeemVoucher(intval($voucher["id"]) );
-											if ($code == 100) { $xml .= '<status code="100">Payment authorized using Voucher</status>'; }
-											else if ($code == 43)
-											{
-												header("HTTP/1.1 402 Payment Required");
-												$xml .= '<status code="43">Insufficient balance on voucher</status>';
-											}
-											else if ($code == 45)
-											{
-												header("HTTP/1.1 401 Unauthorized");
-												$xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
-											}
-											else if ($code == 48)
-											{
-												header("HTTP/1.1 423 Locked");
-												$xml .= '<status code="48">Voucher payment temporarily locked</status>';
-											}
-											else
-											{
-												header("HTTP/1.1 502 Bad Gateway");
-												$xml .= '<status code="92">Payment rejected by voucher issuer</status>';
-											}
-										}
-										else
-										{
-											header("HTTP/1.1 412 Precondition Failed");
-											$xml .= '<status code="99">Voucher payment not configured for client</status>';
-										}
-									}
-								}
-								else
+								else if($isVoucherRedeem === FALSE)
 								{
 									$_OBJ_DB->query("ROLLBACK");
-
-									header("HTTP/1.1 400 Bad Request");
-									$xml .= '<status code="400">Invalid Tender</status>';
+									if($isVoucherRedeemStatus === -1) {
+                                        header("HTTP/1.1 400 Bad Request");
+                                        $xml .= '<status code="400">Invalid Tender</status>';
+                                    }
 								}
 							}
 							else

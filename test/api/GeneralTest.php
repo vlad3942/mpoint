@@ -30,7 +30,6 @@ class GeneralTest extends baseAPITest
     {
         parent::setUp(TRUE);
         global $aHTTP_CONN_INFO;
-        $this->bIgnoreErrors = true;
         $this->_aHTTP_CONN_INFO = $aHTTP_CONN_INFO;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
         $this->_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
@@ -80,6 +79,7 @@ class GeneralTest extends baseAPITest
 
     public function testAuthWithAlternateRouteScenario()
     {
+        $this->bIgnoreErrors = true;
         $pspID = Constants::iWIRE_CARD_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
@@ -144,6 +144,57 @@ class GeneralTest extends baseAPITest
             $response = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
             $this->assertEquals(Constants::iPAYMENT_SOFT_DECLINED_STATE, (int)$response->code);
         }
+    }
+
+    public function testCreateTxnFromTxn()
+    {
+        $pspID = Constants::iWIRE_CARD_PSP;
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10018, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10018, 'app')");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10018, 'CPM', true)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001012, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
+        $this->queryDB("INSERT INTO log.txnpassbook_tbl(id, transactionid, amount, currencyid, requestedopt, performedopt, status,clientid) VALUES(102291, 1001012, 5000, 840, 5014, NULL, 'done', 10018)");
+        $this->queryDB("INSERT INTO log.txnpassbook_tbl(transactionid, amount, currencyid,  performedopt, status, extref, extrefidentifier, clientid) VALUES ( 1001012, 5000, 840,  1001, 'done', '102291', 'log.txnpassbook_tbl', 10018)");
+
+        $iTxnID = 1001012;
+        $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
+        $obj_general = new General($this->_OBJ_DB, $this->_OBJ_TXT);
+        $newTxn = $obj_general->createTxnFromTxn($obj_TxnInfo, 20);
+
+        $res =  $this->queryDB("SELECT id FROM Log.Transaction_Tbl where id= {$newTxn->getId()} and amount = 20 and typeid = 100 and clientid = 10018 and accountid = 1100 and countryid = 100 and orderid = '1234abc' and sessionid = 1" );
+		$this->assertIsResource($res);
+		$this->assertEquals(1, pg_num_rows($res) );
+
+		$res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= {$newTxn->getId()} " );
+		$this->assertIsResource($res);
+		$this->assertEquals(2, pg_num_rows($res));
+
+		$res =  $this->queryDB("SELECT id FROM Log.additional_data_tbl where externalid= '{$newTxn->getId()}'" );
+		$this->assertIsResource($res);
+		$this->assertEquals(0, pg_num_rows($res));
+
+
+		$additionalTxnData = [];
+        $additionalTxnData[0]['name'] = 'voucherid';
+        $additionalTxnData[0]['value'] = 'voucher';
+        $additionalTxnData[0]['type'] = 'Transaction';
+		$newTxn = $obj_general->createTxnFromTxn($obj_TxnInfo, 20, FALSE, $additionalTxnData);
+
+        $res =  $this->queryDB("SELECT id FROM Log.Transaction_Tbl where id= {$newTxn->getId()} and amount = 20 and typeid = 100 and clientid = 10018 and accountid = 1100 and countryid = 100 and orderid = '1234abc' and sessionid = 1" );
+		$this->assertIsResource($res);
+		$this->assertEquals(1, pg_num_rows($res) );
+
+		$res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= {$newTxn->getId()} " );
+		$this->assertIsResource($res);
+		$this->assertEquals(0, pg_num_rows($res));
+
+		$res =  $this->queryDB("SELECT id FROM Log.additional_data_tbl where externalid= '{$newTxn->getId()}' " );
+		$this->assertIsResource($res);
+		$this->assertEquals(1, pg_num_rows($res));
+
     }
 
     public function tearDown() : void
