@@ -200,11 +200,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			            }
 		            }
 
-                    // Validate exchange service info id if explicitly passed in request
-                    $exchangeServiceInfo = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction["exchangeserviceinfo-id"];
-                    if($exchangeServiceInfo > 0){
-                        if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
-                            $aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo ;
+                    // Validate service type id if explicitly passed in request
+                    $fxServiceTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                    if($fxServiceTypeId > 0){
+                        if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                            $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
                         }
                     }
 
@@ -226,9 +226,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }else{
                                 $data['typeid'] = Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE;
                             }
-                            if ($exchangeServiceInfo)
+                            if ($fxServiceTypeId)
                             {
-                                $data['exchangeserviceinfo'] = $exchangeServiceInfo;
+                                $data['fxservicetypeid'] = $fxServiceTypeId;
                             }
 
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
@@ -333,7 +333,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
                                 $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
                             }
-
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
 
                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());

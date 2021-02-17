@@ -23,21 +23,20 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$exchangeinfoid=0)
+	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<initialize-payment client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction order-no="1234abc"';
-        if(isset($exchangeinfoid) === true)
-            $xml .= ' exchangeserviceinfo-id="'.$exchangeinfoid.'"';
-        $xml .= '>';
+		$xml .= '<transaction order-no="1234abc">';
 		$xml .= '<amount country-id="100"';
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'.$amount.'</amount>';
 		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
+        if($fxservicetypeid > 0)
+            $xml .= '<foreign-exchange-info><service-type-id>'.$fxservicetypeid.'</service-type-id></foreign-exchange-info>';
 		$xml .= '</transaction>';
 		if(isset($token) === true)
         {
@@ -605,7 +604,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'email\': [facet \'pattern\'] The value \'invalid email@test.com\' is not accepted by the pattern \'(\w+([-+._\']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}\'.</status>', $sReplyBody);
     }
 
-    public function testInvalidExchangeServiceInfoID()
+    public function testInvalidFXServiceTypeID()
     {
         $pspID = Constants::iWIRE_CARD_PSP;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -623,10 +622,10 @@ class InitializeAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
-        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="57">Invalid exchange service information id :13</status>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="57">Invalid service type id :13</status>', $sReplyBody);
     }
 
-    public function testStoredExchangeInfoID()
+    public function testStoredFXServiceTypeID()
     {
         $pspID = Constants::iWIRE_CARD_PSP;
 
@@ -647,15 +646,15 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><client-config id="10099" account="1100" store-card="0" max-stored-cards="-1" auto-capture="false" enable-cvv="true" mode="0"><name>Test Client</name><callback-url></callback-url><accept-url></accept-url><cancel-url></cancel-url><app-url></app-url><css-url></css-url><logo-url></logo-url><base-image-url></base-image-url><additional-config></additional-config><accounts><account id= "1100" markup= "" /></accounts></client-config><transaction id="1" order-no="1234abc" type-id="1" eua-id="-1" language="da" auto-capture="false" mode="0"><amount country-id="100" currency-id="208" currency="DKK" decimals="2" symbol="Kr." format="{PRICE} {CURRENCY}" alpha2code="DK" alpha3code="DNK" code="208">200</amount><mobile country-id="100" operator-id="10000">288828610</mobile><email>abhinav.shaha@cellpointmobile.com</email><callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url><accept-url/><cancel-url/></transaction><session id=\'1\' type=\'1\' total-amount=\'200\'><amount country-id="100" currency-id="208" currency="DKK" symbol="Kr." format="{PRICE} {CURRENCY}" alpha2code="DK" alpha3code="DNK" code="208">200</amount></session><cards><card id="2" type-id="2" psp-id="18" min-length="16" max-length="16" cvc-length="3" state-id="1" payment-type="1" preferred="false" enabled="true" processor-type="1" installment="0" cvcmandatory="true" dcc="false" presentment-currency="false"><name>Dankort</name><prefixes><prefix><min>5019</min><max>5019</max></prefix><prefix><min>4571</min><max>4571</max></prefix></prefixes>Dankort</card></cards><wallets></wallets></root>', $sReplyBody);
 
-        $res =  $this->queryDB('SELECT exchangeinfoid from Log.Transaction_Tbl WHERE id = 1');
+        $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1');
         $this->assertTrue(is_resource($res) );
 
-        $exchangeinfoid = 0;
+        $fxservicetypeid = 0;
         while ($row = pg_fetch_assoc($res) )
         {
-            $exchangeinfoid = (int)$row["exchangeinfoid"];
+            $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(11, $exchangeinfoid);
+        $this->assertEquals(11, $fxservicetypeid);
     }
 
  //  	public function testCIAMSSOPreferenceNotSet()
