@@ -1023,6 +1023,9 @@ class TxnInfo
      * */
     public function getVirtualToken() {  return $this->_sVirtualPaymentToken;  }
 
+	/**
+	 * @return \PaymentSession
+	 */
 	public function getPaymentSession() { return $this->_obj_PaymentSession;}
 
 

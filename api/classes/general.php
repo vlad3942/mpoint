@@ -202,7 +202,7 @@ class General
 	 */
 	public static function produceTxnInfo(RDB &$oDB, $chk)
 	{
-		list($sTimestamp, $iTxnID) = spliti("Z", $chk);
+		[$sTimestamp, $iTxnID] = spliti("Z", $chk);
 		$sTimestamp = date("Y-m-d H:i:s", base_convert($sTimestamp, 32, 10) );
 		$iTxnID = base_convert($iTxnID, 32, 10);
 		$aTemp = array($sTimestamp);
@@ -494,6 +494,9 @@ class General
         if ($oTI->getRouteConfigID() > 0) {
             $sql .= ", routeconfigid = ". $oTI->getRouteConfigID();
         }
+        if ($oTI->getPSPID() > 0) {
+            $sql .= ", pspid = ". $oTI->getPSPID();
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
@@ -533,13 +536,14 @@ class General
      * @param \TxnInfo $txnInfo
      * @param int      $newAmount
      * @param bool     $isInitiateTxn
+     * @param string   $pspid
      * @param array    $additionalTxnData
      *
      * @return \TxnInfo|null
      * @throws \SQLQueryException
      * @throws \mPointException
      */
-    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, array $additionalTxnData = []): ?TxnInfo
+    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = []): ?TxnInfo
     {
         $iAssociatedTxnId =  $this->newTransaction($txnInfo->getClientConfig(), $txnInfo->getTypeID());
 		$iSessionId = $txnInfo->getSessionId() ;
@@ -558,7 +562,7 @@ class General
                 $data["wallet-id"] = '';
                 $data["amount"] = $newAmount;
                 $data["extid"] = '';
-                $data["psp-id"] = '';
+                $data["psp-id"] = $pspid;
                 $data["captured-amount"] = '';
                 $data["externalref"] = '';
                 $data["converted-amount"] = $newAmount;

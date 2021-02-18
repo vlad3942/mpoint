@@ -181,9 +181,9 @@ class GeneralTest extends baseAPITest
         $additionalTxnData[0]['name'] = 'voucherid';
         $additionalTxnData[0]['value'] = 'voucher';
         $additionalTxnData[0]['type'] = 'Transaction';
-		$newTxn = $obj_general->createTxnFromTxn($obj_TxnInfo, 20, FALSE, $additionalTxnData);
+		$newTxn = $obj_general->createTxnFromTxn($obj_TxnInfo, 20, FALSE, "18", $additionalTxnData);
 
-        $res =  $this->queryDB("SELECT id FROM Log.Transaction_Tbl where id= {$newTxn->getId()} and amount = 20 and typeid = 100 and clientid = 10018 and accountid = 1100 and countryid = 100 and orderid = '1234abc' and sessionid = 1" );
+        $res =  $this->queryDB("SELECT id FROM Log.Transaction_Tbl where id= {$newTxn->getId()} and amount = 20 and typeid = 100 and clientid = 10018 and accountid = 1100 and countryid = 100 and orderid = '1234abc' and sessionid = 1 and pspid = 18" );
 		$this->assertIsResource($res);
 		$this->assertEquals(1, pg_num_rows($res) );
 

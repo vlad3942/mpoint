@@ -279,7 +279,7 @@ try
                                             $additionalTxnData[0]['value'] = $voucher['id'];
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
-                                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, $additionalTxnData);
+                                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, (string)$iPSPID, $additionalTxnData);
                                             if ($txnObj !== NULL) {
                                                 $_OBJ_DB->query('COMMIT');
                                                 $_OBJ_DB->query('START TRANSACTION');
