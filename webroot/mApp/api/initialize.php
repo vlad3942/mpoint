@@ -782,7 +782,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
-                                    if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
+                                    if (((int)$obj_XML->item[$j]['processor-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
                                         try {
                                             $pspId = (int)$obj_XML->item[$j]['pspid'];
                                             if (strtolower($is_legacy) == 'false') {
