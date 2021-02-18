@@ -275,6 +275,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE) {
                         	$pspId= OfflinePaymentCardPSPMapping[$obj_card->getCardTypeId()];
+                        	$obj_TxnInfo->setPSPId($pspId);
 						}
                         else{
 							$is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
@@ -443,8 +444,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									try
 									{
+										$processorType = -1;
+										$merchantAccount = "-1";
+										$processorType = -1;
+										if($obj_paymentProcessor->getPSPConfig() !== NULL)
+										{
+											$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType() ;
+											$pspId = $obj_paymentProcessor->getPSPConfig()->getID();
+											$merchantAccount = htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), ENT_NOQUOTES);
+											$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType();
+										}
+										else
+										{
+											$processorType = General::getPSPType($_OBJ_DB, $pspId);
+										}
 										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === FALSE) {
-											$obj_TxnInfo->setExternalReference($_OBJ_DB, $obj_paymentProcessor->getPSPConfig()->getID(), Constants::iForeignExchange, $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+											$obj_TxnInfo->setExternalReference($_OBJ_DB, $pspId, Constants::iForeignExchange, $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'});
 										}
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
@@ -481,20 +496,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$oTI->produceOrderConfig($_OBJ_DB);
 
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
-										$processorType = -1;
-										$merchantAccount = "-1";
-										$processorType = -1;
-										if($obj_paymentProcessor->getPSPConfig() !== NULL)
-										{
-											$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType() ;
-											$pspId = $obj_paymentProcessor->getPSPConfig()->getID();
-											$merchantAccount = htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), ENT_NOQUOTES);
-											$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType();
-										}
-										else
-										{
-											$processorType = General::getPSPType($_OBJ_DB, $pspId);
-										}
 										if($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
 										{
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
