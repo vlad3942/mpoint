@@ -910,7 +910,7 @@ final class TxnPassbook
                 $this->getClientId()
             );
             $result = $this->getDBConn()->execute($res, $aParams);
-            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            if ($result === false || (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0))
             {
                 throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
                 return FALSE;

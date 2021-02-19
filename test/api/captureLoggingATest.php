@@ -20,7 +20,7 @@ require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
 
-class CaptureLoggingTest extends baseAPITest
+class CaptureLoggingATest extends baseAPITest
 {
 	/**
 	 * @var RDB
@@ -45,16 +45,7 @@ class CaptureLoggingTest extends baseAPITest
 
 	public function testPositiveScenarioCaptureLogging()
 	{
-	    //TODO FIX ME
-	    $this->markTestIncomplete("
-            Failed asserting that two strings are equal.
-            --- Expected
-            +++ Actual
-            @@ @@
-            -'done'
-            +'inprogress'
-        ");
-		$pspID = Constants::iWIRE_CARD_PSP;
+	    $pspID = Constants::iWIRE_CARD_PSP;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
