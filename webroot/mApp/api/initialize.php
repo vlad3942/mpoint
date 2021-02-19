@@ -789,6 +789,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $obj_XML->item[$j]["id"], NULL, $obj_XML->item[$j]->name);
                                                 if ($obj_RS instanceof RoutingService) {
                                                     $iPrimaryRoute = $obj_RS->getAndStoreRoute();
+                                                    $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
                                                     $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( $obj_TxnInfo->getAmount(), $obj_XML->item[$j]["id"] , $iPrimaryRoute);
                                                     $pspId = (int)$obj_CardResultSet['PSPID'];
                                                 }
