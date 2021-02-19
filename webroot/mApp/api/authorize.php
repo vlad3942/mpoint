@@ -306,22 +306,50 @@ try
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                                         // Call get payment data API for wallet and stored card payment
+                                        $walletId = NULL;
                                         $card_psp_id = -1;
                                         if ($isStoredCardPayment === true){
                                             $card_psp_id = (int)$obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                        }
-
-                                        $walletId = NULL;
-                                        $wallet_Processor = NULL;
-                                        $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
-                                        $iPaymentType = $obj_card->getPaymentType();
-
-                                        if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
-                                        {
                                             if($card_psp_id == Constants::iMVAULT_PSP) {
                                                 $typeId = Constants::iMVAULT_WALLET;
                                             }
                                             $walletId = $typeId;
+                                        }
+
+
+                                        $wallet_Processor = NULL;
+                                        $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
+                                        $iPaymentType = $obj_card->getPaymentType();
+
+                                        $aRoutes = array();
+                                        $iPrimaryRoute = 0 ;
+                                        $obj_CardXML = '';
+
+                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
+                                        if (strtolower($is_legacy) == 'false') {
+                                            $iPSPId = $obj_TxnInfo->getPSPID();
+                                            $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
+
+                                            if($iPrimaryRoute <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                            {
+                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
+                                                if($obj_RS instanceof RoutingService)
+                                                {
+                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+                                                    # Update routeconfig ID in log.transaction table
+                                                    $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
+                                                }
+                                            }
+                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
+                                        }else{
+                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
+                                        }
+
+                                        if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                        {
+
                                             if ($typeId > 0)
                                             {
                                                 $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $typeId , $aHTTP_CONN_INFO);
@@ -347,31 +375,6 @@ try
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
                                         }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
-                                        }
-
-                                        $aRoutes = array();
-                                        $iPrimaryRoute = 0 ;
-                                        $obj_CardXML = '';
-                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
-                                        if (strtolower($is_legacy) == 'false') {
-                                            $iPSPId = $obj_TxnInfo->getPSPID();
-                                            $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
-
-                                            if($iPrimaryRoute <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
-                                            {
-                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
-                                                if($obj_RS instanceof RoutingService)
-                                                {
-                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-                                                    # Update routeconfig ID in log.transaction table
-                                                    $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
-                                                }
-                                            }
-                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
-                                        }else{
-                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }
 
                                         //Check if card or payment method is enabled or disabled by merchant
