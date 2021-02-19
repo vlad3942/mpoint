@@ -316,17 +316,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['converted-currency-config']= $obj_CurrencyConfig ;
 							$data['conversion-rate']= 1 ;
 
-                             //Set attempt value based on the previous attempts using the same orderid
-                            $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid']);
-                            $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
-                           /* if($iAttemptNumber > 0 )
+							$parentTxnId = NULL;
+							if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
-                                $data['attempt'] = ++$iAttemptNumber;
+                                $parentTxnId = (int)$obj_DOM->xpath('initialize-payment/transaction/additional-data/param[@name="parent-transacation-id"]');
                             }
-                            else
-                            {
-                                $data['attempt'] = 1;
-                            } */
+
+                             //Set attempt value based on the previous attempts using the same orderid
+                            $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid'], $parentTxnId);
+                            $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
+
+
+
                             $data['sessionid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                             $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
                             if($sessionType > 1 )

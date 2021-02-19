@@ -1384,10 +1384,17 @@ class General
 	 * @return string
 	 * */
 
-    public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
+    public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid, int $txnId = NULL)
     {
+        $txnIdCheck = '';
+
+        if($txnId !== NULL && $txnId >1)
+        {
+            $txnIdCheck = " id= $txnId AND ";
+        }
+
         $sql = "SELECT max(attempt) as attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
+					WHERE {$txnIdCheck} orderid = '" . trim($orderid) . "' AND enabled = true
 					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
 					AND countryid = '.$countryConfig->getID()."
 					AND created > NOW() - interval '15 days' ";
