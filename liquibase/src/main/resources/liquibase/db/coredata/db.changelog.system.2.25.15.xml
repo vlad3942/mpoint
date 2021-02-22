@@ -25,8 +25,14 @@
 	<changeSet author="Nitin Gaikwad"
 		id="18-05-2021-02-22-setup-v2.25-system_3">
 		<sql dbms="postgresql" endDelimiter=";">
+			ALTER EVENT TRIGGER no_ddl_allowed DISABLE
+		</sql>
+		<sql dbms="postgresql" endDelimiter=";">
 			ALTER TABLE system.country_tbl
 			ALTER COLUMN code type character varying(5)
+		</sql>
+		<sql dbms="postgresql" endDelimiter=";">
+			ALTER EVENT TRIGGER no_ddl_allowed ENABLE
 		</sql>
 	</changeSet>
 
