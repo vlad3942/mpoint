@@ -6,25 +6,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
 	objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
-	<!-- JIRA- CMP-5100 -->
-	<changeSet author="Abhijit Nalavade"
-		id="15-48-2021-02-17-setup-v2.25-system_1">
-		<insert catalogName="system" schemaName="system"
-			tableName="CardPricing_Tbl">
-			<column name="pricepointid" value="-170" />
-			<column name="cardid" value="28" />
-			<column name="enabled" value="true" />
-		</insert>
-
-		<insert catalogName="system" schemaName="system"
-			tableName="PSPCurrency_Tbl">
-			<column name="pspid" value="24" />
-			<column name="currencyid" value="170" />
-			<column name="name" value="COP" />
-			<column name="enabled" value="true" />
-		</insert>
-	</changeSet>
-
 	<!-- JIRA- CEBU-457 -->
 	<changeSet author="Nitin Gaikwad"
 		id="18-05-2021-02-22-setup-v2.25-system_2">
