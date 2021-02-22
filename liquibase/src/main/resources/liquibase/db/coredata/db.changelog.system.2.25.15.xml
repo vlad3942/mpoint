@@ -8,7 +8,7 @@
 
 	<!-- JIRA- CMP-5100 -->
 	<changeSet author="Abhijit Nalavade"
-		id="15-48-2021-02-17-setup-v2.25-system">
+		id="15-48-2021-02-17-setup-v2.25-system_1">
 		<insert catalogName="system" schemaName="system"
 			tableName="CardPricing_Tbl">
 			<column name="pricepointid" value="-170" />
@@ -27,7 +27,7 @@
 
 	<!-- JIRA- CEBU-457 -->
 	<changeSet author="Nitin Gaikwad"
-		id="18-05-2021-02-22-setup-v2.25-system">
+		id="18-05-2021-02-22-setup-v2.25-system_2">
 		<update catalogName="system" schemaName="system"
 			tableName="psp_tbl">
 			<column name="name" value="Payment Center" />
@@ -42,7 +42,7 @@
 	</changeSet>
 
 	<changeSet author="Nitin Gaikwad"
-		id="18-05-2021-02-22-setup-v2.25-system">
+		id="18-05-2021-02-22-setup-v2.25-system_3">
 		<sql dbms="postgresql" endDelimiter=";">
 			ALTER TABLE system.country_tbl
 			ALTER COLUMN code type character varying(5)
@@ -50,7 +50,7 @@
 	</changeSet>
 
 	<changeSet author="Nitin Gaikwad"
-		id="18-05-2021-02-22-setup-v2.25-system">
+		id="18-05-2021-02-22-setup-v2.25-system_4">
 
 		<update catalogName="system" schemaName="system"
 			tableName="country_tbl">
