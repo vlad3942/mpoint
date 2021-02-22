@@ -367,7 +367,7 @@ try
 
                                     if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) {
 
-                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount());
                                         if ($txnObj !== NULL) {
 
                                             $obj_TxnInfo = $txnObj;
