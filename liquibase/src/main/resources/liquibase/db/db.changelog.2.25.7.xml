@@ -14,5 +14,6 @@
 	<include file="coredata/db.changelog.system.2.25.12.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.13.xml" relativeToChangelogFile="true"/>
 	<include file="coredata/db.changelog.system.2.25.14.xml" relativeToChangelogFile="true"/>
+	<include file="coredata/db.changelog.system.2.25.15.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
