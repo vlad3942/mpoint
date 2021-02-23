@@ -406,21 +406,27 @@ class PSPConfig extends BasicConfig
      * @param 	integer $clid 	Unique ID for the Client performing the request
      * @param 	integer $accid 	Unique ID for the Account-id performing the request
      * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @param 	integer $routeconfigid 	Unique ID for the Route Config ID
+     *
      * @return 	PSPConfig
      */
-    public static function produceConfiguration(RDB &$oDB, $clid, $accid, $pspid)
+    public static function produceConfiguration(RDB $oDB, $clid, $accid, $pspid, $routeconfigid)
     {
         $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON PSP.id = R.providerid AND R.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1'
+                INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'
+                INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RC.id = RCUR.routeconfigid AND RCUR.enabled = '1'				
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON R.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
-				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
-				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid) ;
+				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id
+				WHERE CL.id = ". (int)$clid ." AND PSP.enabled = '1' 
+				    AND Acc.id = ". (int)$accid ." AND RC.id = ". (int)$routeconfigid;
 
         $RS = $oDB->getName($sql);
+
         if (is_array($RS) === true && count($RS) > 1)
         {
             $sql = "SELECT I.language, I.text
@@ -462,12 +468,11 @@ class PSPConfig extends BasicConfig
 					 WHERE routeconfigid = ". intval($RS["ROUTECONFIGID"]);
 
             $aRouteFeature = $oDB->getAllNames($sql);
-
             return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature);
         }
         else
         {
-            trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid, E_USER_WARNING);
+            trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
             return null;
         }
     }

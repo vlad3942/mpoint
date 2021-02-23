@@ -278,15 +278,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 	}
 
-    /**
-     * Performs a cancel operation with CPM PSP for the provided transaction.
-     * The method will return one the following status codes:
-     *    >=1000 Cancel succeeded
-     *    <1000 Cancel failed
-     *
-     * @return int
-     * @throws \Exception
-     */
+	/**
+	 * Performs a cancel operation with CPM PSP for the provided transaction.
+	 * The method will return one the following status codes:
+	 *    >=1000 Cancel succeeded
+	 *    <1000 Cancel failed
+	 *
+	 * @return int
+	 */
 	public function cancel($amount = -1)
 	{
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
@@ -334,7 +333,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 				if($this->getPSPConfig()->getProcessorType() === 8)
                 {
-                    return (int)$obj_XML["code"];
+                    return (int)$obj_XML->status["code"];
                 }
 
                 $this->_obj_ResponseXML =$obj_XML;

@@ -37,13 +37,23 @@ class PaymentProcessor
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-        if(strtolower($is_legacy) == 'false'){
-            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
-        }else {
+        $sPSPClassName = '';
+        $this->_setConnInfo($aConnInfo, $iPSPID);
+
+        if (strtolower($is_legacy) == 'false') {
+            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI->getRouteConfigID());
+        } else {
             $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
         }
-        $sPSPClassName = $this->_objPSPConfig->getName();
-        $this->_setConnInfo($aConnInfo, $iPSPID);
+        if($this->_objPSPConfig !== NULL)
+        {
+            $sPSPClassName = $this->_objPSPConfig->getName();
+        }
+        else if(empty($this->aConnInfo['ClassName']) === FALSE && class_exists($this->aConnInfo['ClassName']))
+        {
+            $sPSPClassName = $this->aConnInfo['ClassName'];
+        }
+
         try {
             if (empty($this->aConnInfo) === true) {
                 $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
