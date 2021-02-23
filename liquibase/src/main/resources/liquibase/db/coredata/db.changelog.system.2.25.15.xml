@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+	objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+	<!-- JIRA- CEBU-457 -->
+	<changeSet author="Nitin Gaikwad"
+		id="18-05-2021-02-22-setup-v2.25-system_2">
+		<update catalogName="system" schemaName="system"
+			tableName="psp_tbl">
+			<column name="name" value="Payment Center" />
+			<where>id = 69</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="card_tbl">
+			<column name="name" value="Payment Center Offline" />
+			<where>id = 96</where>
+		</update>
+	</changeSet>
+
+	<changeSet author="Nitin Gaikwad"
+		id="18-05-2021-02-22-setup-v2.25-system_3">
+		<sql dbms="postgresql" endDelimiter=";">
+			ALTER EVENT TRIGGER no_ddl_allowed DISABLE
+		</sql>
+		<sql dbms="postgresql" endDelimiter=";">
+			ALTER TABLE system.country_tbl
+			ALTER COLUMN code type character varying(5)
+		</sql>
+		<sql dbms="postgresql" endDelimiter=";">
+			ALTER EVENT TRIGGER no_ddl_allowed ENABLE
+		</sql>
+	</changeSet>
+
+	<changeSet author="Nitin Gaikwad"
+		id="18-05-2021-02-22-setup-v2.25-system_4">
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="056" />
+			<where>alpha3code = 'BEL'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="040" />
+			<where>alpha3code = 'AUT'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="004" />
+			<where>alpha3code = 'AFG'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="008" />
+			<where>alpha3code = 'ALB'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="020" />
+			<where>alpha3code = 'AND'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="051" />
+			<where>alpha3code = 'ARM';</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="070" />
+			<where>alpha3code = 'BIH'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="028" />
+			<where>alpha3code = 'ATG'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="052" />
+			<where>alpha3code = 'BRB'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="016" />
+			<where>alpha3code = 'ASM'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="060" />
+			<where>alpha3code = 'BMU'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="044" />
+			<where>alpha3code = 'BHS'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="012" />
+			<where>alpha3code = 'DZA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="024" />
+			<where>alpha3code = 'AGO'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="050" />
+			<where>alpha3code = 'BGD'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="072" />
+			<where>alpha3code = 'BWA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="032" />
+			<where>alpha3code = 'ARG'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="084" />
+			<where>alpha3code = 'BLZ'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="076" />
+			<where>alpha3code = 'BRA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="010" />
+			<where>alpha3code = 'ATA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="074" />
+			<where>alpha3code = 'BVT'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="036" />
+			<where>alpha3code = 'AUS'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="096" />
+			<where>alpha3code = 'BRN'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="090" />
+			<where>alpha3code = 'SLB'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="048" />
+			<where>alpha3code = 'BHR'</where>
+		</update>
+
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="031" />
+			<where>alpha3code = 'AZE'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="code" value="064" />
+			<where>alpha3code = 'BTN'</where>
+		</update>
+
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="441624" />
+			<where>alpha3code = 'IMN'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1" />
+			<where>alpha3code = 'CAN'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1264" />
+			<where>alpha3code = 'AIA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1268" />
+			<where>alpha3code = 'ATG'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1246" />
+			<where>alpha3code = 'BRB'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1284" />
+			<where>alpha3code = 'VGB'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1345" />
+			<where>alpha3code = 'CYM'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1809" />
+			<where>alpha3code = 'DOM'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1876" />
+			<where>alpha3code = 'JAM'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1684" />
+			<where>alpha3code = 'ASM'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1441" />
+			<where>alpha3code = 'BMU'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1242" />
+			<where>alpha3code = 'BHS'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="212" />
+			<where>alpha3code = 'ESH'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="672" />
+			<where>alpha3code = 'ATA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1767" />
+			<where>alpha3code = 'DMA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1473" />
+			<where>alpha3code = 'GRD'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1787" />
+			<where>alpha3code = 'PRI'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1649" />
+			<where>alpha3code = 'TCA'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1868" />
+			<where>alpha3code = 'TTO'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="61" />
+			<where>alpha3code = 'CXR'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="7" />
+			<where>alpha3code = 'KAZ'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="996" />
+			<where>alpha3code = 'KGZ'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1671" />
+			<where>alpha3code = 'GUM'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="1670" />
+			<where>alpha3code = 'MNP'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="886" />
+			<where>alpha3code = 'TWN'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="675" />
+			<where>alpha3code = 'PGK'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+
+			<column name="country_calling_code" value="95" />
+			<where>alpha3code = 'MMR'</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+			<column name="code" value="704" />
+			<column name="decimals" value="2" />
+			<column name="alpha2code" value="VN" />
+			<column name="alpha3code" value="VNM" />
+			<column name="country_calling_code" value="84" />
+			<where>id = 649 AND currencyid = 704</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+			<column name="code" value="383" />
+			<column name="decimals" value="2" />
+			<column name="alpha2code" value="XK" />
+			<column name="alpha3code" value="XKX" />
+			<column name="country_calling_code" value="383" />
+			<where>id = 148 AND currencyid = 978</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+			<column name="code" value="398" />
+			<column name="alpha2code" value="KZ" />
+			<column name="alpha3code" value="KAZ" />
+			<column name="country_calling_code" value="7" />
+			<where>id = 633 AND currencyid = 398</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+			<column name="code" value="410" />
+			<column name="alpha2code" value="KR" />
+			<column name="alpha3code" value="KOR" />
+			<column name="country_calling_code" value="82" />
+			<where>id = 632 AND currencyid = 410</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+			<column name="code" value="408" />
+			<column name="alpha2code" value="KP" />
+			<column name="alpha3code" value="PRK" />
+			<column name="country_calling_code" value="850" />
+			<where>id = 631 AND currencyid = 408</where>
+		</update>
+
+		<update catalogName="system" schemaName="system"
+			tableName="country_tbl">
+			<column name="code" value="104" />
+			<column name="decimals" value="2" />
+			<column name="alpha2code" value="BU" />
+			<column name="alpha3code" value="BUR" />
+			<column name="country_calling_code" value="95" />
+			<where>id = 625 AND currencyid = 104</where>
+		</update>
+	</changeSet>
+	
+</databaseChangeLog>

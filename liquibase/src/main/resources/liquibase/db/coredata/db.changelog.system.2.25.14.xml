@@ -76,4 +76,21 @@
     
     </changeSet>
 
+    <changeSet author="Abhijit Nalavade" id="15-48-2021-02-17-setup-v2.25-system">
+
+        <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="28"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="PSPCurrency_Tbl">
+            <column name="pspid" value="24"/>
+            <column name="currencyid" value="170"/>
+            <column name="name" value="COP"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>
