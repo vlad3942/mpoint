@@ -95,7 +95,7 @@ class PSPConfig extends BasicConfig
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
 		$this->_sMerchantSubAccount = trim($msa);
-		$this->_iType = intval($system_type);
+		$this->_iType = $system_type;
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_aMessages = $aMsgs;
@@ -264,7 +264,11 @@ class PSPConfig extends BasicConfig
         return $xml;
     }
 
-    public function toRouteConfigXML()
+    /**
+     * Function return Route config XML
+     * @return string
+     */
+    public function toRouteConfigXML(): string
     {
         $xml = '<route_configuration>';
         $xml .= '<id>'. $this->getRouteConfigId() .'</id>';
@@ -300,7 +304,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider 
 	 * @return 	PSPConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $clid, $accid, $pspid)
+	public static function produceConfig(RDB $oDB, int $clid, int $accid, int $pspid)
 	{
 		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, MA.id as MerchantId
@@ -310,7 +314,7 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
-				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid) ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
+				WHERE CL.id = ". $clid ." AND PSP.id = ". $pspid ." AND PSP.enabled = '1' AND Acc.id = ". $accid ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 1)
@@ -318,7 +322,7 @@ class PSPConfig extends BasicConfig
 			$sql = "SELECT I.language, I.text
 					FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
 					INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
-					WHERE I.clientid = ". intval($clid) ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". intval($pspid) ." OR I.pspid IS NULL)";
+					WHERE I.clientid = ". $clid ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". $pspid ." OR I.pspid IS NULL)";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
 			$aMessages = array();
@@ -332,7 +336,7 @@ class PSPConfig extends BasicConfig
 
             $sql  = "SELECT key,value, scope
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant' and enabled=true" ;
+					 WHERE externalid = ". (int) $RS["MERCHANTID"] ." and type='merchant' and enabled=true" ;
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
@@ -347,7 +351,7 @@ class PSPConfig extends BasicConfig
                 }
             }
 
-			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties);
+			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages, $aAdditionalProperties);
 		}
 		else
 		{
@@ -366,7 +370,7 @@ class PSPConfig extends BasicConfig
 	 *
 	 * return string or array
 	 */
-    public function getAdditionalProperties($scope, $key = '')
+    public function getAdditionalProperties(int $scope, string $key = ''): ?array
     {
         $isAll = false;
         $returnProperties = [];
@@ -395,8 +399,7 @@ class PSPConfig extends BasicConfig
         {
             return $returnProperties;
         }
-
-        return false;
+        return null;
     }
 
     /**
@@ -410,7 +413,7 @@ class PSPConfig extends BasicConfig
      *
      * @return 	PSPConfig
      */
-    public static function produceConfiguration(RDB $oDB, $clid, $accid, $pspid, $routeconfigid)
+    public static function produceConfiguration(RDB $oDB, int $clid, int $accid, int $pspid, int $routeconfigid)
     {
         $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
@@ -422,8 +425,8 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id
-				WHERE CL.id = ". (int)$clid ." AND PSP.enabled = '1' 
-				    AND Acc.id = ". (int)$accid ." AND RC.id = ". (int)$routeconfigid;
+				WHERE CL.id = ". $clid ." AND PSP.enabled = '1' 
+				    AND Acc.id = ". $accid ." AND RC.id = ". $routeconfigid;
 
         $RS = $oDB->getName($sql);
 
@@ -432,7 +435,7 @@ class PSPConfig extends BasicConfig
             $sql = "SELECT I.language, I.text
 					FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
 					INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
-					WHERE I.clientid = ". intval($clid) ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". intval($pspid) ." OR I.pspid IS NULL)";
+					WHERE I.clientid = ". $clid ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". $pspid ." OR I.pspid IS NULL)";
 
             $aRS = $oDB->getAllNames($sql);
             $aMessages = array();
@@ -446,7 +449,7 @@ class PSPConfig extends BasicConfig
 
             $sql  = "SELECT key,value, scope
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant' and enabled=true" ;
+					 WHERE externalid = ". (int)$RS["MERCHANTID"] ." and type='merchant' and enabled=true" ;
 
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
@@ -465,7 +468,7 @@ class PSPConfig extends BasicConfig
             $sql  = "SELECT CRF.id, CRF.enabled, SRF.featurename
 					 FROM Client". sSCHEMA_POSTFIX .".RouteFeature_Tbl CRF
 					 INNER JOIN System". sSCHEMA_POSTFIX .".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
-					 WHERE routeconfigid = ". intval($RS["ROUTECONFIGID"]);
+					 WHERE routeconfigid = ". (int)$RS["ROUTECONFIGID"];
 
             $aRouteFeature = $oDB->getAllNames($sql);
             return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature);
