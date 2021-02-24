@@ -343,6 +343,3 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('CARRIER_NAME', 'SAUDI GULF AIRLINES', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('PROFILE_EXPIRY', 180, 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('ENABLE_PROFILE_ANONYMIZATION', true, 10077, 'client', true, 2);
-
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 70, 'mVault', 'blank', 'blank', true, NULL);
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100770, 70, '-1', true);
