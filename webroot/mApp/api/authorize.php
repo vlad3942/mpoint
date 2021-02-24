@@ -320,7 +320,7 @@ try
                                         $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
                                         $iPaymentType = $obj_card->getPaymentType();
 
-                                        if($isCardTokenExist === true || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                        if($isCardTokenExist === true  || $card_psp_id === Constants::iMVAULT_PSP|| $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                         {
                                             $walletId = $typeId;
                                             if ($typeId > 0)
