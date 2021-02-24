@@ -306,21 +306,22 @@ try
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                                         // Call get payment data API for wallet and stored card payment
+                                        $walletId = NULL;
                                         $card_psp_id = -1;
                                         if ($isStoredCardPayment === true){
                                             $card_psp_id = (int)$obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                            if($card_psp_id == Constants::iMVAULT_PSP) {
+                                                $typeId = Constants::iMVAULT_WALLET;
+                                            }
+                                            $walletId = $typeId;
                                         }
 
-                                        $walletId = NULL;
                                         $wallet_Processor = NULL;
                                         $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
                                         $iPaymentType = $obj_card->getPaymentType();
 
-                                        if($isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                        if($isCardTokenExist === true || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                         {
-                                            if($card_psp_id == Constants::iMVAULT_PSP) {
-                                                $typeId = Constants::iMVAULT_WALLET;
-                                            }
                                             $walletId = $typeId;
                                             if ($typeId > 0)
                                             {
@@ -337,21 +338,13 @@ try
                                                         }
                                                     }
                                                 }
-
                                             }
-                                        }
-
-                                        $issuerIdentificationNumber = NULL;
-                                        if($isStoredCardPayment === true){
-                                            $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
-                                        }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
-                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
 
                                         $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
                                         $obj_CardXML = '';
+
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
@@ -372,6 +365,14 @@ try
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
+                                        }
+
+                                        $issuerIdentificationNumber = NULL;
+                                        if($isStoredCardPayment === true){
+                                            $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
+                                        }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
 
                                         //Check if card or payment method is enabled or disabled by merchant
