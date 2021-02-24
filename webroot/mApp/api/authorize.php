@@ -306,22 +306,21 @@ try
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                                         // Call get payment data API for wallet and stored card payment
-                                        $walletId = NULL;
                                         $card_psp_id = -1;
-                                        if ($isStoredCardPayment === true){
+                                        if ($isStoredCardPayment === true)
+                                        {
                                             $card_psp_id = (int)$obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                            if($card_psp_id == Constants::iMVAULT_PSP) {
-                                                $typeId = Constants::iMVAULT_WALLET;
-                                            }
-                                            $walletId = $typeId;
                                         }
-
+                                        $walletId = NULL;
                                         $wallet_Processor = NULL;
                                         $typeId = (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"];
                                         $iPaymentType = $obj_card->getPaymentType();
 
                                         if($isCardTokenExist === true  || $card_psp_id === Constants::iMVAULT_PSP|| $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
                                         {
+                                            if($card_psp_id == Constants::iMVAULT_PSP) {
+                                                $typeId = Constants::iMVAULT_WALLET;
+                                            }
                                             $walletId = $typeId;
                                             if ($typeId > 0)
                                             {
