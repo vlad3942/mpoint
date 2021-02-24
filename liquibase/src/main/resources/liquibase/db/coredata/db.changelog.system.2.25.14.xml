@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Karishan Kumar"
+        id="2021-02-19-setup-v2.25-system">
+        
+        <!-- MPGS -->
+
+        <!-- psp_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSP_Tbl">
+
+            <column name="id" value="70"/>
+            <column name="name" value="MPGS"/>
+            <column name="system_type" value="1"/>
+        </insert>
+                
+        <!-- pspcard_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="8"/>
+            <column name="pspid" value="70"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="7"/>
+            <column name="pspid" value="70"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="5"/>
+            <column name="pspid" value="70"/>
+        </insert>
+
+       <!-- pspcurrency_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="608"/>
+            <column name="pspid" value="70"/>
+            <column name="name" value="PHP"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
