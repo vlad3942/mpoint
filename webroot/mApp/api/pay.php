@@ -273,8 +273,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $iPrimaryRoute = 0 ;
                         $pspId = -1;
 
-                        if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE) {
+                        if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE)
+                        {
                         	$pspId= OfflinePaymentCardPSPMapping[$obj_card->getCardTypeId()];
+							$data['auto-capture'] = 2;
                         	$obj_TxnInfo->setPSPId($pspId);
 						}
                         else{
@@ -473,7 +475,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										if($obj_paymentProcessor->getPSPConfig() !== NULL && $obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
-										$data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE'];
+										if(empty($data['auto-capture']) === true) { $data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE']; }
 										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'}) === FALSE)
 										{
 											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);

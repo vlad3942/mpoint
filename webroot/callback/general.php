@@ -199,7 +199,8 @@ try
     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-    if(strtolower($is_legacy) == 'false') {
+
+	if(strtolower($is_legacy) == 'false' && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE) {
         $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]), $obj_TxnInfo->getRouteConfigID());
     }else{
         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]));
@@ -240,7 +241,7 @@ try
         }
         else
         {
-            if(strtolower($is_legacy) == 'false') {
+            if(strtolower($is_legacy) == 'false'  && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE) {
                 $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]), $obj_TxnInfo->getRouteConfigID() );
             }else{
                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
