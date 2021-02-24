@@ -1114,6 +1114,24 @@ $aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
 
 $aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/mconsole/single-sign-on";
+
+/**
+ * Connection info for connecting to MPGS
+ */
+$aHTTP_CONN_INFO["cebu-mpgs"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cebu-mpgs"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cebu-mpgs"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cebu-mpgs"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cebu-mpgs"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cebu-mpgs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cebu-mpgs"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cebu-mpgs"]["paths"]["initialize"] = "/mpoint/mpgs/initialize";
+$aHTTP_CONN_INFO["cebu-mpgs"]["paths"]["auth"] = "/mpoint/mpgs/authorize-payment";
+$aHTTP_CONN_INFO["cebu-mpgs"]["paths"]["capture"] = "/mpoint/mpgs/capture";
+$aHTTP_CONN_INFO["cebu-mpgs"]["paths"]["status"] = "/mpoint/mpgs/status";
+$aHTTP_CONN_INFO["cebu-mpgs"]["paths"]["cancel"] = "/mpoint/mpgs/cancel";
+$aHTTP_CONN_INFO["cebu-mpgs"]["paths"]["refund"] = "/mpoint/mpgs/refund";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

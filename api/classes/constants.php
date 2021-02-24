@@ -1082,6 +1082,12 @@ abstract class Constants
 	 *
 	 */
 	const iCEBUPAYMENTCENTER_APM = 69;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MPGS
+	 *
+	 */
+	const iMPGS_PSP = 70;
 
     /**
 	 * Unique ID for the Electronic Payment Flow
