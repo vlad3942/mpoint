@@ -1226,11 +1226,11 @@ class Validate extends ValidateBase
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
-		$countryISO_id = $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "";
+		$countryISO_id = sprintf('%03s', $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "");
 		$countryISOCode = "";
 		if($obj_CountryConfig != null && $obj_CountryConfig->getID() >0)
         {
-            $countryISOCode = $obj_CountryConfig->getNumericCode();
+            $countryISOCode = sprintf('%03s',$obj_CountryConfig->getNumericCode());
         }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
