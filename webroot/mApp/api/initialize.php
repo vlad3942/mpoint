@@ -337,12 +337,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $txnPassbookObj->addEntry($passbookEntry);
                                 $txnPassbookObj->performPendingOperations();
                             }
-
+                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="4030">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
-                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
+                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3 && strtolower($is_legacy) != 'false') {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
                                 $obj_TxnInfo->getPaymentSession()->updateState(Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
@@ -660,7 +660,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
-                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if (strtolower($is_legacy) == 'false') {
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                                 if (empty($sessionId) === false) {
