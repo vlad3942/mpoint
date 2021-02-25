@@ -1,6 +1,4 @@
 --- mPoint Client Schema - for SR Migration
---- Truncate Table
-truncate log.paymentroute_tbl;
 
 ------------------------------------------------------------------------------
 -- Enable client to use SR flow i.e non legacy flow:
