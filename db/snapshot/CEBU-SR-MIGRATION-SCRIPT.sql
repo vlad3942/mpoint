@@ -178,7 +178,6 @@ INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VA
 INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,638,458,true);
 INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,502,554,true);
 INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,416,578,true);
-INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,640,608,true);
 INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,606,634,true);
 INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,608,682,true);
 INSERT INTO client.countrycurrency_tbl (clientid,countryid,currencyid,enabled)VALUES (10077,642,702,true);
