@@ -154,8 +154,12 @@ INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 60
 
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'paymaya';
 
+-- CyberSourceAMEX
 
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'CyberSourceAMEX', 2, 'CyberSourceAMEX', 'cebu_cellpoint_test', 'K/B7APZOVPoPCFvSIyqMpvUmeDCAyyd0aWXnIHFQqBnSBwc1PDXRVZCS8DazLnCSXZUuauffLNY0lxJpoR8/e94VJbzKVK+Dzxmhl3hkS0qnmk/ZJFcd2Huh80UK5qG2TwB2inqPacECAGBLk5steF6UlALDYuMOvJuVinUW84VEpxUJ1Dntmm4AhNpB2pUheytX4XjhoodDerjGZGg61Ps4xHxqNl29huaumNYIoCfGNchX5vkKi8uBoPwJCpbBO0ORUy9sgMQOk1w7DTNVSCvkpbF+LH3VdFV/3N8kU9z/ONKLF2zPq5aWjC861EjQo1mAqiZBjg8Afof3CsDQ0Q==', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 63;
 
+INSERT INTO client.routecountry_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'CyberSourceAMEX';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'CyberSourceAMEX';
 
 
