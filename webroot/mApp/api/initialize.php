@@ -785,7 +785,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         try {
                                             $pspId = (int)$obj_XML->item[$j]['pspid'];
                                             if (strtolower($is_legacy) == 'false') {
-                                                $pspId = (int)OnlinePaymentCardPSPMapping[$obj_XML->item[$j]["id"]];
+                                                $cardId = (int)$obj_XML->item[$j]["id"];
+                                                $pspId  = OnlinePaymentCardPSPMapping[$cardId];
                                             }
 
                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
