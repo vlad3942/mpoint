@@ -43,6 +43,11 @@ define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
  */
 define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM));
 
+/**
+ * Online Payment Methods Card and PSP id mapping
+ */
+define("OnlinePaymentCardPSPMapping", array(Constants::iFPX => Constants::iEGHL_PSP, Constants::iDRAGONPAY => Constants::iDragonPay_AGGREGATOR));
+
 
 /**
  * Database settings for mPoint's database
