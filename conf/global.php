@@ -1095,6 +1095,17 @@ $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
 
+/**
+ * Connection info for connecting to Travel Fund
+ */
+$aHTTP_CONN_INFO["travel-fund"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["travel-fund"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["travel-fund"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["travel-fund"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["travel-fund"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["travel-fund"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["travel-fund"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/mpoint/travel-fund/redeem";
 
 /**
  * Connection info for connecting to Paymaya

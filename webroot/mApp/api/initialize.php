@@ -64,6 +64,7 @@ require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/cellulant.php");
+require_once(sCLASS_PATH ."/voucher/travelfund.php");
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
@@ -770,6 +771,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$apmsXML = '<apms>';
 							$aggregatorsXML = '<aggregators>';
 							$offlineXML = '<offline>';
+							$voucherXML = '<vouchers>';
 
 							$splitPaymentFOPConfig = null;
 							if($sessionType > 1)
@@ -883,6 +885,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         case Constants::iPAYMENT_TYPE_OFFLINE;
                                             $offlineXML .= $cardXML;
                                             break;
+                                        case Constants::iPAYMENT_TYPE_VOUCHER;
+                                            $voucherXML .= $cardXML;
+                                            break;
                                         default:
                                             $cardsXML .= $cardXML;
                                     }
@@ -902,6 +907,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $apmsXML .= '</apms>';
                             $aggregatorsXML .= '</aggregators>';
                             $offlineXML .= '</offline>';
+                            $voucherXML .= '</vouchers>';
 
                             $xml .= $cardsXML;
                             $xml .= $walletsXML;
@@ -909,6 +915,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $xml .= $apmsXML;
                                 $xml .= $aggregatorsXML;
                                 $xml .= $offlineXML;
+                                $xml .= $voucherXML;
                             }
 
 							for ($j=0, $jMax = count($aPSPs); $j< $jMax; $j++)
