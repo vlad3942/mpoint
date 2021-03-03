@@ -343,3 +343,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('CARRIER_NAME', 'SAUDI GULF AIRLINES', 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('PROFILE_EXPIRY', 180, 10077, 'client', true, 2);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('ENABLE_PROFILE_ANONYMIZATION', true, 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.HKD', 'TEST088008881200', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 70), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.HKD', 'merchant.TEST088008881200', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 70), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.HKD', '7f8945cebdfd056530baca4e3e8d384a', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 70), 'merchant', 2);
