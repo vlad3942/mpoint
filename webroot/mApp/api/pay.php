@@ -278,6 +278,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         	$pspId= OfflinePaymentCardPSPMapping[$obj_card->getCardTypeId()];
 							$data['auto-capture'] = 2;
                         	$obj_TxnInfo->setPSPId($pspId);
+							//For Offline payment method fee is considered as holding charges required to add in actual amount
+							if($obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
+							{
+								$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
+							}
 						}
                         else{
 							$is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
@@ -485,12 +490,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
 											unset($data['amount']);
 										}
-										//For Offline payment method fee is considered as holding charges required to add in actual amount
-										if($obj_CardResultSet['PAYMENTTYPE'] == Constants::iPAYMENT_TYPE_OFFLINE && $obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
-										{
-											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
-										}
-
 
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
