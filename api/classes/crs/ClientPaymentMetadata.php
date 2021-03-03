@@ -51,14 +51,14 @@ class ClientPaymentMetadata
     /**
      * Object that holds the Account configurations
      *
-     * @var CardState
+     * @var AccountConfig
      */
     private array $_obj_AccountsConfigurations;
 
     /**
      * Object that holds the Foreign Exchange Service Type Configurations
      *
-     * @var CardState
+     * @var FxServiceType
      */
     private array $_obj_FxServiceTypeConfig;
 
