@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Vikas Gupta" id="2021-03-01-Sequencing-Error">
+
+        <!-- Set the sequence: Client.countrycurrency_tbl_id_seq -->
+        <sql dbms="postgresql" endDelimiter=";"
+             splitStatements="false">
+            DO $$
+            DECLARE
+                maxid INT4;
+            BEGIN
+                maxid := (SELECT Max(id) FROM Client.countrycurrency_tbl);
+                PERFORM Setval('Client.countrycurrency_tbl_id_seq', maxid);
+            END
+            $$;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
