@@ -472,7 +472,7 @@ try
         }
 
         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
-        if($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE)
+        if(($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_REJECTED_STATE ) && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE)
         {
             if((int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE && (integer) $obj_XML->callback->transaction->amount["currency-id"] !== $obj_TxnInfo->getCurrencyConfig()->getID())
             {
