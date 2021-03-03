@@ -48,7 +48,19 @@ class ClientPaymentMetadata
      */
     private array $_obj_CardStateConfig;
 
+    /**
+     * Object that holds the Account configurations
+     *
+     * @var CardState
+     */
     private array $_obj_AccountsConfigurations;
+
+    /**
+     * Object that holds the Foreign Exchange Service Type Configurations
+     *
+     * @var CardState
+     */
+    private array $_obj_FxServiceTypeConfig;
 
     /**
      * Default Constructor
@@ -57,8 +69,9 @@ class ClientPaymentMetadata
      * @param 	ClientCountryCurrencyConfig $aObj_ClientCountryCurrencyConfig 	 Hold Configuration for the client payment route country currency
      * @param 	ClientPaymentMethodConfig $aObj_ClientPaymentMethodConfig 		 Hold Configuration for the client supported payment methods
      * @param 	RouteFeature $aObj_ClientRouteFeatureConfig 					 Hold Configuration for the client route feature
+     * @param   FxServiceType $aObj_FxServiceTypeConfig                          Hold an array of object of Foreign Exchange Service Type Configurations
      */
-	public function __construct(array $aObj_ClientRouteConfig, array $aObj_ClientCountryCurrencyConfig, array $aObj_ClientPaymentMethodConfig, array $aObj_ClientRouteFeatureConfig, array $aObj_AccountsConfigurations, array $obj_TransactionTypeConfig, array $aObj_CardStateConfig)
+	public function __construct(array $aObj_ClientRouteConfig, array $aObj_ClientCountryCurrencyConfig, array $aObj_ClientPaymentMethodConfig, array $aObj_ClientRouteFeatureConfig, array $aObj_AccountsConfigurations, array $obj_TransactionTypeConfig, array $aObj_CardStateConfig, array $aObj_FxServiceTypeConfig)
 	{
         $this->_obj_ClientRouteConfig = $aObj_ClientRouteConfig;
         $this->_obj_ClientCountryCurrencyConfig = $aObj_ClientCountryCurrencyConfig;
@@ -67,7 +80,28 @@ class ClientPaymentMetadata
         $this->_obj_TransactionTypeConfig = $obj_TransactionTypeConfig;
         $this->_obj_CardStateConfig = $aObj_CardStateConfig;
         $this->_obj_AccountsConfigurations = $aObj_AccountsConfigurations;
+        $this->_obj_FxServiceTypeConfig = $aObj_FxServiceTypeConfig;
 	}
+
+    /**
+     * Returns the XML payload of Foreign Exchange Service Type Configurations
+     *
+     * @return 	String
+     */
+	private function getFxServiceTypeConfigAsXML() : string
+    {
+        $xml = '<fx_service_types>';
+        foreach ($this->_obj_FxServiceTypeConfig as $obj_FxServiceType)
+        {
+            if ( ($obj_FxServiceType instanceof FxServiceType) === true)
+            {
+                $xml .= $obj_FxServiceType->toXML();
+            }
+        }
+        $xml .= '</fx_service_types>';
+
+        return $xml;
+    }
 
     /**
      * Returns the XML payload of array of Configurations for the Accounts the Transaction will be associated with
@@ -233,6 +267,7 @@ class ClientPaymentMetadata
         $xml .= $this->getTransactionTypeAsXML();
         $xml .= $this->getCardStateAsXML();
         $xml .= $this->getAccountsConfigurationsAsXML();
+        $xml .= $this->getFxServiceTypeConfigAsXML();
         $xml .= '</payment_metadata>';
         return $xml;
     }
@@ -262,10 +297,11 @@ class ClientPaymentMetadata
         }
         $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
         $aObj_CardStateConfig = CardState::produceConfig($oDB);
+        $aObj_FxServiceTypeConfig = FxServiceType::produceConfig($oDB);
 
-        return new ClientPaymentMetadata($aObj_ClientRouteConfig, $aObj_ClientCountryCurrencyConfig, $aObj_ClientPaymentMethodConfig, $aObj_ClientRouteFeatureConfig, $aObj_AccountsConfigurations, $obj_TransactionTypeConfig, $aObj_CardStateConfig);
+        return new ClientPaymentMetadata($aObj_ClientRouteConfig, $aObj_ClientCountryCurrencyConfig, $aObj_ClientPaymentMethodConfig, $aObj_ClientRouteFeatureConfig, $aObj_AccountsConfigurations, $obj_TransactionTypeConfig, $aObj_CardStateConfig, $aObj_FxServiceTypeConfig);
     }
-	
+
 
 }
 ?>
