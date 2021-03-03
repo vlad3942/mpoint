@@ -24,6 +24,7 @@ require_once(sCLASS_PATH ."crs/ClientCountryCurrencyConfig.php");
 require_once(sCLASS_PATH ."/crs/RouteFeature.php");
 require_once(sCLASS_PATH ."/crs/TransactionTypeConfig.php");
 require_once(sCLASS_PATH ."/crs/CardState.php");
+require_once(sCLASS_PATH ."/crs/FxServiceType.php");
 
 $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
