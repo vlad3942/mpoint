@@ -104,7 +104,8 @@ require_once(sCLASS_PATH ."/global-payments.php");
 require_once(sCLASS_PATH ."/cybersource.php");
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
-
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/mpgs.php");
 
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH . "/worldpay.php");
