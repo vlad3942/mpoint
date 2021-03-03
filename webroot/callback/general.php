@@ -472,6 +472,41 @@ try
         }
 
         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+        if($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE)
+        {
+            if((int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE && (integer) $obj_XML->callback->transaction->amount["currency-id"] !== $obj_TxnInfo->getCurrencyConfig()->getID())
+            {
+                $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->callback->transaction->amount["currency-id"]);
+                $data['converted-currency-config'] = $obj_CurrencyConfig;
+                $data['converted-amount'] = (integer) $obj_XML->callback->transaction->amount;
+                $data['conversion-rate'] = (float)$obj_TxnInfo->getAmount()/(float)$obj_XML->callback->transaction->amount;
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                $obj_mPoint->logTransaction($obj_TxnInfo);
+
+            }
+            $passbookEntry = new PassbookEntry
+            (
+                NULL,
+                $obj_TxnInfo->getAmount(),
+                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                Constants::iAuthorizeRequested,
+                '',
+                0,
+                '',
+                '',
+                TRUE,
+                NULL,
+                NULL,
+                $obj_TxnInfo->getClientConfig()->getID(),
+                $obj_TxnInfo->getInitializedAmount()
+            );
+            if ($txnPassbookObj instanceof TxnPassbook)
+            {
+                $txnPassbookObj->addEntry($passbookEntry);
+                $txnPassbookObj->performPendingOperations();
+            }
+
+        }
 
         if ($txnPassbookObj instanceof TxnPassbook) {
             foreach ($aStateId as $iStateId) {
@@ -659,16 +694,7 @@ try
         // Transaction uses one step authorization then no need of PSP call
         if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
-            if((int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE && (integer) $obj_XML->callback->transaction->amount["currency-id"] !== $obj_TxnInfo->getCurrencyConfig()->getID())
-            {
-                $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->callback->transaction->amount["currency-id"]);
-                $data['converted-currency-config'] = $obj_CurrencyConfig;
-                $data['converted-amount'] = (integer) $obj_XML->callback->transaction->amount;
-                $data['conversion-rate'] = (float)$obj_TxnInfo->getAmount()/(float)$obj_XML->callback->transaction->amount;
-                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
-                $obj_mPoint->logTransaction($obj_TxnInfo);
 
-            }
             $code=0;
             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
             $passbookEntry = new PassbookEntry
