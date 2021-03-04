@@ -330,9 +330,9 @@ INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id
 --CEBU MPGS
 INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 70, 'TEST048583918507', 'merchant.TEST048583918507', '42b5c09392e50702e05f29c37c75841a', true, null);
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100770, 70, '-1', true);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 8, true, 70, 608, 1, null, false, 1);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 7, true, 70, 608, 1, null, false, 1);
-INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 5, true, 70, 608, 1, null, false, 1);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 8, true, 70, 640, 1, null, false, 1);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 7, true, 70, 640, 1, null, false, 1);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 5, true, 70, 640, 1, null, false, 1);
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.PHP', 'TEST048583918507', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 70), 'merchant', 2);
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.PHP', 'merchant.TEST048583918507', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 70), 'merchant', 2);
