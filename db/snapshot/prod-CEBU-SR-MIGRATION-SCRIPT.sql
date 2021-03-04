@@ -14,7 +14,7 @@ INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, p
 SELECT id, '2c2p-alc_Master_VISA_USD', 2, 'CebuPacific_USD', 'CELLPM', 'UIYSTHY0O4WLKZMG', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 40;
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='CebuPacific_USD';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'CebuPacific_USD';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 840 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='CebuPacific_USD';
+
 
 -- 2C2P-alc - MCC
 
@@ -23,7 +23,7 @@ SELECT id, '2c2p-alc_Master_VISA_PHP', 2, 'CebuPacific_MCC', 'CELLPM', 'UIYSTHY0
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='CebuPacific_MCC';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on
         r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'CebuPacific_MCC';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 608 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='CebuPacific_MCC';
+
 
 -- PAYPAL PHP : need to check currency for Paypal PHP / USD
 INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
@@ -31,8 +31,6 @@ SELECT id, 'Paypal_PHP', 2, 'As0CsasLOsIIjn6r.ieY7gG7r2vXA.oZ86a8wBLg-p5pF0Ov9-y
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='As0CsasLOsIIjn6r.ieY7gG7r2vXA.oZ86a8wBLg-p5pF0Ov9-y.kQ0F';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'As0CsasLOsIIjn6r.ieY7gG7r2vXA.oZ86a8wBLg-p5pF0Ov9-y.kQ0F';
 
--- PHP Currency
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 608 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='As0CsasLOsIIjn6r.ieY7gG7r2vXA.oZ86a8wBLg-p5pF0Ov9-y.kQ0F';
 
 -- PAYPAL SGD
 INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
@@ -41,8 +39,6 @@ SELECT id, 'Paypal_SGD', 2, 'AFcWxV21C7fd0v3bYYYRCpSSRl31AMSGek.A5c24IFvwr1oJEmn
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AFcWxV21C7fd0v3bYYYRCpSSRl31AMSGek.A5c24IFvwr1oJEmnyY2zs';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'AFcWxV21C7fd0v3bYYYRCpSSRl31AMSGek.A5c24IFvwr1oJEmnyY2zs';
 
--- SGD Currency
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 702 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='AFcWxV21C7fd0v3bYYYRCpSSRl31AMSGek.A5c24IFvwr1oJEmnyY2zs';
 
 -- PAYPAL HKD
 INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
@@ -50,8 +46,6 @@ SELECT id, 'Paypal_HKD', 2, 'Ai1PaghZh5FmBLCDCTQpwG8jB264Ar.yoWfzAZAtGXi7ElVkreZ
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='Ai1PaghZh5FmBLCDCTQpwG8jB264Ar.yoWfzAZAtGXi7ElVkreZTUDJj';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'Ai1PaghZh5FmBLCDCTQpwG8jB264Ar.yoWfzAZAtGXi7ElVkreZTUDJj';
 
--- HKD Currency
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 344 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='Ai1PaghZh5FmBLCDCTQpwG8jB264Ar.yoWfzAZAtGXi7ElVkreZTUDJj';
 
 -- PAYPAL MYR
 INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
@@ -60,11 +54,6 @@ SELECT id, 'Paypal_MYR', 2, 'AeQHpsR6oLP4vEUw.mB5Zx9anAkmAy0QSXSXnOevSEwQ5LJSCNe
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AeQHpsR6oLP4vEUw.mB5Zx9anAkmAy0QSXSXnOevSEwQ5LJSCNeL7S3n';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'AeQHpsR6oLP4vEUw.mB5Zx9anAkmAy0QSXSXnOevSEwQ5LJSCNeL7S3n';
 
--- MYR Currency
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 458 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='AeQHpsR6oLP4vEUw.mB5Zx9anAkmAy0QSXSXnOevSEwQ5LJSCNeL7S3n';
-
--- PHP Currency
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 608 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and  mid ='AeQHpsR6oLP4vEUw.mB5Zx9anAkmAy0QSXSXnOevSEwQ5LJSCNeL7S3n';
 
 -- PAYPAL USD
 
@@ -74,17 +63,6 @@ SELECT id, 'Paypal_USD', 2, 'AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg
 INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
 INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
 
--- Respective Currency
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 36 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 96 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 156 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 360 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 410 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 446 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 840 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 764 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 784 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
-INSERT INTO client.routecurrency_tbl(routeconfigid, currencyid) SELECT rc.id, 901 FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='AICx5s75qo3cvpG9DkpKA8hj8IYyAP9SasTn3mUrSZ2u2UYAGGg4qMs6';
 
 -- MODIRUM API
 INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
