@@ -24,7 +24,7 @@ class MPGSException extends CallbackException { }
  */
 class MPGS extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new DataCashException("Method: getPaymentData is not supported by Data Cash"); }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new MPGSException("Method: getPaymentData is not supported by MPGS"); }
 
 	public function getPSPID() { return Constants::iMPGS_PSP; }
 }
