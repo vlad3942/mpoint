@@ -783,13 +783,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     if (((int)$obj_XML->item[$j]['processor-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
                                         try {
-                                            $pspId = (int)$obj_XML->item[$j]['pspid'];
+                                            $pspId  = (int)$obj_XML->item[$j]['pspid'];
+                                            $cardId = NULL;
                                             if (strtolower($is_legacy) == 'false') {
                                                 $cardId = (int)$obj_XML->item[$j]["id"];
                                                 $pspId  = OnlinePaymentCardPSPMapping[$cardId];
                                             }
 
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$cardId);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
