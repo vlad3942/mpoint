@@ -481,6 +481,10 @@ class General
 		if($oTI->getInstallmentValue()>0) {
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
+
+        if ($oTI->getFXServiceTypeID() > 0) {
+            $sql .= " , fxservicetypeid = '". $oTI->getFXServiceTypeID() ."'";
+        }
         if ($oTI->getProfileID() !== '') {
             $sql .= " , profileid = '". $oTI->getProfileID() ."'";
         }

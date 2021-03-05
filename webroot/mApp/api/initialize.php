@@ -202,7 +202,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			                }
 			            }
 		            }
-					
+
+                    // Validate service type id if explicitly passed in request
+                    $fxServiceTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                    if($fxServiceTypeId > 0){
+                        if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                            $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
+                        }
+                    }
+
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -220,6 +229,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }else{
                                 $data['typeid'] = Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE;
                             }
+                            if ($fxServiceTypeId)
+                            {
+                                $data['fxservicetypeid'] = $fxServiceTypeId;
+                            }
+
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['converted-amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
@@ -322,7 +336,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
                                 $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
                             }
-
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
 
                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());

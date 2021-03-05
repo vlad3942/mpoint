@@ -461,6 +461,18 @@ try
                                         	}
                                         }
 
+                                        // Validate service type id if explicitly passed in request
+                                        $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                                        if($fxServiceTypeId > 0){
+                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
+                                            }
+                                        }
+                                        if ($fxServiceTypeId)
+                                        {
+                                            $data['fxservicetypeid'] = $fxServiceTypeId;
+                                        }
+
                                         if (isset($obj_Elem->capture_type) > 0)
                                         {
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);

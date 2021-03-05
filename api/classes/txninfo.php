@@ -44,6 +44,12 @@ class TxnInfo
 	 */
 	private $_iTypeID;
 	/**
+	 * Foreign Exchange Service type id
+	 *
+	 * @var integer|null
+	 */
+	private $_fxServiceTypeID;
+	/**
 	 * Configuration for the Client who owns the Transaction
 	 *
 	 * @var ClientConfig
@@ -453,52 +459,69 @@ class TxnInfo
 	private $_iRouteConfigId;
 
     /**
-	 * Default Constructor
-	 *
-	 * @param 	integer $id 		Unique ID for the Transaction
-	 * @param 	integer $tid 		Unique ID for the Transaction Type
-	 * @param 	ClientConfig $oClC 	Configuration for the Client who owns the Transaction
-	 * @param 	long $amt 			Total amount the customer will pay for the Transaction without fee
-	 * @param 	integer $pnt 		Total number of points the customer will pay for the Transaction
-	 * @param 	integer $rwd 		Total number of points the customer will be rewarded for completing the transaction
-	 * @param 	integer $rfnd 		Total amount the customer has been refunded for the Transaction
-	 * @param 	string $orid 		Clients Order ID of the Transaction
-	 * @param 	string $extid 		External ID of the Transaction (usually the txn ref of the PSP)
-	 * @param 	string $addr 		Customer's Mobile Number (MSISDN)
-	 * @param 	integer $oid 		GoMobile's ID for the Customer's Mobile Network Operator
-	 * @param 	string $email 		Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
-	 * @param 	string $devid 		Customer's Device id of the platform which is used for transaction
-	 * @param 	string $lurl 		Absolute URL to the Client's Logo which will be displayed on all payment pages
-	 * @param 	string $cssurl 		Absolute URL to the CSS file that should be used to customising the payment pages
-	 * @param 	string $accurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
-	 * @param 	string $curl 		Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
-	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
-	 * @param 	string $iurl 		Absolute URL to the Client's My Account Icon
-	 * @param 	string $aurl 		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
-	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
-	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
-	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transaction
-	 * @param 	integer $accid 		Unique ID for the End-User's prepaid account that the transaction should be associated with
-	 * @param	string $cr			The Client's Reference for the Customer
-	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
-	 * @param 	boolean $asc		Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
-	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
-	 * @param 	string $desc 		String that holds the description of an order
-	 * @param 	string $ip			String that holds the customers IP address
-	 * @param 	integer $paymentSession			Unique ID for payment session used for transation, Defaults to 1
-	 * @param 	integer $productType			Unique ID for product type used for transation, Defaults to 100
-	 * @param 	integer $pspid		Unique ID for the The PSP used for the transaction Defaults to -1.
-	 * @param 	integer $fee		The amount the customer will pay in fee´s for the Transaction.
-	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
-	 * @param	array $aExternalRef	 External Reference Ids
-	 * @param	integer $ofAmt	 Offered DCC Amount
-	 * @param	ClientConfig $oFCR	 Offered DCC Currency
-	 * @param	float $fconversionRate	 Offered DCC Conversion Rate
-	 * @param	string $sIssuing_Bank	 Issuing Bank Name
-	 * @param	array $_aBillingAddr	 Billing Address
-	 *
-	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [], ?int $routeConfigId = -1)
+     * Default Constructor
+     *
+     * @param integer $id Unique ID for the Transaction
+     * @param integer $tid Unique ID for the Transaction Type
+     * @param ClientConfig $oClC Configuration for the Client who owns the Transaction
+     * @param CountryConfig $oCC
+     * @param CurrencyConfig|null $oCR
+     * @param long $amt Total amount the customer will pay for the Transaction without fee
+     * @param integer $pnt Total number of points the customer will pay for the Transaction
+     * @param integer $rwd Total number of points the customer will be rewarded for completing the transaction
+     * @param integer $rfnd Total amount the customer has been refunded for the Transaction
+     * @param string $orid Clients Order ID of the Transaction
+     * @param string $extid External ID of the Transaction (usually the txn ref of the PSP)
+     * @param string $addr Customer's Mobile Number (MSISDN)
+     * @param integer $oid GoMobile's ID for the Customer's Mobile Network Operator
+     * @param string $email Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
+     * @param string $devid Customer's Device id of the platform which is used for transaction
+     * @param string $lurl Absolute URL to the Client's Logo which will be displayed on all payment pages
+     * @param string $cssurl Absolute URL to the CSS file that should be used to customising the payment pages
+     * @param string $accurl Absolute URL where the Customer should be returned to upon successfully completing the Transaction
+     * @param $declineurl
+     * @param string $curl Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
+     * @param string $cburl Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
+     * @param string $iurl Absolute URL to the Client's My Account Icon
+     * @param string $aurl Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
+     * @param string $l The language that all payment pages should be rendered in by default for the Client
+     * @param integer $m The Client Mode in which the Transaction should be Processed
+     * @param int $ac Boolean Flag indicating whether Auto Capture should be used for the transaction
+     * @param integer $accid Unique ID for the End-User's prepaid account that the transaction should be associated with
+     * @param string $cr The Client's Reference for the Customer
+     * @param integer $gmid GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
+     * @param boolean $asc Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
+     * @param string $mrk String indicating the markup language used to render the payment pages
+     * @param string $desc String that holds the description of an order
+     * @param string $ip String that holds the customers IP address
+     * @param int $attempt
+     * @param integer $paymentSession Unique ID for payment session used for transation, Defaults to 1
+     * @param integer $productType Unique ID for product type used for transation, Defaults to 100
+     * @param int $installmentValue
+     * @param string $profileid
+     * @param integer $pspid Unique ID for the The PSP used for the transaction Defaults to -1.
+     * @param integer $fee The amount the customer will pay in fee´s for the Transaction.
+     * @param int $cptamt The Full amount that has been captured for the Transaction
+     * @param int $cardid
+     * @param int $walletid
+     * @param string $mask
+     * @param string $expiry
+     * @param string $token
+     * @param string $authOriginalData
+     * @param string $approvalActionCode
+     * @param string $createdTimestamp
+     * @param string $virtualtoken
+     * @param array $additionalData
+     * @param array $aExternalRef External Reference Ids
+     * @param integer $ofAmt Offered DCC Amount
+     * @param CurrencyConfig|null $oFCR Offered DCC Currency
+     * @param int $fconversionRate Offered DCC Conversion Rate
+     * @param string $sIssuingBank
+     * @param array $aBillingAddr
+     * @param int|null $routeConfigId
+     * @param int $fxservicetypeid
+     */
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,int $fxservicetypeid=0)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -588,7 +611,8 @@ class TxnInfo
         $this->_sIssuingBank = trim($sIssuingBank);
         $this->_aBillingAddr = $aBillingAddr;
         $this->_iRouteConfigId = $routeConfigId;
-        }
+		$this->_fxServiceTypeID = $fxservicetypeid;
+    }
 
 	/**
 	 * Returns the Unique ID for the Transaction
@@ -609,6 +633,14 @@ class TxnInfo
 	 * @return 	integer
 	 */
 	public function getTypeID() { return $this->_iTypeID; }
+	/**
+	 * Returns the System.fxservicetype_tbl id stored in transaction table
+	 *
+	 * @return 	integer
+	 */
+	public function getFXServiceTypeID() : ?int { return $this->_fxServiceTypeID; }
+
+
 	/**
 	 * Returns the Configuration for the Client who owns the Transaction.
 	 *
@@ -1164,8 +1196,9 @@ class TxnInfo
 		}
 
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $obj_CurrencyConfig->getID() .'" currency="'.$obj_CurrencyConfig->getCode() .'" decimals="'. $obj_CurrencyConfig->getDecimals().'" symbol="'. $obj_CurrencyConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $iAmount .'</amount>';
+		$xml .= '<foreign-exchange-info><service-type-id>'. $this->_fxServiceTypeID .'</service-type-id></foreign-exchange-info>';
 
-		if($conversionRate != 1)
+		if($conversionRate !== 1)
 		{
 			$xml .= '<initialize_amount>';
 			$xml .= '<amount>'.$this->getInitializedAmount().'</amount>';
@@ -1591,7 +1624,7 @@ class TxnInfo
 
 	private static function _constProduceQuery()
 	{
-		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
+		$sql = "SELECT t.id, typeid, t.fxservicetypeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
 						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, walletid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken, installment_value, t.profileid,
 						COALESCE(convertedcurrencyid,currencyid) as convertedcurrencyid,COALESCE(convertedamount,amount) as convertedamount,COALESCE(conversionrate,1) as conversionrate,issuing_bank,COALESCE(routeconfigid,-1) as routeconfigid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
@@ -1625,8 +1658,9 @@ class TxnInfo
             else{
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
-
-            $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr, $RS['ROUTECONFIGID']);
+			$fxservicetypeid = 0;
+			if(intval($RS["FXSERVICETYPEID"])>0) $fxservicetypeid = $RS["FXSERVICETYPEID"];
+            $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr, $RS['ROUTECONFIGID'],$fxservicetypeid);
 		}
 		return $obj_TxnInfo;
 	}
@@ -1652,11 +1686,17 @@ class TxnInfo
 	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null )
 	{
 		$obj_TxnInfo = null;
+		$fxservicetypeid = 0;
 		switch (true)
 		{
 		case ($obj instanceof TxnInfo):	// Instantiate from array of new Transaction Information
 			// Use data from provided Data Object for all unspecified values
 			if (array_key_exists("typeid", $misc) === false) { $misc["typeid"] = $obj->getTypeID(); }
+			if ($obj->getFXServiceTypeID() == 0){
+				if(array_key_exists("fxservicetypeid", $misc) === false) { $misc["fxservicetypeid"] = $obj->getFXServiceTypeID(); }
+			}else{
+				$misc["fxservicetypeid"] = $obj->getFXServiceTypeID();
+			}
 			if (array_key_exists("client-config", $misc) === false) { $misc["client-config"] = $obj->getClientConfig(); }
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
 			if (array_key_exists("currency-config", $misc) === false) { $misc["currency-config"] = $obj->getInitializedCurrencyConfig(); }
@@ -1710,7 +1750,6 @@ class TxnInfo
             if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
             if (array_key_exists("issuing-bank", $misc) === false) { $misc["issuing-bank"] = $obj->getIssuingBankName(); }
             if (array_key_exists("billingAddr", $misc) === false) { $misc["billingAddr"] = $obj->getBillingAddr(); }
-            if (array_key_exists("routeconfigid", $misc) === false) { $misc["routeconfigid"] = $obj->getRouteConfigID(); }
 
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
@@ -1721,10 +1760,10 @@ class TxnInfo
             }
             if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = $obj->getInstallmentValue(); }
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = $obj->getProfileID(); }
-
+			if(intval($misc["fxservicetypeid"])>0) $fxservicetypeid = $misc["fxservicetypeid"];
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
-					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"], $misc["routeconfigid"]);
+					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"],null,$fxservicetypeid);
 
 
 			break;
@@ -1761,7 +1800,8 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"", array(), null);
+			if(intval($misc["fxservicetypeid"])>0) $fxservicetypeid = $misc["fxservicetypeid"];
+            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"",array(),null,$fxservicetypeid);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -2241,14 +2281,13 @@ class TxnInfo
 	    return $this->_obj_PaymentSession->toXML();
     }
 
-	/**
-	 * Function to update the transaction amount
-	 *
-	 * @param \RDB $obj_DB     Database object
-	 * @param      $amount     New amount of transaction
-	 *
-	 * @throws \SQLQueryException
-	 */
+    /**
+     * Function to update the transaction amount
+     *
+     * @param $obj_DB     Database object
+     * @param $amount     New amount of transaction
+     *
+     */
     function updateTransactionAmount(RDB $obj_DB,$amount){
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount.", convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
@@ -2338,7 +2377,7 @@ class TxnInfo
            {
 			   $sql .= " ,mask = '" . $mask . "' , expiry = '" . $expiry . "'";
 		   }
-		   $sql .= " WHERE id=". $this->getID();
+			$sql .= " WHERE id=". $this->getID();
            $obj_DB->query($sql);
        }
        catch (mPointException $e)

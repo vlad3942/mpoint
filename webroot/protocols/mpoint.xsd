@@ -50,6 +50,13 @@
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
+									<xs:element name="foreign-exchange-info" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="1" maxOccurs="1" />
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
 									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 								</xs:all>
 								<xs:attribute name="order-no" type="order-no" use="optional" />
@@ -130,6 +137,7 @@
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
@@ -294,6 +302,7 @@
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
