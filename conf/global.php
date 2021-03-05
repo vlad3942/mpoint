@@ -1113,6 +1113,16 @@ $aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
 
+/**
+ * Connection info for connecting to SSO
+ */
+$aHTTP_CONN_INFO["mconsole"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mconsole"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mconsole"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mconsole"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mconsole"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mconsole"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mconsole"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/mconsole/single-sign-on";
 /**
  * GoMobile Connection Info.
