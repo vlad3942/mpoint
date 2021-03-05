@@ -276,7 +276,7 @@ try
                                         {
                                             $additionalTxnData = [];
                                             $additionalTxnData[0]['name'] = 'voucherid';
-                                            $additionalTxnData[0]['value'] = $voucher['id'];
+                                            $additionalTxnData[0]['value'] = (string)$voucher->{'voucher-id'};
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
                                             $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, (string)$iPSPID, $additionalTxnData);
@@ -289,7 +289,8 @@ try
                                              $isVoucherErrorFound = TRUE; //TO Bypass error flow
                                         }
                                     }
-                                   elseif ($sessiontype > 1 && $iPSPID > 0) {
+                                    elseif ($sessiontype > 1 && $iPSPID > 0)
+                                    {
                                         $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
                                         if ($iAmount > $pendingAmount) {
                                             $aMsgCds[53] = "Amount is more than pending amount: " . $iAmount;
@@ -319,6 +320,8 @@ try
                                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
+                                            $sessionToken = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->xpath("./param[@name='session_token']");
+
 
                                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
@@ -333,8 +336,7 @@ try
                                                 $txnPassbookObj->addEntry($passbookEntry);
                                                 $txnPassbookObj->performPendingOperations();
                                             }
-
-                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((int)$voucher["id"], $iAmount);
+                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher->{'voucher-id'}, $iAmount,$sessionToken);
                                             if ($isVoucherRedeemStatus === 100) {
                                                 $xml .= '<status code="100">Payment authorized using Voucher</status>';
                                             } elseif ($isVoucherRedeemStatus === 43) {
