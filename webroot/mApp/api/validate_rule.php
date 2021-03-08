@@ -56,10 +56,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $aCurrencies = (array) $obj_DOM->{'validate_rule_request'}->currencies->{'currency_id'} ?? null;
         $sRoutes = (array) $obj_DOM->{'validate_rule_request'}->{'route_configurations'}->{'route_id'} ?? null;
         $aMissingRouteConfiguration = array();
+        $iConfigCount = (count($aCards) * count($aCurrencies));
         foreach ($sRoutes as $route){
             $obj_validateRule = ValidateRule::produceConfig($_OBJ_DB, $route, $aCards, $aCountries, $aCurrencies);
             if(empty($obj_validateRule) === false){
-                if(!$obj_validateRule->getRouteConfigCount()){
+                if($obj_validateRule->getRouteConfigCount() < $iConfigCount){
                     $aMissingRouteConfiguration[] = $obj_validateRule->getRouteConfigId();
                 }
             }

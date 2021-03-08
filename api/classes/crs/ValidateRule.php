@@ -31,17 +31,17 @@ class ValidateRule
         $this->_iRouteConfigCount = $routeConfigCount;
 	}
 
-	public function getRouteConfigCount()
+	public function getRouteConfigCount() : int
     {
         return $this->_iRouteConfigCount;
     }
 
-    public function getRouteConfigId()
+    public function getRouteConfigId() : int
     {
         return $this->_iRouteConfigId;
     }
 
-    public function toXML(array $aMissingRouteConfiguration)
+    public function toXML(array $aMissingRouteConfiguration) : string
     {
         $xml = '';
         $xml .= '<status>';
@@ -50,7 +50,7 @@ class ValidateRule
            $xml .= '<description>Success</description>';
        } else {
            $xml .= '<code>404</code>';
-           $xml .= '<description>Configuration Not Found For Route : '.implode(',', $aMissingRouteConfiguration).'</description>';
+           $xml .= '<description>Configuration Not Found For Route ID : '.implode(',', $aMissingRouteConfiguration).'</description>';
        }
         $xml .= '</status>';
        return $xml;
