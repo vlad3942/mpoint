@@ -1246,6 +1246,44 @@
 				</xs:complexType>
 			</xs:element>
 			<!-- Get Enduser stored card -->
+
+			<!-- Validate Rule -->
+			<xs:element name="validate_rule_request">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="cards" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="card_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="currencies" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="currency_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="countries" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="country_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="route_configurations" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="route_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- Validate Rule -->
+
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
