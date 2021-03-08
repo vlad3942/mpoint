@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- PSP Curency update -->
+    <changeSet author="Vikas Gupta" id="2021-03-03-PSP-Currency-PSPID">
+        <!-- This is not as per Story  -->
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcurrency_tbl">
+            <where>pspid = 67 AND currencyid = 360 AND name = 'IDR'</where>
+        </delete>
+        <!-- This is not required as per the story -->
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcurrency_tbl">
+            <where>pspid = 68 AND currencyid = 360 AND name = 'IDR'</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>
