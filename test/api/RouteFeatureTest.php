@@ -28,7 +28,11 @@ class RouteFeatureTest extends baseAPITest
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.Route_Tbl (id, clientid, providerid) VALUES (1, 10099, 18)");
-        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, countryid, currencyid, username, password) VALUES (1, 1, 'Wirecard_VISA', 2, 'TESTMID', null, null, 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
+
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (1)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (1)");
+
         $this->queryDB("INSERT INTO Client.Routefeature_Tbl (id, clientid, routeconfigid, featureid) VALUES (1, 10099, 1,2)");
         $this->queryDB("INSERT INTO Client.Routefeature_Tbl (id, clientid, routeconfigid, featureid) VALUES (2, 10099, 1, 5)");
 

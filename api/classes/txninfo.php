@@ -1763,7 +1763,7 @@ class TxnInfo
 			if(intval($misc["fxservicetypeid"])>0) $fxservicetypeid = $misc["fxservicetypeid"];
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
-					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"],null,$fxservicetypeid);
+					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"], $misc["routeconfigid"], $fxservicetypeid);
 
 
 			break;
