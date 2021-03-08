@@ -43,7 +43,7 @@ class Authorize extends General
 	 * @throws Exception
 	 * @throws TxnInfoException
 	 */
-	public function redeemVoucher($iVoucherID, $iAmount=-1, $sessionToken=null)
+	public function redeemVoucher(string $iVoucherID, float $iAmount=-1, array $additionalData=null)
 	{
 		// Add control state and immediately commit database transaction
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE, "");
@@ -57,7 +57,7 @@ class Authorize extends General
 		{
 			if ( ($this->_obj_PSP instanceof Redeemable) === true)
 			{
-				$code = $this->_obj_PSP->redeem($iVoucherID, $iAmount, $sessionToken);
+				$code = $this->_obj_PSP->redeem($iVoucherID, $iAmount, $additionalData);
 
 				if ( (is_int($code) && $code > 0) || strlen($code) > 0)
 				{

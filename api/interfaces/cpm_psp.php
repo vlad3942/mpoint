@@ -777,7 +777,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem($iVoucherID, $iAmount=-1, $sessionToken=null)
+	public function redeem(string $iVoucherID, float $iAmount=-1, array $additionalData)
 	{
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -786,7 +786,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
 		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
 		$b .= '</transaction>';
-		$b .= '<session-token>'. $sessionToken .'</session-token>';
+		if(isset($additionalData['session_token'])){
+			$b .= '<session-token>'. $additionalData['session_token'] .'</session-token>';
+		}
+
 		$b .= '</redeem-voucher>';
 		$b .= '</root>';
 

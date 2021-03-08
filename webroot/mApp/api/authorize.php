@@ -320,8 +320,17 @@ try
                                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
-                                            $sessionToken = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->xpath("./param[@name='session_token']");
-
+                                            $additionalData = array();
+                                            if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
+									{
+                                                $additionalDataParamsCount = count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children());
+                                                for ($index = 0; $index < $additionalDataParamsCount; $index++)
+                                                {
+                                                    $name = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                                                    $value = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
+                                                    $additionalData[$name] = $value;
+                                                }
+                                            }
 
                                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
@@ -336,7 +345,7 @@ try
                                                 $txnPassbookObj->addEntry($passbookEntry);
                                                 $txnPassbookObj->performPendingOperations();
                                             }
-                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher->{'voucher-id'}, $iAmount,$sessionToken);
+                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher->{'voucher-id'}, $iAmount, $additionalData);
                                             if ($isVoucherRedeemStatus === 100) {
                                                 $xml .= '<status code="100">Payment authorized using Voucher</status>';
                                             } elseif ($isVoucherRedeemStatus === 43) {
