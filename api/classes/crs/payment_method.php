@@ -12,16 +12,16 @@ class PaymentMethod extends Card
 {
     private $_obj_TxnInfo = '';
     private $_iProcessorType = '';
-    private $_iPSPId;
-    private $_iStateId;
-    private $_bPreferred;
-    private $_iInstallment;
-    private $_iCaptureType;
-    private $_bCvcMandatory;
-    private $_iWalletId;
-    private $_bDccEnabled;
-    private $_iWidth = 180; // Default logo width
-    private $_iHeight = 115; // Default logo height
+    private int $_iPSPId;
+    private int $_iStateId;
+    private bool $_bPreferred;
+    private int $_iInstallment;
+    private ?int $_iCaptureType;
+    private ?bool $_bCvcMandatory;
+    private ?string $_iWalletId;
+    private ?bool $_bDccEnabled;
+    private int $_iWidth = 180; // Default logo width
+    private int $_iHeight = 115; // Default logo height
 
     /**
      * Default Constructor
@@ -51,14 +51,14 @@ class PaymentMethod extends Card
     public function getLogoWidth() { return $this->_iWidth; }
     public function getLogoHeight() { return $this->_iHeight; }
     public function getstateId() { return $this->_iStateId; }
-    public function getPreferred() { return $this->_bPreferred; }
+    public function getPreferred(): ?bool { return $this->_bPreferred; }
     public function getInstallment() { return $this->_iInstallment; }
     public function getCaptureType() { return $this->_iCaptureType; }
     public function getCvcMandatory() { return $this->_bCvcMandatory; }
     public function getWalletId() { return $this->_iWalletId; }
     public function getDccEnabled() { return $this->_bDccEnabled; }
 
-    public function toXML()
+    public function toXML(): string
     {
         $xml = '<item id="' . $this->getCardTypeId() . '" type-id="' . $this->getCardTypeId() . '" pspid="' . $this->getPSPId() . '" min-length="' . $this->getMinCardLength() . '" max-length="' . $this->getMaxCardLength() . '" cvc-length="' . $this->getCvcLength() . '" state-id="' . $this->getstateId() . '" payment-type="' . $this->getPaymentType() . '"' . ' preferred="' . General::bool2xml($this->getPreferred()) . '"' . ' enabled = "' . General::bool2xml(true) . '"' . ' processor-type = "' . $this->getProcessorType() . '" installment = "' . $this->getInstallment() . '" cvcmandatory = "' . General::bool2xml($this->getCvcMandatory()) . '" walletid = "' . $this->getWalletId() . '" dcc="' . General::bool2xml($this->getDccEnabled()) . '" >';
         $xml .= '<name>' . htmlspecialchars($this->getCardName(), ENT_NOQUOTES) . '</name>';
@@ -90,11 +90,10 @@ class PaymentMethod extends Card
      * @param 	RDB $oDB 		             Reference to the Database Object that holds the active connection to the mPoint Database
      * @param	TranslateText $oTxt 	     Text Translation Object for translating any text into a specific language
      * @param 	TxnInfo $oTI 			     Data object with the Transaction Information
-     * @param 	integer $cardId 	         Unique id for the  card
-     * @param   integer $pspType             Unique psp type id
-     * @return 	object                       Instance of static Routes Configuration
+     * @param 	array $aPaymentMethodsConfig 	     Payment Methods Config
+     * @return 	?array                       Instance of static Routes Configuration
      */
-    public static function produceConfig(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aPaymentMethodsConfig)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $aPaymentMethodsConfig): ?array
     {
         $aObj_Configurations = array();
         $cardIds = array_keys($aPaymentMethodsConfig);
