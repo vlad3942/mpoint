@@ -189,7 +189,8 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCardCallbackVoucherRejected()
     {
-        $pspID = Constants::iDSB_PSP;
+        $this->markTestIncomplete();
+        /*$pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
@@ -254,13 +255,14 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         $res = $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1 and status= 'error' and performedopt=2000 ");
         $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));
+        $this->assertEquals(1, pg_num_rows($res));*/
 
     }
 
     public function testSuccessfulCallbackAccepted()
     {
-        $pspID = Constants::iDSB_PSP;
+        $this->markTestIncomplete();
+        /*$pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
@@ -324,7 +326,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         $res = $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1 and status= 'done' and performedopt=2000 ");
         $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));
+        $this->assertEquals(1, pg_num_rows($res));*/
 
     }
 
