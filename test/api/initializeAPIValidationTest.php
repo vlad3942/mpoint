@@ -1030,7 +1030,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
-		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Travel Fund voucher</name><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>Travel Fund voucher</card></vouchers>', $sReplyBody);
+		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Voucher</name><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>Voucher</card></vouchers>', $sReplyBody);
 	}
 
 }
