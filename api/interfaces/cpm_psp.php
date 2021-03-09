@@ -785,10 +785,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<redeem-voucher id="'. $iVoucherID .'">';
 		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
 		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
-		$b .= '</transaction>';
+		$b .= '<additional-data>';
 		if(isset($additionalData['session_token'])){
 			$b .= '<session-token>'. $additionalData['session_token'] .'</session-token>';
 		}
+		$b .= '</additional-data>';
+		$b .= '</transaction>';
 
 		$b .= '</redeem-voucher>';
 		$b .= '</root>';

@@ -9,10 +9,6 @@
   
 
 <changeSet author="Chaitenya Yadav" id="2021-03-03-Travel-fund">
-    <update catalogName="system" schemaName="system" tableName="Card_tbl">
-        <column name="name" value="Travel Fund voucher" />
-        <where>id = 26</where>
-    </update>
 
     <insert catalogName="System" schemaName="System" tableName="cardprefix_tbl">
             <column name="cardid" value="26"/>
@@ -71,20 +67,6 @@
     <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
         <column name="pspid" value="71"/>
         <column name="enabled" value="true"/>
-        <column name="name" value="MYR"/>
-        <column name="currencyid" value="458" />
-    </insert>
-
-    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
-        <column name="pspid" value="71"/>
-        <column name="enabled" value="true"/>
-        <column name="name" value="SGD"/>
-        <column name="currencyid" value="702" />
-    </insert>
-
-    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
-        <column name="pspid" value="71"/>
-        <column name="enabled" value="true"/>
         <column name="name" value="TWD"/>
         <column name="currencyid" value="901" />
     </insert>
@@ -92,16 +74,9 @@
     <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
         <column name="pspid" value="71"/>
         <column name="enabled" value="true"/>
-        <column name="name" value="AUD"/>
-        <column name="currencyid" value="36" />
-    </insert>
-
-    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
-        <column name="pspid" value="71"/>
-        <column name="enabled" value="true"/>
         <column name="name" value="BND"/>
         <column name="currencyid" value="96" />
-    </insert>
+    </insert>   
 
     <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
         <column name="pspid" value="71"/>
@@ -150,6 +125,104 @@
         <column name="enabled" value="true"/>
         <column name="name" value="DKK"/>
         <column name="currencyid" value="208" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="CAD"/>
+        <column name="currencyid" value="124" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="LKR"/>
+        <column name="currencyid" value="144" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="INR"/>
+        <column name="currencyid" value="356" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="IDR"/>
+        <column name="currencyid" value="360" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="KWD"/>
+        <column name="currencyid" value="414" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="NZD"/>
+        <column name="currencyid" value="554" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="NOK"/>
+        <column name="currencyid" value="578" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="QAR"/>
+        <column name="currencyid" value="634" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="SAR"/>
+        <column name="currencyid" value="682" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="VND"/>
+        <column name="currencyid" value="704" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="SEK"/>
+        <column name="currencyid" value="752" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="CHF"/>
+        <column name="currencyid" value="756" />
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="GBP"/>
+        <column name="currencyid" value="826" />
+    </insert>
+    
+    <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+        <column name="pspid" value="71"/>
+        <column name="enabled" value="true"/>
+        <column name="name" value="EUR"/>
+        <column name="currencyid" value="978" />
     </insert>
 
 </changeSet>

@@ -276,7 +276,7 @@ try
                                         {
                                             $additionalTxnData = [];
                                             $additionalTxnData[0]['name'] = 'voucherid';
-                                            $additionalTxnData[0]['value'] = (string)$voucher->{'voucher-id'};
+                                            $additionalTxnData[0]['value'] = (string)$voucher['id'];
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
                                             $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, (string)$iPSPID, $additionalTxnData);
@@ -322,7 +322,7 @@ try
 
                                             $additionalData = array();
                                             if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
-									{
+									        {
                                                 $additionalDataParamsCount = count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children());
                                                 for ($index = 0; $index < $additionalDataParamsCount; $index++)
                                                 {
@@ -345,7 +345,7 @@ try
                                                 $txnPassbookObj->addEntry($passbookEntry);
                                                 $txnPassbookObj->performPendingOperations();
                                             }
-                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher->{'voucher-id'}, $iAmount, $additionalData);
+                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher["id"], $iAmount, $additionalData);
                                             if ($isVoucherRedeemStatus === 100) {
                                                 $xml .= '<status code="100">Payment authorized using Voucher</status>';
                                             } elseif ($isVoucherRedeemStatus === 43) {

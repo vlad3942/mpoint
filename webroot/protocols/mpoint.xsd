@@ -1310,9 +1310,9 @@
 <xs:complexType name="voucher">
 	<xs:all>
 		<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
-		<xs:element name="voucher-id" type="xs:string" minOccurs="1" maxOccurs="1" />
 	</xs:all>
-	<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
+	<xs:attribute name="id" type="xs:string" use="required" />
+	<xs:attribute name="order-no" type="order-no" use="optional" />
 </xs:complexType>
 
 <xs:group name="passwords">
