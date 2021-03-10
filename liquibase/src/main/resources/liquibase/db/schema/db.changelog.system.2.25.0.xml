@@ -14,6 +14,15 @@
 	</changeSet>
 
 	<changeSet author="Priya Alamwar" id="2020-12-28-v2.25_1-pre-process">
+
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists catalogName="system"
+							 schemaName= "system"
+							 tableName="exchangeinfo_tbl" />
+			</not>
+		</preConditions>
+
 		<createTable catalogName="system" schemaName="system" tableName="exchangeinfo_tbl"
 					 remarks="This table is required to store the master data of FX services (DCC, MCP, PCC  and etc) and services is opted or not.">
 

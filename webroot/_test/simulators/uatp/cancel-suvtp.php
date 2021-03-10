@@ -11,10 +11,12 @@ if ($obj_XML->validate(__DIR__ . '/../xsd/cancel.xsd')) {
 
     if ((string)$obj_XML->xpath("//transactions/transaction/external_refs/external_ref[pspid = '50']/reference") === '165404603632840') {
         echo '<?xml version="1.0" encoding="UTF-8"?>
-    <status code="100">Card deleted Successfully</status>';
+    <root><status code="100">Card deleted Successfully</status></root>';
     } else {
+        header("HTTP/1.0 400 Bad Request");
+        header("Content-Type: text/xml; charset=\"UTF-8\"");
         echo '<?xml version="1.0" encoding="UTF-8"?>
-    <status code="99">Card deleted Successfully</status>';
+    <root><status code="99">Error</status></root>';
     }
 } else {
     header("HTTP/1.0 400 Bad Request");

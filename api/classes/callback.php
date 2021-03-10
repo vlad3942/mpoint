@@ -90,8 +90,8 @@ abstract class Callback extends EndUserAccount
         }
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         if ($oPSPConfig == null) {
-        	if(strtolower($is_legacy) == 'false'){
-                $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+        	if(strtolower($is_legacy) == 'false'  && (int)$oTI->getPaymentMethod($oDB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE){
+                $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $oTI->getRouteConfigID());
 			}else {
                 $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
             }

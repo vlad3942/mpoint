@@ -50,11 +50,17 @@
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
+									<xs:element name="foreign-exchange-info" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="1" maxOccurs="1" />
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
 									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 								</xs:all>
 								<xs:attribute name="order-no" type="order-no" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
-								<xs:attribute name="exchangeserviceinfo-id" type="xs:nonNegativeInteger" use="optional" />
                                 <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
 								<xs:attribute name="product-type" type="xs:positiveInteger" use="optional" default="100" />
 								<xs:attribute name="booking-ref" type="xs:string" use="optional" />
@@ -131,13 +137,13 @@
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
-								<xs:attribute name="exchangeserviceinfo-id" type="xs:nonNegativeInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="auth-token" type="auth-token" minOccurs="0" maxOccurs="1" />
@@ -294,6 +300,7 @@
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
@@ -302,7 +309,6 @@
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
-								<xs:attribute name="exchangeserviceinfo-id" type="xs:nonNegativeInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>

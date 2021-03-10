@@ -482,8 +482,8 @@ class General
             $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
         }
 
-        if ($oTI->getExchangeServiceInfoID() > 0) {
-            $sql .= " , exchangeinfoid = '". $oTI->getExchangeServiceInfoID() ."'";
+        if ($oTI->getFXServiceTypeID() > 0) {
+            $sql .= " , fxservicetypeid = '". $oTI->getFXServiceTypeID() ."'";
         }
         if ($oTI->getProfileID() !== '') {
             $sql .= " , profileid = '". $oTI->getProfileID() ."'";
@@ -640,8 +640,9 @@ class General
 	{
         global $_OBJ_TXT;
         $xml = "" ;
-		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
-	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
+
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo->getRouteConfigID());
+        $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
 	    $data = array();
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
@@ -1648,6 +1649,35 @@ class General
 		}
 
 		return $presentmentCurrencies;
+	}
+
+    /**
+     * @param \RDB $obj_DB
+     * @param int  $pspId
+     *
+     * @return int
+     */
+    public static function getPSPType(RDB $obj_DB, int $pspId) : int
+	{
+		try
+        {
+            $query = "SELECT system_type FROM system" . sSCHEMA_POSTFIX . ".psp_tbl WHERE id = " . $pspId;
+
+            $resultSet = $obj_DB->getName($query);
+            if (is_array($resultSet) === true)
+            {
+                $processorType = (int)$resultSet['SYSTEM_TYPE'];
+                if($processorType !== null && $processorType !== 0)
+                {
+                    return $processorType;
+                }
+            }
+        }
+        catch (Exception $mPointException)
+        {
+            trigger_error("Unable to fetch System Type of PSP : " . $pspId, E_USER_WARNING);
+        }
+        return -1;
 	}
 }
 ?>
