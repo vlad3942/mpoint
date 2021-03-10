@@ -50,7 +50,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
     if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'validate_rule_request'}) > 0)
     {
-        $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
         $aCards = (array) $obj_DOM->{'validate_rule_request'}->cards->{'card_id'} ?? null;
         $aCountries = (array) $obj_DOM->{'validate_rule_request'}->countries->{'country_id'} ?? null;
         $aCurrencies = (array) $obj_DOM->{'validate_rule_request'}->currencies->{'currency_id'} ?? null;

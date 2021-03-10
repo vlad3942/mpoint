@@ -1251,10 +1251,10 @@
 			<xs:element name="validate_rule_request">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="cards" minOccurs="0" maxOccurs="1">
+						<xs:element name="cards" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="card_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+									<xs:element name="card_id" type="xs:integer" minOccurs="1" maxOccurs="unbounded" />
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
@@ -1272,10 +1272,10 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="route_configurations" minOccurs="0" maxOccurs="1">
+						<xs:element name="route_configurations" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="route_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+									<xs:element name="route_id" type="xs:integer" minOccurs="1" maxOccurs="unbounded" />
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>

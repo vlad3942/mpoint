@@ -78,9 +78,10 @@ class ValidateRule
                 $sql .= " AND (RCON.countryid IN ( " . implode(",", $aCountries) . ") OR RCON.countryid IS NULL)";
             }
             if (empty($aCurrencies) === false) {
-                $sql .= " AND PP.currencyid IN (" . implode(",", $aCurrencies) . ")";
-                $sql .= " AND PC.currencyid IN (" . implode(",", $aCurrencies) . ")";
-                $sql .= " AND (RCUR.currencyid IN(" . implode(",", $aCurrencies) . ") OR RCUR.currencyid IS NULL)";
+                $sCurrencies = implode(",", $aCurrencies);
+                $sql .= " AND PP.currencyid IN (" . $sCurrencies . ")";
+                $sql .= " AND PC.currencyid IN (" . $sCurrencies . ")";
+                $sql .= " AND (RCUR.currencyid IN(" . $sCurrencies . ") OR RCUR.currencyid IS NULL)";
             }
             $sql .= "AND RC.enabled = '1'";
 
@@ -88,6 +89,10 @@ class ValidateRule
             if(count($result) > 0)
             {
                 $obj_RuleValidation = new ValidateRule($routeId, $result['COUNT']);
+            }
+            else
+            {
+                trigger_error("Query Produce Empty Result For Route Id : $routeId", E_USER_WARNING);
             }
         }catch (SQLQueryException $e){
             trigger_error($e->getMessage(), E_USER_ERROR);
