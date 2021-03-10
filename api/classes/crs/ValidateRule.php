@@ -92,7 +92,7 @@ class ValidateRule
             }
             else
             {
-                trigger_error("Query Produce Empty Result For Route Id : $routeId", E_USER_WARNING);
+                trigger_error("Query Produce Empty Result For Route Id : $routeId", E_USER_NOTICE);
             }
         }catch (SQLQueryException $e){
             trigger_error($e->getMessage(), E_USER_ERROR);
