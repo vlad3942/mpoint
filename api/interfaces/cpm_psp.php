@@ -777,7 +777,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem(string $iVoucherID, float $iAmount=-1, array $additionalData)
+	public function redeem(string $iVoucherID, float $iAmount=-1, array $additionalData = array())
 	{
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
