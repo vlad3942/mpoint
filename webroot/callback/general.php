@@ -479,7 +479,7 @@ try
                 $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->callback->transaction->amount["currency-id"]);
                 $data['converted-currency-config'] = $obj_CurrencyConfig;
                 $data['converted-amount'] = (integer) $obj_XML->callback->transaction->amount;
-                $data['conversion-rate'] = (float)$obj_TxnInfo->getAmount()/(float)$obj_XML->callback->transaction->amount;
+                $data['conversion-rate'] =  (float)$obj_XML->callback->transaction->amount/(float)$obj_TxnInfo->getAmount();
                 $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                 $obj_mPoint->logTransaction($obj_TxnInfo);
 
