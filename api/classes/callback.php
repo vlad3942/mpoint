@@ -489,15 +489,9 @@ abstract class Callback extends EndUserAccount
 		}
 		$sBody .= "&desc=". urlencode($this->getStatusMessage($sid) );
 		$sBody .= "&exchange_rate=". urlencode($conversionRate);
-		if($conversionRate != 1){
-			$sBody .= "&amount=". urlencode($this->_obj_TxnInfo->getConvertedAmount());
-			$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
-			$sBody .= "&decimals=". urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals() );
-		}else{
-			$sBody .= "&amount=". $amt;
-			$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCurrencyConfig()->getCode() );
-			$sBody .= "&decimals=". urlencode($this->_obj_TxnInfo->getCurrencyConfig()->getDecimals() );
-		}
+		$sBody .= "&amount=". urlencode($this->_obj_TxnInfo->getConvertedAmount());
+		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
+		$sBody .= "&decimals=". urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals() );
 		$sBody .= "&sale_amount=".$amt;
 		$sBody .= "&sale_currency=". urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getCode() );
 		$sBody .= "&sale_decimals=". urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() );
@@ -1361,7 +1355,7 @@ abstract class Callback extends EndUserAccount
 	}
 
 	/* Function to get fraud status code and description */
-	public function getFraudDetails($txnid){
+	public function getFraudDetails($txnid): array{
 		$statusDetails =array();
 		$sql = "SELECT M.stateid, S.name
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl M
