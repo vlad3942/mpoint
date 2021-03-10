@@ -485,7 +485,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
-										if($obj_paymentProcessor->getPSPConfig() !== NULL && $obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+										if($obj_paymentProcessor->getPSPConfig() !== NULL && (int) $obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
 										if(empty($data['auto-capture']) === true) { $data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE']; }
