@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Sagar Narayane" id="2021-01-25-setup-v2.25.9-client">
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
+    <changeSet author="Anna Lagad" id="2021-01-25-setup-v2.25.9.0-client">
+
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="routecountry_tbl"
+                      remarks="Hold route feature configured for the client">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="routeconfigid"
+                    type="int"
+                    remarks="Hold unique id of route configuration">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="countryid"
+                    type="int"
+                    remarks="Hold unique id of route country">
+
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating whether the route country is considered active"
+                    defaultValueBoolean="true">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying when the route country was originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying when the route country was last modified"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createIndex catalogName="client"
+                     schemaName="client"
+                     tableName="routecountry_tbl"
+                     indexName="routecountry_tb_routeconfigid_idx">
+
+            <column name="routeconfigid"/>
+        </createIndex>
+
+        <createIndex catalogName="client"
+                     schemaName="client"
+                     tableName="routecountry_tbl"
+                     indexName="routecountry_tbl_countryid_idx">
+
+            <column name="countryid"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routecountry_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+
+    <changeSet author="Anna Lagad" id="2021-01-25-setup-v2.25.9.1-client">
+
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="routecurrency_tbl"
+                      remarks="Hold unique id of route currency">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="routeconfigid"
+                    type="int"
+                    remarks="Hold unique id of route configuration">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="currencyid"
+                    type="int"
+                    remarks="Hold unique id of the currency">
+
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating whether the route currency is considered active"
+                    defaultValueBoolean="true">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying when the route currency was originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying when the route currency was last modified"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createIndex catalogName="client"
+                     schemaName="client"
+                     tableName="routecurrency_tbl"
+                     indexName="routecurrency_tbl_routeconfigid_idx">
+
+            <column name="routeconfigid"/>
+        </createIndex>
+
+        <createIndex catalogName="client"
+                     schemaName="client"
+                     tableName="routecurrency_tbl"
+                     indexName="routecurrency_tbl_currencyid_idx">
+
+            <column name="currencyid"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routecurrency_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Anna Lagad" id="2021-01-25-setup-v2.25.9.2-client">
+
+        <dropColumn  catalogName="client"
+                     schemaName="client"
+                     tableName="routeconfig_tbl">
+            <column  name="countryid"/>
+        </dropColumn>
+
+        <dropColumn  catalogName="client"
+                     schemaName="client"
+                     tableName="routeconfig_tbl">
+            <column  name="currencyid"/>
+        </dropColumn>
+
+    </changeSet>
+
+
+    <changeSet author="Anna Lagad" id="2021-01-25-setup-v2.25.9.3-client">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routecountry_tbl OWNER TO mpoint;
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routecurrency_tbl OWNER TO mpoint;
+        </sql>
+
+    </changeSet>
+
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Sagar Narayane" id="2021-01-25-setup-v2.25.9.4-client">
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
