@@ -23,15 +23,24 @@ class PaymentMethod extends Card
     private int $_iWidth = 180; // Default logo width
     private int $_iHeight = 115; // Default logo height
 
-    /**
-     * Default Constructor
+    /***
+     * PaymentMethod constructor.
      *
-     * @param	TxnInfo $oTI 		Reference to the Data object with the Transaction Information
-     * @param	CardPrefixConfig    $prefixes 	List of bin range for the card
-     * @param 	array $aCard 	    Hold card configuration details
-     * @param   integer $processorType    Unique psp type id
+     * @param TxnInfo $oTI              Reference to the Data object with the Transaction Information
+     * @param RDB $oDB                  Reference to the Database
+     * @param array $prefixes           List of bin range for the card
+     * @param array $aCard              Hold card configuration details
+     * @param string $processorType     Hold psp type id
+     * @param int $pspId                Hold psp id
+     * @param int $stateId              Hold state id
+     * @param bool $preferred           Hold Preferred
+     * @param int $installment          Hold Installment value
+     * @param int|null $captureType     Hold Capture type
+     * @param bool|null $cvcMandatory   Hold CVV mandatory
+     * @param string|null $walletId     Hold Wallet ID
+     * @param bool|null $dccEnabled     Hold DCC enabled
      */
-    public function __construct(TxnInfo $oTI, RDB $oDB, array $prefixes, array $aCard, $processorType, $pspId, $stateId, $preferred, $installment, $captureType, $cvcMandatory, $walletId, $dccEnabled)
+    public function __construct(TxnInfo $oTI, RDB $oDB, array $prefixes, array $aCard, string $processorType,int $pspId, int $stateId, bool $preferred, int $installment, ?int $captureType, ?bool $cvcMandatory, ?string $walletId, ?bool $dccEnabled)
     {
         parent::__construct($aCard,$oDB, $prefixes);
         $this->_obj_TxnInfo = $oTI;
@@ -46,17 +55,17 @@ class PaymentMethod extends Card
         $this->_bDccEnabled = $dccEnabled;
     }
 
-    public function getProcessorType() { return $this->_iProcessorType; }
-    public function getPSPId() { return $this->_iPSPId; }
-    public function getLogoWidth() { return $this->_iWidth; }
-    public function getLogoHeight() { return $this->_iHeight; }
-    public function getstateId() { return $this->_iStateId; }
+    public function getProcessorType():string { return $this->_iProcessorType; }
+    public function getPSPId(): int { return $this->_iPSPId; }
+    public function getLogoWidth(): int  { return $this->_iWidth; }
+    public function getLogoHeight(): int { return $this->_iHeight; }
+    public function getstateId(): int { return $this->_iStateId; }
     public function getPreferred(): ?bool { return $this->_bPreferred; }
-    public function getInstallment() { return $this->_iInstallment; }
-    public function getCaptureType() { return $this->_iCaptureType; }
-    public function getCvcMandatory() { return $this->_bCvcMandatory; }
-    public function getWalletId() { return $this->_iWalletId; }
-    public function getDccEnabled() { return $this->_bDccEnabled; }
+    public function getInstallment(): int { return $this->_iInstallment; }
+    public function getCaptureType(): ?int { return $this->_iCaptureType; }
+    public function getCvcMandatory(): ?bool { return $this->_bCvcMandatory; }
+    public function getWalletId(): ?string { return $this->_iWalletId; }
+    public function getDccEnabled(): ?bool { return $this->_bDccEnabled; }
 
     public function toXML(): string
     {
