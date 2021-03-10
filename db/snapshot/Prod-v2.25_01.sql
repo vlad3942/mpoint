@@ -12,3 +12,5 @@ update client.client_tbl
 set logourl = 'https://cpd-hpp2-prodassests.s3.eu-central-1.amazonaws.com/10077/logo.svg'
 where id=10077;
 
+-- CMP-5212
+UPDATE client.additionalproperty_tbl SET value = 13 WHERE externalid = 10077 and key = 'webSessionTimeout';
