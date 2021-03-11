@@ -73,4 +73,19 @@
 
     </changeSet>
 
+    <changeSet author="Karishan Kumar"
+        id="2021-03-11-setup-v2.25-system">
+
+        <!-- pspcurrency_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="702"/>
+            <column name="pspid" value="70"/>
+            <column name="name" value="SGD"/>
+        </insert>        
+
+    </changeSet>
+
 </databaseChangeLog>
