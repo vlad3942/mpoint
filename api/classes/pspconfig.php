@@ -407,9 +407,9 @@ class PSPConfig extends BasicConfig
      * @param 	integer $pspid 	Unique ID for the Payment Service Provider
      * @param 	integer $routeconfigid 	Unique ID for the Route Config ID
      *
-     * @return 	PSPConfig
+     * @return 	PSPConfig|null
      */
-    public static function produceConfiguration(RDB $oDB, int $clid, int $accid, int $pspid, int $routeconfigid): PSPConfig
+    public static function produceConfiguration(RDB $oDB, int $clid, int $accid, int $pspid, int $routeconfigid): ?PSPConfig
     {
         $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
