@@ -93,11 +93,13 @@ class ClientRouteConfigurations
      */
     public static function produceConfig(RDB $oDB, int $clientId): ClientRouteConfigurations
     {
-        $sql = 'SELECT R.id as routeid, R.providerid, RC.id AS routeconfigid, RC.name AS routename, RC.username, 
-                RC.password, RC.countryid, RC.currencyid, RC.mid, RC.capturetype, RC.enabled AS routeconfigenabled
-                FROM client'.sSCHEMA_POSTFIX. '.route_tbl R
-                INNER JOIN client' .sSCHEMA_POSTFIX. '.routeconfig_tbl RC ON RC.routeid = R.id
-                WHERE R.clientid = '. $clientId;
+        $sql = "SELECT R.id as routeid, R.providerid, RC.id AS routeconfigid, RC.name AS routename, RC.username, 
+                RC.password, RCON.countryid, RCUR.currencyid, RC.mid, RC.capturetype, RC.enabled AS routeconfigenabled
+                FROM client".sSCHEMA_POSTFIX. ".route_tbl R
+                INNER JOIN client" .sSCHEMA_POSTFIX. ".routeconfig_tbl RC ON RC.routeid = R.id
+                INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'
+                INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RC.id = RCUR.routeconfigid AND RCUR.enabled = '1'
+                WHERE R.clientid = ". $clientId;
 
         try {
             $res = $oDB->query($sql);
