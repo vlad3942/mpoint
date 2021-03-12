@@ -5,7 +5,7 @@
  * Copyright: Cellpoint Digital
  * Link: http://www.cellpointdigital.com
  * Project: server
- * File Name:route.php
+ * File Name:Route.php
  */
 
 
@@ -54,10 +54,12 @@ class Route
         {
             $sql = "SELECT RC.id  FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R
                     INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC  ON RC.routeid = R.id
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'
+                    INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RC.id = RCUR.routeconfigid AND RCUR.enabled = '1'
                     WHERE R.providerid = ".$providerId." 
                     AND R.clientid = ". $this->_iClientId ."
-                    AND ( RC.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID()." OR RC.countryid IS NULL )
-                    AND ( RC.currencyid = ".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RC.currencyid IS NULL)";
+                    AND ( RCON.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID()." OR RCON.countryid IS NULL )
+                    AND ( RCUR.currencyid = ".$this->_obj_TxnInfo->getCurrencyConfig()->getID()." OR RCUR.currencyid IS NULL)";
 
             $result = $this->objDB->getName($sql);
 

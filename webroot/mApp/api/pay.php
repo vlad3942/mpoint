@@ -257,41 +257,64 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
-						// Validate exchange service info id if explicitly passed in request
-						$exchangeServiceInfo = (integer)$obj_DOM->pay[$i]->transaction["exchangeserviceinfo-id"];
-						if($exchangeServiceInfo > 0){
-							if($obj_Validator->valExchangeServiceInfo($_OBJ_DB,$exchangeServiceInfo) !== 10 ){
-								$aMsgCds[57] = "Invalid exchange service information id :".$exchangeServiceInfo;
+						// Validate foreign exchange service type id if explicitly passed in request
+						$fxServiceTypeId =  (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+
+						if($fxServiceTypeId > 0){
+							if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+								$aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
 							}
 						}
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
+						$walletId = NULL;
+						$iPaymentType = $obj_card->getPaymentType();
+						if($iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+						{
+							$walletId = (int) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"];
+						}
+
 
                         $obj_CardResultSet = FALSE;
 						$aRoutes = array();
                         $iPrimaryRoute = 0 ;
-                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                        $pspId = -1;
 
-						if (strtolower($is_legacy) == 'false') {
-                            $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName());
-                            if($obj_RS instanceof RoutingService)
+                        if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE)
+                        {
+                        	$pspId= OfflinePaymentCardPSPMapping[$obj_card->getCardTypeId()];
+							$data['auto-capture'] = 2;
+                        	$obj_TxnInfo->setPSPId($pspId);
+							//For Offline payment method fee is considered as holding charges required to add in actual amount
+							if($obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
 							{
-                                $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+								$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 							}
-                            if($iPrimaryRoute > 0){
-                                $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( (integer) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
-                            }
-						}else{
-                            $obj_CardResultSet = $obj_mPoint->getCardObject(( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'] , 1,-1);
-                        }
+						}
+                        else{
+							$is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
 
-                        if ($obj_CardResultSet === FALSE) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
+							if (strtolower($is_legacy) == 'false') {
+								$obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
+								if ($obj_RS instanceof RoutingService) {
+									$objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+									$iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+								}
+								if ($iPrimaryRoute > 0) {
+									$obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+									$obj_CardResultSet = $obj_mPoint->getCardConfigurationObject((integer)$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
+								}
+							} else {
+								$obj_CardResultSet = $obj_mPoint->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
+							}
 
-						$pspId = (int)$obj_CardResultSet['PSPID'];
+							if ($obj_CardResultSet === FALSE) {
+								$aMsgCds[24] = "The selected payment card is not available";
+							} // Card disabled
 
+							$pspId = (int)$obj_CardResultSet['PSPID'];
+						}
 						$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                         $ips = array_map('trim', $ips);
                         $ip = $ips[0];
@@ -432,26 +455,41 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 
 								// Success: Payment Service Provider Configuration found
-								if (($obj_paymentProcessor instanceof WalletProcessor || $obj_paymentProcessor instanceof PaymentProcessor ) && ($obj_paymentProcessor->getPSPConfig() instanceof PSPConfig) === true)
+								if (($obj_paymentProcessor instanceof WalletProcessor || $obj_paymentProcessor instanceof PaymentProcessor ) && ( $obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE || $obj_paymentProcessor->getPSPConfig() instanceof PSPConfig === true ))
 								{
 									try
 									{
-										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === false)
-										$obj_TxnInfo->setExternalReference($_OBJ_DB,$obj_paymentProcessor->getPSPConfig()->getID(),Constants::iForeignExchange,$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+										$processorType = -1;
+										$merchantAccount = "-1";
+										$processorType = -1;
+										if($obj_paymentProcessor->getPSPConfig() !== NULL)
+										{
+											$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType() ;
+											$pspId = $obj_paymentProcessor->getPSPConfig()->getID();
+											$merchantAccount = htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), ENT_NOQUOTES);
+											$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType();
+										}
+										else
+										{
+											$processorType = General::getPSPType($_OBJ_DB, $pspId);
+										}
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) === FALSE) {
+											$obj_TxnInfo->setExternalReference($_OBJ_DB, $pspId, Constants::iForeignExchange, $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'});
+										}
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 										$data['client-config'] = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(),(integer) $obj_DOM->pay[$i]['account']);
-										if(($data['client-config'] instanceof ClientConfig) === true )
+										if(($data['client-config'] instanceof ClientConfig) === TRUE )
                                         {
                                             $data['markup'] = $data['client-config']->getAccountConfig()->getMarkupLanguage();
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
-										if($obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+										if($obj_paymentProcessor->getPSPConfig() !== NULL && (int) $obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
-										$data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE'];
-										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'}) === false)
+										if(empty($data['auto-capture']) === true) { $data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE']; }
+										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'}) === FALSE)
 										{
 											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);
 											$data['externalref'] = array(Constants::iForeignExchange =>array((integer)$obj_TxnInfo->getClientConfig()->getID() => (string)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'} ));
@@ -465,18 +503,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 										}
-										if ($exchangeServiceInfo)
+										if ($fxServiceTypeId)
 										{
-											$data['exchangeserviceinfo'] = $exchangeServiceInfo;
+											$data['fxservicetypeid'] = $fxServiceTypeId;
 										}
+
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
 
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
-										$processorType = $obj_paymentProcessor->getPSPConfig()->getProcessorType() ;
-										if($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
+										if( $obj_card->getPaymentType($_OBJ_DB) !== Constants::iPAYMENT_TYPE_OFFLINE && ($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY))
 										{
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
@@ -503,9 +542,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 
 										// Initialize payment with Payment Service Provider
-										$xml = '<psp-info id="'. $obj_paymentProcessor->getPSPConfig()->getID() .'" merchant-account="'. htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_paymentProcessor->getPSPConfig()->getProcessorType().'">';
+										$xml = '<psp-info id="'. $pspId .'" merchant-account="'. $merchantAccount .'"  type="'. $processorType .'">';
 
-										switch ($obj_paymentProcessor->getPSPConfig()->getID()) {
+										switch ($pspId) {
 											case (Constants::iDIBS_PSP):
 												$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO['dibs']);
 
@@ -650,7 +689,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												}
 
 										}
-										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
+										$message = '';
+										if($obj_paymentProcessor->getPSPConfig() !== NULL)
+										{
+											$message = htmlspecialchars($obj_paymentProcessor->getPSPConfig()->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES);
+										}
+										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. $message  .'</message>';
 										$xml .= '</psp-info>';
 									}
 									catch (mPointException $e)

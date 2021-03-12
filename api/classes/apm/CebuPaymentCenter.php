@@ -24,18 +24,19 @@ class CebuPaymentCenter extends CPMPSP
 {
     public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new CebuPaymentCenterException("Method: getPaymentData is not supported by Cebu Payment Center"); }
 	public function getPSPID() { return Constants::iCEBUPAYMENTCENTER_APM; }
-    public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL,$authToken = NULL)
+    public function initialize(PSPConfig $obj_PSPConfig = NULL, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL,$authToken = NULL)
     {
         if($card_type_id !== -1)
         {
             $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                SET pspid = " . $obj_PSPConfig->getID() . "
+                SET pspid = " . $this->getPSPID() . "
                 , cardid = ". intval($card_type_id) . "
                 WHERE id = " . $this->getTxnInfo()->getID();
             $this->getDBConn()->query($sql);
         }
         $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, "");
-        $obj_XML = simplexml_load_string("<hidden-fields></hidden-fields>");
+        $obj_XML = simplexml_load_string("<root><hidden-fields></hidden-fields></root>");
+
         return $obj_XML;
     }
 

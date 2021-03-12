@@ -13,18 +13,18 @@ class ValidateTest extends baseAPITest
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
     }
 
-    public function testSuccessfulValExchangeServiceInfo()
+    public function testSuccessfulValFXServiceType()
     {
 		$obj_mPoint = new Validate();
-		$exchangeServiceInfo = $obj_mPoint->valExchangeServiceInfo($this->_OBJ_DB, 13);
-        $this->assertEquals(1,$exchangeServiceInfo);
+		$fxServiceType = $obj_mPoint->valFXServiceType($this->_OBJ_DB, 13);
+        $this->assertEquals(1,$fxServiceType);
 	}
 
-    public function testFailureValExchangeServiceInfo()
+    public function testFailureValFXServiceType()
     {
         $obj_mPoint = new Validate();
-        $exchangeServiceInfo = $obj_mPoint->valExchangeServiceInfo($this->_OBJ_DB, 11);
-        $this->assertEquals(10,$exchangeServiceInfo);
+        $fxServiceType = $obj_mPoint->valFXServiceType($this->_OBJ_DB, 11);
+        $this->assertEquals(10,$fxServiceType);
     }
 
     public function tearDown() : void

@@ -184,11 +184,11 @@ class DCCInitTest extends InitializeAPIValidationTest
         $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
     }
 
-    public function testInvalidExchangeServiceInfoID()
+    public function testInvalidFXServiceTypeID()
     {
         $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
     }
-    public function testStoredExchangeInfoID()
+    public function testStoredFXServiceTypeID()
     {
         $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
     }
