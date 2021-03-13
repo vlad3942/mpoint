@@ -1116,7 +1116,6 @@ $aHTTP_CONN_INFO["travel-fund"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["travel-fund"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["travel-fund"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/mpoint/travel-fund/redeem";
-$aHTTP_CONN_INFO["travel-fund"]["paths"]["callback"] = "/mpoint/travel-fund/callback";
 
 /**
  * Connection info for connecting to Paymaya

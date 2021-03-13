@@ -787,10 +787,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function redeem(string $iVoucherID, float $iAmount=-1, array $additionalData = array())
 	{
+		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<redeem-voucher id="'. $iVoucherID .'">';
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+		if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+		{
+			$b .= $this->getPSPConfig()->toRouteConfigXML();
+		}
 		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
 		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
 		$b .= '<additional-data>';
@@ -798,6 +804,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b .= '<session-token>'. $additionalData['session_token'] .'</session-token>';
 		}
 		$b .= '</additional-data>';
+		$b .= '<auto-capture>'. htmlspecialchars($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';
 		$b .= '</transaction>';
 
 		$b .= '</redeem-voucher>';
