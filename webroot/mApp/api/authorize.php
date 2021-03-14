@@ -169,7 +169,7 @@ require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
-require_once(sCLASS_PATH . '/route.php');
+require_once(sCLASS_PATH . '/Route.php');
 
 ignore_user_abort(true);
 set_time_limit(120);
