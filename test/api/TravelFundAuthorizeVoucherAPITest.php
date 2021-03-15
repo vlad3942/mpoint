@@ -51,6 +51,7 @@ class TravelFundAuthorizeVoucherAPITest extends baseAPITest
 
 	public function testSuccessfulVoucherAuthorize()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iTRAVELFUND_VOUCHER;
 
@@ -85,6 +86,7 @@ class TravelFundAuthorizeVoucherAPITest extends baseAPITest
 
 	public function testVoucherRedemptionDeniedByIssuer()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iTRAVELFUND_VOUCHER;
 

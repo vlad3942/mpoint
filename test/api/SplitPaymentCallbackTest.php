@@ -35,6 +35,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackSplitPaymentNotEnabled()
     {
+        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -125,6 +126,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackVoucherIdNotSet()
     {
+        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -189,6 +191,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCardCallbackVoucherRejected()
     {
+        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -260,6 +263,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackAccepted()
     {
+        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 

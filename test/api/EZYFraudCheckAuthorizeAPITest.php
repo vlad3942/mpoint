@@ -171,6 +171,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
 
     public function testPostAuthFraudCheckAccept()
     {
+        $this->bIgnoreErrors = true;
         $pspID = Constants::iWIRE_CARD_PSP;
         $fraudCheckPspID = Constants::iEZY_PSP;
 

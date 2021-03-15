@@ -85,6 +85,7 @@ class TravelFundSplitPaymentAuthorizeTest extends baseAPITest
 
     public function testSuccessfulAuthorizationVoucherFirst()
     {
+        $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iTRAVELFUND_VOUCHER;
 

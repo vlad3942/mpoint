@@ -25,6 +25,7 @@ class DIBSCallbackAPITest extends baseAPITest
 
     public function testSuccessfulCallback()
     {
+        $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iDIBS_PSP;
 
@@ -62,6 +63,7 @@ class DIBSCallbackAPITest extends baseAPITest
 
 	public function testSuccessfulAutoCapture()
 	{
+        $this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iDIBS_PSP;
 

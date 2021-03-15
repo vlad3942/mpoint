@@ -221,6 +221,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 	public function testIINOpen4DigitsInput6DigitRange()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -269,6 +270,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 	public function testIINOpen4DigitsInputNoRules()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -316,6 +318,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 	public function testIINOpen6DigitsInputNoRules()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -363,6 +366,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 	public function testIINOpen6DigitsInput4DigitRule()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -455,6 +459,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 	public function testIINOpen4DigitsInput6DigitRule()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -503,6 +508,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 	public function testIINOpen6DigitsInput6DigitRule()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -592,6 +598,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
     public function testStoredFXServiceTypeID()
     {
+		$this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -634,6 +641,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
      */
     public function testAlreadyStoredFXServiceTypeID()
     {
+		$this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
