@@ -127,6 +127,14 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function getPSPConfig() { return $this->_obj_PSPConfig; }
 
+
+	/**
+	 * Returns the connection configuration Information of the PSP.
+	 *
+	 * @return aCONN_INFO
+	 */
+	public function getConnInfo() { return $this->aCONN_INFO; }
+
 	/**
 	 * Sends an SMS Receipt with Payment Information to the Customer through GoMobile.
 	 *

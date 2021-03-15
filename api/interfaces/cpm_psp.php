@@ -864,8 +864,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		try
 		{
-			if(isset($this->aCONN_INFO["paths"]["callback"]) && $this->aCONN_INFO["paths"]["callback"] != ''){
-
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
 
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -884,7 +882,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				else { throw new mPointException("Invalid response from callback controller: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 			}
 			else { throw new mPointException("Callback to mPoint callback controller: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
-			}
 		}
 		catch (mPointException $e)
 		{

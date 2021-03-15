@@ -80,7 +80,7 @@ class Authorize extends General
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, "Status code: ". $e->getCode(). "\n". $e->getMessage() );
 		}
 
-		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
+		if ( ($this->_obj_PSP instanceof CPMPSP) === true && (isset($this->_obj_PSP->getConnInfo()['paths']["callback"]) && $this->_obj_PSP->getConnInfo()["paths"]["callback"] != ''))
 		{
 			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
 		}
