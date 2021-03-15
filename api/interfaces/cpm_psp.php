@@ -823,7 +823,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			{
 				$code = (string)$obj_XML->voucher->transaction;
 			}elseif (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) {
-				$code = (string)$obj_XML->voucher['id'];
+				$code = (string)$obj_XML->external_id;
 
 			}
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
