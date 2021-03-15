@@ -1052,7 +1052,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iCEBUPAYMENTCENTER_APM):
 			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
 		case (Constants::iMPGS_PSP):
-			return new MPGS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cebu-mpgs"]);	
+			return new MPGS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mpgs"]);	
 
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);

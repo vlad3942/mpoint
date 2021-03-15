@@ -1087,7 +1087,7 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: MPGS
 	 *
 	 */
-	const iMPGS_PSP = 70;
+	const iMPGS_PSP = 72;
 
     /**
 	 * Unique ID for the Electronic Payment Flow
