@@ -16,7 +16,7 @@
             schemaName="system"
             tableName="PSP_Tbl">
 
-            <column name="id" value="70"/>
+            <column name="id" value="72"/>
             <column name="name" value="MPGS"/>
             <column name="system_type" value="1"/>
         </insert>
@@ -27,7 +27,7 @@
             tableName="PSPCard_Tbl">
 
             <column name="cardid" value="8"/>
-            <column name="pspid" value="70"/>
+            <column name="pspid" value="72"/>
         </insert>
         
          <insert catalogName="system"
@@ -35,7 +35,7 @@
             tableName="PSPCard_Tbl">
 
             <column name="cardid" value="7"/>
-            <column name="pspid" value="70"/>
+            <column name="pspid" value="72"/>
         </insert>
 
         <insert catalogName="system"
@@ -43,7 +43,7 @@
             tableName="PSPCard_Tbl">
 
             <column name="cardid" value="5"/>
-            <column name="pspid" value="70"/>
+            <column name="pspid" value="72"/>
         </insert>
 
        <!-- pspcurrency_tbl -->
@@ -52,7 +52,7 @@
             tableName="PSPCurrency_Tbl">
 
             <column name="currencyid" value="608"/>
-            <column name="pspid" value="70"/>
+            <column name="pspid" value="72"/>
             <column name="name" value="PHP"/>
         </insert>
 
@@ -67,7 +67,7 @@
             tableName="PSPCurrency_Tbl">
 
             <column name="currencyid" value="344"/>
-            <column name="pspid" value="70"/>
+            <column name="pspid" value="72"/>
             <column name="name" value="HKD"/>
         </insert>        
 
@@ -82,7 +82,7 @@
             tableName="PSPCurrency_Tbl">
 
             <column name="currencyid" value="702"/>
-            <column name="pspid" value="70"/>
+            <column name="pspid" value="72"/>
             <column name="name" value="SGD"/>
         </insert>        
 
