@@ -12,24 +12,22 @@ class ClientCountryCurrencyConfig
 {
     /**
      * Hold an array of client supported country
-     * @var integer
+     * @var array
      */
 	private array $_aCountry;
 
     /**
      * Hold an array of client supported currency
-     * @var integer
+     * @var array
      */
 	private array $_aCurrency;
 
-	/**
-	 * Default Constructor
-	 *
-	 * @param 	integer $countryId 		Unique ID for the Country
-	 * @param 	string $currencyId 		Unique ID for the Country currency
-	 * @param 	string $countryName 	Hold client supported country name
-	 * @param	integer $currencyCode	Hold client supported currency code
-	 */
+    /**
+     * Default Constructor
+     *
+     * @param array $aCountryConfig
+     * @param array $aCurrencyConfig
+     */
 	public function __construct(array $aCountryConfig, array $aCurrencyConfig)
 	{
         $this->_aCountry = $aCountryConfig;
@@ -64,15 +62,15 @@ class ClientCountryCurrencyConfig
 
         return $xml;
     }
-	
-	/**
-	 * Produces a new instance of a Country Configuration Object.
-	 *
-	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	integer $id 	Unique ID for the Country the request is performed in
-	 * @return 	ClientCountryCurrencyConfig
-	 */
-	public static function produceConfig(RDB $oDB, $clientId) : array
+
+    /**
+     * Produces a new instance of a Country Configuration Object.
+     *
+     * @param RDB $oDB Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param integer $clientId Unique ID for the Country the request is performed in
+     * @return array
+     */
+	public static function produceConfig(RDB $oDB, int $clientId) : array
 	{
         $aObj_Configurations = array();
         $aCountryConfig = array();

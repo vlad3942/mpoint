@@ -6,86 +6,100 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
     objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
-    <changeSet author="Karishan Kumar"
-        id="2021-02-19-setup-v2.25-system">
-        
-        <!-- MPGS -->
 
-        <!-- psp_tbl -->
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="PSP_Tbl">
+    <changeSet author="Chaitenya Yadav" id="2021-01-20-setup-v2.25-system">
 
-            <column name="id" value="72"/>
-            <column name="name" value="MPGS"/>
-            <column name="system_type" value="1"/>
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-156"/>
+        <column name="cardid" value="15"/>
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-344"/>
+        <column name="cardid" value="15"/>
+    </insert>
+    
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-682"/>
+        <column name="cardid" value="15"/>
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-392"/>
+        <column name="cardid" value="15"/>
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-446"/>
+        <column name="cardid" value="15"/>
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-784"/>
+        <column name="cardid" value="15"/>
+    </insert>
+
+    <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+        <column name="pricepointid" value="-702"/>
+        <column name="cardid" value="15"/>
+    </insert>
+
+    <insert catalogName="System" schemaName="System" tableName="PSPCurrency_Tbl">
+        <column name="pspid" value="14"/>
+        <column name="currencyid" value="682"/>
+        <column name="name" value="SAR"/>
+    </insert>
+
+    <insert catalogName="System" schemaName="System" tableName="PSPCurrency_Tbl">
+        <column name="pspid" value="14"/>
+        <column name="currencyid" value="901"/>
+        <column name="name" value="TWD"/>
+    </insert>
+
+    <insert catalogName="System" schemaName="System" tableName="PSPCurrency_Tbl">
+        <column name="pspid" value="14"/>
+        <column name="currencyid" value="392"/>
+        <column name="name" value="JPY"/>
+    </insert>
+
+    <insert catalogName="System" schemaName="System" tableName="PSPCurrency_Tbl">
+        <column name="pspid" value="14"/>
+        <column name="currencyid" value="446"/>
+        <column name="name" value="MOP"/>
+    </insert>
+
+    <insert catalogName="System" schemaName="System" tableName="PSPCurrency_Tbl">
+        <column name="pspid" value="14"/>
+        <column name="currencyid" value="826"/>
+        <column name="name" value="GBP"/>
+    </insert>
+    
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-01-28-setup-v2.25-system">
+        <update catalogName="log"
+                schemaName="log"
+                tableName="state_tbl">
+
+            <column name="name" value="Post Auth Screen Skip - Business Rules" />
+            <where>id = 3117</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Abhijit Nalavade" id="15-48-2021-02-17-setup-v2.25-system">
+
+        <insert catalogName="system" schemaName="system" tableName="CardPricing_Tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="28"/>
+            <column name="enabled" value="true"/>
         </insert>
-                
-        <!-- pspcard_tbl -->
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="PSPCard_Tbl">
 
-            <column name="cardid" value="8"/>
-            <column name="pspid" value="72"/>
-        </insert>
-        
-         <insert catalogName="system"
-            schemaName="system"
-            tableName="PSPCard_Tbl">
-
-            <column name="cardid" value="7"/>
-            <column name="pspid" value="72"/>
-        </insert>
-
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="PSPCard_Tbl">
-
-            <column name="cardid" value="5"/>
-            <column name="pspid" value="72"/>
-        </insert>
-
-       <!-- pspcurrency_tbl -->
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="608"/>
-            <column name="pspid" value="72"/>
-            <column name="name" value="PHP"/>
+        <insert catalogName="system" schemaName="system" tableName="PSPCurrency_Tbl">
+            <column name="pspid" value="24"/>
+            <column name="currencyid" value="170"/>
+            <column name="name" value="COP"/>
+            <column name="enabled" value="true"/>
         </insert>
 
     </changeSet>
-
-    <changeSet author="Karishan Kumar"
-        id="2021-03-03-setup-v2.25-system">
-
-        <!-- pspcurrency_tbl -->
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="344"/>
-            <column name="pspid" value="72"/>
-            <column name="name" value="HKD"/>
-        </insert>        
-
-    </changeSet>
-
-    <changeSet author="Karishan Kumar"
-        id="2021-03-11-setup-v2.25-system">
-
-        <!-- pspcurrency_tbl -->
-        <insert catalogName="system"
-            schemaName="system"
-            tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="702"/>
-            <column name="pspid" value="72"/>
-            <column name="name" value="SGD"/>
-        </insert>        
-
-    </changeSet>
-
 </databaseChangeLog>

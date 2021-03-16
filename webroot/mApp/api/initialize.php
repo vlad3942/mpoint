@@ -76,6 +76,7 @@ require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 // Require specific Business logic for the MPGS
 require_once(sCLASS_PATH ."/mpgs.php");
+require_once(sCLASS_PATH . '/payment_route.php');
 
 $aMsgCds = array();
 
@@ -101,6 +102,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</initialize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
+global $aHTTP_CONN_INFO;
 $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -111,6 +113,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'initialize-payment'}); $i++)
 		{
+		    $obj_ClientInfo = null;
 			// Set Global Defaults
 			if (empty($obj_DOM->{'initialize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'initialize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'initialize-payment'}[$i]["account"] = -1; }
 
@@ -349,12 +352,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $txnPassbookObj->addEntry($passbookEntry);
                                 $txnPassbookObj->performPendingOperations();
                             }
-
+                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="4030">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
-                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
+                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3 && strtolower($is_legacy) != 'false') {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
                                 $obj_TxnInfo->getPaymentSession()->updateState(Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
@@ -672,7 +675,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
-                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if (strtolower($is_legacy) == 'false') {
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                                 if (empty($sessionId) === false) {
@@ -794,9 +796,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
-                                    if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
+                                    if (((int)$obj_XML->item[$j]['processor-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
                                         try {
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]["pspid"], $aHTTP_CONN_INFO);
+                                            $pspId  = (int)$obj_XML->item[$j]['pspid'];
+                                            $cardId = NULL;
+                                            if (strtolower($is_legacy) == 'false') {
+                                                $cardId = (int)$obj_XML->item[$j]["id"];
+                                                $pspId  = OnlinePaymentCardPSPMapping[$cardId];
+                                            }
+
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$cardId);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
@@ -880,7 +889,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 								case (Constants::iDSB_PSP):
                                     if(strtolower($is_legacy) == 'false') {
-                                        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+                                        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP, $obj_TxnInfo->getRouteConfigID());
                                     }else{
                                         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
                                     }

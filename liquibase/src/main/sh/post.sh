@@ -136,7 +136,8 @@ GRANT SELECT ON TABLE enduser.account_tbl TO repuser;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA system to repuser;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA log to repuser;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA client to repuser;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA enduser to repuser;"
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA enduser to repuser;
+GRANT SELECT ON TABLE system.fxservicetype_tbl TO repuser;"
 
 REP_USER_EXISTS=$(echo "SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'repuser');" | psql -t | tr -d '[:space:]')
 

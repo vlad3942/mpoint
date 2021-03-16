@@ -1763,7 +1763,7 @@ class TxnInfo
 			if(intval($misc["fxservicetypeid"])>0) $fxservicetypeid = $misc["fxservicetypeid"];
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
-					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"],null,$fxservicetypeid);
+					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"], $misc["routeconfigid"], $fxservicetypeid);
 
 
 			break;
@@ -2029,9 +2029,9 @@ class TxnInfo
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
 							(id, first_name,last_name, street, street2, city, state, zip, country, reference_id, reference_type, mobile_country_id, mobile, email)
 						VALUES
-							(". $RS["ID"] .", '". $aShippingObj["first_name"] ."','". $aShippingObj["last_name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
-							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["reference_id"] ."', '". $aShippingObj["reference_type"] ."', '". $aShippingObj["mobile_country_id"] ."', '". $aShippingObj["mobile"] ."', '". $aShippingObj["email"] ."' )";
-				//echo $sql ."\n";exit;
+							(". $RS["ID"] .", '". $obj_DB->escStr($aShippingObj["first_name"]) ."','". $obj_DB->escStr($aShippingObj["last_name"]) ."', '". $obj_DB->escStr($aShippingObj["street"]) ."', '". $obj_DB->escStr($aShippingObj["street2"]) ."', '". $obj_DB->escStr($aShippingObj["city"]) ."', '". $obj_DB->escStr($aShippingObj["state"]) ."',
+							 '". $obj_DB->escStr($aShippingObj["zip"]) ."', '". $obj_DB->escStr($aShippingObj["country"]) ."', '". $obj_DB->escStr($aShippingObj["reference_id"]) ."', '". $obj_DB->escStr($aShippingObj["reference_type"]) ."', '". $obj_DB->escStr($aShippingObj["mobile_country_id"]) ."', '". $obj_DB->escStr($aShippingObj["mobile"]) ."', '". $obj_DB->escStr($aShippingObj["email"]) ."' )";
+				// echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
 				{
@@ -2367,7 +2367,11 @@ class TxnInfo
     {
        try
        {
-           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid) .", pspid = ". $pspId;
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid) ;
+           if($pspId !== null)
+		   {
+		   	$sql .=" , pspid = ". $pspId;
+		   }
 
            if(empty($mask) ===false && empty($expiry) === false)
            {
@@ -2589,6 +2593,14 @@ class TxnInfo
         }
         return false;
     }
+    public function setPSPId(int $pspId) : void
+	{
+		if(in_array($pspId, OfflinePaymentCardPSPMapping, TRUE))
+		{
+			$this->_iPSPID = $pspId;
+
+		}
+	}
 
 }
 ?>
