@@ -339,6 +339,8 @@ class RoutingService extends General
                                 $xml .= '<arrival_date>' . date("Y-m-d\Th:i:s\Z", strtotime($flight_Obj->getArrivalDate ())) . '</arrival_date>';
                                 $xml .= '<departure_country>' . $flight_Obj->getDepartureCountry () . '</departure_country>';
                                 $xml .= '<arrival_country>' . $flight_Obj->getArrivalCountry () . '</arrival_country>';
+                                $xml .= '<departure_airport>' . $flight_Obj->getDepartureAirport () . '</departure_airport>';
+                                $xml .= '<arrival_airport>' . $flight_Obj->getArrivalAirport () . '</arrival_airport>';
                                 $xml .= '<time_zone>' . $flight_Obj->getTimeZone () . '</time_zone>';
                                 $xml .= '</flight_detail>';
                             }
