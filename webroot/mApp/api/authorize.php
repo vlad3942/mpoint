@@ -310,6 +310,7 @@ try
                                     }
 
                                     if($iPSPID > 0 && $isVoucherErrorFound === FALSE && $isVoucherPreferred !== "false" ) {
+                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
                                             if (strtolower($is_legacy) == 'false') {
