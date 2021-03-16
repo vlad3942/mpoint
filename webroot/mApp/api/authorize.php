@@ -313,9 +313,9 @@ try
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
-                                            if (strtolower($is_legacy) == 'false') {
+                                            if (strtolower($is_legacy) === 'false') {
                                                 $typeId = Constants::iVOUCHER_CARD;
-                                                $cardName = 'Voucher';
+                                                $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
                                                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL);
