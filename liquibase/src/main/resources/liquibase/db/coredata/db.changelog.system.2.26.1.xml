@@ -227,5 +227,10 @@
 
 </changeSet>
 
-
+    <changeSet author="Sagar Badave" id="2021-03-17-setup-v2.26-system">
+        <update catalogName="system" schemaName="system" tableName="PSP_Tbl">
+            <column name="system_type" value="11" />
+            <where>id = 19</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
