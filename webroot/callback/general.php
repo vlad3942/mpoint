@@ -200,7 +200,8 @@ try
     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-    if(strtolower($is_legacy) == 'false') {
+
+	if(strtolower($is_legacy) == 'false' && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE) {
         $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]), $obj_TxnInfo->getRouteConfigID());
     }else{
         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]));
@@ -241,7 +242,7 @@ try
         }
         else
         {
-            if(strtolower($is_legacy) == 'false') {
+            if(strtolower($is_legacy) == 'false'  && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE) {
                 $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]), $obj_TxnInfo->getRouteConfigID() );
             }else{
                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
@@ -472,6 +473,41 @@ try
         }
 
         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+        if(($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_REJECTED_STATE ) && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE)
+        {
+            if((int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE && (integer) $obj_XML->callback->transaction->amount["currency-id"] !== $obj_TxnInfo->getCurrencyConfig()->getID())
+            {
+                $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->callback->transaction->amount["currency-id"]);
+                $data['converted-currency-config'] = $obj_CurrencyConfig;
+                $data['converted-amount'] = (integer) $obj_XML->callback->transaction->amount;
+                $data['conversion-rate'] =  (float)$obj_XML->callback->transaction->amount/(float)$obj_TxnInfo->getAmount();
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                $obj_mPoint->logTransaction($obj_TxnInfo);
+
+            }
+            $passbookEntry = new PassbookEntry
+            (
+                NULL,
+                $obj_TxnInfo->getAmount(),
+                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                Constants::iAuthorizeRequested,
+                '',
+                0,
+                '',
+                '',
+                TRUE,
+                NULL,
+                NULL,
+                $obj_TxnInfo->getClientConfig()->getID(),
+                $obj_TxnInfo->getInitializedAmount()
+            );
+            if ($txnPassbookObj instanceof TxnPassbook)
+            {
+                $txnPassbookObj->addEntry($passbookEntry);
+                $txnPassbookObj->performPendingOperations();
+            }
+
+        }
 
         if ($txnPassbookObj instanceof TxnPassbook) {
             foreach ($aStateId as $iStateId) {
@@ -570,11 +606,7 @@ try
                     }
                     else
                     {
-                        if(strtolower($is_legacy) == 'false') {
-                            $obj_mVaultPSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP, $obj_TxnInfo->getRouteConfigID());
-                        }else{
-                            $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-                        }
+                        $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
 
                         $obj_mVaultPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mVaultPSPConfig);
                         $obj_CardElem = $obj_mVaultPSP->getCardDetails();
@@ -663,6 +695,7 @@ try
         // Transaction uses one step authorization then no need of PSP call
         if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
+
             $code=0;
             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
             $passbookEntry = new PassbookEntry
@@ -670,7 +703,17 @@ try
                     NULL,
                     $obj_TxnInfo->getAmount(),
                     $obj_TxnInfo->getCurrencyConfig()->getID(),
-                    Constants::iCaptureRequested
+                    Constants::iCaptureRequested,
+                    '',
+                     0,
+                    '',
+                    '',
+                   TRUE,
+                   NULL,
+                   NULL,
+                   $obj_TxnInfo->getClientConfig()->getID(),
+                   $obj_TxnInfo->getInitializedAmount()
+
                     );
             if ($txnPassbookObj instanceof TxnPassbook)
             {

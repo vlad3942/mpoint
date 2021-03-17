@@ -204,7 +204,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			                }
 			            }
 		            }
-					
+
+                    // Validate service type id if explicitly passed in request
+                    $fxServiceTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                    if($fxServiceTypeId > 0){
+                        if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                            $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
+                        }
+                    }
+
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -222,6 +231,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }else{
                                 $data['typeid'] = Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE;
                             }
+                            if ($fxServiceTypeId)
+                            {
+                                $data['fxservicetypeid'] = $fxServiceTypeId;
+                            }
+
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['converted-amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
@@ -324,7 +338,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
                                 $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
                             }
-
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
 
                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());
@@ -339,12 +352,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $txnPassbookObj->addEntry($passbookEntry);
                                 $txnPassbookObj->performPendingOperations();
                             }
-
+                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="4030">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
-                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
+                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3 && strtolower($is_legacy) != 'false') {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
                                 $obj_TxnInfo->getPaymentSession()->updateState(Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
@@ -662,7 +675,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
-                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if (strtolower($is_legacy) == 'false') {
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                                 if (empty($sessionId) === false) {
@@ -786,18 +798,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     if (((int)$obj_XML->item[$j]['processor-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
                                         try {
-                                            $pspId = (int)$obj_XML->item[$j]['pspid'];
+                                            $pspId  = (int)$obj_XML->item[$j]['pspid'];
+                                            $cardId = NULL;
                                             if (strtolower($is_legacy) == 'false') {
-                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $obj_XML->item[$j]["id"], NULL, $obj_XML->item[$j]->name);
-                                                if ($obj_RS instanceof RoutingService) {
-                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute();
-                                                    $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                                    $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject( $obj_TxnInfo->getAmount(), $obj_XML->item[$j]["id"] , $iPrimaryRoute);
-                                                    $pspId = (int)$obj_CardResultSet['PSPID'];
-                                                }
+                                                $cardId = (int)$obj_XML->item[$j]["id"];
+                                                $pspId  = OnlinePaymentCardPSPMapping[$cardId];
                                             }
 
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$cardId);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {

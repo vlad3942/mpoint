@@ -409,25 +409,6 @@ class CreditCard extends EndUserAccount
 
     public function getCardConfigurationXML($amount, $cardTypeId, $routeId)
     {
-        /* ========== Calculate Logo Dimensions Start ========== */
-        if ( ($this->_obj_UA instanceof UAProfile) === true)
-        {
-            $iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
-            $iHeight = $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100;
-
-            if ($iWidth / 180 > $iHeight / 115) { $fScale = $iHeight / 115; }
-            else { $fScale = $iWidth / 180; }
-
-            $iWidth = intval($fScale * 180);
-            $iHeight = intval($fScale * 115);
-        }
-        else
-        {
-            $iWidth = 180;
-            $iHeight = 115;
-        }
-        /* ========== Calculate Logo Dimensions End ========== */
-
         $RS = $this->getCardConfigurationObject($amount, $cardTypeId, $routeId);
 
         $xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
@@ -457,8 +438,6 @@ class CreditCard extends EndUserAccount
                 // Construct XML Document with card data
                 $xml .= '<item id="' . $RS["ID"] . '" type-id="' . $RS["ID"] . '" pspid="' . $iProviderId . '" min-length="' . $RS["MINLENGTH"] . '" max-length="' . $RS["MAXLENGTH"] . '" cvc-length="' . $RS["CVCLENGTH"] . '" enabled = "' . General::bool2xml(true) . '"' . ' cvcmandatory = "' . General::bool2xml($RS['CVCMANDATORY']) . '" dcc="' . General::bool2xml($RS["DCCENABLED"]) . '" >';
                 $xml .= '<name>' . htmlspecialchars($RS["NAME"], ENT_NOQUOTES) . '</name>';
-                $xml .= '<logo-width>' . $iWidth . '</logo-width>';
-                $xml .= '<logo-height>' . $iHeight . '</logo-height>';
                 $xml .= '<account>' . $RS["ACCOUNT"] . '</account>';
                 $xml .= '<subaccount>' . $RS["SUBACCOUNT"] . '</subaccount>';
                 $xml .= '<currency>' . $RS["CURRENCY"] . '</currency>';

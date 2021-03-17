@@ -490,4 +490,5 @@
 			<where>id = 625 AND currencyid = 104</where>
 		</update>
 	</changeSet>
+	
 </databaseChangeLog>

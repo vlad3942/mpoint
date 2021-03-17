@@ -34,13 +34,13 @@ class PaymentProcessor
         }
     }
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$cardId=NULL)
     {
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         $sPSPClassName = '';
         $this->_setConnInfo($aConnInfo, $iPSPID);
 
-        if (strtolower($is_legacy) == 'false') {
+        if (strtolower($is_legacy) == 'false' && !isset(OnlinePaymentCardPSPMapping[$cardId])) {
             $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI->getRouteConfigID());
         } else {
             $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
@@ -77,9 +77,9 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$cardId=NULL)
     {
-        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
+        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo,$cardId);
     }
 
     public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL)

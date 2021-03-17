@@ -258,6 +258,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
+						// Validate foreign exchange service type id if explicitly passed in request
+						$fxServiceTypeId =  (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+
+						if($fxServiceTypeId > 0){
+							if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+								$aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
+							}
+						}
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
@@ -274,9 +282,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $iPrimaryRoute = 0 ;
                         $pspId = -1;
 
-                        if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE) {
+                        if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE)
+                        {
                         	$pspId= OfflinePaymentCardPSPMapping[$obj_card->getCardTypeId()];
+							$data['auto-capture'] = 2;
                         	$obj_TxnInfo->setPSPId($pspId);
+							//For Offline payment method fee is considered as holding charges required to add in actual amount
+							if($obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
+							{
+								$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
+							}
 						}
                         else{
 							$is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
@@ -471,10 +486,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
 										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
-										if($obj_paymentProcessor->getPSPConfig() !== NULL && $obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
+										if($obj_paymentProcessor->getPSPConfig() !== NULL && (int) $obj_paymentProcessor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_WALLET) {
 											$data['wallet-id'] = $obj_paymentProcessor->getPSPConfig()->getID();
 										}
-										$data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE'];
+										if(empty($data['auto-capture']) === true) { $data['auto-capture'] = (int)$obj_CardResultSet['CAPTURE_TYPE']; }
 										if(empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'}) === FALSE)
 										{
 											$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"]);
@@ -489,15 +504,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 										}
-
+										if ($fxServiceTypeId)
+										{
+											$data['fxservicetypeid'] = $fxServiceTypeId;
+										}
 
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
 
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
-										if($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
+										if( $obj_card->getPaymentType($_OBJ_DB) !== Constants::iPAYMENT_TYPE_OFFLINE && ($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY))
 										{
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
