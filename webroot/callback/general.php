@@ -146,7 +146,10 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
-
+// Require specific Business logic for the CEBU Payment Center component
+require_once(sCLASS_PATH .'/voucher/TravelFund.php');
+// Require model class for Payment Authorization
+require_once(sCLASS_PATH ."/authorize.php");
 
 /**
  * Input XML format
@@ -779,7 +782,7 @@ try
                 $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
             }
             $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
-            if ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
+            if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_CAPTURED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
                 try {
                     $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
                     $newTxnInfoIds = $obj_TxnInfo->getPaymentSession()->getFilteredTransaction($whereClause);
@@ -788,18 +791,20 @@ try
                         $iPSPID = $newTxnInfo->getPSPID();
                         $iAmount = (int)$newTxnInfo->getAmount();
 
-                        if (strtolower($is_legacy) == 'false') {
-                            $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                        if (strtolower($is_legacy) == 'false')
+                        {
+                            $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID,$newTxnInfo->getRouteConfigID());
                         } else {
                             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                         }
 
-                        if (($obj_PSPConfig->getProcessorType() === Constants::iPAYMENT_TYPE_VOUCHER)
+                        if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
                             && ($newTxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_WITH_VOUCHER_STATE) === FALSE)) {
                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $obj_PSP);
 
                             $voucherId = $newTxnInfo->getAdditionalData('voucherid');
+
                             if ($voucherId !== NULL && $voucherId !== FALSE) {
 
                                 // <editor-fold defaultstate="collapsed" desc="Update Passbook Table">
@@ -830,8 +835,8 @@ try
                                     $txnPassbookObj->performPendingOperations();
                                 }
                                 // </editor-fold>
-
-                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((int)$voucherId, $iAmount);
+                                $additionalData = $newTxnInfo->getAdditionalData();
+                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((int)$voucherId, $iAmount,$additionalData);
 
                                 // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
                                 if ($isVoucherRedeemStatus === 100) {

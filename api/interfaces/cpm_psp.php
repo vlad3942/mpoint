@@ -785,7 +785,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem(string $iVoucherID, float $iAmount=-1, array $additionalData = array())
+	public function redeem(string $iVoucherID, float $iAmount=-1, array $aAdditionalData = array())
 	{
 		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
@@ -800,8 +800,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
 		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
 		$b .= '<additional-data>';
-		if(isset($additionalData['session_token'])){
-			$b .= '<session-token>'. $additionalData['session_token'] .'</session-token>';
+		if(isset($aAdditionalData) === true && empty($aAdditionalData) === false)
+		{
+            foreach ($aAdditionalData as $key=>$value)
+            {
+                $b .= '<property name="' . $key . '">' . $value . '</property>';
+            }
 		}
 		$b .= '</additional-data>';
 		$b .= '<auto-capture>'. htmlspecialchars($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';

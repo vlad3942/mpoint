@@ -170,6 +170,7 @@ require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 require_once(sCLASS_PATH . '/Route.php');
+require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -270,7 +271,9 @@ try
                                         }
                                     }
                                     $isVoucherErrorFound = FALSE;
-								    if($iPSPID > 1 && $sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0 )
+                                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+
+                                    if($iPSPID > 1 && $sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0 )
                                     {
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
                                         {
@@ -279,7 +282,38 @@ try
                                             $additionalTxnData[0]['value'] = (string)$voucher['id'];
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
-                                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, (string)$iPSPID, $additionalTxnData);
+                                            $additionalData = array();
+                                            if(isset($voucher->{'additional-data'}))
+                                            {
+                                                $additionalDataParamsCount = count($voucher->{'additional-data'}->children());
+                                                for ($index = 0; $index < $additionalDataParamsCount; $index++)
+                                                {
+                                                    $name = (string)$voucher->{'additional-data'}->param[$index]['name'];
+                                                    $value = (string)$voucher->{'additional-data'}->param[$index];
+                                                    $additionalData[$name] = $value;
+                                                    $additionalTxnData[$index+1]['name'] = $name;
+                                                    $additionalTxnData[$index+1]['value'] = $value;
+                                                    $additionalTxnData[$index+1]['type'] = 'Transaction';
+                                                }
+                                            }
+                                            $misc = [];
+                                            if (strtolower($is_legacy) === 'false')
+                                            {
+                                                $typeId = Constants::iVOUCHER_CARD;
+                                                $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
+                                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+
+                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL);
+                                                if ($obj_RS instanceof RoutingService)
+                                                {
+                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+                                                    $misc["routeconfigid"] = $iPrimaryRoute;
+
+                                                }
+                                            }
+
+                                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
                                             if ($txnObj !== NULL) {
                                                 $_OBJ_DB->query('COMMIT');
                                                 $_OBJ_DB->query('START TRANSACTION');
@@ -310,7 +344,6 @@ try
                                     }
 
                                     if($iPSPID > 0 && $isVoucherErrorFound === FALSE && $isVoucherPreferred !== "false" ) {
-                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
                                             if (strtolower($is_legacy) === 'false') {
@@ -334,18 +367,6 @@ try
                                             }
                                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-
-                                            $additionalData = array();
-                                            if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}))
-									        {
-                                                $additionalDataParamsCount = count($obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->children());
-                                                for ($index = 0; $index < $additionalDataParamsCount; $index++)
-                                                {
-                                                    $name = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
-                                                    $value = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
-                                                    $additionalData[$name] = $value;
-                                                }
-                                            }
 
                                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
@@ -597,7 +618,7 @@ try
                                                {
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
 
-                                                   if($iSessionType > 1 && $iSaleAmount < (int)$obj_TxnInfo->getAmount()) { $misc["amount"] = $iSaleAmount; }
+                                                   if($iSessionType > 1 && $iSaleAmount < (int)$obj_TxnInfo->getAmount()) { $data["amount"] = $iSaleAmount; }
 
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
                                                    $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;

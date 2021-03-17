@@ -543,7 +543,7 @@ class General
      * @throws \SQLQueryException
      * @throws \mPointException
      */
-    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = []): ?TxnInfo
+    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = [],array $misc = []): ?TxnInfo
     {
         $iAssociatedTxnId =  $this->newTransaction($txnInfo->getClientConfig(), $txnInfo->getTypeID());
 		$iSessionId = $txnInfo->getSessionId() ;
@@ -557,7 +557,7 @@ class General
 		}
 		else{
 		    try {
-                $data = [];
+                $data = $misc;
                 $data["card-id"] = '';
                 $data["wallet-id"] = '';
                 $data["amount"] = $newAmount;
