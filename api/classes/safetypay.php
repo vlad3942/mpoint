@@ -24,13 +24,13 @@ class safetypayException extends CallbackException { }
  */
 class safetypay extends CPMPSP
 {
-    public function capture($iAmount=-1) { throw new SAFETYPAYException("Method: capture is not supported for SAFETYPAY."); }
+    public function capture($iAmount=-1) { throw new safetypayException("Method: capture is not supported for SAFETYPAY."); }
 	/* SAFETYPAY reversal requires txn status query and txn can be reversed only if not yet settled. */
-    public function cancel($amount = -1) { throw new SAFETYPAYException("Method: cancel is not supported by SAFETYPAY"); }
-    public function refund($iAmount=-1, $iStatus = NULL) { throw new SAFETYPAYException("Method: refund is not supported by SAFETYPAY"); }
+    public function cancel($amount = -1) { throw new safetypayException("Method: cancel is not supported by SAFETYPAY"); }
+    public function refund($iAmount=-1, $iStatus = NULL) { throw new safetypayException("Method: refund is not supported by SAFETYPAY"); }
     
-    public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new SAFETYPAYException("Method: getPaymentData is not supported by SAFETYPAY"); }
-    public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new SAFETYPAYException("Method: authorize is not supported by SAFETYPAY"); }
+    public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new safetypayException("Method: getPaymentData is not supported by SAFETYPAY"); }
+    public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new safetypayException("Method: authorize is not supported by SAFETYPAY"); }
     public function getPSPID() { return Constants::iSAFETYPAY_AGGREGATOR; }
     public function getPaymentMethods(PSPConfig $obj_PSPConfig)
     {
