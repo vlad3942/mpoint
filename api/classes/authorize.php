@@ -75,12 +75,11 @@ class Authorize extends General
 		catch (Exception $e)
 		{
 			$code = $e->getCode();
-			$iStateID = Constants::iPAYMENT_REJECTED_STATE;
-			$this->delMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE);
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, "Status code: ". $e->getCode(). "\n". $e->getMessage() );
+            trigger_error("redeem of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
 
-		if ( $this->_obj_PSP->getConnInfo()["paths"]["callback"] != ''){
+		if ( $this->_obj_PSP->getConnInfo()["paths"]["callback"] != '')
+		{
 			if ( ($this->_obj_PSP instanceof CPMPSP) === true)
 			{
 				$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
