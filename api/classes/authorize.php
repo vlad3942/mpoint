@@ -75,7 +75,7 @@ class Authorize extends General
 		catch (Exception $e)
 		{
 			$code = $e->getCode();
-            trigger_error("redeem of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+            trigger_error("redeem of txn: ". $this->_obj_TxnInfo->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
 
 		if ( $this->_obj_PSP->getConnInfo()["paths"]["callback"] != '')
