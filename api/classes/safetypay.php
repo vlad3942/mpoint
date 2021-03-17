@@ -7,7 +7,7 @@
 * @copyright Cellpoint Digital
 * @link http://www.cellpointdigital.com
 * @package Callback
-* @subpackage SAFETYPAY
+* @subpackage safetypay
 * @version 1.00
 */
 
@@ -15,14 +15,14 @@
 /**
  * Super class for all SAFETYPAY Exceptions
 */
-class SAFETYPAYException extends CallbackException { }
+class safetypayException extends CallbackException { }
 /* ==================== SAFETYPAY Exception Classes End ==================== */
 
 /**
  * Model Class containing all the Business Logic for the Payment Service Provider: SAFETYPAY
  *
  */
-class SAFETYPAY extends CPMPSP
+class safetypay extends CPMPSP
 {
     public function capture($iAmount=-1) { throw new SAFETYPAYException("Method: capture is not supported for SAFETYPAY."); }
 	/* SAFETYPAY reversal requires txn status query and txn can be reversed only if not yet settled. */
