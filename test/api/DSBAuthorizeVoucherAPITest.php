@@ -114,7 +114,9 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
 	public function testVoucherRedemptionDeniedByIssuer()
 	{
-		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        $this->bIgnoreErrors = true;
+
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iDSB_PSP;
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");

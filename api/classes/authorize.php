@@ -75,6 +75,8 @@ class Authorize extends General
 		catch (Exception $e)
 		{
 			$code = $e->getCode();
+            $iStateID = Constants::iPAYMENT_REJECTED_STATE;
+            $this->delMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE);
             trigger_error("redeem of txn: ". $this->_obj_TxnInfo->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
 
