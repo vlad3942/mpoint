@@ -272,6 +272,7 @@ try
                                     }
                                     $isVoucherErrorFound = FALSE;
                                     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                                    $additionalData = array();
 
                                     if($iPSPID > 1 && $sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0 )
                                     {
@@ -282,7 +283,6 @@ try
                                             $additionalTxnData[0]['value'] = (string)$voucher['id'];
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
-                                            $additionalData = array();
                                             if(isset($voucher->{'additional-data'}))
                                             {
                                                 $additionalDataParamsCount = count($voucher->{'additional-data'}->children());
