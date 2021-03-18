@@ -25,8 +25,6 @@ require_once(sCLASS_PATH ."/crs/MerchantRouteProperty.php");
 $xml = '';
 $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
-//print_r($obj_DOM->{'route_configuration'});exit;
-
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
     if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'route_configuration'}) > 0)
@@ -40,33 +38,38 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $code = $obj_mPoint->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
             if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL)
             {
-                if(count($obj_DOM->{'route_configuration'}->route) == 1){
-                    $objClientRouteConfig = new ClientRouteConfig();
-                    $objClientRouteConfig->setInputParams($_OBJ_DB, $obj_DOM->{'route_configuration'});
-                    $response = $objClientRouteConfig->UpdateRoute();
-                    $xml =  $objClientRouteConfig->processResponse($response);
-                }
+                $xml .= '<route_configuration_response>';
+
                 if(count($obj_DOM->{'route_configuration'}->route_features) == 1)
                 {
                     $obj_Route_Features_DOM = $obj_DOM->{'route_configuration'}->route_features;
-                    $iRouteConfigId = (int) $obj_Route_Features_DOM->route_id;
-                    for($i=0;$i<count($obj_Route_Features_DOM->{'route_feature'});$i++){
-                        $objRouteFeature = new RouteFeature((int)$obj_Route_Features_DOM->{'route_feature'}[$i]->id, (string)$obj_Route_Features_DOM->{'route_feature'}[$i]->fname, (string)$obj_Route_Features_DOM->{'route_feature'}[$i]->value);
-                        $response = $objRouteFeature->UpdateRouteFeature($_OBJ_DB, $clientId, $iRouteConfigId);
-                        $xml =  $objRouteFeature->processResponse($response);
-                    }
-                }
-
-                if(count($obj_DOM->{'route_configuration'}->merchant_properties) == 1)
-                {
-                    $obj_Route_Property_DOM = $obj_DOM->{'route_configuration'}->merchant_properties;
-                    $iRouteConfigId = (int) $obj_Route_Property_DOM->route_id;
-                    for($i=0;$i<count($obj_Route_Property_DOM->{'property'});$i++){
-                        $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'property'}[$i]->key, $obj_Route_Property_DOM->{'property'}[$i]->value);
-                        $response = $objRouteFeature->UpdateMerchantRouteProperty();
+                    $iRouteConfigId = (int) $obj_DOM->{'route_configuration'}->id;
+                    $iRouteFeatureCount = count($obj_Route_Features_DOM->{'route_feature'});
+                    for($i=0;$i<$iRouteFeatureCount;$i++){
+                        $objRouteFeature = new RouteFeature((int)$obj_Route_Features_DOM->{'route_feature'}[$i]->id, (string)$obj_Route_Features_DOM->{'route_feature'}[$i]->fname);
+                        $response = $objRouteFeature->AddNewtRouteFeature($_OBJ_DB, $clientId, $iRouteConfigId);
                         $xml .=  $objRouteFeature->processResponse($response);
                     }
                 }
+                elseif(count($obj_DOM->{'route_configuration'}->additional_merchant_properties) == 1)
+                {
+                    $obj_Route_Property_DOM = $obj_DOM->{'route_configuration'}->additional_merchant_properties;
+                    $iRouteConfigId = (int) $obj_DOM->{'route_configuration'}->id;
+                    $iMerchantPropertyCount = count($obj_Route_Property_DOM->{'property'});
+                    for($i=0;$i<$iMerchantPropertyCount;$i++){
+                        $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'property'}[$i]->key, $obj_Route_Property_DOM->{'property'}[$i]->value);
+                        $response = $objRouteFeature->AddNewAdditionalMerchantProperty();
+                        $xml .=  $objRouteFeature->processResponse($response);
+                    }
+                }
+                else
+                {
+                    $objClientRouteConfig = new ClientRouteConfig();
+                    $objClientRouteConfig->setInputParams($_OBJ_DB, $obj_DOM->{'route_configuration'});
+                    $response = $objClientRouteConfig->AddNewRoute();
+                    $xml .=  $objClientRouteConfig->processResponse($response);
+                }
+                $xml .= '</route_configuration_response>';
             }
             else
             {
@@ -137,7 +140,5 @@ else
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
 echo $xml;
-echo '</root>';
 ?>

@@ -26,7 +26,7 @@ class MerchantRouteProperty
      * Hold an unique ID of the route configuration
      * @var integer
      */
-    private $_iRouteConfigId;
+    private int $_iRouteConfigId;
 
     /**
      * Holds name of the merchant property key
@@ -58,10 +58,15 @@ class MerchantRouteProperty
         $this->_sValue = $value;
 	}
 
+    /**
+     * @param array $response an array containing route feature configuration status
+     * @return string XML playload structure of route additional property configuration status
+     */
 	public function processResponse(array $response): string
     {
-        $xml = '<response>';
+        $xml = '<additional_property_response>';
         if($response['status'] === TRUE){
+            $xml .= '<key>'.$this->_sKey.'</key>';
             $xml .= '<status>Success</status>';
             $xml .= '<message>Configuration Successfully Updated.</message>';
         }else{
@@ -72,7 +77,7 @@ class MerchantRouteProperty
                 $xml .= '<message>Fail To Configure Additinal Property. </message>';
             }
         }
-        $xml .= '</response>';
+        $xml .= '</additional_property_response>';
         return $xml;
     }
 
@@ -80,10 +85,10 @@ class MerchantRouteProperty
      * @return array  an array response of update merchant route property
      * @throws Exception
      */
-	public function UpdateMerchantRouteProperty() : array
+	public function AddNewAdditionalMerchantProperty() : array
     {
         $response = array();
-        $isRouteFeaturealreadyExist = $this->isRoutePropertyAlreadyExist();
+        $isRouteFeaturealreadyExist = $this->isAdditionalPropertyAlreadyExist();
         if($isRouteFeaturealreadyExist === false){
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
                 (key, value, externalid, type)
@@ -115,13 +120,14 @@ class MerchantRouteProperty
      * Function used to identify duplicate record
      * @return bool
      */
-    private function isRoutePropertyAlreadyExist() :bool
+    private function isAdditionalPropertyAlreadyExist() :bool
     {
         $sql = "SELECT id
                     FROM Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
                     WHERE externalid = $this->_iRouteConfigId
                     AND lower(key) = '".strtolower($this->_sKey)."'
-                    AND lower(value) = '".strtolower($this->_sValue)."' ";
+                    AND lower(value) = '".strtolower($this->_sValue)."' 
+                    AND type = 'merchant'";
         try {
             $res = $this->_objDB->getName($sql);
             if (is_array($res) === true && count($res) > 0) {

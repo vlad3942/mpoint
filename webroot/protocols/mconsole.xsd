@@ -130,54 +130,46 @@
 
 	<xs:complexType name="route_configuration">
 		<xs:sequence>
+			<xs:element type="xs:positiveInteger" name="id" minOccurs="0" maxOccurs="1"/>
 			<xs:element type="xs:positiveInteger" name="client_id" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="route" minOccurs="0" maxOccurs="1">
+			<xs:element type="xs:positiveInteger" name="route_id" minOccurs="0" maxOccurs="1"/>
+			<xs:element type="xs:string" name="mid" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="country_ids" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element type="xs:positiveInteger" name="provider_id" minOccurs="1" maxOccurs="1"/>
-						<xs:element type="xs:string" name="mid" minOccurs="1" maxOccurs="1"/>
-						<xs:element name="country_ids" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="country_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="currency_ids" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="currency_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element type="xs:string" name="route_name" minOccurs="1" maxOccurs="1"/>
-						<xs:element type="xs:string" name="username" minOccurs="1" maxOccurs="1"/>
-						<xs:element type="xs:string" name="password" minOccurs="1" maxOccurs="1"/>
-						<xs:element type="xs:string" name="capture_type" minOccurs="1" maxOccurs="1"/>
-						<xs:element type="xs:boolean" name="enabled" minOccurs="1" maxOccurs="1" default="true"/>
+						<xs:element name="country_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="currency_ids" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="currency_id" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element type="xs:string" name="route_name" minOccurs="0" maxOccurs="1"/>
+			<xs:element type="xs:string" name="username" minOccurs="0" maxOccurs="1"/>
+			<xs:element type="xs:string" name="password" minOccurs="0" maxOccurs="1"/>
+			<xs:element type="xs:integer" name="capture_type" minOccurs="0" maxOccurs="1"/>
+			<xs:element type="xs:boolean" name="enabled" minOccurs="0" maxOccurs="1" default="true"/>
 			<xs:element name="route_features" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element type="xs:positiveInteger" name="route_id" minOccurs="1" maxOccurs="1"/>
 						<xs:element name="route_feature" minOccurs="1" maxOccurs="unbounded">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-									<xs:element type="xs:string" name="fname" minOccurs="0" maxOccurs="1"/>
-									<xs:element type="xs:boolean" name="value" minOccurs="0" maxOccurs="1"/>
+									<xs:element type="xs:string" name="name" minOccurs="0" maxOccurs="1"/>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="merchant_properties" minOccurs="0" maxOccurs="1">
+			<xs:element name="additional_merchant_properties" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element type="xs:positiveInteger" name="route_id" minOccurs="1" maxOccurs="1"/>
 						<xs:element name="property" minOccurs="1" maxOccurs="unbounded">
 							<xs:complexType>
 								<xs:sequence>

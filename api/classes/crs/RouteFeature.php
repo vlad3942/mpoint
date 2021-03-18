@@ -23,22 +23,15 @@ class RouteFeature
     private string $_sFeatureName;
 
     /**
-     * Holds value of the route feature like true/false
-     * @var string
-     */
-    private ?string $_bValue;
-
-    /**
      * Default Constructor
      *
      * @param 	integer $featureid 	Unique ID for the route feature
      * @param 	string $featurename	Holds name of the route feature
      */
-	public function __construct(int $featureid, string $featurename, ?string $value = NULL)
+	public function __construct(int $featureid, string $featurename)
 	{
         $this->_iFeatureId = $featureid;
         $this->_sFeatureName = $featurename;
-        $this->_bValue = $value;
 	}
 
     /**
@@ -74,11 +67,13 @@ class RouteFeature
      */
     public function processResponse(array $response):string
     {
-        $xml = '';
+        $xml = '<route_features_response>';
         if($response['status'] === TRUE){
+            $xml .= '<id>'.$this->_iFeatureId.'</id>';
             $xml .= '<status>Success</status>';
             $xml .= '<message>Route Feature Configuration Successfully Done.</message>';
         }else{
+            $xml .= '<id>-1</id>';
             $xml .= '<status>Fail</status>';
             if($response['is_duplicate'] === TRUE){
                 $xml .= '<message>Route Feature Configuration Already Exist</message>';
@@ -86,6 +81,7 @@ class RouteFeature
                 $xml .= '<message>Unable to Configure Route Feature. </message>';
             }
         }
+        $xml .= '</route_features_response>';
         return $xml;
     }
 
@@ -94,13 +90,30 @@ class RouteFeature
      * @param int $clientId       Unique ID for the Client performing the request
      * @param int $routeConfigId  Holds unique id of the route configuration
      * @return array              an array response of update route feature
-     * @throws Exception
      */
-    public function UpdateRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : array
+    public function AddNewtRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : array
     {
         $response = array();
         $isRouteFeaturealreadyExist = $this->isRouteFeatureAlreadyExist($_OBJ_DB, $clientId, $routeConfigId);
         if($isRouteFeaturealreadyExist === false){
+            $response['status'] = $this->AddRouteFeature($_OBJ_DB, $clientId, $routeConfigId);
+        }else{
+            trigger_error('Configuration Already Exist for route: '.$this->_iRouteConfigId , E_USER_NOTICE);
+            $response['status'] = FALSE;
+            $response['is_duplicate'] = $isRouteFeaturealreadyExist;
+        }
+        return $response;
+    }
+
+    /**
+     * @param RDB $_OBJ_DB        Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param int $clientId       Unique ID for the Client performing the request
+     * @param int $routeConfigId  Holds unique id of the route configuration
+     * @return bool              Status of add route feature query
+     */
+    private function AddRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : bool
+    {
+        try {
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl
                 (clientid, routeconfigid, featureid)
                 values ($1, $2, $3)";
@@ -111,24 +124,24 @@ class RouteFeature
                 $result = $_OBJ_DB->execute($resource, $aParam);
                 if ($result === false) {
                     throw new Exception("Unable to update route feature", E_USER_ERROR);
-                    $response['status'] = FALSE;
-                }else{
-                    $response['status'] = TRUE;
+                    return FALSE;
                 }
+                return TRUE;
             } else {
                 trigger_error("Unable to build query for update route feature", E_USER_WARNING);
-                $response['status'] = FALSE;
+                return FALSE;
             }
-        }else{
-            trigger_error('Configuration Already Exist for route: '.$this->_iRouteConfigId , E_USER_NOTICE);
-            $response['status'] = FALSE;
-            $response['is_duplicate'] = $isRouteFeaturealreadyExist;
+        }catch (SQLQueryException $e){
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            return FALSE;
         }
-        return $response;
     }
 
     /**
-     * Check whether the route feature already exist or not
+     * @param RDB $_OBJ_DB        Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param int $clientId       Unique ID for the Client performing the request
+     * @param int $routeConfigId  Holds unique id of the route configuration
+     * @return bool               Whether the route feature already exist or not
      */
     private function isRouteFeatureAlreadyExist(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : bool
     {

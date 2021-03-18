@@ -40,6 +40,7 @@ class ClientRouteConfig
     private string $_sUserName;
     private string $_sPassword;
     private int $_iRouteConfigId = -1;
+    private int $_iRouteId;
     private array $_aCountryId = array(null);
     private array $_aCurrencyId = array(null);
 
@@ -94,17 +95,17 @@ class ClientRouteConfig
         if ( ($obj_DOM instanceof SimpleDOMElement) === true)
         {
             $this->_iClientId = (int)$obj_DOM->client_id;
-            $this->_iProviderId = (int)$obj_DOM->route->provider_id;
-            $this->_sRouteName = (string)$obj_DOM->route->route_name;
-            $this->_iCaptureType = (int)$obj_DOM->route->capture_type;
-            $this->_sMID = (string)$obj_DOM->route->mid;
-            $this->_sUserName = (string)$obj_DOM->route->username;
-            $this->_sPassword = (string)$obj_DOM->route->password;
-            if($obj_DOM->route->country_ids->country_id instanceof SimpleDOMElement) {
-                $this->_aCountryId = (array)$obj_DOM->route->country_ids->country_id;
+            $this->_iRouteId = (int)$obj_DOM->route_id;
+            $this->_sRouteName = (string)$obj_DOM->route_name;
+            $this->_iCaptureType = (int)$obj_DOM->capture_type;
+            $this->_sMID = (string)$obj_DOM->mid;
+            $this->_sUserName = (string)$obj_DOM->username;
+            $this->_sPassword = (string)$obj_DOM->password;
+            if($obj_DOM->country_ids->country_id instanceof SimpleDOMElement) {
+                $this->_aCountryId = (array)$obj_DOM->country_ids->country_id;
             }
-            if($obj_DOM->route->currency_ids->currency_id instanceof SimpleDOMElement) {
-                $this->_aCurrencyId = (array)$obj_DOM->route->currency_ids->currency_id;
+            if($obj_DOM->currency_ids->currency_id instanceof SimpleDOMElement) {
+                $this->_aCurrencyId = (array)$obj_DOM->currency_ids->currency_id;
             }
         }
     }
@@ -118,16 +119,12 @@ class ClientRouteConfig
         $xml = '';
         if($response['status'] === TRUE){
             $xml .= '<status>Success</status>';
-            $xml .= '<route_config_id>'.$response['route_config_id'].'</route_config_id>';
+            $xml .= '<route_config_id>'.$this->_iRouteConfigId.'</route_config_id>';
             $xml .= '<message>Route Configuration Created Successfully.</message>';
         }else{
             $xml .= '<status>Fail</status>';
-            $xml .= '<route_config_id>'.$response['route_config_id'].'</route_config_id>';
-            if($response['is_duplicate'] === TRUE){
-                $xml .= '<message>Route Already Exist</message>';
-            }else{
-                $xml .= '<message>Unable to Create Route Configuration. </message>';
-            }
+            $xml .= '<route_config_id>'.$this->_iRouteConfigId.'</route_config_id>';
+            $xml .= '<message>Unable to Create Route Configuration. </message>';
         }
         return $xml;
     }
@@ -136,10 +133,10 @@ class ClientRouteConfig
      * @return array              An array of final response with route configuration status
      * @throws SQLQueryException
      */
-    public function UpdateRoute() : array
+    public function AddNewRoute() : array
     {
         $this->getDBConn()->query('START TRANSACTION');
-        $response = $this->AddRouteConfig();
+        $response['status'] = $this->AddRouteConfig();
         if($response['status'] === TRUE) {
             $addRouteCountryStatus = $this->addRouteCountry();
             $addRouteCurrencyStatus = $this->addRouteCurrency();
@@ -219,15 +216,15 @@ class ClientRouteConfig
     }
 
     /**
-     * @param int $routeId  Hold uniquire of routeconfig
+     * Fucntion used identify wheter route already exist or not
      * @return bool         Success/Failure status
      */
-    private function isRouteConfigAlreadyExist($routeId) : bool
+    private function isRouteConfigAlreadyExist() : bool
     {
-        if(empty($routeId) === false){
-            $sql = "SELECT routeid
+        if(empty($this->_iRouteId) === false){
+           $sql = "SELECT id
                 FROM Client" . sSCHEMA_POSTFIX . ".RouteConfig_Tbl
-                WHERE routeid = $routeId 
+                WHERE routeid = $this->_iRouteId 
                 AND mid = '".$this->_sMID."'
                 AND username = '".$this->_sUserName."'
                 AND password = '".$this->_sPassword."'
@@ -241,15 +238,12 @@ class ClientRouteConfig
     }
 
     /**
-     * @return array      An array of final status of add route configuration
-     * @throws Exception
+     * @return bool      Return final status of add route configuration
      */
-    private function AddRouteConfig() : array
+    private function AddRouteConfig() : bool
     {
-        $response = array();
-        $routeId = $this->getRouteId();
-        $isDuplicateRouteConfig = $this->isRouteConfigAlreadyExist($routeId);
-        if(empty($routeId) === false && $isDuplicateRouteConfig === false){
+        $isDuplicateRouteConfig = $this->isRouteConfigAlreadyExist();
+        if($isDuplicateRouteConfig === false){
 
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".RouteConfig_Tbl
                     (routeid, name, capturetype, mid, username, password)
@@ -259,7 +253,7 @@ class ClientRouteConfig
             if (is_resource($resource) === true) {
 
                 $aParam = array(
-                    $routeId,
+                    $this->_iRouteId,
                     $this->_sRouteName,
                     $this->_iCaptureType,
                     $this->_sMID,
@@ -270,49 +264,16 @@ class ClientRouteConfig
                 $result = $this->getDBConn()->execute($resource, $aParam);
 
                 if ($result === false) {
-                    $response['status'] = FALSE;
+                    return FALSE;
                     throw new Exception("Unable to create route", E_USER_ERROR);
                 } else {
                     $RS = $this->getDBConn()->fetchName($result);
                     $this->_iRouteConfigId = $RS["ID"];
-                    $response['status'] = TRUE;
-                    $response['route_config_id'] = $this->_iRouteConfigId;
+                    return TRUE;
                 }
             }
-        }else{
-            $response['status'] = FALSE;
-            $response['route_config_id'] = $this->_iRouteConfigId;
-            $response['is_duplicate'] = $isDuplicateRouteConfig;
         }
-        return $response;
-    }
-
-    /**
-     * @return int      Unique Id of the client route
-     */
-    private function getRouteId() : int
-    {
-        $iRouteId = -1;
-        $sql = "SELECT R.id
-				FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R
-				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON PSP.id = R.providerid AND PSP.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON R.clientid = CL.id AND CL.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND R.providerid = MSA.pspid AND MSA.enabled = '1'
-				WHERE R.clientid = ". $this->_iClientId ." 
-				AND R.providerid = ". $this->_iProviderId ."
-				AND R.enabled = '1'";
-        try {
-            $RS = $this->getDBConn()->getName($sql);
-            if (is_array($RS) === true && count($RS) > 0){
-                $iRouteId = $RS['ID'];
-            }else{
-                trigger_error('Unable To Find Client Configuration For The Route: '. $this->_iProviderId, E_USER_NOTICE);
-            }
-        }catch (SQLQueryException $e){
-            trigger_error($e->getMessage(), E_USER_ERROR);
-        }
-        return $iRouteId;
+        return FALSE;
     }
 
     public function toXML() : string
