@@ -2292,9 +2292,15 @@ class TxnInfo
      * @param $amount     New amount of transaction
      *
      */
-    function updateTransactionAmount(RDB $obj_DB,$amount){
-    	$this->_lAmount = $amount;
-    	$this->_lConvertedAmount = $amount;
+    function updateTransactionAmount(RDB $obj_DB,$amount)
+    {
+        $this->_lAmount = $amount;
+        $this->_lConvertedAmount = $amount;
+        if ($this->getInitializedAmount() === $this->getPaymentSession()->getAmount())
+        {
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$this->getSessionId();
+            $obj_DB->query($sql);
+    	}
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount.", convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
     }
