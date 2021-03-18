@@ -86,8 +86,9 @@ class ClientRouteConfig
     protected function &getDBConn() { return $this->_objDB; }
 
     /**
+     * Set initialize class variable with appropriate value
+     *
      * @param SimpleDOMElement $obj_DOM
-     * @Description Set class variable with appropriate value
      */
     public function setInputParams(RDB $_OBJ_DB, SimpleDOMElement $obj_DOM)
     {
@@ -111,6 +112,8 @@ class ClientRouteConfig
     }
 
     /**
+     * Function used to process add route config response for end user
+     *
      * @param array $response an array containing route configuration status
      * @return string XML playload structure of final response
      */
@@ -130,10 +133,12 @@ class ClientRouteConfig
     }
 
     /**
+     * Function used to add route configuration
+     *
      * @return array              An array of final response with route configuration status
      * @throws SQLQueryException
      */
-    public function AddNewRoute() : array
+    public function AddRoute() : array
     {
         $this->getDBConn()->query('START TRANSACTION');
         $response['status'] = $this->AddRouteConfig();
@@ -152,6 +157,8 @@ class ClientRouteConfig
     }
 
     /**
+     * Function used to add route country
+     *
      * @return bool        Success/Failure status
      * @throws Exception
      */
@@ -184,6 +191,8 @@ class ClientRouteConfig
     }
 
     /**
+     * Function used to add route currency
+     *
      * @return bool        Success/Failure status
      * @throws Exception
      */
@@ -217,6 +226,7 @@ class ClientRouteConfig
 
     /**
      * Fucntion used identify wheter route already exist or not
+     *
      * @return bool         Success/Failure status
      */
     private function isRouteConfigAlreadyExist() : bool
@@ -238,6 +248,7 @@ class ClientRouteConfig
     }
 
     /**
+     * Function used to add route confuguration
      * @return bool      Return final status of add route configuration
      */
     private function AddRouteConfig() : bool

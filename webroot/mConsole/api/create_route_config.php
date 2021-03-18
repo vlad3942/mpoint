@@ -47,7 +47,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $iRouteFeatureCount = count($obj_Route_Features_DOM->{'route_feature'});
                     for($i=0;$i<$iRouteFeatureCount;$i++){
                         $objRouteFeature = new RouteFeature((int)$obj_Route_Features_DOM->{'route_feature'}[$i]->id, (string)$obj_Route_Features_DOM->{'route_feature'}[$i]->fname);
-                        $response = $objRouteFeature->AddNewtRouteFeature($_OBJ_DB, $clientId, $iRouteConfigId);
+                        $response = $objRouteFeature->AddFeature($_OBJ_DB, $clientId, $iRouteConfigId);
                         $xml .=  $objRouteFeature->processResponse($response);
                     }
                 }
@@ -58,7 +58,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $iMerchantPropertyCount = count($obj_Route_Property_DOM->{'property'});
                     for($i=0;$i<$iMerchantPropertyCount;$i++){
                         $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'property'}[$i]->key, $obj_Route_Property_DOM->{'property'}[$i]->value);
-                        $response = $objRouteFeature->AddNewAdditionalMerchantProperty();
+                        $response['status'] = $objRouteFeature->AddAdditionalMerchantProperty();
                         $xml .=  $objRouteFeature->processResponse($response);
                     }
                 }
@@ -66,7 +66,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 {
                     $objClientRouteConfig = new ClientRouteConfig();
                     $objClientRouteConfig->setInputParams($_OBJ_DB, $obj_DOM->{'route_configuration'});
-                    $response = $objClientRouteConfig->AddNewRoute();
+                    $response = $objClientRouteConfig->AddRoute();
                     $xml .=  $objClientRouteConfig->processResponse($response);
                 }
                 $xml .= '</route_configuration_response>';

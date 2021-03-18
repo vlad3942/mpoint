@@ -62,6 +62,8 @@ class RouteFeature
     }
 
     /**
+     * Function used process route responsew for end user
+     *
      * @param array $response an array containing route feature configuration status
      * @return string XML playload structure of route feature configuration status
      */
@@ -86,12 +88,14 @@ class RouteFeature
     }
 
     /**
+     * Function used to add route feature if route feature already not present
+     *
      * @param RDB $_OBJ_DB        Reference to the Database Object that holds the active connection to the mPoint Database
      * @param int $clientId       Unique ID for the Client performing the request
      * @param int $routeConfigId  Holds unique id of the route configuration
      * @return array              an array response of update route feature
      */
-    public function AddNewtRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : array
+    public function AddFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : array
     {
         $response = array();
         $isRouteFeaturealreadyExist = $this->isRouteFeatureAlreadyExist($_OBJ_DB, $clientId, $routeConfigId);
@@ -106,6 +110,8 @@ class RouteFeature
     }
 
     /**
+     * Function used process route response for end user
+     *
      * @param RDB $_OBJ_DB        Reference to the Database Object that holds the active connection to the mPoint Database
      * @param int $clientId       Unique ID for the Client performing the request
      * @param int $routeConfigId  Holds unique id of the route configuration
@@ -138,6 +144,8 @@ class RouteFeature
     }
 
     /**
+     *  Function used check whether route feature is already exist or not
+     *
      * @param RDB $_OBJ_DB        Reference to the Database Object that holds the active connection to the mPoint Database
      * @param int $clientId       Unique ID for the Client performing the request
      * @param int $routeConfigId  Holds unique id of the route configuration

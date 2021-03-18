@@ -59,33 +59,33 @@ class MerchantRouteProperty
 	}
 
     /**
+     * Function used to process add additional property response
+     *
      * @param array $response an array containing route feature configuration status
      * @return string XML playload structure of route additional property configuration status
      */
 	public function processResponse(array $response): string
     {
         $xml = '<additional_property_response>';
+        $xml .= '<key>'.$this->_sKey.'</key>';
         if($response['status'] === TRUE){
-            $xml .= '<key>'.$this->_sKey.'</key>';
             $xml .= '<status>Success</status>';
             $xml .= '<message>Configuration Successfully Updated.</message>';
         }else{
             $xml .= '<status>Fail</status>';
-            if($response['is_duplicate'] === TRUE){
-                $xml .= '<message>Configuration Already Exist: '. "Key: ".$this->_sKey." value: ".$this->_sValue .'</message>';
-            }else{
-                $xml .= '<message>Fail To Configure Additinal Property. </message>';
-            }
+            $xml .= '<message>Fail To Configure Additinal Property. </message>';
         }
         $xml .= '</additional_property_response>';
         return $xml;
     }
 
     /**
+     * Function used to add additional merchant property for the route
+     *
      * @return array  an array response of update merchant route property
      * @throws Exception
      */
-	public function AddNewAdditionalMerchantProperty() : array
+	public function AddAdditionalMerchantProperty() : bool
     {
         $response = array();
         $isRouteFeaturealreadyExist = $this->isAdditionalPropertyAlreadyExist();
@@ -100,20 +100,18 @@ class MerchantRouteProperty
                 $result = $this->_objDB->execute($resource, $aParam);
                 if ($result === false) {
                     throw new Exception("Unable to update route property", E_USER_ERROR);
-                    $response['status'] = FALSE;
+                    return FALSE;
                 }else{
-                    $response['status'] = TRUE;
+                    return TRUE;
                 }
             } else {
                 trigger_error("Unable to build query for update route property", E_USER_WARNING);
-                $response['status'] = FALSE;
+                return FALSE;
             }
         }else{
             trigger_error('Configuration Already Exist For Route: '.$this->_iRouteConfigId , E_USER_NOTICE);
-            $response['status'] = FALSE;
-            $response['is_duplicate'] = $isRouteFeaturealreadyExist;
+            return FALSE;
         }
-        return $response;
     }
 
     /**
@@ -138,8 +136,6 @@ class MerchantRouteProperty
         }
         return false;
     }
-
-
 
 }
 ?>
