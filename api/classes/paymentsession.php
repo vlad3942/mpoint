@@ -209,17 +209,16 @@ final class PaymentSession
                 elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates ) == true) { $stateId = Constants::iSESSION_COMPLETED; }
             }
             elseif ($iPendingAmt != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) { $stateId = Constants::iSESSION_EXPIRED; }
-            elseif ($iPendingAmt != 0 && $this->getSessionType() > 1)
+            elseif ($iPendingAmt != 0)
             {
-                if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) { $stateId = Constants::iSESSION_PARTIALLY_COMPLETED; }
-                elseif ($this->getTransactionStates( Constants::iPOST_FRAUD_CHECK_REJECTED_STATE) == true) { $stateId = Constants::iSESSION_FAILED; }
-            }
-            elseif ($iPendingAmt != 0  && $this->getSessionType() === 1)
-            {
-                if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) { $stateId = Constants::iSESSION_PARTIALLY_COMPLETED; }
-                elseif ($this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) { $stateId = Constants::iSESSION_FAILED; }
-            }
+                if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
+                    $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
+                }
+                if( $this->getSessionType() === 1 && $this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
+                    $stateId = Constants::iSESSION_FAILED;
+                }
 
+            }
         }
         if($stateId != null)
         {
