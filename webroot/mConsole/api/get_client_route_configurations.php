@@ -20,6 +20,8 @@ require_once(sCLASS_PATH ."/mConsole.php");
 require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/crs/RouteFeature.php");
 require_once(sCLASS_PATH ."/crs/ClientRouteConfigurations.php");
+require_once(sCLASS_PATH ."/crs/ClientRouteCountry.php");
+require_once(sCLASS_PATH ."/crs/ClientRouteCurrency.php");
 
 $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
