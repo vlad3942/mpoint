@@ -11,7 +11,6 @@ class DCCCallbackAPITest extends CallbackAPITest
 {
     public function testSuccessfulDCCCallback()
     {
-        $this->bIgnoreErrors = true;
         $pspID = Constants::iWIRE_CARD_PSP;
         $externalRefId = Constants::iForeignExchange;
         $sCallbackURL = '';

@@ -80,14 +80,11 @@ class Authorize extends General
             trigger_error("redeem of txn: ". $this->_obj_TxnInfo->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
 
-		if ( $this->_obj_PSP->getConnInfo()["paths"]["callback"] != '')
-		{
-			if ( ($this->_obj_PSP instanceof CPMPSP) === true)
-			{
-				$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
-			}
-			else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
-		}
+        if ( ($this->_obj_PSP instanceof CPMPSP) === true)
+        {
+            $this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
+        }
+        else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
 
 		return $code;
 	}

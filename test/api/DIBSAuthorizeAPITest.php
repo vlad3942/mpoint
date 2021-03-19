@@ -11,19 +11,16 @@ class DIBSAuthorizeAPITest extends AuthorizeAPITest
 {
     public function testSuccessfulAuthorize()
     {
-        $this->bIgnoreErrors = true;
         parent::testSuccessfulAuthorize(Constants::iDIBS_PSP);
     }
 
     public function testSuccessfulAuthorizeWithCurrency()
     {
-        $this->bIgnoreErrors = true;
         parent::testSuccessfulAuthorizeWithCurrency(Constants::iDIBS_PSP);
     }
 
 	public function testSuccessfulAuthorizeIncludingAutoCapture()
 	{
-        $this->bIgnoreErrors = true;
 		parent::testSuccessfulAuthorizeIncludingAutoCapture(Constants::iDIBS_PSP);
 	}
 

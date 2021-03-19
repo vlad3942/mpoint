@@ -849,6 +849,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
 	{
+	    if(empty($this->aCONN_INFO["paths"]["callback"]))  return;
+
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
