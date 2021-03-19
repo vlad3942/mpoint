@@ -388,7 +388,7 @@ class InitializeAPIValidationTest extends baseAPITest
 	public function testSSOSuccessForStoredCard()
 	{
 		$this->markTestIncomplete();
-		/*$pspID = 2;
+		$pspID = 2;
         $this->bIgnoreErrors = true; //User Warning Expected
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
 
@@ -419,7 +419,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('eua-id="5001"', $sReplyBody);
-        $this->assertStringContainsString('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="1" charge-type-id="0" cvc-length="3" expired="false" cvcmandatory="true" dcc="false" presentment-currency="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);*/
+        $this->assertStringContainsString('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false" cvcmandatory="true" dcc="false" presentment-currency="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
     }
 
 	public function testSSOMissingAuthToken()

@@ -6,43 +6,36 @@ class WireCardAuthCallbackAPITest extends CallbackAPITest
 {
     public function testSuccessfulNoAutoCapture()
     {
-        $this->markTestIncomplete();
-        // $this->successfulNoAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
+        $this->successfulNoAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
     }
 
     public function testSuccessfulOneStepAuthorizationAutoCapture()
     {
-        $this->markTestIncomplete();
-		// $this->successfulOneStepAuthorizationAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
+		$this->successfulOneStepAuthorizationAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
     }
 
     public function testSuccessfulCapture()
     {
-        $this->markTestIncomplete();
-        // $this->successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CAPTURED_STATE);
+        $this->successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CAPTURED_STATE);
     }
 
     public function testCallbackAttempt()
     {
-        $this->markTestIncomplete();
-        // parent::testCallbackAttempt(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
+        parent::testCallbackAttempt(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
     }
 
     public function testSuccessfulCancel()
     {
-        $this->markTestIncomplete();
-        // $this->successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CANCELLED_STATE);
+        $this->successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CANCELLED_STATE);
     }
 
     public function testSuccessfulRefund()
     {
-        $this->markTestIncomplete();
-        // $this->successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_REFUNDED_STATE);
+        $this->successfulCallbackAccepted(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_REFUNDED_STATE);
     }
 
     public function testSuccessfulAutoCapture()
     {
-        $this->markTestIncomplete();
-        // $this->successfulAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
+        $this->successfulAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
     }
 }
