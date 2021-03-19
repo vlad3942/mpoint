@@ -28,6 +28,7 @@ $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
     $clientId = (integer)$_REQUEST['client_id'];
+    $routeConfigId = (integer)$_REQUEST['route_config_id'];
     $code = Validate::valClient($_OBJ_DB, $clientId);
 
     if ($code === 100)
@@ -43,7 +44,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
         if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL) {
 
-            $obj_Config = ClientRouteConfigurations::produceConfig($_OBJ_DB, $clientId);
+            $obj_Config = ClientRouteConfigurations::produceConfig($_OBJ_DB, $clientId, $routeConfigId);
             if ($obj_Config instanceof ClientRouteConfigurations)
             {
                 $xml = $obj_Config->toXML();
