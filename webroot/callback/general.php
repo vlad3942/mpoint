@@ -835,8 +835,7 @@ try
                                     $txnPassbookObj->performPendingOperations();
                                 }
                                 // </editor-fold>
-                                $additionalData = $newTxnInfo->getAdditionalData();
-                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((int)$voucherId, $iAmount,$additionalData);
+                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher($voucherId, $iAmount);
 
                                 // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
                                 if ($isVoucherRedeemStatus === 100) {

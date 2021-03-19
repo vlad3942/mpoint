@@ -130,7 +130,7 @@ class GeneralPSPTest extends baseAPITest
     public function testRedeem()
     {
         try {
-            $this->_obj_PSP->redeem(1,-1,[]);
+            $this->_obj_PSP->redeem(1,-1);
             $this->assertTrue(FALSE);
         }
         catch (BadMethodCallException $e) {

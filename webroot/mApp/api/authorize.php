@@ -272,7 +272,6 @@ try
                                     }
                                     $isVoucherErrorFound = FALSE;
                                     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-                                    $additionalData = array();
 
                                     if($iPSPID > 1 && $sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0 )
                                     {
@@ -283,17 +282,15 @@ try
                                             $additionalTxnData[0]['value'] = (string)$voucher['id'];
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
-                                            if(isset($voucher->{'additional-data'}))
+                                            if($obj_TxnInfo->getAdditionalData() !== null)
                                             {
-                                                $additionalDataParamsCount = count($voucher->{'additional-data'}->children());
-                                                for ($index = 0; $index < $additionalDataParamsCount; $index++)
+
+                                                foreach ($obj_TxnInfo->getAdditionalData() as $key=>$value)
                                                 {
-                                                    $name = (string)$voucher->{'additional-data'}->param[$index]['name'];
-                                                    $value = (string)$voucher->{'additional-data'}->param[$index];
-                                                    $additionalData[$name] = $value;
-                                                    $additionalTxnData[$index+1]['name'] = $name;
-                                                    $additionalTxnData[$index+1]['value'] = $value;
-                                                    $additionalTxnData[$index+1]['type'] = 'Transaction';
+                                                    $index = count($additionalTxnData);
+                                                    $additionalTxnData[$index]['name'] = $key;
+                                                    $additionalTxnData[$index]['value'] = $value;
+                                                    $additionalTxnData[$index]['type'] = 'Transaction';
                                                 }
                                             }
                                             $misc = [];
@@ -381,7 +378,7 @@ try
                                                 $txnPassbookObj->addEntry($passbookEntry);
                                                 $txnPassbookObj->performPendingOperations();
                                             }
-                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher["id"], $iAmount, $additionalData);
+                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher["id"], $iAmount);
                                             if ($isVoucherRedeemStatus === 100) {
                                                 $xml .= '<status code="100">Payment authorized using Voucher</status>';
                                             } elseif ($isVoucherRedeemStatus === 43) {

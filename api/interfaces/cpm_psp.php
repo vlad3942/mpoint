@@ -785,7 +785,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem(string $iVoucherID, float $iAmount=-1, array $aAdditionalData = array())
+	public function redeem(string $iVoucherID, float $iAmount=-1)
 	{
 		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
@@ -800,9 +800,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
 		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
 		$b .= '<additional-data>';
-		if(isset($aAdditionalData) === true && empty($aAdditionalData) === false)
+		if($this->getTxnInfo()->getAdditionalData() !== null)
 		{
-            foreach ($aAdditionalData as $key=>$value)
+            foreach ($this->getTxnInfo()->getAdditionalData() as $key=>$value)
             {
                 $b .= '<property name="' . $key . '">' . $value . '</property>';
             }

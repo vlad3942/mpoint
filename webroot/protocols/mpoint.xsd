@@ -1354,7 +1354,6 @@
 <xs:complexType name="voucher">
 	<xs:all>
 		<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
-		<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="id" type="xs:string" use="required" />
 	<xs:attribute name="order-no" type="order-no" use="optional" />
