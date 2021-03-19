@@ -74,8 +74,6 @@ require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
-// Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/mpgs.php");
 require_once(sCLASS_PATH . '/payment_route.php');
 
 $aMsgCds = array();
