@@ -150,13 +150,16 @@ class ClientRouteConfigurations
      * @param integer $clientId Unique ID for the Client performing the request
      * @return    ClientRouteConfigurations
      */
-    public static function produceConfig(RDB $oDB, int $clientId): ClientRouteConfigurations
+    public static function produceConfig(RDB $oDB, int $clientId, ?int $routeConfigId = NULL): ClientRouteConfigurations
     {
         $sql = "SELECT R.id as routeid, R.providerid, RC.id AS routeconfigid, RC.name AS routename, RC.username, 
                 RC.password, RC.mid, RC.capturetype, RC.enabled AS routeconfigenabled
                 FROM client" . sSCHEMA_POSTFIX . ".route_tbl R
                 INNER JOIN client" . sSCHEMA_POSTFIX . ".routeconfig_tbl RC ON RC.routeid = R.id
                 WHERE R.clientid = " . $clientId;
+        if(empty($routeConfigId) === false){
+            $sql .= " AND RC.id = ".$routeConfigId;
+        }
 
         try {
             $res = $oDB->query($sql);
