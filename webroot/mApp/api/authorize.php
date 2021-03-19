@@ -343,7 +343,7 @@ try
                                         $isVoucherRedeem = TRUE;
                                     }
 
-                                    if($iPSPID > 0 && $isVoucherErrorFound === FALSE && $isVoucherPreferred !== "false" ) {
+                                    if($iPSPID > 0 && $isVoucherErrorFound === FALSE && ( (is_object($cardNode) === false || count($cardNode) === 0 ) || $isVoucherPreferred !== "false")) {
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
                                             if (strtolower($is_legacy) === 'false') {
