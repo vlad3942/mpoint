@@ -1750,6 +1750,7 @@ class TxnInfo
             if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
             if (array_key_exists("issuing-bank", $misc) === false) { $misc["issuing-bank"] = $obj->getIssuingBankName(); }
             if (array_key_exists("billingAddr", $misc) === false) { $misc["billingAddr"] = $obj->getBillingAddr(); }
+            if (array_key_exists("routeconfigid", $misc) === false) { $misc["routeconfigid"] = $obj->getRouteConfigID(); }
 
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
