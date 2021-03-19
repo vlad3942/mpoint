@@ -114,6 +114,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
 	public function testVoucherRedemptionDeniedByIssuer()
 	{
+	    $this->bIgnoreErrors = true ;//in case of txn decline mpoint will log execption
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iDSB_PSP;
 
