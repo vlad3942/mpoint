@@ -66,7 +66,7 @@ class MerchantRouteProperty
      */
 	public function processResponse(array $response): string
     {
-        $xml = '<additional_property_response>';
+        $xml = '<param>';
         $xml .= '<key>'.$this->_sKey.'</key>';
         if($response['status'] === TRUE){
             $xml .= '<status>Success</status>';
@@ -75,7 +75,7 @@ class MerchantRouteProperty
             $xml .= '<status>Fail</status>';
             $xml .= '<message>Fail To Configure Additinal Property. </message>';
         }
-        $xml .= '</additional_property_response>';
+        $xml .= '</param>';
         return $xml;
     }
 
