@@ -361,4 +361,86 @@
         </insert>
 	</changeSet>
 	
+	<changeSet author="Nitin Gaikwad" id="2021-03-17-setup-v2.26-system-6">
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="63"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="97"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="98"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="99"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="100"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="63"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="97"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="98"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="99"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="100"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+	
 </databaseChangeLog>

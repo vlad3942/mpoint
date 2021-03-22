@@ -7,7 +7,7 @@
 
 require_once __DIR__. '/payAPITest.php';
 
-class AMEXPayAPITest extends PayAPITest
+class SafetyPayAPITest extends PayAPITest
 {
     public function testSuccessfulSafetyPayPay()
     {
