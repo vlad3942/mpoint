@@ -20,4 +20,61 @@
 
     </changeSet>
 
+    <changeSet author="Sagar Narayane"
+        id="2020-03-22-setup-v2.26-log">
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="1014"/>
+            <column name="name" value="Payment Pending"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2012"/>
+            <column name="name" value="Cancel Failed"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2013"/>
+            <column name="name" value="Refund Failed"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2014"/>
+            <column name="name" value="Payment Request Cancelled"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2015"/>
+            <column name="name" value="Payment Request Expired"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <update catalogName="log"
+                schemaName="log"
+                tableName="state_tbl">
+            <column name="name" value="Capture Failed" />
+            <where>id = 2011</where>
+        </update>
+
+    </changeSet>
+
 </databaseChangeLog>
