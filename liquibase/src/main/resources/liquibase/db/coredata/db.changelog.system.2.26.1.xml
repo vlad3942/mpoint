@@ -233,4 +233,132 @@
             <where>id = 19</where>
         </update>
     </changeSet>
+
+	<changeSet author="Nitin Gaikwad" id="2021-03-17-setup-v2.26-system-1">
+		<insert catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+            <column name="id" value="63"/>
+            <column name="name" value="SafetyPay"/>
+            <column name="paymenttype" value="4"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+            <column name="id" value="97"/>
+            <column name="name" value="PSE"/>
+            <column name="paymenttype" value="7"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+            <column name="id" value="98"/>
+            <column name="name" value="Boleto"/>
+            <column name="paymenttype" value="8"/>
+        </insert>
+        
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+            <column name="id" value="99"/>
+            <column name="name" value="Efecty"/>
+            <column name="paymenttype" value="8"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="card_tbl">
+            <column name="id" value="100"/>
+            <column name="name" value="Banco de Bogata"/>
+            <column name="paymenttype" value="8"/>
+        </insert>
+	</changeSet>
+
+	<changeSet author="Nitin Gaikwad" id="2021-03-17-setup-v2.26-system-2">
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="psp_tbl">
+            <column name="id" value="70"/>
+            <column name="name" value="SafetyPay"/>
+            <column name="system_type" value="4"/>
+        </insert>
+    </changeSet>
+
+	<changeSet author="Nitin Gaikwad" id="2021-03-17-setup-v2.26-system-3">
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_tbl">
+            <column name="currencyid" value="986"/>
+            <column name="pspid" value="70"/>
+            <column name="name" value="BRL"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_tbl">
+            <column name="currencyid" value="170"/>
+            <column name="pspid" value="70"/>
+            <column name="name" value="COP"/>
+        </insert>
+        
+    </changeSet>
+
+	<changeSet author="Nitin Gaikwad" id="2021-03-17-setup-v2.26-system-4">
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="70"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="70"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+	
+	<changeSet author="Nitin Gaikwad" id="2021-03-17-setup-v2.26-system-5">
+		<insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_tbl">
+            <column name="cardid" value="63"/>
+            <column name="pspid" value="70"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_tbl">
+            <column name="cardid" value="97"/>
+            <column name="pspid" value="70"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_tbl">
+            <column name="cardid" value="98"/>
+            <column name="pspid" value="70"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_tbl">
+            <column name="cardid" value="99"/>
+            <column name="pspid" value="70"/>
+        </insert>
+        
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_tbl">
+            <column name="cardid" value="100"/>
+            <column name="pspid" value="70"/>
+        </insert>
+	</changeSet>
+	
 </databaseChangeLog>
