@@ -270,6 +270,7 @@ $aHTTP_CONN_INFO["safetypay"]["timeout"] = 120;
 $aHTTP_CONN_INFO["safetypay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["pay"] = "/_test/simulators/safetypay/pay.php";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["initialize"] = "/_test/simulators/safetypay/pay.php";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/_test/simulators/safetypay/get-payment-methods.php";
 $aHTTP_CONN_INFO["safetypay"]["path"] = $aHTTP_CONN_INFO["safetypay"]["paths"]["pay"];
 
 ?>
