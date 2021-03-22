@@ -785,15 +785,32 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem($iVoucherID, $iAmount=-1)
+	public function redeem(string $iVoucherID, float $iAmount=-1)
 	{
+		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<redeem-voucher id="'. $iVoucherID .'">';
-		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'">';
-		$b .= '<amount country-id="1">'. $iAmount .'</amount>';
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+		if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+		{
+			$b .= $this->getPSPConfig()->toRouteConfigXML();
+		}
+		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
+		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
+		$b .= '<additional-data>';
+		if($this->getTxnInfo()->getAdditionalData() !== null)
+		{
+            foreach ($this->getTxnInfo()->getAdditionalData() as $key=>$value)
+            {
+                $b .= '<property name="' . $key . '">' . $value . '</property>';
+            }
+		}
+		$b .= '</additional-data>';
+		$b .= '<auto-capture>'. htmlspecialchars($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';
 		$b .= '</transaction>';
+
 		$b .= '</redeem-voucher>';
 		$b .= '</root>';
 
@@ -806,14 +823,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
-			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) { $code = (string)$obj_XML->voucher->transaction; }
+			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0)
+			{
+				$code = (string)$obj_XML->voucher->transaction;
+			}elseif (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) {
+				$code = (string)$obj_XML->external_id;
+
+			}
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
 		else if ($code == 400)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+			$resCode = (isset($obj_XML->voucher->status["code"]) === true)?($obj_XML->voucher->status["code"]):($obj_XML->status["code"]);
 				
-			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) {  throw new UnexpectedValueException("Redeem failed in validation", (integer) $obj_XML->voucher->status["code"] ); }
+			if (isset($resCode) === true && strlen($resCode) > 0) {  throw new UnexpectedValueException("Redeem failed in validation", (integer) $resCode ); }
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
 		else if ($code == 402) { throw new UnexpectedValueException("Insufficient balance on voucher", 43); }
@@ -825,6 +849,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
 	{
+	    if(empty($this->aCONN_INFO["paths"]["callback"]))  return;
+
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';

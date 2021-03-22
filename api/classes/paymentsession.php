@@ -53,6 +53,8 @@ final class PaymentSession
 
     private $_expire;
 
+    private string $_created;
+
     protected function __construct()
     {
         $args = func_get_args();
@@ -151,7 +153,7 @@ final class PaymentSession
 
     private function getSession($sessionid)
     {
-        $sql = "SELECT * FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE id = " . intval($sessionid);
+        $sql = "SELECT * FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE id = " . (int)$sessionid;
 
         $RS = $this->_obj_Db->getName($sql);
         if (is_array($RS) === true) {
@@ -167,6 +169,8 @@ final class PaymentSession
             $this->_iStateId = $RS["STATEID"];
             $this->_id=$RS["ID"];
             $this->_expire = $RS["EXPIRE"];
+            $this->_created = $RS["CREATED"];
+
             if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
                 $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
             }
@@ -196,25 +200,24 @@ final class PaymentSession
         if ($stateId == null)
         {
             $iPendingAmt = $this->getPendingAmount();
-            if ($iPendingAmt == 0) {
-
+            if ($this->getTransactionStates(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE) === true) { $stateId = Constants::iSESSION_FAILED; }
+            elseif ($iPendingAmt == 0)
+            {
                 $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE);
-
-                if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) {
-                    $stateId = Constants::iSESSION_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates , array(Constants::iPAYMENT_REJECTED_STATE)) == true) {
-                    $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates ) == true) {
-                    $stateId = Constants::iSESSION_COMPLETED;
-                }
-            } elseif ($iPendingAmt != 0) {
+                if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) { $stateId = Constants::iSESSION_COMPLETED; }
+                elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates , array(Constants::iPAYMENT_REJECTED_STATE)) == true) { $stateId = Constants::iSESSION_PARTIALLY_COMPLETED; }
+                elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates ) == true) { $stateId = Constants::iSESSION_COMPLETED; }
+            }
+            elseif ($iPendingAmt != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) { $stateId = Constants::iSESSION_EXPIRED; }
+            elseif ($iPendingAmt != 0)
+            {
                 if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
+                }
+                if( $this->getSessionType() == 1 && $this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
                     $stateId = Constants::iSESSION_FAILED;
                 }
-            } elseif ($iPendingAmt != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {
-                $stateId = Constants::iSESSION_EXPIRED;
+
             }
         }
         if($stateId != null)
@@ -270,7 +273,7 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (2000,2001,2007)
+                AND msg.stateid in (2000,2001)
                 GROUP BY txn.id,msg.stateid";
 
                 $res = $this->_obj_Db->query($sql);
@@ -336,10 +339,12 @@ final class PaymentSession
     {
         $status = false;
         try {
+            //DateTime check is added to improve the performance of query
+            //Session is created immediately after transaction is created
             $primaryProdBtwnCondition = " BETWEEN ". Constants::iPrimaryProdTypeBase ." AND ". Constants::iPrimaryProdTypeBase." + 99";
             $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
-                    WHERE sessionid = " . $this->_id . "
+                    WHERE sessionid = " . $this->_id . " and txn.created >= ('". $this->_created ."'::date -  INTERVAL '10 min')
                     AND (msg.stateid = ".$stateId." AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
@@ -409,7 +414,7 @@ final class PaymentSession
         $aTransaction = [];
         try
         {
-            $sql = "SELECT id FROM log" . sSCHEMA_POSTFIX . ".Transaction_tbl WHERE sessionid = " . $this->getId();
+            $sql = "SELECT id FROM log" . sSCHEMA_POSTFIX . ".Transaction_tbl WHERE sessionid = " . $this->getId() ." AND created >= ('" . $this->_created . "'::date -  INTERVAL '10 min')";
             $aRS = $this->_obj_Db->getAllNames($sql);
             if (is_array($aRS) === true)
             {
@@ -425,4 +430,34 @@ final class PaymentSession
         }
         return $aTransaction;
     }
+
+    /**
+     * @param string $whereClause
+     *
+     * @return array
+     */
+    public function getFilteredTransaction(string $whereClause = ''): array
+    {
+        $aTransaction = [];
+        $sql ='';
+        try {
+            //DateTime check is added to improve the performance of query
+            //Session is created immediately after transaction is created
+            $sql = "SELECT transaction_tbl.id FROM log" . sSCHEMA_POSTFIX . ".message_tbl message_tbl
+            INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl transaction_tbl ON transaction_tbl.id = message_tbl.txnid
+            WHERE sessionid = " . $this->_id . " and transaction_tbl.created >= ('" . $this->_created . "'::date -  INTERVAL '10 min')
+            AND " . $whereClause;
+            $aRS = $this->_obj_Db->getAllNames($sql);
+            if (is_array($aRS) === TRUE) {
+                foreach ($aRS as $rs) {
+                    array_push($aTransaction, $rs['ID']);
+                }
+            }
+        }
+        catch (Exception $e) {
+            trigger_error("Session Get Filtered Transaction query {$sql} failed - " . $e->getMessage() , E_USER_WARNING);
+        }
+        return $aTransaction;
+    }
+
 }

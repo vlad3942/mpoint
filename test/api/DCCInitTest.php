@@ -3,12 +3,89 @@
  * User: SAGAR BADAVE
  */
 
-require_once __DIR__. '/initializeAPIValidationTest.php';
+require_once __DIR__ . '/../../webroot/inc/include.php';
+require_once __DIR__ . '/../inc/testinclude.php';
 
-class DCCInitTest extends InitializeAPIValidationTest
+class DCCInitTest extends baseAPITest
 {
+        protected $_aMPOINT_CONN_INFO;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->constHTTPClient();
+    }
+
+    public function constHTTPClient()
+    {
+        global $aMPOINT_CONN_INFO;
+        $aMPOINT_CONN_INFO['path'] = "/mApp/api/initialize.php";
+        $aMPOINT_CONN_INFO["contenttype"] = "text/xml";
+        $this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
+        $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
+    }
+
+    protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$exchangeinfoid=0)
+	{
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+		$xml .= '<root>';
+		$xml .= '<initialize-payment client-id="'. $client .'" account="'. $account .'">';
+		$xml .= '<transaction order-no="1234abc"';
+        if($exchangeinfoid > 0)
+            $xml .= ' exchangeserviceinfo-id="'.$exchangeinfoid.'"';
+        $xml .= '>';
+		$xml .= '<amount country-id="100"';
+		if(isset($currecyid) === true)
+		    $xml .= ' currency-id="'.$currecyid.'"';
+		$xml .= '>'.$amount.'</amount>';
+		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+		if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
+		$xml .= '</transaction>';
+		if(isset($token) === true)
+        {
+		    $xml .= '<auth-token>'.$token.'</auth-token>';
+        }
+
+        if(isset($sso_preference) === true && ($sso_preference === 'STRICT'))
+        {
+        	if(isset($profileid) === true) {
+				$xml .= '<client-info platform="iOS" version="'.$version.'" language="da" profileid= "'.$profileid.'">';
+			} else {
+				$xml .= '<client-info platform="iOS" version="'.$version.'" language="da" >';
+			}
+
+
+        	if(isset($mobile) === true) {
+				$xml .= '<mobile country-id="100" operator-id="10000">'.$mobile.'</mobile>';
+			}
+			if(isset($email) === true) {
+				$xml .= '<email>'.$email.'</email>';
+			}
+			if(isset($customerref) === true) {
+				$xml .= '<customer-ref>'.$email.'</customer-ref>';
+			}
+        }
+        else {
+			$xml .= '<client-info platform="iOS" version="'.$version.'" language="da">';
+			$xml .= '<mobile country-id="100" operator-id="10000">288828610</mobile>';
+			if(isset($email) === true) {
+				$xml .= '<email>'.$email.'</email>';
+			} else {
+				$xml .= '<email>jona@oismail.com</email>';
+			}
+        }
+
+		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
+		$xml .= '</client-info>';
+		$xml .= '</initialize-payment>';
+		$xml .= '</root>';
+
+		return $xml;
+	}
+
     public function testSuccessfulDCCInit()
     {
+
         $pspID = Constants::iWIRE_CARD_PSP;
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
@@ -58,6 +135,7 @@ class DCCInitTest extends InitializeAPIValidationTest
 
     public function testFailureDCCPresentmentInit()
     {
+
 		$pspID = Constants::iWIRE_CARD_PSP;
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')" );
@@ -78,118 +156,4 @@ class DCCInitTest extends InitializeAPIValidationTest
 		$this->assertStringContainsString('dcc="true"', $sReplyBody );
 		$this->assertStringContainsString('presentment-currency="false"', $sReplyBody );
 	}
-
-    public function testBadRequestInvalidRequestBody()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-	public function failed_testUnsupportedMediaType()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-    public function testBadRequestDisabledClient()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testDisabledAccount()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testUnauthorized()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testWrongUsernamePassword()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testEmptyCardConfiguration()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testEmptyCardConfigurationWithCurrency()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-	public function testSoftDisabledCardType()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testHardDisabledCardType()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-    public function testEmptyCurrencyId()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testEuaIdPasswordFlow()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-    public function testSSOFailForStoredCard()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testSSOTimeoutForStoredCard()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testSSOSuccessForStoredCard()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-	public function testSSOMissingAuthToken()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testInvalidTransactionAmount()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testAttemptNumber()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testStaticRouteLevelConfiguration()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testCardNodes()
-	{
-	    $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-	}
-
-	public function testInvalidEmailAddress()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-
-    public function testInvalidFXServiceTypeID()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
-    public function testStoredFXServiceTypeID()
-    {
-        $this->markTestIncomplete('Duplicate Test case - Already covered in InitializeAPIValidationTest ');
-    }
 }
