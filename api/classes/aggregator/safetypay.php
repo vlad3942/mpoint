@@ -57,11 +57,11 @@ class safetypay extends CPMPSP
         return $sxml;
 
     }
+    function compare_usage($a, $b)
+    {
+        if((int)$a->usage === (int)$b->usage)
+            return strnatcmp($a->displayName, $b->displayName);
+            return ((float) $a->usage < (float) $b->usage);
+    }
 }
 
-function compare_usage($a, $b)
-{
-    if((int)$a->usage === (int)$b->usage)
-        return strnatcmp($a->displayName, $b->displayName);
-    return ((float) $a->usage < (float) $b->usage);
-}
