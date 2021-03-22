@@ -73,7 +73,7 @@ class MerchantRouteProperty
             $xml .= '<message>Configuration Successfully Updated.</message>';
         }else{
             $xml .= '<status>Fail</status>';
-            $xml .= '<message>Fail To Configure Additinal Property. </message>';
+            $xml .= '<message>Fail To Configure Additional Property. </message>';
         }
         $xml .= '</param>';
         return $xml;
