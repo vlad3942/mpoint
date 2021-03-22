@@ -51,16 +51,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $xml .=  $objRouteFeature->processResponse($response);
                     }
                 }
-                elseif(count($obj_DOM->{'route_configuration'}->additional_merchant_properties) == 1)
+                elseif(count($obj_DOM->{'route_configuration'}->additional_data) == 1)
                 {
-                    $obj_Route_Property_DOM = $obj_DOM->{'route_configuration'}->additional_merchant_properties;
+                    $obj_Route_Property_DOM = $obj_DOM->{'route_configuration'}->additional_data;
                     $iRouteConfigId = (int) $obj_DOM->{'route_configuration'}->id;
-                    $iMerchantPropertyCount = count($obj_Route_Property_DOM->{'property'});
+                    $iMerchantPropertyCount = count($obj_Route_Property_DOM->{'param'});
+                    $xml .= '<additional_data>';
                     for($i=0;$i<$iMerchantPropertyCount;$i++){
-                        $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'property'}[$i]->key, $obj_Route_Property_DOM->{'property'}[$i]->value);
+                        $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'param'}[$i]->key, $obj_Route_Property_DOM->{'param'}[$i]->value);
                         $response['status'] = $objRouteFeature->AddAdditionalMerchantProperty();
                         $xml .=  $objRouteFeature->processResponse($response);
                     }
+                    $xml .= '</additional_data>';
                 }
                 else
                 {

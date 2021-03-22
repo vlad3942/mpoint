@@ -167,10 +167,10 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="additional_merchant_properties" minOccurs="0" maxOccurs="1">
+			<xs:element name="additional_data" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="property" minOccurs="1" maxOccurs="unbounded">
+						<xs:element name="param" minOccurs="1" maxOccurs="unbounded">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element type="xs:string" name="key" minOccurs="0" maxOccurs="1"/>
