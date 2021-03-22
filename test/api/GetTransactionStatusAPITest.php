@@ -29,10 +29,11 @@ class GetTransactionStatusAPITest extends baseAPITest
         $xml .= '<root>';
         $xml .= '<get-transaction-status>';
         $xml .= '<client-id>'.$clientid.'</client-id>';
+        if($mode>0){ $xml .= '<mode>'.$mode.'</mode>'; }
+
         $xml .= '<transactions>';
-        $xml .= '<transaction-id ';
-        if($mode>0){ $xml .= 'mode= "'.$mode.'"'; }
-        $xml .= '>'.$txn_id.'</transaction-id>';
+        $xml .= '<transaction-id>';
+        $xml .=  $txn_id.'</transaction-id>';
         $xml .= '</transactions>';        
         $xml .= '</get-transaction-status>';
         $xml .= '</root>';

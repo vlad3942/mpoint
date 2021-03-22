@@ -43,11 +43,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'get-transaction-status'}) > 0) {
 
         $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT );
-        $aTransactionIDs = $obj_DOM->{'get-transaction-status'}->transactions->{'transaction-id'};
         $iClientId = (integer)$obj_DOM->{'get-transaction-status'}->{"client-id"};
+        $mode = (integer)$obj_DOM->{'get-transaction-status'}->{'mode'};
+
+        if($obj_DOM->{'get-transaction-status'}->{"session_id"})
+        {
+            $xml .= $obj_mPoint->getTxnStatus(0,(int)$iClientId,$mode,(int)$obj_DOM->{'get-transaction-status'}->{"session_id"});
+        }
+        $aTransactionIDs = $obj_DOM->{'get-transaction-status'}->transactions->{'transaction-id'};
         for ($i=0; $i<count($aTransactionIDs); $i++)
         {
-            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,(int)$aTransactionIDs[$i]['mode']);
+            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,$mode);
         }
     }
     elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
