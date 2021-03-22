@@ -23,6 +23,14 @@ abstract class Constants
 	 *
 	 */
 	const iUNSUPPORTED_OPERATOR = 44;
+
+	/**
+	 * Defines the ID of the State that should be logged when the Transaction is created by mPoint
+	 * This state define that transaction is created and in order to data for futuristic authorization
+	 *
+	 */
+	const iTRANSACTION_CREATED = 1000;
+
 	/**
 	 * Defines the ID of the State that should be logged when the Client Input has been successfully validate
 	 *
@@ -1083,6 +1091,12 @@ abstract class Constants
 	 */
 	const iCEBUPAYMENTCENTER_APM = 69;
 
+	/**
+	 * Unique PSP ID for transaction's made using CEBU Travel Fund
+	 *
+	 */
+	const iTRAVELFUND_VOUCHER = 71;
+
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1624,6 +1638,7 @@ abstract class Constants
 	const iPROCESSOR_TYPE_TOKENIZATION = 8;
 	const iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY = 9;
 	const iPROCESSOR_TYPE_POST_FRAUD_GATEWAY = 10;
+	const iPROCESSOR_TYPE_VOUCHER = 11;
 
 
 

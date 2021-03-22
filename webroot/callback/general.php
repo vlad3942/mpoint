@@ -146,7 +146,10 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
-
+// Require specific Business logic for the CEBU Payment Center component
+require_once(sCLASS_PATH .'/voucher/TravelFund.php');
+// Require model class for Payment Authorization
+require_once(sCLASS_PATH ."/authorize.php");
 
 /**
  * Input XML format
@@ -759,9 +762,6 @@ try
          }
          $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
-         if(($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)
-         $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-
           //update captured amt when psp returns captured callback
           if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
               $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
@@ -776,6 +776,106 @@ try
           echo '</root>';
           $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
       }
+
+        if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
+            if ($obj_TxnInfo->getCallbackURL() != "") {
+                $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+            }
+            $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
+            if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_CAPTURED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
+                try {
+                    $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
+                    $newTxnInfoIds = $obj_TxnInfo->getPaymentSession()->getFilteredTransaction($whereClause);
+                    if (count($newTxnInfoIds) > 0) {
+                        $newTxnInfo = TxnInfo::produceInfo($newTxnInfoIds[0], $_OBJ_DB);
+                        $iPSPID = $newTxnInfo->getPSPID();
+                        $iAmount = (int)$newTxnInfo->getAmount();
+
+                        if (strtolower($is_legacy) == 'false')
+                        {
+                            $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID,$newTxnInfo->getRouteConfigID());
+                        } else {
+                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                        }
+
+                        if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
+                            && ($newTxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_WITH_VOUCHER_STATE) === FALSE)) {
+                            $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                            $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $obj_PSP);
+
+                            $voucherId = $newTxnInfo->getAdditionalData('voucherid');
+
+                            if ($voucherId !== NULL && $voucherId !== FALSE) {
+
+                                // <editor-fold defaultstate="collapsed" desc="Update Passbook Table">
+
+                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $newTxnInfo->getID(), $newTxnInfo->getClientConfig()->getID());
+
+                                $passbookEntry = new PassbookEntry
+                                (
+                                    NULL,
+                                    $iAmount,
+                                    $newTxnInfo->getCurrencyConfig()->getID(),
+                                    Constants::iInitializeRequested
+                                );
+                                if ($txnPassbookObj instanceof TxnPassbook) {
+                                    $txnPassbookObj->addEntry($passbookEntry);
+                                    $txnPassbookObj->performPendingOperations();
+                                }
+
+                                $passbookEntry = new PassbookEntry
+                                (
+                                    NULL,
+                                    $iAmount,
+                                    $newTxnInfo->getCurrencyConfig()->getID(),
+                                    Constants::iAuthorizeRequested
+                                );
+                                if ($txnPassbookObj instanceof TxnPassbook) {
+                                    $txnPassbookObj->addEntry($passbookEntry);
+                                    $txnPassbookObj->performPendingOperations();
+                                }
+                                // </editor-fold>
+                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher($voucherId, $iAmount);
+
+                                // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
+                                if ($isVoucherRedeemStatus === 100) {
+                                    $xml .= '<status code="100">Payment authorized using Voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 43) {
+                                    header("HTTP/1.1 402 Payment Required");
+                                    $xml .= '<status code="43">Insufficient balance on voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 45) {
+                                    header("HTTP/1.1 401 Unauthorized");
+                                    $xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
+                                } elseif ($isVoucherRedeemStatus === 48) {
+                                    header("HTTP/1.1 423 Locked");
+                                    $xml .= '<status code="48">Voucher payment temporarily locked</status>';
+                                } else {
+                                    header("HTTP/1.1 502 Bad Gateway");
+                                    $xml .= '<status code="92">Payment rejected by voucher issuer</status>';
+                                }
+                                // </editor-fold>
+
+                            }
+                        }
+                    }
+                }
+                catch (Exception $e) {
+                    trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
+                }
+                 if ($obj_TxnInfo->getCallbackURL() != "")
+                 {
+                    header("HTTP/1.1 202 Accepted");
+                    header("Content-Length: 0");
+                    header("Connection: Close");
+                 }
+                 else
+                 {
+                      	header("HTTP/1.1 200 OK");
+                 }
+
+            }
+
+        }
 
       $iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID());
       if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO['foreign-exchange']); }

@@ -249,4 +249,16 @@ $aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/_test/simulators/mco
 
 $aHTTP_CONN_INFO["uatp"]["paths"]["cancel"] = "/_test/simulators/uatp/cancel-suvtp.php";
 
+/**
+ * Connection info for connecting to Travel Fund
+ */
+
+$aHTTP_CONN_INFO["travel-fund"]["protocol"] = "http";
+$aHTTP_CONN_INFO["travel-fund"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["travel-fund"]["port"] = 80;
+$aHTTP_CONN_INFO["travel-fund"]["method"] = "POST";
+$aHTTP_CONN_INFO["travel-fund"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/_test/simulators/travel-fund/redeem.php";
+
+
 ?>

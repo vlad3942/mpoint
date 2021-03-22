@@ -270,7 +270,7 @@ final class TxnPassbook
         } elseif ($requestedOperation === Constants::iVoidRequested) {
             $validateOperationResponse = $this->_validateOperation($this->_cancelledAmount + $this->_refundedAmount, $passbookEntry->getAmount(), $this->_getCancelableAmount() + $this->_getRefundableAmount(), $this->isPartialRefundSupported());
         } elseif ($requestedOperation === Constants::iAuthorizeRequested) {
-            if ($this->_authorizedAmount === 0 && ($this->_initializedAmount >= $passbookEntry->getAmount() || $this->_initializedAmount === $passbookEntry->getInitializedAmount() )) {
+            if ($this->_authorizedAmount === 0 && ($this->_initializedAmount >= $passbookEntry->getAmount() || $this->_initializedAmount >= $passbookEntry->getInitializedAmount() )) {
                 $validateOperationResponse['Status'] = 0;
                 $validateOperationResponse['Message'] = '';
             }
@@ -910,7 +910,7 @@ final class TxnPassbook
                 $this->getClientId()
             );
             $result = $this->getDBConn()->execute($res, $aParams);
-            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
+            if ($result === false || (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0))
             {
                 throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
                 return FALSE;

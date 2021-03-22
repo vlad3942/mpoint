@@ -30,13 +30,8 @@ class GetStatusAPITest extends baseAPITest
         $xml .= '<root>';
         $xml .= '<get-status client-id="'. $client .'">';
         $xml .= '<transactions>';
-        $xml .= '<transaction id="'. $txn_id .'" order-no="'. $order_id .'" />';
+        $xml .= '<transaction id="'. $txn_id .'"/>';
         $xml .= '</transactions>';
-        $xml .= '<client-info language="us" version="1.28" platform="iOS/9.0">';
-        $xml .= '<mobile operator-id="20000" country-id="608">8767649198</mobile>';
-        $xml .= '<email>gaurav.pawar@cellpointmobile.com</email>';
-        $xml .= '<ip>127.0.0.1</ip>';
-        $xml .= '</client-info>';
         $xml .= '</get-status>';
         $xml .= '</root>';
 

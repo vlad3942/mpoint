@@ -24,6 +24,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 
     public function testSuccessfulCallback()
     {
+		$this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iMOBILEPAY_PSP;
 
@@ -121,6 +122,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 
 	public function testSuccessfulAutoCapture()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iMOBILEPAY_PSP;
 
@@ -169,6 +171,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 
 	public function testOrderUniqueByMerchant()
 	{
+		$this->bIgnoreErrors = true;
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iMOBILEPAY_PSP;
 
