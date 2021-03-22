@@ -66,7 +66,7 @@ final class GeneralPSP extends CPMACQUIRER
         throw new BadMethodCallException('Method tokenize is not supported by GeneralPSP class');
     }
 
-    public function redeem($iVoucherID, $iAmount = -1)
+    public function redeem(string $iVoucherID, float $iAmount = -1)
     {
         throw new BadMethodCallException('Method redeem is not supported by GeneralPSP class');
     }

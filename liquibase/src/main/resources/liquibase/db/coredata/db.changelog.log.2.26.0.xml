@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Sagar Narayane"
+        id="2020-02-18-setup-v2.26-log">
+        
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="1000"/>
+            <column name="name" value="System Created Transaction"/>
+            <column name="func" value=""/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
