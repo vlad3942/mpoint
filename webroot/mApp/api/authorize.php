@@ -294,6 +294,7 @@ try
                                                 }
                                             }
                                             $misc = [];
+                                            $misc['auto-capture'] = 2;
                                             if (strtolower($is_legacy) === 'false')
                                             {
                                                 $typeId = Constants::iVOUCHER_CARD;
@@ -355,6 +356,9 @@ try
                                                     $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
                                                     # Update routeconfig ID in log.transaction table
                                                     $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                                                    $misc = [];
+                                                    $misc['auto-capture'] = 2;
+                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
                                                     $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
 
@@ -409,9 +413,12 @@ try
 								if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
 
-                                    if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) {
+                                    if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100)
+                                    {
+                                        $misc = [];
+                                        $misc["routeconfigid"] = -1;
 
-                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount());
+                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
                                         if ($txnObj !== NULL) {
 
                                             $obj_TxnInfo = $txnObj;
