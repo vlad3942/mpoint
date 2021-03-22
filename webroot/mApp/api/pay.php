@@ -321,18 +321,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $ip);
-                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
+                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
+
+                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $iSessionType != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
                         {
                             $authToken = trim($obj_DOM->pay[$i]->{'auth-token'});
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"],$obj_TransacionCountryConfig,$authToken) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }  //made hmac mandatory for dcc
-                        else if($obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
+                        else if($iSessionType != 2 && $obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
 						{
 							if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"],$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
 						}
 
 						$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
-                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
 						$iSaleAmount = 0;
 						
 						if($iSessionType > 1 && $obj_CardResultSet["DCCENABLED"] === false )
