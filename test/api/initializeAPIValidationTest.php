@@ -387,7 +387,6 @@ class InitializeAPIValidationTest extends baseAPITest
 
 	public function testSSOSuccessForStoredCard()
 	{
-		$this->markTestIncomplete();
 		$pspID = 2;
         $this->bIgnoreErrors = true; //User Warning Expected
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
