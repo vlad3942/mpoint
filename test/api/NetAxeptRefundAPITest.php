@@ -244,7 +244,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 		
 		$this->captureTest(502, 999, Constants::iPAYMENT_CAPTURED_STATE);
 		$this->_assertTransactionState(Constants::iPAYMENT_CAPTURED_STATE, 0);
-		$this->_assertTransactionState(Constants::iPAYMENT_DECLINED_STATE);
+		$this->_assertTransactionState(Constants::iPAYMENT_CAPTURE_FAILED_STATE);
 		
 		$this->refundTest(200, 1001, Constants::iPAYMENT_CANCELLED_STATE);
 		$this->_assertTransactionState(Constants::iPAYMENT_CANCELLED_STATE);

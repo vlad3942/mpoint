@@ -150,7 +150,7 @@ if($argc == 2)
 				{
 					if(empty(trim($RS['TXNID'])) === false)
 					{
-						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_DECLINED_STATE, "Declined from script");
+						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Declined from script");
 				
 					}
 				}

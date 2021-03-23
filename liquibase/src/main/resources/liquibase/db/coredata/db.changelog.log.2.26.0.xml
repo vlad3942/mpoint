@@ -68,6 +68,15 @@
             <column name="func" value="Payment"/>
         </insert>
 
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="4039"/>
+            <column name="name" value="Session Already Completed"/>
+            <column name="func" value="initialize"/>
+        </insert>
+
         <update catalogName="log"
                 schemaName="log"
                 tableName="state_tbl">

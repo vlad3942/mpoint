@@ -451,6 +451,12 @@ abstract class Constants
     const iSESSION_PARTIALLY_COMPLETED = 4031;
 
     /**
+     * Defines the ID of the State that indicates that Session Already Completed
+     *
+     */
+    const iSESSION_ALREADY_COMPLETED = 4039;
+
+    /**
 	 * Defines the ID of the State that indicates that the payment has been initiated for captured.
 	 *
 	 */

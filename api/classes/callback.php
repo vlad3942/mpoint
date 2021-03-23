@@ -431,7 +431,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardNo, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
 	}
 
 	/**
@@ -687,7 +687,7 @@ abstract class Callback extends EndUserAccount
 	public function hasTransactionFailureState($sid)
 	{
         $sParentStatusCode = substr($sid, 0 ,4);
-        return (in_array($sParentStatusCode, array(Constants::iPAYMENT_DECLINED_STATE, Constants::iPAYMENT_REJECTED_STATE)) === true);
+        return (in_array($sParentStatusCode, array(Constants::iPAYMENT_CAPTURE_FAILED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_CANCEL_FAILED_STATE, Constants::iPAYMENT_REFUND_FAILED_STATE, Constants::iPAYMENT_REQUEST_CANCELLED_STATE, Constants::iPAYMENT_REQUEST_EXPIRED_STATE)) === true);
 	}
 
     /**

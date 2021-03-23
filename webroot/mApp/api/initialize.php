@@ -355,8 +355,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
-                                $xml = '<status code="4030">Payment session is already completed</status>';
-                                $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
+                                $xml = '<status code="'. Constants::iSESSION_ALREADY_COMPLETED .'">Payment session is already completed</status>';
+                                $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_ALREADY_COMPLETED, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
                             elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3 && strtolower($is_legacy) != 'false') {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
