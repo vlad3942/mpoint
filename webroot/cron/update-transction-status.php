@@ -138,7 +138,6 @@ require_once(sCLASS_PATH ."/googlepay.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH . "/eghl.php");
-
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
 
@@ -160,6 +159,8 @@ require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH ."/apm/swish.php");
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // </editor-fold>
 
 ignore_user_abort(true);

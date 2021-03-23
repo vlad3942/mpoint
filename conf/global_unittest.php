@@ -231,7 +231,7 @@ $aHTTP_CONN_INFO["mvault"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["mvault"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["mvault"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
-$HTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
+$aHTTP_CONN_INFO["mvault"]["mvault-contenttype"] = "application/xml";
 $aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/_test/simulators/mvault/save-card.php";
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-card-details"] = "/_test/simulators/mvault/get-card-details.php";
 
@@ -260,5 +260,17 @@ $aHTTP_CONN_INFO["travel-fund"]["method"] = "POST";
 $aHTTP_CONN_INFO["travel-fund"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/_test/simulators/travel-fund/redeem.php";
 
+/**
+ * Connection info for connecting to SafetyPay
+ */
+$aHTTP_CONN_INFO["safetypay"]["protocol"] = "http";
+$aHTTP_CONN_INFO["safetypay"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["safetypay"]["port"] = 80;
+$aHTTP_CONN_INFO["safetypay"]["timeout"] = 120;
+$aHTTP_CONN_INFO["safetypay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["pay"] = "/_test/simulators/safetypay/pay.php";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["initialize"] = "/_test/simulators/safetypay/pay.php";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/_test/simulators/safetypay/get-payment-methods.php";
+$aHTTP_CONN_INFO["safetypay"]["path"] = $aHTTP_CONN_INFO["safetypay"]["paths"]["pay"];
 
 ?>
