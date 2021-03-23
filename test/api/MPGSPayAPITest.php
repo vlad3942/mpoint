@@ -5,7 +5,7 @@ class MPGSPayAPITest extends PayAPITest
 {
     public function testSuccessfulPay()
     {
-        parent::testSuccessfulPay(Constants::iDATA_CASH_PSP, Constants::iVISA_CARD);
+        parent::testSuccessfulPay(Constants::iMPGS_PSP, Constants::iVISA_CARD);
 	}
 
 }

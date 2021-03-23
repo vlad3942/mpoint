@@ -10,7 +10,7 @@ class MPGSAuthorizeAPITest extends AuthorizeAPITest
 {
     public function testSuccessfulAuthorize()
     {
-        $pspID = Constants::iDATA_CASH_PSP;
+        $pspID = Constants::iMPGS_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
