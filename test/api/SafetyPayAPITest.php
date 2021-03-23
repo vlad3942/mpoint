@@ -1,8 +1,11 @@
 <?php
 /**
- * User: jot
- * Date: 24-03-15
- * Time: 19:46
+ * User: Nitin Gaikwad
+ * Copyright: Cellpoint Mobile
+ * Link: http://www.cellpointmobile.com
+ * Project: mPoint
+ * Package:
+ * File Name:SafetyPayAPITest.php
  */
 
 require_once __DIR__. '/payAPITest.php';

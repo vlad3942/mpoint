@@ -1,6 +1,11 @@
 <?php
 /**
- * User: SAGAR BADAVE
+ * User: Nitin Gaikwad
+ * Copyright: Cellpoint Mobile
+ * Link: http://www.cellpointmobile.com
+ * Project: mPoint
+ * Package:
+ * File Name:SafetyPayInitTest.php
  */
 
 require_once __DIR__. '/initializeAPIValidationTest.php';
