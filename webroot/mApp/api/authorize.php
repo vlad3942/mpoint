@@ -170,7 +170,7 @@ require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 // Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/mpgs.php");
+require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH . '/Route.php');
 require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 

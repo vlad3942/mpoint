@@ -167,7 +167,7 @@ require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
 // Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/mpgs.php");
+require_once(sCLASS_PATH ."/MPGS.php");
 
 $aMsgCds = array();
 

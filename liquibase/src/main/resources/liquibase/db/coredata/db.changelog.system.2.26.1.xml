@@ -442,5 +442,317 @@
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
+
+    <changeSet author="Karishan Kumar" id="2021-02-19-setup-v2.26-system">
+        
+        <!-- MPGS -->
+
+        <!-- psp_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSP_Tbl">
+
+            <column name="id" value="72"/>
+            <column name="name" value="MPGS"/>
+            <column name="system_type" value="1"/>
+        </insert>
+                
+        <!-- pspcard_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="8"/>
+            <column name="pspid" value="72"/>
+        </insert>
+        
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="7"/>
+            <column name="pspid" value="72"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCard_Tbl">
+
+            <column name="cardid" value="5"/>
+            <column name="pspid" value="72"/>
+        </insert>
+
+       <!-- pspcurrency_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="608"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="PHP"/>
+        </insert>
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="344"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="HKD"/>
+        </insert>        
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="702"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="SGD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="784"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="AED"/>
+        </insert> 
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="36"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="AUD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="96"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="BND"/>
+        </insert>       
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="156"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="CNY"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="360"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="IDR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="392"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="SGD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="410"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="KRW"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="446"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="MOP"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="458"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="MYR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="764"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="THB"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="901"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="TWD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="840"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="USD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="124"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="CAD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="756"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="CHF"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="208"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="DKK"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="978"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="EUR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="826"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="GBP"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="144"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="LKR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="554"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="NZD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="634"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="QAR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="682"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="SAR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="752"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="SEK"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="356"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="INR"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="48"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="BHD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="414"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="KWD"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="704"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="VND"/>
+        </insert>
+
+         <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="578"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="NOK"/>
+        </insert>
+
+    </changeSet>
 	
 </databaseChangeLog>
