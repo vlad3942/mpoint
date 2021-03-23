@@ -380,7 +380,7 @@ abstract class Callback extends EndUserAccount
 		$amount =(int)$vars["amount"];
 		$sAdditionalData = "";
 		$exp = null;
-		$cardNo = 0;
+		$cardno = 0;
 		$fee = 0;
 		$cardId = 0;
 
@@ -426,7 +426,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardNo, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
 	}
 
 	/**
