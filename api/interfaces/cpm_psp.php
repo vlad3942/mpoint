@@ -188,14 +188,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					else
 					{
 						$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
-						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_FAILED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 						throw new RefundException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); 
 					}
 				}
 				else
 				{
 					$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
-					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_FAILED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 					throw new RefundException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); 
 				}
 			}
@@ -374,14 +372,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				else {
 				    if($this->getPSPConfig()->getProcessorType() !== 8) {
                         $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
-                        $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCEL_FAILED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
                     }
 				    throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
 			}
 			else {
 			    if($this->getPSPConfig()->getProcessorType() !== 8) {
                     $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
-                    $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCEL_FAILED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
                 }
 			    throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
