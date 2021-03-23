@@ -128,7 +128,7 @@ require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH . "/eghl.php");
 // Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/safetypay.php");
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the PayU component

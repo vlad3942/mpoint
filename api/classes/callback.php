@@ -1086,7 +1086,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iCEBUPAYMENTCENTER_APM):
 			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
 		case (Constants::iSAFETYPAY_AGGREGATOR):
-		    return new safetypay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"]);
+		    return new SafetyPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"]);
 		case (Constants::iTRAVELFUND_VOUCHER):
 			return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["travel-fund"]);
 

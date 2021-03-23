@@ -93,7 +93,7 @@ require_once(sCLASS_PATH ."/eghl.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/safetypay.php");
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the VeriTrans4G component
 require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 // Require specific Business logic for the DragonPay component
