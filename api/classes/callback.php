@@ -385,7 +385,7 @@ abstract class Callback extends EndUserAccount
 		$amount =(int)$vars["amount"];
 		$sAdditionalData = "";
 		$exp = null;
-		$cardNo = 0;
+		$cardno = 0;
 		$fee = 0;
 		$cardId = 0;
 
