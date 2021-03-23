@@ -317,7 +317,7 @@ class ClientRouteConfig
     {
         $aObj_Configurations = array();
 
-        $sql = "SELECT R.id, R.providerid, PSP.name AS providername
+        $sql = "SELECT DISTINCT R.id, R.providerid, PSP.name AS providername
 				FROM Client".sSCHEMA_POSTFIX.".Route_Tbl R
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON PSP.id = R.providerid AND PSP.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON R.clientid = CL.id AND CL.enabled = '1'

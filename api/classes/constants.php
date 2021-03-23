@@ -1098,6 +1098,12 @@ abstract class Constants
 	const iMPGS_PSP = 72;
 
 	/**
+	 * Unique ID for the Net banking aggregator : SAFETYPAY
+	 *
+	 */
+	const iSAFETYPAY_AGGREGATOR = 70;
+
+	/**
 	 * Unique PSP ID for transaction's made using CEBU Travel Fund
 	 *
 	 */
@@ -1559,6 +1565,26 @@ abstract class Constants
 	 *
 	 */
 	const iCEBUPAYMENTCENTEROFFLINE = 96;
+	/**
+	 * Unique Card ID for transaction's made using PSE
+	 *
+	 */
+	const iPSE = 97;
+	/**
+	 * Unique Card ID for transaction's made using BOLETO for offline
+	 *
+	 */
+	const iBOLETO = 98;/**
+	* Unique Card ID for transaction's made using Efecty for offline
+	*
+	*/
+	const iEFECTY = 99;/**
+	* Unique Card ID for transaction's made using BancoDe Bogata for offline
+	*
+	*/
+	const iBANCODEBOGATA  = 100;
+	
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
