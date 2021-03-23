@@ -275,7 +275,7 @@ $aHTTP_CONN_INFO["safetypay"]["path"] = $aHTTP_CONN_INFO["safetypay"]["paths"]["
 
 
 /**
- * Connection info for connecting to DataCash
+ * Connection info for connecting to MPGS
  */
 $aHTTP_CONN_INFO["mpgs"]["protocol"] = "http";
 $aHTTP_CONN_INFO["mpgs"]["host"] = "mpoint.local.cellpointmobile.com";
