@@ -284,7 +284,7 @@ abstract class Callback extends EndUserAccount
 	{
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
 		/* ========== Instantiate Connection Info Start ========== */
-		//check if proxy callback url is present or not
+		//check if proxy callback url is present or not //This temporary working for CEBU, CMD is in place remove this
 		$proxyCallbackUrl = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PROXY_CALLBACK');
 		if($proxyCallbackUrl !== null && $proxyCallbackUrl !== '' && $proxyCallbackUrl !== false ) {
 			$body = $body.'&proxy_callback='.$proxyCallbackUrl;
