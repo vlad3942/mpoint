@@ -599,7 +599,7 @@ try
                                         }
                                         $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 
-                                        if($iSessionType > 1 &&  General::xml2bool($obj_Elem["dcc"]) === false)
+                                        if($iSessionType > 1 &&  empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true  )
                                         {
                                             if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
                                             {
