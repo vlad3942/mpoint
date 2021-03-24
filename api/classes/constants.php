@@ -1090,6 +1090,13 @@ abstract class Constants
 	 *
 	 */
 	const iCEBUPAYMENTCENTER_APM = 69;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MPGS
+	 *
+	 */
+	const iMPGS_PSP = 72;
+
 	/**
 	 * Unique ID for the Net banking aggregator : SAFETYPAY
 	 *

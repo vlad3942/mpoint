@@ -104,6 +104,8 @@ require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH ."/grabpay.php");
 // Require specific Business logic for the Paymaya component
 require_once(sCLASS_PATH .'/apm/paymaya.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
