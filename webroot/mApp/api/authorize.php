@@ -346,6 +346,8 @@ try
                                     if($iPSPID > 0 && $isVoucherErrorFound === FALSE && ( (is_object($cardNode) === false || count($cardNode) === 0 ) || $isVoucherPreferred !== "false")) {
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
+                                            $misc = [];
+                                            $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
                                             if (strtolower($is_legacy) === 'false') {
                                                 $typeId = Constants::iVOUCHER_CARD;
                                                 $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
@@ -358,16 +360,15 @@ try
                                                     $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
                                                     # Update routeconfig ID in log.transaction table
                                                     $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                                    $misc = [];
-                                                    $misc['auto-capture'] = 2;
-                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
-                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
 
                                                 $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                             } else {
                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                                             }
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+
                                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
@@ -601,7 +602,7 @@ try
                                         }
                                         $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 
-                                        if($iSessionType > 1 &&  General::xml2bool($obj_Elem["dcc"]) === false)
+                                        if($iSessionType > 1 &&  empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true  )
                                         {
                                             if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
                                             {

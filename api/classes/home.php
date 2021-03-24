@@ -911,7 +911,7 @@ class Home extends General
             }
 		    else { $aTxnId[0] = $txnId; }
 
-            foreach ($aTxnId as $txnid)
+            foreach ($aTxnId as $index => $txnid)
             {
                 $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
                                   FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
@@ -990,6 +990,10 @@ class Home extends General
                          $cancelUrl = $obj_TxnInfo->getCancelURL();
                          $cssUrl = $obj_TxnInfo->getCSSURL();
                          $logoUrl = $obj_TxnInfo->getLogoURL();
+                         if($sessionId > 0 && $index === 0)
+                         {
+                             $xml .= $obj_TxnInfo->getPaymentSessionXML();
+                         }
                          $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
                          $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
                          if($obj_TxnInfo->getConversationRate() !=1 )
