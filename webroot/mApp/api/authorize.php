@@ -344,6 +344,8 @@ try
                                     if($iPSPID > 0 && $isVoucherErrorFound === FALSE && ( (is_object($cardNode) === false || count($cardNode) === 0 ) || $isVoucherPreferred !== "false")) {
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
+                                            $misc = [];
+                                            $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
                                             if (strtolower($is_legacy) === 'false') {
                                                 $typeId = Constants::iVOUCHER_CARD;
                                                 $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
@@ -356,16 +358,12 @@ try
                                                     $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
                                                     # Update routeconfig ID in log.transaction table
                                                     $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                                    $misc = [];
-                                                    $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
                                                     $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
                                                     $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
 
                                                 $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                             } else {
-                                                $misc = [];
-                                                $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
                                                 $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
                                                 $obj_mPoint->logTransaction($obj_TxnInfo);
 
