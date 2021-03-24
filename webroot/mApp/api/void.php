@@ -113,7 +113,8 @@ require_once(sCLASS_PATH ."/first-data.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 // Require specific Business logic for the SWISH component
 require_once(sCLASS_PATH ."/apm/swish.php");
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 require_once (sCLASS_PATH . '/txn_passbook.php');
 require_once (sCLASS_PATH . '/passbookentry.php');
 require_once (sCLASS_PATH . '/chase.php');
@@ -123,6 +124,8 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CebuPaymentCenter component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );

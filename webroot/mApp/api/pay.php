@@ -127,7 +127,8 @@ require_once(sCLASS_PATH ."/googlepay.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH . "/eghl.php");
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the PayU component
@@ -165,6 +166,8 @@ require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 $aMsgCds = array();
 

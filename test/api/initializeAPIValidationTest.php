@@ -22,13 +22,13 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0)
+    protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0,$countryid=100)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<initialize-payment client-id="'. $client .'" account="'. $account .'">';
 		$xml .= '<transaction order-no="1234abc">';
-		$xml .= '<amount country-id="100"';
+		$xml .= '<amount country-id="'.$countryid.'"';
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'.$amount.'</amount>';
@@ -387,7 +387,6 @@ class InitializeAPIValidationTest extends baseAPITest
 
 	public function testSSOSuccessForStoredCard()
 	{
-		$this->markTestIncomplete();
 		$pspID = 2;
         $this->bIgnoreErrors = true; //User Warning Expected
 		$authenticateURL = $sCallbackURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/login.php';
