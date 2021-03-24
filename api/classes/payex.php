@@ -18,25 +18,26 @@
  */
 class PayEx extends Callback
 {
-	/**
-	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
-	 * The method will re-construct the data received from DIBS after having removed the following mPoint specific fields:
-	 * 	- width
-	 * 	- height
-	 * 	- format
-	 * 	- PHPSESSID (found using PHP's session_name() function)
-	 * 	- language
-	 * 	- cardid
-	 * Additionally the method will add mPoint's Unique ID for the Transaction.
-	 *
-	 * @see 	Callback::notifyClient()
-	 * @see 	Callback::send()
-	 * @see 	Callback::getVariables()
-	 *
-	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
-	 * @param 	array $_post 	Array of data received from DIBS via HTTP POST
-	 */
-	public function notifyClient($sid, array $_post, SurePayConfig &$obj_SurePay=null)
+    /**
+     * Notifies the Client of the Payment Status by performing a callback via HTTP.
+     * The method will re-construct the data received from DIBS after having removed the following mPoint specific fields:
+     *    - width
+     *    - height
+     *    - format
+     *    - PHPSESSID (found using PHP's session_name() function)
+     *    - language
+     *    - cardid
+     * Additionally the method will add mPoint's Unique ID for the Transaction.
+     *
+     * @param integer $sid Unique ID of the State that the Transaction terminated in
+     * @param array $_post Array of data received from DIBS via HTTP POST
+     * @param SurePayConfig|null $obj_SurePay
+     * @see    Callback::notifyClient()
+     * @see    Callback::send()
+     * @see    Callback::getVariables()
+     *
+     */
+	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
@@ -127,7 +128,7 @@ class PayEx extends Callback
 		}
 		else
 		{
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $obj_Std->Capture5Result);
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $obj_Std->Capture5Result);
 			trigger_error("Capture declined by PayEx for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), Result: ". $obj_XML->status->description ."(". $obj_XML->status->errorCode .")", E_USER_WARNING);
 			
 			return 1;
@@ -459,7 +460,7 @@ class PayEx extends Callback
 		}
 		else
 		{
-			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_DECLINED_STATE, $fee, array("result" => $obj_Std->CompleteResult) );
+			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $fee, array("result" => $obj_Std->CompleteResult) );
 		}
 		
 		return $obj_XML;

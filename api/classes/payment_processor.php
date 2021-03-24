@@ -34,16 +34,26 @@ class PaymentProcessor
         }
     }
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$cardId=NULL)
     {
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-        if(strtolower($is_legacy) == 'false'){
-            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
-        }else {
+        $sPSPClassName = '';
+        $this->_setConnInfo($aConnInfo, $iPSPID);
+
+        if (strtolower($is_legacy) == 'false' && !isset(OnlinePaymentCardPSPMapping[$cardId])) {
+            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI->getRouteConfigID());
+        } else {
             $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
         }
-        $sPSPClassName = $this->_objPSPConfig->getName();
-        $this->_setConnInfo($aConnInfo, $iPSPID);
+        if($this->_objPSPConfig !== NULL)
+        {
+            $sPSPClassName = $this->_objPSPConfig->getName();
+        }
+        else if(empty($this->aConnInfo['ClassName']) === FALSE && class_exists($this->aConnInfo['ClassName']))
+        {
+            $sPSPClassName = $this->aConnInfo['ClassName'];
+        }
+
         try {
             if (empty($this->aConnInfo) === true) {
                 $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
@@ -67,9 +77,9 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$cardId=NULL)
     {
-        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
+        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo,$cardId);
     }
 
     public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL)
@@ -142,7 +152,7 @@ class PaymentProcessor
         return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);
     }
 
-    public function notifyClient($iStateId, array $vars, ?SurePayConfig $obj_SurePay=null)
+    public function notifyClient(int $iStateId, array $vars, ?SurePayConfig $obj_SurePay=null)
     {
         return $this->_objPSP->notifyClient($iStateId,$vars,$obj_SurePay);
     }

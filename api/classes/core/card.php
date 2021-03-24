@@ -308,7 +308,7 @@ class Card implements JsonSerializable
             $this->sNetwork = (string)$obj_Card["network"];
         }
         if (empty($obj_Card["type-id"]) === FALSE) {
-            $this->iCardTypeId = $obj_Card["type-id"];
+            $this->iCardTypeId = (string)$obj_Card["type-id"];
         }
     }
 

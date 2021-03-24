@@ -42,7 +42,7 @@ FROM devbuilder as builder
 RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
-FROM registry.t.cpm.dev/library/phpfpmextras:master20201127121317       
+FROM registry.t.cpm.dev/library/phpfpmextras:master20210127155931
 
 USER 0
 

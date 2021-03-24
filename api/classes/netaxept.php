@@ -264,7 +264,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 		}
 		catch (Exception $e)
 		{
-			$this->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($e, true) );
+			$this->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, var_export($e, true) );
 			trigger_error("Netaxept capture failed with exception: ". $e->getMessage() ." (". $e->getCode() .")\n". $e->getTraceAsString(), E_USER_ERROR);
 			/*
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)

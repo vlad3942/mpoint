@@ -241,7 +241,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $pspID = Constants::iWIRE_CARD_PSP;
         $fraudCheckPspID = Constants::iEZY_PSP;
 
-        $sCallbackURL = "";
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -309,7 +309,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $pspID = Constants::iWIRE_CARD_PSP;
         $fraudCheckPspID = Constants::iEZY_PSP;
 
-        $sCallbackURL = "";
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");

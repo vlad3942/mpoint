@@ -21,7 +21,7 @@ final class GeneralPSP extends CPMACQUIRER
         return -1;
     }
 
-    public function notifyClient($iStateId, array $vars, $surePay)
+    public function notifyClient(int $iStateId, array $vars,  ?SurePayConfig $surePay = null)
     {
         throw new BadMethodCallException('Method notifyClient is not supported by GeneralPSP class');
     }
@@ -66,7 +66,7 @@ final class GeneralPSP extends CPMACQUIRER
         throw new BadMethodCallException('Method tokenize is not supported by GeneralPSP class');
     }
 
-    public function redeem($iVoucherID, $iAmount = -1)
+    public function redeem(string $iVoucherID, float $iAmount = -1)
     {
         throw new BadMethodCallException('Method redeem is not supported by GeneralPSP class');
     }

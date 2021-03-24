@@ -95,6 +95,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 set_time_limit(120);
 
@@ -162,7 +164,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					// Perform callback to Client
                     $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                   "amount" => $_REQUEST['amount']);
-                    $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+                    $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args);
                 }
 			}
 			catch (BadMethodCallException $e)

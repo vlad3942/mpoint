@@ -23,7 +23,7 @@ class PayAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getPayDoc($client, $account, $txn=1, $amount = 200, $authToken = null)
+	protected function getPayDoc($client, $account, $txn=1, $amount = 200, $authToken = null,$fxservicetypeid=0)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -32,6 +32,8 @@ class PayAPIValidationTest extends baseAPITest
 		$xml .= '<card type-id="7">';
 		$xml .= '<amount country-id="100">'.$amount.'</amount>';
 		$xml .= '</card>';
+        if($fxservicetypeid > 0)
+            $xml .= '<foreign-exchange-info><id>1</id><service-type-id>'.$fxservicetypeid.'</service-type-id></foreign-exchange-info>';
 		$xml .= '</transaction>';
 		if($authToken !== null){
 			$xml .= '<auth-token>'.$authToken.'</auth-token>';
@@ -75,7 +77,7 @@ class PayAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(200, $iStatus); //TODO: Correct when CMP-236 is solved
+        $this->assertEquals(400, $iStatus); //TODO: Correct when CMP-236 is solved
         //$this->assertEquals("msg=173", $sReplyBody); //TODO: Correct when CMP-236 is solved
     }
 
@@ -154,11 +156,17 @@ class PayAPIValidationTest extends baseAPITest
 
 	public function testWrongUsernamePassword()
 	{
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $pspID = 2;
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
 
-		$xml = $this->getPayDoc(10099, 1100);
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid,  countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE,208, 1,5000,208)");
+
+
+		$xml = $this->getPayDoc(10099, 1100,1001001);
 
 		$this->_httpClient->connect();
 
@@ -218,12 +226,12 @@ class PayAPIValidationTest extends baseAPITest
 		$this->assertEquals(400, $iStatus);
 		$this->assertStringContainsString('<status code="24">The selected payment card is not available', $sReplyBody);
 	}
-	
+
 	public function testDisabledCardWithOneActiveCard()
 	{
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-	
-			
+
+
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10099, 'app')");
@@ -235,15 +243,15 @@ class PayAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, countryid) VALUES (10099, 7, 2, true, 1, 100)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
-			
-		
+
+
 		$xml = $this->getPayDoc(10099, 1100, 1001001);
-	
+
 		$this->_httpClient->connect();
-	
+
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-		
+
 		$this->assertEquals(200, $iStatus);
 	}
 
@@ -261,4 +269,102 @@ class PayAPIValidationTest extends baseAPITest
 
     }
 
+    public function testInvalidFXServiceTypeID()
+    {
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10099, 'app')");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, 2, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 7, 2, true, 4)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
+
+        $xml = $this->getPayDoc(10099, 1100, 1001001,200,null,13);
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(400, $iStatus);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="57">Invalid service type id :13</status>', $sReplyBody);
+    }
+
+    public function testStoredFXServiceTypeID()
+    {
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10099, 'app')");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, 2, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 7, 2, true, 4)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, countryid) VALUES (10099, 7, 2, true, 1, 100)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
+
+        $xml = $this->getPayDoc(10099, 1100, 1001001,200,null,11);
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="2" merchant-account="4216310"  type="1"><url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url><card-number>cardno</card-number><expiry-month>expmon</expiry-month><expiry-year>expyear</expiry-year><cvc>cvc</cvc><hidden-fields><merchant/><callbackurl/><amount/><currency/><orderid/><fullreply>true</fullreply><paytype/><lang/><language/><cardid/><mpointid/><euaid/><clientid/><accountid/><markup>app</markup></hidden-fields><store-card>preauth</store-card><message language="gb"></message></psp-info></root>', $sReplyBody);
+
+        $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1001001');
+        $this->assertTrue(is_resource($res) );
+
+        $fxservicetypeid = 0;
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $fxservicetypeid = (int)$row["fxservicetypeid"];
+        }
+        $this->assertEquals(11, $fxservicetypeid);
+    }
+
+    /**
+     * Check if foreign exchange service type id is already passed in a init transaction
+     * If passed then if try to send some other id in pay it should not update
+     */
+    public function testAlreadyStoredFXServiceTypeID()
+    {
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10099, 'app')");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, 2, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 7, 2, true, 4)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, countryid) VALUES (10099, 7, 2, true, 1, 100)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid,fxservicetypeid) VALUES (1001001, 100, 10099, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208,11)");
+
+        $xml = $this->getPayDoc(10099, 1100, 1001001,200,null,12);
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="2" merchant-account="4216310"  type="1"><url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url><card-number>cardno</card-number><expiry-month>expmon</expiry-month><expiry-year>expyear</expiry-year><cvc>cvc</cvc><hidden-fields><merchant/><callbackurl/><amount/><currency/><orderid/><fullreply>true</fullreply><paytype/><lang/><language/><cardid/><mpointid/><euaid/><clientid/><accountid/><markup>app</markup></hidden-fields><store-card>preauth</store-card><message language="gb"></message></psp-info></root>', $sReplyBody);
+
+        $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1001001');
+        $this->assertTrue(is_resource($res) );
+
+        $fxservicetypeid = 0;
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $fxservicetypeid = (int)$row["fxservicetypeid"];
+        }
+        $this->assertEquals(11, $fxservicetypeid);
+    }
 }

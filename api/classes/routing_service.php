@@ -204,9 +204,14 @@ class RoutingService extends General
         }
         $b .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $b .= '</amount>';
+        if($this->_obj_TxnInfo->getFXServiceTypeID()>0) {
+            $b .= '<foreign_exchange_info>';
+            $b .= '<service_type_id>'.$this->_obj_TxnInfo->getFXServiceTypeID() .'</service_type_id>';
+            $b .= '</foreign_exchange_info>';
+        }
         $b .= '<card>';
         $b .= '<id>'.$this->_iCardTypeId.'</id>';
-        $b .= '<type_id>VISA</type_id>';
+        $b .= '<type_id>'.$this->_sCardName.'</type_id>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -258,9 +263,11 @@ class RoutingService extends General
      * Store all alternate payment routes to authorize transaction if psp1 fails during authorize
      * and return primary route to authorize transaction
      *
-     * @return (integer) $firstPSP	Primary route to authorize transaction
+     * @param \PaymentRoute|null $objTxnRoute
+     *
+     * @return int (integer) $firstPSP    Primary route to authorize transaction
      */
-    public function getAndStoreRoute(PaymentRoute $objTxnRoute)
+    public function getAndStoreRoute(?PaymentRoute $objTxnRoute = NULL): int
     {
         $obj_RoutingServiceResponse = $this->getRoute();
         $aRoutes = [];
@@ -274,7 +281,7 @@ class RoutingService extends General
             $aAlternateRoutes = array();
             foreach ($aRoutes as $oRoute) {
                 if(empty($oRoute->preference) === false){
-                    if ($oRoute->preference == 1) {
+                    if ($oRoute->preference === 1) {
                         $firstPSP = $oRoute->id;
                     }
                     $aAlternateRoutes[] = array(
@@ -285,10 +292,15 @@ class RoutingService extends General
                     $firstPSP = $oRoute->id;
                 }
             }
-            // Store alternate routes to authorize transaction if psp1 fails during authorize
-            $objTxnRoute->setAlternateRoute($aAlternateRoutes);
+
+            //If Route route is called from init API no need to store alternate routes
+            if($objTxnRoute !== NULL)
+            {
+                // Store alternate routes to authorize transaction if psp1 fails during authorize
+                $objTxnRoute->setAlternateRoute($aAlternateRoutes);
+            }
         }
-        return (int)$firstPSP;
+        return $firstPSP;
     }
 
     private function toAttributeLessOrderDataXML()
@@ -325,6 +337,12 @@ class RoutingService extends General
                                 $xml .= '<arrival_date>' . date("Y-m-d\Th:i:s\Z", strtotime($flight_Obj->getArrivalDate ())) . '</arrival_date>';
                                 $xml .= '<departure_country>' . $flight_Obj->getDepartureCountry () . '</departure_country>';
                                 $xml .= '<arrival_country>' . $flight_Obj->getArrivalCountry () . '</arrival_country>';
+                                $xml .= '<departure_airport>';
+                                $xml .= '<iata>' . $flight_Obj->getDepartureAirport () . '</iata>';
+                                $xml .= '</departure_airport>';
+                                $xml .= '<arrival_airport>';
+                                $xml .= '<iata>' . $flight_Obj->getArrivalAirport () . '</iata>';
+                                $xml .= '</arrival_airport>';
                                 $xml .= '<time_zone>' . $flight_Obj->getTimeZone () . '</time_zone>';
                                 $xml .= '</flight_detail>';
                             }

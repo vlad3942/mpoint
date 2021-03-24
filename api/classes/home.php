@@ -494,7 +494,7 @@ class Home extends General
         if (is_array($result) === true && count($result) > 0) {
             foreach ($result as $RS) {
                 // Set stateid given by CRS into resultset
-                if (empty($aPaymentMethodsConfig)) {
+                if (empty($aPaymentMethodsConfig) === FALSE) {
                     $aCardConfig = isset($aPaymentMethodsConfig[$RS['CARDID']]) ? $aPaymentMethodsConfig[$RS['CARDID']] : NULL;
                     $RS['STATEID'] = isset($aCardConfig['state_id']) ? $aCardConfig['state_id'] : 1;
                 }
@@ -715,13 +715,13 @@ class Home extends General
 
 		$sql = "SELECT stateid
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
+				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE .", ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id DESC";
 //		echo $sql ."\n";
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
+				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE ." ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id ASC";
 //		echo $sql ."\n";
 		$stmt2 = $this->getDBConn()->prepare($sql);
@@ -896,175 +896,191 @@ class Home extends General
 	}
 
 
-    public function getTxnStatus($txnid,$clientid,$mode)
+    public function getTxnStatus($txnId,$clientid,$mode,$sessionId=0)
     {
-		try{
-		$xml = '';
-
-        $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
-                          FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
-                          WHERE txnid = ".$txnid." and M.enabled = true";
-
-        $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
-        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
-
-      //  mode param is optional when populated with value 1 then status code will return only after session is closed and
-     // only final payment status code will be returned to avoid extra checks at API consumer side
-        if($mode === 1)
+		try
         {
-            $state = "";
-            if($objPaymentMethod->PaymentType == Constants::iPAYMENT_TYPE_OFFLINE)
+		    $xml = '';
+
+		    $aTxnId = array();
+		    if($sessionId !== 0)
             {
-                $state = ",".Constants::iPAYMENT_INIT_WITH_PSP_STATE;
+                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId;
+                $RSTxnId = $this->getDBConn()->query($sql);
+                while ($RS = $this->getDBConn()->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
             }
-            $sql = "WITH WT1 as
-                   (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
-                    WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
-                    ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",".Constants::iPAYMENT_WITH_VOUCHER_STATE.",
-                    ".Constants::iPAYMENT_WITH_ACCOUNT_STATE.",".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
-                    ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_DECLINED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
-                    ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.")) s where s.rank=1
-                    ),
-                    WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.") limit 1)
-                    UNION
-                    SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
-                    ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
-                    ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.") and txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.") limit 1)
-                    )
-                    SELECT  *,row_number() OVER(ORDER BY id ASC) AS rownum FROM WT3";
-        }
+		    else { $aTxnId[0] = $txnId; }
 
-		   $RSMsg = $this->getDBConn()->query($sql);
-
-
-            $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
-            $objCountryConf = $obj_TxnInfo->getCountryConfig();
-			$objClientConf = $obj_TxnInfo->getClientConfig();
-			if($objClientConf->getID() === $clientid){
-            $sTxnAdditionalDataXml = "";
-            $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
-            if($aTxnAdditionalData !== null)
+            foreach ($aTxnId as $index => $txnid)
             {
-                $sTxnAdditionalDataXml ="<additional-data>";
-                foreach ($aTxnAdditionalData as $key => $value)
+                $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
+                                  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
+                                  WHERE txnid = ".$txnid." and M.enabled = true";
+
+                $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
+                $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
+              //  mode param is optional when populated with value 1 then status code will return only after session is closed and
+             // only final payment status code will be returned to avoid extra checks at API consumer side
+                if($mode === 1)
                 {
-                    $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                    $state = "";
+                    if($objPaymentMethod->PaymentType == Constants::iPAYMENT_TYPE_OFFLINE)
+                    {
+                        $state = ",".Constants::iPAYMENT_INIT_WITH_PSP_STATE;
+                    }
+                    $sql = "WITH WT1 as
+                           (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
+                            WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
+                            ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",".Constants::iPAYMENT_WITH_VOUCHER_STATE.",
+                            ".Constants::iPAYMENT_WITH_ACCOUNT_STATE.",".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
+                            ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
+                            ".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.",
+                            ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.")) s where s.rank=1
+                            ),
+                            WT3 as (SELECT * FROM WT2 where txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.$state.") limit 1)
+                            UNION
+                            SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
+                            ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
+                            ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.") and txnid = (SELECT txnid FROM WT1 WHERE stateid in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_PARTIALLY_COMPLETED.",".Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.",".Constants::iSESSION_FAILED.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.") limit 1)
+                            )
+                            SELECT  *,row_number() OVER(ORDER BY id ASC) AS rownum FROM WT3";
                 }
-                $sTxnAdditionalDataXml .="</additional-data>";
-            }
 
-            $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
-            $pendingAmount = intval($obj_paymentSession->getPendingAmount());
-            $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
+            	   $RSMsg = $this->getDBConn()->query($sql);
 
-            $amount = $obj_TxnInfo->getAmount();
 
-           $sStatusMessagesXML = '';
-            while ($RS = $this->getDBConn()->fetchName($RSMsg) )
-            {
-                $sStatusMessagesXML .= '<status-message id = "'.$RS['STATEID'].'" position = "'.$RS['ROWNUM'] .'">' . $RS['NAME'] . '</status-message>';
-            }
+                    $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
+                    $objCountryConf = $obj_TxnInfo->getCountryConfig();
+            		$objClientConf = $obj_TxnInfo->getClientConfig();
+            		if($objClientConf->getID() === $clientid)
+            		{
+                        $sTxnAdditionalDataXml = "";
+                        $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
+                        if($aTxnAdditionalData !== null)
+                        {
+                            $sTxnAdditionalDataXml ="<additional-data>";
+                            foreach ($aTxnAdditionalData as $key => $value)
+                            {
+                                $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                            }
+                            $sTxnAdditionalDataXml .="</additional-data>";
+                        }
 
-            $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
-            $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
-            $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
-            $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
-            $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
-            $cardMask = $obj_TxnInfo->getCardMask();
-            $cardExpiry = $obj_TxnInfo->getCardExpiry();
-            $acceptUrl = $obj_TxnInfo->getAcceptURL();
-            $cancelUrl = $obj_TxnInfo->getCancelURL();
-            $cssUrl = $obj_TxnInfo->getCSSURL();
-            $logoUrl = $obj_TxnInfo->getLogoURL();
-            $xml = '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
-            $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
-            if($obj_TxnInfo->getConversationRate() !=1 )
-            {
-                $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
-            }
-            if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
-            if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
-            $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
-            $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
-            $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
-            $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
-            $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
-            $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
-            $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
-            $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
-            if (empty($isEmbeddedHpp) === false) {
-                $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>';
-            }
-            if (empty($isAutoRedirect) === false) {
-                $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>';
-            }
-            $xml .= '<status>' . $sStatusMessagesXML . '</status>';
-            $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
-            //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
-			$xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
-			if ($obj_TxnInfo->getProfileID() !== '') {
-				$xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"';
-			}
-			$xml .= '>';
-            $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
-            $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
-            $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
-            $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
-            $xml .= '</client-info>';
-            $xml .= $sTxnAdditionalDataXml;
-            $aShippingAddress = $obj_TxnInfo->getBillingAddr();
-            if (empty($aShippingAddress) === false) {
-                $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
-                $xml .= '<address>';
-                $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
-                $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
-                $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
-                $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
-                $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
-                $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
-                $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
-                if (($obj_CountryConfig instanceof CountryConfig) === true) {
-                    $xml .= '<country>';
-                    $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
-                    $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
-                    $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
-					$xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
-					$xml .= '</country>';
-                }
-                if (empty($aShippingAddress['mobile']) === false){
-                    $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
-                    $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
-                }
-                if (empty($aShippingAddress['email']) === false){
-                    $xml .= '<email>' . $aShippingAddress['email'] . '</email>';
-                }
-                $xml .= '</address>';
-            }
-            $xml .= '</transaction>';
+                         $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
+                         $pendingAmount = intval($obj_paymentSession->getPendingAmount());
+                         $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
 
-            if ( ($objCountryConf instanceof CountryConfig) === true) {
-                $iAccountID = $obj_TxnInfo->getAccountID();
+                         $amount = $obj_TxnInfo->getAmount();
 
-                $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
-                             WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
-                             ORDER BY EC.created DESC LIMIT 1";
-                $resultSet = $this->getDBConn()->getName($cardsSql);
-                if (empty($resultSet) === false) {
-                    $xml .= '<stored-card>';
-                    $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
-                    $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
-                    $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
-                    $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
-                    $xml .= '</stored-card>';
-                }
-			}
-			}else{
-				trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE);
-			}
-		}
-		catch (mPointException $e){
-			return $xml;
-		}
+                         $sStatusMessagesXML = '';
+                         while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+                         {
+                             $sStatusMessagesXML .= '<status-message id = "'.$RS['STATEID'].'" position = "'.$RS['ROWNUM'] .'">' . $RS['NAME'] . '</status-message>';
+                         }
+
+                         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+                         $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
+                         $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
+                         $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
+                         $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
+                         $cardMask = $obj_TxnInfo->getCardMask();
+                         $cardExpiry = $obj_TxnInfo->getCardExpiry();
+                         $acceptUrl = $obj_TxnInfo->getAcceptURL();
+                         $cancelUrl = $obj_TxnInfo->getCancelURL();
+                         $cssUrl = $obj_TxnInfo->getCSSURL();
+                         $logoUrl = $obj_TxnInfo->getLogoURL();
+                         if($sessionId > 0 && $index === 0)
+                         {
+                             $xml .= $obj_TxnInfo->getPaymentSessionXML();
+                         }
+                         $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
+                         $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
+                         if($obj_TxnInfo->getConversationRate() !=1 )
+                         {
+                             $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
+                         }
+                         if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
+                         if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
+                         $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
+                         $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
+                         $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
+                         $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
+                         $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
+                         $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
+                         $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
+                         $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
+                         if (empty($isEmbeddedHpp) === false) { $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>'; }
+                         if (empty($isAutoRedirect) === false) { $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>'; }
+            		     $xml .= '<createdDate>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //YYMMDD
+            		     $xml .= '<createdTime>'. htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
+
+                         $xml .= '<status>' . $sStatusMessagesXML . '</status>';
+                         $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
+                     //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
+            		     $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
+            		     if ($obj_TxnInfo->getProfileID() !== '') { $xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"'; }
+            		     $xml .= '>';
+                         $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
+                         $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
+                         $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
+                         $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
+                         $xml .= '</client-info>';
+                         $xml .= $sTxnAdditionalDataXml;
+                         $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+                         if (empty($aShippingAddress) === false)
+                         {
+                             $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+                             $xml .= '<address>';
+                             $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+                             $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
+                             $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
+                             $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+                             $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+                             $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
+                             $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
+                             if (($obj_CountryConfig instanceof CountryConfig) === true)
+                             {
+                                 $xml .= '<country>';
+                                 $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
+                                 $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
+                                 $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
+            		     		 $xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
+            		     		 $xml .= '</country>';
+                             }
+                             if (empty($aShippingAddress['mobile']) === false)
+                             {
+                                 $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                                 $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+                             }
+                             if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
+                             $xml .= '</address>';
+                         }
+                         $xml .= '</transaction>';
+
+                         if ( ($objCountryConf instanceof CountryConfig) === true)
+                         {
+                             $iAccountID = $obj_TxnInfo->getAccountID();
+
+                             $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
+                                          WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
+                                          ORDER BY EC.created DESC LIMIT 1";
+                             $resultSet = $this->getDBConn()->getName($cardsSql);
+                             if (empty($resultSet) === false)
+                             {
+                                 $xml .= '<stored-card>';
+                                 $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
+                                 $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
+                                 $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
+                                 $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
+                                 $xml .= '</stored-card>';
+                             }
+            		     }
+            		}
+            		else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
+            }
+        }
+        catch (mPointException $e) { return $xml; }
         return $xml;
     }
 
@@ -1612,7 +1628,8 @@ class Home extends General
         $sql = "SELECT transactionid as id
                     FROM (
                              SELECT DISTINCT ON (transactionid) transactionid,
-                                                                performedopt
+                                                                performedopt, 
+                                                                passbook.modified
                              FROM log.txnpassbook_tbl passbook
                              {INNER_JOIN}
                              WHERE passbook.clientid = $clientid
@@ -1620,12 +1637,11 @@ class Home extends General
                                AND passbook.status = '". Constants::sPassbookStatusDone ."'
                                AND performedopt is NOT null
                                AND performedopt <> ". Constants::iINPUT_VALID_STATE ."
-                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval' 
-                               AND passbook.modified < now() - INTERVAL '$interval'
+                               AND passbook.created > now() - INTERVAL '1 DAY' - INTERVAL '$interval'                                
                                {INNER_JOIN_CONDITION}
                              ORDER BY transactionid, passbook.created DESC                             
                          ) sub
-                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE .";";
+                    WHERE performedopt = ". Constants::iPAYMENT_ACCEPTED_STATE ." and modified < now() - INTERVAL '$interval' ";
 
         if (isset($pspid) === FALSE) {
             $sql = str_replace(['{INNER_JOIN}','{INNER_JOIN_CONDITION}'],'', $sql);

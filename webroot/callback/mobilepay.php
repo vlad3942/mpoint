@@ -101,7 +101,7 @@ try
 					else
 					{
 						$bPaymentIsCaptured = false;
-						$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($obj_TxnData, true) );
+						$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, var_export($obj_TxnData, true) );
 						trigger_error("Auto-capture failed for transaction: ". $obj_TxnInfo->getID() . " - Capture API returned: ". $code, E_USER_WARNING);
 					}
 				}

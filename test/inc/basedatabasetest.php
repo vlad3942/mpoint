@@ -108,8 +108,7 @@ abstract class BaseDatabaseTest extends TestCase
     public function tearDown(): void
     {
         $this->restoreOriginalConfiguration();
-        if($this->_isDBSetuped)
-        {
+        if(isset($this->_db) === TRUE) {
             pg_close($this->_db);
         }
         parent::tearDown();

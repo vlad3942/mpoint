@@ -89,7 +89,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             catch (CaptureException $e)
             {
                 trigger_error("Capture of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $e->getMessage() );
+                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $e->getMessage() );
                 return $e->getCode();
             }
         }
@@ -200,6 +200,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			catch (RefundException $e)
 			{
 				$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_FAILED_STATE, utf8_encode("Refund of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage()) );
 				trigger_error("Refund of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 				return $e->getCode();
 			}
@@ -333,7 +334,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 				if($this->getPSPConfig()->getProcessorType() === 8)
                 {
-                    return (int)$obj_XML["code"];
+                    return (int)$obj_XML->status["code"];
                 }
 
                 $this->_obj_ResponseXML =$obj_XML;
@@ -347,9 +348,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$iUpdateStatusCode = $iStatus;
 					}
 
-					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
+					$paymentState = Constants::iPAYMENT_CANCEL_FAILED_STATE;
 					$passbookState = Constants::sPassbookStatusError;
-					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
+					$updateStatusCode = Constants::iPAYMENT_CANCEL_FAILED_STATE;
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
@@ -369,16 +370,23 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					return $retStatusCode;
 				}
 				else {
-				    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+				    if($this->getPSPConfig()->getProcessorType() !== 8) {
+                        $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+                    }
 				    throw new mPointException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
 			}
 			else {
-			    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+			    if($this->getPSPConfig()->getProcessorType() !== 8) {
+                    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+                }
 			    throw new mPointException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
-		    $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+		    if($this->getPSPConfig()->getProcessorType() !== 8) {
+                $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCEL_FAILED_STATE, utf8_encode("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage()) );
+            }
 			trigger_error("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 			return $e->getCode();
 		}
@@ -531,6 +539,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 } */
 
                 $obj_XML->name = 'card_holderName';
+                $obj_XML->{"auth-token"} = 'Auth-Token' ;
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
@@ -561,12 +570,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             }
             //In case of wallet payment flow mPoint get real card and card id in authorization
             $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry, $obj_PSPConfig->getID());
-            $this->updateTxnInfoObject();
         }
         catch (Exception $e)
         {
             trigger_error("Failed to update card details", E_USER_ERROR);
         }
+        $this->updateTxnInfoObject();
+        $this->genInvoiceId(NULL);
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -777,15 +787,32 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem($iVoucherID, $iAmount=-1)
+	public function redeem(string $iVoucherID, float $iAmount=-1)
 	{
+		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<redeem-voucher id="'. $iVoucherID .'">';
-		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'">';
-		$b .= '<amount country-id="1">'. $iAmount .'</amount>';
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+		if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+		{
+			$b .= $this->getPSPConfig()->toRouteConfigXML();
+		}
+		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
+		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
+		$b .= '<additional-data>';
+		if($this->getTxnInfo()->getAdditionalData() !== null)
+		{
+            foreach ($this->getTxnInfo()->getAdditionalData() as $key=>$value)
+            {
+                $b .= '<property name="' . $key . '">' . $value . '</property>';
+            }
+		}
+		$b .= '</additional-data>';
+		$b .= '<auto-capture>'. htmlspecialchars($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'</auto-capture>';
 		$b .= '</transaction>';
+
 		$b .= '</redeem-voucher>';
 		$b .= '</root>';
 
@@ -798,14 +825,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
-			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) { $code = (string)$obj_XML->voucher->transaction; }
+			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0)
+			{
+				$code = (string)$obj_XML->voucher->transaction;
+			}elseif (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) {
+				$code = (string)$obj_XML->external_id;
+
+			}
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
 		else if ($code == 400)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+			$resCode = (isset($obj_XML->voucher->status["code"]) === true)?($obj_XML->voucher->status["code"]):($obj_XML->status["code"]);
 				
-			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) {  throw new UnexpectedValueException("Redeem failed in validation", (integer) $obj_XML->voucher->status["code"] ); }
+			if (isset($resCode) === true && strlen($resCode) > 0) {  throw new UnexpectedValueException("Redeem failed in validation", (integer) $resCode ); }
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
 		else if ($code == 402) { throw new UnexpectedValueException("Insufficient balance on voucher", 43); }
@@ -817,6 +851,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
 	{
+	    if(empty($this->aCONN_INFO["paths"]["callback"]))  return;
+
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -1100,7 +1136,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		if($obj_Card->expiry)
 		{
-			list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+			[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 			$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
 		}
 
@@ -1113,7 +1149,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
                 
         if($obj_Card->{'valid-from'}) {
-            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            [$valid_from_month, $valid_from_year] = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
             $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
@@ -1164,7 +1200,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)
 	{
-		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+		[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 		
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
 		$b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
@@ -1173,7 +1209,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<token>'. $obj_Card->ticket .'</token>';
                 
         if($obj_Card->{'valid-from'}) {
-            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            [$valid_from_month, $valid_from_year] = explode("/", $obj_Card->{'valid-from'});
             $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
             $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
             $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
@@ -1381,7 +1417,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $response = new stdClass();
         try
         {
-            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], null, $obj_Card->expiry, $this->getPSPConfig()->getID());
+            $mask =NULL;
+            if(isset($obj_Card->{'card-number'}))
+            {
+                $mask = self::getMaskCardNumber($obj_Card->{'card-number'});
+            }
+            else if(isset($obj_Card->mask) && empty($obj_Card->mask) === false)
+            {
+                $mask=str_replace(" ", "", $obj_Card->mask);
+            }
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry, $this->getPSPConfig()->getID());
             $this->updateTxnInfoObject();
 
 			$code = 0;

@@ -16,6 +16,8 @@
  */
 
 // Require Global Include File
+use api\classes\splitpayment\config\Configuration;
+
 require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation
@@ -61,6 +63,8 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/eghl.php");
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 require_once(sCLASS_PATH ."/cellulant.php");
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
@@ -74,6 +78,7 @@ require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
+require_once(sCLASS_PATH . '/payment_route.php');
 
 $aMsgCds = array();
 
@@ -99,6 +104,7 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</initialize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
+global $aHTTP_CONN_INFO;
 $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -109,6 +115,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'initialize-payment'}); $i++)
 		{
+		    $obj_ClientInfo = null;
 			// Set Global Defaults
 			if (empty($obj_DOM->{'initialize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'initialize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'initialize-payment'}[$i]["account"] = -1; }
 
@@ -199,7 +206,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			                }
 			            }
 		            }
-					
+
+                    // Validate service type id if explicitly passed in request
+                    $fxServiceTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                    if($fxServiceTypeId > 0){
+                        if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                            $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
+                        }
+                    }
+
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -217,6 +233,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }else{
                                 $data['typeid'] = Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE;
                             }
+                            if ($fxServiceTypeId)
+                            {
+                                $data['fxservicetypeid'] = $fxServiceTypeId;
+                            }
+
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['converted-amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
@@ -300,17 +321,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['converted-currency-config']= $obj_CurrencyConfig ;
 							$data['conversion-rate']= 1 ;
 
-                             //Set attempt value based on the previous attempts using the same orderid
-                            $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid']);
-                            $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
-                           /* if($iAttemptNumber > 0 )
+							$parentTxnId = NULL;
+							if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
-                                $data['attempt'] = ++$iAttemptNumber;
+                                $parentTxnId = (int)$obj_DOM->xpath('initialize-payment/transaction/additional-data/param[@name="parent-transacation-id"]');
                             }
-                            else
-                            {
-                                $data['attempt'] = 1;
-                            } */
+
+                             //Set attempt value based on the previous attempts using the same orderid
+                            $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid'], $parentTxnId);
+                            $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
+
+
+
                             $data['sessionid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                             $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
                             if($sessionType > 1 )
@@ -319,7 +341,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
                                 $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
                             }
-
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
 
                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());
@@ -334,12 +355,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $txnPassbookObj->addEntry($passbookEntry);
                                 $txnPassbookObj->performPendingOperations();
                             }
-
+                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
-                                $xml = '<status code="4030">Payment session is already completed</status>';
-                                $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
+                                $xml = '<status code="'. Constants::iSESSION_ALREADY_COMPLETED .'">Payment session is already completed</status>';
+                                $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_ALREADY_COMPLETED, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
-                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
+                            elseif ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3 && strtolower($is_legacy) != 'false') {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
                                 $obj_TxnInfo->getPaymentSession()->updateState(Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
@@ -634,6 +655,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $euaId = $obj_TxnInfo->getAccountID();
                             }
+							if($sessionType > 1)
+                            {
+                                try {
+                                    $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
+                                    if($splitPaymentConfig instanceof Configuration) {
+                                        $xml .= "<split_payment>";
+                                        $xml .= $splitPaymentConfig->toXML();
+                                        $xml .= "</split_payment>";
+                                    }
+                                }
+                                catch (JsonException $e) {
+                                    trigger_error("SplitPayment Configuration for client id $clientId invalid, Please check SplitPaymentConfig in client.additionalproperty_tbl" , E_USER_WARNING);
+                                }
+                            }
 							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
 							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
@@ -657,7 +692,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
-                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                             if (strtolower($is_legacy) == 'false') {
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                                 if (empty($sessionId) === false) {
@@ -739,7 +773,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$apmsXML = '<apms>';
 							$aggregatorsXML = '<aggregators>';
 							$offlineXML = '<offline>';
-							for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
+							$voucherXML = '<vouchers>';
+
+							$splitPaymentFOPConfig = null;
+							if($sessionType > 1)
+                            {
+                                $splitPaymentFOPConfig = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"SplitPaymentFOPConfig");
+
+                                if (isset($splitPaymentFOPConfig) === true) {
+                                    $splitPaymentFOPConfig = json_decode($splitPaymentFOPConfig, TRUE, 512, JSON_THROW_ON_ERROR);
+                                }
+                            }
+
+
+                            for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
 							{
 							    $cardXML = '';
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
@@ -762,7 +809,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 									}
 
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
+                                    $processorType = (int)$obj_XML->item[$j]['payment-type'] ;
+                                    $cardId = (int)$obj_XML->item[$j]["id"];
+                                    $splittable = "false";
+                                    if(isset($splitPaymentFOPConfig) && array_key_exists($processorType, $splitPaymentFOPConfig) === TRUE) {
+                                        if (is_array($splitPaymentFOPConfig[$processorType]) === FALSE || in_array($cardId, $splitPaymentFOPConfig[$processorType], TRUE) === TRUE) {
+                                            $splittable = "true";
+                                        }
+                                    }
+
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'" splittable="'.$splittable.'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
 
 									if($presentmentCurrency)
@@ -779,9 +835,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
-                                    if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
+                                    if (((int)$obj_XML->item[$j]['processor-type']) === Constants::iPROCESSOR_TYPE_GATEWAY) {
                                         try {
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]["pspid"], $aHTTP_CONN_INFO);
+                                            $pspId  = (int)$obj_XML->item[$j]['pspid'];
+                                            $cardId = NULL;
+                                            if (strtolower($is_legacy) == 'false') {
+                                                $cardId = (int)$obj_XML->item[$j]["id"];
+                                                $pspId  = OnlinePaymentCardPSPMapping[$cardId];
+                                            }
+
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$cardId);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
@@ -831,6 +894,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         case Constants::iPAYMENT_TYPE_OFFLINE;
                                             $offlineXML .= $cardXML;
                                             break;
+                                        case Constants::iPAYMENT_TYPE_VOUCHER;
+                                            $voucherXML .= $cardXML;
+                                            break;
                                         default:
                                             $cardsXML .= $cardXML;
                                     }
@@ -850,6 +916,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $apmsXML .= '</apms>';
                             $aggregatorsXML .= '</aggregators>';
                             $offlineXML .= '</offline>';
+                            $voucherXML .= '</vouchers>';
 
                             $xml .= $cardsXML;
                             $xml .= $walletsXML;
@@ -857,6 +924,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $xml .= $apmsXML;
                                 $xml .= $aggregatorsXML;
                                 $xml .= $offlineXML;
+                                $xml .= $voucherXML;
                             }
 
 							for ($j=0, $jMax = count($aPSPs); $j< $jMax; $j++)
@@ -865,7 +933,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 								case (Constants::iDSB_PSP):
                                     if(strtolower($is_legacy) == 'false') {
-                                        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+                                        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP, $obj_TxnInfo->getRouteConfigID());
                                     }else{
                                         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
                                     }

@@ -39,7 +39,13 @@
 												</xs:all>
 											</xs:complexType>
 										</xs:element>
-
+										<xs:element name="foreign-exchange-info" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:all>
+													<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="1" maxOccurs="1" />
+												</xs:all>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="amount">
 											<xs:complexType>
 												<xs:all>

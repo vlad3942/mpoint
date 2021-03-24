@@ -9,8 +9,24 @@
  * File Name:update-transction-status.php
  */
 
+$interval = '15 MINUTE ';
+if (PHP_SAPI == "cli") {
+    if ($argc < 2) {
+        echo "Expected 1 arguments, but got " . ($argc - 1) . PHP_EOL;
+        echo "Syntax : php update-transction-status.php <interval>" . PHP_EOL;
+        die();
+    }
+
+    [$filePath, $interval] = $argv;
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
+}else{
+    $interval = $_GET["interval"];
+}
+
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
 // <editor-fold defaultstate="collapsed" desc="all required files">
-require_once("../inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 
 
 // Require API for Simple DOM manipulation
@@ -122,7 +138,6 @@ require_once(sCLASS_PATH ."/googlepay.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH . "/eghl.php");
-
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
 
@@ -144,16 +159,14 @@ require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH ."/apm/swish.php");
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // </editor-fold>
 
 ignore_user_abort(true);
 set_time_limit(-1);
 
-$interval = '15 MINUTE ';
-if(isset($_GET["interval"]))
-{
-    $interval = $_GET["interval"];
-}
+
 
 $query = "SELECT txnid as id, pspid
           FROM (

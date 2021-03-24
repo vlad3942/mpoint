@@ -1226,11 +1226,11 @@ class Validate extends ValidateBase
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
-		$countryISO_id = $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "";
+		$countryISO_id = sprintf('%03s', $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "");
 		$countryISOCode = "";
 		if($obj_CountryConfig != null && $obj_CountryConfig->getID() >0)
         {
-            $countryISOCode = $obj_CountryConfig->getNumericCode();
+            $countryISOCode = sprintf('%03s',$obj_CountryConfig->getNumericCode());
         }
 
 		$chk = hash('sha512',$obj_ClientConfig->getID() . $orderno . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt());
@@ -1587,6 +1587,34 @@ class Validate extends ValidateBase
 				if ($RS["COUNT"] > 0) { $code = 10; }// Success
 				else { $code = 1 ; } 
 				return $code;
+	}
+	/**
+	 * Performs validation on the fxservicetypeid used for the transaction
+	 * Should have a mapping present in the System.fxservicetype_tbl
+	 * Will return code as -
+	 *
+	 * 10.success
+	 * 1. No mapping found (default)
+	 *
+	 * @param RDB $oDB   Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param integer $fxservicetypeid  ID of the record in database table: System.fxservicetype_tbl
+	 *
+	 * @return integer
+	 */
+	public function valFXServiceType(RDB $oDB,int $fxservicetypeid) : int
+	{
+		$code = 1;
+		$sql = "SELECT id
+                    FROM System". sSCHEMA_POSTFIX .".fxservicetype_tbl
+                    WHERE id = ". $fxservicetypeid;
+//		echo $sql;exit;
+		$RS = $oDB->getName($sql);
+	 	if (is_array($RS) === true) {
+			if ($RS["ID"] == $fxservicetypeid) {
+				$code = 10;
+			}// Success
+		}
+		return $code;
 	}
 }
 ?>

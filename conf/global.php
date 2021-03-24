@@ -38,6 +38,16 @@ define("iDEBUG_LEVEL", env('LOG_DEBUG_LEVEL', 2));
  */
 define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
 
+/**
+ * Offline Payment Methods Card and PSP id mapping
+ */
+define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM));
+
+/**
+ * Online Payment Methods Card and PSP id mapping
+ */
+define("OnlinePaymentCardPSPMapping", array(Constants::iFPX => Constants::iEGHL_PSP, Constants::iDRAGONPAY => Constants::iDragonPay_AGGREGATOR));
+
 
 /**
  * Database settings for mPoint's database
@@ -477,6 +487,7 @@ $aHTTP_CONN_INFO["paypal"]["paths"]["auth"] = "/mpoint/paypal/authorize-payment"
 $aHTTP_CONN_INFO["paypal"]["paths"]["capture"] = "/mpoint/paypal/capture";
 $aHTTP_CONN_INFO["paypal"]["paths"]["refund"] = "/mpoint/paypal/refund";
 $aHTTP_CONN_INFO["paypal"]["paths"]["cancel"] = "/mpoint/paypal/cancel";
+$aHTTP_CONN_INFO["paypal"]["paths"]["status"] = "/mpoint/paypal/status";
 
 
 /**
@@ -1095,6 +1106,17 @@ $aHTTP_CONN_INFO["swish"]["paths"]["refund"] = "/mpoint/apm/swish/refund";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/callback";
 $aHTTP_CONN_INFO["swish"]["paths"]["callback"] = "/mpoint/apm/swish/failed-txn-refund-callback";
 
+/**
+ * Connection info for connecting to Travel Fund
+ */
+$aHTTP_CONN_INFO["travel-fund"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["travel-fund"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["travel-fund"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["travel-fund"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["travel-fund"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["travel-fund"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["travel-fund"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/mpoint/travel-fund/redeem";
 
 /**
  * Connection info for connecting to Paymaya
@@ -1113,7 +1135,54 @@ $aHTTP_CONN_INFO["paymaya"]["paths"]["refund"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["cancel"] = "/mpoint/apm/paymaya/void";
 $aHTTP_CONN_INFO["paymaya"]["paths"]["status"] = "/mpoint/apm/paymaya/status";
 
+/**
+ * Connection info for connecting to SSO
+ */
+$aHTTP_CONN_INFO["mconsole"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mconsole"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mconsole"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mconsole"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mconsole"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mconsole"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mconsole"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/mconsole/single-sign-on";
+
+/**
+ * Connection info for connecting to MPGS
+ */
+$aHTTP_CONN_INFO["mpgs"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mpgs"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mpgs"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mpgs"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mpgs"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mpgs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mpgs"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["initialize"] = "/mpoint/mpgs/initialize";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["auth"] = "/mpoint/mpgs/authorize-payment";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["capture"] = "/mpoint/mpgs/capture";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["status"] = "/mpoint/mpgs/status";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["cancel"] = "/mpoint/mpgs/cancel";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["refund"] = "/mpoint/mpgs/refund";
+
+/**
+ * Connection info for connecting to SafetyPay
+ */
+$aHTTP_CONN_INFO["safetypay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["safetypay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["safetypay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["safetypay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["safetypay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["safetypay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["safetypay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["initialize"] = "/mpoint/aggregator/safetypay/initialize";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["callback"] = "/mpoint/aggregator/safetypay/callback";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["void"] = "/mpoint/aggregator/safetypay/void";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["refund"] = "/mpoint/aggregator/safetypay/refund";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["cancel"] = "/mpoint/aggregator/safetypay/void";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["status"] = "/mpoint/aggregator/safetypay/status";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/safetypay/get-payment-methods";
+
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

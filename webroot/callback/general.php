@@ -146,6 +146,14 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
+// Require specific Business logic for the CEBU Payment Center component
+require_once(sCLASS_PATH .'/voucher/TravelFund.php');
+// Require model class for Payment Authorization
+require_once(sCLASS_PATH ."/authorize.php");
 
 
 /**
@@ -199,8 +207,9 @@ try
     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-    if(strtolower($is_legacy) == 'false') {
-        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]));
+
+	if(strtolower($is_legacy) == 'false' && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE) {
+        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]), $obj_TxnInfo->getRouteConfigID());
     }else{
         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]));
     }
@@ -233,15 +242,15 @@ try
         if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE)
         {
             if(strtolower($is_legacy) == 'false') {
-                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_TxnInfo->getPSPID()) );
+                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_TxnInfo->getPSPID()), $obj_TxnInfo->getRouteConfigID() );
             }else{
                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_TxnInfo->getPSPID()) );
             }
         }
         else
         {
-            if(strtolower($is_legacy) == 'false') {
-                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
+            if(strtolower($is_legacy) == 'false'  && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE) {
+                $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]), $obj_TxnInfo->getRouteConfigID() );
             }else{
                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
             }
@@ -392,7 +401,7 @@ try
             case (Constants::iVISA_CHECKOUT_WALLET):
                 $obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]);
                 if(strtolower($is_legacy) == 'false') {
-                    $objWallet_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+                    $objWallet_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP, $obj_TxnInfo->getRouteConfigID());
                 }else{
                     $objWallet_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
                 }
@@ -400,7 +409,7 @@ try
             case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
                 $obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
                 if(strtolower($is_legacy) == 'false') {
-                    $objWallet_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+                    $objWallet_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP, $obj_TxnInfo->getRouteConfigID());
                 }else{
                     $objWallet_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
                 }
@@ -408,7 +417,7 @@ try
             case (Constants::iMASTER_PASS_WALLET):
                 $obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
                 if(strtolower($is_legacy) == 'false') {
-                    $objWallet_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
+                    $objWallet_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP, $obj_TxnInfo->getRouteConfigID());
                 }else{
                     $objWallet_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
                 }
@@ -471,6 +480,41 @@ try
         }
 
         $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+        if(($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_REJECTED_STATE ) && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE)
+        {
+            if((int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE && (integer) $obj_XML->callback->transaction->amount["currency-id"] !== $obj_TxnInfo->getCurrencyConfig()->getID())
+            {
+                $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->callback->transaction->amount["currency-id"]);
+                $data['converted-currency-config'] = $obj_CurrencyConfig;
+                $data['converted-amount'] = (integer) $obj_XML->callback->transaction->amount;
+                $data['conversion-rate'] =  (float)$obj_XML->callback->transaction->amount/(float)$obj_TxnInfo->getAmount();
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                $obj_mPoint->logTransaction($obj_TxnInfo);
+
+            }
+            $passbookEntry = new PassbookEntry
+            (
+                NULL,
+                $obj_TxnInfo->getAmount(),
+                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                Constants::iAuthorizeRequested,
+                '',
+                0,
+                '',
+                '',
+                TRUE,
+                NULL,
+                NULL,
+                $obj_TxnInfo->getClientConfig()->getID(),
+                $obj_TxnInfo->getInitializedAmount()
+            );
+            if ($txnPassbookObj instanceof TxnPassbook)
+            {
+                $txnPassbookObj->addEntry($passbookEntry);
+                $txnPassbookObj->performPendingOperations();
+            }
+
+        }
 
         if ($txnPassbookObj instanceof TxnPassbook) {
             foreach ($aStateId as $iStateId) {
@@ -488,6 +532,26 @@ try
                     case Constants::iPAYMENT_CAPTURED_STATE:
                         $state = Constants::iPAYMENT_CAPTURED_STATE;
                         $status = Constants::sPassbookStatusDone;
+                        break;
+                    case Constants::iPAYMENT_CAPTURE_FAILED_STATE:
+                        $state = Constants::iPAYMENT_CAPTURED_STATE;
+                        $status = Constants::sPassbookStatusError;
+                        break;
+                    case Constants::iPAYMENT_REFUNDED_STATE:
+                        $state = Constants::iPAYMENT_REFUNDED_STATE;
+                        $status = Constants::sPassbookStatusDone;
+                        break;
+                    case Constants::iPAYMENT_REFUND_FAILED_STATE:
+                        $state = Constants::iPAYMENT_REFUNDED_STATE;
+                        $status = Constants::sPassbookStatusError;
+                        break;
+                    case Constants::iPAYMENT_CANCELLED_STATE:
+                        $state = Constants::iPAYMENT_CANCELLED_STATE;
+                        $status = Constants::sPassbookStatusDone;
+                        break;
+                    case Constants::iPAYMENT_CANCEL_FAILED_STATE:
+                        $state = Constants::iPAYMENT_CANCELLED_STATE;
+                        $status = Constants::sPassbookStatusError;
                         break;
                 }
                 if ($state !== 0) {
@@ -521,7 +585,7 @@ try
                 || ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)))
             {
                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-                if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY, $is_legacy)) > 0)
+                if($_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
                 {
                     $aFraudRule = array();
                     $bIsSkipFraud = false;
@@ -569,11 +633,7 @@ try
                     }
                     else
                     {
-                        if(strtolower($is_legacy) == 'false') {
-                            $obj_mVaultPSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-                        }else{
-                            $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-                        }
+                        $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
 
                         $obj_mVaultPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mVaultPSPConfig);
                         $obj_CardElem = $obj_mVaultPSP->getCardDetails();
@@ -654,14 +714,15 @@ try
             }
             else
             {
-                array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
-                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+                array_push($aStateId,Constants::iPAYMENT_CAPTURE_FAILED_STATE);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
             }
         }
 
         // Transaction uses one step authorization then no need of PSP call
         if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
+
             $code=0;
             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
             $passbookEntry = new PassbookEntry
@@ -669,7 +730,17 @@ try
                     NULL,
                     $obj_TxnInfo->getAmount(),
                     $obj_TxnInfo->getCurrencyConfig()->getID(),
-                    Constants::iCaptureRequested
+                    Constants::iCaptureRequested,
+                    '',
+                     0,
+                    '',
+                    '',
+                   TRUE,
+                   NULL,
+                   NULL,
+                   $obj_TxnInfo->getClientConfig()->getID(),
+                   $obj_TxnInfo->getInitializedAmount()
+
                     );
             if ($txnPassbookObj instanceof TxnPassbook)
             {
@@ -687,42 +758,130 @@ try
       $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
       // Callback URL has been defined for Client
 
-        /*
-         * Return the success code 202 to indicate Request Accepted and
-         * the request to notify the upstream  retail system.
-        */
-          ignore_user_abort(true);
-          header("HTTP/1.1 202 Accepted");
-          header("Content-Length: 0");
-          header("Connection: Close");
-          flush();
+    /*
+     * Return the success code 202 to indicate Request Accepted and
+     * the request to notify the upstream  retail system.
+    */
+      ignore_user_abort(true);
+      header("HTTP/1.1 202 Accepted");
+      header("Content-Length: 0");
+      header("Connection: Close");
+      flush();
 
-         foreach ($aStateId as $iStateId) {
-             if ($iStateId == 2000) {
-                 $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-             }
-             else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
-                $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
-                //Check whether a notification has already been sent to retail system with status 20109
-                // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
-                if($count == 0)  {
-                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                }
-             }
-             else {
-                 $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+     foreach ($aStateId as $iStateId) {
+         if ($iStateId == 2000) {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+         }
+         else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
+            $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
+            //Check whether a notification has already been sent to retail system with status 20109
+            // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
+            if($count == 0)  {
+                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
             }
          }
-         $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
+         else {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+        }
+     }
+     $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
-         if(($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)
-         $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+      //update captured amt when psp returns captured callback
+      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
+          $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
+          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
+      }
 
-          //update captured amt when psp returns captured callback
-          if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
-              $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
-              $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
-          }
+        if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
+            $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+            $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
+            if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_CAPTURED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
+                try {
+                    $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
+                    $newTxnInfoIds = $obj_TxnInfo->getPaymentSession()->getFilteredTransaction($whereClause);
+                    if (count($newTxnInfoIds) > 0) {
+                        $newTxnInfo = TxnInfo::produceInfo($newTxnInfoIds[0], $_OBJ_DB);
+                        $iPSPID = $newTxnInfo->getPSPID();
+                        $iAmount = (int)$newTxnInfo->getAmount();
+
+                        if (strtolower($is_legacy) == 'false')
+                        {
+                            $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID,$newTxnInfo->getRouteConfigID());
+                        } else {
+                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $newTxnInfo->getClientConfig()->getID(), $newTxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+                        }
+
+                        if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
+                            && ($newTxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_WITH_VOUCHER_STATE) === FALSE)) {
+                            $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                            $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $obj_PSP);
+
+                            $voucherId = $newTxnInfo->getAdditionalData('voucherid');
+
+                            if ($voucherId !== NULL && $voucherId !== FALSE) {
+
+                                // <editor-fold defaultstate="collapsed" desc="Update Passbook Table">
+
+                                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $newTxnInfo->getID(), $newTxnInfo->getClientConfig()->getID());
+
+                                $passbookEntry = new PassbookEntry
+                                (
+                                    NULL,
+                                    $iAmount,
+                                    $newTxnInfo->getCurrencyConfig()->getID(),
+                                    Constants::iInitializeRequested
+                                );
+                                if ($txnPassbookObj instanceof TxnPassbook) {
+                                    $txnPassbookObj->addEntry($passbookEntry);
+                                    $txnPassbookObj->performPendingOperations();
+                                }
+
+                                $passbookEntry = new PassbookEntry
+                                (
+                                    NULL,
+                                    $iAmount,
+                                    $newTxnInfo->getCurrencyConfig()->getID(),
+                                    Constants::iAuthorizeRequested
+                                );
+                                if ($txnPassbookObj instanceof TxnPassbook) {
+                                    $txnPassbookObj->addEntry($passbookEntry);
+                                    $txnPassbookObj->performPendingOperations();
+                                }
+                                // </editor-fold>
+                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher($voucherId, $iAmount);
+
+                                // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
+                                if ($isVoucherRedeemStatus === 100) {
+                                    $xml .= '<status code="100">Payment authorized using Voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 43) {
+                                    header("HTTP/1.1 402 Payment Required");
+                                    $xml .= '<status code="43">Insufficient balance on voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 45) {
+                                    header("HTTP/1.1 401 Unauthorized");
+                                    $xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
+                                } elseif ($isVoucherRedeemStatus === 48) {
+                                    header("HTTP/1.1 423 Locked");
+                                    $xml .= '<status code="48">Voucher payment temporarily locked</status>';
+                                } else {
+                                    header("HTTP/1.1 502 Bad Gateway");
+                                    $xml .= '<status code="92">Payment rejected by voucher issuer</status>';
+                                }
+                                // </editor-fold>
+
+                            }
+                        }
+                    }
+                }
+                catch (Exception $e) {
+                    trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
+                }
+
+                header("HTTP/1.1 202 Accepted");
+                header("Content-Length: 0");
+                header("Connection: Close");
+            }
+
+        }
     }
 }
 catch (TxnInfoException $e)

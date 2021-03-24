@@ -1,31 +1,29 @@
 <?php
 
 if (PHP_SAPI == "cli") {
-    if ($argc < 5) {
-        echo "Expected 4 arguments, but got " . ($argc - 1) . PHP_EOL;
-        echo "Syntax : php auto-void-transaction.php <mPointHost> <username> <password> <ClientId> <optional : PSPId>" . PHP_EOL;
+    if ($argc < 2) {
+        echo "Expected 1 arguments, but got " . ($argc - 1) . PHP_EOL;
+        echo "Syntax : php auto-void-transactions.php <ClientId> <optional : PSPId>" . PHP_EOL;
         die();
     }
 
-    if ($argc === 6) {
-        [$filePath, $mPointHost, $username, $password, $clientid, $pspid] = $argv;
+    if ($argc === 3) {
+        [$filePath, $clientid, $pspid] = $argv;
     } else {
-        [$filePath, $mPointHost, $username, $password, $clientid] = $argv;
+        [$filePath, $clientid] = $argv;
         $pspid = NULL;
     }
-    $_SERVER['HTTP_HOST'] = $mPointHost;
-    $_SERVER['PHP_AUTH_USER'] = $username;
-    $_SERVER['PHP_AUTH_PW'] = $password;
-    $_SERVER['DOCUMENT_ROOT'] = $_SERVER['WEBROOT'];
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] = getenv('DOCUMENT_ROOT','/opt/cpm/mPoint/webroot');
 } else {
     $clientid = $_REQUEST['clientid'];
     $pspid = $_REQUEST['pspid'];
 }
 
 ini_set('max_execution_time', 1200);
-
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
 // <editor-fold defaultstate="collapsed" desc="Required dependancies">
-require_once("/opt/cpm/mPoint/webroot/inc/include.php");
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 require_once(sAPI_CLASS_PATH . "/gomobile.php");
 require_once(sAPI_CLASS_PATH . "simpledom.php");
 require_once(sCLASS_PATH . "/pspconfig.php");
@@ -94,45 +92,56 @@ global $aHTTP_CONN_INFO;
 $xml ='<?xml version="1.0" encoding="UTF-8"?><root>';
 
 $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientid);
-if ($obj_ClientConfig !== NULL && $obj_ClientConfig->getUsername() === $_SERVER['PHP_AUTH_USER']  && $obj_ClientConfig->getPassword() === $_SERVER['PHP_AUTH_PW'] )
+if ($obj_ClientConfig !== NULL)
 {
     $obj_Home = new Home($_OBJ_DB, $_OBJ_TXT);
     $_aConfig = $obj_Home->getAutoVoidConfig($clientid, $pspid);
-    foreach ($_aConfig as $config) {
-
-        $aTransactionId = $obj_Home->getOrphanAuthorizedTransactionList($clientid, $config['EXPIRY'], $config['PSPID']);
-        if (count($aTransactionId) > 0) {
-            $transactionId = $aTransactionId[0]['ID'];
-            $objTxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-            $objGeneralPSP = new GeneralPSP($_OBJ_DB, $_OBJ_TXT, $objTxnInfo, $aHTTP_CONN_INFO, NULL, NULL);
-
-            foreach ($aTransactionId as $transactionId) {
-                $objGeneralPSP->setTxnInfo($transactionId['ID']);
-
-                $externalRefCancelStatus = 100;
-
-                // Cancel SUVTP
-                $externalRef = $objTxnInfo->getExternalRef(50,50);
-                if(empty($externalRef) === FALSE)
-                {
-                    $obj_uatpPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $objTxnInfo, 50, $aHTTP_CONN_INFO);
-                    $externalRefCancelStatus = $obj_uatpPSP->cancel();
-                }
-
-                if($externalRefCancelStatus === 100)
-                {
-                    $response = $objGeneralPSP->voidTransaction($objGeneralPSP->getTxnInfo()->getAmount(), 'Void triggered from Auto Void Cron');
-                    $statusCode = array_key_first($response);
-                    $xml .= "<transaction id ='".$transactionId['ID']."'><status code='$statusCode'>". $response[$statusCode] ."</status></transaction>";
-                }
-                else
-                {
-                    $xml .= "<transaction id ='".$transactionId['ID']."'><status code='$externalRefCancelStatus'>Unable to cancel transaction for PSP : 50 </status></transaction>";
-                }
-
+    if (empty($_aConfig) === FALSE) {
+        foreach ($_aConfig as $config) {
+            if ($config['PSPID'] == '') {
+                $config['PSPID'] = NULL;
             }
+            $aTransactionId = $obj_Home->getOrphanAuthorizedTransactionList($clientid, $config['EXPIRY'], $config['PSPID']);
+            if (count($aTransactionId) > 0) {
+                $transactionId = $aTransactionId[0]['ID'];
+                $objTxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
+                $objGeneralPSP = new GeneralPSP($_OBJ_DB, $_OBJ_TXT, $objTxnInfo, $aHTTP_CONN_INFO, NULL, NULL);
 
+                foreach ($aTransactionId as $transactionId) {
+                    $objGeneralPSP->setTxnInfo($transactionId['ID']);
+                    $objTxnInfo = $objGeneralPSP->getTxnInfo();
+                    $externalRefCancelStatus = 100;
+
+                    // Cancel SUVTP
+                    $externalRef = $objTxnInfo->getExternalRef(50, 50);
+                    if (empty($externalRef) === FALSE) {
+                        $obj_uatpPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $objTxnInfo, 50, $aHTTP_CONN_INFO);
+                        try {
+                            $externalRefCancelStatus = $obj_uatpPSP->cancel();
+                        } catch (Exception $e) {
+                            $externalRefCancelStatus = 500;
+                        }
+                    }
+
+                    if ($externalRefCancelStatus === 100) {
+                        try {
+                            $response = $objGeneralPSP->voidTransaction($objGeneralPSP->getTxnInfo()->getAmount(), 'Void triggered from Auto Void Cron');
+                            $statusCode = array_key_first($response);
+                        } catch (Exception $e) {
+                            $statusCode = 500;
+                        }
+
+                        $xml .= "<transaction id ='" . $transactionId['ID'] . "'><status code='$statusCode'>" . $response[$statusCode] . "</status></transaction>";
+                    } else {
+                        $xml .= "<transaction id ='" . $transactionId['ID'] . "'><status code='$externalRefCancelStatus'>Unable to cancel transaction for PSP : 50 </status></transaction>";
+                    }
+                }
+            }
         }
+    }else{
+        header("HTTP/1.1 400 Bad Request");
+        $xml = '';
+        $xml .= '<status code="400">Invalid Configuration</status>';
     }
 }
 else {

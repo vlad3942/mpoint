@@ -131,7 +131,7 @@ try
 			}
 			else
 			    {
-			        $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			        $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 			    }
 		}
 		else

@@ -23,6 +23,14 @@ abstract class Constants
 	 *
 	 */
 	const iUNSUPPORTED_OPERATOR = 44;
+
+	/**
+	 * Defines the ID of the State that should be logged when the Transaction is created by mPoint
+	 * This state define that transaction is created and in order to data for futuristic authorization
+	 *
+	 */
+	const iTRANSACTION_CREATED = 1000;
+
 	/**
 	 * Defines the ID of the State that should be logged when the Client Input has been successfully validate
 	 *
@@ -121,6 +129,13 @@ abstract class Constants
 	 *
 	 */
 	const iEMAIL_REJECTED_STATE = 1031;
+
+
+	/**
+	 * Defines the ID of the State that payment is pending
+	 *
+	 */
+	const iPAYMENT_PENDING_STATE = 1041;
 
 	/**
 	 * Defines the ID of the State that indicates that 3D Secure has been activated for the payment
@@ -308,7 +323,36 @@ abstract class Constants
 	 * when doing a Capture
 	 *
 	 */
-	const iPAYMENT_DECLINED_STATE = 2011;
+	const iPAYMENT_CAPTURE_FAILED_STATE = 2011;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
+	 * when doing a Cancel
+	 *
+	 */
+	const iPAYMENT_CANCEL_FAILED_STATE = 2012;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
+	 * when doing a Refund
+	 *
+	 */
+	const iPAYMENT_REFUND_FAILED_STATE = 2013;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment request was cancelled by the Payment Service Provider (PSP)
+	 * when payment was in pending state
+	 *
+	 */
+	const iPAYMENT_REQUEST_CANCELLED_STATE = 2014;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment request was expired
+	 * when payment was in pending state
+	 *
+	 */
+	const iPAYMENT_REQUEST_EXPIRED_STATE = 2015;
+
     /**
      * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
      *
@@ -405,6 +449,12 @@ abstract class Constants
      *
      */
     const iSESSION_PARTIALLY_COMPLETED = 4031;
+
+    /**
+     * Defines the ID of the State that indicates that Session Already Completed
+     *
+     */
+    const iSESSION_ALREADY_COMPLETED = 4039;
 
     /**
 	 * Defines the ID of the State that indicates that the payment has been initiated for captured.
@@ -1082,6 +1132,24 @@ abstract class Constants
 	 *
 	 */
 	const iCEBUPAYMENTCENTER_APM = 69;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MPGS
+	 *
+	 */
+	const iMPGS_PSP = 72;
+
+	/**
+	 * Unique ID for the Net banking aggregator : SAFETYPAY
+	 *
+	 */
+	const iSAFETYPAY_AGGREGATOR = 70;
+
+	/**
+	 * Unique PSP ID for transaction's made using CEBU Travel Fund
+	 *
+	 */
+	const iTRAVELFUND_VOUCHER = 71;
 
     /**
 	 * Unique ID for the Electronic Payment Flow
@@ -1539,6 +1607,26 @@ abstract class Constants
 	 *
 	 */
 	const iCEBUPAYMENTCENTEROFFLINE = 96;
+	/**
+	 * Unique Card ID for transaction's made using PSE
+	 *
+	 */
+	const iPSE = 97;
+	/**
+	 * Unique Card ID for transaction's made using BOLETO for offline
+	 *
+	 */
+	const iBOLETO = 98;/**
+	* Unique Card ID for transaction's made using Efecty for offline
+	*
+	*/
+	const iEFECTY = 99;/**
+	* Unique Card ID for transaction's made using BancoDe Bogata for offline
+	*
+	*/
+	const iBANCODEBOGATA  = 100;
+	
+	
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -1624,6 +1712,7 @@ abstract class Constants
 	const iPROCESSOR_TYPE_TOKENIZATION = 8;
 	const iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY = 9;
 	const iPROCESSOR_TYPE_POST_FRAUD_GATEWAY = 10;
+	const iPROCESSOR_TYPE_VOUCHER = 11;
 
 
 

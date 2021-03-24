@@ -209,7 +209,7 @@ try
 			}
 			else
 			    {
-			        $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			        $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 			    }
 		}
 	}

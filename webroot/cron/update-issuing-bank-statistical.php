@@ -13,10 +13,13 @@
  *
  */
 
-
+if (PHP_SAPI == "cli") {
+    $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
+    $_SERVER['DOCUMENT_ROOT'] ='/opt/cpm/mPoint/webroot';
+}
+include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
 // <editor-fold defaultstate="collapsed" desc="all required files">
-require_once("../inc/include.php");
-
+require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');
 
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH . "simpledom.php");
@@ -141,7 +144,8 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 // Require specific Business logic for the SWISH component
 require_once(sCLASS_PATH ."/apm/swish.php");
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // </editor-fold>
 
 

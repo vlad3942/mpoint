@@ -326,3 +326,239 @@ INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id
 INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,784,608,'true','true');
 INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,410,608,'true','true');
 INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,764,608,'true','true');
+
+
+-- Cebu Icer : Set dcc enabled to true for Gcash
+UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 93 ;
+
+-- Cebu Icer : Add sale currency and presentment currency configuration for Gcash
+
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,156,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,360,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,901,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,36,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,96,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,446,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,784,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,410,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,764,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,344,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,458,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,702,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,392,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,840,608,'true','true');
+
+
+
+-- Cebu Icer : Set dcc enabled to true for GrabPay
+UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 94 ;
+-- Cebu Icer : Add sale currency and presentment currency configuration for GrabPay
+
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,156,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,360,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,901,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,36,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,96,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,446,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,784,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,410,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,764,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,344,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,458,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,702,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,392,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,840,608,'true','true');
+
+
+
+-- Cebu Icer : Set dcc enabled to true for paymaya
+UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 95 ;
+
+-- Cebu Icer : Add sale currency and presentment currency configuration for paymaya
+
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,156,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,360,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,901,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,36,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,96,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,446,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,784,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,410,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,764,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,344,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,458,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,702,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,392,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,840,608,'true','true');
+
+
+-- Cebu Icer : Set dcc enabled to true for payment center
+UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 96 ;
+
+-- Cebu Icer : Add sale currency and presentment currency configuration for payment center
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,36,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,36,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,96,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,96,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,156,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,156,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,410,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,410,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,446,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,446,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,764,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,764,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,901,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,901,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,344,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,344,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,458,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,458,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,702,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,702,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,392,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,392,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,840,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,840,784,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,784,608,'true','true');
+INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,608,784,'true','true');
+
+--CEBU MPGS
+INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 72, 'TEST048583918507', 'merchant.TEST048583918507', '42b5c09392e50702e05f29c37c75841a', true, null);
+INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100770, 72, '-1', true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 8, true, 72, null, 1, null, false, 1);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 7, true, 72, null, 1, null, false, 1);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10077, 5, true, 72, null, 1, null, false, 1);
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.PHP', 'TEST048583918507', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.PHP', 'merchant.TEST048583918507', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.PHP', '42b5c09392e50702e05f29c37c75841a', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('HOST', 'gpmnl.gateway.mastercard.com', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('mvault', true, 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('AIRLINE_CODE', '6S', 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('CARRIER_NAME', 'SAUDI GULF AIRLINES', 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('PROFILE_EXPIRY', 180, 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled, scope) VALUES ('ENABLE_PROFILE_ANONYMIZATION', true, 10077, 'client', true, 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.HKD', 'TEST088008881200', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.HKD', 'merchant.TEST088008881200', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.HKD', '7f8945cebdfd056530baca4e3e8d384a', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.SGD', 'TEST065004485703', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.SGD', 'merchant.TEST065004485703', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.SGD', 'c1e2d0ffb6f52218be89ac0061af1f2a', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.PHP', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.HKD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.SGD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.USD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.USD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.USD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.USD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.AED', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.AED', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.AED', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.AED', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.AUD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.AUD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.AUD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.AUD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.BND', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.BND', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.BND', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.BND', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.CNY', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.CNY', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.CNY', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.CNY', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.IDR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.IDR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.IDR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.IDR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.JPY', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.JPY', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.JPY', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.JPY', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.KRW', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.KRW', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.KRW', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.KRW', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.MOP', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.MOP', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.MOP', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.MOP', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.MYR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.MYR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.MYR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.MYR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.THB', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.THB', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.THB', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.THB', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.TWD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.TWD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.TWD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.TWD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.USD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.USD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.USD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.USD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.CAD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.CAD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.CAD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.CAD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.CHF', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.CHF', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.CHF', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.CHF', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.DKK', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.DKK', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.DKK', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.DKK', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.EUR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.EUR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.EUR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.EUR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.GBP', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.GBP', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.GBP', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.GBP', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.LKR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.LKR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.LKR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.LKR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.NZD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.NZD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.NZD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.NZD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.QAR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.QAR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.QAR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.QAR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.SAR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.SAR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.SAR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.SAR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.SEK', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.SEK', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.SEK', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.SEK', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.INR', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.INR', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.INR', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.INR', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.BHD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.BHD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.BHD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.BHD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.KWD', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.KWD', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.KWD', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.KWD', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.VND', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.VND', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.VND', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.VND', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.NOK', 'TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.NOK', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.NOK', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.NOK', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+
+
