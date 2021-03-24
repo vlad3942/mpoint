@@ -975,7 +975,7 @@ final class TxnPassbook
     /**
      * Returns xml of passbook table entries of performedopt Capture, Refund, Cancel
      */
-    public function toXML($checkPerformedOptArray = array(Constants::iINPUT_VALID_STATE,Constants::iPAYMENT_ACCEPTED_STATE,Constants::iPAYMENT_CAPTURED_STATE,Constants::iPAYMENT_REFUNDED_STATE,Constants::iPAYMENT_CANCELLED_STATE,Constants::iPAYMENT_DECLINED_STATE,Constants::iPAYMENT_REJECTED_STATE))
+    public function toXML($checkPerformedOptArray = array(Constants::iINPUT_VALID_STATE,Constants::iPAYMENT_ACCEPTED_STATE,Constants::iPAYMENT_CAPTURED_STATE,Constants::iPAYMENT_REFUNDED_STATE,Constants::iPAYMENT_CANCELLED_STATE,Constants::iPAYMENT_CAPTURE_FAILED_STATE,Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_CANCEL_FAILED_STATE, Constants::iPAYMENT_REFUND_FAILED_STATE))
     {
 		$xml = '<passbook-status>';
 		$passbookEntryInstance = $this->getEntries(TRUE);

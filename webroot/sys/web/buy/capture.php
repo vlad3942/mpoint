@@ -171,9 +171,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{
 						$args = array("transact" => $obj_TxnInfo->getExternalID(),
 									  "amount" => $_REQUEST['amount']);
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args);
 					}
-                    $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                    $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURE_FAILED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
                 }
 			}
 			catch (BadMethodCallException $e)

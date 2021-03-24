@@ -14,10 +14,14 @@ case Constants::iPAYMENT_REFUNDED_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'language');
 	break;
 case Constants::iPAYMENT_CANCELLED_STATE:
-case Constants::iPAYMENT_DECLINED_STATE:
+case Constants::iPAYMENT_CAPTURE_FAILED_STATE:
+case Constants::iPAYMENT_CANCEL_FAILED_STATE:
+case Constants::iPAYMENT_REFUND_FAILED_STATE:
 	$aRequiredArguments = array('status', 'mpoint-id', 'pspid', 'language');
 	break;
 case Constants::iPAYMENT_REJECTED_STATE:
+case Constants::iPAYMENT_REQUEST_CANCELLED_STATE:
+case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
 	$aRequiredArguments = array('status', 'mpoint-id', 'language');
 	break;
     case Constants::iSESSION_COMPLETED:

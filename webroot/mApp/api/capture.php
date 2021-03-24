@@ -285,9 +285,9 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										{
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount);
-											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}
-                                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURE_FAILED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
                                     }
 								}
 								catch (BadMethodCallException $e)

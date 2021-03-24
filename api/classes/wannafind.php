@@ -105,7 +105,7 @@ class WannaFind extends Callback implements Captureable
 			// Capture Declined
 			else
 			{
-				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, var_export($aStatus, true) );
 				trigger_error("Capture declined by WannaFind for Transaction: ". $txn .", ". trim($obj_HTTP->getReplyBody() ), E_USER_WARNING);
 				
 				return 1;

@@ -130,6 +130,13 @@ abstract class Constants
 	 */
 	const iEMAIL_REJECTED_STATE = 1031;
 
+
+	/**
+	 * Defines the ID of the State that payment is pending
+	 *
+	 */
+	const iPAYMENT_PENDING_STATE = 1041;
+
 	/**
 	 * Defines the ID of the State that indicates that 3D Secure has been activated for the payment
 	 *
@@ -316,7 +323,36 @@ abstract class Constants
 	 * when doing a Capture
 	 *
 	 */
-	const iPAYMENT_DECLINED_STATE = 2011;
+	const iPAYMENT_CAPTURE_FAILED_STATE = 2011;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
+	 * when doing a Cancel
+	 *
+	 */
+	const iPAYMENT_CANCEL_FAILED_STATE = 2012;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
+	 * when doing a Refund
+	 *
+	 */
+	const iPAYMENT_REFUND_FAILED_STATE = 2013;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment request was cancelled by the Payment Service Provider (PSP)
+	 * when payment was in pending state
+	 *
+	 */
+	const iPAYMENT_REQUEST_CANCELLED_STATE = 2014;
+
+	/**
+	 * Defines the ID of the State that indicates that the payment request was expired
+	 * when payment was in pending state
+	 *
+	 */
+	const iPAYMENT_REQUEST_EXPIRED_STATE = 2015;
+
     /**
      * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
      *
@@ -413,6 +449,12 @@ abstract class Constants
      *
      */
     const iSESSION_PARTIALLY_COMPLETED = 4031;
+
+    /**
+     * Defines the ID of the State that indicates that Session Already Completed
+     *
+     */
+    const iSESSION_ALREADY_COMPLETED = 4039;
 
     /**
 	 * Defines the ID of the State that indicates that the payment has been initiated for captured.

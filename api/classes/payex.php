@@ -128,7 +128,7 @@ class PayEx extends Callback
 		}
 		else
 		{
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $obj_Std->Capture5Result);
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $obj_Std->Capture5Result);
 			trigger_error("Capture declined by PayEx for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), Result: ". $obj_XML->status->description ."(". $obj_XML->status->errorCode .")", E_USER_WARNING);
 			
 			return 1;
@@ -460,7 +460,7 @@ class PayEx extends Callback
 		}
 		else
 		{
-			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_DECLINED_STATE, $fee, array("result" => $obj_Std->CompleteResult) );
+			$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $fee, array("result" => $obj_Std->CompleteResult) );
 		}
 		
 		return $obj_XML;
