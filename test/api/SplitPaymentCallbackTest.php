@@ -35,7 +35,6 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackSplitPaymentNotEnabled()
     {
-        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -46,7 +45,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, " . $pspID . ", '1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10099, 8, $pspID)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4030, '900-55150298', 10000, 9876543210, '', '127.0.0.1', -1, 2);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid, expire) VALUES (1, 10099, 1100, 208, 100, 4030, '900-55150298', 10000, 9876543210, '', '127.0.0.1', -1, 2, (NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, null, '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 10000,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 10000,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
@@ -74,7 +73,6 @@ class SplitPaymentCallbackTest extends baseAPITest
         $aStates = [];
         while ($row = pg_fetch_assoc($res)) {
             $aStates[] = $row["stateid"];
-
         }
 
         $this->assertCount(6, $aStates);
@@ -126,7 +124,6 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackVoucherIdNotSet()
     {
-        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -263,7 +260,6 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackAccepted()
     {
-        $this->bIgnoreErrors = true;
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -322,7 +318,7 @@ class SplitPaymentCallbackTest extends baseAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertCount(11, $aStates);
+        $this->assertCount(12, $aStates);
         $this->assertTrue(is_int(array_search(2000, $aStates)));
         $this->assertTrue(is_int(array_search(4030, $aStates)));
 

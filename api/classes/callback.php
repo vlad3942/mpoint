@@ -1055,6 +1055,7 @@ abstract class Callback extends EndUserAccount
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
         $isStateUpdated = $sessionObj->updateState();
         if($isStateUpdated == 1) {
+        	$sid =  $sessionObj->getStateId();
             $checkSessionCallback = $sessionObj->checkSessionCompletion();
             if (empty($checkSessionCallback) === true && $this->getTxnInfo()->getCallbackURL() != '') {
 				$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
@@ -1320,13 +1321,15 @@ abstract class Callback extends EndUserAccount
 			$sessionObj = $this->getTxnInfo()->getPaymentSession();
 			$isStateUpdated = $sessionObj->updateState();
 			//Here Session Callback is triggering 2nd time, queryParam callback is already sent
-			//Below lines (1230, 1234) needs to be remove the queryParam callback flow is removed
-			if ($isStateUpdated === 1 || TRUE) {
+			//Below lines (1325, 1328, 1330) "TRUE || and false" needs to be remove the queryParam callback flow is removed
+			if (TRUE || $isStateUpdated === 1) {
 				$checkSessionCallback = $sessionObj->checkSessionCompletion();
 				$aTransaction = [];
-				if (true || empty($checkSessionCallback) === TRUE && $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId()) !== 1) {
+				if (TRUE || empty($checkSessionCallback) === TRUE && $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId()) !== 1) {
 					$sid = $sessionObj->getStateId();
-					$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), '');
+					if(FALSE) {
+						$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), '');
+					}
 					if ($sessionObj->getPendingAmount() === 0) {
 						$aTransaction = $this->_obj_TxnInfo->getPaymentSession()->getTransactions();
 						$isIgnoreRequest = FALSE;

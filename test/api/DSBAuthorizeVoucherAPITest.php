@@ -79,7 +79,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
         $retries = 0;
 
-        while ($retries++ <= 15)
+        while ($retries++ <= 16)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
             $this->assertTrue(is_resource($res) );
@@ -90,7 +90,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
                 $trow = $row;
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) == 15) { break; }
+            if (count($aStates) == 16) { break; }
             usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
@@ -100,7 +100,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(2, $trow["amount"]);
 
 		$stateIndex = 0;
-		$this->assertCount(15, $aStates);
+		$this->assertCount(16, $aStates);
 		$this->assertEquals(2007, $aStates[$stateIndex++]);
 		$this->assertEquals(2000, $aStates[$stateIndex++]);
 		$this->assertEquals(1991, $aStates[$stateIndex++]);
@@ -115,6 +115,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(4030, $aStates[$stateIndex++]);
 		$this->assertEquals(1991, $aStates[$stateIndex++]);
 		$this->assertEquals(1992, $aStates[$stateIndex++]);
+		$this->assertEquals(1990, $aStates[$stateIndex++]);
 		$this->assertEquals(1990, $aStates[$stateIndex++]);
 	}
 

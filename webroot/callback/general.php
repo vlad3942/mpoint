@@ -880,7 +880,6 @@ try
                 header("Content-Length: 0");
                 header("Connection: Close");
             }
-
         }
     }
 }
