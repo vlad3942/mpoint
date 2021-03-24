@@ -284,7 +284,7 @@ class DIBS extends Callback implements Captureable, Refundable
 				// Capture Declined
 				if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
 				{
-					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, var_export($aStatus, true) );
 					trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), Result Code: ". @$aStatus["result"], E_USER_WARNING);
 					
 					return $aStatus["result"];
@@ -510,7 +510,7 @@ class DIBS extends Callback implements Captureable, Refundable
 			return Constants::iPAYMENT_ACCEPTED_STATE;
 		case 4:
 		case 17:
-			return Constants::iPAYMENT_DECLINED_STATE;
+			return Constants::iPAYMENT_CAPTURE_FAILED_STATE;
 		case 3:
 		case 5:
 		case 7:
