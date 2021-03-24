@@ -506,12 +506,6 @@
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="-208"/>
-            <column name="cardid" value="26"/>
-            <column name="enabled" value="true"/>
-        </insert>
-
-        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-124"/>
             <column name="cardid" value="26"/>
             <column name="enabled" value="true"/>
