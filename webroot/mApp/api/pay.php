@@ -268,6 +268,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
 							}
 						}
+
+						if ($fxServiceTypeId)
+                        {
+                            $data['fxservicetypeid'] = $fxServiceTypeId;
+                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                        }
+
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
@@ -516,10 +523,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 										}
-										if ($fxServiceTypeId)
-										{
-											$data['fxservicetypeid'] = $fxServiceTypeId;
-										}
+
 
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 
