@@ -74,14 +74,13 @@ class FailedPaymentMethodConfig
     {
         $aObj_Configurations = array();
         if($obj instanceof RDB && $sessionId > 0 && $clientId > 0) {
-            $aStateIDs = array(Constants::iInitializeRequested, Constants::iRefundRequested, Constants::iCancelRequested, Constants::iCaptureRequested, Constants::iAuthorizeRequested);
             $sql = "SELECT Txn.cardid, C.paymenttype, p2.st AS stateid
                 FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
                 INNER JOIN Log" . sSCHEMA_POSTFIX . ".Session_Tbl S ON Txn.sessionid = S.id AND S.stateid != " . Constants::iSESSION_COMPLETED . ".
                 INNER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl C ON Txn.cardid = C.id
-				INNER JOIN (select transactionid,max(requestedopt) as st from log.txnpassbook_tbl where clientid = $clientId group by transactionid) p2 ON (Txn.id = p2.transactionid)
-				WHERE Txn.sessionid = " . $sessionId . " AND p2.st IN (" . implode(",", $aStateIDs) . ")";
+				INNER JOIN (select transactionid,performedopt as st, status from log.txnpassbook_tbl where clientid = $clientId) p2 ON (Txn.id = p2.transactionid)
+				WHERE Txn.sessionid = " . $sessionId . " AND p2.st = ".Constants::iPAYMENT_ACCEPTED_STATE ." AND p2.status = 'error'";
 
             $res = $obj->query($sql);
             while ($RS = $obj->fetchName($res)) {
