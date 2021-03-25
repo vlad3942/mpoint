@@ -524,6 +524,20 @@ try
                                             }
                                         }
 
+                                        // Validate service type id if explicitly passed in request
+                                        $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                                        if($fxServiceTypeId > 0){
+                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
+                                            }
+                                        }
+                                        if ($fxServiceTypeId)
+                                        {
+                                            $data['fxservicetypeid'] = $fxServiceTypeId;
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                        }
+
                                         $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
                                         $obj_CardXML = '';
@@ -651,18 +665,6 @@ try
                                         	if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'authorize-payment'}[$i]["client-id"])) != 10 ){
                                         		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
                                         	}
-                                        }
-
-                                        // Validate service type id if explicitly passed in request
-                                        $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
-                                        if($fxServiceTypeId > 0){
-                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
-                                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
-                                            }
-                                        }
-                                        if ($fxServiceTypeId)
-                                        {
-                                            $data['fxservicetypeid'] = $fxServiceTypeId;
                                         }
 
                                         if (isset($obj_Elem->capture_type) > 0)
