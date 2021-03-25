@@ -1662,7 +1662,9 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 			$fxservicetypeid = 0;
-			if(intval($RS["FXSERVICETYPEID"])>0) $fxservicetypeid = $RS["FXSERVICETYPEID"];
+			if((int)$RS["FXSERVICETYPEID"] >0) {
+				$fxservicetypeid = (int)$RS["FXSERVICETYPEID"];
+			}
             $obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"], $RS["INSTALLMENT_VALUE"], $RS["PROFILEID"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["WALLETID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData,$obj_ExternalRefData,$RS["CONVERTEDAMOUNT"],$obj_ConvertedCurrencyConfig,$RS["CONVERSIONRATE"],$RS["ISSUING_BANK"],$aBillingAddr, $RS['ROUTECONFIGID'],$fxservicetypeid);
 		}
 		return $obj_TxnInfo;
@@ -1764,7 +1766,10 @@ class TxnInfo
             }
             if (array_key_exists("installment-value", $misc) === false) { $misc["installment-value"] = $obj->getInstallmentValue(); }
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = $obj->getProfileID(); }
-			if(intval($misc["fxservicetypeid"])>0) $fxservicetypeid = $misc["fxservicetypeid"];
+			if((int)$misc["fxservicetypeid"] >0)
+			{
+				$fxservicetypeid = $misc["fxservicetypeid"];
+			}
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["installment-value"], $misc["profileid"],$misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"], $misc["wallet-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"],
 					$misc["externalref"],$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],$misc["issuing-bank"],$misc["billingAddr"], $misc["routeconfigid"], $fxservicetypeid);
@@ -1793,6 +1798,11 @@ class TxnInfo
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = -1; }
 			if (array_key_exists("fee", $misc) === false) { $misc["fee"] = 0; }
 
+			if((int)$misc["fxservicetypeid"] >0)
+			{
+				$fxservicetypeid = $misc["fxservicetypeid"];
+			}
+
 			if(isset($misc["sessionid"]) == false || empty($misc["sessionid"]) == true)
                 $misc["sessionid"] = -1;
 
@@ -1804,7 +1814,6 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			if(intval($misc["fxservicetypeid"])>0) $fxservicetypeid = $misc["fxservicetypeid"];
             $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"",array(),null,$fxservicetypeid);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log

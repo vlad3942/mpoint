@@ -140,9 +140,9 @@ try
 			}
 			else
 			{
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_DECLINED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
-				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010) - Netaxept Error {$responseCode}");
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURE_FAILED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010) - Netaxept Error {$responseCode}");
 			}
 		}
 		else
