@@ -132,4 +132,22 @@ class TransactionDataTest extends baseAPITest
         $this->transactionData->setBillingAddress([$additionalData]);
         $this->assertStringContainsString('"billing_address":[{"key":"BillingAddress","value":"Test"}]', json_encode($this->transactionData));
     }
+
+    public function testSetServiceTypeId()
+    {
+        $this->transactionData->setServiceTypeId(11);
+        $this->assertStringContainsString('"service_type_id":11}', json_encode($this->transactionData));
+    }
+
+    public function testSetFraudStatusCode()
+    {
+        $this->transactionData->setFraudStatusCode("1123");
+        $this->assertStringContainsString('"fraud_status_code":"1123"}', json_encode($this->transactionData));
+    }
+
+    public function testSetFraudStatusDesc()
+    {
+        $this->transactionData->setFraudStatusDesc("reject");
+        $this->assertStringContainsString('"fraud_status_desc":"reject"}', json_encode($this->transactionData));
+    }
 }

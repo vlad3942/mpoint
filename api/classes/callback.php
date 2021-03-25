@@ -1519,6 +1519,15 @@ abstract class Callback extends EndUserAccount
         }
 
         $transactionData->setBillingAddress($aBillingAddress);
+
+        $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
+
+        $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
+		if (empty($getFraudStatusCode) === FALSE) {
+			$transactionData->setFraudStatusCode($getFraudStatusCode['status_code']);
+			$transactionData->setFraudStatusDesc($getFraudStatusCode['status_desc']);
+		}
+
 		return $transactionData;
     }
 

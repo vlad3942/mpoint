@@ -21,73 +21,79 @@ use JsonSerializable;
 class TransactionData implements JsonSerializable
 {
 
-    public int $id;
+    private int $id;
 
-    public string $order_id;
+    private string $order_id;
 
-    public string $description;
+    private string $description;
 
-    public int $fee;
+    private int $fee;
 
-    public string $hmac;
+    private string $hmac;
 
-    public string $approval_code;
+    private string $approval_code;
 
-    public int $wallet_id;
+    private int $wallet_id;
 
-    public string $payment_method;
+    private string $payment_method;
 
-    public string $payment_type;
+    private string $payment_type;
 
-    public string $short_code;
+    private string $short_code;
 
-    public string $date_time;
+    private string $date_time;
 
-    public string $local_date_time;
+    private string $local_date_time;
 
-    public string $issuing_bank;
+    private string $issuing_bank;
 
-    public int $foreign_exchange_id;
+    private int $foreign_exchange_id;
 
-    public Amount $amount;
+    private Amount $amount;
 
-    public StateInfo $status;
+    private StateInfo $status;
 
-    public PSPData $psp;
+    private PSPData $psp;
 
-    public \Card $card;
+    private \Card $card;
 
-    public \CustomerInfo $customer_info;
-
-    /**
-     * @var \AdditionalData[]
-     */
-    public array $additional_data;
+    private \CustomerInfo $customer_info;
 
     /**
      * @var \AdditionalData[]
      */
-    public array $client_data;
+    private array $additional_data;
+
+    /**
+     * @var \AdditionalData[]
+     */
+    private array $client_data;
 
     /**
      * @var \ProductInfo[]
      */
-    public array $product_info;
+    private array $product_info;
 
     /**
      * @var \AdditionalData[]
      */
-    public array $delivery_info;
+    private array $delivery_info;
 
     /**
      * @var \AdditionalData[]
      */
-    public array $shipping_info;
+    private array $shipping_info;
 
     /**
      * @var \AdditionalData[]
      */
-    public array $billing_address;
+    private array $billing_address;
+
+    private int $service_type_id;
+
+    private string $fraud_status_code;
+
+    private string $fraud_status_desc;
 
     /**
      * TransactionData constructor.
@@ -260,5 +266,53 @@ class TransactionData implements JsonSerializable
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return int
+     */
+    public function getServiceTypeId(): int
+    {
+        return $this->service_type_id;
+    }
+
+    /**
+     * @param int $service_type_id
+     */
+    public function setServiceTypeId(int $service_type_id): void
+    {
+        $this->service_type_id = $service_type_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFraudStatusCode(): string
+    {
+        return $this->fraud_status_code;
+    }
+
+    /**
+     * @param string $fraud_status_code
+     */
+    public function setFraudStatusCode(string $fraud_status_code): void
+    {
+        $this->fraud_status_code = $fraud_status_code;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFraudStatusDesc(): string
+    {
+        return $this->fraud_status_desc;
+    }
+
+    /**
+     * @param string $fraud_status_desc
+     */
+    public function setFraudStatusDesc(string $fraud_status_desc): void
+    {
+        $this->fraud_status_desc = $fraud_status_desc;
     }
 }
