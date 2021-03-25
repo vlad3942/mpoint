@@ -74,7 +74,7 @@ class FailedPaymentMethodConfig
     {
         $aObj_Configurations = array();
         if($obj instanceof RDB && $sessionId > 0 && $clientId > 0) {
-            $aStateIDs = array(Constants::iInitializeRequested, Constants::iRefundRequested, Constants::iCancelRequested, Constants::iCaptureRequested, Constants::iAuthorizeRequested);
+            $aStateIDs = array(Constants::iPAYMENT_REJECTED_STATE);
             $sql = "SELECT Txn.cardid, C.paymenttype, p2.st AS stateid
                 FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
                 INNER JOIN Log" . sSCHEMA_POSTFIX . ".Session_Tbl S ON Txn.sessionid = S.id AND S.stateid != " . Constants::iSESSION_COMPLETED . ".
