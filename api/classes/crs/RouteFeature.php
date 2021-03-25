@@ -5,7 +5,7 @@
  * Copyright: Cellpoint Digital
  * Link: http://www.cellpointdigital.com
  * Project: mPoint
- * File Name:route_feature.php
+ * File Name:RouteFeature.php
  */
 
 class RouteFeature
@@ -14,13 +14,13 @@ class RouteFeature
      * Hold an unique ID for the route feature
      * @var integer
      */
-    private int $_iFeatureId;
+    private ?int $_iFeatureId;
 
     /**
      * Holds name of the route feature
      * @var string
      */
-    private string $_sFeatureName;
+    private ?string $_sFeatureName;
 
     /**
      * Default Constructor
@@ -28,7 +28,7 @@ class RouteFeature
      * @param 	integer $featureid 	Unique ID for the route feature
      * @param 	string $featurename	Holds name of the route feature
      */
-	public function __construct(int $featureid, string $featurename)
+	public function __construct(?int $featureid = null, ?string $featurename = null)
 	{
         $this->_iFeatureId = $featureid;
         $this->_sFeatureName = $featurename;
@@ -52,6 +52,10 @@ class RouteFeature
         return $this->_sFeatureName;
     }
 
+    /**
+     * Produce Route Feature Configuration Response
+     * @return string XML playload structure of route feature configuration
+     */
     public function toXML() : string
     {
       $xml  = '<route_feature>';
@@ -62,7 +66,7 @@ class RouteFeature
     }
 
     /**
-     * Function used process route responsew for end user
+     * Function used process route response for end user
      *
      * @param array $response an array containing route feature configuration status
      * @return string XML playload structure of route feature configuration status
@@ -117,7 +121,7 @@ class RouteFeature
      * @param int $routeConfigId  Holds unique id of the route configuration
      * @return bool              Status of add route feature query
      */
-    private function AddRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : bool
+    public function AddRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId) : bool
     {
         try {
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl
@@ -209,7 +213,7 @@ class RouteFeature
     {
         $aObj_Configurations = array();
 
-        $RouteFeature_SQL = "SELECT CRF.id as featureid, SRF.featurename
+        $RouteFeature_SQL = "SELECT CRF.featureid, SRF.featurename
                          FROM Client" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl CRF
                          INNER JOIN System" . sSCHEMA_POSTFIX . ".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
                          WHERE CRF.routeconfigid = " . $routeConfigID .
@@ -225,6 +229,77 @@ class RouteFeature
             trigger_error($e->getMessage(), E_USER_ERROR);
         }
         return $aObj_Configurations;
+    }
+
+    /**
+     * Function used to get list of all configured featured id for the given route configuration
+     *
+     * @param RDB $_OBJ_DB        Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param int $routeConfigId  Hold unique id of the route configuration
+     * @return array              List of all configured featured id for the given route configuration
+     */
+    public static function getAllFeatureByRouteConfigID(RDB $_OBJ_DB, int $routeConfigId)
+    {
+        $aFeatureId = array();
+        $aObj_RouteFeatures = self::produceConfigByRouteConfigID($_OBJ_DB, $routeConfigId);
+        if (empty($aObj_RouteFeatures) === false) {
+            foreach ($aObj_RouteFeatures as $obj_RouteFeatures) {
+                if ($obj_RouteFeatures instanceof RouteFeature) {
+                    $aFeatureId[] = $obj_RouteFeatures->getFeatureId();
+                }
+            }
+        }
+        return $aFeatureId;
+    }
+
+    /**
+     * Function used to delete all the given featured id for the given route configuration
+     *
+     * @param RDB $_OBJ_DB   Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param int $clientId  Hold unique client id
+     * @param int $routeConfigId  Hold unique id of the route configuration
+     * @param array $aFeatureIdToBeDelete  Hold list of featured id to be deleted
+     * @return bool  true/false response
+     */
+    public static function DeleteRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId, array $aFeatureIdToBeDelete) : bool
+    {
+        if(empty($aFeatureIdToBeDelete) === false) {
+            if(empty($routeConfigId) === false) {
+                try {
+                    $sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".RouteFeature_Tbl
+                            WHERE routeconfigid = ". $routeConfigId ." 
+                            AND clientid = ".$clientId."
+                            AND featureid IN  (" . implode(",", $aFeatureIdToBeDelete) . ")";
+                    return is_resource($_OBJ_DB->query($sql) );
+                } catch (SQLQueryException $e) {
+                    trigger_error($e->getMessage(), E_USER_ERROR);
+                }
+            }else {
+                trigger_error("RouteConfigId Not Found", E_USER_WARNING);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Function used process route responsew for end user
+     *
+     * @param bool $response  true/false as a response of a update route feature configuration
+     * @return string XML playload structure of route feature configuration status
+     */
+    public function getUpdateRouteFeatureResponseAsXML(bool $response):string
+    {
+        $xml = '<route_features_response>';
+        if($response === TRUE){
+            $xml .= '<status>Success</status>';
+            $xml .= '<message>Route Feature Updated Successfully.</message>';
+        }else{
+            $xml .= '<status>Fail</status>';
+            $xml .= '<message>Unable to Update Route Feature. </message>';
+        }
+        $xml .= '</route_features_response>';
+        return $xml;
     }
 
 }
