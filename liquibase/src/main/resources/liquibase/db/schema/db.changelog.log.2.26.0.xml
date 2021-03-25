@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Sagar Narayane"
+        id="2020-03-25-master-v2.26">
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE TRIGGER update_session_tbl
+            BEFORE INSERT OR UPDATE
+            ON log.session_tbl FOR EACH ROW
+            EXECUTE PROCEDURE public.update_table_proc()
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
