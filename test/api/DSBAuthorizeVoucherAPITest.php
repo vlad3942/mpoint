@@ -79,7 +79,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
         $retries = 0;
 
-        while ($retries++ <= 9)
+        while ($retries++ <= 13)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
             $this->assertTrue(is_resource($res) );
@@ -90,7 +90,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
                 $trow = $row;
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) == 9) { break; }
+            if (count($aStates) == 13) { break; }
             usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
@@ -99,22 +99,26 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
 		
-		$this->assertCount(9, $aStates);
+		$this->assertCount(13, $aStates);
 		$this->assertEquals(2007, $aStates[0]);
-		//$this->assertEquals(2009, $aStates[1]);
 		$this->assertEquals(2000, $aStates[1]);
 		$this->assertEquals(1991, $aStates[2]);
 		$this->assertEquals(1992, $aStates[3]);
 		$this->assertEquals(1990, $aStates[4]);
-		$this->assertEquals(4030, $aStates[5]);
+		$this->assertEquals(2001, $aStates[5]);
 		$this->assertEquals(1991, $aStates[6]);
 		$this->assertEquals(1992, $aStates[7]);
 		$this->assertEquals(1990, $aStates[8]);
+		$this->assertEquals(4030, $aStates[9]);
+		$this->assertEquals(1991, $aStates[10]);
+		$this->assertEquals(1992, $aStates[11]);
+		$this->assertEquals(1990, $aStates[12]);
 	}
 
 	public function testVoucherRedemptionDeniedByIssuer()
 	{
-		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+	    $this->bIgnoreErrors = true ;//in case of txn decline mpoint will log execption
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 		$pspID = Constants::iDSB_PSP;
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -127,7 +131,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 11, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid, expire) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 11, 9876543210, '', '127.0.0.1', -1, 1,(NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 11, '127.0.0.1', TRUE, 208,1,11,208)");
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 11,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");

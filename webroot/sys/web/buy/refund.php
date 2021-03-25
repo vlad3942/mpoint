@@ -95,7 +95,8 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 // Require specific Business logic for the SWISH component
 require_once(sCLASS_PATH ."/apm/swish.php");
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
 
@@ -106,6 +107,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 set_time_limit(120);
 $aMsgCds = array();

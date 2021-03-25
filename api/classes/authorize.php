@@ -43,7 +43,7 @@ class Authorize extends General
 	 * @throws Exception
 	 * @throws TxnInfoException
 	 */
-	public function redeemVoucher($iVoucherID, $iAmount=-1)
+	public function redeemVoucher(string $iVoucherID, float $iAmount=-1)
 	{
 		// Add control state and immediately commit database transaction
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE, "");
@@ -75,16 +75,20 @@ class Authorize extends General
 		catch (Exception $e)
 		{
 			$code = $e->getCode();
-			$iStateID = Constants::iPAYMENT_REJECTED_STATE;
-			$this->delMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE);
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, "Status code: ". $e->getCode(). "\n". $e->getMessage() );
+            $iStateID = Constants::iPAYMENT_REJECTED_STATE;
+            $this->delMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE);
+            trigger_error("redeem of txn: ". $this->_obj_TxnInfo->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
 
-		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
-		{
+        if ( ($this->_obj_PSP instanceof CPMPSP) === true)
+        {
 			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
-		}
-		else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
+			if($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $this->_obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt){
+				$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
+				$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
+			}
+        }
+        else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
 
 		return $code;
 	}

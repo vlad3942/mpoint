@@ -127,7 +127,8 @@ require_once(sCLASS_PATH ."/googlepay.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH . "/eghl.php");
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the PayU component
@@ -165,6 +166,8 @@ require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 $aMsgCds = array();
 
@@ -321,19 +324,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $ip);
-                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
+                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
+
+                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $iSessionType != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
                         {
                             $authToken = trim($obj_DOM->pay[$i]->{'auth-token'});
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"],$obj_TransacionCountryConfig,$authToken) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }  //made hmac mandatory for dcc
-                        else if($obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
+                        else if($iSessionType != 2 && $obj_CardResultSet["DCCENABLED"] === true && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false)
 						{
 							if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount, (int)$obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"],$obj_TransacionCountryConfig,$obj_TxnInfo,$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'id'}) !== 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
 						}
 
-						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 )
+						$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+						$iSaleAmount = 0;
+						
+						if($iSessionType > 1 && $obj_CardResultSet["DCCENABLED"] === false )
 						{
-							$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 							if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
 							{
 								$aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
@@ -344,10 +351,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else
 						{
-						    if($obj_CardResultSet["DCCENABLED"] === true  && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false
+							$iSaleAmount = (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'};
+							if($obj_CardResultSet["DCCENABLED"] === true  && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === false
 							   && intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) !== $obj_TxnInfo->getCurrencyConfig()->getID())
                             {
-                                if((int)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} !== (int)$obj_TxnInfo->getAmount())
+
+                                if($iSaleAmount > $pendingAmount && $iSessionType > 1)
+								{
+									$aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
+								}
+                                else if((int)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'} !== (int)$obj_TxnInfo->getAmount() && $iSessionType <= 1)
                                 {
                                 	$aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
                                 }
@@ -496,7 +509,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$data['converted-currency-config'] = $obj_CurrencyConfig;
 											$data['converted-amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 											$data['conversion-rate'] = $obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
-											unset($data['amount']);
+											$data['amount'] = $iSaleAmount;
 										}
 										//For Offline payment method fee is considered as holding charges required to add in actual amount
 										if($obj_CardResultSet['PAYMENTTYPE'] == Constants::iPAYMENT_TYPE_OFFLINE && $obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))

@@ -202,7 +202,7 @@ class General
 	 */
 	public static function produceTxnInfo(RDB &$oDB, $chk)
 	{
-		list($sTimestamp, $iTxnID) = spliti("Z", $chk);
+		[$sTimestamp, $iTxnID] = spliti("Z", $chk);
 		$sTimestamp = date("Y-m-d H:i:s", base_convert($sTimestamp, 32, 10) );
 		$iTxnID = base_convert($iTxnID, 32, 10);
 		$aTemp = array($sTimestamp);
@@ -494,6 +494,9 @@ class General
         if ($oTI->getRouteConfigID() > 0) {
             $sql .= ", routeconfigid = ". $oTI->getRouteConfigID();
         }
+        if ($oTI->getPSPID() > 0) {
+            $sql .= ", pspid = ". $oTI->getPSPID();
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
@@ -507,7 +510,7 @@ class General
 	public function newAssociatedTransaction(TxnInfo &$oTI)
 	{
 		$iTxnID = $this->newTransaction($oTI->getClientConfig(), $oTI->getTypeID());
-		
+
 		$iSessionId = $oTI->getSessionId() ;
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -528,6 +531,64 @@ class General
         }
 		return $iTxnID ;
 	}
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int      $newAmount
+     * @param bool     $isInitiateTxn
+     * @param string   $pspid
+     * @param array    $additionalTxnData
+     *
+     * @return \TxnInfo|null
+     * @throws \SQLQueryException
+     * @throws \mPointException
+     */
+    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = [],array $misc = []): ?TxnInfo
+    {
+        $iAssociatedTxnId =  $this->newTransaction($txnInfo->getClientConfig(), $txnInfo->getTypeID());
+	    try
+        {
+             $data = $misc;
+             $data["card-id"] = '';
+             $data["wallet-id"] = '';
+             $data["amount"] = $newAmount;
+             $data["extid"] = '';
+             $data["psp-id"] = $pspid;
+             $data["captured-amount"] = '';
+             $data["externalref"] = '';
+             $data["converted-amount"] = $newAmount;
+             $data["conversion-rate"] = 1;
+             $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
+             if (count($additionalTxnData) > 0) {
+                 $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
+             }
+             $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
+             $this->logTransaction($obj_AssociatedTxnInfo);
+
+             $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $txnInfo->getClientConfig()->getID());
+             if($isInitiateTxn === true) {
+                 $passbookEntry = new PassbookEntry
+                 (
+                     NULL,
+                     $newAmount,
+                     $obj_AssociatedTxnInfo->getCurrencyConfig()->getID(),
+                     Constants::iInitializeRequested
+                 );
+                 if ($txnPassbookObj instanceof TxnPassbook) {
+                     $txnPassbookObj->addEntry($passbookEntry);
+                     $txnPassbookObj->performPendingOperations();
+                 }
+             }
+             return $obj_AssociatedTxnInfo;
+         }
+         catch (Exception $e)
+         {
+             trigger_error("Error while creating new transaction ($iAssociatedTxnId). Transaction is rollback - " .$e->getMessage() , E_USER_ERROR);
+         }
+
+		return NULL;
+    }
+
 
 	/**
 	 * Adds a new entry to the Message log with the provided debug data.
@@ -1315,10 +1376,17 @@ class General
 	 * @return string
 	 * */
 
-    public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid)
+    public function getTxnAttemptsFromOrderID(ClientConfig $clientConfig, CountryConfig $countryConfig, $orderid, int $txnId = NULL)
     {
+        $txnIdCheck = '';
+
+        if($txnId !== NULL && $txnId >1)
+        {
+            $txnIdCheck = " id= $txnId AND ";
+        }
+
         $sql = "SELECT max(attempt) as attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-					WHERE orderid = '" . trim($orderid) . "' AND enabled = true
+					WHERE {$txnIdCheck} orderid = '" . trim($orderid) . "' AND enabled = true
 					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
 					AND countryid = '.$countryConfig->getID()."
 					AND created > NOW() - interval '15 days' ";

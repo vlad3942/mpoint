@@ -284,7 +284,7 @@ abstract class Callback extends EndUserAccount
 	{
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
 		/* ========== Instantiate Connection Info Start ========== */
-		//check if proxy callback url is present or not
+		//check if proxy callback url is present or not //This temporary working for CEBU, CMD is in place remove this
 		$proxyCallbackUrl = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PROXY_CALLBACK');
 		if($proxyCallbackUrl !== null && $proxyCallbackUrl !== '' && $proxyCallbackUrl !== false ) {
 			$body = $body.'&proxy_callback='.$proxyCallbackUrl;
@@ -385,7 +385,7 @@ abstract class Callback extends EndUserAccount
 		$amount =(int)$vars["amount"];
 		$sAdditionalData = "";
 		$exp = null;
-		$cardNo = 0;
+		$cardno = 0;
 		$fee = 0;
 		$cardId = 0;
 
@@ -431,7 +431,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardNo, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
 	}
 
 	/**
@@ -687,7 +687,7 @@ abstract class Callback extends EndUserAccount
 	public function hasTransactionFailureState($sid)
 	{
         $sParentStatusCode = substr($sid, 0 ,4);
-        return (in_array($sParentStatusCode, array(Constants::iPAYMENT_DECLINED_STATE, Constants::iPAYMENT_REJECTED_STATE)) === true);
+        return (in_array($sParentStatusCode, array(Constants::iPAYMENT_CAPTURE_FAILED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_CANCEL_FAILED_STATE, Constants::iPAYMENT_REFUND_FAILED_STATE, Constants::iPAYMENT_REQUEST_CANCELLED_STATE, Constants::iPAYMENT_REQUEST_EXPIRED_STATE)) === true);
 	}
 
     /**
@@ -1085,6 +1085,12 @@ abstract class Callback extends EndUserAccount
 			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
 		case (Constants::iCEBUPAYMENTCENTER_APM):
 			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+		case (Constants::iMPGS_PSP):
+			return new MPGS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mpgs"]);	
+		case (Constants::iSAFETYPAY_AGGREGATOR):
+		    return new SafetyPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"]);
+		case (Constants::iTRAVELFUND_VOUCHER):
+			return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["travel-fund"]);
 
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);

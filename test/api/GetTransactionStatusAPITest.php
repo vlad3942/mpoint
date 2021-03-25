@@ -29,10 +29,11 @@ class GetTransactionStatusAPITest extends baseAPITest
         $xml .= '<root>';
         $xml .= '<get-transaction-status>';
         $xml .= '<client-id>'.$clientid.'</client-id>';
+        if($mode>0){ $xml .= '<mode>'.$mode.'</mode>'; }
+
         $xml .= '<transactions>';
-        $xml .= '<transaction-id ';
-        if($mode>0){ $xml .= 'mode= "'.$mode.'"'; }
-        $xml .= '>'.$txn_id.'</transaction-id>';
+        $xml .= '<transaction-id>';
+        $xml .=  $txn_id.'</transaction-id>';
         $xml .= '</transactions>';        
         $xml .= '</get-transaction-status>';
         $xml .= '</root>';
@@ -129,6 +130,7 @@ class GetTransactionStatusAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
+        
 	 	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><transaction id="1001001" mpoint-id="1001001" order-no="103-1418291" accoutid="1100" clientid="10099" language="gb"  card-id="0" psp-id="18" payment-method-id="1"   session-id="1" session-type="" extid="" approval-code="" walletid="0"><amount country-id="100" currency="208" symbol="Kr." format="{PRICE} {CURRENCY}" pending = "5000"  currency-code = "DKK" decimals = "2" conversationRate = "1">5000</amount><card-expiry>12/21</card-expiry><card-name>System Record</card-name><psp-name>Wire Card</psp-name><accept-url></accept-url><cancel-url></cancel-url><css-url></css-url><logo-url></logo-url><google-analytics-id></google-analytics-id><form-method></form-method><createdDate>2021-01-18</createdDate><createdTime>13:09:28</createdTime><status><status-message id = "1009" position = "1">Payment Initialized with Payment Service Provider</status-message></status><sign>257e89dffd3e6ff7db2fed0182ee54ef</sign><client-info language="gb" platform=""><mobile operator-id="10000" country-id="100"></mobile><email></email><customer-ref></customer-ref><device-id></device-id></client-info><address><first-name>test</first-name><last-name>test</last-name><street>test</street><street2>test</street2><postal-code>411023</postal-code><city>test</city><state>test</state><country><name></name><code>0</code><alpha2code></alpha2code><alpha3code></alpha3code></country><mobile idc="1">test@test.com</mobile><email>8888888888</email></address></transaction><stored-card><card-id>61775</card-id><card-mask>501910******3742</card-mask><card-expiry>06/24</card-expiry><card-type>2</card-type></stored-card></root>', $sReplyBody);
     }
 

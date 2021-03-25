@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Sagar Narayane"
+        id="2020-02-18-setup-v2.26-log">
+        
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="1000"/>
+            <column name="name" value="System Created Transaction"/>
+            <column name="func" value=""/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet author="Sagar Narayane"
+        id="2020-03-22-setup-v2.26-log">
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="1014"/>
+            <column name="name" value="Payment Pending"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2012"/>
+            <column name="name" value="Cancel Failed"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2013"/>
+            <column name="name" value="Refund Failed"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2014"/>
+            <column name="name" value="Payment Request Cancelled"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="2015"/>
+            <column name="name" value="Payment Request Expired"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="4039"/>
+            <column name="name" value="Session Already Completed"/>
+            <column name="func" value="initialize"/>
+        </insert>
+
+        <update catalogName="log"
+                schemaName="log"
+                tableName="state_tbl">
+            <column name="name" value="Capture Failed" />
+            <where>id = 2011</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

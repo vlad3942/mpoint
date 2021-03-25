@@ -126,7 +126,8 @@ require_once(sCLASS_PATH ."/googlepay.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH . "/eghl.php");
-
+// Require specific Business logic for the SAFETYPAY component
+require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
 
@@ -187,34 +188,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			// Client successfully authenticated
 			if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 			{
-				$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-status'}->{'client-info'}->mobile["country-id"]);
-				if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-				
-				$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
-
-				$testingRequset = (boolean)$obj_DOM->{'get-status'}["test"];
+			    $testingRequset = (boolean)$obj_DOM->{'get-status'}["test"];
 
 				// Basic input valid
 				if (count($aMsgCds) == 0)
 				{
-					foreach ($obj_DOM->{'get-status'}->transactions->transaction as $t)
+					$aTxnId = [];
+					if($obj_DOM->{'get-status'}->transactions)
+					{
+						foreach ($obj_DOM->{'get-status'}->transactions->transaction as $t)
+						{
+							$aTxnId[] = (int)$t["id"];
+						}
+					}
+					else
+					{
+						$sessionId = $obj_DOM->{'get-status'}->{'session_id'};
+						$sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId;
+						$RSTxnId = $_OBJ_DB->query($sql);
+						while ($RS = $_OBJ_DB->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
+					}
+
+					foreach ($aTxnId as $t)
 					{
 						try
 						{
-							//If order-no is supplied to API, use it in query for txninfo
-							$misc = empty($t["order-no"]) === false ? array($t["order-no"]) : null;
 
-							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $t["id"], $_OBJ_DB, $misc);
-
-//							if($obj_TxnInfo->getPSPID() !== null)
-//							{
-//                                $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID() ), $aHTTP_CONN_INFO);
-//                                $states = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
-//                                if($obj_TxnInfo->hasEitherState($_OBJ_DB, $states) === false)
-//                                {
-//                                    $obj_PSP->status();
-//                                }
-//                            }
+							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $t, $_OBJ_DB);
 
 							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB,$testingRequset);
 							$obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
