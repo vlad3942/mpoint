@@ -561,4 +561,13 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.NOK', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.NOK', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
 
+--Paymaya Acq
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid,psp_type,capture_type) VALUES (10077, 5, 73, true, 640,2,2);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid,psp_type,capture_type) VALUES (10077, 7, 73, true, 640,2,2);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid,psp_type,capture_type) VALUES (10077, 8, 73, true, 640,2,2);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10077,73, 'EFS100001149', 'Blank', 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5zz');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100770, 73, 'paymaya acq');
+INSERT INTO Client.countrycurrency_tbl(clientid, countryid, currencyid) VALUES (10077,640,608);
 
