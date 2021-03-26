@@ -260,6 +260,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
                                             {
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
+													"cardid" => $obj_TxnInfo->getCardID(),
 													"fee" => $obj_TxnInfo->getFee() );
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                             }
@@ -284,6 +285,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 										{
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
+													"cardid" => $obj_TxnInfo->getCardID(),
 													"amount" => $amount);
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 										}

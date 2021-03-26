@@ -14,21 +14,34 @@
 class ClientRouteCurrency
 {
     /**
+     * Handles the active database connection
+     * @var RDB
+     */
+    private $_objDB;
+
+    /**
      * Hold unique ID of the client route currency
      *
      * @var integer
      */
-    private int $_iID;
+    private ?int $_iID;
 
     /**
      * Hold unique ID of route config
      *
      * @var integer
      */
-    private int $_iCurrencyId;
+    private ?int $_iCurrencyId;
 
-    public function __construct(int $id, int $currencyId)
+    /**
+     * Default Constructor
+     * @param   RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $id 	    Hold unique ID of the currency list
+     * @param 	integer $currencyId	Hold unique ID of the currency
+     */
+    public function __construct(RDB $oDB, ?int $id = null, ?int $currencyId = null)
     {
+        $this->objDB = $oDB;
         $this->_iID = $id;
         $this->_iCurrencyId = $currencyId;
     }
@@ -71,12 +84,71 @@ class ClientRouteCurrency
         try {
             $res = $oDB->query($sql);
             while ($RS = $oDB->fetchName($res)) {
-                $aObj_Configurations[] = new ClientRouteCurrency ((int) $RS["ID"], (int) $RS["CURRENCYID"]);
+                $aObj_Configurations[] = new ClientRouteCurrency ($oDB, (int) $RS["ID"], (int) $RS["CURRENCYID"]);
             }
         } catch (SQLQueryException $e) {
             trigger_error($e->getMessage(), E_USER_ERROR);
         }
         return $aObj_Configurations;
     }
+
+    /**
+     * Function used to add supported currency for the given route
+     *
+     * @param int $routeConfigId   Hold unique id of the route configuration
+     * @param array $aCurrencyId   Hold an array of supported route currency
+     * @return bool                success / failure response
+     * @throws Exception
+     */
+    public function addRouteCurrency(int $routeConfigId, array $aCurrencyId): bool
+    {
+        if(empty($routeConfigId) === false) {
+            foreach ($aCurrencyId as $currencyId){
+                $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".RouteCurrency_Tbl
+                    (routeconfigid, currencyid)
+                    values ($1, $2)";
+
+                $resource = $this->objDB->prepare($sql);
+                if (is_resource($resource) === true) {
+                    $aParam = array( $routeConfigId, $currencyId );
+                    $result = $this->objDB->execute($resource, $aParam);
+                    if ($result === false) {
+                        throw new Exception("Unable to add route currency", E_USER_ERROR);
+                        return false;
+                    }
+                } else {
+                    trigger_error("Unable to build query for add route currency", E_USER_WARNING);
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            trigger_error("RouteConfigId Not Found", E_USER_WARNING);
+            return false;
+        }
+    }
+
+    /**
+     * Function used to delete given list of route specific currency
+     * 
+     * @param int $routeConfigId  Hold unique id of the route configuration
+     * @param array $aCurrencyId   Hold an array of supported route country
+     * @return bool               success / failure response
+     */
+    public function deleteRouteCurrency(int $routeConfigId, array $aCurrencyId) : bool
+    {
+        if(empty($routeConfigId) === false && empty($aCurrencyId) === false) {
+            try {
+                $sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl
+                        WHERE routeconfigid = ". $routeConfigId ." 
+                        AND currencyid IN (" . implode(",", $aCurrencyId) . ")";
+                return is_resource($this->objDB->query($sql) );
+            } catch (SQLQueryException $e) {
+                trigger_error($e->getMessage(), E_USER_ERROR);
+            }
+        }
+        return false;
+    }
+
 }
 ?>
