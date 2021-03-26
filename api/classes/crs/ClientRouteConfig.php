@@ -91,7 +91,7 @@ class ClientRouteConfig
      * @param RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
      * @param SimpleDOMElement $obj_DOM
      */
-    public function setInputParams(RDB $_OBJ_DB, SimpleDOMElement $obj_DOM)
+    public function setInputParams(RDB $_OBJ_DB, SimpleDOMElement $obj_DOM) : void
     {
         $this->_objDB = $_OBJ_DB;
         if ( ($obj_DOM instanceof SimpleDOMElement) === true)

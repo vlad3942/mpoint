@@ -137,22 +137,17 @@ class ClientRouteCurrency
      */
     public function deleteRouteCurrency(int $routeConfigId, array $aCurrencyId) : bool
     {
-        if(empty($aCurrencyId) === false) {
-            if(empty($routeConfigId) === false) {
-                try {
-                    $sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl
-                            WHERE routeconfigid = ". $routeConfigId ." 
-                            AND currencyid IN (" . implode(",", $aCurrencyId) . ")";
-                    return is_resource($this->objDB->query($sql) );
-                } catch (SQLQueryException $e) {
-                    trigger_error($e->getMessage(), E_USER_ERROR);
-                }
-            }else {
-                trigger_error("RouteConfigId Not Found", E_USER_WARNING);
-                return false;
+        if(empty($routeConfigId) === false && empty($aCurrencyId) === false) {
+            try {
+                $sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl
+                        WHERE routeconfigid = ". $routeConfigId ." 
+                        AND currencyid IN (" . implode(",", $aCurrencyId) . ")";
+                return is_resource($this->objDB->query($sql) );
+            } catch (SQLQueryException $e) {
+                trigger_error($e->getMessage(), E_USER_ERROR);
             }
         }
-        return true;
+        return false;
     }
 
 }

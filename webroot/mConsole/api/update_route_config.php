@@ -61,7 +61,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $aFeatureIdToBeDelete = array_diff($aExistingFeatureId, $aDuplicatefeatureId);
                     if(!$objRouteFeature instanceof RouteFeature)
                         $objRouteFeature = new RouteFeature();
-                    $response = $objRouteFeature->DeleteRouteFeature($_OBJ_DB, $clientId, $iRouteConfigId, $aFeatureIdToBeDelete);
+                    $response = $objRouteFeature->deleteRouteFeature($_OBJ_DB, $clientId, $iRouteConfigId, $aFeatureIdToBeDelete);
                     $xml .=  $objRouteFeature->getUpdateRouteFeatureResponseAsXML($response);
                 }
                 elseif(count($obj_DOM->{'route_configuration'}->additional_data) == 1)

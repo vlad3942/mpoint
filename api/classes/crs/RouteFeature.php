@@ -261,7 +261,7 @@ class RouteFeature
      * @param array $aFeatureIdToBeDelete  Hold list of featured id to be deleted
      * @return bool  true/false response
      */
-    public static function DeleteRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId, array $aFeatureIdToBeDelete) : bool
+    public function deleteRouteFeature(RDB $_OBJ_DB, int $clientId, int $routeConfigId, array $aFeatureIdToBeDelete) : bool
     {
         if(empty($aFeatureIdToBeDelete) === false) {
             if(empty($routeConfigId) === false) {

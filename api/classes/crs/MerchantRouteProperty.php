@@ -188,7 +188,7 @@ class MerchantRouteProperty
      * @param array $aAdditionalPropertyToBeDelete  Hold list of merchant additional property which needs to be remove
      * @return bool  Return true/false as a response
      */
-    private function deleteAdditionalMerchantProperty(array $aAdditionalPropertyToBeDelete)
+    private function deleteAdditionalMerchantProperty(array $aAdditionalPropertyToBeDelete) : bool
     {
         if(empty($aAdditionalPropertyToBeDelete) === false) {
             if(empty($this->_iRouteConfigId) === false) {
@@ -202,7 +202,7 @@ class MerchantRouteProperty
                     trigger_error($e->getMessage(), E_USER_ERROR);
                 }
             }else {
-                trigger_error("RouteConfigId Not Found", E_USER_WARNING);
+                trigger_error("RouteConfigId is Missing", E_USER_WARNING);
                 return false;
             }
         }
