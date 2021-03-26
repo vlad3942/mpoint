@@ -292,6 +292,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 													    {
                                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                                "cardid" => $obj_TxnInfo->getCardID(),
                                                                 "amount" => $amount);
                                                             $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                                         }
