@@ -287,9 +287,13 @@ abstract class Callback extends EndUserAccount
 		//check if proxy callback url is present or not //This temporary working for CEBU, CMD is in place remove this
 		$proxyCallbackUrl = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'PROXY_CALLBACK');
 		if($proxyCallbackUrl !== null && $proxyCallbackUrl !== '' && $proxyCallbackUrl !== false ) {
-			$body = $body.'&proxy_callback='.$proxyCallbackUrl;
+			$body = $body.'&proxy_callback='. $this->_obj_TxnInfo->getCallbackURL();
 		}
-		$aURLInfo = parse_url($this->_obj_TxnInfo->getCallbackURL() );
+		else
+		{
+			 $proxyCallbackUrl = $this->_obj_TxnInfo->getCallbackURL();
+		}
+		$aURLInfo = parse_url($proxyCallbackUrl);
 
 		if (array_key_exists("port", $aURLInfo) === false)
 		{
