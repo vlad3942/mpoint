@@ -97,6 +97,8 @@ require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 // Require specific Business logic for the MPGS
 require_once(sCLASS_PATH ."/MPGS.php");
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/paymaya_acq.php");
 
 set_time_limit(120);
 

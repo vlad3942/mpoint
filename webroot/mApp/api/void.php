@@ -126,6 +126,8 @@ require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 // Require specific Business logic for the MPGS
 require_once(sCLASS_PATH ."/MPGS.php");
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/paymaya_acq.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );

@@ -110,6 +110,9 @@ require_once(sCLASS_PATH . "/worldpay.php");
 
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/paymaya_acq.php");
+
 /**
  * Input XML format
  *

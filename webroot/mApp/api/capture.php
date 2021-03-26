@@ -112,6 +112,8 @@ require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 //header("Content-Type: application/x-www-form-urlencoded");
 // Require specific Business logic for the MPGS
 require_once(sCLASS_PATH ."/MPGS.php");
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/paymaya_acq.php");
 
 /*
  $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
