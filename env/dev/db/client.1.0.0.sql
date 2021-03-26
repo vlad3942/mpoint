@@ -562,3 +562,159 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.NOK', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
 
 
+
+--CEBU MPGS CRS query
+
+INSERT INTO client.route_tbl (clientid, providerid) VALUES(10077, 72);
+ 
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_PHP', 1, 'TEST048583918507', 'merchant.TEST048583918507', '42b5c09392e50702e05f29c37c75841a', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='TEST048583918507';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'TEST048583918507';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_HKD', 1, 'TEST088008881200', 'merchant.TEST088008881200', '7f8945cebdfd056530baca4e3e8d384a', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='TEST088008881200';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'TEST088008881200';
+
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_SGD', 1, 'TEST065004485703', 'merchant.TEST065004485703', 'c1e2d0ffb6f52218be89ac0061af1f2a', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='TEST065004485703';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'TEST065004485703';
+
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_USD', 1, 'TEST048583918508', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='TEST048583918508';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'TEST048583918508';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_AED', 1, 'mid.AED', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.AED';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.AED';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_AUD', 1, 'mid.AUD', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.AUD';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.AUD';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_BND', 1, 'mid.BND', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.BND';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.BND';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_CNY', 1, 'mid.CNY', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.CNY';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.CNY';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_IDR', 1, 'mid.IDR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.IDR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.IDR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_JPY', 1, 'mid.JPY', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.JPY';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.JPY';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_KRW', 1, 'mid.KRW', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.KRW';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.KRW';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_MOP', 1, 'mid.MOP', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.MOP';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.MOP';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_MYR', 1, 'mid.MYR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.MYR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.MYR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_THB', 1, 'mid.THB', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.THB';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.THB';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_TWD', 1, 'mid.TWD', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.TWD';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.TWD';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_CAD', 1, 'mid.CAD', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.CAD';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.CAD';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_CHF', 1, 'mid.CHF', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.CHF';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.CHF';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_DKK', 1, 'mid.DKK', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.DKK';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.DKK';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_EUR', 1, 'mid.EUR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.EUR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.EUR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_GBP', 1, 'mid.GBP', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.GBP';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.GBP';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_LKR', 1, 'mid.LKR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.LKR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.LKR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_NZD', 1, 'mid.NZD', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.NZD';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.NZD';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_QAR', 1, 'mid.QAR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.QAR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.QAR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_SAR', 1, 'mid.SAR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.SAR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.SAR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_SEK', 1, 'mid.SEK', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.SEK';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.SEK';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_INR', 1, 'mid.INR', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.INR';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.INR';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_BHD', 1, 'mid.BHD', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.BHD';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.BHD';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_KWD', 1, 'mid.KWD', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.KWD';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.KWD';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_VND', 1, 'mid.VND', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.VND';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.VND';
+
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'MPGS_NOK', 1, 'mid.NOK', 'merchant.TEST048583918508', '78ebecfdcd194aac7c1e5fde0b584f40', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='mid.NOK';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'mid.NOK';
