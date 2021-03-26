@@ -292,9 +292,9 @@ class ClientPaymentMetadata
             $aObj_ClientRouteConfig = ClientRouteConfig::produceConfig($oDB, $clientId);
             $aObj_ClientCountryCurrencyConfig = ClientCountryCurrencyConfig::produceConfig($oDB, $clientId);
             $aObj_ClientPaymentMethodConfig = ClientPaymentMethodConfig::producePaymentMethodConfig($oDB, $clientId);
-            $aObj_ClientRouteFeatureConfig = RouteFeature::produceConfig($oDB, $clientId);
             $aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $clientId);
         }
+        $aObj_ClientRouteFeatureConfig = RouteFeature::produceConfig($oDB);
         $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
         $aObj_CardStateConfig = CardState::produceConfig($oDB);
         $aObj_FxServiceTypeConfig = FxServiceType::produceConfig($oDB);

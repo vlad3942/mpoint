@@ -180,20 +180,18 @@ class RouteFeature
      * @param 	integer $clientId 	Unique ID for the Client performing the request
      * @return 	RouteFeature
      */
-    public static function produceConfig(RDB &$oDB, $clientId) : array
+    public static function produceConfig(RDB &$oDB) : array
     {
         $aObj_Configurations = array();
 
-        $sql = "SELECT CRF.featureid, SRF.featurename
-				FROM Client".sSCHEMA_POSTFIX.".Routefeature_Tbl CRF
-				INNER JOIN System".sSCHEMA_POSTFIX.".Routefeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
-				WHERE CRF.clientid = ". $clientId ." 
-				AND CRF.enabled = '1'
-				ORDER BY CRF.featureid";
+        $sql = "SELECT id, featurename,enabled 
+			    FROM System".sSCHEMA_POSTFIX.".Routefeature_Tbl
+				WHERE enabled = '1'
+				ORDER BY id ASC";
         try {
             $res = $oDB->query($sql);
             while ($RS = $oDB->fetchName($res)) {
-                $aObj_Configurations[] = new RouteFeature ($RS["FEATUREID"], $RS["FEATURENAME"]);
+                $aObj_Configurations[] = new RouteFeature ($RS["ID"], $RS["FEATURENAME"]);
             }
         }catch (SQLQueryException $e){
             trigger_error($e->getMessage(), E_USER_ERROR);

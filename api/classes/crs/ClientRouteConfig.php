@@ -344,7 +344,7 @@ class ClientRouteConfig
                     ORDER BY RC.id";
 
                 $aRouteConfig = (array)$oDB->getAllNames($sql);
-                $aObj_Configurations[] = new ClientRouteConfig ($RS["PROVIDERID"], $RS["PROVIDERNAME"], $aRouteConfig);
+                $aObj_Configurations[] = new ClientRouteConfig ($RS["ID"], $RS["PROVIDERNAME"], $aRouteConfig);
             }
         }catch (SQLQueryException $e){
             trigger_error($e->getMessage(), E_USER_ERROR);
