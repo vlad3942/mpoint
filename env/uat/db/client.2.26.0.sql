@@ -1,4 +1,8 @@
 -- mPoint DB Scripts For Travel Fund:
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10077, 26, 71);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) VALUES (10077, 71, '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 71, '-1' FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10077 GROUP BY A.id;
+INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid) VALUES (10077,640,208);
 
 INSERT INTO client.route_tbl (clientid, providerid) VALUES(10077, 71);
 
