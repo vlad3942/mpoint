@@ -479,41 +479,26 @@ try
             $obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
         }
 
-        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
-        if(($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_REJECTED_STATE ) && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE)
-        {
-            if((int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE && (integer) $obj_XML->callback->transaction->amount["currency-id"] !== $obj_TxnInfo->getCurrencyConfig()->getID())
-            {
-                $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->callback->transaction->amount["currency-id"]);
-                $data['converted-currency-config'] = $obj_CurrencyConfig;
-                $data['converted-amount'] = (integer) $obj_XML->callback->transaction->amount;
-                $data['conversion-rate'] =  (float)$obj_XML->callback->transaction->amount/(float)$obj_TxnInfo->getAmount();
-                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
-                $obj_mPoint->logTransaction($obj_TxnInfo);
+        $data['card-id'] =  $obj_XML->callback->transaction->card["type-id"];
+        $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 
-            }
-            $passbookEntry = new PassbookEntry
-            (
-                NULL,
-                $obj_TxnInfo->getAmount(),
-                $obj_TxnInfo->getCurrencyConfig()->getID(),
-                Constants::iAuthorizeRequested,
-                '',
-                0,
-                '',
-                '',
-                TRUE,
-                NULL,
-                NULL,
-                $obj_TxnInfo->getClientConfig()->getID(),
-                $obj_TxnInfo->getInitializedAmount()
-            );
+        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+        $paymentType = (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType;
+        $currencyId = (int) $obj_XML->callback->transaction->amount["currency-id"];
+        if($currencyId > 0  && ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_REJECTED_STATE || $iStateID === Constants::iPAYMENT_REQUEST_CANCELLED_STATE || $iStateID === Constants::iPAYMENT_REQUEST_EXPIRED_STATE) && $paymentType === Constants::iPAYMENT_TYPE_OFFLINE && $currencyId !== $obj_TxnInfo->getCurrencyConfig()->getID())
+        {
+
+            $offlineAmount = (integer) $obj_XML->callback->transaction->amount;
+            $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, $currencyId);
+            $data['converted-currency-config'] = $obj_CurrencyConfig;
+            $data['converted-amount'] = $offlineAmount;
+            $data['conversion-rate'] =  (float)$obj_XML->callback->transaction->amount/(float)$obj_TxnInfo->getAmount();
+            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+            $obj_mPoint->logTransaction($obj_TxnInfo);
             if ($txnPassbookObj instanceof TxnPassbook)
             {
-                $txnPassbookObj->addEntry($passbookEntry);
-                $txnPassbookObj->performPendingOperations();
+                $txnPassbookObj->updatePerformedOptEntry($paymentType, $offlineAmount, $currencyId);
             }
-
         }
 
         if ($txnPassbookObj instanceof TxnPassbook) {
@@ -526,6 +511,8 @@ try
                         $status = Constants::sPassbookStatusDone;
                         break;
                     case Constants::iPAYMENT_REJECTED_STATE:
+                    case Constants::iPAYMENT_REQUEST_CANCELLED_STATE:
+                    case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
                         $state = Constants::iPAYMENT_ACCEPTED_STATE;
                         $status = Constants::sPassbookStatusError;
                         break;
