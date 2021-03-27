@@ -22,6 +22,7 @@ require_once(sCLASS_PATH ."/crs/RouteFeature.php");
 require_once(sCLASS_PATH ."/crs/ClientRouteConfigurations.php");
 require_once(sCLASS_PATH ."/crs/ClientRouteCountry.php");
 require_once(sCLASS_PATH ."/crs/ClientRouteCurrency.php");
+require_once(sCLASS_PATH ."/crs/AdditionalProperties.php");
 
 $obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
