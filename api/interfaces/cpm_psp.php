@@ -354,7 +354,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
-							'cardid'=>0);
+							'cardid'=>$this->getTxnInfo()->getCardID());
 
 					if ($iStatusCode == 1000)
 					{

@@ -207,6 +207,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                         if (strlen($obj_TxnInfo->getCallbackURL()) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true) {
                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                 "amount" => $_REQUEST['amount'],
+                                "cardid" => $obj_TxnInfo->getCardID(),
                                 "fee" => $obj_TxnInfo->getFee());
                             $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                         }
