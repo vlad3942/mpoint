@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/callbackAPITest.php';
+require_once __DIR__ . '/CallbackAPITest.php';
 
 class DCCCallbackAPITest extends CallbackAPITest
 {

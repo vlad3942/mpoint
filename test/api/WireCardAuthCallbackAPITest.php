@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__. '/callbackAPITest.php';
+require_once __DIR__ . '/CallbackAPITest.php';
 
 class WireCardAuthCallbackAPITest extends CallbackAPITest
 {

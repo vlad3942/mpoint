@@ -8,7 +8,7 @@
  * File Name:SafetyPayInitTest.php
  */
 
-require_once __DIR__. '/initializeAPIValidationTest.php';
+require_once __DIR__ . '/InitializeAPIValidationTest.php';
 
 class SafetyPayInitTest extends InitializeAPIValidationTest
 {

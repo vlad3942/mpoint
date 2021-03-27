@@ -8,7 +8,7 @@
  * File Name:SafetyPayAPITest.php
  */
 
-require_once __DIR__. '/payAPITest.php';
+require_once __DIR__ . '/PayAPITest.php';
 
 class SafetyPayAPITest extends PayAPITest
 {

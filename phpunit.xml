@@ -9,8 +9,25 @@
 		 stopOnFailure="false">
 	<testsuites>
 		<testsuite name="Application Test Suite">
-			<directory suffix="Test.php">./test/api</directory>
+			<file>./test/api/CaptureAPIValidationTest.php</file>
+			<file>./test/api/GeneralPSPTest.php</file>
+		</testsuite>
+		<testsuite name="Application Test Suite1">
+			<directory suffix="Test.php">./test/api/</directory>
 			<directory suffix="Test.php">./test/classes/</directory>
+			<exclude>./test/api/CaptureAPIValidationTest.php</exclude>
+			<exclude>./test/api/GeneralPSPTest.php</exclude>
+			<!-- Below classes are used as base class and it has 0 test methods, so excluding for units execution-->
+			<exclude>./test/api/CallbackAPITest.php</exclude>
+			<exclude>./test/api/PayAPITest.php</exclude>
+
+			<!-- Below Test cases are skipped as the test case tests an old integration which is no longer supported by NetAxept.
+			To remedy this, the new NetAxept integration from branch: release/v2.02 needs to be merged in -->
+			<exclude>./test/api/NetaxeptAuthorizeAPITest.php</exclude>
+			<exclude>./test/api/NetaxeptCallbackAPITest.php</exclude>
+			<exclude>./test/api/NetAxeptCaptureAPITest.php</exclude>
+			<exclude>./test/api/NetAxeptPayAPITest.php</exclude>
+			<exclude>./test/api/NetAxeptRefundAPITest.php</exclude>
 		</testsuite>
 	</testsuites>
 	<coverage includeUncoveredFiles="true"
