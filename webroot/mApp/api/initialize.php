@@ -697,10 +697,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
-                            if (strtolower($is_legacy) == 'false') {
+                            if (strtolower($is_legacy) == 'false')
+                            {
+
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                                if (empty($sessionId) === false) {
+                                $fraudDettectedForPMType = -1;
+                                if (empty($sessionId) === false)
+                                {
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+                                    $fraudDettectedForPMType = $obj_mPoint->findFraudDetected($sessionId);
                                 }
                                 // Call mProfile to get customer type
                                 if (empty($authenticationURL) === false && empty($authToken) === false && empty($profileTypeId) === true) {
@@ -722,7 +727,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     if ($obj_PaymentMethodResponse instanceof RoutingServiceResponse) {
                                         $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                                        $obj_PM = PaymentMethod::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+                                        $obj_PM = PaymentMethod::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods,$fraudDettectedForPMType);
                                         ksort($obj_PM, 1);
                                         $obj_XML = '<cards>';
                                         foreach ($obj_PM as $key => $value) {
