@@ -86,4 +86,24 @@
 
     </changeSet>
 
+    <changeSet author="Sagar Narayane"
+        id="2020-03-27-setup-v2.26-log">
+
+        <delete  catalogName="Log"
+                 schemaName="Log"
+                 tableName="State_Tbl">
+            <where>id = 1014</where>
+        </delete>
+
+        <insert catalogName="Log"
+            schemaName="Log"
+            tableName="State_Tbl">
+
+            <column name="id" value="1041"/>
+            <column name="name" value="Payment Pending"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>

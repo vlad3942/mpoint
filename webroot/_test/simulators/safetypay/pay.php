@@ -7,6 +7,14 @@ require_once(sAPI_CLASS_PATH ."/simpledom.php");
 $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 if ($obj_XML->validate(dirname(__FILE__). '/../xsd/pay.xsd') )
 {
+
+    $isPaymentPending  = 'false';
+     if((string)$obj_XML->initialize->transaction->amount_info->{"currency-id"} === '986')
+     {
+        $isPaymentPending  = 'true';
+     }
+
+
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 
     echo '<?xml version="1.0" encoding="utf-8"?>
@@ -20,6 +28,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/../xsd/pay.xsd') )
             </input-fields>
             <name>card_holderName</name>
             <message language="gb"></message>
+            <payment-pending>'.$isPaymentPending.'</payment-pending>
         </root>';
 }
 else

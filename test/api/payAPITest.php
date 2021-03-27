@@ -93,7 +93,7 @@ class PayAPITest extends baseAPITest
 		return $xml;
 	}
 
-	protected function testSuccessfulPay($pspID, $cardID,$typeId=1, $pspType = 1, $countryid=100,$currencyid=208)
+	protected function testSuccessfulPay($pspID, $cardID,$typeId=1, $pspType = 1, $countryid=100,$currencyid=208, $finalStateId = 1009)
 	{
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -116,6 +116,10 @@ class PayAPITest extends baseAPITest
 
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="'.$typeId.'">', $sReplyBody);
+		if($finalStateId !== null)
+        {
+		    $this->assertStringContainsString('<status code="'. $finalStateId .'">', $sReplyBody);
+        }
 
 		$res =  $this->queryDB("SELECT id FROM Enduser.Account_Tbl");
 		$this->assertTrue(is_resource($res) );
