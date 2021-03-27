@@ -146,6 +146,8 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 // Require specific Business logic for the SAFETYPAY component
 require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the CEBU Payment Center component
@@ -531,6 +533,26 @@ try
                         $state = Constants::iPAYMENT_CAPTURED_STATE;
                         $status = Constants::sPassbookStatusDone;
                         break;
+                    case Constants::iPAYMENT_CAPTURE_FAILED_STATE:
+                        $state = Constants::iPAYMENT_CAPTURED_STATE;
+                        $status = Constants::sPassbookStatusError;
+                        break;
+                    case Constants::iPAYMENT_REFUNDED_STATE:
+                        $state = Constants::iPAYMENT_REFUNDED_STATE;
+                        $status = Constants::sPassbookStatusDone;
+                        break;
+                    case Constants::iPAYMENT_REFUND_FAILED_STATE:
+                        $state = Constants::iPAYMENT_REFUNDED_STATE;
+                        $status = Constants::sPassbookStatusError;
+                        break;
+                    case Constants::iPAYMENT_CANCELLED_STATE:
+                        $state = Constants::iPAYMENT_CANCELLED_STATE;
+                        $status = Constants::sPassbookStatusDone;
+                        break;
+                    case Constants::iPAYMENT_CANCEL_FAILED_STATE:
+                        $state = Constants::iPAYMENT_CANCELLED_STATE;
+                        $status = Constants::sPassbookStatusError;
+                        break;
                 }
                 if ($state !== 0) {
                     $txnPassbookObj->updateInProgressOperations($obj_XML->callback->transaction->amount, $state, $status);
@@ -692,8 +714,8 @@ try
             }
             else
             {
-                array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
-                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+                array_push($aStateId,Constants::iPAYMENT_CAPTURE_FAILED_STATE);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
             }
         }
 

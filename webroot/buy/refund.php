@@ -133,8 +133,12 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
+
 // Require specific Business logic for the SAFETYPAY component
 require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
+
 set_time_limit(120);
 $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -228,6 +232,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
                             {
                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                    "cardid" => $obj_TxnInfo->getCardID(),
                                     "amount" => $_REQUEST['amount']);
                                 $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                             }

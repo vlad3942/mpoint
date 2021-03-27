@@ -50,26 +50,7 @@ class RouteFeatureTest extends baseAPITest
         }
         $xml .= '</route_features>';
 
-        $this->assertStringContainsString('<route_features><route_feature><id>2</id><name>Delayed Capture</name></route_feature><route_feature><id>5</id><name>Refund</name></route_feature></route_features>', $xml);
-    }
-
-    public function testEmptyGetRouteFeature()
-    {
-        $aObj_ClientRouteFeatureConfig = RouteFeature::produceConfig($this->_OBJ_DB, 10099);
-        $this->assertIsArray($aObj_ClientRouteFeatureConfig);
-        $xml = '<route_features>';
-        foreach ($aObj_ClientRouteFeatureConfig as $obj_RF)
-        {
-            $this->assertInstanceOf(RouteFeature::class, $obj_RF);
-
-            if ( ($obj_RF instanceof RouteFeature) === true)
-            {
-                $xml .= $obj_RF->toXML();
-            }
-        }
-        $xml .= '</route_features>';
-
-        $this->assertStringContainsString('<route_features></route_features>', $xml);
+        $this->assertStringContainsString('<route_features><route_feature><id>1</id><name>Pre-Auth</name></route_feature><route_feature><id>2</id><name>Delayed Capture</name></route_feature><route_feature><id>3</id><name>Batch Capture</name></route_feature><route_feature><id>4</id><name>Partial Capture</name></route_feature><route_feature><id>5</id><name>Refund</name></route_feature><route_feature><id>6</id><name>Partial Refund</name></route_feature><route_feature><id>7</id><name>Settlement</name></route_feature><route_feature><id>8</id><name>Recurring</name></route_feature><route_feature><id>9</id><name>3DS</name></route_feature><route_feature><id>10</id><name>Installment</name></route_feature><route_feature><id>11</id><name>Store Card</name></route_feature><route_feature><id>12</id><name>Channel Mobile</name></route_feature><route_feature><id>13</id><name>Channel Web</name></route_feature><route_feature><id>14</id><name>Channel Others</name></route_feature><route_feature><id>15</id><name>Pre-auth Fraud</name></route_feature><route_feature><id>16</id><name>Post-Auth Fraud</name></route_feature><route_feature><id>17</id><name>Voids</name></route_feature></route_features>', $xml);
     }
 
     public function tearDown() : void

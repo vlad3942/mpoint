@@ -54,7 +54,7 @@ class ClientRouteConfigTest extends baseAPITest
         }
         $xml .= '</payment_providers>';
 
-        $this->assertStringContainsString('<payment_providers><payment_provider><id>18</id><name>Wire Card</name><route_configurations><route_configuration><id>1</id><route_name>Wirecard_VISA</route_name></route_configuration></route_configurations></payment_provider></payment_providers>', $xml);
+        $this->assertStringContainsString('<payment_providers><payment_provider><id>1</id><name>Wire Card</name><route_configurations><route_configuration><id>1</id><route_name>Wirecard_VISA</route_name></route_configuration></route_configurations></payment_provider></payment_providers>', $xml);
     }
 
     public function testEmptyGetClientRouteConfig()

@@ -79,7 +79,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
         $retries = 0;
 
-        while ($retries++ <= 9)
+        while ($retries++ <= 13)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
             $this->assertTrue(is_resource($res) );
@@ -90,7 +90,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
                 $trow = $row;
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) == 9) { break; }
+            if (count($aStates) == 13) { break; }
             usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
@@ -99,17 +99,20 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
 		
-		$this->assertCount(9, $aStates);
+		$this->assertCount(13, $aStates);
 		$this->assertEquals(2007, $aStates[0]);
-		//$this->assertEquals(2009, $aStates[1]);
 		$this->assertEquals(2000, $aStates[1]);
 		$this->assertEquals(1991, $aStates[2]);
 		$this->assertEquals(1992, $aStates[3]);
 		$this->assertEquals(1990, $aStates[4]);
-		$this->assertEquals(4030, $aStates[5]);
+		$this->assertEquals(2001, $aStates[5]);
 		$this->assertEquals(1991, $aStates[6]);
 		$this->assertEquals(1992, $aStates[7]);
 		$this->assertEquals(1990, $aStates[8]);
+		$this->assertEquals(4030, $aStates[9]);
+		$this->assertEquals(1991, $aStates[10]);
+		$this->assertEquals(1992, $aStates[11]);
+		$this->assertEquals(1990, $aStates[12]);
 	}
 
 	public function testVoucherRedemptionDeniedByIssuer()

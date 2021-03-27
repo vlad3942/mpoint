@@ -5,7 +5,7 @@
  * Copyright: Cellpoint Digital
  * Link: http://www.cellpointdigital.com
  * Project: mPoint
- * File Name:client_route_config.php
+ * File Name:ClientRouteConfig.php
  */
 
 class ClientRouteConfig
@@ -86,11 +86,12 @@ class ClientRouteConfig
     protected function &getDBConn() { return $this->_objDB; }
 
     /**
-     * Set initialize class variable with appropriate value
+     * Initialize class variable with appropriate value
      *
+     * @param RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
      * @param SimpleDOMElement $obj_DOM
      */
-    public function setInputParams(RDB $_OBJ_DB, SimpleDOMElement $obj_DOM)
+    public function setInputParams(RDB $_OBJ_DB, SimpleDOMElement $obj_DOM) : void
     {
         $this->_objDB = $_OBJ_DB;
         if ( ($obj_DOM instanceof SimpleDOMElement) === true)
@@ -107,6 +108,9 @@ class ClientRouteConfig
             }
             if($obj_DOM->currency_ids->currency_id instanceof SimpleDOMElement) {
                 $this->_aCurrencyId = (array)$obj_DOM->currency_ids->currency_id;
+            }
+            if(empty($obj_DOM->id ) === false){
+                $this->_iRouteConfigId = (int)$obj_DOM->id;
             }
         }
     }
@@ -225,7 +229,7 @@ class ClientRouteConfig
     }
 
     /**
-     * Fucntion used identify wheter route already exist or not
+     * Fucntion used identify whether route configuration already exist or not
      *
      * @return bool         Success/Failure status
      */
@@ -248,7 +252,7 @@ class ClientRouteConfig
     }
 
     /**
-     * Function used to add route confuguration
+     * Function used to add route configuration
      * @return bool      Return final status of add route configuration
      */
     private function AddRouteConfig() : bool
@@ -287,6 +291,10 @@ class ClientRouteConfig
         return FALSE;
     }
 
+    /**
+     * Produce route configuration response in the form of XML
+     * @return string  XML playload structure of route feature configuration status
+     */
     public function toXML() : string
     {
       $xml = '<payment_provider>';
@@ -336,12 +344,124 @@ class ClientRouteConfig
                     ORDER BY RC.id";
 
                 $aRouteConfig = (array)$oDB->getAllNames($sql);
-                $aObj_Configurations[] = new ClientRouteConfig ($RS["PROVIDERID"], $RS["PROVIDERNAME"], $aRouteConfig);
+                $aObj_Configurations[] = new ClientRouteConfig ($RS["ID"], $RS["PROVIDERNAME"], $aRouteConfig);
             }
         }catch (SQLQueryException $e){
             trigger_error($e->getMessage(), E_USER_ERROR);
         }
         return $aObj_Configurations;
+    }
+
+    /**
+     * Function used to update route configuration
+     * @return bool   true/false as a update route configuration response
+     */
+    public function updateRoute() : bool
+    {
+        $this->getDBConn()->query('START TRANSACTION');
+        $response['status'] = $this->updateRouteConfig();
+        if($response['status'] === TRUE) {
+            $updateRouteCountryStatus = $this->updateRouteCountry();
+            $updateRouteCurrencyStatus = $this->updateRouteCurrency();
+            if ($updateRouteCountryStatus === TRUE && $updateRouteCurrencyStatus === TRUE) {
+                $this->getDBConn()->query('COMMIT');
+                return TRUE;
+            }else{
+                $this->getDBConn()->getDBConn()->query('ROLLBACK');
+                return FALSE;
+            }
+        }
+        return FALSE;
+    }
+
+    /**
+     * Function used to update route configuration
+     * @return bool  Return true upon successful query executation or else retrun false
+     */
+    private function updateRouteConfig() : bool
+    {
+        try {
+            $sql = "UPDATE Client" . sSCHEMA_POSTFIX . ".Routeconfig_Tbl
+            SET routeid = '" . $this->_iRouteId . "', name = '" . $this->_sRouteName . "', capturetype = '" . $this->_iCaptureType . "',
+                mid = '" . $this->_sMID . "', username= '" . $this->_sUserName . "', password = '" . $this->_sPassword . "'
+            WHERE id = " . $this->_iRouteConfigId;
+
+            return is_resource($this->getDBConn()->query($sql));
+        } catch (SQLQueryException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            return false;
+        }
+    }
+
+    /**
+     * Function used to update the supported country for the route
+     * @return bool   success / failure response
+     * @throws Exception
+     */
+    private function updateRouteCountry() : bool
+    {
+        $aCountryId = array();
+        $aObj_RouteCountry = ClientRouteCountry::produceConfig($this->_objDB, $this->_iRouteConfigId);
+        if (empty($aObj_RouteCountry) === false) {
+            foreach ($aObj_RouteCountry as $objCountry) {
+                if ($objCountry instanceof ClientRouteCountry) {
+                    $aCountryId[] =  $objCountry->getCountryID();
+                }
+            }
+        }
+        $obj_RouteCountry = new ClientRouteCountry ($this->_objDB);
+        $aCountryIdToBeAdd  = array_diff($this->_aCountryId, $aCountryId);
+        $aCountryIdToBeDelete = array_diff($aCountryId, $this->_aCountryId);
+        $status = $obj_RouteCountry->addRouteCountry($this->_iRouteConfigId, $aCountryIdToBeAdd);
+        if($status === true) {
+            return $obj_RouteCountry->deleteRouteCountry($this->_iRouteConfigId, $aCountryIdToBeDelete);
+        }
+        return true;
+    }
+
+    /**
+     * Function used to update the supported currency for the route
+     * @return bool   success / failure response
+     * @throws Exception
+     */
+    private function updateRouteCurrency() : bool
+    {
+        $aCurrencyId = array();
+        $aObj_RouteCurrency = ClientRouteCurrency::produceConfig($this->_objDB, $this->_iRouteConfigId);
+        if (empty($aObj_RouteCurrency) === false) {
+            foreach ($aObj_RouteCurrency as $objCurrency) {
+                if ($objCurrency instanceof ClientRouteCurrency) {
+                    $aCurrencyId[] =  $objCurrency->getCurrencyID();
+                }
+            }
+        }
+        $obj_RouteCurrency = new ClientRouteCurrency ($this->_objDB);
+        $aCurrencyIdToBeAdd  = array_diff($this->_aCurrencyId, $aCurrencyId);
+        $aCurrencyIdToBeDelete = array_diff($aCurrencyId, $this->_aCurrencyId);
+        $status = $obj_RouteCurrency->addRouteCurrency($this->_iRouteConfigId, $aCurrencyIdToBeAdd);
+        if($status === true) {
+            return $obj_RouteCurrency->deleteRouteCurrency($this->_iRouteConfigId, $aCurrencyIdToBeDelete);
+        }
+        return true;
+    }
+
+    /**
+     * Function used to process update route config response
+     *
+     * @param bool $response  An array containing route configuration status
+     * @return string         XML playload structure of final response
+     */
+    public function getUpdateRouteResponseAsXML(bool $response):string
+    {
+        $xml = '';
+        if($response === TRUE){
+            $xml .= '<status>Success</status>';
+            $xml .= '<message>Route Configuration Updated Successfully.</message>';
+        }else{
+            $xml .= '<status>Fail</status>';
+            $xml .= '<message>Unable To Update Route Configuration. </message>';
+        }
+        return $xml;
     }
 
 }

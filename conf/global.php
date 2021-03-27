@@ -1148,6 +1148,23 @@ $aHTTP_CONN_INFO["mconsole"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mconsole"]["paths"]["single-sign-on"] = "/mconsole/single-sign-on";
 
 /**
+ * Connection info for connecting to MPGS
+ */
+$aHTTP_CONN_INFO["mpgs"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mpgs"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mpgs"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mpgs"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mpgs"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mpgs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mpgs"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["initialize"] = "/mpoint/mpgs/initialize";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["auth"] = "/mpoint/mpgs/authorize-payment";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["capture"] = "/mpoint/mpgs/capture";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["status"] = "/mpoint/mpgs/status";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["cancel"] = "/mpoint/mpgs/cancel";
+$aHTTP_CONN_INFO["mpgs"]["paths"]["refund"] = "/mpoint/mpgs/refund";
+
+/**
  * Connection info for connecting to SafetyPay
  */
 $aHTTP_CONN_INFO["safetypay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];

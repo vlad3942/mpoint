@@ -71,7 +71,6 @@ require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH ."/ccpp.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 
-
 ignore_user_abort(true);
 set_time_limit(0);
 set_time_limit(120);

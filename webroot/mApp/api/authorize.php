@@ -169,6 +169,8 @@ require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH . '/Route.php');
 require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 
@@ -344,6 +346,8 @@ try
                                     if($iPSPID > 0 && $isVoucherErrorFound === FALSE && ( (is_object($cardNode) === false || count($cardNode) === 0 ) || $isVoucherPreferred !== "false")) {
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
                                             $isVoucherRedeem = TRUE;
+                                            $misc = [];
+                                            $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
                                             if (strtolower($is_legacy) === 'false') {
                                                 $typeId = Constants::iVOUCHER_CARD;
                                                 $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
@@ -356,16 +360,15 @@ try
                                                     $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
                                                     # Update routeconfig ID in log.transaction table
                                                     $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                                    $misc = [];
-                                                    $misc['auto-capture'] = 2;
-                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
-                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
 
                                                 $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $obj_TxnInfo->getRouteConfigID());
                                             } else {
                                                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
                                             }
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+
                                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
@@ -521,6 +524,20 @@ try
                                             }
                                         }
 
+                                        // Validate service type id if explicitly passed in request
+                                        $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
+                                        if($fxServiceTypeId > 0){
+                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
+                                            }
+                                        }
+                                        if ($fxServiceTypeId)
+                                        {
+                                            $data['fxservicetypeid'] = $fxServiceTypeId;
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                        }
+
                                         $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
                                         $obj_CardXML = '';
@@ -599,7 +616,7 @@ try
                                         }
                                         $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 
-                                        if($iSessionType > 1 &&  General::xml2bool($obj_Elem["dcc"]) === false)
+                                        if($iSessionType > 1 &&  empty($obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true  )
                                         {
                                             if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
                                             {
@@ -648,18 +665,6 @@ try
                                         	if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'authorize-payment'}[$i]["client-id"])) != 10 ){
                                         		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
                                         	}
-                                        }
-
-                                        // Validate service type id if explicitly passed in request
-                                        $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
-                                        if($fxServiceTypeId > 0){
-                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
-                                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
-                                            }
-                                        }
-                                        if ($fxServiceTypeId)
-                                        {
-                                            $data['fxservicetypeid'] = $fxServiceTypeId;
                                         }
 
                                         if (isset($obj_Elem->capture_type) > 0)

@@ -89,7 +89,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             catch (CaptureException $e)
             {
                 trigger_error("Capture of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $e->getMessage() );
+                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $e->getMessage() );
                 return $e->getCode();
             }
         }
@@ -200,6 +200,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			catch (RefundException $e)
 			{
 				$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_FAILED_STATE, utf8_encode("Refund of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage()) );
 				trigger_error("Refund of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 				return $e->getCode();
 			}
@@ -347,13 +348,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$iUpdateStatusCode = $iStatus;
 					}
 
-					$paymentState = Constants::iPAYMENT_DECLINED_STATE;
+					$paymentState = Constants::iPAYMENT_CANCEL_FAILED_STATE;
 					$passbookState = Constants::sPassbookStatusError;
-					$updateStatusCode = Constants::iPAYMENT_DECLINED_STATE;
+					$updateStatusCode = Constants::iPAYMENT_CANCEL_FAILED_STATE;
 					$retStatusCode = $iStatusCode;
 					$args = array('amount'=>$this->getTxnInfo()->getAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
-							'cardid'=>0);
+							'cardid'=>$this->getTxnInfo()->getCardID());
 
 					if ($iStatusCode == 1000)
 					{
@@ -384,6 +385,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 		    if($this->getPSPConfig()->getProcessorType() !== 8) {
                 $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CANCELLED_STATE, Constants::sPassbookStatusError);
+                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCEL_FAILED_STATE, utf8_encode("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage()) );
             }
 			trigger_error("Cancel of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 			return $e->getCode();

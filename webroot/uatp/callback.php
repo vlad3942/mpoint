@@ -57,7 +57,7 @@ if(isset($_REQUEST['tickernumbers']))
 $status = $_REQUEST['status'];
 
 $sPassbookStatus = 'done';
-if($status == Constants::iPAYMENT_DECLINED_STATE) { $sPassbookStatus = 'error'; }
+if($status == Constants::iPAYMENT_CAPTURE_FAILED_STATE || $status == Constants::iPAYMENT_CANCEL_FAILED_STATE || $status == Constants::iPAYMENT_REFUND_FAILED_STATE) { $sPassbookStatus = 'error'; }
 
 //Suppress 4030,2010,2000 callback as a part of CMP-3052,CMP-3000
 if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_REJECTED_STATE && $status != Constants::iPAYMENT_ACCEPTED_STATE)

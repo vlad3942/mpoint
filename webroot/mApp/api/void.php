@@ -124,6 +124,8 @@ require_once(sCLASS_PATH ."/grabpay.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CebuPaymentCenter component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
+// Require specific Business logic for the MPGS
+require_once(sCLASS_PATH ."/MPGS.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -290,6 +292,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 													    {
                                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                                "cardid" => $obj_TxnInfo->getCardID(),
                                                                 "amount" => $amount);
                                                             $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                                         }
