@@ -205,7 +205,7 @@ class ClientRouteConfigurations
                 $aObj_RouteFeatures[$routeConfigID] = RouteFeature::produceConfigByRouteConfigID($oDB, $routeConfigID);
                 $aObj_RouteCountry[$routeConfigID] = ClientRouteCountry::produceConfig($oDB, $routeConfigID);
                 $aObj_RouteCurrecny[$routeConfigID] = ClientRouteCurrency::produceConfig($oDB, $routeConfigID);
-                $aObj_AdditionalProperties[$routeConfigID] = AdditionalProperties::produceConfig($oDB, $routeConfigID);
+                $aObj_AdditionalProperties[$routeConfigID] = AdditionalProperties::produceConfig($oDB, $routeConfigID, 'merchant', );
             }
         } catch (SQLQueryException $e) {
             trigger_error($e->getMessage(), E_USER_ERROR);

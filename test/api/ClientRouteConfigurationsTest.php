@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../api/classes/crs/RouteFeature.php';
 require_once __DIR__ . '/../../api/classes/crs/ClientRouteConfigurations.php';
 require_once __DIR__ . '/../../api/classes/crs/ClientRouteCountry.php';
 require_once __DIR__ . '/../../api/classes/crs/ClientRouteCurrency.php';
-require_once(sCLASS_PATH ."/crs/AdditionalProperties.php");
+require_once(sCLASS_PATH ."/core/AdditionalProperties.php");
 
 class ClientRouteConfigurationsTest extends baseAPITest
 {

@@ -28,7 +28,7 @@ class AdditionalProperties
      * @param   string $key             Hold additional property key
      * @param   string $value           Hold additional property value
      */
-	public function __construct(string $key = null, string $value = null)
+	public function __construct(string $key, string $value)
 	{
         $this->_sKey = $key;
         $this->_sValue = $value;
@@ -73,12 +73,12 @@ class AdditionalProperties
      * @param int $routeConfigId   Hold unique id of the route configuration
      * @return AdditionalProperties  $aObj_Configurations    Hold additional property configuration
      */
-    public static function produceConfig(RDB $oDB, int $routeConfigId): array
+    public static function produceConfig(RDB $oDB, int $externalId, string $type): array
     {
         $aObj_Configurations = array();
         $sql  = "SELECT key,value
                  FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-                 WHERE externalid = ". $routeConfigId ." and type='merchant' and enabled=true" ;
+                 WHERE externalid = ". $externalId ." and type='".$type."' and enabled=true" ;
         try {
             $res = $oDB->query($sql);
             while ($RS = $oDB->fetchName($res)) {
