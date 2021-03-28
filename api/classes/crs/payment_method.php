@@ -127,7 +127,7 @@ class PaymentMethod extends Card
                 $aRS['STATEID'] = $aCardConfig['state_id'];
                 if($aRS['PAYMENTTYPE'] == $fraudDettectedForPMType)
                 {
-                    $aRS['STATEID'] = Constants::iCARD_TEMPORARILY_UNAVAILABLE_STATE;
+                    $aRS['STATEID'] = Constants::iCARD_DISABLED;
                 }
                 $preference = $aCardConfig['preference'];
 
