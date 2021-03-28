@@ -1,11 +1,10 @@
 <?php
 /**
  * Created by IntelliJ IDEA.
- * User: Vikas Gupta
- * Copyright: Cellpoint Mobile
- * Link: http://www.cellpointmobile.com
+ * User: Anna Lagad
+ * Copyright: Cellpoint Digital
+ * Link: http://www.cellpointdigital.com
  * Project: mPoint
- * Package: mPoint Test Suite
  * File Name:AdditionalPropertiesTest.php
  */
 
@@ -14,7 +13,7 @@ require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
 require_once(sCLASS_PATH ."/core/AdditionalProperties.php");
 
-class ClientRouteConfigurationsTest extends baseAPITest
+class AdditionalPropertiesTest extends baseAPITest
 {
     private $_OBJ_DB;
 
@@ -32,7 +31,7 @@ class ClientRouteConfigurationsTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('PAYPAL_MID_MYR', 'tsto1654', 1, 'merchant',1)");
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('PAYPAL_USERNAME_MYR', 'test123', 1, 'merchant',1)");
 
-        $aObj_AdditionalProperties = AdditionalProperties::produceConfig($this->_OBJ_DB, 1, 'merchant', );
+        $aObj_AdditionalProperties = AdditionalProperties::produceConfig($this->_OBJ_DB, 1, 'merchant');
         $xml = '';
         $this->assertIsArray($aObj_AdditionalProperties);
         if (empty($aObj_AdditionalProperties) === false) {
@@ -53,7 +52,7 @@ class ClientRouteConfigurationsTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Route_Tbl (id, clientid, providerid) VALUES (1, 10099, 18)");
         $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
 
-        $aObj_AdditionalProperties = AdditionalProperties::produceConfig($this->_OBJ_DB, 1, 'merchant', );
+        $aObj_AdditionalProperties = AdditionalProperties::produceConfig($this->_OBJ_DB, 1, 'merchant');
         $xml = '';
         $this->assertIsArray($aObj_AdditionalProperties);
         if (empty($aObj_AdditionalProperties) === false) {
