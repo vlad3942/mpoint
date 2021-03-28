@@ -200,8 +200,7 @@ final class PaymentSession
         if ($stateId == null)
         {
             $iPendingAmt = $this->getPendingAmount();
-            if ($this->getTransactionStates(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE) === true) { $stateId = Constants::iSESSION_FAILED; }
-            elseif ($iPendingAmt == 0)
+            if ($iPendingAmt == 0)
             {
                 $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE);
                 if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) { $stateId = Constants::iSESSION_COMPLETED; }
@@ -211,7 +210,7 @@ final class PaymentSession
             elseif ($iPendingAmt != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) { $stateId = Constants::iSESSION_EXPIRED; }
             elseif ($iPendingAmt != 0)
             {
-                if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
+                if ($iPendingAmt != $this->getAmount() && $this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
                 }
                 if( $this->getSessionType() == 1 && $this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
@@ -268,13 +267,14 @@ final class PaymentSession
         try
         {
             $amount = 0;
-            if (empty($this->_id) === false) {
-                $sql = "SELECT  DISTINCT txn.id, txn.amount
+            if (empty($this->_id) === false)
+            {
+                $sql = "SELECT * FROM (SELECT  txn.id, txn.amount,msg.stateid ,rank() over(partition by msg.txnid order by msg.id desc) as rn
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (2000,2001)
-                GROUP BY txn.id,msg.stateid";
+                AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.")) s where s.rn =1 and s.stateid != ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE."
+                ";
 
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
