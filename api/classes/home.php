@@ -932,9 +932,8 @@ class Home extends General
                     if(($obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_COMPLETED ||
                         $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED ||
                         $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_FAILED ||
                         $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iPAYMENT_3DS_FAILURE_STATE) ||
-                        $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,$state)))
+                        $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iPAYMENT_REJECTED_STATE ,Constants::iPRE_FRAUD_CHECK_REJECTED_STATE,Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,$state)))
                     {
                         $sql = "WITH WT1 as
                            (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
