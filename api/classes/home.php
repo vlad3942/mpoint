@@ -925,7 +925,7 @@ class Home extends General
                     $state = -1;
                     if($objPaymentMethod->PaymentType == Constants::iPAYMENT_TYPE_OFFLINE)
                     {
-                        $state = Constants::iPAYMENT_INIT_WITH_PSP_STATE;
+                        $state = Constants::iPAYMENT_PENDING_STATE;
                     }
                     $RSMsg = false;
 
