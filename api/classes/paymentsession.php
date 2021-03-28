@@ -345,7 +345,7 @@ final class PaymentSession
             $primaryProdBtwnCondition = " BETWEEN ". Constants::iPrimaryProdTypeBase ." AND ". Constants::iPrimaryProdTypeBase." + 99";
             $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
-                    WHERE sessionid = " . $this->_id . " and txn.created >= ('". $this->_created ."'::date -  INTERVAL '10 min')
+                    WHERE sessionid = " . $this->_id . " and txn.created >= ('". $this->_created ."'::date -  INTERVAL '30 min')
                     AND (msg.stateid = ".$stateId." AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
@@ -415,7 +415,9 @@ final class PaymentSession
         $aTransaction = [];
         try
         {
-            $sql = "SELECT id FROM log" . sSCHEMA_POSTFIX . ".Transaction_tbl WHERE sessionid = " . $this->getId() ." AND created >= ('" . $this->_created . "'::date -  INTERVAL '10 min')";
+            $sql = "SELECT * FROM ( SELECT txn.id,msg.stateid,rank() over(partition by msg.txnid order by msg.id desc) as rn FROM log" . sSCHEMA_POSTFIX . ".Transaction_tbl txn
+                    INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid  
+                    WHERE sessionid = " . $this->getId() ." AND txn.created >= ('" . $this->_created . "'::date -  INTERVAL '30 min')) s where s.rn = 1 and s.stateid != ".Constants::iTRANSACTION_CREATED;
             $aRS = $this->_obj_Db->getAllNames($sql);
             if (is_array($aRS) === true)
             {
@@ -446,7 +448,7 @@ final class PaymentSession
             //Session is created immediately after transaction is created
             $sql = "SELECT transaction_tbl.id FROM log" . sSCHEMA_POSTFIX . ".message_tbl message_tbl
             INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl transaction_tbl ON transaction_tbl.id = message_tbl.txnid
-            WHERE sessionid = " . $this->_id . " and transaction_tbl.created >= ('" . $this->_created . "'::date -  INTERVAL '10 min')
+            WHERE sessionid = " . $this->_id . " and transaction_tbl.created >= ('" . $this->_created . "'::date -  INTERVAL '30 min')
             AND " . $whereClause;
             $aRS = $this->_obj_Db->getAllNames($sql);
             if (is_array($aRS) === TRUE) {
