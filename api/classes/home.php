@@ -916,7 +916,6 @@ class Home extends General
 
 
                 $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
-                if($obj_TxnInfo->getCardID() === 0) continue;
                 $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
               //  mode param is optional when populated with value 1 then status code will return only after session is closed and
@@ -952,6 +951,10 @@ class Home extends General
                            SELECT  *,row_number() OVER(ORDER BY id ASC) AS rownum FROM WT2";
 
                             $RSMsg = $this->getDBConn()->query($sql);
+                    }
+                    elseif ($obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iTRANSACTION_CREATED))=== true)
+                    {
+                        continue;
                     }
                 }
                 else
