@@ -35,19 +35,28 @@ class ClientRouteConfigurations
     private $_obj_RouteCurrecny;
 
     /**
+     * Hold Additional Property Configuration
+     * @var AdditionalProperties
+     */
+    private $_obj_AdditionalProperty;
+
+
+    /**
      * Default Constructor
      *
      * @param array $aObj_RouteConfigs Hold Configuration for the client route configuration
      * @param array $aObj_RouteFeatures Hold Configuration for the client route Features
      * @param array $aObj_RouteCountry Hold Configuration for the client route country
      * @param array $aObj_RouteCurrecny Hold Configuration for the client route currency
+     * @param array $aObj_AdditionalProperties Hold Additional Property Configuration
      */
-    public function __construct(array $aObj_RouteConfigs, array $aObj_RouteFeatures, array $aObj_RouteCountry, array $aObj_RouteCurrecny)
+    public function __construct(array $aObj_RouteConfigs, array $aObj_RouteFeatures, array $aObj_RouteCountry, array $aObj_RouteCurrecny, array $aObj_AdditionalProperties)
     {
         $this->_obj_RouteConfig = $aObj_RouteConfigs;
         $this->_obj_RouteFeatures = $aObj_RouteFeatures;
         $this->_obj_RouteCountry = $aObj_RouteCountry;
         $this->_obj_RouteCurrecny = $aObj_RouteCurrecny;
+        $this->_obj_AdditionalProperty = $aObj_AdditionalProperties;
     }
 
     /**
@@ -110,6 +119,21 @@ class ClientRouteConfigurations
         return $xml;
     }
 
+    private function getRouteAdditionalPropertyAsXML(int $routeConfigID) : string
+    {
+        $xml = '';
+        if (empty($this->_obj_AdditionalProperty[$routeConfigID]) === false) {
+            $xml = '<additional_data>';
+            foreach ($this->_obj_AdditionalProperty[$routeConfigID] as $additionalProperty) {
+                if ($additionalProperty instanceof AdditionalProperties) {
+                    $xml .= $additionalProperty->toXML();
+                }
+            }
+            $xml .= '</additional_data>';
+        }
+        return $xml;
+    }
+
     /***
      * Prepare XML string
      * @return string
@@ -120,6 +144,7 @@ class ClientRouteConfigurations
         foreach ($this->_obj_RouteConfig as $valRouteConfig) {
             $xml .= '<route_configuration>';
             $xml .= '<id>' . $valRouteConfig['ROUTECONFIGID'] . '</id>';
+            $xml .= '<route_id>' . $valRouteConfig['ROUTEID'] . '</route_id>';
             $xml .= '<provider_id>' . $valRouteConfig['PROVIDERID'] . '</provider_id>';
             $xml .= '<mid>' . $valRouteConfig['MID'] . '</mid>';
             $xml .= '<route_name>' . $valRouteConfig['ROUTENAME'] . '</route_name>';
@@ -136,6 +161,9 @@ class ClientRouteConfigurations
             }
             if ($this->_obj_RouteCurrecny[(int)$valRouteConfig['ROUTECONFIGID']]) {
                 $xml .= $this->getRouteCurrencyAsXML((int)$valRouteConfig['ROUTECONFIGID']);
+            }
+            if ($this->_obj_AdditionalProperty[(int)$valRouteConfig['ROUTECONFIGID']]) {
+                $xml .= $this->getRouteAdditionalPropertyAsXML((int)$valRouteConfig['ROUTECONFIGID']);
             }
             $xml .= '</route_configuration>';
         }
@@ -168,6 +196,7 @@ class ClientRouteConfigurations
             $aObj_RouteFeatures = array();
             $aObj_RouteCountry = array();
             $aObj_RouteCurrecny = array();
+            $aObj_AdditionalProperties = array();
 
             while ($RS = $oDB->fetchName($res)) {
                 $aObj_RouteConfigurations[$RS["ROUTECONFIGID"]] = $RS;
@@ -176,12 +205,13 @@ class ClientRouteConfigurations
                 $aObj_RouteFeatures[$routeConfigID] = RouteFeature::produceConfigByRouteConfigID($oDB, $routeConfigID);
                 $aObj_RouteCountry[$routeConfigID] = ClientRouteCountry::produceConfig($oDB, $routeConfigID);
                 $aObj_RouteCurrecny[$routeConfigID] = ClientRouteCurrency::produceConfig($oDB, $routeConfigID);
+                $aObj_AdditionalProperties[$routeConfigID] = AdditionalProperties::produceConfig($oDB, $routeConfigID, 'merchant', );
             }
         } catch (SQLQueryException $e) {
             trigger_error($e->getMessage(), E_USER_ERROR);
         }
 
-        return new ClientRouteConfigurations($aObj_RouteConfigurations, $aObj_RouteFeatures, $aObj_RouteCountry, $aObj_RouteCurrecny);
+        return new ClientRouteConfigurations($aObj_RouteConfigurations, $aObj_RouteFeatures, $aObj_RouteCountry, $aObj_RouteCurrecny, $aObj_AdditionalProperties);
     }
 }
 
