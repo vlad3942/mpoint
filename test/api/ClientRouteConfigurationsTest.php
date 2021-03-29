@@ -123,6 +123,26 @@ class ClientRouteConfigurationsTest extends baseAPITest
         $this->assertStringContainsString('<route_configurations></route_configurations>', $xml, 'No Client Route Configuration Found :: ' . $xml);
     }
 
+    public function testSuccessDeleteRouteConfig() : void
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Route_Tbl (id, clientid, providerid) VALUES (1, 10099, 18)");
+        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
+
+        $status = ClientRouteConfigurations::deleteRouteConfig($this->_OBJ_DB, 1);
+        $this->assertTrue($status);
+    }
+
+    public function testFailDeleteRouteConfig() : void
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Route_Tbl (id, clientid, providerid) VALUES (1, 10099, 18)");
+        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
+
+        $status = ClientRouteConfigurations::deleteRouteConfig($this->_OBJ_DB, 1001);
+        $this->assertFalse($status);
+    }
+
     public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
