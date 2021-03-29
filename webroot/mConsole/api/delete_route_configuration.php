@@ -33,7 +33,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $code = $obj_mPoint->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
         if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL)
         {
-            $status = ClientRouteConfigurations::deleteRouteConfig($_OBJ_DB, $routeConfigId);
+            $status = ClientRouteConfigurations::DeleteRouteConfig($_OBJ_DB, $routeConfigId);
             if($status === TRUE){
                 $xml .= '<status>success</status>';
                 $xml .= '<message>Route Configuration Deleted Successfully</message>';

@@ -179,7 +179,7 @@ class ClientRouteConfigurations
      * @param int $routeConfigId   Hold unique id of the route configuration
      * @return bool
      */
-    public static function deleteRouteConfig(RDB $oDB, int $routeConfigId) : bool
+    public static function DeleteRouteConfig(RDB $oDB, int $routeConfigId) : bool
     {
         if(empty($routeConfigId) === false){
             try {
