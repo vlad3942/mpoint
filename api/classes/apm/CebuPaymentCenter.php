@@ -35,6 +35,10 @@ class CebuPaymentCenter extends CPMPSP
             $this->getDBConn()->query($sql);
         }
         $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_PENDING_STATE, "");
+        $args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							'transact'=>$this->getTxnInfo()->getExternalID(),
+							'cardid'=>$card_type_id);
+        $this->notifyClient(Constants::iPAYMENT_PENDING_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
         $obj_XML = simplexml_load_string("<root><hidden-fields></hidden-fields></root>");
 
         return $obj_XML;
