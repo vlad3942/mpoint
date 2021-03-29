@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+
+    <changeSet author="Anna Lagad" id="2021-03-29-setup-v2.26.0-client">
+
+        <addColumn  catalogName="client"
+                    schemaName="client"
+                    tableName="routeconfig_tbl">
+
+            <column name="isdeleted"
+                    type="boolean"
+                    remarks="Flag indicating whether the route is deleted by merchant"
+                    defaultValueBoolean="false"/>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

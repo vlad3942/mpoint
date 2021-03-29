@@ -172,6 +172,39 @@ class ClientRouteConfigurations
     }
 
     /**
+     * Function used to soft delete route configuration
+     *
+     * @param RDB $oDB             $oDB Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param int $clientId        Hold unique id of the client
+     * @param int $routeConfigId   Hold unique id of the route configuration
+     * @return bool
+     */
+    public static function DeleteRouteConfig(RDB $oDB, int $routeConfigId) : bool
+    {
+        if(empty($routeConfigId) === false){
+            try {
+                $sql = "UPDATE Client". sSCHEMA_POSTFIX .".RouteConfig_Tbl
+                    SET isdeleted = '1' 
+                    WHERE id = $routeConfigId";
+
+                $res = $oDB->query($sql);
+                if(is_resource($res) === true && $oDB->countAffectedRows($res) === 1) {
+                    return true;
+                }else{
+                    trigger_error("No Record Update For The Route Config ID: ".$routeConfigId, E_USER_WARNING);
+                    return false;
+                }
+            } catch (SQLQueryException $e) {
+                trigger_error($e->getMessage(), E_USER_ERROR);
+                return false;
+            }
+        }else{
+            trigger_error("RouteConfigId Not Found", E_USER_WARNING);
+            return false;
+        }
+    }
+
+    /**
      * Produces a new instance of a Client Route Configuration Object.
      *
      * @param RDB $oDB Reference to the Database Object that holds the active connection to the mPoint Database
