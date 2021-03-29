@@ -532,7 +532,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$oTI->produceOrderConfig($_OBJ_DB);
 
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
-										if( $obj_card->getPaymentType($_OBJ_DB) !== Constants::iPAYMENT_TYPE_OFFLINE && ($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY))
+										if( $processorType === Constants::iPAYMENT_TYPE_OFFLINE || $processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
 										{
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
@@ -713,6 +713,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. $message  .'</message>';
 										$xml .= '</psp-info>';
+
+										if( $oTI->hasEitherState($_OBJ_DB, Constants::iPAYMENT_PENDING_STATE) === true)
+                                        {
+                                            $xml .= '<status code="'.Constants::iPAYMENT_PENDING_STATE.'">Payment Pending</status>';
+                                        }
+										else if($oTI->hasEitherState($_OBJ_DB,Constants::iPAYMENT_INIT_WITH_PSP_STATE) === true)
+                                        {
+                                            $xml .= '<status code="'.Constants::iPAYMENT_INIT_WITH_PSP_STATE.'">Payment Initialize with PSP</status>';
+                                        }
 									}
 									catch (mPointException $e)
 									{

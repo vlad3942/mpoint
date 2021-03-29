@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class WorldpayAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -53,15 +53,4 @@ class WorldpayAuthorizeAPITest extends AuthorizeAPITest
         $row = pg_fetch_assoc($res);
         $this->assertEquals(5001, $row["euaid"]);
     }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
-    }
-
 }

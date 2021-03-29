@@ -316,7 +316,7 @@ class PayAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="2" merchant-account="4216310"  type="1"><url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url><card-number>cardno</card-number><expiry-month>expmon</expiry-month><expiry-year>expyear</expiry-year><cvc>cvc</cvc><hidden-fields><merchant/><callbackurl/><amount/><currency/><orderid/><fullreply>true</fullreply><paytype/><lang/><language/><cardid/><mpointid/><euaid/><clientid/><accountid/><markup>app</markup></hidden-fields><store-card>preauth</store-card><message language="gb"></message></psp-info></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="2" merchant-account="4216310"  type="1"><url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url><card-number>cardno</card-number><expiry-month>expmon</expiry-month><expiry-year>expyear</expiry-year><cvc>cvc</cvc><hidden-fields><merchant/><callbackurl/><amount/><currency/><orderid/><fullreply>true</fullreply><paytype/><lang/><language/><cardid/><mpointid/><euaid/><clientid/><accountid/><markup>app</markup></hidden-fields><store-card>preauth</store-card><message language="gb"></message></psp-info><status code="1009">Payment Initialize with PSP</status></root>', $sReplyBody);
 
         $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1001001');
         $this->assertTrue(is_resource($res) );
@@ -355,7 +355,7 @@ class PayAPIValidationTest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="2" merchant-account="4216310"  type="1"><url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url><card-number>cardno</card-number><expiry-month>expmon</expiry-month><expiry-year>expyear</expiry-year><cvc>cvc</cvc><hidden-fields><merchant/><callbackurl/><amount/><currency/><orderid/><fullreply>true</fullreply><paytype/><lang/><language/><cardid/><mpointid/><euaid/><clientid/><accountid/><markup>app</markup></hidden-fields><store-card>preauth</store-card><message language="gb"></message></psp-info></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="2" merchant-account="4216310"  type="1"><url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url><card-number>cardno</card-number><expiry-month>expmon</expiry-month><expiry-year>expyear</expiry-year><cvc>cvc</cvc><hidden-fields><merchant/><callbackurl/><amount/><currency/><orderid/><fullreply>true</fullreply><paytype/><lang/><language/><cardid/><mpointid/><euaid/><clientid/><accountid/><markup>app</markup></hidden-fields><store-card>preauth</store-card><message language="gb"></message></psp-info><status code="1009">Payment Initialize with PSP</status></root>', $sReplyBody);
 
         $res =  $this->queryDB('SELECT fxservicetypeid from Log.Transaction_Tbl WHERE id = 1001001');
         $this->assertTrue(is_resource($res) );

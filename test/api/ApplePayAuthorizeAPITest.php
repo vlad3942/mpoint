@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class ApplePayAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -125,15 +125,5 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
         $xml .= '</root>';
 
         return $xml;
-    }
-
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
     }
 }

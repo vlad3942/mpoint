@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/callbackAPITest.php';
+require_once __DIR__ . '/CallbackAPITest.php';
 
 class DCCCallbackAPITest extends CallbackAPITest
 {
@@ -53,10 +53,4 @@ class DCCCallbackAPITest extends CallbackAPITest
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_CONSTRUCTED_STATE);
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 2 );
     }
-
-    public function testCallbackAttempt()
-    {
-        $this->markTestIncomplete();
-    }
-
 }

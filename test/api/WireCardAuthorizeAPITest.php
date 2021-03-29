@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class WireCardAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -57,16 +57,6 @@ class WireCardAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
         $row = pg_fetch_assoc($res);
         $this->assertEquals(5001, $row["euaid"]);
-    }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
     }
 
     public function testSuccessfulAuthorizeWithSubCode()

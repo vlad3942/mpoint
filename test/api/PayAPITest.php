@@ -93,7 +93,7 @@ class PayAPITest extends baseAPITest
 		return $xml;
 	}
 
-	protected function testSuccessfulPay($pspID, $cardID,$typeId=1, $pspType = 1, $countryid=100,$currencyid=208)
+	protected function testSuccessfulPay($pspID, $cardID,$typeId=1, $pspType = 1, $countryid=100,$currencyid=208, $finalStateId = 1009)
 	{
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -106,6 +106,8 @@ class PayAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,psp_type) VALUES (10099, $cardID, $pspID, $pspType)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, ".$currencyid.", ".$countryid .", 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, ".$countryid .", $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 200,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 200,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
 
 		$xml = $this->getPayDoc(10099, 1100, 1001001, $cardID, false, $countryid, $currencyid);
 
@@ -116,12 +118,23 @@ class PayAPITest extends baseAPITest
 
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="'.$typeId.'">', $sReplyBody);
+		if($finalStateId !== null)
+        {
+		    $this->assertStringContainsString('<status code="'. $finalStateId .'">', $sReplyBody);
+        }
 
 		$res =  $this->queryDB("SELECT id FROM Enduser.Account_Tbl");
 		$this->assertTrue(is_resource($res) );
 
 		$this->assertEquals(0, pg_num_rows($res) );
-        $this->bIgnoreErrors = true;
+
+		if($typeId !== 1 && $typeId !== 2 && $typeId !== 3)
+        {
+            $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'inprogress' and performedopt=2000" );
+		    $this->assertIsResource($res);
+		    $this->assertEquals(1, pg_num_rows($res));
+        }
+
 		return $sReplyBody;
 	}
 

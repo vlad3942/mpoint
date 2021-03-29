@@ -49,17 +49,10 @@ unset($_Request["proxy_callback"]);
 
 
 $genericCallabckRequest = http_build_query($_Request);
-$search =['sale_currency','sale_amount','sale_decimals'];
-$replace = ['sale_c','sale_a','sale_d'];
-$genericCallabckRequest =  str_replace($search, $replace, $genericCallabckRequest);
-
-$search =['mpoint-id','payment-method','payment-type','orderid','status','amount','currency','customer-country-id','card-number','expiry','approval-code','session-id','pspid','psp-name','decimals','exchange_rate','billing_first_name','billing_last_name','billing_street_address','billing_city','billing_country','billing_state','billing_postal_code','billing_email','billing_mobile','billing_idc'];
-$replace = ['transaction_id','payment_method','payment-type','order_id','state_id','dcc_card_amount','dcc_card_currency','customer-country-id','masked_card','expiration_date','approval_code','session_id','psp_ref_id','psp_name','dcc_card_decimals','dcc_exchange_rate','first_name','last_name','street_address','city','country','province','postal_code','email','mobile','dialing_country_code'];
+$genericCallabckRequest = urldecode($genericCallabckRequest);
+$search =['&transaction-data','&mpoint-id','&payment-method','&payment-type','&orderid','&status','&amount','&currency','&customer-country-id','&card-number','&expiry','&approval-code','&session-id','&pspid','&psp-name','&decimals','&exchange_rate','&billing_first_name','&billing_last_name','&billing_street_address','&billing_city','&billing_country','&billing_state','&billing_postal_code','&billing_email','&billing_mobile','&billing_idc','&sale_currency','&sale_amount','&sale_decimals',];
+$replace = ['&transaction_data','&transaction_id','&payment_method','&payment-type','&order_id','&state_id','&dcc_card_amount','&dcc_card_currency','&customer-country-id','&masked_card','&expiration_date','&approval_code','&session_id','&psp_ref_id','&psp_name','&dcc_card_decimals','&dcc_exchange_rate','&first_name','&last_name','&street_address','&city','&country','&province','&postal_code','&email','&mobile','&dialing_country_code','&currency','&amount','&decimals'];
 $cebusCallabckRequest =  str_replace($search, $replace, $genericCallabckRequest);
-
-$search =['sale_c','sale_a','sale_d'];
-$replace = ['currency','amount','decimals'];
-$cebusCallabckRequest =  str_replace($search, $replace, $cebusCallabckRequest);
 
 sendCallback($url, $cebusCallabckRequest);
 

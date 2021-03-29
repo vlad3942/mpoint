@@ -102,7 +102,7 @@ class PaymentMethod extends Card
      * @param 	array $aPaymentMethodsConfig 	     Payment Methods Config
      * @return 	?array                       Instance of static Routes Configuration
      */
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $aPaymentMethodsConfig): ?array
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $aPaymentMethodsConfig,int $fraudDettectedForPMType = -1): ?array
     {
         $aObj_Configurations = array();
         $cardIds = array_keys($aPaymentMethodsConfig);
@@ -125,6 +125,10 @@ class PaymentMethod extends Card
                 // Set processor type and stateid given by CRS into resultset
                 $aCardConfig = $aPaymentMethodsConfig[$aRS['ID']];
                 $aRS['STATEID'] = $aCardConfig['state_id'];
+                if($aRS['PAYMENTTYPE'] == $fraudDettectedForPMType)
+                {
+                    $aRS['STATEID'] = Constants::iCARD_DISABLED;
+                }
                 $preference = $aCardConfig['preference'];
 
                 // Transaction instantiated via SMS or "Card" is NOT Premium SMS
@@ -156,7 +160,7 @@ class PaymentMethod extends Card
      * @param 	SimpleDOMElement $aObj_XML 	 List of payment methods
      * @return 	array $aObj_Configurations   Static Routes Configuration object
      */
-    public static function produceConfigurations(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aObj_PaymentMethods)
+    public static function produceConfigurations(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aObj_PaymentMethods,int $fraudDettectedForPMType = -1 )
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aPaymentMethodsConfig = array();
@@ -167,7 +171,7 @@ class PaymentMethod extends Card
                 'preference' => $paymentMethods[$i]->preference
             );
         }
-        return self::produceConfig($oDB, $oTxt, $oTI, $aPaymentMethodsConfig);
+        return self::produceConfig($oDB, $oTxt, $oTI, $aPaymentMethodsConfig,$fraudDettectedForPMType);
     }
 
 }
