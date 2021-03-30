@@ -340,7 +340,7 @@ class ClientRouteConfig
             while ($RS = $oDB->fetchName($res)) {
                 $sql = "SELECT RC.id AS routeid, RC.name AS routename
                     FROM Client" . sSCHEMA_POSTFIX . ".Routeconfig_Tbl RC
-                    WHERE RC.routeid = " . $RS["ID"] . " AND RC.enabled = '1'
+                    WHERE RC.routeid = " . $RS["ID"] . " AND RC.enabled = '1' AND RC.isdeleted = '0'
                     ORDER BY RC.id";
 
                 $aRouteConfig = (array)$oDB->getAllNames($sql);
