@@ -547,11 +547,13 @@ abstract class Callback extends EndUserAccount
 		$sBody .= '&payment-type=' . $objb_getPaymentMethod->PaymentType;
 		$sBody .= '&payment-provider-id=' . $this->_obj_TxnInfo->getPSPID();
 
-        $shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
-        if($shortCode !== false)
-        {
-        	$sBody .= '&short-code='. $shortCode;
-        }
+		if ($this->_obj_PSPConfig !== null) {
+			$shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
+			if($shortCode !== false)
+			{
+				$sBody .= '&short-code='. $shortCode;
+			}
+		}
 
         $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
         if($aTxnAdditionalData !== null)
