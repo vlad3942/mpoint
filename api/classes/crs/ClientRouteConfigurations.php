@@ -216,7 +216,7 @@ class ClientRouteConfigurations
         $sql = "SELECT R.id as routeid, R.providerid, RC.id AS routeconfigid, RC.name AS routename, RC.username, 
                 RC.password, RC.mid, RC.capturetype, RC.enabled AS routeconfigenabled
                 FROM client" . sSCHEMA_POSTFIX . ".route_tbl R
-                INNER JOIN client" . sSCHEMA_POSTFIX . ".routeconfig_tbl RC ON RC.routeid = R.id
+                INNER JOIN client" . sSCHEMA_POSTFIX . ".routeconfig_tbl RC ON RC.routeid = R.id AND isdeleted = '0' 
                 WHERE R.clientid = " . $clientId;
         if(empty($routeConfigId) === false){
             $sql .= " AND RC.id = ".$routeConfigId;
