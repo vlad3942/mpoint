@@ -911,4 +911,14 @@
         </insert>
  
     </changeSet>
+
+    <!-- Currency USD support added for Paypal -->
+    <changeSet author="Chaitenya Yadav" id="2021-03-30-setup-v2.26-system">
+            <insert catalogName="system" schemaName="system" tableName="PSPCurrency_Tbl">
+            <column name="currencyid" value="840"/>
+            <column name="pspid" value="24"/>
+            <column name="name" value="USD"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
