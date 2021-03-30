@@ -114,6 +114,26 @@ class FlightInfo {
      */
     private $_sTimeZone;
 
+    /**
+     * Service class constants for First Class
+    */
+    const FIRSTCLASS = 1;
+
+    /**
+     * Service class constants for Standard
+     */
+    const STANDARD = 2;
+
+    /**
+     * Service class constants for Economy
+     */
+    const ECONOMY = 3;
+
+    /**
+     * Service class constants for Business
+     */
+    const BUSINESS = 4;
+
 
     /**
 	 * Default Constructor
