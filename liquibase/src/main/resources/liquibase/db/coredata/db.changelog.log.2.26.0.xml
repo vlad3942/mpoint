@@ -86,4 +86,149 @@
 
     </changeSet>
 
+    <changeSet  author="Kalpesh Parikh"  id="2021-03-25-setup-v2.26-log-1">
+        <renameColumn  catalogName="Log"
+                       schemaName="Log"
+                       tableName="Flight_tbl"
+                       newColumnName="op_airline_code"
+                       oldColumnName="airline_code"/>
+
+        <renameColumn  catalogName="Log"
+                       schemaName="Log"
+                       tableName="Flight_tbl"
+                       newColumnName="mkt_flight_number"
+                       oldColumnName="flight_number"/>
+
+        <renameColumn  catalogName="Log"
+                       schemaName="Log"
+                       tableName="Flight_tbl"
+                       newColumnName="departure_timezone"
+                       oldColumnName="time_zone"/>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="op_flight_number"
+                    type="varchar(20)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="arrival_timezone"
+                    type="varchar(10)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="mkt_airline_code"
+                    type="varchar(10)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="departure_city"
+                    type="varchar(50)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="arrival_city"
+                    type="varchar(50)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="aircraft_type"
+                    type="varchar(50)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="arrival_terminal"
+                    type="varchar(20)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="Flight_tbl">
+            <column name="departure_terminal"
+                    type="varchar(20)"
+            />
+        </addColumn>
+    </changeSet>
+
+    <changeSet  author="Kalpesh Parikh"  id="2021-03-25-setup-v2.26-log-2">
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="passenger_tbl">
+            <column name="seq"
+                    type="int"
+            />
+        </addColumn>
+    </changeSet>
+
+    <changeSet  author="Kalpesh Parikh"  id="2021-03-25-setup-v2.26-log-3">
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="billing_summary_tbl">
+            <column name="profile_seq"
+                    type="int"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="billing_summary_tbl">
+            <column name="trip_tag"
+                    type="int"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="billing_summary_tbl">
+            <column name="trip_seq"
+                    type="int"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="billing_summary_tbl">
+            <column name="product_code"
+                    type="varchar(30)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="billing_summary_tbl">
+            <column name="product_category"
+                    type="varchar(30)"
+            />
+        </addColumn>
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="billing_summary_tbl">
+            <column name="product_item"
+                    type="varchar(50)"
+            />
+        </addColumn>
+
+    </changeSet>
+
 </databaseChangeLog>
