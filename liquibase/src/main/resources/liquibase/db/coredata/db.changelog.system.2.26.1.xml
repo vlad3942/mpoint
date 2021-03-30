@@ -902,4 +902,13 @@
 
     </changeSet>
 	
+
+    <changeSet author="Chaitenya Yadav" id="2021-03-24-Travel-fund-system-03">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-36"/>
+            <column name="cardid" value="26"/>
+            <column name="enabled" value="true"/>
+        </insert>
+ 
+    </changeSet>
 </databaseChangeLog>
