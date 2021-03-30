@@ -916,6 +916,8 @@ class Home extends General
 
 
                 $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
+
+                if( $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iTRANSACTION_CREATED))=== true && $obj_TxnInfo->getPSPID()=== 0) continue;
                 $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
               //  mode param is optional when populated with value 1 then status code will return only after session is closed and
