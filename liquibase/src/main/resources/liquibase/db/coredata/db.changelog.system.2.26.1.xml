@@ -921,4 +921,34 @@
         </insert>
     </changeSet>
 
+    <!-- Currency MYR & SGD support added for Travel Fund -->
+    <changeSet author="Chaitenya Yadav" id="2021-03-30-setup-v2.26-system-02">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="71"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="MYR"/>
+            <column name="currencyid" value="458" />
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="71"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="SGD"/>
+            <column name="currencyid" value="702" />
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-458"/>
+            <column name="cardid" value="26"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-702"/>
+            <column name="cardid" value="26"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
