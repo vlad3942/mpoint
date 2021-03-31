@@ -1097,6 +1097,8 @@ abstract class Callback extends EndUserAccount
 		    return new SafetyPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"]);
 		case (Constants::iTRAVELFUND_VOUCHER):
 			return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["travel-fund"]);
+		case (Constants::iPAYMAYA_ACQ):
+        	return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya_acq"]);
 
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);

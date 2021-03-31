@@ -173,6 +173,8 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH . '/Route.php');
 require_once(sCLASS_PATH ."/voucher/TravelFund.php");
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/paymaya_acq.php");
 
 ignore_user_abort(true);
 set_time_limit(120);

@@ -1183,6 +1183,24 @@ $aHTTP_CONN_INFO["safetypay"]["paths"]["cancel"] = "/mpoint/aggregator/safetypay
 $aHTTP_CONN_INFO["safetypay"]["paths"]["status"] = "/mpoint/aggregator/safetypay/status";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/safetypay/get-payment-methods";
 
+/**
+ * Connection info for connecting to Paymaya-Acq
+ */
+$aHTTP_CONN_INFO["paymaya"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paymaya"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paymaya"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paymaya"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paymaya"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paymaya"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paymaya"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paymaya"]["paths"]["initialize"] = "/mpoint/paymaya-acq/initialize";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["auth"] = "/mpoint/paymaya-acq/authorize-payment";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["capture"] = "/mpoint/paymaya-acq/capture";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/paymaya-acq/void";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/paymaya-acq/void";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["void"] = "/mpoint/paymaya-acq/void";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/paymaya-acq/callback";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["status"] = "/mpoint/paymaya-acq/status";
 
 /**
  * GoMobile Connection Info.
