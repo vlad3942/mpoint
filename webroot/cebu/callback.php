@@ -16,30 +16,86 @@ $_Request = $_REQUEST;
 $isSessionCallback = array_key_exists('transaction-data', $_Request);
 
 $cardNames = [];
+$alpha2Codes = [];
 if ($isSessionCallback === TRUE) {
     $txnIds = array_keys($_Request['transaction-data']);
     $cardIds = [];
+    $billingCountryIds = [];
     foreach ($txnIds as $txnId) {
         array_push($cardIds, (int)$_Request['transaction-data'][$txnId]['card-id']);
+        if($_Request['transaction-data'][$txnId]['billing_country'] != 0){
+            array_push($billingCountryIds, (int)$_Request['transaction-data'][$txnId]['billing_country']);
+        }
     }
     $cardNames = getCardNames($cardIds);
-
+    if(empty($billingCountryIds) === false){
+        $alpha2Codes    = getCountryAlpha2Code($billingCountryIds);
+    }
     foreach ($txnIds as $txnId) {
         $cardId = (int)$_Request['transaction-data'][$txnId]['card-id'];
         if (array_key_exists($cardId, $cardNames)) {
             $_Request['transaction-data'][$txnId]['card_name'] = $cardNames[$cardId];
         }
+        $billing_country = (int)$_Request['transaction-data'][$txnId]['billing_country'];
+        if (array_key_exists($billing_country, $alpha2Codes)) {
+            $_Request['transaction-data'][$txnId]['country_alpha2code'] = $alpha2Codes[$billing_country];
+        }
+
+        if($_Request['transaction-data'][$txnId]['payment-method'] === 'CD')
+        {
+            $_Request['transaction-data'][$txnId]['payment-method'] = 'Card';
+        }
+        if($_Request['transaction-data'][$txnId]['payment-type'] == 2)
+        {
+            $_Request['transaction-data'][$txnId]['payment-method'] = 'TravelFund';
+        }
+        else
+        {
+            $_Request['transaction-data'][$txnId]['payment-method'] = $cardNames[$cardId];
+        }
+        $pspName = $_Request['transaction-data'][$txnId]['psp-name'];
+        $pspName = str_replace(' ', '-', $pspName);
+        $_Request['transaction-data'][$txnId]['psp-name'] = $pspName;
     }
 
     $cardId = $_Request['card-id'];
     if (array_key_exists($cardId, $cardNames)) {
         $_Request['card_name'] = $cardNames[$cardId];
     }
+
+    $billing_country = $_Request['billing_country'];
+    if (array_key_exists($billing_country, $alpha2Codes)) {
+        $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
+    }
+
+
+
 } else {
     $cardId = (int)$_Request['card-id'];
     $cardNames = getCardNames([$cardId]);
     if (array_key_exists($cardId, $cardNames)) {
         $_Request['card_name'] = $cardNames[$cardId];
+    }
+    $billing_country   = (int)$_Request['billing_country'];
+    if($billing_country != 0){
+        $alpha2Codes       = getCountryAlpha2Code([$billing_country]);
+        if (array_key_exists($billing_country, $alpha2Codes)) {
+            $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
+        }
+    }
+
+    if(isset($_Request['payment-method'])) {
+        if ($_Request['payment-method'] === 'CD') {
+            $_Request['payment-method'] = 'Card';
+        } else {
+            $_Request['payment-method'] = $cardNames[$cardId];
+        }
+    }
+
+    if(isset($_Request['psp-name'])) {
+        $pspName = $_Request['psp-name'];
+        $pspName = str_replace(' ', '-', $pspName);
+        $_Request['psp-name'] = $pspName;
     }
 }
 
@@ -69,23 +125,43 @@ sendCallback($url, $cebusCallabckRequest);
 function getCardNames(array $cardIds): array
 {
     global $_OBJ_DB;
-    $sql = 'SELECT ID,NAME FROM SYSTEM.CARD_TBL WHERE ID IN (' . implode(',', $cardIds) . ')';
+    $sql = "SELECT ID,REPLACE(NAME, ' ','-') FROM SYSTEM.CARD_TBL WHERE ID IN (" . implode(',', $cardIds) . ')';
     $resultSet = $_OBJ_DB->getAllNames($sql);
     $cardNames = [];
 
     if (is_array($resultSet) === TRUE && count($resultSet) > 0) {
         foreach ($resultSet as $rs) {
-            $cardNames[(int)$rs['ID']] = $rs['NAME'];
+            if((int)$rs['ID'] === 26)
+            {
+                $cardNames[26] = 'TravelFund';
+            }
+            else {
+                $cardNames[(int)$rs['ID']] = $rs['NAME'];
+            }
         }
     }
     return $cardNames;
+}
+
+function getCountryAlpha2Code(array $billingCountryIds): array
+{
+    global $_OBJ_DB;
+    $sql = 'SELECT ID,ALPHA2CODE FROM SYSTEM.COUNTRY_TBL WHERE ID IN (' . implode(',', $billingCountryIds) . ')';
+    $RS  = $_OBJ_DB->getAllNames($sql);
+    $alpha2Codes = [];
+    if (is_array($RS) === TRUE && count($RS) > 0) {
+        foreach ($RS as $rs) {
+            $alpha2Codes[(int)$rs['ID']] = $rs['ALPHA2CODE'];
+        }
+    }
+    return $alpha2Codes;
 }
 
 function sendCallback(string $url, string $body)
 {
     $aURLInfo = parse_url($url);
 
-if (array_key_exists("port", $aURLInfo) === false)
+    if (array_key_exists("port", $aURLInfo) === false)
     {
         if (array_key_exists("scheme", $aURLInfo) === true)
         {
@@ -122,16 +198,16 @@ if (array_key_exists("port", $aURLInfo) === false)
 }
 
 function constHTTPHeaders()
-	{
-		/* ----- Construct HTTP Header Start ----- */
-		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-		$h .= "host: {HOST}" .HTTPClient::CRLF;
-		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-		$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-		$h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
-		$h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
-		/* ----- Construct HTTP Header End ----- */
+{
+    /* ----- Construct HTTP Header Start ----- */
+    $h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+    $h .= "host: {HOST}" .HTTPClient::CRLF;
+    $h .= "referer: {REFERER}" .HTTPClient::CRLF;
+    $h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+    $h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
+    $h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
+    $h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
+    /* ----- Construct HTTP Header End ----- */
 
-		return $h;
-	}
+    return $h;
+}

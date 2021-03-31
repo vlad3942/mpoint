@@ -1200,7 +1200,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] =  $sessionObj->getAmount();
+					$transactionData['sale_amount'] =  $objTransaction->getAmount();
 					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
 					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
@@ -1223,7 +1223,7 @@ abstract class Callback extends EndUserAccount
 					{
 						$transactionData['description'] = $objTransaction->getDescription();
 					}
-					$sVariables = $this->getVariables();
+					$sVariables = $this->getVariables($objTransaction->getID());
 					if($sVariables !== '')
 					{
 						$aVariables = [];
@@ -1269,11 +1269,11 @@ abstract class Callback extends EndUserAccount
 						$transactionData['fraud_status_desc']=  $getFraudStatusCode['status_desc'];
 					}
 					$transactionData['exchange_rate'] =  $conversionRate;
-					$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
+					$fxservicetypeid = $objTransaction->getFXServiceTypeID();
 					if($fxservicetypeid !=0){
 						$transactionData['service_type_id'] =  $fxservicetypeid;
 					}
-					$objb_BillingAddr =  $this->_obj_TxnInfo->getBillingAddr();
+					$objb_BillingAddr =  $objTransaction->getBillingAddr();
 					if (empty($objb_BillingAddr) === false) {
 						$transactionData['billing_first_name'] =  urlencode($objb_BillingAddr['first_name']);
 						$transactionData['billing_last_name'] =  urlencode($objb_BillingAddr['last_name']);
@@ -1298,18 +1298,18 @@ abstract class Callback extends EndUserAccount
             			}
         			}
 
-        			$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
+        			$dateTime = new DateTime($objTransaction->getCreatedTimestamp());
 					$transactionData['date-time']= $dateTime->format('c');
-					$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,'TIMEZONE');
+					$timeZone = $objTransaction->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,'TIMEZONE');
 					if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
 						$transactionData['local-date-time'] = $dateTime->format('c');
 					}
 
-					if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+					if (strlen($objTransaction->getIssuingBankName()) > 0)
 					{
-						$transactionData['issuing-bank'] =  $this->_obj_TxnInfo->getIssuingBankName();
+						$transactionData['issuing-bank'] =  $objTransaction->getIssuingBankName();
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
