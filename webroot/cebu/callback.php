@@ -37,8 +37,10 @@ if ($isSessionCallback === TRUE) {
             $_Request['transaction-data'][$txnId]['card_name'] = $cardNames[$cardId];
         }
         $billing_country = (int)$_Request['transaction-data'][$txnId]['billing_country'];
-        if (array_key_exists($billing_country, $alpha2Codes)) {
-            $_Request['transaction-data'][$txnId]['country_alpha2code'] = $alpha2Codes[$billing_country];
+        if($billing_country > 0) {
+            if (array_key_exists($billing_country, $alpha2Codes)) {
+                $_Request['transaction-data'][$txnId]['country_alpha2code'] = $alpha2Codes[$billing_country];
+            }
         }
 
         if($_Request['transaction-data'][$txnId]['payment-method'] === 'CD')
@@ -63,13 +65,6 @@ if ($isSessionCallback === TRUE) {
         $_Request['card_name'] = $cardNames[$cardId];
     }
 
-    $billing_country = $_Request['billing_country'];
-    if (array_key_exists($billing_country, $alpha2Codes)) {
-        $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
-    }
-
-
-
 } else {
     $cardId = (int)$_Request['card-id'];
     $cardNames = getCardNames([$cardId]);
@@ -78,7 +73,7 @@ if ($isSessionCallback === TRUE) {
     }
     $billing_country   = (int)$_Request['billing_country'];
     if($billing_country != 0){
-        $alpha2Codes       = getCountryAlpha2Code([$billing_country]);
+        $alpha2Codes  = getCountryAlpha2Code([$billing_country]);
         if (array_key_exists($billing_country, $alpha2Codes)) {
             $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
         }
