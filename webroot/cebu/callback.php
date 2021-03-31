@@ -37,7 +37,7 @@ if ($isSessionCallback === TRUE) {
             $_Request['transaction-data'][$txnId]['card_name'] = $cardNames[$cardId];
         }
         $billing_country = (int)$_Request['transaction-data'][$txnId]['billing_country'];
-        if($billing_country > 0) {
+        if($billing_country != 0) {
             if (array_key_exists($billing_country, $alpha2Codes)) {
                 $_Request['transaction-data'][$txnId]['country_alpha2code'] = $alpha2Codes[$billing_country];
             }
