@@ -7,7 +7,6 @@
     
     <include file="coredata/db.changelog.log.2.26.0.xml" relativeToChangelogFile="true"/>
     <include file="coredata/db.changelog.system.2.26.1.xml" relativeToChangelogFile="true"/>
-    <include file="coredata/db.changelog.system.2.26.2.xml" relativeToChangelogFile="true"/>
     <include file="schema/db.changelog.log.2.26.0.xml" relativeToChangelogFile="true"/>
     <include file="schema/db.changelog.client.2.26.0.xml" relativeToChangelogFile="true"/>
 

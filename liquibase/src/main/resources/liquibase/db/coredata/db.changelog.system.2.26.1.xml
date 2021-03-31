@@ -951,4 +951,36 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Amar" id="2021-03-26-Paymaya-Acq">
+
+        <insert catalogName="system" schemaName="system" tableName="PSP_Tbl">
+            <column name="id" value="73"/>
+            <column name="name" value="paymaya acq"/>
+            <column name="system_type" value="2"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="PSPCard_Tbl">
+            <column name="cardid" value="7"/>
+            <column name="pspid" value="73"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="PSPCard_Tbl">
+            <column name="cardid" value="8"/>
+            <column name="pspid" value="73"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="PSPCard_Tbl">
+            <column name="cardid" value="5"/>
+            <column name="pspid" value="73"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="73"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="PHP"/>
+            <column name="currencyid" value="608" />
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>
