@@ -319,7 +319,7 @@ class ClientRouteConfig
      *
      * @param 	RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
      * @param 	integer $clientId 	Unique ID for the Client performing the request
-     * @return 	ClientRouteConfig
+     * @return 	ClientRouteConfig   An array of Client Route Configuration Object
      */
     public static function produceConfig(RDB $oDB, $clientId) : array
     {
