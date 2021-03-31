@@ -290,6 +290,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
 													{
                                                         $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                            "cardid" => $obj_TxnInfo->getCardID(),
                                                             "amount" => $amount);
                                                         $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 													}

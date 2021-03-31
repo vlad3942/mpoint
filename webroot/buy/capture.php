@@ -204,9 +204,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$aMsgCds[1000] = "Success";
 					// Perform callback to Client
                     if ($code != Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT) {
-
                         $args = array("transact" => $obj_TxnInfo->getExternalID(),
                             "amount" => $_REQUEST['amount'],
+                            "cardid" => $obj_TxnInfo->getCardID(),
                             "fee" => $obj_TxnInfo->getFee());
                         $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                     }

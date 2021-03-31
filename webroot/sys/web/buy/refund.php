@@ -164,6 +164,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						$aMsgCds[$code] = "Success";
 						// Perform callback to Client
                         $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                      "cardid" => $obj_TxnInfo->getCardID(),
                                       "amount" => $_REQUEST['amount']);
                         $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
                     }

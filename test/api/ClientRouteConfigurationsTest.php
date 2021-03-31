@@ -97,7 +97,7 @@ class ClientRouteConfigurationsTest extends baseAPITest
         {
             $xml = $aObj_ClientRouteConfigurations->toXML();
         }
-        $this->assertStringContainsString('<route_configurations><route_configuration><id>1</id><provider_id>18</provider_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>1</id><name>Delayed Capture</name></route_feature><route_feature><id>2</id><name>Refund</name></route_feature></route_features><country_ids><country_id>0</country_id></country_ids><currency_ids><currency_id>0</currency_id></currency_ids></route_configuration></route_configurations>', $xml, 'Client Route Configuration Found');
+        $this->assertStringContainsString('<route_configurations><route_configuration><id>1</id><provider_id>18</provider_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>2</id><name>Delayed Capture</name></route_feature><route_feature><id>5</id><name>Refund</name></route_feature></route_features><country_ids><country_id>0</country_id></country_ids><currency_ids><currency_id>0</currency_id></currency_ids></route_configuration></route_configurations>', $xml, 'Client Route Configuration Found');
     }
 
 
