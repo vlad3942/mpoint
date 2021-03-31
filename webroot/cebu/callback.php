@@ -16,18 +16,29 @@ $_Request = $_REQUEST;
 $isSessionCallback = array_key_exists('transaction-data', $_Request);
 
 $cardNames = [];
+$alpha2Codes = [];
 if ($isSessionCallback === TRUE) {
     $txnIds = array_keys($_Request['transaction-data']);
     $cardIds = [];
+    $billingCountryIds = [];
     foreach ($txnIds as $txnId) {
         array_push($cardIds, (int)$_Request['transaction-data'][$txnId]['card-id']);
+        if($_Request['transaction-data'][$txnId]['billing_country'] != 0){
+            array_push($billingCountryIds, (int)$_Request['transaction-data'][$txnId]['billing_country']);
+        }
     }
     $cardNames = getCardNames($cardIds);
-
+    if(empty($billingCountryIds) === false){
+        $alpha2Codes    = getCountryAlpha2Code($billingCountryIds);
+    }
     foreach ($txnIds as $txnId) {
         $cardId = (int)$_Request['transaction-data'][$txnId]['card-id'];
         if (array_key_exists($cardId, $cardNames)) {
             $_Request['transaction-data'][$txnId]['card_name'] = $cardNames[$cardId];
+        }
+        $billing_country = (int)$_Request['transaction-data'][$txnId]['billing_country'];
+        if (array_key_exists($billing_country, $alpha2Codes)) {
+            $_Request['transaction-data'][$txnId]['country_alpha2code'] = $alpha2Codes[$billing_country];
         }
     }
 
@@ -35,11 +46,24 @@ if ($isSessionCallback === TRUE) {
     if (array_key_exists($cardId, $cardNames)) {
         $_Request['card_name'] = $cardNames[$cardId];
     }
+
+    $billing_country = $_Request['billing_country'];
+    if (array_key_exists($billing_country, $alpha2Codes)) {
+        $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
+    }
+
 } else {
     $cardId = (int)$_Request['card-id'];
     $cardNames = getCardNames([$cardId]);
     if (array_key_exists($cardId, $cardNames)) {
         $_Request['card_name'] = $cardNames[$cardId];
+    }
+    $billing_country   = (int)$_Request['billing_country'];
+    if($billing_country != 0){
+        $alpha2Codes       = getCountryAlpha2Code([$billing_country]);
+        if (array_key_exists($billing_country, $alpha2Codes)) {
+            $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
+        }
     }
 }
 
@@ -79,6 +103,20 @@ function getCardNames(array $cardIds): array
         }
     }
     return $cardNames;
+}
+
+function getCountryAlpha2Code(array $billingCountryIds): array
+{
+    global $_OBJ_DB;
+    $sql = 'SELECT ID,ALPHA2CODE FROM SYSTEM.COUNTRY_TBL WHERE ID IN (' . implode(',', $billingCountryIds) . ')';
+    $RS  = $_OBJ_DB->getAllNames($sql);
+    $alpha2Codes = [];
+    if (is_array($RS) === TRUE && count($RS) > 0) {
+        foreach ($RS as $rs) {
+            $alpha2Codes[(int)$rs['ID']] = $rs['ALPHA2CODE'];
+        }
+    }
+    return $alpha2Codes;
 }
 
 function sendCallback(string $url, string $body)
