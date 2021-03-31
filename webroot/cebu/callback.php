@@ -40,6 +40,22 @@ if ($isSessionCallback === TRUE) {
         if (array_key_exists($billing_country, $alpha2Codes)) {
             $_Request['transaction-data'][$txnId]['country_alpha2code'] = $alpha2Codes[$billing_country];
         }
+
+        if($_Request['transaction-data'][$txnId]['payment-method'] === 'CD')
+        {
+            $_Request['transaction-data'][$txnId]['payment-method'] = 'Card';
+        }
+        if($_Request['transaction-data'][$txnId]['payment-type'] == 2)
+        {
+            $_Request['transaction-data'][$txnId]['payment-method'] = 'TravelFund';
+        }
+        else
+        {
+            $_Request['transaction-data'][$txnId]['payment-method'] = $cardNames[$cardId];
+        }
+        $pspName = $_Request['transaction-data'][$txnId]['psp-name'];
+        $pspName = str_replace(' ', '-', $pspName);
+        $_Request['transaction-data'][$txnId]['psp-name'] = $pspName;
     }
 
     $cardId = $_Request['card-id'];
@@ -51,6 +67,8 @@ if ($isSessionCallback === TRUE) {
     if (array_key_exists($billing_country, $alpha2Codes)) {
         $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
     }
+
+
 
 } else {
     $cardId = (int)$_Request['card-id'];
@@ -64,6 +82,20 @@ if ($isSessionCallback === TRUE) {
         if (array_key_exists($billing_country, $alpha2Codes)) {
             $_Request['country_alpha2code'] = $alpha2Codes[$billing_country];
         }
+    }
+
+    if(isset($_Request['payment-method'])) {
+        if ($_Request['payment-method'] === 'CD') {
+            $_Request['payment-method'] = 'Card';
+        } else {
+            $_Request['payment-method'] = $cardNames[$cardId];
+        }
+    }
+
+    if(isset($_Request['psp-name'])) {
+        $pspName = $_Request['psp-name'];
+        $pspName = str_replace(' ', '-', $pspName);
+        $_Request['psp-name'] = $pspName;
     }
 }
 
@@ -93,13 +125,19 @@ sendCallback($url, $cebusCallabckRequest);
 function getCardNames(array $cardIds): array
 {
     global $_OBJ_DB;
-    $sql = 'SELECT ID,NAME FROM SYSTEM.CARD_TBL WHERE ID IN (' . implode(',', $cardIds) . ')';
+    $sql = "SELECT ID,REPLACE(NAME, ' ','-') FROM SYSTEM.CARD_TBL WHERE ID IN (" . implode(',', $cardIds) . ')';
     $resultSet = $_OBJ_DB->getAllNames($sql);
     $cardNames = [];
 
     if (is_array($resultSet) === TRUE && count($resultSet) > 0) {
         foreach ($resultSet as $rs) {
-            $cardNames[(int)$rs['ID']] = $rs['NAME'];
+            if((int)$rs['ID'] === 26)
+            {
+                $cardNames[26] = 'TravelFund';
+            }
+            else {
+                $cardNames[(int)$rs['ID']] = $rs['NAME'];
+            }
         }
     }
     return $cardNames;
@@ -123,7 +161,7 @@ function sendCallback(string $url, string $body)
 {
     $aURLInfo = parse_url($url);
 
-if (array_key_exists("port", $aURLInfo) === false)
+    if (array_key_exists("port", $aURLInfo) === false)
     {
         if (array_key_exists("scheme", $aURLInfo) === true)
         {
@@ -160,16 +198,16 @@ if (array_key_exists("port", $aURLInfo) === false)
 }
 
 function constHTTPHeaders()
-	{
-		/* ----- Construct HTTP Header Start ----- */
-		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-		$h .= "host: {HOST}" .HTTPClient::CRLF;
-		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-		$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-		$h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
-		$h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
-		/* ----- Construct HTTP Header End ----- */
+{
+    /* ----- Construct HTTP Header Start ----- */
+    $h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+    $h .= "host: {HOST}" .HTTPClient::CRLF;
+    $h .= "referer: {REFERER}" .HTTPClient::CRLF;
+    $h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+    $h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
+    $h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
+    $h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
+    /* ----- Construct HTTP Header End ----- */
 
-		return $h;
-	}
+    return $h;
+}
