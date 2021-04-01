@@ -1528,9 +1528,14 @@ class General
                 // Check Code and update Route ConfigID
                 $code = (int)$response->code;
 
-                // Update Transaction ID
-                if($code ==  "2005") {
-                    $obj_TxnInfo->updateRouteConfigID($this->getDBConn(), $iAlternateRoute);
+                // Update Transaction ID based on Return Auth Response code
+                switch ($code) {
+                    case (2005):
+                    case (2000):
+                        $obj_TxnInfo->updateRouteConfigID($this->getDBConn(), $iAlternateRoute);
+                        break;
+                    default:
+                        break;
                 }
                 // Check for another preference
                 $preference++;
