@@ -43,7 +43,7 @@ if ($isSessionCallback === TRUE) {
             }
         }
 
-        if($_Request['transaction-data'][$txnId]['payment-method'] === 'CD')
+        if($_Request['transaction-data'][$txnId]['payment-type'] == 1)
         {
             $_Request['transaction-data'][$txnId]['payment-method'] = 'Card';
         }
