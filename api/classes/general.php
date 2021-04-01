@@ -632,7 +632,7 @@ class General
         global $_OBJ_TXT;
         $xml = "" ;
 
-        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo->getRouteConfigID());
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
 	    $data = array();
@@ -673,7 +673,7 @@ class General
         $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 
         return $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-			
+
 	}
 
 	/**
@@ -1486,7 +1486,21 @@ class General
         }
     }
 
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE)
+    /***
+     * Function is used to process Authorize Response and based on Status Code, Do retry
+     *
+     * @param     $obj_TxnInfo              Transaction Info
+     * @param     $obj_Processor            Processor Object
+     * @param     $aHTTP_CONN_INFO Http     Connection Detail
+     * @param     $obj_Elem
+     * @param     $response                 Auth Response
+     * @param     $is_legacy                Check for Legacy flow or not
+     * @param     $paymentRetryWithAlternateRoute Is Client configured for Alternate route.
+     * @param int $preference               Alternate Route Preference.
+     *
+     * @return string XML String
+     */
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE): ?string
     {
         $xml = '';
         $code = $response->code;
@@ -1504,12 +1518,23 @@ class General
         } else if ($code == "2016") {
             $xml = $response->body;
         } else if (($code == "20103" || $code == "504") && strtolower($is_legacy) == 'false' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
+
             $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
+
             if(empty($iAlternateRoute) === false) {
                 $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                $code = $response->code;
-                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $code, $is_legacy, $paymentRetryWithAlternateRoute, $preference = Constants::iTHIRD_ALTERNATE_ROUTE);
+
+                // Check Code and update Route ConfigID
+                $code = (int)$response->code;
+
+                // Update Transaction ID
+                if($code ==  "2005") {
+                    $obj_TxnInfo->updateRouteConfigID($this->getDBConn(), $iAlternateRoute);
+                }
+                // Check for another preference
+                $preference++;
+                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference);
             }else{
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
             }
