@@ -120,7 +120,7 @@ sendCallback($url, $cebusCallabckRequest);
 function getCardNames(array $cardIds): array
 {
     global $_OBJ_DB;
-    $sql = "SELECT ID,REPLACE(NAME, ' ','-') FROM SYSTEM.CARD_TBL WHERE ID IN (" . implode(',', $cardIds) . ')';
+    $sql = "SELECT ID,REPLACE(NAME, ' ','-') AS NAME FROM SYSTEM.CARD_TBL WHERE ID IN (" . implode(',', $cardIds) . ')';
     $resultSet = $_OBJ_DB->getAllNames($sql);
     $cardNames = [];
 
