@@ -47,7 +47,7 @@ if ($isSessionCallback === TRUE) {
         {
             $_Request['transaction-data'][$txnId]['payment-method'] = 'Card';
         }
-        if($_Request['transaction-data'][$txnId]['payment-type'] == 2)
+        elseif($_Request['transaction-data'][$txnId]['payment-type'] == 2)
         {
             $_Request['transaction-data'][$txnId]['payment-method'] = 'TravelFund';
         }
