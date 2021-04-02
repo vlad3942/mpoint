@@ -55,7 +55,7 @@ class MerchantRouteProperty
         $this->_iClientId = $clientId;
         $this->_iRouteConfigId = $routeConfigId;
         $this->_sKey = $key;
-        $this->_sValue = $value;
+        $this->_sValue = html_entity_decode($value);
 	}
 
     /**
@@ -177,10 +177,9 @@ class MerchantRouteProperty
                     return FALSE;
                 }
             }
-            $aAdditionalPropertyToBeDelete = array_diff_key($aExistingAdditionalProperty, $aAdditionalProperty);
-            return $this->deleteAdditionalMerchantProperty($aAdditionalPropertyToBeDelete);
         }
-        return false;
+        $aAdditionalPropertyToBeDelete = array_diff_key($aExistingAdditionalProperty, $aAdditionalProperty);
+        return $this->deleteAdditionalMerchantProperty($aAdditionalPropertyToBeDelete);
     }
 
     /**
