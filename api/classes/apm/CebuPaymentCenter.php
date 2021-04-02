@@ -34,6 +34,7 @@ class CebuPaymentCenter extends CPMPSP
                 WHERE id = " . $this->getTxnInfo()->getID();
             $this->getDBConn()->query($sql);
         }
+        $this->updateTxnInfoObject();
         $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_PENDING_STATE, "");
         $args = array('amount'=>$this->getTxnInfo()->getAmount(),
 							'transact'=>$this->getTxnInfo()->getExternalID(),
