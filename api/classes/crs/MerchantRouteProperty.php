@@ -123,6 +123,7 @@ class MerchantRouteProperty
                     FROM Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
                     WHERE externalid = $this->_iRouteConfigId
                     AND lower(key) = '".strtolower($this->_sKey)."'
+                    AND lower(value) = '".strtolower($this->_sValue)."'
                     AND type = 'merchant'";
         try {
             $res = $this->_objDB->getName($sql);
