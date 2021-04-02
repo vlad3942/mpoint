@@ -585,12 +585,11 @@ try
 										{
 										    $aMsgCds[21] = 'Invalid Card Number: ' . $obj_card->getCardNumber();
 										}
-
-                                        $expiryValidationCode = $obj_CardValidator->validateExpiry();
-                                        if ($expiryValidationCode !== 740) {
+                                        if($obj_card->getExpiry() !== '' && $obj_CardValidator->validateExpiry() !== 740)
+                                        {
                                             $aMsgCds[23]  = 'Invalid Card Expiry: '.$obj_card->getExpiry();;
                                         }
-                                        
+
                                         $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                                         $ips = array_map('trim', $ips);
                                         $ip = $ips[0];
