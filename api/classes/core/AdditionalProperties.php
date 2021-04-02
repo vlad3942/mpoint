@@ -61,7 +61,7 @@ class AdditionalProperties
     {
         $xml = '<param>';
         $xml .= '<key>'.$this->getKey().'</key>';
-        $xml .= '<value>'.$this->getValue().'</value>';
+        $xml .= '<value>'.htmlentities($this->getValue()).'</value>';
         $xml .= '</param>';
         return $xml;
     }
