@@ -123,7 +123,6 @@ class MerchantRouteProperty
                     FROM Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
                     WHERE externalid = $this->_iRouteConfigId
                     AND lower(key) = '".strtolower($this->_sKey)."'
-                    AND lower(value) = '".strtolower($this->_sValue)."'
                     AND type = 'merchant'";
         try {
             $res = $this->_objDB->getName($sql);
@@ -170,10 +169,15 @@ class MerchantRouteProperty
         $aExistingAdditionalProperty = MerchantRouteProperty::getAdditionalPropertyByRouteConfigId();
         if(empty($aAdditionalProperty) === false){
             foreach ($aAdditionalProperty as $key => $value){
-                $this->_sKey = $key;
-                $this->_sValue = $value;
-                $states = $this->AddAdditionalMerchantProperty();
-                if ($states === FALSE){
+                if(strlen($key) > 0 && strlen($value) > 0) {
+                    $this->_sKey = $key;
+                    $this->_sValue = $value;
+                    $states = $this->AddAdditionalMerchantProperty();
+                    if ($states === FALSE) {
+                        return FALSE;
+                    }
+                }else{
+                    trigger_error("Found Empty Additional Property", E_USER_WARNING);
                     return FALSE;
                 }
             }
