@@ -87,23 +87,21 @@ class MerchantRouteProperty
      */
 	public function AddAdditionalMerchantProperty() : bool
     {
-        $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
-            (key, value, externalid, type)
-            values ($1, $2, $3, $4)";
+        try {
+            $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
+                    (key, value, externalid, type)
+                    VALUES ('" . $this->_sKey . "', '" . $this->_sValue . "', '" . $this->_iRouteConfigId . "', 'merchant')";
 
-        $resource = $this->_objDB->prepare($sql);
-        if (is_resource($resource) === true) {
-            $aParam = array( $this->_sKey, $this->_sValue, $this->_iRouteConfigId, 'merchant');
-            $result = $this->_objDB->execute($resource, $aParam);
-            if ($result === false) {
+            $res = $this->_objDB->query($sql);
+            if (is_resource($res) === false) {
                 throw new Exception("Unable to update route property", E_USER_ERROR);
                 return FALSE;
-            }else{
+            } else {
                 return TRUE;
             }
-        } else {
-            trigger_error("Unable to build query for update route property", E_USER_WARNING);
-            return FALSE;
+        }catch (SQLQueryException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            return false;
         }
     }
 
