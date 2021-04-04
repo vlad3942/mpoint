@@ -634,18 +634,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		try
 		{
-            $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
-            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-            $obj_HTTP->connect();
-            $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-            $obj_HTTP->disConnect();
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
 
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
 			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
 
 			if ($code == 200 || $code == 303)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				$this->_obj_ResponseXML =$obj_XML;
+                $this->_obj_ResponseXML =$obj_XML;
 				$sql = "";
 				
 				if(count($obj_XML->transaction) > 0)
@@ -670,7 +670,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				}
 
                 if($code == Constants::iPAYMENT_REJECTED_STATE && $this->getTxnInfo()->hasEitherSoftDeclinedState($subCode) === true){
-
                     $code = Constants::iPAYMENT_SOFT_DECLINED_STATE;
                     // Add Log state for Rejected
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
