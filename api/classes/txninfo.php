@@ -2626,37 +2626,5 @@ class TxnInfo
 		}
 	}
 
-	/**
-	 * Update route config ID against transaction ID.
-	 *
-	 * @param \RDB $obj_DB
-	 * @param int  $routeConfigID
-	 *
-	 * @return bool
-	 * @throws \Exception
-	 */
-	public function updateRouteConfigID(RDB $obj_DB, $routeConfigID = -1)
-	{
-		$retStatus = FALSE;
-		if (($obj_DB instanceof RDB) === false && $obj_DB != null) {  throw new Exception("Failed to connect to database"); }
-
-		try
-		{
-			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET routeconfigid = ". $routeConfigID ."
-						WHERE id = ". $this->getID();
-						// 	echo $sql ."\n";die;
-			$res = $obj_DB->query($sql);
-
-			// Refund amount updated successfully
-			if(is_resource($res) === true && $obj_DB->countAffectedRows($res) === 1){ $retStatus = TRUE; }
-		}
-		catch (mPointException $mPointException)
-		{
-			trigger_error("Failed to update route config ID", E_USER_ERROR);
-		}
-		return $retStatus;
-	}
-
 }
 ?>

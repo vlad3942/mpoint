@@ -639,13 +639,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
             $obj_HTTP->disConnect();
-            $RS_body = $obj_HTTP->getReplyBody();
 
 			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
-			
+
 			if ($code == 200 || $code == 303)
 			{
-				$obj_XML = simplexml_load_string( $RS_body );
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 				$this->_obj_ResponseXML =$obj_XML;
 				$sql = "";
 				
@@ -680,12 +679,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
-                    $obj_XML= simplexml_load_string($RS_body);
+				    $obj_XML= simplexml_load_string($obj_HTTP->getReplyBody() );
 				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_XML->asXML());
                     //$this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-
-					$body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","", $RS_body);
+					$body = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
 					$body = str_replace("<root>","",$body);
 					$body = str_replace("</root>","",$body);
 				}

@@ -635,9 +635,15 @@ class General
         $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
+        // Update Associated Transaction ID
 	    $data = array();
-		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
+	    $data['routeconfigid'] = $iSecondaryRoute;
+        $obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_AssociatedTxnInfo);
+
+        // Update Parent Transaction Route Config ID
+        $obj_TxnInfo = TxnInfo::produceInfo( $obj_TxnInfo->getID(), $this->getDBConn(),$obj_TxnInfo,$data);
+        $this->logTransaction($obj_TxnInfo);
 
         /*******************************
         $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
@@ -1524,19 +1530,6 @@ class General
 
             if(empty($iAlternateRoute) === false) {
                 $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-
-                // Check Code and update Route ConfigID
-                $code = (int)$response->code;
-
-                // Update Transaction ID based on Return Auth Response code
-                switch ($code) {
-                    case (2005):
-                    case (2000):
-                        $obj_TxnInfo->updateRouteConfigID($this->getDBConn(), $iAlternateRoute);
-                        break;
-                    default:
-                        break;
-                }
                 // Check for another preference
                 $preference++;
                 return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference);
