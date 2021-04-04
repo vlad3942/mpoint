@@ -105,6 +105,33 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/_test/simulators/wire-card
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/_test/simulators/mobilepay/cancel.php";
 
 /**
+ * Connection info for connecting to 2C2P ALC
+ */
+$aHTTP_CONN_INFO["2c2p-alc"]["protocol"]    = 'http';
+$aHTTP_CONN_INFO["2c2p-alc"]["host"]        = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["2c2p-alc"]["port"]        = 80;
+$aHTTP_CONN_INFO["2c2p-alc"]["timeout"]     = 120;
+$aHTTP_CONN_INFO["2c2p-alc"]["path"]        = ""; // Set by calling class
+$aHTTP_CONN_INFO["2c2p-alc"]["method"]      = 'POST';
+$aHTTP_CONN_INFO["2c2p-alc"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["initialize"] = "/_test/simulators/2c2p-alc/pay.php";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["auth"] = "/_test/simulators/2c2p-alc/auth.php";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["capture"] = "/_test/simulators/2c2p-alc/capture.php";
+
+/**
+ * Connection info for connecting to First data
+ */
+$aHTTP_CONN_INFO["first-data"]["protocol"]    = 'http';
+$aHTTP_CONN_INFO["first-data"]["host"]        = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["first-data"]["port"]        = 80;
+$aHTTP_CONN_INFO["first-data"]["timeout"]     = 120;
+$aHTTP_CONN_INFO["first-data"]["path"]        = ""; // Set by calling class
+$aHTTP_CONN_INFO["first-data"]["method"]      = 'POST';
+$aHTTP_CONN_INFO["first-data"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["first-data"]["paths"]["initialize"] = "/_test/simulators/first-data/pay.php";
+$aHTTP_CONN_INFO["first-data"]["paths"]["auth"] = "/_test/simulators/first-data/auth.php";
+
+/**
  * Connection info for connecting to DataCash
  */
 $aHTTP_CONN_INFO["data-cash"]["protocol"] = "http";

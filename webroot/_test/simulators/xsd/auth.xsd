@@ -36,6 +36,7 @@
 									<xs:attribute type="xs:positiveInteger" name="type" />
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="route_configuration" type="route_configuration" minOccurs="0" maxOccurs="1"/>
 							<xs:element name="transaction" >
 								<xs:complexType>
 									<xs:all>
@@ -374,9 +375,10 @@
 
 	<xs:element name="additional-config">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
 				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
-			</xs:sequence>
+				<xs:element name="property" minOccurs="0" maxOccurs="unbounded" />
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 
@@ -407,6 +409,30 @@
 						<xs:element type="xs:integer" name="type"/>
 						<xs:element type="xs:integer" name="pspid"/>
 						<xs:element type="xs:integer" name="reference"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="route_configuration">
+		<xs:sequence>
+			<xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="unbounded" />
+			<xs:element name="route_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="mid" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="username" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="route_features" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="route_feature" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="unbounded" />
+									<xs:element name="name" type="xs:integer" minOccurs="1" maxOccurs="1" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
