@@ -287,4 +287,16 @@ $aHTTP_CONN_INFO["mpgs"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
 $aHTTP_CONN_INFO["mpgs"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
 $aHTTP_CONN_INFO["mpgs"]["path"] = $aHTTP_CONN_INFO["mpgs"]["paths"]["pay"];
 
+/**
+ * Message Queue Provider Information
+ *
+ */
+$aMessage_Queue_Provider_info['provider'] = 'googlepubsub';
+//First Preference to KeyFile
+$aMessage_Queue_Provider_info['keyfile'] = '{"type":"service_account","project_id":"cpm-development","private_key_id":"bf5d8a48b48c811aed70265ba3f9bc4077f29c76","private_key":"-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCmHL64UyTtD63N\nRW3BnlYBrETgKNnbez8Ata2AKVO3zRnGMSZbpLYKf388NXhqGXILwdBUG1uY/tzV\nBsh1xA0mE89Cw3d5FD/nerJQeT0b7lWjxmS9hY3ThTMlX5Y5MVVw4/COlXUH5cyW\nosAEBCxJt4Iki6VZDIKK2GAs0omeJKbkYq+WnPZKMZUG3y1LBk7Pl0Lxhql1a+9J\nBlAKESuIsla7zCqjU4lSkPq8OJaH0vRl5lKwEMfv6xdUsyjq77NIzOn5uxZpykxq\nNTRTgaSxj+pdPSLpFSMME6fTAZO3daeiZyS+4fdhJQmNcneWcg9zoJf5Lt+8cEVw\nNYm8aya5AgMBAAECggEAAj7QeamfDcjI2MXb21KGd1iSqESJGFlIw1vRU/KLEAiY\n1PfgXLwD3W22hLP01BtSsjO9GwvxH6bvSX5hWo0rP9Tj9/MwM93pFLoQ+7s9zxk4\nRWHWxgSOg5nQ9Iv/mfePn/pmy6ibx77slmsuBQfg6OCvBMsx8ZuUjqeo2iZA57cx\nwLih8/eX6mMOe8nsv+Vg5I65wvDvDTWGJbj6VstV8I1GOHOSbacR5VtgJnZJpoDl\nOv3+JOWvu3vFYCSAU43SFw7I6jTLf+/EahgsmNpM0DaGXrvrt9NPcdpFc7iE36Xe\n5D/LafzSMMl9uoj3+fMw8PwxEy3qXp+dcsT6gQnMIQKBgQDn/gPZo06OBB5x7wBP\nxKKgPnsJ2yA9mxjKufV6FLNB29imQOr6I8lnoEib8AIvkR13qeL+VF+sRan+ukNK\nyuDwoqG9EG5xFxymP3GXT9ToPc+sDYfXkEml+XTB30MsKx77hHVoXA/qnVhFYW99\n0TDv6mS0xhcH4GWVz6IKusrwoQKBgQC3TWzDycCEF/2SwaL2ktCLOK8vd4NbhTLI\nTZNdVs+YSaHfqbfdK8WlvsZdCdr61lR3h3ZpmAd5wEm75t8iRboesCyzU13aUeoy\ngbivZJXAGMThE5/sdEafz8SO5jTJZFEGmvJNhE9zpYNJ48gqO/oHiTILei9YQ4A+\nc+nuL71HGQKBgHCNuOh6Zr5YGT1Fq20IBa6hIaiie33oJZsVpZdZO68ULoRasqYx\nfqGcDh45z5WsXhOUhODHprM6CUPgso0y6PdWsAm+UxbjE69E0KOMw8r5UiwzVFit\nVE4GPTNiUoC3WwzEMwIyyDYXqJ/gqers90Uu/zUFdl8H68FHP2LdRWCBAoGAUbwV\nfqwsyvoDmPf9GaPXl+zbuPe6vAmF3mkxB9LY2JgktR3xnY6SIFkUDJKDcYw2t+HQ\nfD9NPg3vEvlcj+S1nE+EbyYCWIJkQsczOgpI+BJTX+WnTwF+KG61v96ItTClLKPU\n3Znc771i8ITAUYzS7Z9QkGuYRuw6eB6ptgrVhKkCgYBqMLMu2G+YqfDgwc5kD/t/\n8c00RjlMdmKBGJTRhajzjy2/z1vWURZd6KVvJAuv18mv06/7u0M9variobLhYBXz\n/5q3Kt8azqxucudYf68/tjGWW6/ZeIOY0Yl1m8hBLeqcwpxeR3OOdiAwUpv6jwU5\nOaLyOQeLW9+9AT3H+89onw==\n-----END PRIVATE KEY-----\n","client_email":"mpoint-phpunittest-publisher@cpm-development.iam.gserviceaccount.com","client_id":"114317260328047162452","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_x509_cert_url":"https://www.googleapis.com/robot/v1/metadata/x509/mpoint-phpunittest-publisher%40cpm-development.iam.gserviceaccount.com"}';
+$aMessage_Queue_Provider_info['keyfilepath'] = '';
+$aMessage_Queue_Provider_info['projectid'] = 'cpm-development';
+$aMessage_Queue_Provider_info['topicname'] = 'mpoint-phpunittest';
+
+
 ?>

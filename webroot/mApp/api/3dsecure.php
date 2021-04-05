@@ -100,12 +100,12 @@ try
 	}
 	catch (mPointException $e)
 	{
-		trigger_error($e, E_USER_WARNING);
+		trigger_error($e->getMessage(), E_USER_WARNING);
 		throw new mPointSimpleControllerException(HTTP::BAD_GATEWAY, $e->getCode(), $e->getMessage(), $e);
 	}
 	catch (Exception $e)
 	{
-		trigger_error($e, E_USER_ERROR);
+		trigger_error($e->getMessage(), E_USER_ERROR);
 		throw new mPointSimpleControllerException(HTTP::INTERNAL_SERVER_ERROR, $e->getCode(), $e->getMessage(), $e);
 	}
 }
