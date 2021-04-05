@@ -155,6 +155,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{
 						$args = array("transact" => $obj_TxnInfo->getExternalID(),
 									  "amount" => $_REQUEST['amount'],
+									  "cardid" => $obj_TxnInfo->getCardID(),
 									  "fee" => $obj_TxnInfo->getFee() );
 						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
 					}
@@ -170,6 +171,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 					{
 						$args = array("transact" => $obj_TxnInfo->getExternalID(),
+									  "cardid" => $obj_TxnInfo->getCardID(),
 									  "amount" => $_REQUEST['amount']);
 						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args);
 					}

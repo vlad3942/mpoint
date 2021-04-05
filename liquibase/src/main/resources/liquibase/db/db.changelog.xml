@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <!-- 
+    <!--
     All sets of updates are added as a new changelog version
     NEVER EVER change an existing configuration, only append
 
@@ -45,6 +45,7 @@
     <include file="db.changelog.2.25.23.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.25.24.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.25.25.xml" relativeToChangelogFile="true"/>
+    <include file="db.changelog.2.26.0.xml" relativeToChangelogFile="true"/>
     <include file="db.changelog.2.26.xml" relativeToChangelogFile="true"/>
     <!-- Add new change log files, for each release
     <include file="db.changelog.1.1.0.xml" relativeToChangelogFile="true"/>

@@ -32,7 +32,7 @@ class MerchantRouteProperty
      * Holds name of the merchant property key
      * @var string
      */
-    private string $_sKey;
+    private ?string $_sKey;
 
     /**
      * Holds name of the merchant property value
@@ -49,7 +49,7 @@ class MerchantRouteProperty
      * @param   string $key             Hold additional property key
      * @param   string $value           Hold additional property value
      */
-	public function __construct(RDB $_OBJ_DB, int $clientId, int $routeConfigId , string $key, string $value)
+	public function __construct(RDB $_OBJ_DB, int $clientId, int $routeConfigId , ?string $key = null, ?string $value = null)
 	{
         $this->_objDB = $_OBJ_DB;
         $this->_iClientId = $clientId;
@@ -87,7 +87,6 @@ class MerchantRouteProperty
      */
 	public function AddAdditionalMerchantProperty() : bool
     {
-        $response = array();
         $isRouteFeaturealreadyExist = $this->isAdditionalPropertyAlreadyExist();
         if($isRouteFeaturealreadyExist === false){
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
@@ -110,13 +109,13 @@ class MerchantRouteProperty
             }
         }else{
             trigger_error('Configuration Already Exist For Route: '.$this->_iRouteConfigId , E_USER_NOTICE);
-            return FALSE;
+            return TRUE;
         }
     }
 
     /**
-     * Function used to identify duplicate record
-     * @return bool
+     * Function used to identify duplicate additional property configuration for the route
+     * @return bool  return true if additional property configuration already exist or else return false
      */
     private function isAdditionalPropertyAlreadyExist() :bool
     {
@@ -135,6 +134,98 @@ class MerchantRouteProperty
             trigger_error($e->getMessage(), E_USER_ERROR);
         }
         return false;
+    }
+
+    /**
+     * Function is used to get additional route property configuration
+     * @return array  An array of additional route property
+     */
+    private function getAdditionalPropertyByRouteConfigId() : array
+    {
+        $aAdditionalProperties = array();
+        $sql  = "SELECT key, value
+					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
+					 WHERE externalid = ". $this->_iRouteConfigId ." AND type='merchant' " ;
+        try {
+            $aRS = $this->_objDB->getAllNames($sql);
+            if (is_array($aRS) === true && count($aRS) > 0) {
+                foreach ($aRS as $rs) {
+                    $aAdditionalProperties[$rs["KEY"]] = $rs["VALUE"];
+                }
+            }
+        }catch (SQLQueryException $e){
+            trigger_error($e->getMessage(), E_USER_ERROR);
+        }
+        return $aAdditionalProperties;
+    }
+
+    /**
+     * Function is used to update additional merchant property for given the route
+     * @param array $aAdditionalProperty  Hold route additional property configuration
+     * @return bool     Return true/false as a response
+     * @throws Exception
+     */
+    public function updateAdditionalMerchantProperty(array $aAdditionalProperty)
+    {
+        $aExistingAdditionalProperty = MerchantRouteProperty::getAdditionalPropertyByRouteConfigId();
+        if(empty($aAdditionalProperty) === false){
+            foreach ($aAdditionalProperty as $key => $value){
+                $this->_sKey = $key;
+                $this->_sValue = $value;
+                $states = $this->AddAdditionalMerchantProperty();
+                if ($states === FALSE){
+                    return FALSE;
+                }
+            }
+            $aAdditionalPropertyToBeDelete = array_diff_key($aExistingAdditionalProperty, $aAdditionalProperty);
+            return $this->deleteAdditionalMerchantProperty($aAdditionalPropertyToBeDelete);
+        }
+        return false;
+    }
+
+    /**
+     * Function help to delete merchant additional property specific to the route
+     * @param array $aAdditionalPropertyToBeDelete  Hold list of merchant additional property which needs to be remove
+     * @return bool  Return true/false as a response
+     */
+    private function deleteAdditionalMerchantProperty(array $aAdditionalPropertyToBeDelete) : bool
+    {
+        if(empty($aAdditionalPropertyToBeDelete) === false) {
+            if(empty($this->_iRouteConfigId) === false) {
+                try {
+                    $sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".AdditionalProperty_tbl
+                            WHERE externalid = ". $this->_iRouteConfigId ." 
+                            AND type='merchant'
+                            AND key IN  ('" . implode("','", array_keys($aAdditionalPropertyToBeDelete)) . "')";
+                    return is_resource($this->_objDB->query($sql) );
+                } catch (SQLQueryException $e) {
+                    trigger_error($e->getMessage(), E_USER_ERROR);
+                }
+            }else {
+                trigger_error("RouteConfigId is Missing", E_USER_WARNING);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Function used to process add additional property response
+     *
+     * @param bool $response  true/flase as a update route feature configuration status
+     * @return string XML playload structure of route additional property configuration status
+     */
+    public function getUpdateAdditionalPropertyResponseAsXML(bool $response): string
+    {
+        $xml = '';
+        if($response === TRUE){
+            $xml .= '<status>Success</status>';
+            $xml .= '<message>Additional Property Updated Successfully</message>';
+        }else{
+            $xml .= '<status>Fail</status>';
+            $xml .= '<message>Unable To Update Additional Property</message>';
+        }
+        return $xml;
     }
 
 }
