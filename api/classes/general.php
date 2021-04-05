@@ -630,18 +630,18 @@ class General
 	public function authWithAlternateRoute(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
 	{
         global $_OBJ_TXT;
-        $xml = "" ;
 
         $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
         // Update Associated Transaction ID
 	    $data = array();
-	    $data['routeconfigid'] = $iSecondaryRoute;
         $obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_AssociatedTxnInfo);
 
         // Update Parent Transaction Route Config ID
+        $obj_TxnInfo->setRouteConfigID($iSecondaryRoute);
+        $data['routeconfigid'] = $iSecondaryRoute;
         $obj_TxnInfo = TxnInfo::produceInfo( $obj_TxnInfo->getID(), $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_TxnInfo);
 
@@ -1510,38 +1510,55 @@ class General
     {
         $xml = '';
         $code = $response->code;
-        if ($code == "100") {
-            $xml = '<status code="100">Payment Authorized using Stored Card</status>';
-        } else if ($code == "2010") {
-            $xml = '<status code="2010">Payment rejected by PSP</status>';
-        } else if ($code == "2000") {
-            $xml = '<status code="2000">Payment authorized</status>';
-        } else if ($code == "2009") {
-			$xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
-		} else if ($code == "2005") {
-            header("HTTP/1.1 303");
-            $xml = $response->body;
-        } else if ($code == "2016") {
-            $xml = $response->body;
-        } else if (($code == "20103" || $code == "504") && strtolower($is_legacy) == 'false' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
+        $subCode = $response->sub_code;
 
-            $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
-            $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
+        switch ($code) {
+            case 100 :
+                $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+                break;
+            case Constants::iPAYMENT_ACCEPTED_STATE :
+                $xml = '<status code="2000">Payment authorized</status>';
+                break;
+            case Constants::iTICKET_CREATED_STATE :
+                $xml = '<status code="2009">Payment authorized and Card Details Stored.</status>';
+                break;
+            case Constants::iPAYMENT_3DS_VERIFICATION_STATE :
+                header("HTTP/1.1 303");
+                $xml = $response->body;
+                break;
+            case Constants::iPAYMENT_3DS_FAILURE_STATE :
+                $xml = $response->body;
+                break;
+            case Constants::iPAYMENT_REJECTED_STATE :
+            case 504:
+                if ($code == 504 || $obj_TxnInfo->hasEitherSoftDeclinedState($subCode) === true) {
+                    if(strtolower($is_legacy) == 'false' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
 
-            if(empty($iAlternateRoute) === false) {
-                $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
-                // Check for another preference
-                $preference++;
-                return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference);
-            }else{
+                        $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
+                        $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
+
+                        if (empty($iAlternateRoute) === false) {
+                            $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
+                            // Check for another preference
+                            $preference++;
+                            return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference);
+                        } else {
+                            $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+                        }
+                    }
+                }
+                else {
+                    $xml = '<status code="2010">Payment rejected by PSP</status>';
+                }
+                break;
+            default :
+                $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                header("HTTP/1.1 502 Bad Gateway");
                 $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
-            }
-        }else{
-            $this->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-            header("HTTP/1.1 502 Bad Gateway");
-            $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
+                break;
         }
-        if($response->sub_code > 0)
+
+        if($subCode > 0)
         {
             $responseXML = simpledom_load_string($xml);
             $responseXML['sub-code'] = $response->sub_code;
