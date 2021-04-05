@@ -2500,7 +2500,10 @@ class TxnInfo
         $stateId = 0;
         try
         {
-            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = '" . $this->getID() . "'";
+            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE  stateid in (".Constants::iINPUT_VALID_STATE.",".Constants::iPAYMENT_INIT_WITH_PSP_STATE.",
+                            ".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",
+                            ".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",
+                            ".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.") and txnid = '" . $this->getID() . "' order by id desc limit 1";
 
             $resultSet = $obj_DB->getName($query);
             if (is_array($resultSet) === true)

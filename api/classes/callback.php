@@ -1125,18 +1125,19 @@ abstract class Callback extends EndUserAccount
 					$objTransaction = TxnInfo::produceInfo($transactionId, $this->getDBConn());
 
 					// TransactionData array
-					$transactionData['status'] = $objTransaction->getLatestPaymentState($this->getDBConn());
-					$transactionData['hmac'] = $objTransaction->getHMAC();
-					$transactionData['product-type'] = $objTransaction->getProductType();
-					$transactionData['amount'] = $objTransaction->getAmount();
-					$transactionData['currency'] = $objTransaction->getCurrencyConfig()->getCode();
-					$transactionData['decimals'] = $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] = $sessionObj->getAmount();
-					$transactionData['sale_currency'] = urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
-					$transactionData['sale_decimals'] = $objTransaction->getInitializedCurrencyConfig()->getDecimals();
-					$transactionData['fee'] = $objTransaction->getFee();
-					$transactionData['issuer-approval-code'] = $objTransaction->getApprovalCode();
-					if (intval($objTransaction->getCardID()) > 0) {
+					$transactionData['status']= $objTransaction->getLatestPaymentState($this->getDBConn());
+					$transactionData['hmac']= $objTransaction->getHMAC();
+					$transactionData['product-type']= $objTransaction->getProductType();
+					$transactionData['amount']= $objTransaction->getAmount();
+					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
+					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
+					$transactionData['sale_amount'] =  $objTransaction->getAmount();
+					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
+					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
+					$transactionData['fee']= $objTransaction->getFee();
+					$transactionData['issuer-approval-code']= $objTransaction->getApprovalCode();
+					if (intval($objTransaction->getCardID()) > 0)
+					{
 						$transactionData['card-id'] = $objTransaction->getCardID();
 					}
 					$cardMask = $objTransaction->getCardMask();
@@ -1150,7 +1151,7 @@ abstract class Callback extends EndUserAccount
 					if ($objTransaction->getDescription() !== '') {
 						$transactionData['description'] = $objTransaction->getDescription();
 					}
-					$sVariables = $this->getVariables();
+					$sVariables = $this->getVariables($objTransaction->getID());
 					if ($sVariables !== '') {
 						$aVariables = [];
 						parse_str($sVariables, $aVariables);
@@ -1190,22 +1191,22 @@ abstract class Callback extends EndUserAccount
 						$transactionData['fraud_status_desc'] = $getFraudStatusCode['status_desc'];
 					}
 					$transactionData['exchange_rate'] = $conversionRate;
-					$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
+					$fxservicetypeid = $objTransaction->getFXServiceTypeID();
 					if ($fxservicetypeid != 0) {
 						$transactionData['service_type_id'] = $fxservicetypeid;
 					}
-					$objb_BillingAddr = $this->_obj_TxnInfo->getBillingAddr();
-					if (empty($objb_BillingAddr) === FALSE) {
-						$transactionData['billing_first_name'] = urlencode($objb_BillingAddr['first_name']);
-						$transactionData['billing_last_name'] = urlencode($objb_BillingAddr['last_name']);
-						$transactionData['billing_street_address'] = urlencode($objb_BillingAddr['street']);
-						$transactionData['billing_city'] = urlencode($objb_BillingAddr['city']);
-						$transactionData['billing_country'] = urlencode($objb_BillingAddr['country']);
-						$transactionData['billing_state'] = urlencode($objb_BillingAddr['state']);
-						$transactionData['billing_postal_code'] = urlencode($objb_BillingAddr['zip']);
-						$transactionData['billing_email'] = urlencode($objb_BillingAddr['email']);
-						$transactionData['billing_mobile'] = urlencode($objb_BillingAddr['mobile']);
-						$transactionData['billing_idc'] = urlencode($objb_BillingAddr['mobile_country_id']);
+					$objb_BillingAddr =  $objTransaction->getBillingAddr();
+					if (empty($objb_BillingAddr) === false) {
+						$transactionData['billing_first_name'] =  urlencode($objb_BillingAddr['first_name']);
+						$transactionData['billing_last_name'] =  urlencode($objb_BillingAddr['last_name']);
+						$transactionData['billing_street_address'] =  urlencode($objb_BillingAddr['street']);
+						$transactionData['billing_city'] =  urlencode($objb_BillingAddr['city']);
+						$transactionData['billing_country'] =  urlencode($objb_BillingAddr['country']);
+						$transactionData['billing_state'] =  urlencode($objb_BillingAddr['state']);
+						$transactionData['billing_postal_code'] =  urlencode($objb_BillingAddr['zip']);
+						$transactionData['billing_email'] =  urlencode($objb_BillingAddr['email']);
+						$transactionData['billing_mobile'] =  urlencode($objb_BillingAddr['mobile']);
+						$transactionData['billing_idc'] =  urlencode($objb_BillingAddr['mobile_country_id']);
 					}
 					$aTxnAdditionalData = $objTransaction->getAdditionalData();
 					if ($aTxnAdditionalData !== NULL) {
@@ -1216,16 +1217,18 @@ abstract class Callback extends EndUserAccount
 						}
 					}
 
-					$dateTime = new DateTime($objTransaction->getCreatedTimestamp());
-					$transactionData['date-time'] = $dateTime->format('c');
-					$timeZone = $objTransaction->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
-					if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
+        			$dateTime = new DateTime($objTransaction->getCreatedTimestamp());
+					$transactionData['date-time']= $dateTime->format('c');
+					$timeZone = $objTransaction->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,'TIMEZONE');
+					if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
+					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
 						$transactionData['local-date-time'] = $dateTime->format('c');
 					}
 
-					if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0) {
-						$transactionData['issuing-bank'] = $objTransaction->getIssuingBankName();
+					if (strlen($objTransaction->getIssuingBankName()) > 0)
+					{
+						$transactionData['issuing-bank'] =  $objTransaction->getIssuingBankName();
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;

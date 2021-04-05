@@ -55,7 +55,7 @@ class MerchantRouteProperty
         $this->_iClientId = $clientId;
         $this->_iRouteConfigId = $routeConfigId;
         $this->_sKey = $key;
-        $this->_sValue = $value;
+        $this->_sValue = html_entity_decode($value);
 	}
 
     /**
@@ -87,53 +87,48 @@ class MerchantRouteProperty
      */
 	public function AddAdditionalMerchantProperty() : bool
     {
-        $isRouteFeaturealreadyExist = $this->isAdditionalPropertyAlreadyExist();
-        if($isRouteFeaturealreadyExist === false){
+        try {
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
-                (key, value, externalid, type)
-                values ($1, $2, $3, $4)";
+                    (key, value, externalid, type)
+                    VALUES ('" . $this->_sKey . "', '" . $this->_sValue . "', '" . $this->_iRouteConfigId . "', 'merchant')";
 
-            $resource = $this->_objDB->prepare($sql);
-            if (is_resource($resource) === true) {
-                $aParam = array( $this->_sKey, $this->_sValue, $this->_iRouteConfigId, 'merchant');
-                $result = $this->_objDB->execute($resource, $aParam);
-                if ($result === false) {
-                    throw new Exception("Unable to update route property", E_USER_ERROR);
-                    return FALSE;
-                }else{
-                    return TRUE;
-                }
-            } else {
-                trigger_error("Unable to build query for update route property", E_USER_WARNING);
+            $res = $this->_objDB->query($sql);
+            if (is_resource($res) === false) {
+                throw new Exception("Unable to update route property", E_USER_ERROR);
                 return FALSE;
+            } else {
+                return TRUE;
             }
-        }else{
-            trigger_error('Configuration Already Exist For Route: '.$this->_iRouteConfigId , E_USER_NOTICE);
-            return TRUE;
+        }catch (SQLQueryException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            return false;
         }
     }
 
     /**
-     * Function used to identify duplicate additional property configuration for the route
-     * @return bool  return true if additional property configuration already exist or else return false
+     * Function used to update additional merchant property for the route
+     *
+     * @return bool     true/false based on record updated
+     * @throws Exception
      */
-    private function isAdditionalPropertyAlreadyExist() :bool
+    private function updateMerchantAdditionalProperty():bool
     {
-        $sql = "SELECT id
-                    FROM Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
-                    WHERE externalid = $this->_iRouteConfigId
-                    AND lower(key) = '".strtolower($this->_sKey)."'
-                    AND lower(value) = '".strtolower($this->_sValue)."' 
-                    AND type = 'merchant'";
         try {
-            $res = $this->_objDB->getName($sql);
-            if (is_array($res) === true && count($res) > 0) {
+            $sql = "UPDATE Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
+                SET value = '" . $this->_sValue . "'
+                WHERE externalid = $this->_iRouteConfigId AND key = '".$this->_sKey."'";
+
+            $res = $this->_objDB->query($sql);
+            if(is_resource($res) === true && $this->_objDB->countAffectedRows($res) === 1) {
                 return true;
+            }else{
+                trigger_error("No Record Updated For The Route Config ID: ".$this->_iRouteConfigId, E_USER_WARNING);
+                return false;
             }
-        }catch (SQLQueryException $e){
+        } catch (SQLQueryException $e) {
             trigger_error($e->getMessage(), E_USER_ERROR);
+            return false;
         }
-        return false;
     }
 
     /**
@@ -170,17 +165,24 @@ class MerchantRouteProperty
         $aExistingAdditionalProperty = MerchantRouteProperty::getAdditionalPropertyByRouteConfigId();
         if(empty($aAdditionalProperty) === false){
             foreach ($aAdditionalProperty as $key => $value){
-                $this->_sKey = $key;
-                $this->_sValue = $value;
-                $states = $this->AddAdditionalMerchantProperty();
-                if ($states === FALSE){
-                    return FALSE;
+                if(strlen($key) > 0 && strlen($value) > 0) {
+                    $this->_sKey = $key;
+                    $this->_sValue = $value;
+                    if(array_key_exists($key,$aExistingAdditionalProperty)) {
+                        $states = $this->updateMerchantAdditionalProperty();
+                    }else{
+                        $states = $this->AddAdditionalMerchantProperty();
+                    }
+                    if ($states === FALSE) {
+                        return FALSE;
+                    }
+                }else{
+                    trigger_error("Found Empty Additional Property", E_USER_WARNING);
                 }
             }
-            $aAdditionalPropertyToBeDelete = array_diff_key($aExistingAdditionalProperty, $aAdditionalProperty);
-            return $this->deleteAdditionalMerchantProperty($aAdditionalPropertyToBeDelete);
         }
-        return false;
+        $aAdditionalPropertyToBeDelete = array_diff_key($aExistingAdditionalProperty, $aAdditionalProperty);
+        return $this->deleteAdditionalMerchantProperty($aAdditionalPropertyToBeDelete);
     }
 
     /**

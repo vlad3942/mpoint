@@ -239,6 +239,7 @@ class ClientRouteConfig
            $sql = "SELECT id
                 FROM Client" . sSCHEMA_POSTFIX . ".RouteConfig_Tbl
                 WHERE routeid = $this->_iRouteId 
+                AND name = '" . $this->_sRouteName . "'
                 AND mid = '".$this->_sMID."'
                 AND username = '".$this->_sUserName."'
                 AND password = '".$this->_sPassword."'
@@ -359,19 +360,29 @@ class ClientRouteConfig
     public function updateRoute() : bool
     {
         $this->getDBConn()->query('START TRANSACTION');
-        $response['status'] = $this->updateRouteConfig();
-        if($response['status'] === TRUE) {
+        $isDuplicateRouteConfig = $this->isRouteConfigAlreadyExist();
+        $updateRouteConfigStatus = TRUE;
+        if($isDuplicateRouteConfig === FALSE){
+            $updateRouteConfigStatus = $this->updateRouteConfig();
+        }
+        if($updateRouteConfigStatus === TRUE)
+        {
             $updateRouteCountryStatus = $this->updateRouteCountry();
             $updateRouteCurrencyStatus = $this->updateRouteCurrency();
             if ($updateRouteCountryStatus === TRUE && $updateRouteCurrencyStatus === TRUE) {
                 $this->getDBConn()->query('COMMIT');
                 return TRUE;
             }else{
-                $this->getDBConn()->getDBConn()->query('ROLLBACK');
+                if($isDuplicateRouteConfig === FALSE){
+                    $this->getDBConn()->getDBConn()->query('ROLLBACK');
+                }
+                trigger_error("Unable To Update Route Country/Currecny For The Route: ".$this->_iRouteConfigId, E_USER_WARNING);
                 return FALSE;
             }
+        } else {
+            trigger_error("Unable To Update Route Configuration For The Route: ".$this->_iRouteConfigId, E_USER_WARNING);
+            return FALSE;
         }
-        return FALSE;
     }
 
     /**
