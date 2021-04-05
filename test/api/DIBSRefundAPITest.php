@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/refundAPITest.php';
+require_once __DIR__ . '/RefundAPITest.php';
 
 class DIBSRefundAPITest extends RefundAPITest
 {
@@ -13,12 +13,4 @@ class DIBSRefundAPITest extends RefundAPITest
     {
         parent::testSuccessfulRefund(Constants::iDIBS_PSP);
     }
-
-	public function testSuccessfulCancelTriggeredByRefund()
-	{
-        $this->markTestIncomplete();
-		//TODO: Implement this test for DIBS
-		//parent::testSuccessfulCancelTriggeredByRefund(Constants::iDIBS_PSP);
-	}
-
 }

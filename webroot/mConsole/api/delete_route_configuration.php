@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @author Vikas Gupta
+ * @author Anna Lagad
  * @copyright Cellpoint Digital
  * @link http://www.cellpointdigital.com
  * @package mConsole
@@ -18,41 +18,31 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-require_once(sCLASS_PATH ."/crs/RouteFeature.php");
 require_once(sCLASS_PATH ."/crs/ClientRouteConfigurations.php");
-require_once(sCLASS_PATH ."/crs/ClientRouteCountry.php");
-require_once(sCLASS_PATH ."/crs/ClientRouteCurrency.php");
-require_once(sCLASS_PATH ."/core/AdditionalProperties.php");
 
-$obj_mConsole = new mConsole($_OBJ_DB, $_OBJ_TXT);
-
+$xml = '';
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
     $clientId = (integer)$_REQUEST['client_id'];
     $routeConfigId = (integer)$_REQUEST['route_config_id'];
     $code = Validate::valClient($_OBJ_DB, $clientId);
-
     if ($code === 100)
     {
-        $aHTTP_CONN_INFO["mesb"]["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
-        $aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
-        $aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
-        $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
-
         $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
         global $aHTTP_CONN_INFO;
-        $code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
-
-        if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL) {
-
-            $obj_Config = ClientRouteConfigurations::produceConfig($_OBJ_DB, $clientId, $routeConfigId);
-            if ($obj_Config instanceof ClientRouteConfigurations)
-            {
-                $xml = $obj_Config->toXML();
+        $code = $obj_mPoint->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
+        if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL)
+        {
+            $status = ClientRouteConfigurations::DeleteRouteConfig($_OBJ_DB, $routeConfigId);
+            if($status === TRUE){
+                $xml .= '<status>success</status>';
+                $xml .= '<message>Route Configuration Deleted Successfully</message>';
+            }else{
+                $xml .= '<status>Fail</status>';
+                $xml .= '<message>Unable To Delete Route Configuration</message>';
             }
-
         } else {
-            $response = $obj_mConsole->getSSOValidationError($code);
+            $response = $obj_mPoint->getSSOValidationError($code);
             header($response['http_message']);
             $xml = $response['response'];
         }
@@ -92,6 +82,8 @@ header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
+echo '<delete_route_configuration_response>';
 echo $xml;
+echo '</delete_route_configuration_response>';
 echo '</root>';
 ?>

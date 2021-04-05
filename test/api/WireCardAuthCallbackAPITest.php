@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__. '/callbackAPITest.php';
+require_once __DIR__ . '/CallbackAPITest.php';
 
 class WireCardAuthCallbackAPITest extends CallbackAPITest
 {
@@ -21,7 +21,7 @@ class WireCardAuthCallbackAPITest extends CallbackAPITest
 
     public function testCallbackAttempt()
     {
-        parent::testCallbackAttempt(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
+        parent::callbackAttemptTest(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
     }
 
     public function testSuccessfulCancel()

@@ -143,7 +143,9 @@ GRANT SELECT ON TABLE client.route_tbl TO repuser;
 GRANT SELECT ON TABLE client.routeconfig_tbl TO repuser;
 GRANT SELECT ON TABLE client.routecountry_tbl TO repuser;
 GRANT SELECT ON TABLE client.routecurrency_tbl TO repuser;
-GRANT SELECT ON TABLE client.routefeature_tbl TO repuser;"
+GRANT SELECT ON TABLE client.routefeature_tbl TO repuser;
+GRANT SELECT ON TABLE system.routefeature_tbl TO repuser;"
+
 
 
 REP_USER_EXISTS=$(echo "SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'repuser');" | psql -t | tr -d '[:space:]')

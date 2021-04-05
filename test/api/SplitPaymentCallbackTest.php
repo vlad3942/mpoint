@@ -393,9 +393,10 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
         //$this->assertContains(Constants::iSESSION_FAILED, $aStates);
 
-        $res = $this->queryDB("SELECT id FROM Log.session_tbl where id= 1 and stateid= 4020");
+       /* Session Will not be closed on fraud detected based on new user story CEBU-18
+        *  $res = $this->queryDB("SELECT id FROM Log.session_tbl where id= 1 and stateid= 4020");
         $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));
+        $this->assertEquals(1, pg_num_rows($res));*/
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
         $this->assertIsResource($res);
@@ -476,9 +477,10 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertNotContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
 
 
-        $res = $this->queryDB("SELECT id FROM Log.session_tbl where id= 1 and stateid= 4020");
+  /*   Session Will not be closed on fraud detected based on new user story CEBU-18
+   *       $res = $this->queryDB("SELECT id FROM Log.session_tbl where id= 1 and stateid= 4020");
         $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));
+        $this->assertEquals(1, pg_num_rows($res));*/
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
         $this->assertIsResource($res);

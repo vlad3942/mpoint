@@ -319,7 +319,7 @@ class ClientRouteConfig
      *
      * @param 	RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
      * @param 	integer $clientId 	Unique ID for the Client performing the request
-     * @return 	ClientRouteConfig
+     * @return 	ClientRouteConfig   An array of Client Route Configuration Object
      */
     public static function produceConfig(RDB $oDB, $clientId) : array
     {
@@ -340,7 +340,7 @@ class ClientRouteConfig
             while ($RS = $oDB->fetchName($res)) {
                 $sql = "SELECT RC.id AS routeid, RC.name AS routename
                     FROM Client" . sSCHEMA_POSTFIX . ".Routeconfig_Tbl RC
-                    WHERE RC.routeid = " . $RS["ID"] . " AND RC.enabled = '1'
+                    WHERE RC.routeid = " . $RS["ID"] . " AND RC.enabled = '1' AND RC.isdeleted = '0'
                     ORDER BY RC.id";
 
                 $aRouteConfig = (array)$oDB->getAllNames($sql);

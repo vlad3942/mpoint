@@ -434,6 +434,7 @@
 												<xs:element name="sale-currencyid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 												<xs:element name="conversion-rate" type="xs:decimal"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="service-type-id" type="xs:nonNegativeInteger"	minOccurs="0" maxOccurs="1" />
 											</xs:all>
 										</xs:complexType>
 									</xs:element>

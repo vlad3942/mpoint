@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/callbackAPITest.php';
+require_once __DIR__ . '/CallbackAPITest.php';
 
 class DCCCallbackAPITest extends CallbackAPITest
 {
@@ -45,10 +45,4 @@ class DCCCallbackAPITest extends CallbackAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
     }
-
-    public function testCallbackAttempt()
-    {
-        $this->markTestIncomplete();
-    }
-
 }

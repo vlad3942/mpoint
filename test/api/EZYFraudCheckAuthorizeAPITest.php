@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -407,19 +407,5 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $xml .= '</root>';
 
         return $xml;
-    }
-
-    public function testSuccessfulAuthorize()
-    {
-        $this->markTestIncomplete();
-    }
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
     }
 }
