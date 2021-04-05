@@ -269,8 +269,9 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         {
             $aStates[$row["stateid"]] = $row["txnid"];
         }
+
         $this->assertGreaterThan(0, count($aStates) );
         $this->assertArrayHasKey(7010, $aStates );
-        $this->assertArrayHasKey(20103, $aStates );
+        $this->assertArrayHasKey(2010303, $aStates );
     }
 }

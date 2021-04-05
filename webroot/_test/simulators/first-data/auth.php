@@ -9,7 +9,7 @@ $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 if ($obj_XML->validate(dirname(__FILE__). '/../xsd/auth.xsd') )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
-    echo '<?xml version="1.0" encoding="UTF-8"?><root><status code="2010" sub-code="2010300">PSP Down</status></root>';
+    echo '<?xml version="1.0" encoding="UTF-8"?><root><status code="2010" sub-code="2010303">PSP Down</status></root>';
 }
 else
 {
