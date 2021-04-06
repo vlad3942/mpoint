@@ -118,10 +118,8 @@ class PSPSettlement extends mPointSettlement
                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                     "amount" => $obj_TxnInfo->getAmount(),
                                     "fee" => $obj_TxnInfo->getFee());
-                                if ($obj_TxnInfo->getCallbackURL() !== '') {
-                                    $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
-                                }
-                                $obj_PSP->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$this->_objConnectionInfo['foreign-exchange']);
+
+                                $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                             } elseif ($iStatusCode === 1100) {
                                 $totalSuccessfulTxnCount++;
                             }

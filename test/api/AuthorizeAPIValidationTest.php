@@ -258,7 +258,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(7, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
@@ -305,7 +305,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(7, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
@@ -352,7 +352,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(7, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
@@ -400,7 +400,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(7, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
@@ -492,7 +492,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(7, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
@@ -540,7 +540,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(7, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
 		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);

@@ -485,11 +485,12 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->assertEquals($pspID, $trow["pspid"]);
         $this->assertEquals(11, $trow["amount"]);
 
-        $this->assertCount(4, $aStates);
+        $this->assertCount(5, $aStates);
         $this->assertEquals(2010, $aStates[0]);
         $this->assertEquals(1991, $aStates[1]);
         $this->assertEquals(1992, $aStates[2]);
         $this->assertEquals(1990, $aStates[3]);
+        $this->assertEquals(1990, $aStates[4]);
     }
 
 
