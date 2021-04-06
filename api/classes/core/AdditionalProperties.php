@@ -26,7 +26,7 @@ class AdditionalProperties
      * Holds name of the merchant property scope
      * @var integer
      */
-    private string $_iScope;
+    private int $_iScope;
 
     /**
      * Default Constructor

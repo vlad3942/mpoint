@@ -44,7 +44,7 @@ class MerchantRouteProperty
      * Holds scope of the merchant property
      * @var integer
      */
-    private ?string $_iScope;
+    private ?int $_iScope;
 
     /**
      * Default Constructor
@@ -56,7 +56,7 @@ class MerchantRouteProperty
      * @param   string $value           Hold additional property value
      * @param   string $scope           Hold additional property scope
      */
-	public function __construct(RDB $_OBJ_DB, int $clientId, int $routeConfigId , ?string $key = null, ?string $value = null, $scope = Constants::iPrivateProperty)
+	public function __construct(RDB $_OBJ_DB, int $clientId, int $routeConfigId , ?string $key = null, ?string $value = null, int $scope = Constants::iPrivateProperty)
 	{
         $this->_objDB = $_OBJ_DB;
         $this->_iClientId = $clientId;
