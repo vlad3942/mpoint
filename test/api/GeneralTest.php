@@ -126,6 +126,7 @@ class GeneralTest extends baseAPITest
         $code = (int)$response->code;
         $subCode = (int)$response->sub_code;
         $this->assertEquals(Constants::iPAYMENT_REJECTED_STATE, $code);
+        $this->assertEquals(2010301, $subCode);
         if($code === Constants::iPAYMENT_REJECTED_STATE && $obj_TxnInfo->hasEitherSoftDeclinedState($subCode) === true ){
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);

@@ -76,7 +76,6 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 13, '-1')");
 
-        //As per talk with Jona and Simon 2016-07-19 it should not be possible to authorize a disabled card, since the client can ignore flags sent from initialize
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 16, $pspID, true, 1)");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, $pspID, true, 1)");
 
@@ -270,7 +269,7 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
             $aStates[$row["stateid"]] = $row["txnid"];
         }
 
-        $this->assertGreaterThan(0, count($aStates) );
+        $this->assertEquals(3, count($aStates) );
         $this->assertArrayHasKey(7010, $aStates );
         $this->assertArrayHasKey(2010303, $aStates );
     }
