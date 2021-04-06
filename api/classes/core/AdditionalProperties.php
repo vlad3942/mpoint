@@ -23,15 +23,22 @@ class AdditionalProperties
     private string $_sValue;
 
     /**
+     * Holds name of the merchant property scope
+     * @var integer
+     */
+    private string $_iScope;
+
+    /**
      * Default Constructor
      *
      * @param   string $key             Hold additional property key
      * @param   string $value           Hold additional property value
      */
-	public function __construct(string $key, string $value)
+	public function __construct(string $key, string $value, int $scope)
 	{
         $this->_sKey = $key;
         $this->_sValue = $value;
+        $this->_iScope = $scope;
 	}
 
     /**
@@ -53,6 +60,15 @@ class AdditionalProperties
     }
 
     /**
+     * Hold additional property scope
+     * @return integer
+     */
+    public function getScope() : string
+    {
+        return $this->_iScope;
+    }
+
+    /**
      * Returns the XML payload of Additional Property Configurations
      *
      * @return    String
@@ -62,6 +78,7 @@ class AdditionalProperties
         $xml = '<param>';
         $xml .= '<key>'.$this->getKey().'</key>';
         $xml .= '<value>'.htmlentities($this->getValue()).'</value>';
+        $xml .= '<scope>'.$this->getScope().'</scope>';
         $xml .= '</param>';
         return $xml;
     }
@@ -76,13 +93,13 @@ class AdditionalProperties
     public static function produceConfig(RDB $oDB, int $externalId, string $type): array
     {
         $aObj_Configurations = array();
-        $sql  = "SELECT key,value
+        $sql  = "SELECT key,value, scope
                  FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
                  WHERE externalid = ". $externalId ." and type='".$type."' and enabled=true" ;
         try {
             $res = $oDB->query($sql);
             while ($RS = $oDB->fetchName($res)) {
-                $aObj_Configurations[] = new AdditionalProperties ( (string) $RS["KEY"], (string) $RS["VALUE"]);
+                $aObj_Configurations[] = new AdditionalProperties ( (string) $RS["KEY"], (string) $RS["VALUE"], (int) $RS["SCOPE"]);
             }
         } catch (SQLQueryException $e) {
             trigger_error($e->getMessage(), E_USER_ERROR);
