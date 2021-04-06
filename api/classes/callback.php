@@ -1185,7 +1185,7 @@ abstract class Callback extends EndUserAccount
 					if ($shortCode !== FALSE) {
 						$transactionData['short-code'] = $shortCode;
 					}
-					$getFraudStatusCode = $this->getFraudDetails($txnId);
+					$getFraudStatusCode = $this->getFraudDetails($objTransaction->getID());
 					if (empty($getFraudStatusCode) === FALSE) {
 						$transactionData['fraud_status_code'] = $getFraudStatusCode['status_code'];
 						$transactionData['fraud_status_desc'] = $getFraudStatusCode['status_desc'];
