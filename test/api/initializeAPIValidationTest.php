@@ -1163,37 +1163,73 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->assertEquals(2, $seq);
 
         //Check billing_summary_tbl entry
-        $res =  $this->queryDB("SELECT product_code from Log.Order_Tbl ot join Log.billing_summary_tbl bst on ot.id = bst.order_id WHERE ot.orderref='1234abc' and bst.bill_type='Fare'");
+        $res =  $this->queryDB("SELECT profile_seq, trip_tag, trip_seq, product_code, product_category, product_item from Log.Order_Tbl ot join Log.billing_summary_tbl bst on ot.id = bst.order_id WHERE ot.orderref='1234abc' and bst.bill_type='Fare'");
 
         $this->assertTrue(is_resource($res) );
 
         while ($row = pg_fetch_assoc($res) )
         {
+            $profileSeq = (int) $row['profile_seq'];
+            $tripTag = (int) $row['trip_tag'];
+            $tripSeq = (int) $row['trip_seq'];
             $productCode = $row["product_code"];
+            $productCat = $row['product_category'];
+            $productItem = $row['product_item'];
+
         }
+        $this->assertEquals(0, $profileSeq);
+        $this->assertEquals(0, $tripTag);
+        $this->assertEquals(0, $tripSeq);
         $this->assertEquals('ABF', $productCode);
+        $this->assertEquals('FARE', $productCat);
+        $this->assertEquals('Base fare for adult', $productItem);
 
         //Check billing_summary_tbl entry
-        $res =  $this->queryDB("SELECT trip_seq from Log.Order_Tbl ot join Log.billing_summary_tbl bst on ot.id = bst.order_id WHERE ot.orderref='1234abc' and bst.bill_type='Add-on'");
+        $res =  $this->queryDB("SELECT profile_seq, trip_tag, trip_seq, product_code, product_category, product_item from Log.Order_Tbl ot join Log.billing_summary_tbl bst on ot.id = bst.order_id WHERE ot.orderref='1234abc' and bst.bill_type='Add-on'");
 
         $this->assertTrue(is_resource($res) );
 
         while ($row = pg_fetch_assoc($res) )
         {
-            $tripSeq = (int)$row["trip_seq"];
+            $profileSeq = (int) $row['profile_seq'];
+            $tripTag = (int) $row['trip_tag'];
+            $tripSeq = (int) $row['trip_seq'];
+            $productCode = $row["product_code"];
+            $productCat = $row['product_category'];
+            $productItem = $row['product_item'];
         }
+        $this->assertEquals(1, $profileSeq);
+        $this->assertEquals(2, $tripTag);
         $this->assertEquals(2, $tripSeq);
+        $this->assertEquals('ABF', $productCode);
+        $this->assertEquals('FARE', $productCat);
+        $this->assertEquals('Base fare for adult', $productItem);
 
         //Check flight_tbl entry
-        $res =  $this->queryDB("SELECT op_airline_code from Log.Order_Tbl ot join Log.flight_tbl ft on ot.id = ft.order_id WHERE ot.orderref='1234abc'");
+        $res =  $this->queryDB("SELECT op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal from Log.Order_Tbl ot join Log.flight_tbl ft on ot.id = ft.order_id WHERE ot.orderref='1234abc'");
 
         $this->assertTrue(is_resource($res) );
 
         while ($row = pg_fetch_assoc($res) )
         {
-            $opAirlineCode = $row["op_airline_code"];
+            $opFlightNumber = $row["op_flight_number"];
+            $arrivalTz = $row["arrival_timezone"];
+            $mktAirlineCode = $row["mkt_airline_code"];
+            $deptCity = $row["departure_city"];
+            $arrCity = $row["arrival_city"];
+            $aircraftType = $row["aircraft_type"];
+            $arrivalTerminal = $row["arrival_terminal"];
+            $deptTerminal = $row["departure_terminal"];
+
         }
-        $this->assertEquals('5J', $opAirlineCode);
+        $this->assertEquals('1', $opFlightNumber);
+        $this->assertEquals('+08:00', $arrivalTz);
+        $this->assertEquals('5J', $mktAirlineCode);
+        $this->assertEquals('Ninoy Aquino International Airport', $deptCity);
+        $this->assertEquals('Mactan Cebu International Airport', $arrCity);
+        $this->assertEquals('Aircraft Boeing-737-9', $aircraftType);
+        $this->assertEquals('2', $arrivalTerminal);
+        $this->assertEquals('1', $deptTerminal);
 
     }
 }
