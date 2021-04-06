@@ -156,7 +156,7 @@
 			<xs:element name="route_features" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="route_feature" minOccurs="1" maxOccurs="unbounded">
+						<xs:element name="route_feature" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
