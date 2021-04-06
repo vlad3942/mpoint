@@ -1129,6 +1129,7 @@ class InitializeAPIValidationTest extends baseAPITest
         </client-info>
         </initialize-payment>
         </root>*/
+
         $pspID = Constants::iWIRE_CARD_PSP;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10078, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -1141,7 +1142,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $orderXml = '<orders> <line-item> <product sku="product-ticket"> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>2</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <billing-summary> <fare-detail> <fare> <type>1</type> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </fare> </fare-detail> <add-ons> <add-on> <profile-seq>1</profile-seq> <trip-tag>2</trip-tag> <trip-seq>2</trip-seq> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </add-on> </add-ons> </billing-summary> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="deviceFingerPrint">hVdMGC9x3eJsGssbGZFB9d4Q7hdP</param> </additional-data> </line-item> </orders>';
 
         $xml = $this->getInitDoc(10078, 100780, 608,null,100000,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","0", 640, $orderXml);
-        //echo $xml;exit;
+
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
