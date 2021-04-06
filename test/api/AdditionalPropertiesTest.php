@@ -43,7 +43,7 @@ class AdditionalPropertiesTest extends baseAPITest
             }
             $xml .= '</additional_data>';
         }
-        $this->assertStringContainsString('<additional_data><param><key>PAYPAL_MID_MYR</key><value>tsto1654</value></param><param><key>PAYPAL_USERNAME_MYR</key><value>test123</value></param></additional_data>', $xml);
+        $this->assertStringContainsString('<additional_data><param><key>PAYPAL_MID_MYR</key><value>tsto1654</value><scope>1</scope></param><param><key>PAYPAL_USERNAME_MYR</key><value>test123</value><scope>1</scope></param></additional_data>', $xml);
     }
 
     public function testEmptyGetAdditionalProperty() : void
