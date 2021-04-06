@@ -641,8 +641,6 @@ class General
 
         // Update Parent Transaction Route Config ID
         $obj_TxnInfo->setRouteConfigID($iSecondaryRoute);
-        $data['routeconfigid'] = $iSecondaryRoute;
-        $obj_TxnInfo = TxnInfo::produceInfo( $obj_TxnInfo->getID(), $this->getDBConn(),$obj_TxnInfo,$data);
         $this->logTransaction($obj_TxnInfo);
 
         /*******************************
@@ -1506,7 +1504,7 @@ class General
      *
      * @return string XML String
      */
-    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference = Constants::iSECOND_ALTERNATE_ROUTE): ?string
+    public function processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $preference = Constants::iSECOND_ALTERNATE_ROUTE): ?string
     {
         $xml = '';
         $code = $response->code;
@@ -1532,7 +1530,7 @@ class General
             case Constants::iPAYMENT_REJECTED_STATE :
             case 504:
                 if ($code == 504 || $obj_TxnInfo->hasEitherSoftDeclinedState($subCode) === true) {
-                    if(strtolower($is_legacy) == 'false' && strtolower($paymentRetryWithAlternateRoute) == 'true') {
+                    if(strtolower($is_legacy) == 'false') {
 
                         $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
                         $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
@@ -1541,7 +1539,7 @@ class General
                             $response = $this->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $aHTTP_CONN_INFO, $obj_Elem);
                             // Check for another preference
                             $preference++;
-                            return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $paymentRetryWithAlternateRoute, $preference);
+                            return $this->processAuthResponse($obj_TxnInfo, $obj_Processor, $aHTTP_CONN_INFO, $obj_Elem, $response, $is_legacy, $preference);
                         } else {
                             $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                         }
