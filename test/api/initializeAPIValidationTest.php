@@ -33,12 +33,12 @@ class InitializeAPIValidationTest extends baseAPITest
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'.$amount.'</amount>';
 		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+        if(!empty($orderXml))
+            $xml .= $orderXml;
 		if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
         if($fxservicetypeid > 0)
             $xml .= '<foreign-exchange-info><service-type-id>'.$fxservicetypeid.'</service-type-id></foreign-exchange-info>';
-        if(!empty($orderXml))
-            $xml .= $orderXml;
-		$xml .= '</transaction>';
+        $xml .= '</transaction>';
 		if(isset($token) === true)
         {
 		    $xml .= '<auth-token>'.$token.'</auth-token>';
