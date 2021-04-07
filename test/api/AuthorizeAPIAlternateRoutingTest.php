@@ -244,7 +244,7 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         // Check Transaction Against Session
-        $SQL_TxnPaymentRouteTbl =  $this->queryDB("SELECT Txn.* FROM log.paymentroute_tbl Pr WHERE Pr.sessionid = 1");
+        $SQL_TxnPaymentRouteTbl =  $this->queryDB("SELECT Pr.* FROM log.paymentroute_tbl Pr WHERE Pr.sessionid = 1");
         $this->assertTrue(is_resource($SQL_TxnPaymentRouteTbl));
         $res_TxnPaymentRouteTbl = pg_fetch_all($SQL_TxnPaymentRouteTbl);
 
