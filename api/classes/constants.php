@@ -1870,7 +1870,25 @@ abstract class Constants
 	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_NOT_APPLICABLE_SUB_STATE = 2016998;
 	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_UNKNOWN_ERROR_SUB_STATE = 2016999;
 
+	/**
+	 * Initialize API flight info Service class constants for First Class
+	 */
+	const FIRSTCLASS = 1;
 
+	/**
+	 * Initialize API flight info Service class constants for Standard
+	 */
+	const STANDARD = 2;
+
+	/**
+	 * Initialize API flight info Service class constants for Economy
+	 */
+	const ECONOMY = 3;
+
+	/**
+	 * Initialize API flight info Service class constants for Business
+	 */
+	const BUSINESS = 4;
 
 }
 

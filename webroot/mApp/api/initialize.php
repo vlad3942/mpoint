@@ -507,7 +507,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 										$flight =  $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
                                         $serviceClass = strtoupper(preg_replace('/\s+/','',$flight->{'service-level'}));
-										$data['flights']['service_level'] = (string) constant("FlightInfo::$serviceClass");
+										$data['flights']['service_level'] = (string) constant("Constants::$serviceClass");
 										$data['flights']['service_class'] = (string) $flight->{'booking-class'};
                                         $data['flights']['arrival_date'] = (string) $flight->{'arrival-time'};
                                         $data['flights']['departure_date'] = (string) $flight->{'departure-time'};
