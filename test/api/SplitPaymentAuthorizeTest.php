@@ -217,6 +217,9 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 		$s = 0;
 		$this->assertEquals(Constants::iTRANSACTION_CREATED, $aStates[$s++]);
 		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+
+		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
     }
 
     public function testSuccessfulDCCAuthorizationVoucherFirst()
@@ -293,6 +296,9 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $s = 0;
         $this->assertEquals(Constants::iTRANSACTION_CREATED, $aStates[$s++]);
         $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
     }
 
 
@@ -359,6 +365,9 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
 		$s = 0;
 		$this->assertEquals(Constants::iTRANSACTION_CREATED, $aStates[$s++]);
+
+		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
     }
 
     public function testSuccessfulDCCAuthorizationCardFirst()
@@ -436,6 +445,9 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $s = 0;
         $this->assertEquals(Constants::iTRANSACTION_CREATED, $aStates[$s++]);
+
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
     }
 
     public function testVoucherRedemptionDeniedByIssuer()
