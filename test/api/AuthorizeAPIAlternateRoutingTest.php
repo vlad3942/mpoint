@@ -247,10 +247,14 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         print_r($iStatus);
         echo "\n}\n";
 
-        echo "{sReplyBody \n\n";
-        print_r($sReplyBody);
-        echo "\n}\n";
+        // Check Transaction Against Session
+        $SQL_TxnPaymentRouteTbl =  $this->queryDB("SELECT Txn.* FROM log.paymentroute_tbl Pr WHERE Pr.sessionid = 1");
+        $this->assertTrue(is_resource($SQL_TxnPaymentRouteTbl));
+        $res_TxnPaymentRouteTbl = pg_fetch_all($SQL_TxnPaymentRouteTbl);
 
+        echo "{res_TxnPaymentRouteTbl \n\n";
+        print_r($res_TxnPaymentRouteTbl);
+        echo "\n}\n";
 
         $this->assertEquals(303, $iStatus);
         $this->assertStringContainsString('<status code="2005">3d verification required</status>', $sReplyBody);
