@@ -375,13 +375,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 {
                                     $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
                                 }
-
                             }
 						    else
 						    {
 								$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 if ($iValResult != 10) {
                                     $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                }
+                                elseif($iSessionType > 1)
+                                {
+                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 }
                             }
 
