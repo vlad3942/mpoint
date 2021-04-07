@@ -243,6 +243,10 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
+        echo "{sReplyBody \n\n";
+        print_r($sReplyBody);
+        echo "\n}\n";
+
         $this->assertEquals(303, $iStatus);
         $this->assertStringContainsString('<status code="2005">3d verification required</status>', $sReplyBody);
 
