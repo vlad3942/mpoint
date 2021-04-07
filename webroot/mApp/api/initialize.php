@@ -478,9 +478,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             }
                                         }
 
-                                        if (count($billingSummary->{'fare-detail'}->fare) > 0)
+                                        if (count($billingSummary->{'add-ons'}->{'add-on'}) > 0)
                                         {
-                                            for ($k=0; $k<count($billingSummary->{'fare-detail'}->fare); $k++)
+                                            for ($k=0; $k<count($billingSummary->{'add-ons'}->{'add-on'}); $k++)
                                             {
                                                 $addOn = $billingSummary->{'add-ons'}->{'add-on'}[$k];
                                                 $addOnArr = array();
