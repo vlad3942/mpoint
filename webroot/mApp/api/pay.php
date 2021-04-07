@@ -353,6 +353,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else{
 								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
+								$obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
 							}
 						}
 						else
@@ -370,6 +371,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 {
                                 	$aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
                                 }
+                                else
+                                {
+                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
+                                }
+
                             }
 						    else
 						    {

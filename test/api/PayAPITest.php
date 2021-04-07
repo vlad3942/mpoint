@@ -135,6 +135,9 @@ class PayAPITest extends baseAPITest
 		    $this->assertEquals(1, pg_num_rows($res));
         }
 
+		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=1");
+        $this->assertTrue(is_resource($res) );
+
 		return $sReplyBody;
 	}
 
@@ -171,7 +174,8 @@ class PayAPITest extends baseAPITest
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310"  type="'.$typeId.'">', $sReplyBody);
 
-		
+		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=1");
+        $this->assertTrue(is_resource($res) );
 
 	}
 

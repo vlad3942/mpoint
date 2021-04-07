@@ -44,6 +44,8 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
         $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid=1001012 and performedopt = 2000");
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=1");
+        $this->assertIsResource($res);
     }
 
     public function testSuccessfulSplitAuthorize()
@@ -83,6 +85,8 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
         $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid=1001012 and performedopt = 2000");
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
     }
 
     public function testInvalidSplitAuthorizeAmount()
