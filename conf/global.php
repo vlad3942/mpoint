@@ -1193,14 +1193,11 @@ $aHTTP_CONN_INFO["paymaya_acq"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"]
 $aHTTP_CONN_INFO["paymaya_acq"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["paymaya_acq"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["paymaya_acq"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["initialize"] = "/mpoint/paymaya-acq/initialize";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["auth"] = "/mpoint/paymaya-acq/authorize-payment";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["capture"] = "/mpoint/paymaya-acq/capture";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["refund"] = "/mpoint/paymaya-acq/void";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["cancel"] = "/mpoint/paymaya-acq/void";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["void"] = "/mpoint/paymaya-acq/void";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["callback"] = "/mpoint/paymaya-acq/callback";
-$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["status"] = "/mpoint/paymaya-acq/status";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["initialize"] = "/mpsp/paymaya-acq/initialize";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["auth"] = "/mpsp/paymaya-acq/authorize-payment";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["refund"] = "/mpsp/paymaya-acq/refund";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["status"] = "/mpsp/paymaya-acq/status";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["void"] = "/mpsp/paymaya-acq/refund";
 
 /**
  * GoMobile Connection Info.
