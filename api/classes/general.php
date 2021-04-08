@@ -558,6 +558,7 @@ class General
              $data["externalref"] = '';
              $data["converted-amount"] = $newAmount;
              $data["conversion-rate"] = 1;
+             $txnInfo->setFXServiceTypeID(0);
              $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
              if (count($additionalTxnData) > 0) {
                  $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
