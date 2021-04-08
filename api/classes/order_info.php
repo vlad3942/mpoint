@@ -351,18 +351,68 @@ class OrderInfo
         $xml .= '<image-url>'. $this->getProductImageURL() .'</image-url>';
         if(count($this->getFlightConfigs()) > 0 ) {
             $xml .= '<airline-data>';
-            foreach ($this->getFlightConfigs() as $flight_Obj) {
-                if (($flight_Obj instanceof FlightInfo) === TRUE) {
-                    $xml .= $flight_Obj->toXML();
+            if ($_SESSION['oldOrderXML'] === true) {
+                foreach ($this->getFlightConfigs() as $flight_Obj) {
+                    if (($flight_Obj instanceof FlightInfo) === TRUE) {
+                        $xml .= $flight_Obj->toXML($_SESSION['oldOrderXML']);
+                    }
+                }
+                foreach ($this->getPassengerConfigs() as $passenger_Obj) {
+                    if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
+
+                        $xml .= $passenger_Obj->toXML($_SESSION['oldOrderXML']);
+
+                    }
+                }
+            } else {
+                if (count($this->getPassengerConfigs()) > 0) {
+                    $xml .= '<profiles>';
+                    foreach ($this->getPassengerConfigs() as $passenger_Obj) {
+                        if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
+
+                            $xml .= $passenger_Obj->toXML();
+
+                        }
+                    }
+                    $xml .= '</profiles>';
+                }
+
+                if (count($this->getBillingSummaryFareConfigs()) > 0 || count($this->getBillingSummaryAddonConfigs()) > 0) {
+                    $xml .= '<billing-summary>';
+                    if (count($this->getBillingSummaryFareConfigs()) > 0) {
+                        $xml .= '<fare-detail>';
+                        foreach ($this->getBillingSummaryFareConfigs() as $billSummaryFare_Obj) {
+                            if (($billSummaryFare_Obj instanceof getBillingSummaryFareConfigs) === TRUE) {
+                                $xml .= $billSummaryFare_Obj->toXML();
+                            }
+                        }
+                        $xml .= '</fare-detail>';
+                    }
+
+                    if (count($this->getBillingSummaryAddonConfigs()) > 0) {
+                        $xml .= '<add-ons>';
+                        foreach ($this->getBillingSummaryAddonConfigs() as $billSummaryAddon_Obj) {
+                            if (($billSummaryAddon_Obj instanceof getBillingSummaryAddonConfigs) === TRUE) {
+                                $xml .= $billSummaryAddon_Obj->toXML();
+                            }
+                        }
+                        $xml .= '</add-ons>';
+                    }
+
+                    $xml .= '</billing-summary>';
+                }
+
+                if (count($this->getFlightConfigs()) > 0) {
+                    $xml .= '<trips>';
+                    foreach ($this->getFlightConfigs() as $flight_Obj) {
+                        if (($flight_Obj instanceof FlightInfo) === TRUE) {
+                            $xml .= $flight_Obj->toXML();
+                        }
+                    }
+                    $xml .= '</trips>';
                 }
             }
-            foreach ($this->getPassengerConfigs() as $passenger_Obj) {
-                if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
 
-                    $xml .= $passenger_Obj->toXML();
-
-                }
-            }
             $xml .= '</airline-data>';
         }
         $xml .= '</product>';
