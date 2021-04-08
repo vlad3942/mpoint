@@ -369,6 +369,6 @@ class PayAPIValidationTest extends baseAPITest
         {
             $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(11, $fxservicetypeid);
+        $this->assertEquals(12, $fxservicetypeid);
     }
 }
