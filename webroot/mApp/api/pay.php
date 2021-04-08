@@ -271,7 +271,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						if ($fxServiceTypeId)
                         {
-                            $data['fxservicetypeid'] = $fxServiceTypeId;
+                            $obj_TxnInfo->setFXServiceTypeID($fxServiceTypeId);
                         }
 
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);

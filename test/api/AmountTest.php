@@ -28,7 +28,7 @@ class AmountTest extends baseAPITest
 
     public function testWrongCurrency()
     {
-        $additional_data = new Amount(100, 40,1);
+        $additional_data = new Amount(100, -1,1);
         $json_string = json_encode($additional_data);
         $this->assertEquals('[]', $json_string);
     }
