@@ -669,11 +669,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$sql .= ",approval_action_code = '".$approvalCode."'";
 				}
 
-                if($code == Constants::iPAYMENT_REJECTED_STATE && $this->getTxnInfo()->hasEitherSoftDeclinedState($subCode) === true){
-                    // Add Log state for Rejected
-                    $this->newMessage($this->getTxnInfo()->getID(), $subCode, $obj_XML->asXML());
-                }
-
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
