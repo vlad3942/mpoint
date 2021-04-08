@@ -658,7 +658,7 @@ try
                                              {
                                                  $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                              }
-                                             elseif($iSessionType > 1)
+                                             elseif($iSessionType > 1 && $iSaleAmount <= 0)
                                             {
                                                 $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }

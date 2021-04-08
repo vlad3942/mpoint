@@ -640,7 +640,10 @@ class TxnInfo
 	 */
 	public function getFXServiceTypeID() : ?int { return $this->_fxServiceTypeID; }
 
-
+	public function setFXServiceTypeID(int $fxTypeId) : void
+	{
+		$this->_fxServiceTypeID = $fxTypeId;
+	}
 	/**
 	 * Returns the Configuration for the Client who owns the Transaction.
 	 *
@@ -2311,7 +2314,7 @@ class TxnInfo
 
     function updateSessionType(RDB $obj_DB,$amount)
 	{
-		if ($amount <= $this->getPaymentSession()->getAmount())
+		if ($amount < $this->getPaymentSession()->getAmount())
         {
             $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->getSessionId() . " and sessiontypeid = 1";
             $obj_DB->query($sql);
