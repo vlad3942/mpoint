@@ -556,6 +556,8 @@ class General
              $data["psp-id"] = $pspid;
              $data["captured-amount"] = '';
              $data["externalref"] = '';
+             $data["currency-config"] = $txnInfo->getInitializedCurrencyConfig();
+             $data["converted-currency-config"] = $txnInfo->getInitializedCurrencyConfig();
              $data["converted-amount"] = $newAmount;
              $data["conversion-rate"] = 1;
              $txnInfo->setFXServiceTypeID(0);
