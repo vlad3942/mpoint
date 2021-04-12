@@ -194,10 +194,9 @@ abstract class mPointSettlement
 
             if($isValidTransaction === true) {
                 $obj_UAProfile = NULL;
-                // set session variable
-                $_SESSION['oldOrderXML'] = true;
+                // set global variable $oldOrderXml to true
+                $GLOBALS['oldOrderXml'] = true;
                 $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
-                unset($_SESSION['oldOrderXML']);
                 if ($captureAmount === -1) {
                     $captureAmount = $obj_TxnInfo->getAmount();
                 }

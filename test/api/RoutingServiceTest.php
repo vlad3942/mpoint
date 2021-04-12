@@ -331,6 +331,63 @@ class RoutingServiceTest extends baseAPITest
         }
     }
 
+    public function testFlightInfoToXML()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 18, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, 1,  18, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+        $this->queryDB("INSERT INTO log.order_tbl (id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity, created, modified, enabled, orderref, fees) VALUES (24, 1001001, 640, 125056, 'product-ticket', 'ONE WAY', 'MNL-CEB', '', 0, 0, 1, '2021-04-09 10:25:06.395114', '2021-04-09 10:25:06.395114', true, 'FIU9YAN', 0)");
+        $this->queryDB("INSERT INTO log.flight_tbl (id, service_class, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, created, modified, mkt_flight_number, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone, op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal) VALUES (22, 'Z', 'MNL', 'CEB', '5J', 24, '2021-03-07 21:05:00.000000', '2021-03-07 19:35:00.000000', '2021-04-09 10:25:06.513775', '2021-04-09 10:25:06.513775', '563', '1', '1', '3', 640, 640, '+08:00', '1', '+08:00', '5J', 'Ninoy Aquino International Airport', 'Mactan Cebu International Airport', 'Aircraft Boeing-737-9', '2', '1')");
+        $this->queryDB("INSERT INTO log.additional_data_tbl (id, name, value, type, created, modified, externalid) VALUES (10, 'fare_basis', 'we543s3', 'Flight', '2021-04-06 09:18:21.094984', '2021-04-06 09:18:21.094984', 22)");
+
+        $flightObj = FlightInfo::produceConfigurations($this->_OBJ_DB, 24);
+        // new xml
+        $GLOBALS['oldOrderXml'] = false;
+        $xml = $flightObj[0]->toXML();
+        $this->assertEquals('<trip tag="1" seq="1"><origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin><destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination><departure-time>2021-03-07T19:35:00Z</departure-time><arrival-time>2021-03-07T21:05:00Z</arrival-time><booking-class>Z</booking-class><service-level id="3">Economy</service-level><transportation code="5J" number="1"><carriers><carrier code="5J" type-id="Aircraft Boeing-737-9"><number>563</number></carrier></carriers></transportation><additional-data><param name="fare_basis">we543s3</param></additional-data></trip>', $xml);
+
+        //old xml
+        $GLOBALS['oldOrderXml'] = true;
+        $xml = $flightObj[0]->toXML();
+        $this->assertEquals('<flight-detail tag="1" trip-count="1" service-level="3"><service-class>Z</service-class><flight-number>563</flight-number><departure-airport>MNL</departure-airport><arrival-airport>CEB</arrival-airport><airline-code>5J</airline-code><departure-date>2021-03-07 19:35:00</departure-date><arrival-date>2021-03-07 21:05:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone>+08:00</time-zone><additional-data><param name="fare_basis">we543s3</param></additional-data></flight-detail>', $xml);
+
+    }
+
+    public function testPassengerInfoToXML()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 18, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, 1,  18, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+        $this->queryDB("INSERT INTO log.order_tbl (id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity, created, modified, enabled, orderref, fees) VALUES (24, 1001001, 640, 125056, 'product-ticket', 'ONE WAY', 'MNL-CEB', '', 0, 0, 1, '2021-04-09 10:25:06.395114', '2021-04-09 10:25:06.395114', true, 'FIU9YAN', 0)");
+        $this->queryDB("INSERT INTO log.passenger_tbl (id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount, seq) VALUES (24, 'dan', 'dan', 'ADT', 24, '2021-04-09 13:06:23.420245', '2021-04-09 13:06:23.420245', 'Mr', 'dan@dan.com', '9187231231', '640', 0, 1)");
+        $this->queryDB("INSERT INTO log.additional_data_tbl (id, name, value, type, created, modified, externalid) VALUES (109, 'loyality_id', '345rtyu', 'Passenger', '2021-04-09 13:06:23.406019', '2021-04-09 13:06:23.406019', 24);");
+
+        $passengerObj = PassengerInfo::produceConfigurations($this->_OBJ_DB, 24);
+
+        // new xml
+        $GLOBALS['oldOrderXml'] = false;
+        $xml = $passengerObj[0]->toXML();
+        $this->assertEquals('<profile><seq>1</seq><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></profile>', $xml);
+
+        //old xml
+        $GLOBALS['oldOrderXml'] = true;
+        $xml = $passengerObj[0]->toXML();
+        $this->assertEquals('<passenger-detail><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></passenger-detail>', $xml);
+
+    }
+
     public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
