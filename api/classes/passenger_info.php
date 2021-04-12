@@ -204,7 +204,7 @@ class PassengerInfo {
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
 		if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE externalid=" . $RS ["ID"];
+			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Passenger' and externalid=" . $RS ["ID"];
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			
@@ -244,9 +244,10 @@ class PassengerInfo {
         return $Axml;
     }
 	
-	public function toXML($oldOrderXml = false) {
+	public function toXML()
+    {
 		$xml = '';
-		if ($oldOrderXml === true) {
+		if ($GLOBALS['oldOrderXml'] === true) {
 		    // return old AID format
             $xml = $this->_toOldXML();
         } else {

@@ -1,4 +1,7 @@
 <?php
+use api\classes\billingsummary\info\AddonInfo as BillingSummaryAddonInfo;
+use api\classes\billingsummary\info\FareInfo as BillingSummaryFareInfo;
+
 /**
  * The Info package contains various data classes holding information such as:
  * 	- Order specific details as received by the cart that is send when a transation is initialized.
@@ -127,13 +130,43 @@ class OrderInfo
      * @var long
      */
     private $_iFees;
-	/**
-	 * Default Constructor
-	 *
+    /**
+     * The Billing Summary Fare Configuration of the Order for a Customer
+     *
+     * @var array
+     */
+    private  $_BillingSummaryFareConfigs;
+    /**
+     * The Billing Summary Add on Configuration of the Order for a Customer
+     *
+     * @var array
+     */
+    private  $_BillingSummaryAddonConfigs;
 
-	 *
-	 */
-	public function __construct($id, $orderref, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata,$fees)
+    /**
+     * Default Constructor
+     *
+     * @param $id
+     * @param $orderref
+     * @param $tid
+     * @param $cid
+     * @param $amt
+     * @param $pnt
+     * @param $rwd
+     * @param $qty
+     * @param $productsku
+     * @param $productname
+     * @param $productdesc
+     * @param $productimgurl
+     * @param $flightd
+     * @param $passengerd
+     * @param $addressd
+     * @param $additionaldata
+     * @param $fees
+     * @param $billingSummaryFared
+     * @param $billingSummaryAddond
+     */
+	public function __construct($id, $orderref, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata,$fees, $billingSummaryFared, $billingSummaryAddond)
 	{		
 		$this->_iID =  (integer) $id;
 		$this->_sOrderRef =  (string) $orderref;
@@ -152,6 +185,9 @@ class OrderInfo
 		$this->_AddressConfigs = (array) $addressd;
         $this->_aAdditionalData = $additionaldata;
         $this->_iFees = (float) $fees;
+        $this->_BillingSummaryFareConfigs =  (array) $billingSummaryFared;
+        $this->_BillingSummaryAddonConfigs =  (array) $billingSummaryAddond;
+
 	}
 
 	/**
@@ -258,6 +294,18 @@ class OrderInfo
     public function getAdditionalData() {
         return $this->_aAdditionalData;
     }
+    /**
+     * Returns the  Billing Summary Fare Configuration of the Order for a Customer
+     *
+     * @return 	array
+     */
+    public function getBillingSummaryFareConfigs() { return $this->_BillingSummaryFareConfigs; }
+    /**
+     * Returns the Billing Summary Addon Configuration of the Order a Customer
+     *
+     * @return 	array
+     */
+    public function getBillingSummaryAddonConfigs() { return $this->_BillingSummaryAddonConfigs; }
 		
 	public static function produceConfig(RDB $oDB, $id, $amount)
 	{
@@ -277,6 +325,8 @@ class OrderInfo
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
 			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
+            $billingSummaryFared = BillingSummaryFareInfo::produceConfigurations($oDB, $id);
+            $billingSummaryAddond = BillingSummaryAddonInfo::produceConfigurations($oDB, $id);
 			$orderAmount = $RS['AMOUNT'];
 			if($amount > -1)
             {
@@ -284,7 +334,7 @@ class OrderInfo
             }
 
 			return new OrderInfo($RS["ID"], $RS['ORDERREF'],$RS["TXNID"], $RS["COUNTRYID"], $orderAmount, $RS["POINTS"],
-								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA, $RS["FEES"]);
+								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA, $RS["FEES"], $billingSummaryFared, $billingSummaryAddond);
 		}
 		else { return null; }
 	}
@@ -351,16 +401,16 @@ class OrderInfo
         $xml .= '<image-url>'. $this->getProductImageURL() .'</image-url>';
         if(count($this->getFlightConfigs()) > 0 ) {
             $xml .= '<airline-data>';
-            if ($_SESSION['oldOrderXML'] === true) {
+            if ($GLOBALS['oldOrderXml'] === true) {
                 foreach ($this->getFlightConfigs() as $flight_Obj) {
                     if (($flight_Obj instanceof FlightInfo) === TRUE) {
-                        $xml .= $flight_Obj->toXML($_SESSION['oldOrderXML']);
+                        $xml .= $flight_Obj->toXML();
                     }
                 }
                 foreach ($this->getPassengerConfigs() as $passenger_Obj) {
                     if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
 
-                        $xml .= $passenger_Obj->toXML($_SESSION['oldOrderXML']);
+                        $xml .= $passenger_Obj->toXML();
 
                     }
                 }
@@ -382,7 +432,7 @@ class OrderInfo
                     if (count($this->getBillingSummaryFareConfigs()) > 0) {
                         $xml .= '<fare-detail>';
                         foreach ($this->getBillingSummaryFareConfigs() as $billSummaryFare_Obj) {
-                            if (($billSummaryFare_Obj instanceof getBillingSummaryFareConfigs) === TRUE) {
+                            if (($billSummaryFare_Obj instanceof BillingSummaryFareInfo) === TRUE) {
                                 $xml .= $billSummaryFare_Obj->toXML();
                             }
                         }
@@ -392,7 +442,7 @@ class OrderInfo
                     if (count($this->getBillingSummaryAddonConfigs()) > 0) {
                         $xml .= '<add-ons>';
                         foreach ($this->getBillingSummaryAddonConfigs() as $billSummaryAddon_Obj) {
-                            if (($billSummaryAddon_Obj instanceof getBillingSummaryAddonConfigs) === TRUE) {
+                            if (($billSummaryAddon_Obj instanceof BillingSummaryAddonInfo) === TRUE) {
                                 $xml .= $billSummaryAddon_Obj->toXML();
                             }
                         }
