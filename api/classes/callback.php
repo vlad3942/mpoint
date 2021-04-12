@@ -1128,10 +1128,10 @@ abstract class Callback extends EndUserAccount
 					$transactionData['status']= $objTransaction->getLatestPaymentState($this->getDBConn());
 					$transactionData['hmac']= $objTransaction->getHMAC();
 					$transactionData['product-type']= $objTransaction->getProductType();
-					$transactionData['amount']= $objTransaction->getInitializedAmount();
+					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] =  $objTransaction->getAmount();
+					$transactionData['sale_amount'] =  $objTransaction->getInitializedAmount();
 					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
 					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
