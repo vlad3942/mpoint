@@ -1131,7 +1131,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] =  $objTransaction->getAmount();
+					$transactionData['sale_amount'] =  $objTransaction->getInitializedAmount();
 					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
 					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
