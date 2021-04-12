@@ -197,6 +197,7 @@ abstract class mPointSettlement
                 // set global variable $oldOrderXml to true
                 $GLOBALS['oldOrderXml'] = true;
                 $this->_sTransactionXML .= $obj_TxnInfo->toXML($obj_UAProfile, $captureAmount);
+                $GLOBALS['oldOrderXml'] = false;
                 if ($captureAmount === -1) {
                     $captureAmount = $obj_TxnInfo->getAmount();
                 }
