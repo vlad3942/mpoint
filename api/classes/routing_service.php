@@ -345,7 +345,7 @@ class RoutingService extends General
                                 $xml .= '<arrival_airport>';
                                 $xml .= '<iata>' . $flight_Obj->getArrivalAirport () . '</iata>';
                                 $xml .= '</arrival_airport>';
-                                $xml .= '<time_zone>' . $flight_Obj->getTimeZone () . '</time_zone>';
+                                $xml .= '<time_zone>' . $flight_Obj->getDeparturetTimeZone () . '</time_zone>';
                                 $xml .= '</flight_detail>';
                             }
                         }
