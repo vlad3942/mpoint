@@ -509,7 +509,7 @@ abstract class Callback extends EndUserAccount
 			$sBody .= "&amount=" . urlencode($this->_obj_TxnInfo->getConvertedAmount());
 			$sBody .= "&currency=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
 			$sBody .= "&decimals=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals());
-			$sBody .= "&sale_amount=" . $amt;
+			$sBody .= "&sale_amount=" . $this->_obj_TxnInfo->getInitializedAmount();
 			$sBody .= "&sale_currency=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getCode());
 			$sBody .= "&sale_decimals=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals());
 			$sBody .= "&fee=" . intval($fee);
