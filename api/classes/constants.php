@@ -1886,9 +1886,15 @@ abstract class Constants
 	const ECONOMY = 3;
 
 	/**
+	 * Initialize API flight info Service class constants for Premier
+	 */
+	const Premier = 4;
+
+	/**
 	 * Initialize API flight info Service class constants for Business
 	 */
-	const BUSINESS = 4;
+	const BUSINESS = 5;
+
 
 }
 
