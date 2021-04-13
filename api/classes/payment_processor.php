@@ -40,11 +40,14 @@ class PaymentProcessor
         $sPSPClassName = '';
         $this->_setConnInfo($aConnInfo, $iPSPID);
 
-        if (strtolower($is_legacy) == 'false' && !isset(OnlinePaymentCardPSPMapping[$cardId])) {
-            $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI->getRouteConfigID());
-        } else {
-            $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
-        }
+        $this->_objPSPConfig = General::producePSPConfigObject($oDB, $oTI, $cardId, $iPSPID );
+
+        // if (strtolower($is_legacy) == 'false' && !isset(OnlinePaymentCardPSPMapping[$cardId])) {
+        //     $this->_objPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID, $oTI->getRouteConfigID());
+        // } else {
+        //     $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
+        // }
+
         if($this->_objPSPConfig !== NULL)
         {
             $sPSPClassName = $this->_objPSPConfig->getName();
@@ -53,7 +56,6 @@ class PaymentProcessor
         {
             $sPSPClassName = $this->aConnInfo['ClassName'];
         }
-
         try {
             if (empty($this->aConnInfo) === true) {
                 $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
