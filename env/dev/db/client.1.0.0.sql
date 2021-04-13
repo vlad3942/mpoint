@@ -571,6 +571,7 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd)
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100770, 73, 'paymaya acq');
 INSERT INTO Client.countrycurrency_tbl(clientid, countryid, currencyid) VALUES (10077,640,608);
 
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.PHP', 'EFS100001149', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 73), 'merchant', 2);
 --Paymaya Acq CRS scripts
 
 
