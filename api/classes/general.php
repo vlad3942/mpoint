@@ -635,8 +635,7 @@ class General
         global $_OBJ_TXT;
         $xml = "" ;
 
-        // $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo->getRouteConfigID());
-        $obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $obj_TxnInfo, null, -1);
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
 	    $data = array();
@@ -1717,7 +1716,6 @@ class General
         }
         else {
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
-            //trigger_error("PSP Configuration not found using", E_USER_WARNING);
         }
         return $oPSPConfig;
     }

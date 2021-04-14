@@ -584,7 +584,7 @@ try
                                         }else{
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . " and @state-id=1 and @walletid = '']");
                                         }
-										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected asd payment card is not available"; } // Card disabled
+										if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
 
 										if($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false && $obj_CardValidator->valCardNumber() !== 720)
 										{
