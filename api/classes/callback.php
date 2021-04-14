@@ -596,7 +596,8 @@ abstract class Callback extends EndUserAccount
 				$sBody .= "&billing_postal_code=" . urlencode($objb_BillingAddr['zip']);
 				$sBody .= "&billing_email=" . urlencode($objb_BillingAddr['email']);
 				$sBody .= "&billing_mobile=" . urlencode($objb_BillingAddr['mobile']);
-				$sBody .= "&billing_idc=" . urlencode($objb_BillingAddr['mobile_country_id']);
+				$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+				$sBody .= "&billing_idc=" . urlencode($obj_MobileCountryConfig->getCountryCode());
 			}
 			$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
 			if ($fxservicetypeid != 0) {
@@ -1206,7 +1207,8 @@ abstract class Callback extends EndUserAccount
 						$transactionData['billing_postal_code'] =  urlencode($objb_BillingAddr['zip']);
 						$transactionData['billing_email'] =  urlencode($objb_BillingAddr['email']);
 						$transactionData['billing_mobile'] =  urlencode($objb_BillingAddr['mobile']);
-						$transactionData['billing_idc'] =  urlencode($objb_BillingAddr['mobile_country_id']);
+						$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+						$transactionData['billing_idc'] =  urlencode($obj_MobileCountryConfig->getCountryCode());
 					}
 					$aTxnAdditionalData = $objTransaction->getAdditionalData();
 					if ($aTxnAdditionalData !== NULL) {
