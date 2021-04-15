@@ -198,7 +198,7 @@ class PassengerInfo {
 
 
 
-    public static function produceConfig(RDB $oDB, $id) {
+    public static function produceConfig(RDB $oDB, $id) : ?PassengerInfo {
 		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id,amount, seq
 					FROM log" . sSCHEMA_POSTFIX . ".passenger_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
@@ -214,6 +214,7 @@ class PassengerInfo {
 				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"], $RS["SEQ"]);
 			}
 		} else {
+            trigger_error('Unable to create Passenger Info object', E_USER_NOTICE);
 			return null;
 		}
 	}

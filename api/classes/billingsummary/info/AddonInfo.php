@@ -23,7 +23,7 @@ class AddonInfo extends BillingSummaryAbstract
         parent::__construct($id, $ref, $type, $typeId, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem);
     }
 
-    public static function produceConfig(\RDB $oDB, $id) {
+    public static function produceConfig(\RDB $oDB, $id) : ?AddonInfo {
         $sql = "SELECT id, journey_ref, bill_type, type_id, description, amount, currency, created, modified, profile_seq, trip_tag,  trip_seq, product_code, product_category, product_item
 					FROM log" . sSCHEMA_POSTFIX . ".billing_summary_tbl WHERE id=" . $id;
         // echo $sql ."\n";
@@ -31,6 +31,7 @@ class AddonInfo extends BillingSummaryAbstract
         if (is_array ( $RS ) === true && count ( $RS ) > 0) {
             return new AddonInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["TYPE_ID"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
         } else {
+            trigger_error('Unable to create Add on info object', E_USER_NOTICE);
             return null;
         }
     }
@@ -47,7 +48,7 @@ class AddonInfo extends BillingSummaryAbstract
         return $aConfigurations;
     }
 
-    public function toXML()
+    public function toXML() : string
     {
         $xml = '';
         $xml .= '<add-on>';

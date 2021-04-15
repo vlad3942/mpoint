@@ -408,7 +408,7 @@ class FlightInfo {
         return $dt->format('Y-m-d\TH:i:s\Z');
     }
 
-	public static function produceConfig(RDB $oDB, $id) {
+	public static function produceConfig(RDB $oDB, $id) : ?FlightInfo {
 		$sql = "SELECT id, service_class, mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone, op_flight_number, arrival_timezone, mkt_airline_code,
                 departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal
 					FROM log" . sSCHEMA_POSTFIX . ".flight_tbl WHERE id=" . $id;
@@ -424,6 +424,7 @@ class FlightInfo {
 				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["MKT_FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["OP_AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"],null, $RS ["DEPARTURE_TIMEZONE"], $RS["OP_FLIGHT_NUMBER"], $RS["ARRIVAL_TIMEZONE"], $RS["MKT_AIRLINE_CODE"], $RS["DEPARTURE_CITY"], $RS["ARRIVAL_CITY"], $RS["AIRCRAFT_TYPE"], $RS["ARRIVAL_TERMINAL"], $RS["DEPARTURE_TERMINAL"] );
 			}
 		} else {
+		    trigger_error('Unable to create Flight Info object', E_USER_NOTICE);
 			return null;
 		}
 	}
@@ -451,7 +452,7 @@ class FlightInfo {
         $Axml .= '</param>';
         return $Axml;
     }
-    public function toXML()
+    public function toXML() : string
     {
         $xml = '';
         if ($GLOBALS['oldOrderXml'] === true) {
