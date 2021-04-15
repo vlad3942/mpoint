@@ -14,6 +14,11 @@ class MobilePayCaptureAPITest extends CaptureAPITest
         parent::testSuccessfulCapture(Constants::iMOBILEPAY_PSP);
     }
 
+    public function testSuccessfulCaptureWithAID()
+    {
+        parent::testSuccessfulCaptureWithAID(Constants::iMOBILEPAY_PSP);
+    }
+
     public function testSuccessfulCaptureInitiated()
     {
         $this->markTestIncomplete();
