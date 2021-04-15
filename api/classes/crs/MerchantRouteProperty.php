@@ -41,6 +41,12 @@ class MerchantRouteProperty
     private ?string $_sValue;
 
     /**
+     * Holds scope of the merchant property
+     * @var integer
+     */
+    private ?int $_iScope;
+
+    /**
      * Default Constructor
      *
      * @param 	RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
@@ -48,14 +54,16 @@ class MerchantRouteProperty
      * @param 	integer $routeConfigId	Holds unique id of the route configuration
      * @param   string $key             Hold additional property key
      * @param   string $value           Hold additional property value
+     * @param   string $scope           Hold additional property scope
      */
-	public function __construct(RDB $_OBJ_DB, int $clientId, int $routeConfigId , ?string $key = null, ?string $value = null)
+	public function __construct(RDB $_OBJ_DB, int $clientId, int $routeConfigId , ?string $key = null, ?string $value = null, int $scope = Constants::iPrivateProperty)
 	{
         $this->_objDB = $_OBJ_DB;
         $this->_iClientId = $clientId;
         $this->_iRouteConfigId = $routeConfigId;
         $this->_sKey = $key;
         $this->_sValue = html_entity_decode($value);
+        $this->_iScope = $scope;
 	}
 
     /**
@@ -89,8 +97,8 @@ class MerchantRouteProperty
     {
         try {
             $sql = "INSERT INTO Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
-                    (key, value, externalid, type)
-                    VALUES ('" . $this->_sKey . "', '" . $this->_sValue . "', '" . $this->_iRouteConfigId . "', 'merchant')";
+                    (key, value, externalid, type, scope)
+                    VALUES ('" . $this->_sKey . "', '" . $this->_sValue . "', '" . $this->_iRouteConfigId . "', 'merchant', $this->_iScope)";
 
             $res = $this->_objDB->query($sql);
             if (is_resource($res) === false) {
@@ -115,7 +123,8 @@ class MerchantRouteProperty
     {
         try {
             $sql = "UPDATE Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_Tbl
-                SET value = '" . $this->_sValue . "'
+                SET value = '" . $this->_sValue . "',
+                    scope = $this->_iScope
                 WHERE externalid = $this->_iRouteConfigId AND key = '".$this->_sKey."'";
 
             $res = $this->_objDB->query($sql);
@@ -165,9 +174,10 @@ class MerchantRouteProperty
         $aExistingAdditionalProperty = MerchantRouteProperty::getAdditionalPropertyByRouteConfigId();
         if(empty($aAdditionalProperty) === false){
             foreach ($aAdditionalProperty as $key => $value){
-                if(strlen($key) > 0 && strlen($value) > 0) {
+                if(strlen($key) > 0 && empty($value) === false) {
                     $this->_sKey = $key;
-                    $this->_sValue = $value;
+                    $this->_sValue = $value['value'];
+                    $this->_iScope = $value['scope'];
                     if(array_key_exists($key,$aExistingAdditionalProperty)) {
                         $states = $this->updateMerchantAdditionalProperty();
                     }else{

@@ -506,7 +506,7 @@ abstract class Callback extends EndUserAccount
 			$sBody .= "&amount=" . urlencode($this->_obj_TxnInfo->getConvertedAmount());
 			$sBody .= "&currency=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
 			$sBody .= "&decimals=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals());
-			$sBody .= "&sale_amount=" . $amt;
+			$sBody .= "&sale_amount=" . $this->_obj_TxnInfo->getInitializedAmount();
 			$sBody .= "&sale_currency=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getCode());
 			$sBody .= "&sale_decimals=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals());
 			$sBody .= "&fee=" . intval($fee);
@@ -596,7 +596,8 @@ abstract class Callback extends EndUserAccount
 				$sBody .= "&billing_postal_code=" . urlencode($objb_BillingAddr['zip']);
 				$sBody .= "&billing_email=" . urlencode($objb_BillingAddr['email']);
 				$sBody .= "&billing_mobile=" . urlencode($objb_BillingAddr['mobile']);
-				$sBody .= "&billing_idc=" . urlencode($objb_BillingAddr['mobile_country_id']);
+				$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+				$sBody .= "&billing_idc=" . urlencode($obj_MobileCountryConfig->getCountryCode());
 			}
 			$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
 			if ($fxservicetypeid != 0) {
@@ -1131,7 +1132,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] =  $objTransaction->getAmount();
+					$transactionData['sale_amount'] =  $objTransaction->getInitializedAmount();
 					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
 					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
@@ -1185,7 +1186,7 @@ abstract class Callback extends EndUserAccount
 					if ($shortCode !== FALSE) {
 						$transactionData['short-code'] = $shortCode;
 					}
-					$getFraudStatusCode = $this->getFraudDetails($txnId);
+					$getFraudStatusCode = $this->getFraudDetails($objTransaction->getID());
 					if (empty($getFraudStatusCode) === FALSE) {
 						$transactionData['fraud_status_code'] = $getFraudStatusCode['status_code'];
 						$transactionData['fraud_status_desc'] = $getFraudStatusCode['status_desc'];
@@ -1206,7 +1207,8 @@ abstract class Callback extends EndUserAccount
 						$transactionData['billing_postal_code'] =  urlencode($objb_BillingAddr['zip']);
 						$transactionData['billing_email'] =  urlencode($objb_BillingAddr['email']);
 						$transactionData['billing_mobile'] =  urlencode($objb_BillingAddr['mobile']);
-						$transactionData['billing_idc'] =  urlencode($objb_BillingAddr['mobile_country_id']);
+						$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+						$transactionData['billing_idc'] =  urlencode($obj_MobileCountryConfig->getCountryCode());
 					}
 					$aTxnAdditionalData = $objTransaction->getAdditionalData();
 					if ($aTxnAdditionalData !== NULL) {

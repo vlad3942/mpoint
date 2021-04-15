@@ -327,6 +327,10 @@ class PayAPIValidationTest extends baseAPITest
             $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
         $this->assertEquals(11, $fxservicetypeid);
+
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=1");
+        $this->assertTrue(is_resource($res) );
+
     }
 
     /**
@@ -365,6 +369,6 @@ class PayAPIValidationTest extends baseAPITest
         {
             $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(11, $fxservicetypeid);
+        $this->assertEquals(12, $fxservicetypeid);
     }
 }

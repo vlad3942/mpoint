@@ -35,7 +35,7 @@ class Amount implements JsonSerializable
      */
     public function __construct(int $value, int $currency_id, ?float $conversion_rate = NULL)
     {
-        if($value > 0 && strlen($currency_id) === 3) {
+        if($value > 0 && $currency_id > 0) {
             $this->value = $value;
             $this->currency_id = $currency_id;
             if (empty($conversion_rate) === false){
