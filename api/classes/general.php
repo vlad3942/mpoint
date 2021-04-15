@@ -609,17 +609,14 @@ class General
 					(txnid, stateid, data)
 				VALUES
 					($1, $2, $3)";
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->prepare($sql);
-		if (is_resource($res) === true)
-		{
-			$aParams = array($txnid, $sid, $data);
-			if ($this->getDBConn()->execute($res, $aParams) === false)
-			{
-				throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
-			}
+
+		$bindParam = array($txnid, $sid, $data);
+		$resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
+		
+		if (!is_resource($resultSet)) {
+			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
 		}
-		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
+			
 	}
 
 	/**
