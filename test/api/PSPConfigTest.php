@@ -138,7 +138,7 @@ class PSPConfigTest extends baseAPITest
 
         $aMerchantAccountDetails = array('merchantaccount' => 'Test 2c2p-alc', 'username' => 'CELLPM', 'password' => 'HC1XBPV0O4WLKZMG');
         $toAttributeLessXML = $obj_PSPConfig->toAttributeLessXML(2, $aMerchantAccountDetails);
-        $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>CebuPacific_USD</merchantAccount>', $toAttributeLessXML, 'Error :: Attribute less XML not matched');
+        $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>Test 2c2p-alc</merchantAccount><merchantSubAccount>Test Sub Merchant</merchantSubAccount><username>CELLPM</username>', $toAttributeLessXML, 'Error :: Attribute less XML not matched with additional');
 
         $toRouteConfigXML = $obj_PSPConfig->toRouteConfigXML();
         $this->assertStringContainsString('<id>1126</id><route_id>18</route_id><name>Wire Card</name><mid>CebuPacific_USD</mid><username>CELLPM</username>', $toRouteConfigXML, 'Error :: Route Configuration not matched');
