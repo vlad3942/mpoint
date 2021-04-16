@@ -140,7 +140,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 --CEBU MPGS CRS query
 
-INSERT INTO client.route_tbl (clientid, providerid) VALUES(10077, 72);
+INSERT INTO client.route_tbl (id, clientid, providerid) VALUES(( SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 10077, 72);
  
 INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
 SELECT id, 'MPGS_PHP', 2, 'TEST048583918507', 'merchant.TEST048583918507', '42b5c09392e50702e05f29c37c75841a', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 72;

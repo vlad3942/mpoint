@@ -239,23 +239,16 @@ class AmexSettlement extends mPointSettlement
                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
                                                     "fee" => $obj_TxnInfo->getFee() );
-                                            if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-                                            {
-                                                $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
-                                            }
- 											
-											$obj_PSP->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$this->_objConnectionInfo['foreign-exchange']);
+
+                                            $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                         }
                                         else
                                         {
                                             $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null );
                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount);
-                                            if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-                                            {
-                                                $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
-                                            }
-											$obj_PSP->notifyForeignExchange(array(Constants::iPAYMENT_REFUNDED_STATE),$this->_objConnectionInfo['foreign-exchange']);
+
+                                            $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                         }
 
                                     }

@@ -326,10 +326,9 @@
 					<xs:sequence>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
-									<xs:choice minOccurs="1" maxOccurs="1">
-										<xs:element name="voucher" type="voucher"/>
-										<xs:element name="card">
+								<xs:all>
+									<xs:element name="voucher" type="voucher" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="card" minOccurs="0" maxOccurs="1">
 											<xs:complexType>
 												<xs:all>
 													<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
@@ -416,7 +415,6 @@
 												<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 											</xs:complexType>
 										</xs:element>
-									</xs:choice>
 									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
@@ -438,7 +436,7 @@
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
-								</xs:sequence>
+								</xs:all>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>

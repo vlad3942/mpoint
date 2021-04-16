@@ -21,10 +21,15 @@ if ($isSessionCallback === TRUE) {
     $txnIds = array_keys($_Request['transaction-data']);
     $cardIds = [];
     $billingCountryIds = [];
+    $sessionToken = '';
     foreach ($txnIds as $txnId) {
         array_push($cardIds, (int)$_Request['transaction-data'][$txnId]['card-id']);
         if($_Request['transaction-data'][$txnId]['billing_country'] != 0){
             array_push($billingCountryIds, (int)$_Request['transaction-data'][$txnId]['billing_country']);
+        }
+
+        if( array_key_exists('session_token', $_Request['transaction-data'][$txnId])) {
+            $sessionToken = $_Request['transaction-data'][$txnId]['session_token'];
         }
     }
     $cardNames = getCardNames($cardIds);
@@ -64,6 +69,8 @@ if ($isSessionCallback === TRUE) {
     if (array_key_exists($cardId, $cardNames)) {
         $_Request['card_name'] = $cardNames[$cardId];
     }
+
+    $_Request['session_token'] = $sessionToken;
 
 } else {
     $cardId = (int)$_Request['card-id'];

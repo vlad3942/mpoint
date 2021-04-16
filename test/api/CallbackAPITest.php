@@ -125,6 +125,7 @@ class CallbackAPITest extends baseAPITest
 
     public function successfulAutoCapture($pspID, $iTransStatus)
     {
+        $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
@@ -190,6 +191,7 @@ class CallbackAPITest extends baseAPITest
 
     public function successfulNoAutoCapture($pspID, $iTransStatus)
     {
+        $this->bIgnoreErrors=true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
