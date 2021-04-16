@@ -15,15 +15,15 @@
 /**
  * Super class for all Paymaya-acq Exceptions
  */
-class PaymayaAcqException extends CallbackException { }
+class Paymaya_AcqException extends CallbackException { }
 /* ==================== Paymaya-acq Exception Classes End ==================== */
 
 /**
  * Model Class containing all the Business Logic for the Payment Service Provider: Paymaya-acq
  *
  */
-class PaymayaAcq extends CPMPSP
+class Paymaya_Acq extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PaymayaAcqException("Method: getPaymentData is not supported by Paymaya-acq"); }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new Paymaya_AcqException("Method: getPaymentData is not supported by Paymaya-acq"); }
 	public function getPSPID() { return Constants::iPAYMAYA_ACQ; }
 }
