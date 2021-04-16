@@ -71,7 +71,7 @@ class ClientRouteConfigurationsTest extends baseAPITest
         $expected_RS = $this->getRS_GetClientRoutingConfigurations();
 
         $this->assertTrue(True, 'Get Matched');
-        $this->assertStringContainsString('<route_configuration><id>1</id><provider_id>18</provider_id><country_id></country_id><currency_id></currency_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>1</id><name>Delayed Capture</name></route_feature><route_feature><id>2</id><name>Refund</name></route_feature></route_features></route_configuration>', $expected_RS, 'Client Route Configuration Found');
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><route_configurations><route_configuration><id>1</id><provider_id>18</provider_id><country_id></country_id><currency_id></currency_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>1</id><name>Delayed Capture</name></route_feature><route_feature><id>2</id><name>Refund</name></route_feature></route_features></route_configuration></route_configurations></root>', $expected_RS, 'Client Route Configuration Found');
 
     }
 
@@ -100,7 +100,7 @@ class ClientRouteConfigurationsTest extends baseAPITest
         {
             $xml = $aObj_ClientRouteConfigurations->toXML();
         }
-        $this->assertStringContainsString('<route_configurations><route_configuration><id>1</id><route_id>1</route_id><provider_id>18</provider_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>2</id><name>Delayed Capture</name></route_feature><route_feature><id>5</id><name>Refund</name></route_feature></route_features><country_ids><country_id>0</country_id></country_ids><currency_ids><currency_id>0</currency_id></currency_ids><additional_data><param><key>PAYPAL_MID_MYR</key><value>tsto1654</value></param><param><key>PAYPAL_USERNAME_MYR</key><value>test123</value></param></additional_data></route_configuration></route_configurations>', $xml, 'Client Route Configuration Found');
+        $this->assertStringContainsString('<route_configurations><route_configuration><id>1</id><route_id>1</route_id><provider_id>18</provider_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>2</id><name>Delayed Capture</name></route_feature><route_feature><id>5</id><name>Refund</name></route_feature></route_features><country_ids><country_id>0</country_id></country_ids><currency_ids><currency_id>0</currency_id></currency_ids><additional_data><param><key>PAYPAL_MID_MYR</key><value>tsto1654</value><scope>1</scope></param><param><key>PAYPAL_USERNAME_MYR</key><value>test123</value><scope>1</scope></param></additional_data></route_configuration></route_configurations>', $xml, 'Client Route Configuration Found');
     }
 
 

@@ -14,7 +14,7 @@
  *
  *
  */
-class PaymentMethod extends EndUserAccount
+class PaymentMethodOld extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction InformaStion

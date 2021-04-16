@@ -84,4 +84,12 @@ abstract class baseAPITest extends BaseDatabaseTest
 		}
 	}
 
+    protected function getReflectionMethod($className,$methodName)
+    {
+        $class = new ReflectionClass($className);
+        $method = $class->getMethod($methodName);
+        $method->setAccessible(true);
+        return $method;
+    }
+
 }

@@ -1264,6 +1264,17 @@ $aCPM_CONN_INFO["contenttype"] = env("mpoint.contenttype", "application/x-www-fo
 
 $aHTTP_CONN_INFO["hpp"]["protocol"] = "https";
 
+/**
+ * Message Queue Provider Information
+ *
+ */
+$aMessage_Queue_Provider_info['provider'] = env("messagequeue.provider", "googlepubsub");
+//First Preference to KeyFile
+$aMessage_Queue_Provider_info['keyfile'] = env("messagequeue.keyfile", "");
+$aMessage_Queue_Provider_info['keyfilepath'] = env("messagequeue.keyfilepath", "");
+$aMessage_Queue_Provider_info['projectid'] =  env("messagequeue.projectid", "");
+$aMessage_Queue_Provider_info['topicname'] =  env("messagequeue.topicname", "");
+
 
 
 /**

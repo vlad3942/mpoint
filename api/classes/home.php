@@ -917,7 +917,7 @@ class Home extends General
 
                 $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
 
-                if( $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iTRANSACTION_CREATED))=== true && $obj_TxnInfo->getPSPID()=== 0) continue;
+                if( $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iTRANSACTION_CREATED))=== true && $obj_TxnInfo->getCardID()=== 0) continue;
                 $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
               //  mode param is optional when populated with value 1 then status code will return only after session is closed and
@@ -940,8 +940,8 @@ class Home extends General
                         $sql = "WITH WT1 as
                            (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
                             WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
-                            ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",".Constants::iPAYMENT_WITH_VOUCHER_STATE.",
-                            ".Constants::iPAYMENT_WITH_ACCOUNT_STATE.",".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
+                            ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",
+                            ".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
                             ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
                             ".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.",
                             ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".$state.")) s where s.rank=1

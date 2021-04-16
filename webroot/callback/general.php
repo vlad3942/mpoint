@@ -746,55 +746,43 @@ try
 
       $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
       // Callback URL has been defined for Client
-      if ($obj_TxnInfo->getCallbackURL() != "")
-      {
-        /*
-         * Return the success code 202 to indicate Request Accepted and
-         * the request to notify the upstream  retail system.
-        */
-          ignore_user_abort(true);
-          header("HTTP/1.1 202 Accepted");
-          header("Content-Length: 0");
-          header("Connection: Close");
-          flush();
 
-         foreach ($aStateId as $iStateId) {
-             if ($iStateId == 2000) {
-                 $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-             }
-             else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
-                $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
-                //Check whether a notification has already been sent to retail system with status 20109
-                // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
-                if($count == 0)  {
-                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                }
-             }
-             else {
-                 $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+    /*
+     * Return the success code 202 to indicate Request Accepted and
+     * the request to notify the upstream  retail system.
+    */
+      ignore_user_abort(true);
+      header("HTTP/1.1 202 Accepted");
+      header("Content-Length: 0");
+      header("Connection: Close");
+      flush();
+
+     foreach ($aStateId as $iStateId) {
+         if ($iStateId == 2000) {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+         }
+         else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
+            $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
+            //Check whether a notification has already been sent to retail system with status 20109
+            // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
+            if($count == 0)  {
+                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
             }
          }
-         $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
+         else {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+        }
+     }
+     $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
-          //update captured amt when psp returns captured callback
-          if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
-              $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
-              $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
-          }
-       }
-      else {
-          header("Content-Type: text/xml; charset=\"UTF-8\"");
-          echo '<?xml version="1.0" encoding="UTF-8"?>';
-          echo '<root>';
-          echo '<status code="1000">Callback Success</status>';
-          echo '</root>';
-          $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
+      //update captured amt when psp returns captured callback
+      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
+          $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
+          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
       }
 
         if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
-            if ($obj_TxnInfo->getCallbackURL() != "") {
-                $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-            }
+            $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
             $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
             if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_CAPTURED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
                 try {
@@ -876,23 +864,12 @@ try
                 catch (Exception $e) {
                     trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
                 }
-                 if ($obj_TxnInfo->getCallbackURL() != "")
-                 {
-                    header("HTTP/1.1 202 Accepted");
-                    header("Content-Length: 0");
-                    header("Connection: Close");
-                 }
-                 else
-                 {
-                      	header("HTTP/1.1 200 OK");
-                 }
 
+                header("HTTP/1.1 202 Accepted");
+                header("Content-Length: 0");
+                header("Connection: Close");
             }
-
         }
-
-      $iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$obj_TxnInfo->getPSPID());
-      if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0) { $obj_mPoint->notifyForeignExchange($aStateId,$aHTTP_CONN_INFO['foreign-exchange']); }
     }
 }
 catch (TxnInfoException $e)

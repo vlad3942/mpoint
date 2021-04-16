@@ -74,7 +74,8 @@ class CaptureLoggingNegativeCaseTest extends baseAPITest
 		try
 		{
 			//Here exception will occur hence need to handle further execution in exception block
-			$obj_PSP->completeCapture(50000,0);
+			$res = $obj_PSP->completeCapture(50000,0);
+			$this->assertFalse($res);
 		}
 		catch(Exception $e)
 		{

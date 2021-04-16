@@ -116,11 +116,6 @@ final class GeneralPSP extends CPMACQUIRER
         throw new BadMethodCallException('Method authenticate is not supported by GeneralPSP class');
     }
 
-    public function notifyForeignExchange(array $aStateId, $aCI)
-    {
-        throw new BadMethodCallException('Method notifyForeignExchange is not supported by GeneralPSP class');
-    }
-
     public function voidTransaction(int $amount, ?string $orderReference = null, ?string $orderReferenceIdentifier = null): array
     {
         try {
@@ -170,10 +165,6 @@ final class GeneralPSP extends CPMACQUIRER
                                  "amount"   => $_REQUEST['amount']];
                         parent::notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
                     }
-
-                    parent::notifyForeignExchange([Constants::iPAYMENT_REFUNDED_STATE], $aHTTP_CONN_INFO['foreign-exchange']);
-                } elseif ($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_CANCELLED_STATE) === TRUE) {
-                    parent::notifyForeignExchange([Constants::iPAYMENT_CANCELLED_STATE], $aHTTP_CONN_INFO['foreign-exchange']);
                 }
             } elseif ($code === 1100) {
          //       header("HTTP/1.0 200 OK");

@@ -258,16 +258,11 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										// Perform callback to Client
 										if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
 										{
-										    if(strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-                                            {
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,
 													"cardid" => $obj_TxnInfo->getCardID(),
 													"fee" => $obj_TxnInfo->getFee() );
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                                            }
-                                            $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
-
                                         }
 									}
                                     elseif ($code == 1002)
@@ -284,14 +279,10 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										$aMsgCds[999] = "Declined";
 										$xml .= '<status code="999" ></status>';
 										// Perform callback to Client
-										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-										{
-											$args = array("transact" => $obj_TxnInfo->getExternalID(),
-													"cardid" => $obj_TxnInfo->getCardID(),
-													"amount" => $amount);
-											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-										}
-                                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURE_FAILED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+                                        $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                "cardid" => $obj_TxnInfo->getCardID(),
+                                                "amount" => $amount);
+                                        $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                     }
 								}
 								catch (BadMethodCallException $e)

@@ -825,7 +825,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $processorType = (int)$obj_XML->item[$j]['payment-type'] ;
                                     $cardId = (int)$obj_XML->item[$j]["id"];
                                     $splittable = "false";
-                                    if(isset($splitPaymentFOPConfig) && array_key_exists($processorType, $splitPaymentFOPConfig) === TRUE) {
+                                    if($sessionType > 1 && isset($splitPaymentFOPConfig) && array_key_exists($processorType, $splitPaymentFOPConfig) === TRUE) {
                                         if (is_array($splitPaymentFOPConfig[$processorType]) === FALSE || in_array($cardId, $splitPaymentFOPConfig[$processorType], TRUE) === TRUE) {
                                             $splittable = "true";
                                         }

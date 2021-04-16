@@ -206,15 +206,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$aMsgCds[1000] = "Success";
 					// Perform callback to Client
                     if ($code != Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT) {
-                        if (strlen($obj_TxnInfo->getCallbackURL()) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true) {
-                            $args = array("transact" => $obj_TxnInfo->getExternalID(),
-                                "amount" => $_REQUEST['amount'],
-                                "cardid" => $obj_TxnInfo->getCardID(),
-                                "fee" => $obj_TxnInfo->getFee());
-                            $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                        }
-                        $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
-
+                        $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                            "amount" => $_REQUEST['amount'],
+                            "cardid" => $obj_TxnInfo->getCardID(),
+                            "fee" => $obj_TxnInfo->getFee());
+                        $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                     }
 				}
 				else
@@ -228,13 +224,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                         $obj_mPoint->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, $e->getMessage() );
                     }
 					// Perform callback to Client
-					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-					{
-						$args = array("transact" => $obj_TxnInfo->getExternalID(),
-									  "amount" => $_REQUEST['amount']);
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-					}
-                    $obj_mPoint->getPSP()->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURE_FAILED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
+
+                    $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                  "amount" => $_REQUEST['amount']);
+                    $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+
 
                 }
 			}
@@ -258,7 +252,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				header("HTTP/1.0 500 Internal Error");
 
 				$aMsgCds[$e->getCode()] = $e->getMessage();
-				trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
+				trigger_error("Internal Error" ."\n". $e->getMessage(), E_USER_WARNING);
 			}
 		}
 		// Error: Invalid Input
