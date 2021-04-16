@@ -31,7 +31,7 @@
 		</testsuite>
 	</testsuites>
 	<coverage includeUncoveredFiles="true"
-              processUncoveredFiles="true"
+              processUncoveredFiles="false"
               ignoreDeprecatedCodeUnits="true"
               disableCodeCoverageIgnore="true">
         <include>
@@ -39,7 +39,7 @@
 			<directory suffix=".php">./classes</directory>
         </include>
 		<report>
-			<html outputDirectory="./CoverageReport" lowUpperBound="50" highLowerBound="90"/>
+			<html outputDirectory="./log/CoverageReport" lowUpperBound="50" highLowerBound="90"/>
 			<text outputFile="./log/zzzzzCoverageSummary.txt" showUncoveredFiles="true" showOnlySummary="true"/>
 		</report>
 	</coverage>
