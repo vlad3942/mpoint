@@ -902,4 +902,69 @@
 
     </changeSet>
 	
+
+    <changeSet author="Chaitenya Yadav" id="2021-03-24-Travel-fund-system-03">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-36"/>
+            <column name="cardid" value="26"/>
+            <column name="enabled" value="true"/>
+        </insert>
+ 
+    </changeSet>
+
+    <!-- Currency USD support added for Paypal -->
+    <changeSet author="Chaitenya Yadav" id="2021-03-30-setup-v2.26-system">
+            <insert catalogName="system" schemaName="system" tableName="PSPCurrency_Tbl">
+            <column name="currencyid" value="840"/>
+            <column name="pspid" value="24"/>
+            <column name="name" value="USD"/>
+        </insert>
+    </changeSet>
+
+    <!-- Currency MYR & SGD support added for Travel Fund -->
+    <changeSet author="Chaitenya Yadav" id="2021-03-30-setup-v2.26-system-02">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="71"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="MYR"/>
+            <column name="currencyid" value="458" />
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="71"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="SGD"/>
+            <column name="currencyid" value="702" />
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-458"/>
+            <column name="cardid" value="26"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-702"/>
+            <column name="cardid" value="26"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Karishan Kumar" id="2021-04-14-setup-v2.26-system">
+        
+        <!-- MPGS -->
+        <!-- pspcurrency_tbl -->
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="392"/>
+            <column name="pspid" value="72"/>
+            <column name="name" value="JPY"/>
+        </insert>
+
+
+    </changeSet>
+
 </databaseChangeLog>

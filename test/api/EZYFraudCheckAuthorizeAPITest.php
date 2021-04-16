@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -221,7 +221,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $httpClient->connect();
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
 
@@ -241,7 +241,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $pspID = Constants::iWIRE_CARD_PSP;
         $fraudCheckPspID = Constants::iEZY_PSP;
 
-        $sCallbackURL = "";
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -289,7 +289,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $this->bIgnoreErrors = true;
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
 
@@ -309,7 +309,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $pspID = Constants::iWIRE_CARD_PSP;
         $fraudCheckPspID = Constants::iEZY_PSP;
 
-        $sCallbackURL = "";
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -358,7 +358,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $this->bIgnoreErrors = true;
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
 
@@ -407,19 +407,5 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $xml .= '</root>';
 
         return $xml;
-    }
-
-    public function testSuccessfulAuthorize()
-    {
-        $this->markTestIncomplete();
-    }
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
     }
 }

@@ -533,6 +533,15 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $this->_obj_ResponseXML =$obj_XML;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
 
+				if(count($this->_obj_ResponseXML->{'payment-pending'}) > 0 && $this->_obj_ResponseXML->{'payment-pending'} != 'false')
+                {
+                    $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_PENDING_STATE, '');
+                    $args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							'transact'=>$this->getTxnInfo()->getExternalID(),
+							'cardid'=>$this->getTxnInfo()->getCardID());
+                    $this->notifyClient(Constants::iPAYMENT_PENDING_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
+                }
+
                /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;

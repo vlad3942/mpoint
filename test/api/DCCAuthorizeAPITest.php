@@ -3,7 +3,7 @@
  * User: SAGAR BADAVE
  */
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class DCCAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -44,6 +44,8 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
         $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid=1001012 and performedopt = 2000");
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=1");
+        $this->assertIsResource($res);
     }
 
     public function testSuccessfulSplitAuthorize()
@@ -83,6 +85,8 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $this->assertTrue(is_resource($res) );
         $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid=1001012 and performedopt = 2000");
         $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
     }
 
     public function testInvalidSplitAuthorizeAmount()
@@ -116,15 +120,5 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(400, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="53">Amount is more than pending amount: 30000</status></root>', $sReplyBody);
-    }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
     }
 }

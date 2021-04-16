@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class VisaCheckoutAuthorizeAPITest extends AuthorizeAPITest
 {

@@ -640,7 +640,10 @@ class TxnInfo
 	 */
 	public function getFXServiceTypeID() : ?int { return $this->_fxServiceTypeID; }
 
-
+	public function setFXServiceTypeID(int $fxTypeId) : void
+	{
+		$this->_fxServiceTypeID = $fxTypeId;
+	}
 	/**
 	 * Returns the Configuration for the Client who owns the Transaction.
 	 *
@@ -1759,7 +1762,7 @@ class TxnInfo
 
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
-                $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],$misc["sessiontype"],$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
+                $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],"1",$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
             }
             else{
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
@@ -1808,7 +1811,7 @@ class TxnInfo
 
             $paymentSession = null;
             if($misc["sessionid"] == -1){
-                $paymentSession = PaymentSession::Get($obj_db, $obj,$misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["orderid"], $misc["sessiontype"], $misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
+                $paymentSession = PaymentSession::Get($obj_db, $obj,$misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["orderid"], "1", $misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
             }
             else{
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
@@ -2305,14 +2308,18 @@ class TxnInfo
     {
         $this->_lAmount = $amount;
         $this->_lConvertedAmount = $amount;
-        if ($this->getInitializedAmount() === $this->getPaymentSession()->getAmount())
-        {
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$this->getSessionId();
-            $obj_DB->query($sql);
-    	}
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount.", convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
     }
+
+    function updateSessionType(RDB $obj_DB,$amount)
+	{
+		if ($amount < $this->getPaymentSession()->getAmount())
+        {
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->getSessionId() . " and sessiontypeid = 1";
+            $obj_DB->query($sql);
+    	}
+	}
 
     /**
      * Returns the Product Type
@@ -2500,7 +2507,10 @@ class TxnInfo
         $stateId = 0;
         try
         {
-            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = '" . $this->getID() . "'";
+            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE  stateid in (".Constants::iINPUT_VALID_STATE.",".Constants::iPAYMENT_INIT_WITH_PSP_STATE.",
+                            ".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",
+                            ".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",
+                            ".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.") and txnid = '" . $this->getID() . "' order by id desc limit 1";
 
             $resultSet = $obj_DB->getName($query);
             if (is_array($resultSet) === true)
