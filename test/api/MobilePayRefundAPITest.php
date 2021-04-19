@@ -14,6 +14,11 @@ class MobilePayRefundAPITest extends RefundAPITest
         parent::testSuccessfulRefund(Constants::iMOBILEPAY_PSP);
     }
 
+    public function testSuccessfulRefundWithAID()
+    {
+        parent::testSuccessfulRefundWithAID(Constants::iMOBILEPAY_PSP);
+    }
+
 	public function testSuccessfulCancelTriggeredByRefund()
 	{
 		parent::testSuccessfulCancelTriggeredByRefund(Constants::iMOBILEPAY_PSP);
