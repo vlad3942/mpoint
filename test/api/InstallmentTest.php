@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class InstallmentTest extends AuthorizeAPITest
 {
