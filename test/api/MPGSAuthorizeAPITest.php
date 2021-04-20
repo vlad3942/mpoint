@@ -4,7 +4,7 @@
  * Date: 04-03-2021
  */
 
-require_once __DIR__. '/authorizeAPITest.php';
+require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class MPGSAuthorizeAPITest extends AuthorizeAPITest
 {
@@ -34,15 +34,5 @@ class MPGSAuthorizeAPITest extends AuthorizeAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
 
-    }
-
-    public function testSuccessfulAuthorizeIncludingAutoCapture()
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testSuccessfulAuthorizeWithCurrency()
-    {
-        $this->markTestIncomplete();
     }
 }

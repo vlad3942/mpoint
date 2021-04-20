@@ -5,17 +5,12 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/captureAPITest.php';
+require_once __DIR__ . '/CaptureAPITest.php';
 
 class DIBSCaptureAPITest extends CaptureAPITest
 {
     public function testSuccessfulCapture()
     {
         parent::testSuccessfulCapture(Constants::iDIBS_PSP);
-    }
-
-    public function testSuccessfulCaptureInitiated()
-    {
-        $this->markTestIncomplete();
     }
 }

@@ -8,7 +8,7 @@
  * File Name:SafetyPayAPITest.php
  */
 
-require_once __DIR__. '/payAPITest.php';
+require_once __DIR__ . '/PayAPITest.php';
 
 class SafetyPayAPITest extends PayAPITest
 {
@@ -16,6 +16,12 @@ class SafetyPayAPITest extends PayAPITest
     {
         parent::testSuccessfulPay(Constants::iSAFETYPAY_AGGREGATOR, 63, 4, 7, 405,170 );
 	}
+
+	public function testSuccessfulSafetyPayPaymentPending()
+    {
+        parent::testSuccessfulPay(Constants::iSAFETYPAY_AGGREGATOR, 63, 4, 7, 403,986, 1041 );
+	}
+
 	public function testSuccessfulPSEPay()
 	{
 	    parent::testSuccessfulPay(Constants::iSAFETYPAY_AGGREGATOR, 97, 4, 7, 405,170);

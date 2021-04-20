@@ -5,7 +5,7 @@
  * Time: 10:00
  */
 
-require_once __DIR__. '/voidAPITest.php';
+require_once __DIR__ . '/VoidAPITest.php';
 
 class MobilePayVoidAPITest extends VoidAPITest
 {

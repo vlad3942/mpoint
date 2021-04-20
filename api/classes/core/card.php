@@ -9,10 +9,11 @@
  * File Name:Card.php
  */
 
-class Card
+class Card implements JsonSerializable
 {
     private $sCvc = '';
     private $sCardNumber = '';
+    private $sMaskedCardNumber = '';
     private $sExpiry = '';
     private $sValidFrom = '';
     private $sCardHolderName = '';
@@ -36,7 +37,7 @@ class Card
 
     private $objDB;
 
-    public function __construct($obj_Card, RDB &$oDB = NULL, array $prefixes = NULL)
+    public function __construct($obj_Card = NULL, RDB &$oDB = NULL, array $prefixes = NULL)
     {
         if ( ($obj_Card instanceof SimpleDOMElement) === true)
         {
@@ -341,6 +342,36 @@ class Card
         {
             $this->iPaymentType = $aCard['PAYMENTTYPE'];
         }
+        if(empty($aCard['MASKEDCARDNUMBER']) === FALSE)
+        {
+            $this->sMaskedCardNumber = $aCard['MASKEDCARDNUMBER'];
+        }
+        if(empty($aCard['EXPIRY']) === FALSE && strlen($aCard['EXPIRY']) >= 5)
+        {
+            $this->sExpiry = $aCard['EXPIRY'];
+        }
     }
 
+    /**
+     * @return string
+     */
+    public function getMaskedCardNumber()
+    {
+        return $this->sMaskedCardNumber;
+    }
+
+
+    public function jsonSerialize()
+    {
+        $response = ['id' => $this->getCardTypeId()];
+        if(empty($this->sMaskedCardNumber) === false)
+        {
+            $response['masked_card_number'] = $this->sMaskedCardNumber;
+        }
+        if(empty($this->sExpiry) === false)
+        {
+            $response['expiry'] = $this->sExpiry;
+        }
+        return $response;
+    }
 }

@@ -271,8 +271,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						if ($fxServiceTypeId)
                         {
-                            $data['fxservicetypeid'] = $fxServiceTypeId;
-                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                            $obj_TxnInfo->setFXServiceTypeID($fxServiceTypeId);
                         }
 
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -354,6 +353,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else{
 								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
+								$obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
 							}
 						}
 						else
@@ -371,12 +371,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 {
                                 	$aMsgCds[$iValResult + 50] = 'Invalid Amount ' . (string)$obj_DOM->pay[$i]->transaction->card->amount;
                                 }
+                                else
+                                {
+                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
+                                }
                             }
 						    else
 						    {
 								$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 if ($iValResult != 10) {
                                     $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                                }
+                                elseif($iSessionType > 1)
+                                {
+                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 }
                             }
 
@@ -532,7 +540,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$oTI->produceOrderConfig($_OBJ_DB);
 
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
-										if( $obj_card->getPaymentType($_OBJ_DB) !== Constants::iPAYMENT_TYPE_OFFLINE && ($processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY))
+										if( $processorType === Constants::iPAYMENT_TYPE_OFFLINE || $processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
 										{
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
@@ -713,6 +721,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. $message  .'</message>';
 										$xml .= '</psp-info>';
+
+										if( $oTI->hasEitherState($_OBJ_DB, Constants::iPAYMENT_PENDING_STATE) === true)
+                                        {
+                                            $xml .= '<status code="'.Constants::iPAYMENT_PENDING_STATE.'">Payment Pending</status>';
+                                        }
+										else if($oTI->hasEitherState($_OBJ_DB,Constants::iPAYMENT_INIT_WITH_PSP_STATE) === true)
+                                        {
+                                            $xml .= '<status code="'.Constants::iPAYMENT_INIT_WITH_PSP_STATE.'">Payment Initialize with PSP</status>';
+                                        }
 									}
 									catch (mPointException $e)
 									{

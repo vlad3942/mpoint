@@ -632,6 +632,7 @@ try
                                             }
                                             else{
                                                 $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                                $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }
                                         }
                                        else
@@ -647,20 +648,28 @@ try
                                                {
                                                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"]);
 
-                                                   if($iSessionType > 1 && $iSaleAmount < (int)$obj_TxnInfo->getAmount()) { $data["amount"] = $iSaleAmount; }
+                                                   if($iSessionType > 1 && $iSaleAmount < (int)$obj_TxnInfo->getAmount()) {
+                                                       $data["amount"] = $iSaleAmount;
+                                                       $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
+                                                   }
 
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
                                                    $data['converted-amount'] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount;
                                                    $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
-
                                                }
-                                             else if( $iSessionType > 1 && $iSaleAmount > $pendingAmount) { $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount; }
+                                             else if( $iSessionType > 1 && $iSaleAmount > $pendingAmount) {
+                                                 $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                             }
                                              else if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount))
                                              {
                                                  $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                              }
+                                             elseif($iSessionType > 1 && $iSaleAmount <= 0)
+                                            {
+                                                $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                            }
                                         }
 
                                         if($obj_card->getCardHolderName() !== '' && $obj_CardValidator->valCardFullName() !== 730){
@@ -1350,7 +1359,7 @@ try
 
 
                                                                     $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');
-                                                                    $obj_Processor->getPSPInfo()->updateSessionState(Constants::iPAYMENT_REJECTED_STATE,$obj_Processor->getPSPInfo()->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                                                                    //$obj_Processor->getPSPInfo()->updateSessionState(Constants::iPAYMENT_REJECTED_STATE,$obj_Processor->getPSPInfo()->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                                                     $xml .= '<status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
                                                                 }
                                                             }

@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/captureAPITest.php';
+require_once __DIR__ . '/CaptureAPITest.php';
 
 class NetAxeptCaptureAPITest extends CaptureAPITest
 {

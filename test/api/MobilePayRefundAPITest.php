@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/refundAPITest.php';
+require_once __DIR__ . '/RefundAPITest.php';
 
 class MobilePayRefundAPITest extends RefundAPITest
 {

@@ -5,6 +5,7 @@ require_once(dirname(__FILE__). '/../../../inc/include.php');
 switch (@$_REQUEST["status"])
 {
 case Constants::iPAYMENT_ACCEPTED_STATE:
+case Constants::iPAYMENT_PENDING_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'card-id', 'language');
 	break;
 case Constants::iPAYMENT_CAPTURED_STATE:

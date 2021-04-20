@@ -1117,6 +1117,7 @@ $aHTTP_CONN_INFO["travel-fund"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["travel-fund"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["travel-fund"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/mpoint/travel-fund/redeem";
+$aHTTP_CONN_INFO["travel-fund"]["paths"]["refund"] = "/mpoint/travel-fund/refund";
 
 /**
  * Connection info for connecting to Paymaya
@@ -1247,6 +1248,17 @@ $aCPM_CONN_INFO["contenttype"] = env("mpoint.contenttype", "application/x-www-fo
  */
 
 $aHTTP_CONN_INFO["hpp"]["protocol"] = "https";
+
+/**
+ * Message Queue Provider Information
+ *
+ */
+$aMessage_Queue_Provider_info['provider'] = env("messagequeue.provider", "googlepubsub");
+//First Preference to KeyFile
+$aMessage_Queue_Provider_info['keyfile'] = env("messagequeue.keyfile", "");
+$aMessage_Queue_Provider_info['keyfilepath'] = env("messagequeue.keyfilepath", "");
+$aMessage_Queue_Provider_info['projectid'] =  env("messagequeue.projectid", "");
+$aMessage_Queue_Provider_info['topicname'] =  env("messagequeue.topicname", "");
 
 
 

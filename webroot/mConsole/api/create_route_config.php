@@ -58,7 +58,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $iMerchantPropertyCount = count($obj_Route_Property_DOM->{'param'});
                     $xml .= '<additional_data>';
                     for($i=0;$i<$iMerchantPropertyCount;$i++){
-                        $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'param'}[$i]->key, $obj_Route_Property_DOM->{'param'}[$i]->value);
+                        $objRouteFeature = new MerchantRouteProperty($_OBJ_DB, $clientId, $iRouteConfigId, $obj_Route_Property_DOM->{'param'}[$i]->key, $obj_Route_Property_DOM->{'param'}[$i]->value, (int)$obj_Route_Property_DOM->{'param'}[$i]->scope);
                         $response['status'] = $objRouteFeature->AddAdditionalMerchantProperty();
                         $xml .=  $objRouteFeature->processResponse($response);
                     }
