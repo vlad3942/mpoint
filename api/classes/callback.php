@@ -102,12 +102,6 @@ abstract class Callback extends EndUserAccount
         if ($oPSPConfig == null) {
 
 			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, null, $pspID);
-
-        	// if(strtolower($is_legacy) == 'false'  && (int)$oTI->getPaymentMethod($oDB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE){
-            //     $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $oTI->getRouteConfigID());
-			// }else {
-            //     $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
-            // }
         }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
@@ -1288,7 +1282,6 @@ abstract class Callback extends EndUserAccount
 
 		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
 			$this->_obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $this->_obj_TxnInfo, $this->_obj_TxnInfo->getPSPID(), null);
-			// $this->_obj_PSPConfig = PSPConfig::produceConfig($oDB, $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getPSPID());
 		}
 		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}
