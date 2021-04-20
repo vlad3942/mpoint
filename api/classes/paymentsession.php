@@ -119,33 +119,30 @@ final class PaymentSession
                 VALUES 
                     ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
 
-            $res = $this->_obj_Db->prepare($sql);
-            if (is_resource($res) === true) {
-                $aParams = array(
-                    $this->_iClientId,
-                    $this->_iAccountId,
-                    $this->_iCurrencyId,
-                    $this->_iCountryId,
-                    '4001',
-                    $orderid,
-                    $amount,
-                    $this->_sMobile,
-                    $this->_sDeviceId,
-                    $this->_sIp,
-                    $sessiontypeid,
-                    $externalId,
-                    $this->_expire
-                );
-
-                $result = $this->_obj_Db->execute($res, $aParams);
-
-                if ($result === false) {
-                    throw new Exception("Fail to create session", E_USER_ERROR);
-                } else {
-                    $RS = $this->_obj_Db->fetchName($result);
-                    $this->_id = $RS["ID"];
-                }
+            $aParams = array(
+                $this->_iClientId,
+                $this->_iAccountId,
+                $this->_iCurrencyId,
+                $this->_iCountryId,
+                '4001',
+                $orderid,
+                $amount,
+                $this->_sMobile,
+                $this->_sDeviceId,
+                $this->_sIp,
+                $sessiontypeid,
+                $externalId,
+                $this->_expire
+            );
+            $res = $this->_obj_Db->executeQuery($sql, $aParams);
+            
+            if ($res === false) {
+                throw new Exception("Fail to create session", E_USER_ERROR);
             }
+
+            $result = $this->_obj_Db->fetchName($res);
+            $this->_id = $result["ID"];
+
         } catch (Exception $e) {
             trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
         }
