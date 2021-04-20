@@ -10,6 +10,16 @@
  * @version 1.11
  */
 
+require_once(sCLASS_PATH ."/core/card.php");
+
+use api\classes\AdditionalData;
+use api\classes\Amount;
+use api\classes\CallbackMessageRequest;
+use api\classes\ProductInfo;
+use api\classes\PSPData;
+use api\classes\StateInfo;
+use api\classes\TransactionData;
+use api\classes\messagequeue\client\MessageQueueClient;
 /* ==================== Callback Exception Classes Start ==================== */
 /**
  * Exception class for all Callback exceptions
@@ -472,214 +482,139 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0): void
 	{
-		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
-		$sEmail = $this->_obj_TxnInfo->getEMail();
-		$conversionRate = $this->_obj_TxnInfo->getConversationRate();
-		$txnId = $this->_obj_TxnInfo->getID();
-		/* ----- Construct Body Start ----- */
 		$sBody = "";
-		$sBody .= "mpoint-id=". $txnId;
-		if(strlen($sAdditionalData) > 0)
-		$sBody .= "&".$sAdditionalData;
-		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
-		if($this->hasTransactionFailureState($sid) === true)
-		{
-            $sBody .= "&status=". substr($sid, 0 ,4);
-            $sBody .= "&errorcode=". $sid;
-		}
-		else
-		{
-            $sBody .= "&status=". $sid;
-		}
-		$sBody .= "&desc=". urlencode($this->getStatusMessage($sid) );
-		$sBody .= "&exchange_rate=". urlencode($conversionRate);
-		$sBody .= "&amount=". urlencode($this->_obj_TxnInfo->getConvertedAmount());
-		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
-		$sBody .= "&decimals=". urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals() );
-		$sBody .= "&sale_amount=".$amt;
-		$sBody .= "&sale_currency=". urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getCode() );
-		$sBody .= "&sale_decimals=". urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() );
-		$sBody .= "&fee=". intval($fee);
-		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
-		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
-		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
-		if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
-		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
-		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
-		{
-			$pspId = $this->_obj_TxnInfo->getPSPID();
-			$sBody .= "&pspid=". urlencode($pspid);
-			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspId));
-        }
-		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
-		$sBody .= $this->getVariables();
-		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
-		if(empty($sDeviceID) === false)
-		{
-		$sBody .= "&device-id=". urlencode($sDeviceID);
-		}
-		if(empty($sEmail) === false)
-		{
-		$sBody .= "&email=". urlencode($sEmail);
-		}
-		if(empty($exp)===false)
-		{
-			$sBody .= "&expiry=". $exp;
-		}
-        $sBody .= "&session-id=". $this->_obj_TxnInfo->getSessionId();
-		/* Adding customer Info as part of the callback query params */
-		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
-        {
-            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
-            $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
-        }
-        if (strlen($this->_obj_TxnInfo->getApprovalCode()) >0){
-        	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
-        }
-
-		if (($this->_obj_TxnInfo->getWalletID() > 0) === true )
-		{
-        	$sBody .= "&wallet-id=". $this->_obj_TxnInfo->getWalletID();
-        }
-
-		$objb_getPaymentMethod =  $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
-        $sBody .= '&payment-method=' . $objb_getPaymentMethod->PaymentMethod;
-		$sBody .= '&payment-type=' . $objb_getPaymentMethod->PaymentType;
-		$sBody .= '&payment-provider-id=' . $this->_obj_TxnInfo->getPSPID();
-
-        $shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
-        if($shortCode !== false)
-        {
-        	$sBody .= '&short-code='. $shortCode;
-        }
-
-        $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
-        if($aTxnAdditionalData !== null)
-        {
-            foreach ($aTxnAdditionalData as $key => $value)
-            {
-				$sBody .= '&' .$key. '=' . $value;
+		if($this->_obj_TxnInfo->getCallbackURL() != "") {
+			$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
+			$sEmail = $this->_obj_TxnInfo->getEMail();
+			$conversionRate = $this->_obj_TxnInfo->getConversationRate();
+			$txnId = $this->_obj_TxnInfo->getID();
+			/* ----- Construct Body Start ----- */
+			$sBody = "";
+			$sBody .= "mpoint-id=" . $txnId;
+			if (strlen($sAdditionalData) > 0) {
+				$sBody .= "&" . $sAdditionalData;
 			}
-		}
-		$getFraudStatusCode = $this->getFraudDetails($txnId);
-		if (empty($getFraudStatusCode) === false) {
-			$sBody .= "&fraud_status_code=". urlencode($getFraudStatusCode['status_code']);
-			$sBody .= "&fraud_status_desc=". urlencode($getFraudStatusCode['status_desc'] );
-		}
-		$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
-		$sBody .= '&date-time=' . $dateTime->format('c');
-		$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
-		if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
-		{
-			$dateTime->setTimezone(new DateTimeZone($timeZone));
-			$sBody .= '&local-date-time=' . $dateTime->format('c');
-		}
-		if (strlen($this->_obj_TxnInfo->getIssuingBankName()) >0){
-			$sBody .= "&issuing-bank=". $this->_obj_TxnInfo->getIssuingBankName();
-		}
-		$objb_BillingAddr =  $this->_obj_TxnInfo->getBillingAddr();
-		if (empty($objb_BillingAddr) === false) {
-			$sBody .= "&billing_first_name=" . urlencode($objb_BillingAddr['first_name']);
-			$sBody .= "&billing_last_name=" . urlencode($objb_BillingAddr['last_name']);
-			$sBody .= "&billing_street_address=" . urlencode($objb_BillingAddr['street']);
-			$sBody .= "&billing_city=" . urlencode($objb_BillingAddr['city']);
-			$sBody .= "&billing_country=" . urlencode($objb_BillingAddr['country']);
-			$sBody .= "&billing_state=" . urlencode($objb_BillingAddr['state']);
-			$sBody .= "&billing_postal_code=" . urlencode($objb_BillingAddr['zip']);
-			$sBody .= "&billing_email=" . urlencode($objb_BillingAddr['email']);
-			$sBody .= "&billing_mobile=" . urlencode($objb_BillingAddr['mobile']);
-			$sBody .= "&billing_idc=" . urlencode($objb_BillingAddr['mobile_country_id']);
-		}
-		$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
-		if($fxservicetypeid !=0){
-			$sBody .= "&service_type_id=" . urlencode($fxservicetypeid);
-		}
-		/* ----- Construct Body End ----- */
-		$this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
-	}
-
-
-	/**
-	 * Function used to make a callback to the foreign Exchange instance for updating it with the transaction status.
-	 * @param array $aStateId Transaction state array
-	 * @param array $aCI Connection Information Array
-	 */
-	public function notifyForeignExchange(array $aStateId,$aCI)
-	{
-		//Refreshing txnInfo object to reflect updated values after payment operation performed 
-		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
-
-		$iForeignExchangeId = $this->_obj_TxnInfo->getExternalRef(Constants::iForeignExchange,$this->_obj_TxnInfo->getPSPID());
-		if($iForeignExchangeId !==null && empty($iForeignExchangeId) === false && sizeof($aStateId)>0)
-		{
-			$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
-			$b = '<?xml version="1.0" encoding="UTF-8"?>';
-			$b .= '<root>';
-			$b .= '<callback>';
-			$b .= '<clientId>' . $this->_obj_TxnInfo->getClientConfig()->getID() . '</clientId>';
-			$b .= '<account>' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '</account>';
-			$b .= '<clientConfig>';
-			$b .= '<additionalConfig>';
-			foreach ($this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
-			{
-				$b .= '<property>';
-				$b .= '<name>' . $aAdditionalProperty['key'] . '</name>';
-				$b .= '<value>' . $aAdditionalProperty['value'] . '</value>';
-				$b .= '</property>';
+			$sBody .= "&orderid=" . urlencode($this->_obj_TxnInfo->getOrderID());
+			if ($this->hasTransactionFailureState($sid) === TRUE) {
+				$sBody .= "&status=" . substr($sid, 0, 4);
+				$sBody .= "&errorcode=" . $sid;
+			} else {
+				$sBody .= "&status=" . $sid;
 			}
-			$b .= '</additionalConfig>';
-			$b .= '</clientConfig>';
-			$b .= $this->_obj_PSPConfig->toAttributeLessXML(Constants::iPrivateProperty);
-			$s = '<status>';
-			foreach ($aStateId as $iStateId) {
-				$s .= '<code>' . $iStateId . '</code>';
+			$sBody .= "&desc=" . urlencode($this->getStatusMessage($sid));
+			$sBody .= "&exchange_rate=" . urlencode($conversionRate);
+			$sBody .= "&amount=" . urlencode($this->_obj_TxnInfo->getConvertedAmount());
+			$sBody .= "&currency=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
+			$sBody .= "&decimals=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals());
+			$sBody .= "&sale_amount=" . $this->_obj_TxnInfo->getInitializedAmount();
+			$sBody .= "&sale_currency=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getCode());
+			$sBody .= "&sale_decimals=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals());
+			$sBody .= "&fee=" . intval($fee);
+			$sBody .= "&mobile=" . urlencode($this->_obj_TxnInfo->getMobile());
+			$sBody .= "&operator=" . urlencode($this->_obj_TxnInfo->getOperator());
+			$sBody .= "&language=" . urlencode($this->_obj_TxnInfo->getLanguage());
+			if (intval($cardid) > 0) {
+				$sBody .= "&card-id=" . $cardid;
+			}
+			if (empty($cardno) === FALSE) {
+				$sBody .= "&card-number=" . urlencode($cardno);
+			}
+			if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === TRUE) {
+				$pspId = $this->_obj_TxnInfo->getPSPID();
+				$sBody .= "&pspid=" . urlencode($pspid);
+				$sBody .= "&psp-name=" . urlencode($this->getPSPName($pspId));
+			}
+			if (strlen($this->_obj_TxnInfo->getDescription()) > 0) {
+				$sBody .= "&description=" . urlencode($this->_obj_TxnInfo->getDescription());
+			}
+			$sBody .= $this->getVariables();
+			$sBody .= "&hmac=" . urlencode($this->_obj_TxnInfo->getHMAC());
+			if (empty($sDeviceID) === FALSE) {
+				$sBody .= "&device-id=" . urlencode($sDeviceID);
+			}
+			if (empty($sEmail) === FALSE) {
+				$sBody .= "&email=" . urlencode($sEmail);
+			}
+			if (empty($exp) === FALSE) {
+				$sBody .= "&expiry=" . $exp;
+			}
+			$sBody .= "&session-id=" . $this->_obj_TxnInfo->getSessionId();
+			/* Adding customer Info as part of the callback query params */
+			if (($this->_obj_TxnInfo->getAccountID() > 0) === TRUE) {
+				$obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
+				$sBody .= "&customer-country-id=" . $obj_CustomerInfo->getCountryID();
+			}
+			if (strlen($this->_obj_TxnInfo->getApprovalCode()) > 0) {
+				$sBody .= "&approval-code=" . $this->_obj_TxnInfo->getApprovalCode();
 			}
 
-			$s .= '</status>';
+			if (($this->_obj_TxnInfo->getWalletID() > 0) === TRUE) {
+				$sBody .= "&wallet-id=" . $this->_obj_TxnInfo->getWalletID();
+			}
 
-			$s .= '<cfxId>' . $iForeignExchangeId . '</cfxId>';
-			$aExcludeNode = array();
-			array_push($aExcludeNode, 'fee');
-			array_push($aExcludeNode, 'price');
-			array_push($aExcludeNode, 'points');
-			array_push($aExcludeNode, 'reward');
-			array_push($aExcludeNode, 'mobile');
+			$objb_getPaymentMethod = $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
+			$sBody .= '&payment-method=' . $objb_getPaymentMethod->PaymentMethod;
+			$sBody .= '&payment-type=' . $objb_getPaymentMethod->PaymentType;
+			$sBody .= '&payment-provider-id=' . $this->_obj_TxnInfo->getPSPID();
 
-			$b .= str_replace("</transaction>", $s . "</transaction>", $this->_obj_TxnInfo->toAttributeLessXML($aExcludeNode));
-			$b .= '</callback>';
-			$b .= '</root>';
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_CONSTRUCTED_STATE, $s);
-
-			$aURLInfo = parse_url($this->getClientConfig()->getMESBURL());
-			$obj_ConnInfo = new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $aCI["paths"]["callback"], $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword());
-			try
-			{
-				$obj_HTTP = $this->send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
-				$iCode = $obj_HTTP->getReturnCode();
-				if (intval($iCode) === 200 || intval($iCode) === 202)
-				{
-					trigger_error("mPoint Callback request to Foreign Exchange succeeded for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
-					$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_ACCEPTED_STATE, $obj_HTTP->getReplyHeader());
-
+			if ($this->_obj_PSPConfig !== NULL) {
+				$shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
+				if ($shortCode !== FALSE) {
+					$sBody .= '&short-code=' . $shortCode;
 				}
-				else
-				{
-					trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_WARNING);
-					$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_REJECTED_STATE, $obj_HTTP->getReplyHeader());
-				}
+			}
 
-			} // Error: Unable to establish Connection to Client
-			catch (HTTPConnectionException $e)
-			{
-				trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_WARNING);
-				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_CONN_FAILED_STATE, $e->getMessage() . "(" . $e->getCode() . ")");
-			} // Error: Unable to send Callback to Client
-			catch (HTTPSendException $e)
-			{
-				trigger_error("mPoint Callback request to Foreign Exchange failed for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_WARNING);
-				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iACKFX_SEND_FAILED_STATE, $e->getMessage() . "(" . $e->getCode() . ")");
+			$aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
+			if ($aTxnAdditionalData !== NULL) {
+				foreach ($aTxnAdditionalData as $key => $value) {
+					$sBody .= '&' . $key . '=' . $value;
+				}
+			}
+			$getFraudStatusCode = $this->getFraudDetails($txnId);
+			if (empty($getFraudStatusCode) === FALSE) {
+				$sBody .= "&fraud_status_code=" . urlencode($getFraudStatusCode['status_code']);
+				$sBody .= "&fraud_status_desc=" . urlencode($getFraudStatusCode['status_desc']);
+			}
+			$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
+			$sBody .= '&date-time=' . $dateTime->format('c');
+			$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
+			if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
+				$dateTime->setTimezone(new DateTimeZone($timeZone));
+				$sBody .= '&local-date-time=' . $dateTime->format('c');
+			}
+			if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0) {
+				$sBody .= "&issuing-bank=" . $this->_obj_TxnInfo->getIssuingBankName();
+			}
+			$objb_BillingAddr = $this->_obj_TxnInfo->getBillingAddr();
+			if (empty($objb_BillingAddr) === FALSE) {
+				$sBody .= "&billing_first_name=" . urlencode($objb_BillingAddr['first_name']);
+				$sBody .= "&billing_last_name=" . urlencode($objb_BillingAddr['last_name']);
+				$sBody .= "&billing_street_address=" . urlencode($objb_BillingAddr['street']);
+				$sBody .= "&billing_city=" . urlencode($objb_BillingAddr['city']);
+				$sBody .= "&billing_country=" . urlencode($objb_BillingAddr['country']);
+				$sBody .= "&billing_state=" . urlencode($objb_BillingAddr['state']);
+				$sBody .= "&billing_postal_code=" . urlencode($objb_BillingAddr['zip']);
+				$sBody .= "&billing_email=" . urlencode($objb_BillingAddr['email']);
+				$sBody .= "&billing_mobile=" . urlencode($objb_BillingAddr['mobile']);
+				$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+				$sBody .= "&billing_idc=" . urlencode($obj_MobileCountryConfig->getCountryCode());
+			}
+			$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
+			if ($fxservicetypeid != 0) {
+				$sBody .= "&service_type_id=" . urlencode($fxservicetypeid);
+			}
+
+			if ($sBody !== "") {
+				/* ----- Construct Body End ----- */
+				$this->performCallback($sBody, $obj_SurePay, 0, $sid);
 			}
 		}
+
+		$callbackMessageRequest = $this->constructMessage($sid, (int)$amt);
+		if ($callbackMessageRequest !== NULL) {
+                $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
+            }
+
 	}
 
 	/*
@@ -1130,11 +1065,12 @@ abstract class Callback extends EndUserAccount
 
     public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0 )
     {
-        $sessionObj = $this->getTxnInfo()->getPaymentSession();
-        $isStateUpdated = $sessionObj->updateState();
-        if($isStateUpdated == 1) {
-            $checkSessionCallback = $sessionObj->checkSessionCompletion();
-            if (empty($checkSessionCallback) === true) {
+		$sessionObj = $this->getTxnInfo()->getPaymentSession();
+		$isStateUpdated = $sessionObj->updateState();
+		if ($isStateUpdated == 1) {
+			$sid = $sessionObj->getStateId();
+			$checkSessionCallback = $sessionObj->checkSessionCompletion();
+			if (empty($checkSessionCallback) === TRUE && $this->getTxnInfo()->getCallbackURL() != '') {
 				$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 				$sEmail = $this->_obj_TxnInfo->getEMail();
 				$conversionRate = $this->_obj_TxnInfo->getConversationRate();
@@ -1151,34 +1087,33 @@ abstract class Callback extends EndUserAccount
 				if (intval($cardid) > 0) {
 					$sBody .= "&card-id=" . $cardid;
 				}
-				if (empty($cardno) === false) {
+				if (empty($cardno) === FALSE) {
 					$sBody .= "&card-number=" . urlencode($cardno);
 				}
-				if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) {
+				if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === TRUE) {
 					$sBody .= "&pspid=" . urlencode($pspid);
 				}
 				if (strlen($this->_obj_TxnInfo->getDescription()) > 0) {
 					$sBody .= "&description=" . urlencode($this->_obj_TxnInfo->getDescription());
 				}
 				$sBody .= $this->getVariables();
-				if (empty($sDeviceID) === false) {
+				if (empty($sDeviceID) === FALSE) {
 					$sBody .= "&device-id=" . urlencode($sDeviceID);
 				}
-				if (empty($sEmail) === false) {
+				if (empty($sEmail) === FALSE) {
 					$sBody .= "&email=" . urlencode($sEmail);
 				}
-				if (empty($exp) === false) {
+				if (empty($exp) === FALSE) {
 					$sBody .= "&expiry=" . $exp;
 				}
 
 				/* Adding customer Info as part of the callback query params */
-				if (($this->_obj_TxnInfo->getAccountID() > 0) === true) {
+				if (($this->_obj_TxnInfo->getAccountID() > 0) === TRUE) {
 					$obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
 					$sBody .= "&customer-country-id=" . $obj_CustomerInfo->getCountryID();
 				}
 
-				if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
-				{
+				if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0) {
 					$sBody .= "&issuing-bank=" . urlencode($this->_obj_TxnInfo->getIssuingBankName());
 				}
 
@@ -1186,9 +1121,8 @@ abstract class Callback extends EndUserAccount
 
 				$aTransactionData = [];
 				$aTransactionData['transaction-data'] = [];
-				foreach ($aTransaction as $transactionId)
-				{
-					$transactionData =[];
+				foreach ($aTransaction as $transactionId) {
+					$transactionData = [];
 					$objTransaction = TxnInfo::produceInfo($transactionId, $this->getDBConn());
 
 					// TransactionData array
@@ -1198,7 +1132,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] =  $sessionObj->getAmount();
+					$transactionData['sale_amount'] =  $objTransaction->getInitializedAmount();
 					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
 					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
@@ -1208,70 +1142,61 @@ abstract class Callback extends EndUserAccount
 						$transactionData['card-id'] = $objTransaction->getCardID();
 					}
 					$cardMask = $objTransaction->getCardMask();
-					if (empty($cardMask) === false)
-					{
+					if (empty($cardMask) === FALSE) {
 						$transactionData['card-number'] = $cardMask;
 					}
-					if ($objTransaction->getClientConfig()->sendPSPID() === true)
-					{
-						$transactionData['pspid']= $objTransaction->getExternalID();
-						$transactionData['psp-name']= $this->getPSPName($objTransaction->getPSPID());
+					if ($objTransaction->getClientConfig()->sendPSPID() === TRUE) {
+						$transactionData['pspid'] = $objTransaction->getExternalID();
+						$transactionData['psp-name'] = $this->getPSPName($objTransaction->getPSPID());
 					}
-					if ($objTransaction->getDescription() !== '')
-					{
+					if ($objTransaction->getDescription() !== '') {
 						$transactionData['description'] = $objTransaction->getDescription();
 					}
-					$sVariables = $this->getVariables();
-					if($sVariables !== '')
-					{
+					$sVariables = $this->getVariables($objTransaction->getID());
+					if ($sVariables !== '') {
 						$aVariables = [];
 						parse_str($sVariables, $aVariables);
 						array_push($transactionData[$transactionId], $aVariables);
 					}
 
 					$sDeviceID = $objTransaction->getDeviceID();
-					if(empty($sDeviceID) === false)
-					{
-						$transactionData['device-id']=$sDeviceID;
+					if (empty($sDeviceID) === FALSE) {
+						$transactionData['device-id'] = $sDeviceID;
 					}
 
 					$expiry = $objTransaction->getCardExpiry();
-					if(empty($expiry)===false)
-					{
+					if (empty($expiry) === FALSE) {
 						$transactionData['expiry'] = $expiry;
 					}
 
-					if ($objTransaction->getApprovalCode() !== '')
-					{
-        				$transactionData['approval-code']= $objTransaction->getApprovalCode();
-        			}
+					if ($objTransaction->getApprovalCode() !== '') {
+						$transactionData['approval-code'] = $objTransaction->getApprovalCode();
+					}
 
-					if (($objTransaction->getWalletID() > 0) === true )
-					{
-        				$transactionData['wallet-id']= $objTransaction->getWalletID();
-        			}
+					if (($objTransaction->getWalletID() > 0) === TRUE) {
+						$transactionData['wallet-id'] = $objTransaction->getWalletID();
+					}
 
 					$objb_getPaymentMethod = $objTransaction->getPaymentMethod($this->getDBConn());
 					$transactionData['payment-method'] = $objb_getPaymentMethod->PaymentMethod;
 					$transactionData['payment-type'] = $objb_getPaymentMethod->PaymentType;
 					$transactionData['payment-provider-id'] = $objTransaction->getPSPID();
 
-					$shortCode = $this->getAdditionalPropertyFromDB('SHORT-CODE', $objTransaction->getClientConfig()->getID(),$objTransaction->getPSPID());
-					if($shortCode !== false)
-					{
-						$transactionData['short-code']=  $shortCode;
+					$shortCode = $this->getAdditionalPropertyFromDB('SHORT-CODE', $objTransaction->getClientConfig()->getID(), $objTransaction->getPSPID());
+					if ($shortCode !== FALSE) {
+						$transactionData['short-code'] = $shortCode;
 					}
-					$getFraudStatusCode = $this->getFraudDetails($txnId);
-					if (empty($getFraudStatusCode) === false) {
-						$transactionData['fraud_status_code']=  $getFraudStatusCode['status_code'];
-						$transactionData['fraud_status_desc']=  $getFraudStatusCode['status_desc'];
+					$getFraudStatusCode = $this->getFraudDetails($objTransaction->getID());
+					if (empty($getFraudStatusCode) === FALSE) {
+						$transactionData['fraud_status_code'] = $getFraudStatusCode['status_code'];
+						$transactionData['fraud_status_desc'] = $getFraudStatusCode['status_desc'];
 					}
-					$transactionData['exchange_rate'] =  $conversionRate;
-					$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
-					if($fxservicetypeid !=0){
-						$transactionData['service_type_id'] =  $fxservicetypeid;
+					$transactionData['exchange_rate'] = $conversionRate;
+					$fxservicetypeid = $objTransaction->getFXServiceTypeID();
+					if ($fxservicetypeid != 0) {
+						$transactionData['service_type_id'] = $fxservicetypeid;
 					}
-					$objb_BillingAddr =  $this->_obj_TxnInfo->getBillingAddr();
+					$objb_BillingAddr =  $objTransaction->getBillingAddr();
 					if (empty($objb_BillingAddr) === false) {
 						$transactionData['billing_first_name'] =  urlencode($objb_BillingAddr['first_name']);
 						$transactionData['billing_last_name'] =  urlencode($objb_BillingAddr['last_name']);
@@ -1282,53 +1207,53 @@ abstract class Callback extends EndUserAccount
 						$transactionData['billing_postal_code'] =  urlencode($objb_BillingAddr['zip']);
 						$transactionData['billing_email'] =  urlencode($objb_BillingAddr['email']);
 						$transactionData['billing_mobile'] =  urlencode($objb_BillingAddr['mobile']);
-						$transactionData['billing_idc'] =  urlencode($objb_BillingAddr['mobile_country_id']);
+						$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+						$transactionData['billing_idc'] =  urlencode($obj_MobileCountryConfig->getCountryCode());
 					}
 					$aTxnAdditionalData = $objTransaction->getAdditionalData();
-					if($aTxnAdditionalData !== null)
-					{
-						foreach ($aTxnAdditionalData as $key => $value)
-						{
-							if($key !== '')
-							{
+					if ($aTxnAdditionalData !== NULL) {
+						foreach ($aTxnAdditionalData as $key => $value) {
+							if ($key !== '') {
 								$transactionData[$key] = $value;
 							}
-            			}
-        			}
+						}
+					}
 
-        			$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
+        			$dateTime = new DateTime($objTransaction->getCreatedTimestamp());
 					$transactionData['date-time']= $dateTime->format('c');
-					$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,'TIMEZONE');
+					$timeZone = $objTransaction->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,'TIMEZONE');
 					if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
 						$transactionData['local-date-time'] = $dateTime->format('c');
 					}
 
-					if (strlen($this->_obj_TxnInfo->getIssuingBankName()) > 0)
+					if (strlen($objTransaction->getIssuingBankName()) > 0)
 					{
-						$transactionData['issuing-bank'] =  $this->_obj_TxnInfo->getIssuingBankName();
+						$transactionData['issuing-bank'] =  $objTransaction->getIssuingBankName();
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
 				}
 
-				$sBody .= '&' .http_build_query($aTransactionData);
+				$sBody .= '&' . http_build_query($aTransactionData);
 
-				 if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED)
-				{
+				if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED) {
 					$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
-					if ($iSessionStateValidation !== 1)
-					{
+					if ($iSessionStateValidation !== 1) {
 						$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
-						if ($sessionObj->getPendingAmount() === 0)
-						{
+						if ($sessionObj->getPendingAmount() === 0) {
 							$this->performCallback($sBody, $obj_SurePay);
 						}
 					}
 				}
-        	}
-        }
+			}
+		}
+
+		$callbackMessageRequest = $this->constructMessage($sid, NULL, TRUE);
+		if ($callbackMessageRequest !== NULL) {
+			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
+		}
     }
 
     public function getCaptureMethod()
@@ -1383,5 +1308,279 @@ abstract class Callback extends EndUserAccount
 		}
 		return $statusDetails;
 	}
+
+
+	/**
+	 * @param bool $isSessionCallback
+	 * @param      $sid
+	 * @param null $amt
+	 *
+	 * @return \CallbackMessageRequest|null
+	 */
+	private function constructMessage($sid = NULL, $amt = NULL, $isSessionCallback = FALSE)
+    {
+    	$isIgnoreRequest = TRUE;
+		$aTransactionData = [];
+		$sub_code = NULL;
+		$sid = $sid;
+		//Callback for session
+		if($sid > 4001 && ($isSessionCallback === TRUE  || $sid < 4999)) {
+			$sessionObj = $this->getTxnInfo()->getPaymentSession();
+			$isStateUpdated = $sessionObj->updateState();
+			//Here Session Callback is triggering 2nd time, queryParam callback is already sent
+			//Below lines (1325, 1328, 1330) "TRUE || and false" needs to be remove the queryParam callback flow is removed
+			if (TRUE || $isStateUpdated === 1) {
+				$checkSessionCallback = $sessionObj->checkSessionCompletion();
+				$aTransaction = [];
+				if (TRUE || empty($checkSessionCallback) === TRUE && $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId()) !== 1) {
+					$sid = $sessionObj->getStateId();
+					if(FALSE) {
+						$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), '');
+					}
+					if ($sessionObj->getPendingAmount() === 0) {
+						$aTransaction = $this->_obj_TxnInfo->getPaymentSession()->getTransactions();
+						$isIgnoreRequest = FALSE;
+					}
+				}
+				foreach ($aTransaction as $transactionId) {
+					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData));
+				}
+			}
+		}
+		//Callbacks for transaction
+		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
+			//Create a TxnInfo object to refresh newly added data in database
+			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
+			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn, $sid, $amt);
+			$aTransactionData = [$obj_TransactionData];
+			$isIgnoreRequest = FALSE;
+		}
+
+		if($isIgnoreRequest === FALSE) {
+			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(), NULL);
+			if ($this->hasTransactionFailureState($sid) === TRUE) {
+				$status = substr($sid, 0, 4);
+				$sub_code = $sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
+			} else {
+				$status = $sid;
+			}
+			$obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid));
+			return new CallbackMessageRequest($this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData);
+		}
+		return  NULL;
+    }
+
+	/**
+	 * @param \TxnInfo $txnInfo
+	 * @param int|null $sid
+	 * @param int      $amt
+	 *
+	 * @return \TransactionData
+	 * @throws \Exception
+	 */
+	private function constructTransactionInfo(TxnInfo $txnInfo, $sid = NULL, $amt = -1)
+    {
+
+        $obj_CustomerInfo = NULL;
+        $obj_PSPInfo = NULL;
+        $obj_StateInfo= NULL;
+        $aClientData = [];
+        $aProductÌnfo = [];
+        $aDeliveryInfo = [];
+        $aShippingInfo = [];
+        $additionalData = [];
+        $aBillingAddress = [];
+        $sub_code = NULL;
+
+        $obj_getPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
+
+        if($amt === -1)
+		{
+			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $txnInfo->getID(), $txnInfo->getClientConfig()->getID());
+			switch ($sid){
+				case 2001:
+					$amt = $txnPassbookObj->getCapturedAmount();
+					break;
+				case 2002:
+					$amt = $txnPassbookObj->getCancelledAmount();
+					break;
+				case 2003:
+					$amt = $txnPassbookObj->getRefundedAmount();
+					break;
+				default:
+					$amt = $txnPassbookObj->getAuthorizedAmount();
+			}
+		}
+
+        $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(), $txnInfo->getConversationRate());
+
+        if(empty($sid))
+		{
+			$sid = $txnInfo->getLatestPaymentState($this->getDBConn());
+		}
+
+        $aCardInfo = [
+            'ID' => $txnInfo->getCardID(),
+            'MASKEDCARDNUMBER' => $txnInfo->getCardMask(),
+            'EXPIRY' => $txnInfo->getCardExpiry()
+        ];
+        $obj_CardInfo = new Card($aCardInfo);
+
+        if ($this->hasTransactionFailureState($sid) === TRUE) {
+            $status = substr($sid, 0, 4);
+            $sub_code=$sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
+        } else {
+            $status = $sid;
+        }
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
+
+        if ($txnInfo->getClientConfig()->sendPSPID() === TRUE) {
+            $pspId = $txnInfo->getPSPID();
+            $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
+        }
+
+        if (($txnInfo->getAccountID() > 0) === TRUE) {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setEMail($txnInfo->getEMail());
+            $obj_CustomerInfo->setMobile($txnInfo->getMobile());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+            $obj_CustomerInfo->setLanguage($txnInfo->getLanguage());
+        }
+        else{
+            $obj_CustomerInfo = new CustomerInfo(-1,null, $txnInfo->getMobile(),$txnInfo->getEMail(),'','',$txnInfo->getLanguage() );
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+        }
+
+        $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
+
+        $transactionData->setFee($txnInfo->getFee());
+        $transactionData->setDescription($txnInfo->getDescription());
+        $transactionData->setHmac($txnInfo->getHMAC());
+        $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
+        $transactionData->setWalletId($txnInfo->getWalletID());
+        $transactionData->setShortCode($this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
+        $foreignExchangeId = $txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID());
+        if(empty($foreignExchangeId) === false) {
+			$transactionData->setForeignExchangeId($foreignExchangeId);
+		}
+        $dateTime = new DateTime($txnInfo->getCreatedTimestamp());
+        $transactionData->setDateTime($dateTime->format('c'));
+        $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
+        if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
+            $dateTime->setTimezone(new DateTimeZone($timeZone));
+            $transactionData->setLocalDateTime($dateTime->format('c'));
+        }
+        $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
+
+        $aTxnAdditionalData = $txnInfo->getAdditionalData();
+        if ($aTxnAdditionalData !== NULL) {
+            foreach ($aTxnAdditionalData as $name => $value) {
+                array_push($additionalData, new AdditionalData($name, $value));
+            }
+        }
+        $transactionData->setAdditionalData($additionalData);
+
+        $transactionId = $txnInfo->getID();
+        $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);
+        $aProducts = $this->getMessageData($transactionId, Constants::iPRODUCTS_STATE);
+        $adeliveryinfo = $this->getMessageData($transactionId, Constants::iDELIVERY_INFO_STATE);
+        $ashippinginfo = $this->getMessageData($transactionId, Constants::iSHIPPING_INFO_STATE);
+        $abillingaddress = $txnInfo->getBillingAddr();
+
+        // Add custom Client Variables
+        foreach ($aClientVars as $name => $value) {
+            $aClientData[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setClientData($aClientData);
+
+        // Add Purchased Products
+        if (count($aProducts) > 0) {
+            foreach ($aProducts["names"] as $key => $name) {
+                $aProductÌnfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+            }
+        }
+
+        $transactionData->setProductInfo($aProductÌnfo);
+
+        // Add Delivery Information
+        foreach ($adeliveryinfo as $name => $value) {
+            $aDeliveryInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setDeliveryInfo($aDeliveryInfo);
+
+        // Add Shipping Information
+        foreach ($ashippinginfo as $name => $value) {
+            $aShippingInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setShippingInfo($aShippingInfo);
+
+        // Add Billing address
+        foreach ($abillingaddress as $name => $value) {
+            $aBillingAddress[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setBillingAddress($aBillingAddress);
+
+        $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
+
+        $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
+		if (empty($getFraudStatusCode) === FALSE) {
+			$transactionData->setFraudStatusCode($getFraudStatusCode['status_code']);
+			$transactionData->setFraudStatusDesc($getFraudStatusCode['status_desc']);
+		}
+
+		return $transactionData;
+    }
+
+	/**
+	 * @param string              $body
+	 * @param \SurePayConfig|null $obj_SurePay
+	 * @param int                 $attempt
+	 * @param int                 $sid
+	 */
+	private function publishMessage($body, SurePayConfig &$obj_SurePay = NULL, $attempt = 0, $sid = 0)
+    {
+        try {
+            $messageQueueClient = MessageQueueClient::GetClient();
+            $messageQueueClient->authenticate();
+            try {
+                $response = $messageQueueClient->publish($body);
+                if ($response === TRUE) {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, 'Message Successfully Publish :  '. $body);
+                } else {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, 'Fail to Publish: '. $body);
+                }
+            } catch (Exception $e) {
+
+                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, $e->getMessage());
+            }
+        }
+        catch (Exception $e) {
+            trigger_error("mPoint Callback request failed for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+            $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_SEND_FAILED_STATE, $e->getMessage());
+        }
+
+        if (($obj_SurePay instanceof SurePayConfig) === TRUE && $attempt < $obj_SurePay->getMax()) {
+            $attempt++;
+            sleep($obj_SurePay->getDelay() * $attempt);
+            trigger_error("mPoint Callback request retried for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+            $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt " . $attempt . " of " . $obj_SurePay->getMax());
+            $this->publishMessage($body, $obj_SurePay, $attempt);
+        }
+    }
+
+	public static function EmptyValueComparator($value)
+    {
+        if (is_array($value)) {
+            return count($value) !== 0;
+        }
+        return NULL !== $value;
+    }
 }
 ?>

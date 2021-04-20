@@ -640,7 +640,10 @@ class TxnInfo
 	 */
 	public function getFXServiceTypeID() : ?int { return $this->_fxServiceTypeID; }
 
-
+	public function setFXServiceTypeID(int $fxTypeId) : void
+	{
+		$this->_fxServiceTypeID = $fxTypeId;
+	}
 	/**
 	 * Returns the Configuration for the Client who owns the Transaction.
 	 *
@@ -1759,7 +1762,7 @@ class TxnInfo
 
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
-                $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],$misc["sessiontype"],$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
+                $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],"1",$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
             }
             else{
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
@@ -1808,7 +1811,7 @@ class TxnInfo
 
             $paymentSession = null;
             if($misc["sessionid"] == -1){
-                $paymentSession = PaymentSession::Get($obj_db, $obj,$misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["orderid"], $misc["sessiontype"], $misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
+                $paymentSession = PaymentSession::Get($obj_db, $obj,$misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["orderid"], "1", $misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
             }
             else{
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
@@ -2007,7 +2010,7 @@ class TxnInfo
 						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified, profile_seq, trip_tag, trip_seq, product_code, product_category, product_item)
 					VALUES
 						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now(), ". $aBillingSummary["profile_seq"] .", ". $aBillingSummary["trip_tag"] . ", " . $aBillingSummary["trip_seq"] .", '" . $aBillingSummary["product_code"] ."', '" .$aBillingSummary["product_category"]. "', '" .$aBillingSummary["product_item"]. "')";
-
+			
 			if (is_resource($obj_DB->query($sql) ) === false)
 			{
 				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for billing summary: ". $RS["ID"], 1002); }
@@ -2166,7 +2169,7 @@ class TxnInfo
 				// Error: Unable to generate a new Flight ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
 
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone, op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal)
+            $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone, op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal)
 					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."',
 					'". $aFlightData["mkt_flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["op_airline_code"] ."',
 					'". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', 
@@ -2174,7 +2177,7 @@ class TxnInfo
 					'". $aFlightData["departure_timezone"] ."', '". $aFlightData["op_flight_number"] ."', '". $aFlightData["arrival_timezone"] ."', '". $aFlightData["mkt_airline_code"] ."', 
 					'". $aFlightData["departure_city"] ."', '". $aFlightData["arrival_city"] ."', '". $aFlightData["aircraft_type"] ."', '". $aFlightData["arrival_terminal"] ."', '". $aFlightData["departure_terminal"] ."')";
 
-				$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
+            $this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				
 				// Error: Unable to insert a new flight record in the Flight Table
 				if (is_resource($obj_DB->query($sql) ) === false)
@@ -2204,18 +2207,18 @@ class TxnInfo
 		$aReturnValue = "";
 		if( is_array($aPassengerData) === true )
 		{
-
-			    $sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".passenger_Tbl_id_seq') AS id FROM DUAL";
+			
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".passenger_Tbl_id_seq') AS id FROM DUAL";
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Passenger ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
-	
-				
-						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount, seq)
-						VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."',". $aPassengerData["amount"] .", ". $aPassengerData["seq"] .")";
 
-				// Error: Unable to insert a new passenger record in the Passenger Table
-				$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
+
+                        $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount, seq)
+                            VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."',". $aPassengerData["amount"] .", ". $aPassengerData["seq"] .")";
+
+                // Error: Unable to insert a new passenger record in the Passenger Table
+                $this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				if (is_resource($obj_DB->query($sql) ) === false)
 				{
 					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Passenger: ". $RS["ID"], 1002); }
@@ -2223,7 +2226,7 @@ class TxnInfo
 				else
 				{
 					$aReturnValue = $RS["ID"];
-
+	
 				}
 	
 			
@@ -2312,14 +2315,18 @@ class TxnInfo
     {
         $this->_lAmount = $amount;
         $this->_lConvertedAmount = $amount;
-        if ($this->getInitializedAmount() === $this->getPaymentSession()->getAmount())
-        {
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$this->getSessionId();
-            $obj_DB->query($sql);
-    	}
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount.", convertedamount = ".$amount."  WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
     }
+
+    function updateSessionType(RDB $obj_DB,$amount)
+	{
+		if ($amount < $this->getPaymentSession()->getAmount())
+        {
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->getSessionId() . " and sessiontypeid = 1";
+            $obj_DB->query($sql);
+    	}
+	}
 
     /**
      * Returns the Product Type
@@ -2507,7 +2514,10 @@ class TxnInfo
         $stateId = 0;
         try
         {
-            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = '" . $this->getID() . "'";
+            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE  stateid in (".Constants::iINPUT_VALID_STATE.",".Constants::iPAYMENT_INIT_WITH_PSP_STATE.",
+                            ".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",
+                            ".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",
+                            ".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.") and txnid = '" . $this->getID() . "' order by id desc limit 1";
 
             $resultSet = $obj_DB->getName($query);
             if (is_array($resultSet) === true)

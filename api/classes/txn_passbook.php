@@ -1012,4 +1012,73 @@ final class TxnPassbook
 
 	    return $xml;
     }
+
+     /**
+     * @return int
+     */
+    public function getAuthorizedAmount()
+    {
+        return $this->_authorizedAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCapturedAmount()
+    {
+        return $this->_capturedAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRefundedAmount()
+    {
+        return $this->_refundedAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCancelledAmount()
+    {
+        return $this->_cancelledAmount;
+    }
+
+    /**
+     * In case of offline payment currency conversion also happen offline CPD/mPoint get
+     * conversion details in callback
+     *
+     * Purpose of this method is to update the amount and current of passbook entry where performedopt is 2000
+     * In other cases only state will update nothing else
+     *
+     * @param int $paymentType
+     * @param int $amount
+     * @param int $currencyId
+     *
+     * @return bool
+     */
+    public function updatePerformedOptEntry(int $paymentType, int $amount, int $currencyId) : bool
+    {
+        if($paymentType === Constants::iPAYMENT_TYPE_OFFLINE) {
+            $sql = 'UPDATE Log' . sSCHEMA_POSTFIX . '.TxnPassbook_tbl
+					SET currencyid = ' .$currencyId . ', amount=' . $amount . '
+					WHERE clientid = ' . $this->getClientId() . ' AND transactionid = '. $this->getTransactionId() ." 
+					AND performedopt = 2000 AND status = '" . Constants::sPassbookStatusInProgress."'";
+            $res = $this->getDBConn()->query($sql);
+
+            if ($this->getDBConn()->countAffectedRows($res) > 0) {
+                return TRUE;
+            }
+            else
+            {
+                trigger_error('Unable to update passbook amount and currency for transaction id ' . $this->getTransactionId());
+            }
+        }
+        else
+        {
+            trigger_error('Can not to update passbook amount and currency for transaction id ' . $this->getTransactionId() . ', Updation allowed only for offline payment type', E_USER_WARNING );
+        }
+        return FALSE;
+    }
 }

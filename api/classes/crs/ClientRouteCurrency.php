@@ -147,7 +147,7 @@ class ClientRouteCurrency
                 trigger_error($e->getMessage(), E_USER_ERROR);
             }
         }
-        return false;
+        return true;
     }
 
 }

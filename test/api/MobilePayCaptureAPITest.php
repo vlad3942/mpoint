@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/captureAPITest.php';
+require_once __DIR__ . '/CaptureAPITest.php';
 
 class MobilePayCaptureAPITest extends CaptureAPITest
 {
@@ -17,10 +17,5 @@ class MobilePayCaptureAPITest extends CaptureAPITest
     public function testSuccessfulCaptureWithAID()
     {
         parent::testSuccessfulCaptureWithAID(Constants::iMOBILEPAY_PSP);
-    }
-
-    public function testSuccessfulCaptureInitiated()
-    {
-        $this->markTestIncomplete();
     }
 }

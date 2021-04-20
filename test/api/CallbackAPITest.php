@@ -22,7 +22,7 @@ class CallbackAPITest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-    private function getTransStatus($iTransStatus)
+    protected function getTransStatus($iTransStatus)
     {
         switch ($iTransStatus)
         {
@@ -37,6 +37,15 @@ class CallbackAPITest extends baseAPITest
                 break;
             case Constants::iPAYMENT_REFUNDED_STATE:
                 $status = '<status code="2003">Transaction is Refunded.</status>';
+                break;
+            case Constants::iPAYMENT_PENDING_STATE:
+                $status = '<status code="1041">Payment is Pending.</status>';
+                break;
+            case Constants::iPAYMENT_REQUEST_CANCELLED_STATE:
+                $status = '<status code="2014">Payment Request is Cancelled.</status>';
+                break;
+            case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
+                $status = '<status code="2015">Payment Request is Expired.</status>';
                 break;
             default:
                 $status = '<status code="999">Unknown Error.</status>';
@@ -116,6 +125,7 @@ class CallbackAPITest extends baseAPITest
 
     public function successfulAutoCapture($pspID, $iTransStatus)
     {
+        $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
@@ -181,6 +191,7 @@ class CallbackAPITest extends baseAPITest
 
     public function successfulNoAutoCapture($pspID, $iTransStatus)
     {
+        $this->bIgnoreErrors=true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
@@ -299,7 +310,7 @@ class CallbackAPITest extends baseAPITest
 		$this->assertEquals(Constants::sPassbookStatusDone, $cStates[0]);
     }
 
-    public function testCallbackAttempt($pspID, $iTransStatus)
+    public function callbackAttemptTest($pspID, $iTransStatus)
     {
         $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/invalidURL.php";

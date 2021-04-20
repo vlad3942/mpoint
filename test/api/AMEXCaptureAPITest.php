@@ -5,15 +5,10 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/captureAPITest.php';
+require_once __DIR__ . '/CaptureAPITest.php';
 
 class AMEXCaptureAPITest extends CaptureAPITest
 {
-	public function testSuccessfulCapture()
-	{
-        $this->markTestIncomplete();
-	}
-
 	public function testSuccessfulCaptureInitiated()
     {
         parent::testSuccessfulCaptureInitiated(Constants::iAMEX_ACQUIRER);

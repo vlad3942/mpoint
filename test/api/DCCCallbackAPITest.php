@@ -5,7 +5,7 @@
  * Time: 19:46
  */
 
-require_once __DIR__. '/callbackAPITest.php';
+require_once __DIR__ . '/CallbackAPITest.php';
 
 class DCCCallbackAPITest extends CallbackAPITest
 {
@@ -36,10 +36,6 @@ class DCCCallbackAPITest extends CallbackAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_ACCEPTED_STATE);
-        $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1);
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_CONSTRUCTED_STATE);
-        $this->assertTrue(is_resource($res) && pg_num_rows($res) == 1 );
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (104,1001014, 5000,208,". Constants::iCaptureRequested. ",NULL,'done',10018)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (105,1001014, 5000,208,NULL,". Constants::iPAYMENT_CAPTURED_STATE. ",'inprogress',104,10018)");
 
@@ -48,15 +44,5 @@ class DCCCallbackAPITest extends CallbackAPITest
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_ACCEPTED_STATE);
-        $this->assertTrue(is_resource($res) && pg_num_rows($res) == 2);
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".Constants::iACKFX_CONSTRUCTED_STATE);
-        $this->assertTrue(is_resource($res) && pg_num_rows($res) == 2 );
     }
-
-    public function testCallbackAttempt()
-    {
-        $this->markTestIncomplete();
-    }
-
 }

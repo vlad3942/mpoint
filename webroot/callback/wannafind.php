@@ -118,7 +118,7 @@ try
 	}
 
 	// Callback URL has been defined for Client and transaction hasn't been duplicated
-	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
+	if ($iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
 		// Transaction uses Auto Capture and Authorization was accepted
 		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
@@ -128,18 +128,15 @@ try
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-				$obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_ACCEPTED_STATE,Constants::iPAYMENT_CAPTURED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 			}
 			else
 			    {
 			        $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-			        $obj_mPoint->notifyForeignExchange(array(Constants::iPAYMENT_CAPTURE_FAILED_STATE),$aHTTP_CONN_INFO['foreign-exchange']);
 			    }
 		}
 		else
 		    {
 		        $obj_mPoint->notifyClient($iStateID, $_REQUEST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-		        $obj_mPoint->notifyForeignExchange(array($iStateID),$aHTTP_CONN_INFO['foreign-exchange']);
 		    }
 	}
 }

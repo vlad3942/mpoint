@@ -1673,6 +1673,7 @@ abstract class Constants
 	const iCARD_DISABLED_BY_PSP_STATE = 3;
 	const iCARD_PREREQUISITE_NOT_MET_STATE = 4;
 	const iCARD_TEMPORARILY_UNAVAILABLE_STATE = 5;
+	const iCARD_DISABLED = 6;
 
 	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';
 	
