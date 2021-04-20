@@ -266,7 +266,7 @@ class ClientRouteConfig
                 $this->_sPassword
             );
 
-            $result = $this->getDBConn()->execute($sql, $aParam);
+            $result = $this->getDBConn()->executeQuery($sql, $aParam);
 
             if ($result === false) {
                 return FALSE;
