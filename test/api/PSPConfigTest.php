@@ -77,7 +77,7 @@ class PSPConfigTest extends baseAPITest
         $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>Test 2c2p-alc</merchantAccount><merchantSubAccount>Test Sub Merchant</merchantSubAccount>', $toAttributeLessXML, 'Error :: Attribute less XML not matched');
 
         $toRouteConfigXML = $obj_PSPConfig->toRouteConfigXML();
-        $this->assertStringContainsString('<route_configuration><id>-1</id><route_id>18</route_id><name>Wire Card</name><mid>Test 2c2p-alc</mid>', $toRouteConfigXML, 'Error :: Route Configuration not matched');
+        $this->assertStringContainsString('<route_configuration><id>-1</id><route_id>18</route_id><name>Wire Card</name><mid></mid><username></username><password></password><route_features></route_features></route_configuration>', $toRouteConfigXML, 'Error :: Route Configuration not matched');
     }
 
     /**
@@ -131,10 +131,10 @@ class PSPConfigTest extends baseAPITest
 
         $this->assertEquals('Test Sub Merchant', $obj_PSPConfig->getMerchantSubAccount(), 'Error:: Merchant SubAccount name missing');
         $toXML = $obj_PSPConfig->toXML();
-        $this->assertStringContainsString('<psp-config id="18" type="1"><name>Wire Card</name><merchant-account>CebuPacific_USD</merchant-account>', $toXML, 'Error :: To XML not matched');
+        $this->assertStringContainsString('<psp-config id="18" type="1"><name>Wire Card</name><merchant-account>Test 2c2p-alc</merchant-account><merchant-sub-account>Test Sub Merchant</merchant-sub-account><username>CELLPM</username><password>HC1XBPV0O4WLKZMG</password><messages></messages><additional-config><property name="3DVERIFICATION">true</property><property name="TEST_MPI">true</property></additional-config></psp-config>', $toXML, 'Error :: To XML not matched');
 
         $toAttributeLessXML = $obj_PSPConfig->toAttributeLessXML();
-        $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>CebuPacific_USD</merchantAccount>', $toAttributeLessXML, 'Error :: Attribute less XML not matched');
+        $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>Test 2c2p-alc</merchantAccount><merchantSubAccount>Test Sub Merchant</merchantSubAccount><username>CELLPM</username><password>HC1XBPV0O4WLKZMG</password><messages></messages><additionalConfig><property><name>3DVERIFICATION</name><value>true</value></property><property><name>TEST_MPI</name><value>true</value></property></additionalConfig></pspConfig>', $toAttributeLessXML, 'Error :: Attribute less XML not matched');
 
         $aMerchantAccountDetails = array('merchantaccount' => 'Test 2c2p-alc', 'username' => 'CELLPM', 'password' => 'HC1XBPV0O4WLKZMG');
         $toAttributeLessXML = $obj_PSPConfig->toAttributeLessXML(2, $aMerchantAccountDetails);
