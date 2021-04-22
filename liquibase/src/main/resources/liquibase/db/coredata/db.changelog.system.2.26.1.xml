@@ -979,42 +979,6 @@
             <column name="name" value="COP"/>
         </insert>
 
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="170"/>
-            <column name="pspid" value="4"/>
-            <column name="name" value="BRL"/>
-        </insert>
-
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="986"/>
-            <column name="pspid" value="4"/>
-            <column name="name" value="COP"/>
-        </insert>
-
-        <!-- Ingenico -->
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="170"/>
-            <column name="pspid" value="21"/>
-            <column name="name" value="BRL"/>
-        </insert>
-
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="986"/>
-            <column name="pspid" value="21"/>
-            <column name="name" value="COP"/>
-        </insert>
 
         <!-- CyberSource -->
         <insert catalogName="system"
@@ -1023,16 +987,7 @@
 
             <column name="currencyid" value="170"/>
             <column name="pspid" value="63"/>
-            <column name="name" value="BRL"/>
-        </insert>
-
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="170"/>
-            <column name="pspid" value="63"/>
-            <column name="name" value="COP"/>
+            <column name="name" value="cCOP"/>
         </insert>
 
         <insert catalogName="system"
@@ -1042,15 +997,6 @@
             <column name="currencyid" value="986"/>
             <column name="pspid" value="63"/>
             <column name="name" value="BRL"/>
-        </insert>
-
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCurrency_Tbl">
-
-            <column name="currencyid" value="986"/>
-            <column name="pspid" value="63"/>
-            <column name="name" value="COP"/>
         </insert>
 
     </changeSet>
