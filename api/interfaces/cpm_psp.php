@@ -641,7 +641,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
 			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
-			
+
 			if ($code == 200 || $code == 303)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -668,10 +668,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if($approvalCode != ''){
 					$sql .= ",approval_action_code = '".$approvalCode."'";
 				}
-
-                if($code == Constants::iPAYMENT_REJECTED_STATE && $this->getTxnInfo()->hasEitherSoftDeclinedState($subCode) === true){
-                    $code = Constants::iPAYMENT_SOFT_DECLINED_STATE;
-                }
 
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)

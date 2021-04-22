@@ -124,8 +124,10 @@ class GeneralTest extends baseAPITest
         $obj_Processor = PaymentProcessor::produceConfig($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $this->_aHTTP_CONN_INFO);
         $response = $obj_Processor->authorize($obj_Elem);
         $code = (int)$response->code;
-        $this->assertEquals(Constants::iPAYMENT_SOFT_DECLINED_STATE, $code);
-        if($code === Constants::iPAYMENT_SOFT_DECLINED_STATE){
+        $subCode = (int)$response->sub_code;
+        $this->assertEquals(Constants::iPAYMENT_REJECTED_STATE, $code);
+        $this->assertEquals(2010301, $subCode);
+        if($code === Constants::iPAYMENT_REJECTED_STATE && $obj_TxnInfo->hasEitherSoftDeclinedState($subCode) === true ){
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iAlternateRoute = $objTxnRoute->getAlternateRoute(Constants::iSECOND_ALTERNATE_ROUTE);
             $this->assertGreaterThanOrEqual(1, $iAlternateRoute);
@@ -156,7 +158,8 @@ class GeneralTest extends baseAPITest
         $obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         if(empty($iAlternateRoute) === false){
             $response = $obj_mPoint->authWithAlternateRoute($obj_TxnInfo, $iAlternateRoute, $this->_aHTTP_CONN_INFO, $obj_Elem);
-            $this->assertEquals(Constants::iPAYMENT_SOFT_DECLINED_STATE, (int)$response->code);
+            $this->assertEquals(Constants::iPAYMENT_REJECTED_STATE, (int)$response->code);
+            $this->assertEquals(2010301, (int)$response->sub_code);
         }
     }
 
