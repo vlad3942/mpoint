@@ -22,7 +22,7 @@ abstract class AuthorizeAPITest extends baseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO));
 	}
 
-	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $currecyid = null,$hmac=null,$cardid=2,$aDccParams=null)
+	protected function getAuthDoc($client, $account, $txn=1, $amount=100, $euaPasswd='', $intAccountId=0, $clientpasswd='', $currecyid = null,$hmac=null,$cardid=2,$aDccParams=null, $bInstallment=false)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -54,6 +54,12 @@ abstract class AuthorizeAPITest extends baseAPITest
             if(empty($aDccParams[2]) === false) { $xml .= '<sale-currencyid>'.$aDccParams[2].'</sale-currencyid>'; }
             if(empty($aDccParams[3]) === false) { $xml .= '<sale-amount>'.$aDccParams[3].'</sale-amount>'; }
             $xml .= '</foreign-exchange-info>';
+        }
+        if($bInstallment === true)
+        {
+            $xml .= '<installment>';
+            $xml .= '<value>5</value>';
+            $xml .= '</installment>';
         }
 		$xml .= '</transaction>';
 		if ($intAccountId > 0)

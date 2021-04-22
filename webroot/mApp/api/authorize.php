@@ -489,6 +489,14 @@ try
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
+                                        // Update installment value if explicitly passed in the request
+                                        $installment = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->installment->value;
+                                        if($installment > 0){
+                                            $data['installment-value'] = $installment;
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                        }
+
                                         // Call get payment data API for wallet and stored card payment
                                         $card_psp_id = -1;
                                         if ($isStoredCardPayment === true)
