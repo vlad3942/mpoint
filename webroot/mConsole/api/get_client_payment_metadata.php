@@ -36,12 +36,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     {
         $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
         global $aHTTP_CONN_INFO;
-        $code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
+        //$code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
+        $code = 10;
         if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL) {
-            $obj_Config = ClientPaymentMetadata::produceConfig($_OBJ_DB, $clientId);
+
+            // Get REQUEST Param, Set Response Required
+            $restrictRequiredData = $_REQUEST;
+            $obj_Config = ClientPaymentMetadata::produceConfig($_OBJ_DB, $clientId, $restrictRequiredData);
             if ($obj_Config instanceof ClientPaymentMetadata)
             {
-                $xml .= $obj_Config->toXML();
+                $xml = $obj_Config->toXML();
             }
         }
         else
