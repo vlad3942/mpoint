@@ -967,7 +967,7 @@
 
     </changeSet>
 
-    <changeSet author="Priya Alamwar" id="2021-04-22-setup-v2.26-system-04">
+    <changeSet author="Priya Alamwar" id="2021-04-22-setup-v2.26-system-05">
 
         <!-- WorldPay -->
         <insert catalogName="system"
@@ -996,6 +996,17 @@
 
             <column name="currencyid" value="986"/>
             <column name="pspid" value="63"/>
+            <column name="name" value="BRL"/>
+        </insert>
+
+        <!-- Ingenico -->
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="986"/>
+            <column name="pspid" value="21"/>
             <column name="name" value="BRL"/>
         </insert>
 
