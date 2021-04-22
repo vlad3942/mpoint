@@ -36,8 +36,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     {
         $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
         global $aHTTP_CONN_INFO;
-        //$code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
-        $code = 10;
+        $code = $obj_mConsole->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
         if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL) {
 
             // Get REQUEST Param, Set Response Required
