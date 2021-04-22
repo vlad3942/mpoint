@@ -635,7 +635,7 @@ class General
         global $_OBJ_TXT;
         $xml = "" ;
 
-        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $obj_TxnInfo->getRouteConfigID());
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
 	    $data = array();
@@ -1699,5 +1699,25 @@ class General
         return -1;
     }
 
+    // Get PSP Config Object
+    public static function producePSPConfigObject(RDB $oDB, TxnInfo $oTI, ?int $cardId, ?int $pspID, bool $bForceLegacy = false): ?PSPConfig
+    {
+        $isLegacy           = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+        $iProcessorType     = self::getPSPType($oDB, $pspID);
+        $iCardType          = OnlinePaymentCardPSPMapping[$cardId];
+        $isOfflineType      = (int)$oTI->getPaymentMethod($oDB)->PaymentType;
+        $routeConfigID      = (int)$oTI->getRouteConfigID();
+
+        if($bForceLegacy === true || strtolower($isLegacy) == 'true') {
+            $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+        }
+        else if(strtolower($isLegacy) == 'false' && ($isOfflineType !== Constants::iPAYMENT_TYPE_OFFLINE || !isset($iCardType) || $iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0 ){
+            $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $routeConfigID);
+        }
+        else {
+            $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
+        }
+        return $oPSPConfig;
+    }
 }
 ?>
