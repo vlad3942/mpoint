@@ -967,7 +967,7 @@
 
     </changeSet>
 
-    <changeSet author="Priya Alamwar" id="2021-04-22-setup-v2.26-system-03">
+    <changeSet author="Priya Alamwar" id="2021-04-22-setup-v2.26-system-04">
 
         <!-- WorldPay -->
         <insert catalogName="system"
@@ -987,7 +987,7 @@
 
             <column name="currencyid" value="170"/>
             <column name="pspid" value="63"/>
-            <column name="name" value="cCOP"/>
+            <column name="name" value="COP"/>
         </insert>
 
         <insert catalogName="system"
