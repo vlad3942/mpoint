@@ -1672,8 +1672,8 @@
 <xs:element name="trip">
 	<xs:complexType>
 		<xs:sequence>
-			<xs:element ref="origin" minOccurs="1" maxOccurs="1" />
-			<xs:element ref="destination" minOccurs="1" maxOccurs="1" />
+			<xs:element name="origin" type="place" minOccurs="1" maxOccurs="1" />
+			<xs:element name="destination" type="place" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="departure-time" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="arrival-time" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="booking-class" minOccurs="1" maxOccurs="1" />
@@ -1711,7 +1711,7 @@
 <xs:element name="profile">
 	<xs:complexType>
 		<xs:sequence>
-			<xs:element type="xs:positiveInteger" name="seq" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:positiveInteger" name="seq" minOccurs="0" maxOccurs="1" />
 			<xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
 			<xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
 			<xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
@@ -1751,31 +1751,16 @@
    </xs:complexType>
 </xs:element>
 
-<xs:element name="origin">
-	<xs:complexType>
+<xs:complexType name="place">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="external-id" type="xs:string" use="required" />
 				<xs:attribute name="country-id" type="xs:string" use="required" />
 				<xs:attribute name="time-zone" type="xs:string" use="required" />
-				<xs:attribute name="terminal" type="xs:string" use="required" />
+				<xs:attribute name="terminal" type="xs:string" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
-	</xs:complexType>
-</xs:element>
-
-<xs:element name="destination">
-	<xs:complexType>
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="external-id" type="xs:string" use="required" />
-				<xs:attribute name="country-id" type="xs:string" use="required" />
-				<xs:attribute name="time-zone" type="xs:string" use="required" />
-				<xs:attribute name="terminal" type="xs:string" use="required" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-</xs:element>
+</xs:complexType>
 
 <xs:element name="transportation">
 	<xs:complexType>
@@ -1784,6 +1769,7 @@
 		</xs:sequence>
 		<xs:attribute name="code" use="required" type="xs:string"/>
 		<xs:attribute name="number" use="required" type="xs:string"/>
+		<xs:attribute name="id" type="xs:string" use="optional" />
 	</xs:complexType>
 </xs:element>
 
