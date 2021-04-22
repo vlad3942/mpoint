@@ -43,7 +43,7 @@ class Authorize extends General
 	 * @throws Exception
 	 * @throws TxnInfoException
 	 */
-	public function redeemVoucher(string $iVoucherID, float $iAmount=-1)
+	public function redeemVoucher(string $iVoucherID = null, float $iAmount=-1)
 	{
 		// Add control state and immediately commit database transaction
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE, "");

@@ -280,9 +280,11 @@ try
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
                                         {
                                             $additionalTxnData = [];
-                                            $additionalTxnData[0]['name'] = 'voucherid';
-                                            $additionalTxnData[0]['value'] = (string)$voucher['id'];
-                                            $additionalTxnData[0]['type'] = 'Transaction';
+                                            if(empty($voucher['id']) === false){
+                                                $additionalTxnData[0]['name'] = 'voucherid';
+                                                $additionalTxnData[0]['value'] = (string)$voucher['id'];
+                                                $additionalTxnData[0]['type'] = 'Transaction';
+                                            }
 
                                             if($obj_TxnInfo->getAdditionalData() !== null)
                                             {

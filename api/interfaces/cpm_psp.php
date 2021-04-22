@@ -792,7 +792,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem(string $iVoucherID, float $iAmount=-1)
+	public function redeem(string $iVoucherID = null, float $iAmount=-1)
 	{
 		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
@@ -834,8 +834,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			{
 				$code = (string)$obj_XML->voucher->transaction;
 			}elseif (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) {
-				$code = (string)$obj_XML->external_id;
-
+				if(empty($obj_XML->external_id) === false){
+					$code = (string)$obj_XML->external_id;
+				}
 			}
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
