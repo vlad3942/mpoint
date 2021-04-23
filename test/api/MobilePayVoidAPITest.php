@@ -17,4 +17,9 @@ class MobilePayVoidAPITest extends VoidAPITest
 	{
 		parent::testSuccessfulCancelTriggeredByVoid(Constants::iMOBILEPAY_PSP);
 	}
+
+    public function testSuccessfulCancelTriggeredByVoidAID()
+    {
+        parent::testSuccessfulCancelTriggeredByVoidAID(Constants::iMOBILEPAY_PSP);
+    }
 }

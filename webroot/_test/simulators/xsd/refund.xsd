@@ -106,6 +106,8 @@
 													<xs:element name="action-code" type="xs:string" minOccurs="0"/>
 													<xs:element name="auth-original-data" type="xs:string" minOccurs="0"/>
 													<xs:element name="language" type="xs:string"/>
+													<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+													<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
 												</xs:all>
 												<xs:attribute type="xs:positiveInteger" name="id"/>
 												<xs:attribute type="xs:positiveInteger" name="type"/>
@@ -207,6 +209,399 @@
 						<xs:element type="xs:integer" name="pspid"/>
 						<xs:element type="xs:integer" name="reference"/>
 					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="additional-data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:simpleType name="email">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[^@]+@[^\.]+\..+" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="phone">
+		<xs:simpleContent>
+			<xs:extension base="xs:token">
+				<xs:attribute name="country-id" type="countryid" use="required" />
+				<xs:attribute name="operator-id" type="operatorid" use="optional" />
+				<xs:attribute name="country-code" type="countrycode" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="operatorid">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:minInclusive value="10000" />
+			<xs:maxInclusive value="99999" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="countryid">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="100" />
+			<xs:maxInclusive value="999" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="countrycode">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="999" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="mobile">
+		<xs:simpleContent>
+			<xs:restriction base="phone">
+				<xs:minLength value="6" />
+				<xs:maxLength value="15" />
+				<xs:pattern value="([0-9])*"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:element name="orders">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="shipping-address" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="street" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="street2" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="city" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="state" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="zip" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="country" type="xs:string" minOccurs="1" maxOccurs="1" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+				<xs:element name="fees" maxOccurs="1" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="fee" maxOccurs="unbounded" minOccurs="0">
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:decimal">
+											<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
+											<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+											<xs:attribute name="currency-id" type="xs:positiveInteger" use="optional" />
+											<xs:attribute name="symbol" use="optional">
+												<xs:annotation>
+													<xs:documentation>
+														The symbol that is used to represent the
+														currency (kr. $, € etc.)
+													</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:minLength value="0" />
+														<xs:maxLength value="3" />
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+											<xs:attribute name="format" use="optional">
+												<xs:annotation>
+													<xs:documentation>
+														The price format that is used when displaying
+														prices in the country
+													</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="{CURRENCY}{PRICE}" />
+														<xs:enumeration value="{PRICE} {CURRENCY}" />
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="line-item" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="product" minOccurs="1" maxOccurs="1">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="name" type="name" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="description" type="name" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="image-url" type="url" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="airline-data" type="airline-data"  minOccurs="0" maxOccurs="1" />
+									</xs:all>
+									<xs:attribute name="sku" use="required" type="xs:string"/>
+									<xs:attribute name="order-ref" use="optional" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+							<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
+							<xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+							<xs:element name="reward" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+							<xs:element name="quantity" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+							<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="airline-data">
+		<xs:sequence>
+			<xs:element ref="profiles" minOccurs="1" maxOccurs="1" />
+			<xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
+			<xs:element ref="trips"  minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="billing-summary">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+				<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="fare" type="fare-type-detail" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="add-ons" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="add-on" type="fare-addon-detail" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="fare-type-detail">
+		<xs:all>
+			<xs:element name="type" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="product-code" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="product-category" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="product-item" type="xs:string" minOccurs="1" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="fare-addon-detail">
+		<xs:all>
+			<xs:element name="profile-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="trip-tag" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="trip-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="product-code" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="product-category" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="product-item" type="xs:string" minOccurs="1" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
+
+	<xs:element name="flight-detail">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="service-class" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="flight-number" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="departure-airport" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="arrival-airport" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="airline-code" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="departure-date" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="arrival-date" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:positiveInteger" name="departure-country" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:positiveInteger" name="arrival-country" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="time-zone" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+			<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
+			<xs:attribute name="trip-count" use="optional" type="xs:positiveInteger"/>
+			<xs:attribute name="service-level" use="optional" type="xs:positiveInteger"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="trips">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="trip" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="trip">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="origin" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="destination" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="departure-time" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="arrival-time" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="booking-class" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="service-level" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="transportation" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+			<xs:attribute name="tag" use="required" type="xs:positiveInteger"/>
+			<xs:attribute name="seq" use="required" type="xs:nonNegativeInteger"/>
+		</xs:complexType>
+	</xs:element>
+
+
+
+	<xs:element name="passenger-detail">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+				<xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
+				<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="profiles">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="profile" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="profile">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:positiveInteger" name="seq" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+				<xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
+				<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="contact-info">
+		<xs:complexType>
+			<xs:all>
+				<xs:element type="email" name="email" minOccurs="0" maxOccurs="1" />
+				<xs:element type="mobile" name="mobile" minOccurs="0" maxOccurs="1"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="origin">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="external-id" type="xs:string" use="required" />
+					<xs:attribute name="country-id" type="xs:string" use="required" />
+					<xs:attribute name="time-zone" type="xs:string" use="required" />
+					<xs:attribute name="terminal" type="xs:string" use="required" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="service-level">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="destination">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="external-id" type="xs:string" use="required" />
+					<xs:attribute name="country-id" type="xs:string" use="required" />
+					<xs:attribute name="time-zone" type="xs:string" use="required" />
+					<xs:attribute name="terminal" type="xs:string" use="required" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="transportation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="carriers" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+			<xs:attribute name="code" use="required" type="xs:string"/>
+			<xs:attribute name="number" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="carriers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="carrier" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="carrier">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:positiveInteger" name="number" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+			<xs:attribute name="code" use="required" type="xs:string"/>
+			<xs:attribute name="type-id" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="additional-order-data" >
+		<xs:all>
+			<xs:element type="name" name="description" minOccurs="1" maxOccurs="1"/>
+			<xs:element type="xs:string" name="value" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+
+	<xs:simpleType name="name">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="url">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="http.?://.+" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="fee">
+		<xs:sequence>
+			<xs:element name="fee" maxOccurs="unbounded" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:decimal">
+							<xs:attribute name="type" use="optional" />
+							<xs:attribute name="country-id" use="optional" />
+						</xs:extension>
+					</xs:simpleContent>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>

@@ -22,7 +22,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-    protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0,$countryid=100)
+    protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0,$countryid=100, $orderXml='')
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -33,10 +33,12 @@ class InitializeAPIValidationTest extends baseAPITest
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'.$amount.'</amount>';
 		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+        if(!empty($orderXml))
+            $xml .= $orderXml;
 		if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
         if($fxservicetypeid > 0)
             $xml .= '<foreign-exchange-info><service-type-id>'.$fxservicetypeid.'</service-type-id></foreign-exchange-info>';
-		$xml .= '</transaction>';
+        $xml .= '</transaction>';
 		if(isset($token) === true)
         {
 		    $xml .= '<auth-token>'.$token.'</auth-token>';
@@ -771,4 +773,265 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Voucher</name><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>Voucher</card></vouchers>', $sReplyBody);
 	}
 
+    public function testAirlineData()
+    {
+
+        /**   AIR LINE DATA XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <root>
+        <initialize-payment account="100770" client-id="10077">
+        <transaction order-no="TESTABHINAVV1" type-id="1">
+        <amount country-id="640">100000</amount>
+        <hmac></hmac>
+        <orders>
+        <line-item>
+        <product sku="product-ticket">
+        <name>ONE WAY</name>
+        <description>MNL-CEB</description>
+        <airline-data>
+        <profiles>
+        <profile>
+        <seq>2</seq>
+        <title>Mr</title>
+        <first-name>dan</first-name>
+        <last-name>dan</last-name>
+        <type>ADT</type>
+        <contact-info>
+        <email>dan@dan.com</email>
+        <mobile country-id="640">9187231231</mobile>
+        </contact-info>
+        <additional-data>
+        <param name="loyality_id">345rtyu</param>
+        </additional-data>
+        </profile>
+        </profiles>
+        <billing-summary>
+        <fare-detail>
+        <fare>
+        <type>1</type>
+        <description>adult</description>
+        <currency>PHP</currency>
+        <amount>60</amount>
+        <product-code>ABF</product-code>
+        <product-category>FARE</product-category>
+        <product-item>Base fare for adult</product-item>
+        </fare>
+        </fare-detail>
+        <add-ons>
+        <add-on>
+        <profile-seq>1</profile-seq>
+        <trip-tag>2</trip-tag>
+        <trip-seq>2</trip-seq>
+        <description>adult</description>
+        <currency>PHP</currency>
+        <amount>60</amount>
+        <product-code>ABF</product-code>
+        <product-category>FARE</product-category>
+        <product-item>Base fare for adult</product-item>
+        </add-on>
+        </add-ons>
+        </billing-summary>
+        <trips>
+        <trip tag="1" seq="1">
+        <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin>
+        <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination>
+        <departure-time>2021-03-07T19:35:00Z</departure-time>
+        <arrival-time>2021-03-07T21:05:00Z</arrival-time>
+        <booking-class>Z</booking-class>
+        <service-level>Economy</service-level>
+        <transportation code="5J" number="1">
+        <carriers>
+        <carrier code="5J" type-id="Aircraft Boeing-737-9">
+        <number>563</number>
+        </carrier>
+        </carriers>
+        </transportation>
+        <additional-data>
+        <param name="fare_basis">we543s3</param>
+        </additional-data>
+        </trip>
+        </trips>
+        </airline-data>
+        </product>
+        <amount>125056</amount>
+        <quantity>1</quantity>
+        <additional-data>
+        <param name="deviceFingerPrint">hVdMGC9x3eJsGssbGZFB9d4Q7hdP</param>
+        </additional-data>
+        </line-item>
+        </orders>
+        </transaction>
+        <client-info language="en" sdk-version="2.0.0" version="2.0.0" platform="HTML5">
+        <mobile operator-id="64000" country-id="640">9766367227</mobile>
+        <email>abhinav.shaha@cellpointmobile.com</email>
+        <customer-ref>abhinav.shaha@cellpointmobile.com</customer-ref>
+        </client-info>
+        </initialize-payment>
+        </root>*/
+
+        $pspID = Constants::iWIRE_CARD_PSP;
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10078, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100780, 10078)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10078, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10078, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100780, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10078, 2, $pspID, true, 1)");
+
+        $orderXml = '<orders> <line-item> <product sku="product-ticket"> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>2</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <billing-summary> <fare-detail> <fare> <type>1</type> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </fare> </fare-detail> <add-ons> <add-on> <profile-seq>1</profile-seq> <trip-tag>2</trip-tag> <trip-seq>2</trip-seq> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </add-on> </add-ons> </billing-summary> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="deviceFingerPrint">hVdMGC9x3eJsGssbGZFB9d4Q7hdP</param> </additional-data> </line-item> </orders>';
+
+        $xml = $this->getInitDoc(10078, 100780, 608,null,100000,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","0", 640, $orderXml);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+        $this->assertStringContainsString('<orders><line-item><product sku="product-ticket"><name>ONE WAY</name><description>MNL-CEB</description><airline-data><profiles><profile><seq>2</seq><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></profile></profiles><billing-summary><fare-detail><fare><type>1</type><description>adult</description><currency>PHP</currency><amount>60</amount><product-code>ABF</product-code><product-category>FARE</product-category><product-item>Base fare for adult</product-item></fare></fare-detail><add-ons><add-on><profile-seq>1</profile-seq><trip-tag>2</trip-tag><trip-seq>2</trip-seq><description>adult</description><currency>PHP</currency><amount>60</amount><product-code>ABF</product-code><product-category>FARE</product-category><product-item>Base fare for adult</product-item></add-on></add-ons></billing-summary><trips><trip tag="1" seq="1"><origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin><destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination><departure-time>2021-03-07T19:35:00Z</departure-time><arrival-time>2021-03-07T21:05:00Z</arrival-time><booking-class>Z</booking-class><service-level>Economy</service-level><transportation code="5J" number="1"><carriers><carrier code="5J" type-id="Aircraft Boeing-737-9"><number>563</number></carrier></carriers></transportation><additional-data><param name="fare_basis">we543s3</param></additional-data></trip></trips></airline-data></product><amount>125056</amount><quantity>1</quantity><additional-data><param name="deviceFingerPrint">hVdMGC9x3eJsGssbGZFB9d4Q7hdP</param></additional-data></line-item></orders>', $sReplyBody);
+
+        //Check passenger_tbl entry
+        $res =  $this->queryDB("SELECT seq from Log.Order_Tbl ot join Log.passenger_tbl pt on ot.id = pt.order_id WHERE ot.orderref='1234abc'");
+
+        $this->assertTrue(is_resource($res) );
+
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $seq = (int)$row["seq"];
+        }
+        $this->assertEquals(2, $seq);
+
+        //Check billing_summary_tbl entry
+        $res =  $this->queryDB("SELECT profile_seq, trip_tag, trip_seq, product_code, product_category, product_item from Log.Order_Tbl ot join Log.billing_summary_tbl bst on ot.id = bst.order_id WHERE ot.orderref='1234abc' and bst.bill_type='Fare'");
+
+        $this->assertTrue(is_resource($res) );
+
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $profileSeq = (int) $row['profile_seq'];
+            $tripTag = (int) $row['trip_tag'];
+            $tripSeq = (int) $row['trip_seq'];
+            $productCode = $row["product_code"];
+            $productCat = $row['product_category'];
+            $productItem = $row['product_item'];
+
+        }
+        $this->assertEquals(0, $profileSeq);
+        $this->assertEquals(0, $tripTag);
+        $this->assertEquals(0, $tripSeq);
+        $this->assertEquals('ABF', $productCode);
+        $this->assertEquals('FARE', $productCat);
+        $this->assertEquals('Base fare for adult', $productItem);
+
+        //Check billing_summary_tbl entry
+        $res =  $this->queryDB("SELECT profile_seq, trip_tag, trip_seq, product_code, product_category, product_item from Log.Order_Tbl ot join Log.billing_summary_tbl bst on ot.id = bst.order_id WHERE ot.orderref='1234abc' and bst.bill_type='Add-on'");
+
+        $this->assertTrue(is_resource($res) );
+
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $profileSeq = (int) $row['profile_seq'];
+            $tripTag = (int) $row['trip_tag'];
+            $tripSeq = (int) $row['trip_seq'];
+            $productCode = $row["product_code"];
+            $productCat = $row['product_category'];
+            $productItem = $row['product_item'];
+        }
+        $this->assertEquals(1, $profileSeq);
+        $this->assertEquals(2, $tripTag);
+        $this->assertEquals(2, $tripSeq);
+        $this->assertEquals('ABF', $productCode);
+        $this->assertEquals('FARE', $productCat);
+        $this->assertEquals('Base fare for adult', $productItem);
+
+        //Check flight_tbl entry
+        $res =  $this->queryDB("SELECT op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal from Log.Order_Tbl ot join Log.flight_tbl ft on ot.id = ft.order_id WHERE ot.orderref='1234abc'");
+
+        $this->assertTrue(is_resource($res) );
+
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $opFlightNumber = $row["op_flight_number"];
+            $arrivalTz = $row["arrival_timezone"];
+            $mktAirlineCode = $row["mkt_airline_code"];
+            $deptCity = $row["departure_city"];
+            $arrCity = $row["arrival_city"];
+            $aircraftType = $row["aircraft_type"];
+            $arrivalTerminal = $row["arrival_terminal"];
+            $deptTerminal = $row["departure_terminal"];
+
+        }
+        $this->assertEquals('1', $opFlightNumber);
+        $this->assertEquals('+08:00', $arrivalTz);
+        $this->assertEquals('5J', $mktAirlineCode);
+        $this->assertEquals('Ninoy Aquino International Airport', $deptCity);
+        $this->assertEquals('Mactan Cebu International Airport', $arrCity);
+        $this->assertEquals('Aircraft Boeing-737-9', $aircraftType);
+        $this->assertEquals('2', $arrivalTerminal);
+        $this->assertEquals('1', $deptTerminal);
+
+    }
+
+    public function testAirlineDataWithoutBillingSummary()
+    {
+
+        $pspID = Constants::iWIRE_CARD_PSP;
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10078, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100780, 10078)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10078, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10078, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100780, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10078, 2, $pspID, true, 1)");
+
+        $orderXml = '<orders> <line-item> <product sku="product-ticket"> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>2</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="deviceFingerPrint">hVdMGC9x3eJsGssbGZFB9d4Q7hdP</param> </additional-data> </line-item> </orders>';
+
+        $xml = $this->getInitDoc(10078, 100780, 608,null,100000,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","0", 640, $orderXml);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+        $this->assertStringContainsString('<orders><line-item><product sku="product-ticket"><name>ONE WAY</name><description>MNL-CEB</description><airline-data><profiles><profile><seq>2</seq><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></profile></profiles><trips><trip tag="1" seq="1"><origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin><destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination><departure-time>2021-03-07T19:35:00Z</departure-time><arrival-time>2021-03-07T21:05:00Z</arrival-time><booking-class>Z</booking-class><service-level>Economy</service-level><transportation code="5J" number="1"><carriers><carrier code="5J" type-id="Aircraft Boeing-737-9"><number>563</number></carrier></carriers></transportation><additional-data><param name="fare_basis">we543s3</param></additional-data></trip></trips></airline-data></product><amount>125056</amount><quantity>1</quantity><additional-data><param name="deviceFingerPrint">hVdMGC9x3eJsGssbGZFB9d4Q7hdP</param></additional-data></line-item></orders>', $sReplyBody);
+
+        //Check passenger_tbl entry
+        $res =  $this->queryDB("SELECT seq from Log.Order_Tbl ot join Log.passenger_tbl pt on ot.id = pt.order_id WHERE ot.orderref='1234abc'");
+
+        $this->assertTrue(is_resource($res) );
+
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $seq = (int)$row["seq"];
+        }
+        $this->assertEquals(2, $seq);
+
+        //Check flight_tbl entry
+        $res =  $this->queryDB("SELECT op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal from Log.Order_Tbl ot join Log.flight_tbl ft on ot.id = ft.order_id WHERE ot.orderref='1234abc'");
+
+        $this->assertTrue(is_resource($res) );
+
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $opFlightNumber = $row["op_flight_number"];
+            $arrivalTz = $row["arrival_timezone"];
+            $mktAirlineCode = $row["mkt_airline_code"];
+            $deptCity = $row["departure_city"];
+            $arrCity = $row["arrival_city"];
+            $aircraftType = $row["aircraft_type"];
+            $arrivalTerminal = $row["arrival_terminal"];
+            $deptTerminal = $row["departure_terminal"];
+
+        }
+        $this->assertEquals('1', $opFlightNumber);
+        $this->assertEquals('+08:00', $arrivalTz);
+        $this->assertEquals('5J', $mktAirlineCode);
+        $this->assertEquals('Ninoy Aquino International Airport', $deptCity);
+        $this->assertEquals('Mactan Cebu International Airport', $arrCity);
+        $this->assertEquals('Aircraft Boeing-737-9', $aircraftType);
+        $this->assertEquals('2', $arrivalTerminal);
+        $this->assertEquals('1', $deptTerminal);
+
+    }
 }
