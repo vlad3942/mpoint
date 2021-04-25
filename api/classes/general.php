@@ -12,6 +12,9 @@
  * @package General
  * @version 1.11
  */
+
+use phpDocumentor\Reflection\Types\Boolean;
+
 require_once sCLASS_PATH .'/Parser.php';
 /**
  * General class for functionality methods which are used by several different modules or components
@@ -1756,6 +1759,47 @@ class General
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
         }
         return $oPSPConfig;
+    }
+
+	 /***
+     * Function is used to process Authorize Response and based on Status Code, Do retry
+     *
+     * @param	$obj_TxnInfo		Transaction Info
+     * @param	$cardid				integer  card-id
+     *
+     * @return string autoFetchBalance String
+     */
+	public static function isAutoFetchBalance(TxnInfo $obj_TxnInfo, ?int $cardId): ?bool
+    {
+		$isAutoFetchBalance = false;
+
+		$autoFetchBalance = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"autoFetchBalance");
+		$fetchBalanceUserType = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"fetchBalanceUserType");
+		$fetchBalancePaymentMethods = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"fetchBalancePaymentMethods");
+
+		if (isset($fetchBalanceUserType) === true) {
+			$fetchBalanceUserType = json_decode($fetchBalanceUserType, TRUE, 512, JSON_THROW_ON_ERROR);
+		}
+
+		if (isset($fetchBalancePaymentMethods) === true) {
+			$fetchBalancePaymentMethods = json_decode($fetchBalancePaymentMethods, TRUE, 512, JSON_THROW_ON_ERROR);
+		}
+
+		if($obj_TxnInfo->getAdditionalData() !== null)
+		{
+			foreach ($obj_TxnInfo->getAdditionalData() as $key=>$value)
+			{
+				if($key === "customer-type"){
+					$customerType = $value;
+					break;
+				}
+			}
+		}
+
+		if($autoFetchBalance === "true" && in_array($customerType, $fetchBalanceUserType) && in_array($cardId, $fetchBalancePaymentMethods)){
+			$isAutoFetchBalance = true;
+		}
+		return $isAutoFetchBalance;
     }
 }
 ?>

@@ -1894,4 +1894,15 @@ abstract class AutoCaptureType
    */
 	const eBatchCapt = 4;
 }
+abstract class UserType
+{
+	/*
+   * Auto-Capture flag for mPoint to do not perform auto-capture
+   */
+	const iGuestUser = 1;
+	/*
+   * Auto-Capture flag for mPoint to perform PSP level auto-capture
+   */
+	const iMemberUser = 2;
+}
 ?>

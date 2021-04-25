@@ -81,6 +81,11 @@ class CustomerInfo implements JsonSerializable
      * @var integer
      */
     private $_iOperator;
+    /**
+     * Hold user type
+     * @var integer
+     */
+    private $_iuserType;
 
 	/**
 	 * Default constructor
@@ -145,6 +150,8 @@ class CustomerInfo implements JsonSerializable
     public function getProfileID() { return $this->_iProfileID; }
     public function setProfileTypeID($profileTypeId) { $this->_iprofileTypeId = $profileTypeId; }
     public function getProfileTypeID() { return $this->_iprofileTypeId; }
+    public function setUserType($userType) { $this->_iuserType = $userType; }
+    public function getUserType() { return $this->_iuserType; }
 
 	public function toXML()
 	{

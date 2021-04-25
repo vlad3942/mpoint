@@ -166,6 +166,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
 					$authToken = trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'});
                     $profileTypeId = null;
+                    $userType = null;
                     $clientId = (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"] ; 
                     if (empty($authenticationURL) === false && empty($authToken)=== false)
                     {
@@ -191,6 +192,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         if ($code == 10) {
                             $bIsSingleSingOnPass = true;
                             $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
+                            $userType = $obj_CustomerInfo->getUserType();
                         } 
 
                     }  
@@ -416,6 +418,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
                             }
 
+							if($userType){
+								$misc = array();
+								$misc['additionaldata']['customer-type'] = $userType;
+								$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
+							}
 							//Test if the order/cart details are passed as part of the input XML request.
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
@@ -829,8 +836,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
                                     }
 
+                                    $fetchBalance = $obj_mPoint->isAutoFetchBalance($obj_TxnInfo, $cardId);
+
                                     $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'" splittable="'.$splittable.'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
+                                    if($fetchBalance === true){
+                                        $cardXML .= '<fetch-balance>true</fetch-balance>';
+                                    }
 
 									if($presentmentCurrency)
                                     {
