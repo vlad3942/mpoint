@@ -1778,11 +1778,11 @@ class General
 		$fetchBalancePaymentMethods = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"fetchBalancePaymentMethods");
 
 		if (isset($fetchBalanceUserType) === true) {
-			$fetchBalanceUserType = json_decode($fetchBalanceUserType, TRUE, 512, JSON_THROW_ON_ERROR);
+			$fetchBalanceUserType = json_decode($fetchBalanceUserType);
 		}
 
 		if (isset($fetchBalancePaymentMethods) === true) {
-			$fetchBalancePaymentMethods = json_decode($fetchBalancePaymentMethods, TRUE, 512, JSON_THROW_ON_ERROR);
+			$fetchBalancePaymentMethods = json_decode($fetchBalancePaymentMethods);
 		}
 
 		if($obj_TxnInfo->getAdditionalData() !== null)
