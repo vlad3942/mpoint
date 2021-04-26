@@ -2,5 +2,5 @@
 
 interface Redeemable
 {
-	public function redeem(string $iVoucherID = null, float $iAmount = -1);
+	public function redeem(string $iVoucherID, float $iAmount = -1);
 }

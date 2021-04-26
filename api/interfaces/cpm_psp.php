@@ -792,7 +792,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $sResponseXML;
     }
 
-	public function redeem(string $iVoucherID = null, float $iAmount=-1)
+	public function redeem(string $iVoucherID, float $iAmount=-1)
 	{
 		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
