@@ -463,6 +463,8 @@ class FlightInfo {
             $xml .= '<destination external-id="'. $this->getArrivalAirport() .'" country-id="' . $this->getArrivalCountry() . '" time-zone="' . $this->getArrivalTimeZone() . '" terminal="' . $this->getArrivalTerminal() . '">'. $this->getArrivalCity() .'</destination>';
             $xml .= '<departure-time>' . $this->_getDateTimeWithZone($this->getDepartureDate ()) . '</departure-time>';
             $xml .= '<arrival-time>' . $this->_getDateTimeWithZone($this->getArrivalDate()) . '</arrival-time>';
+            $xml .= '<departure-time-without-timezone>' . $this->getDepartureDate() . '</departure-time-without-timezone>';
+            $xml .= '<arrival-time-without-timezone>' . $this->getArrivalDate() . '</arrival-time-without-timezone>';
             $xml .= '<booking-class>' . $this->getServiceClass () . '</booking-class>';
             $xml .= '<service-level id="' .$this->getAServiceLevel(). '">' . $this->_getServiceLevelName($this->getAServiceLevel()) . '</service-level>';
             $xml .= '<transportation code="'. $this->getMarketingAirline() .'" number="' . $this->getOpFlightNumber() . '">';
