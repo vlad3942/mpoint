@@ -629,6 +629,8 @@
 				<xs:element ref="destination" minOccurs="1" maxOccurs="1" />
 				<xs:element type="xs:string" name="departure-time" minOccurs="1" maxOccurs="1" />
 				<xs:element type="xs:string" name="arrival-time" minOccurs="1" maxOccurs="1" />
+				<xs:element type="xs:string" name="departure-time-without-timezone" minOccurs="0" maxOccurs="1" />
+				<xs:element type="xs:string" name="arrival-time-without-timezone" minOccurs="0" maxOccurs="1" />
 				<xs:element type="xs:string" name="booking-class" minOccurs="1" maxOccurs="1" />
 				<xs:element ref="service-level" minOccurs="1" maxOccurs="1" />
 				<xs:element ref="transportation" minOccurs="1" maxOccurs="1" />
