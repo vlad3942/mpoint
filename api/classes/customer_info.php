@@ -301,5 +301,4 @@ class CustomerInfo implements JsonSerializable
         return $response;
     }
 }
->>>>>>> 556391c3a2a57467c75b97c1aec60935913766cc
 ?>
