@@ -457,77 +457,87 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 									if($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'}){
 										$billingSummary = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'};
-										for ($k=0; $k<count($billingSummary->{'journey-item'}); $k++ )
-										{
-											$journeyId = (string) $billingSummary->{'journey-item'}[$k]->id;
-											$fareDetail = $billingSummary->{'journey-item'}[$k]->{'fare-detail'};
-											for ($fd=0; $fd<count($fareDetail->fare); $fd++ )
-											{
-												$fareArr = array();
-												$fareArr['journey_ref'] = (string) $journeyId;
-												$fareArr['order_id'] = $order_id;
-												$fareArr['bill_type'] = (string) 'Fare';
-												$fareArr['type_id'] = (string) $fareDetail->fare[$fd]->{'type-id'};
-												$fareArr['description'] = (string) $fareDetail->fare[$fd]->{'description'};
-												$fareArr['currency'] = (string) $fareDetail->fare[$fd]->{'currency'};
-												$fareArr['amount'] = (string) $fareDetail->fare[$fd]->{'amount'};
-												$obj_TxnInfo->setBillingSummary($_OBJ_DB, $fareArr);
-											}
-											$addOns = $billingSummary->{'journey-item'}[$k]->{'add-ons'};
-											for ($ad=0; $ad<count($addOns->{'add-on'}); $ad++ )
-											{
-												$addOnArr = array();
-												$addOnArr['journey_ref'] = (string) $journeyId;
-												$addOnArr['order_id'] = $order_id;
-												$addOnArr['bill_type'] = (string) 'Add-on';
-												$addOnArr['type_id'] = (string) $addOns->{'add-on'}[$ad]->{'type-id'};
-												$addOnArr['description'] = (string) $addOns->{'add-on'}[$ad]->{'description'};
-												$addOnArr['currency'] = (string) $addOns->{'add-on'}[$ad]->{'currency'};
-												$addOnArr['amount'] = (string) $addOns->{'add-on'}[$ad]->{'amount'};
-												$obj_TxnInfo->setBillingSummary($_OBJ_DB, $addOnArr);
-											}
-										}
+                                        if (count($billingSummary->{'fare-detail'}->fare) > 0)
+                                        {
+                                            for ($k=0; $k<count($billingSummary->{'fare-detail'}->fare); $k++)
+                                            {
+                                                $fare = $billingSummary->{'fare-detail'}->fare[$k];
+                                                $fareArr = array();
+                                                $fareArr['order_id'] = $order_id;
+                                                $fareArr['bill_type'] = (string) 'Fare';
+                                                $fareArr['type_id'] = (string) $fare->{'type'};
+                                                $fareArr['profile_seq'] = (int) $fare->{'profile-seq'};
+                                                $fareArr['trip_tag'] = (int) $fare->{'trip-tag'};
+                                                $fareArr['trip_seq'] = (int) $fare->{'trip-seq'};
+                                                $fareArr['description'] = (string) $fare->{'description'};
+                                                $fareArr['currency'] = (string) $fare->{'currency'};
+                                                $fareArr['amount'] = (string) $fare->{'amount'};
+                                                $fareArr['product_code'] = (string) $fare->{'product-code'};
+                                                $fareArr['product_category'] = (string) $fare->{'product-category'};
+                                                $fareArr['product_item'] = (string) $fare->{'product-item'};
+                                                $obj_TxnInfo->setBillingSummary($_OBJ_DB, $fareArr);
+                                            }
+                                        }
+
+                                        if (count($billingSummary->{'add-ons'}->{'add-on'}) > 0)
+                                        {
+                                            for ($k=0; $k<count($billingSummary->{'add-ons'}->{'add-on'}); $k++)
+                                            {
+                                                $addOn = $billingSummary->{'add-ons'}->{'add-on'}[$k];
+                                                $addOnArr = array();
+                                                $addOnArr['order_id'] = $order_id;
+                                                $addOnArr['bill_type'] = (string) 'Add-on';
+                                                $addOnArr['type_id'] = (int) $addOn->{'type'};
+                                                $addOnArr['profile_seq'] = $addOn->{'profile-seq'};
+                                                $addOnArr['trip_tag'] = $addOn->{'trip-tag'};
+                                                $addOnArr['trip_seq'] = $addOn->{'trip-seq'};
+                                                $addOnArr['description'] = (string) $addOn->{'description'};
+                                                $addOnArr['currency'] = (string) $addOn->{'currency'};
+                                                $addOnArr['amount'] = (string) $addOn->{'amount'};
+                                                $addOnArr['product_code'] = (string) $addOn->{'product-code'};
+                                                $addOnArr['product_category'] = (string) $addOn->{'product-category'};
+                                                $addOnArr['product_item'] = (string) $addOn->{'product-item'};
+                                                $obj_TxnInfo->setBillingSummary($_OBJ_DB, $addOnArr);
+                                            }
+                                        }
 									}
 
-									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0)
+									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip) > 0)
 									{
-										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k++ )
+										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++ )
 										{
-										$data['flights']['service_class'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};
-										$data['flights']['departure_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-airport'};
-										$data['flights']['arrival_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
-										$data['flights']['airline_code'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
-										$data['flights']['arrival_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'};
-										$data['flights']['departure_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
-										$data['flights']['flight_number'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'flight-number'};
-                                        if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-country'}) == 1)
-                                        {
-                                            $data['flights']['departure_country'] = (int)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-country'};
-                                        }
-                                        else
-                                        {
-                                            $data['flights']['departure_country'] = 0;
-                                        }
-                                        if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-country'}) == 1)
-                                        {
-                                            $data['flights']['arrival_country'] = (int)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-country'};
-                                        }
-                                        else
-                                        {
-                                            $data['flights']['arrival_country'] = 0;
-                                        }
-                                        $data['flights']['time_zone'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'time-zone'};
-                                        $data['flights']['order_id'] = $order_id;
-                                        $data['flights']['tag'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['tag'];
-                                        $data['flights']['trip_count'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['trip-count'];
-                                        $data['flights']['service_level'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['service-level'];
+										$flight =  $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
+                                        $serviceClass = strtoupper(preg_replace('/\s+/','',$flight->{'service-level'}));
+										$data['flights']['service_level'] = (string) constant("Constants::$serviceClass");
+										$data['flights']['service_class'] = (string) $flight->{'booking-class'};
+                                        $data['flights']['arrival_date'] = (string) $flight->{'arrival-time'};
+                                        $data['flights']['departure_date'] = (string) $flight->{'departure-time'};
+                                        $data['flights']['departure_terminal'] = (string) $flight->origin['terminal'];
+                                        $data['flights']['arrival_terminal'] = (string) $flight->destination['terminal'];
+                                        $data['flights']['departure_city'] = (string) $flight->origin;
+                                        $data['flights']['arrival_city'] = (string) $flight->destination;
+                                        $data['flights']['departure_timezone'] = (string) $flight->origin['time-zone'];
+                                        $data['flights']['arrival_timezone'] = (string) $flight->destination['time-zone'];
 
-										if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) > 0)
+										$data['flights']['departure_airport'] = (string) $flight->origin['external-id'];
+										$data['flights']['arrival_airport'] = (string) $flight->destination['external-id'];
+										$data['flights']['op_airline_code'] = (string) $flight->transportation->carriers->carrier['code'];
+                                        $data['flights']['mkt_airline_code'] = (string) $flight->transportation['code'];
+										$data['flights']['aircraft_type'] = (string) $flight->transportation->carriers->carrier['type-id'];
+										$data['flights']['op_flight_number'] = (string) $flight->transportation['number'];
+										$data['flights']['mkt_flight_number'] = (string) $flight->transportation->carriers->carrier->number;
+                                        $data['flights']['departure_country'] = (int) $flight->origin['country-id'];
+                                        $data['flights']['arrival_country'] = (int) $flight->destination['country-id'];
+                                        $data['flights']['order_id'] = $order_id;
+                                        $data['flights']['tag'] = (string) $flight['tag'];
+                                        $data['flights']['trip_count'] = (string) $flight['seq'];
+
+										if(count($flight->{'additional-data'}) > 0)
 											{
-												for ($l=0; $l<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()); $l++)
+												for ($l=0; $l<count($flight->{'additional-data'}->children()); $l++)
 												{
-													$data['additional'][$l]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l]['name'];
-													$data['additional'][$l]['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l];
+													$data['additional'][$l]['name'] = (string) $flight->{'additional-data'}->param[$l]['name'];
+													$data['additional'][$l]['value'] = (string) $flight->{'additional-data'}->param[$l];
 													$data['additional'][$l]['type'] = (string) "Flight";
 												}
 											}
@@ -539,26 +549,28 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 									}
 
-									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0)
+									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile) > 0)
 									{
-										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k++ )
+										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile); $k++ )
 										{
-											$data['passenger']['first_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'first-name'};
-											$data['passenger']['last_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'last-name'};
-											$data['passenger']['type'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'type'};
-                                            $data['passenger']['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'amount'};
+										    $profile = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile[$k];
+                                            $data['passenger']['seq'] = (integer) $profile->{'seq'};
+										    $data['passenger']['first_name'] = (string) $profile->{'first-name'};
+											$data['passenger']['last_name'] = (string) $profile->{'last-name'};
+											$data['passenger']['type'] = (string) $profile->{'type'};
+                                            $data['passenger']['amount'] = (integer) $profile->{'amount'};
                                             $data['passenger']['order_id'] = $order_id;
-                                            $data['passenger']['title'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'title'};
-                                            $data['passenger']['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->email;
-                                            $data['passenger']['mobile'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile;
-                                            $data['passenger']['country_id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile["country-id"];
+                                            $data['passenger']['title'] = (string) $profile->{'title'};
+                                            $data['passenger']['email'] = (string) $profile->{'contact-info'}->email;
+                                            $data['passenger']['mobile'] = (string) $profile->{'contact-info'}->mobile;
+                                            $data['passenger']['country_id'] = (string) $profile->{'contact-info'}->mobile["country-id"];
 
-											if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}) > 0)
+											if(count($profile->{'additional-data'}) > 0)
 											{
-												for ($l=0; $l<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->children()); $l++)
+												for ($l=0; $l<count($profile->{'additional-data'}->children()); $l++)
 												{
-													$data['additionalp'][$l]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param[$l]['name'];
-													$data['additionalp'][$l]['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param[$l];
+													$data['additionalp'][$l]['name'] = (string) $profile->{'additional-data'}->param[$l]['name'];
+													$data['additionalp'][$l]['value'] = (string) $profile->{'additional-data'}->param[$l];
 													$data['additionalp'][$l]['type'] = (string) "Passenger";
 												}
 											}
@@ -943,11 +955,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								switch ($aPSPs[$j])
 								{
 								case (Constants::iDSB_PSP):
-                                    if(strtolower($is_legacy) == 'false') {
-                                        $obj_PSPConfig = PSPConfig::produceConfiguration($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP, $obj_TxnInfo->getRouteConfigID());
-                                    }else{
-                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
-                                    }
+                                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, Constants::iDSB_PSP);
 									$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
 									$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
 									break;

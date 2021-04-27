@@ -7,4 +7,9 @@ class AlipayPayAPITest extends PayAPITest
     {
         parent::testSuccessfulPay(Constants::iALIPAY_PSP, Constants::iALIPAY_WALLET, Constants::iPROCESSOR_TYPE_APM,Constants::iPROCESSOR_TYPE_APM, 200,840);
 	}
+
+    public function testSuccessfulPayWithAID()
+    {
+        parent::testSuccessfulPayWithAID(Constants::iALIPAY_PSP, Constants::iALIPAY_WALLET, Constants::iPROCESSOR_TYPE_APM,Constants::iPROCESSOR_TYPE_APM, 200,840);
+    }
 }

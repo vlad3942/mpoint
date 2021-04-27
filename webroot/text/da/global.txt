@@ -1408,7 +1408,7 @@ msgstr @@@ Gem kort informationer @@@
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør Betaling @@@
 
-#: /api/classes/callback.php:151
+#: /api/classes/callback.php:148
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
