@@ -68,6 +68,10 @@ class PassengerInfo {
      * Amount Paid by Passenger
      */
     private $_Amount;
+    /**
+     * The sequence number of a passenger
+     */
+    private $_Seq;
 
     /**
      * Default Constructor
@@ -80,9 +84,10 @@ class PassengerInfo {
      * @param $mobile
      * @param $countryId
      * @param $amount
+     * @param $seq
      * @param $Adata
      */
-	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $amount, $Adata = null) {
+	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $amount, $seq, $Adata = null) {
 		$this->_iID = ( integer ) $id;
 		$this->_First_Name = $fnm;
 		$this->_Last_Name = $lnm;
@@ -93,6 +98,7 @@ class PassengerInfo {
 		$this->_Mobile = $mobile;
 		$this->_CountryId = $countryId;
 		$this->_Amount = $amount;
+        $this->_Seq = $seq;
 	}
 	
 	/**
@@ -181,24 +187,34 @@ class PassengerInfo {
         return $this->_Amount;
     }
 
+    /**
+     * Returns the sequence number of a passenger
+     * @return integer
+     */
+    public function getSeqNumber()
+    {
+        return $this->_Seq;
+    }
 
 
-    public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id,amount
+
+    public static function produceConfig(RDB $oDB, $id) : ?PassengerInfo {
+		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id,amount, seq
 					FROM log" . sSCHEMA_POSTFIX . ".passenger_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
 		if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE externalid=" . $RS ["ID"];
+			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Passenger' and externalid=" . $RS ["ID"];
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"],$RSA );
+				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"], $RS["SEQ"], $RSA );
 			} else {
-				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"]);
+				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RS ["AMOUNT"], $RS["SEQ"]);
 			}
 		} else {
+            trigger_error('Unable to create Passenger Info object', E_USER_NOTICE);
 			return null;
 		}
 	}
@@ -229,13 +245,50 @@ class PassengerInfo {
         return $Axml;
     }
 	
-	public function toXML() {
+	public function toXML()
+    {
 		$xml = '';
-		$xml .= '<passenger-detail>';
-		$xml .= '<title>' . $this->getTitle() . '</title>';
-		$xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
-		$xml .= '<last-name>' . $this->getLastName () . '</last-name>';
-		$xml .= '<type>' . $this->getType () . '</type>';
+		if ($GLOBALS['oldOrderXml'] === true) {
+		    // return old AID format
+            $xml = $this->_toOldXML();
+        } else {
+		    //return new AID format
+            $xml .= '<profile>';
+            $xml .= '<seq>' . $this->getSeqNumber() . '</seq>';
+            $xml .= '<title>' . $this->getTitle() . '</title>';
+            $xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
+            $xml .= '<last-name>' . $this->getLastName () . '</last-name>';
+            $xml .= '<type>' . $this->getType () . '</type>';
+            if ($this->getAmount() > 0) { $xml .= '<amount>' . $this->getAmount() . '</amount>'; }
+            if ($this->getEmail() || $this->getMobile())
+            {
+                $xml .= '<contact-info>';
+                $xml .= '<email>' . $this->getEmail() .'</email>';
+                $xml .= '<mobile country-id="' . $this->getCountryId() .'">' . $this->getMobile() .'</mobile>';
+                $xml .= '</contact-info>';
+            }
+            if ($this->getAdditionalData ()) {
+                $xml .= '<additional-data>';
+                foreach ( $this->getAdditionalData () as $pAdditionalData ) {
+                    $xml .= $this->getAdditionalDataArr ( $pAdditionalData );
+                }
+                $xml .= '</additional-data>';
+            } else {
+            }
+            $xml .= '</profile>';
+        }
+
+		return $xml;
+	}
+
+	private function _toOldXML()
+    {
+        $xml = '';
+        $xml .= '<passenger-detail>';
+        $xml .= '<title>' . $this->getTitle() . '</title>';
+        $xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
+        $xml .= '<last-name>' . $this->getLastName () . '</last-name>';
+        $xml .= '<type>' . $this->getType () . '</type>';
         if ($this->getAmount() > 0) { $xml .= '<amount>' . $this->getAmount() . '</amount>'; }
         if ($this->getEmail() || $this->getMobile())
         {
@@ -244,17 +297,18 @@ class PassengerInfo {
             $xml .= '<mobile country-id="' . $this->getCountryId() .'">' . $this->getMobile() .'</mobile>';
             $xml .= '</contact-info>';
         }
-		if ($this->getAdditionalData ()) {
-			$xml .= '<additional-data>';
-			foreach ( $this->getAdditionalData () as $pAdditionalData ) {
-				$xml .= $this->getAdditionalDataArr ( $pAdditionalData );
-			}
-			$xml .= '</additional-data>';
-		} else {
-		}
-		$xml .= '</passenger-detail>';
-		return $xml;
-	}
+        if ($this->getAdditionalData ()) {
+            $xml .= '<additional-data>';
+            foreach ( $this->getAdditionalData () as $pAdditionalData ) {
+                $xml .= $this->getAdditionalDataArr ( $pAdditionalData );
+            }
+            $xml .= '</additional-data>';
+        } else {
+        }
+        $xml .= '</passenger-detail>';
+
+        return $xml;
+    }
 
     public function toAttributeLessXML()
     {

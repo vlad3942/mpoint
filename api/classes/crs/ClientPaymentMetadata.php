@@ -12,69 +12,77 @@ class ClientPaymentMetadata
 {
     /**
      * Configuration for the client payment route
-     * @var ClientRouteConfig
+     * @Array ClientRouteConfig
      */
-    private array $_obj_ClientRouteConfig;
+    private ?array $_obj_ClientRouteConfig;
 
     /**
-     * Configuration for the client payment route country currency
-     * @var ClientCountryCurrencyConfig
+     * Configuration for the client payment route country
+     * @Array ClientCountryCurrencyConfig
      */
-    private array $_obj_ClientCountryCurrencyConfig;
+    private ?array $_obj_ClientCountryConfig;
+
+    /**
+     * Configuration for the client payment route currency
+     * @Array ClientCountryCurrencyConfig
+     */
+    private ?array $_obj_ClientCurrencyConfig;
 
     /**
      * Configuration for the client supported payment methods
-     * @var ClientPaymentMethodConfig
+     * @Array ClientPaymentMethodConfig
      */
-    private array $_obj_ClientPaymentMethodConfig;
+    private ?array $_obj_ClientPaymentMethodConfig;
 
     /**
      * Configuration for the client route feature
-     * @var RouteFeature
+     * @Array RouteFeature
      */
-    private array $_obj_ClientRouteFeatureConfig;
+    private ?array $_obj_ClientRouteFeatureConfig;
 
     /**
      * Object that holds the transaction type configurations
      *
-     * @var TransactionTypeConfig
+     * @Array TransactionTypeConfig
      */
-    private array $_obj_TransactionTypeConfig;
+    private ?array $_obj_TransactionTypeConfig;
 
     /**
      * Object that holds the card state configurations
      *
-     * @var CardState
+     * @Array CardState
      */
-    private array $_obj_CardStateConfig;
+    private ?array $_obj_CardStateConfig;
 
     /**
      * Object that holds the Account configurations
      *
-     * @var AccountConfig
+     * @Array AccountConfig
      */
-    private array $_obj_AccountsConfigurations;
+    private ?array $_obj_AccountsConfigurations;
 
     /**
      * Object that holds the Foreign Exchange Service Type Configurations
      *
-     * @var FxServiceType
+     * @Array FxServiceType
      */
-    private array $_obj_FxServiceTypeConfig;
+    private ?array $_obj_FxServiceTypeConfig;
 
     /**
      * Default Constructor
      *
-     * @param 	ClientRouteConfig $aObj_ClientRouteConfig 						 Hold Configuration for the client payment route
-     * @param 	ClientCountryCurrencyConfig $aObj_ClientCountryCurrencyConfig 	 Hold Configuration for the client payment route country currency
-     * @param 	ClientPaymentMethodConfig $aObj_ClientPaymentMethodConfig 		 Hold Configuration for the client supported payment methods
-     * @param 	RouteFeature $aObj_ClientRouteFeatureConfig 					 Hold Configuration for the client route feature
-     * @param   FxServiceType $aObj_FxServiceTypeConfig                          Hold an array of object of Foreign Exchange Service Type Configurations
+     * @param 	?Array ClientRouteConfig $aObj_ClientRouteConfig  						 Hold Configuration for the client payment route
+     * @param 	?Array ClientCountryCurrencyConfig $aObj_ClientCountryConfig 	 Hold Configuration for the client payment route country
+     * @param 	?Array ClientPaymentMethodConfig $aObj_ClientPaymentMethodConfig 		 Hold Configuration for the client supported payment methods
+     * @param 	?Array RouteFeature $aObj_ClientRouteFeatureConfig 					 Hold Configuration for the client route feature
+     * @param   ?Array FxServiceType $aObj_FxServiceTypeConfig                          Hold an array of object of Foreign Exchange Service Type Configurations
+     * @param   ?Array ClientCountryCurrencyConfig $aObj_ClientCurrencyConfig            Hold Configuration for the client payment route currency
      */
-	public function __construct(array $aObj_ClientRouteConfig, array $aObj_ClientCountryCurrencyConfig, array $aObj_ClientPaymentMethodConfig, array $aObj_ClientRouteFeatureConfig, array $aObj_AccountsConfigurations, array $obj_TransactionTypeConfig, array $aObj_CardStateConfig, array $aObj_FxServiceTypeConfig)
+	public function __construct(?array $aObj_ClientRouteConfig, ?array $aObj_ClientCountryConfig, ?array $aObj_ClientPaymentMethodConfig, ?array $aObj_ClientRouteFeatureConfig, ?array $aObj_AccountsConfigurations, ?array $obj_TransactionTypeConfig, ?array $aObj_CardStateConfig, ?array $aObj_FxServiceTypeConfig, ?array $aObj_ClientCurrencyConfig)
 	{
         $this->_obj_ClientRouteConfig = $aObj_ClientRouteConfig;
-        $this->_obj_ClientCountryCurrencyConfig = $aObj_ClientCountryCurrencyConfig;
+        $this->_obj_ClientCountryConfig = $aObj_ClientCountryConfig;
+        $this->_obj_ClientCurrencyConfig = $aObj_ClientCurrencyConfig;
         $this->_obj_ClientPaymentMethodConfig = $aObj_ClientPaymentMethodConfig;
         $this->_obj_ClientRouteFeatureConfig = $aObj_ClientRouteFeatureConfig;
         $this->_obj_TransactionTypeConfig = $obj_TransactionTypeConfig;
@@ -90,6 +98,9 @@ class ClientPaymentMetadata
      */
 	private function getFxServiceTypeConfigAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_FxServiceTypeConfig) === 0) return '';
+
         $xml = '<fx_service_types>';
         foreach ($this->_obj_FxServiceTypeConfig as $obj_FxServiceType)
         {
@@ -110,6 +121,9 @@ class ClientPaymentMetadata
      */
     private function getAccountsConfigurationsAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_AccountsConfigurations) === 0) return '';
+
         $xml = '<account_configurations>';
         foreach ($this->_obj_AccountsConfigurations as $obj_AccountConfig)
         {
@@ -130,6 +144,9 @@ class ClientPaymentMetadata
      */
 	private function getCardStateAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_CardStateConfig) === 0) return '';
+
         $xml = '<card_states>';
         foreach ($this->_obj_CardStateConfig as $obj_CardState)
         {
@@ -149,6 +166,9 @@ class ClientPaymentMetadata
      */
     private function getTransactionTypeAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_TransactionTypeConfig) === 0) return '';
+
         $xml = '<transaction_types>';
         foreach ($this->_obj_TransactionTypeConfig as $obj_TransactionType)
         {
@@ -167,6 +187,9 @@ class ClientPaymentMetadata
      */
 	private function getPaymentProviderAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_ClientRouteConfig) === 0) return '';
+
         $xml = '<payment_providers>';
         foreach ($this->_obj_ClientRouteConfig as $obj_RC)
         {
@@ -186,12 +209,15 @@ class ClientPaymentMetadata
      */
     private function getPaymentCountryAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_ClientCountryConfig) === 0) return '';
+
         $xml = '<payment_countries>';
-        foreach ($this->_obj_ClientCountryCurrencyConfig as $obj_ClientCountryCurrencyConfig)
+        foreach ($this->_obj_ClientCountryConfig as $obj_ClientCountryConfig)
         {
-            if (($obj_ClientCountryCurrencyConfig instanceof ClientCountryCurrencyConfig) === true)
+            if (($obj_ClientCountryConfig instanceof ClientCountryCurrencyConfig) === true)
             {
-                $xml .= $obj_ClientCountryCurrencyConfig->toCountryAsXML();
+                $xml .= $obj_ClientCountryConfig->toCountryAsXML();
             }
         }
         $xml .= '</payment_countries>';
@@ -205,12 +231,15 @@ class ClientPaymentMetadata
      */
     private function getPaymentCurrencyAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_ClientCurrencyConfig) === 0) return '';
+
         $xml = '<payment_currencies>';
-        foreach ($this->_obj_ClientCountryCurrencyConfig as $obj_ClientCountryCurrencyConfig)
+        foreach ($this->_obj_ClientCurrencyConfig as $obj_ClientCurrencyConfig)
         {
-            if (($obj_ClientCountryCurrencyConfig instanceof ClientCountryCurrencyConfig) === true)
+            if (($obj_ClientCurrencyConfig instanceof ClientCountryCurrencyConfig) === true)
             {
-                $xml .= $obj_ClientCountryCurrencyConfig->toCurrencyAsXML();
+                $xml .= $obj_ClientCurrencyConfig->toCurrencyAsXML();
             }
         }
         $xml .= '</payment_currencies>';
@@ -224,6 +253,9 @@ class ClientPaymentMetadata
      */
     public function getPaymentMethodsAsXML(RDB &$oDB = NULL) : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_ClientPaymentMethodConfig) === 0) return '';
+
         $xml = '<payment_methods>';
         foreach ($this->_obj_ClientPaymentMethodConfig as $obj_PM)
         {
@@ -243,6 +275,9 @@ class ClientPaymentMetadata
      */
     private function getRouteFeatureAsXML() : string
     {
+        // If not found object Return blank
+        if(count($this->_obj_ClientRouteFeatureConfig) === 0) return '';
+
         $xml = '<route_features>';
         foreach ($this->_obj_ClientRouteFeatureConfig as $obj_RF)
         {
@@ -272,36 +307,118 @@ class ClientPaymentMetadata
         return $xml;
     }
 
+    /***
+     * Function is used to set Restrict data as per request param
+     * @param array|null $restrictData  Contains array based on desired dataset.
+     *
+     * @return array
+     */
+    private static function processRestrictDataParam(?array $restrictData): array{
+
+        // Remove Client ID
+        unset($restrictData['client_id']);
+
+        $restrictRequiredData = [];
+        $restrictRequiredData['method']         = !($restrictData['method'] === 'false');
+        $restrictRequiredData['provider']       = !($restrictData['provider'] === 'false');
+        $restrictRequiredData['feature']        = !($restrictData['feature'] === 'false');
+        $restrictRequiredData['currency']       = !($restrictData['currency'] === 'false');
+        $restrictRequiredData['country']        = !($restrictData['country'] === 'false');
+        $restrictRequiredData['card_state']     = !($restrictData['card_state'] === 'false');
+        $restrictRequiredData['fx_service']     = !($restrictData['fx_service'] === 'false');
+        $restrictRequiredData['account_config']     = !($restrictData['account_config'] === 'false');
+        $restrictRequiredData['transaction_type']   = !($restrictData['transaction_type'] === 'false');
+
+        // If no GET PARAM found,
+        if(count($restrictData) === 0) { return $restrictRequiredData; }
+
+        $includeArr = array();
+        $excludeArr = array();
+        foreach ($restrictData as $keyParam => $valParam) {
+            switch ($valParam){
+                case 'true':
+                    $includeArr[$keyParam] = true;
+                    break;
+                case 'false':
+                    $excludeArr[$keyParam] = false;
+                    break;
+            }
+        }
+
+        if(count($includeArr) > 0) {
+            $restrictRequiredData = $includeArr;
+        }
+        else if(count($excludeArr) > 0) {
+            $restrictRequiredData = array_merge_recursive($restrictRequiredData, $excludeArr);
+        }
+
+        return $restrictRequiredData;
+    }
+
     /**
      * Produces a new instance of a Client Payment Metadata
      *
      * @param 	RDB $oDB 		    Reference to the Database Object that holds the active connection to the mPoint Database
      * @param 	integer $clientId 	Unique ID for the Client performing the request
+     * @param   ?array $requestParam Hold Request parAm, based on that, filter data
      * @return 	ClientPaymentMetadata
      */
-    public static function produceConfig(RDB $oDB, int $clientId) : object
+    public static function produceConfig(RDB $oDB, int $clientId, ?array $requestParam = array()) : object
     {
+        // Clean RQ Restrict Param
+        $restrictData = self::processRestrictDataParam($requestParam);
+
         $aObj_ClientRouteConfig = array();
-        $aObj_ClientCountryCurrencyConfig = array();
+        $aObj_ClientCurrencyConfig = array();
+        $aObj_ClientCountryConfig = array();
         $aObj_ClientPaymentMethodConfig = array();
         $aObj_ClientRouteFeatureConfig = array();
         $aObj_AccountsConfigurations = array();
+        $obj_TransactionTypeConfig = array();
+        $aObj_CardStateConfig = array();
+        $aObj_FxServiceTypeConfig = array();
 
         if(empty($clientId) === false)
         {
-            $aObj_ClientRouteConfig = ClientRouteConfig::produceConfig($oDB, $clientId);
-            $aObj_ClientCountryCurrencyConfig = ClientCountryCurrencyConfig::produceConfig($oDB, $clientId);
-            $aObj_ClientPaymentMethodConfig = ClientPaymentMethodConfig::producePaymentMethodConfig($oDB, $clientId);
-            $aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $clientId);
+            if($restrictData['provider'] === true) {
+                $aObj_ClientRouteConfig = ClientRouteConfig::produceConfig($oDB, $clientId);
+            }
+
+            if($restrictData['country'] === true) {
+                $aObj_ClientCountryConfig = ClientCountryCurrencyConfig::produceConfig($oDB, $clientId);
+            }
+
+            if($restrictData['currency'] === true) {
+                $aObj_ClientCurrencyConfig = ClientCountryCurrencyConfig::produceConfig($oDB, $clientId);
+            }
+
+            if($restrictData['method'] === true) {
+                $aObj_ClientPaymentMethodConfig = ClientPaymentMethodConfig::producePaymentMethodConfig($oDB,
+                    $clientId);
+            }
+
+            if($restrictData['account_config'] === true) {
+                $aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $clientId);
+            }
         }
-        $aObj_ClientRouteFeatureConfig = RouteFeature::produceConfig($oDB);
-        $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
-        $aObj_CardStateConfig = CardState::produceConfig($oDB);
-        $aObj_FxServiceTypeConfig = FxServiceType::produceConfig($oDB);
 
-        return new ClientPaymentMetadata($aObj_ClientRouteConfig, $aObj_ClientCountryCurrencyConfig, $aObj_ClientPaymentMethodConfig, $aObj_ClientRouteFeatureConfig, $aObj_AccountsConfigurations, $obj_TransactionTypeConfig, $aObj_CardStateConfig, $aObj_FxServiceTypeConfig);
+        if($restrictData['feature'] === true) {
+            $aObj_ClientRouteFeatureConfig = RouteFeature::produceConfig($oDB);
+        }
+
+        if($restrictData['transaction_type'] === true) {
+            $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
+        }
+
+        if($restrictData['card_state'] === true) {
+            $aObj_CardStateConfig = CardState::produceConfig($oDB);
+        }
+
+        if($restrictData['fx_service'] === true) {
+            $aObj_FxServiceTypeConfig = FxServiceType::produceConfig($oDB);
+        }
+
+        return new ClientPaymentMetadata($aObj_ClientRouteConfig, $aObj_ClientCountryConfig, $aObj_ClientPaymentMethodConfig, $aObj_ClientRouteFeatureConfig, $aObj_AccountsConfigurations, $obj_TransactionTypeConfig, $aObj_CardStateConfig, $aObj_FxServiceTypeConfig, $aObj_ClientCurrencyConfig);
     }
-
-
 }
 ?>

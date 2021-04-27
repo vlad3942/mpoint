@@ -80,8 +80,8 @@ class CustomerInfo implements JsonSerializable
     /**
      * @var integer
      */
-    private $_iOperator;
-    /**
+	private $_iOperator;
+	/**
      * Hold user type
      * @var integer
      */
@@ -149,8 +149,8 @@ class CustomerInfo implements JsonSerializable
 	public function getLanguage() { return $this->_sLanguage; }
     public function getProfileID() { return $this->_iProfileID; }
     public function setProfileTypeID($profileTypeId) { $this->_iprofileTypeId = $profileTypeId; }
-    public function getProfileTypeID() { return $this->_iprofileTypeId; }
-    public function setUserType($userType) { $this->_iuserType = $userType; }
+	public function getProfileTypeID() { return $this->_iprofileTypeId; }
+	public function setUserType($userType) { $this->_iuserType = $userType; }
     public function getUserType() { return $this->_iuserType; }
 
 	public function toXML()
@@ -301,4 +301,5 @@ class CustomerInfo implements JsonSerializable
         return $response;
     }
 }
+>>>>>>> 556391c3a2a57467c75b97c1aec60935913766cc
 ?>

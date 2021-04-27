@@ -29,7 +29,7 @@ class CardValidatorTest extends baseAPITest
                         <cvc>003</cvc>
                         <card-holder-name>test</card-holder-name>
                         <card-number>5555555555554444</card-number>
-                        <expiry>01/21</expiry>				
+                        <expiry>06/24</expiry>				
                     </card>';
 
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
@@ -60,6 +60,11 @@ class CardValidatorTest extends baseAPITest
         $this->assertEquals(710, $this->cardValidator->validateCVC());
     }
 
+    public function testValidateExpiry()
+    {
+        $this->assertEquals(740, $this->cardValidator->validateExpiry());
+    }
+
     public function testNegativeScenario1()
     {
 
@@ -77,5 +82,6 @@ class CardValidatorTest extends baseAPITest
         $this->assertEquals(711, $cardValidator->validateCVC());
         $this->assertEquals(722, $cardValidator->valCardNumber());
         $this->assertEquals(731, $cardValidator->valCardFullName());
+        $this->assertEquals(742, $cardValidator->validateExpiry());
     }
 }
