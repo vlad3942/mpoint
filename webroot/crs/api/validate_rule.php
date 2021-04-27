@@ -22,24 +22,24 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<validate_rule_request>';
-$HTTP_RAW_POST_DATA .= '<cards>';
+$HTTP_RAW_POST_DATA .= '<rule_validation_details>';
+$HTTP_RAW_POST_DATA .= '<card_ids>';
 $HTTP_RAW_POST_DATA .= '<card_id>8</card_id>';
 $HTTP_RAW_POST_DATA .= '<card_id>7</card_id>';
-$HTTP_RAW_POST_DATA .= '</cards>';
-$HTTP_RAW_POST_DATA .= '<currencies>';
+$HTTP_RAW_POST_DATA .= '</card_ids>';
+$HTTP_RAW_POST_DATA .= '<currency_ids>';
 $HTTP_RAW_POST_DATA .= '<currency_id>644</currency_id>';
 $HTTP_RAW_POST_DATA .= '<currency_id>356</currency_id>';
-$HTTP_RAW_POST_DATA .= '</currencies>';
-$HTTP_RAW_POST_DATA .= '<countries>';
+$HTTP_RAW_POST_DATA .= '</currency_ids>';
+$HTTP_RAW_POST_DATA .= '<country_ids>';
 $HTTP_RAW_POST_DATA .= '<country_id>200</country_id>';
 $HTTP_RAW_POST_DATA .= '<country_id>603</country_id>';
-$HTTP_RAW_POST_DATA .= '</countries>';
-$HTTP_RAW_POST_DATA .= '<route_configurations>';
-$HTTP_RAW_POST_DATA .= '<route_id>12</route_id>';
-$HTTP_RAW_POST_DATA .= '<route_id>78</route_id>';
-$HTTP_RAW_POST_DATA .= '</route_configurations>';
-$HTTP_RAW_POST_DATA .= '</validate_rule_request>';
+$HTTP_RAW_POST_DATA .= '</country_ids>';
+$HTTP_RAW_POST_DATA .= '<routeconfig_ids>';
+$HTTP_RAW_POST_DATA .= '<routeconfig_id>12</routeconfig_id>';
+$HTTP_RAW_POST_DATA .= '<routeconfig_id>78</routeconfig_id>';
+$HTTP_RAW_POST_DATA .= '</routeconfig_ids>';
+$HTTP_RAW_POST_DATA .= '</rule_validation_details>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 
@@ -48,12 +48,12 @@ $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 //print_r($obj_DOM);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-    if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'validate_rule_request'}) > 0)
+    if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'rule_validation_details'}) > 0)
     {
-        $aCards = (array) $obj_DOM->{'validate_rule_request'}->cards->{'card_id'} ?? null;
-        $aCountries = (array) $obj_DOM->{'validate_rule_request'}->countries->{'country_id'} ?? null;
-        $aCurrencies = (array) $obj_DOM->{'validate_rule_request'}->currencies->{'currency_id'} ?? null;
-        $sRoutes = (array) $obj_DOM->{'validate_rule_request'}->{'route_configurations'}->{'route_id'} ?? null;
+        $aCards = (array) $obj_DOM->{'rule_validation_details'}->{'card_ids'}->{'card_id'} ?? null;
+        $aCountries = (array) $obj_DOM->{'rule_validation_details'}->{'country_ids'}->{'country_id'} ?? null;
+        $aCurrencies = (array) $obj_DOM->{'rule_validation_details'}->{'currency_ids'}->{'currency_id'} ?? null;
+        $sRoutes = (array) $obj_DOM->{'rule_validation_details'}->{'routeconfig_ids'}->{'routeconfig_id'} ?? null;
         $aMissingRouteConfiguration = array();
         $iConfigCount = (count($aCards) * count($aCurrencies));
         foreach ($sRoutes as $route){
@@ -73,7 +73,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $xml = '<status code="415">Invalid XML Document</status>';
     }
     // Error: Wrong operation
-    elseif (count($obj_DOM->{'validate_rule_request'}) == 0)
+    elseif (count($obj_DOM->{'rule_validation_details'}) == 0)
     {
         header("HTTP/1.1 400 Bad Request");
         $xml = '';
