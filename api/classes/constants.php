@@ -519,13 +519,13 @@ abstract class Constants
      * Defines the ID of the State that indicates that PRE-Auth Review Success
      *
      */
-    const iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE = 3017;
+    const iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE = 30141;
 
     /**
      * Defines the ID of the State that indicates that PRE-Auth Review Fail
      *
      */
-    const iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE = 3018;
+    const iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE = 30142;
 
 	/**
 	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
@@ -579,13 +579,13 @@ abstract class Constants
      * Defines the ID of the State that indicates that POST-Auth Review Success
      *
      */
-    const iPOST_FRAUD_CHECK_REVIEW_SUCCESS_STATE = 3118;
+    const iPOST_FRAUD_CHECK_REVIEW_SUCCESS_STATE = 31141;
 
     /**
      * Defines the ID of the State that indicates that POST-Auth Review Fail
      *
      */
-    const iPOST_FRAUD_CHECK_REVIEW_FAIL_STATE = 3119;
+    const iPOST_FRAUD_CHECK_REVIEW_FAIL_STATE = 31142;
 
 
     /**
