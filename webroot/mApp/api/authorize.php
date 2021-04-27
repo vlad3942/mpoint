@@ -587,7 +587,7 @@ try
 										}
                                         if($obj_card->getExpiry() !== '' && $obj_CardValidator->validateExpiry() !== 740)
                                         {
-                                            $aMsgCds[23]  = 'Invalid Card Expiry: '.$obj_card->getExpiry();;
+                                            $aMsgCds[23]  = 'Invalid Card Expiry: '.$obj_card->getExpiry();
                                         }
 
                                         $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
