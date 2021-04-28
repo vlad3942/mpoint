@@ -964,4 +964,72 @@
 
     </changeSet>
 
+    <changeSet author="Sagar Badave"
+               id="2021-04-23-setup-v2.27-system">
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="30141" />
+            <where>id = 3017</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="30142" />
+            <where>id = 3018</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="31141" />
+            <where>id = 3118</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="31142" />
+            <where>id = 3119</where>
+        </update>
+
+    </changeSet>    <changeSet author="Priya Alamwar" id="2021-04-22-setup-v2.26-system-05">
+
+        <!-- WorldPay -->
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="170"/>
+            <column name="pspid" value="4"/>
+            <column name="name" value="COP"/>
+        </insert>
+
+
+        <!-- CyberSource -->
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="170"/>
+            <column name="pspid" value="63"/>
+            <column name="name" value="COP"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="986"/>
+            <column name="pspid" value="63"/>
+            <column name="name" value="BRL"/>
+        </insert>
+
+        <!-- Ingenico -->
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_Tbl">
+
+            <column name="currencyid" value="986"/>
+            <column name="pspid" value="21"/>
+            <column name="name" value="BRL"/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>

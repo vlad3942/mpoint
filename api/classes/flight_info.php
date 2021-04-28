@@ -42,11 +42,17 @@ class FlightInfo {
 	 */
 	private $_ArrivalAirport;
 	/**
-	 * Unique Value of Airline
+	 * Unique Value of Operating Airline
 	 *
 	 * @var integer
 	 */
-	private $_AirlineCode;
+	private $_OpAirlineCode;
+    /**
+     * Unique Value of Marketing Airline
+     *
+     * @var integer
+     */
+    private $_MktAirlineCode;
 	/**
 	 * Arrival Date of Passenger
 	 *
@@ -66,11 +72,18 @@ class FlightInfo {
 	 */
 	private $_aAdditionalData;
 	/**
-	 * Flight number of this flight
+	 * Marketing Flight number of this flight
 	 *
 	 * @var string
 	 */
-	private $_aFlightNumber;
+	private $_MktFlightNumber;
+
+    /**
+     * Operating Flight number of this flight
+     *
+     * @var string
+     */
+    private $_OpFlightNumber;
 
     /**
      * Captures the itinerary sequence of this flight
@@ -112,28 +125,69 @@ class FlightInfo {
      *
      * @var string
      */
-    private $_sTimeZone;
+    private $_DeptTimeZone;
+    /**
+     * Indicates the arrival date time zone
+     *
+     * @var string
+     */
+    private $_ArrivalTimeZone;
+
+    /**
+     * Indicates the arrival terminal
+     *
+     * @var string
+     */
+    private $_ArrivalTerminal;
+
+    /**
+     * Indicates the departure terminal
+     *
+     * @var string
+     */
+    private $_DeptTerminal;
+
+    /**
+     * Indicates the service level id and name mapping
+     *
+     * @var array
+     */
+    private $_ServiceLevelAndIdMapp = [
+        '1' => 'First Class',
+        '2' => 'Standard',
+        '3' => 'Economy',
+        '4' => 'Premier',
+        '5' => 'Business'
+    ];
 
 
     /**
 	 * Default Constructor
 	 */
-	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $departureCountryId, $arrivalCountryId, $Adata, $timeZone) {
+	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $departureCountryId, $arrivalCountryId, $Adata, $timeZone, $opFlightNumber, $aTimeZone, $mAirlineCode, $deptCity, $arrivalCity, $airCraftType, $aTerminal, $dTerminal ) {
 		$this->_iID = ( integer ) $id;
 		$this->_ServiceClass = $scid;
 		$this->_DepartureAirport = $daid;
 		$this->_ArrivalAirport = $aaid;
-		$this->_AirlineCode = $alid;
+		$this->_OpAirlineCode = $alid;
 		$this->_ArrivalDate = $adid;
 		$this->_DepartureDate = $ddid;
 		$this->_aAdditionalData = $Adata;
-		$this->_aFlightNumber = $fnum;
+		$this->_MktFlightNumber = $fnum;
 		$this->_aTag = $tag;
 		$this->_aTripCount = $tripCount;
 		$this->_aServiceLevel = $serviceLevel;
         $this->_iDepartureCountryId = $departureCountryId;
         $this->_iArrivalCountryId = $arrivalCountryId;
-        $this->_sTimeZone = $timeZone;
+        $this->_DeptTimeZone = $timeZone;
+        $this->_OpFlightNumber = $opFlightNumber;
+        $this->_ArrivalTimeZone = $aTimeZone;
+        $this->_MktAirlineCode = $mAirlineCode;
+        $this->_DepartureCity = $deptCity;
+        $this->_ArrivalCity = $arrivalCity;
+        $this->_AirCraftType = $airCraftType;
+        $this->_ArrivalTerminal = $aTerminal;
+        $this->_DeptTerminal = $dTerminal;
 	}
 	
 	/**
@@ -169,13 +223,22 @@ class FlightInfo {
 		return $this->_ArrivalAirport;
 	}
 	/**
-	 * Returns the Code of that Airline from which Passenger Transacts
+	 * Returns the Operating Code of that Airline from which Passenger Transacts
 	 *
 	 * @return string
 	 */
-	public function getAirline() {
-		return $this->_AirlineCode;
+	public function getOperatingAirline() {
+		return $this->_OpAirlineCode;
 	}
+
+    /**
+     * Returns the Marketing Code of that Airline from which Passenger Transacts
+     *
+     * @return string
+     */
+    public function getMarketingAirline() {
+        return $this->_MktAirlineCode;
+    }
 	/**
 	 * Returns the date of Arrival of that Passenger
 	 *
@@ -201,13 +264,22 @@ class FlightInfo {
 		return $this->_aAdditionalData;
 	}
 	/**
-	 * Returns the flight number of this flight
+	 * Returns the marketing flight number of this flight
 	 *
 	 * @return array
 	 */
-	public function getFlightNumber() {
-		return $this->_aFlightNumber;
+	public function getMktFlightNumber() {
+		return $this->_MktFlightNumber;
 	}
+
+    /**
+     * Returns the operating flight number of this flight
+     *
+     * @return array
+     */
+    public function getOpFlightNumber() {
+        return $this->_OpFlightNumber;
+    }
 
     /**
      * Returns itinerary sequence of this flight
@@ -258,26 +330,101 @@ class FlightInfo {
      * Returns the departure date time zone
      * @return string
      */
-    public function getTimeZone()
+    public function getDeparturetTimeZone()
     {
-        return $this->_sTimeZone;
+        return $this->_DeptTimeZone;
     }
 
-	public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, time_zone
+    /**
+     * Returns the arrival date time zone
+     * @return string
+     */
+    public function getArrivalTimeZone()
+    {
+        return $this->_ArrivalTimeZone;
+    }
+
+    /**
+     * Returns departure city of this flight
+     * @return string
+     */
+    public function getDepartureCity()
+    {
+        return $this->_DepartureCity;
+    }
+
+    /**
+     * Returns arrival city of this flight
+     * @return string
+     */
+    public function getArrivalCity()
+    {
+        return $this->_ArrivalCity;
+    }
+
+    /**
+     * Returns aircraft type of this flight
+     * @return string
+     */
+    public function getAircraftType()
+    {
+        return $this->_AirCraftType;
+    }
+
+    /**
+     * Returns arrival terminal of this flight
+     * @return string
+     */
+    public function getArrivalTerminal()
+    {
+        return $this->_ArrivalTerminal;
+    }
+
+    /**
+     * Returns departure terminal of this flight
+     * @return string
+     */
+    public function getDepartureTerminal()
+    {
+        return $this->_DeptTerminal;
+    }
+
+    /**
+     * Returns the id of service level
+     * @return string
+     */
+    private function _getServiceLevelName($serviceLevelId)
+    {
+        return $this->_ServiceLevelAndIdMapp[$serviceLevelId];
+    }
+
+    /**
+     * Returns date time with timezone
+     * @return string
+     */
+    private function _getDateTimeWithZone($dateTime)
+    {
+        $dt = new DateTime($dateTime);
+        return $dt->format('Y-m-d\TH:i:s\Z');
+    }
+
+	public static function produceConfig(RDB $oDB, $id) : ?FlightInfo {
+		$sql = "SELECT id, service_class, mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone, op_flight_number, arrival_timezone, mkt_airline_code,
+                departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal
 					FROM log" . sSCHEMA_POSTFIX . ".flight_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
 		if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE externalid=" . $RS ["ID"];
+			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Flight' and externalid=" . $RS ["ID"];
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"], $RSA, $RS ["TIME_ZONE"] );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["MKT_FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["OP_AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"], $RSA, $RS ["DEPARTURE_TIMEZONE"], $RS["OP_FLIGHT_NUMBER"], $RS["ARRIVAL_TIMEZONE"], $RS["MKT_AIRLINE_CODE"], $RS["DEPARTURE_CITY"], $RS["ARRIVAL_CITY"], $RS["AIRCRAFT_TYPE"], $RS["ARRIVAL_TERMINAL"], $RS["DEPARTURE_TERMINAL"] );
 			} else {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"],null, $RS ["TIME_ZONE"] );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["MKT_FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["OP_AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RS ["DEPARTURE_COUNTRYID"], $RS ["ARRIVAL_COUNTRYID"],null, $RS ["DEPARTURE_TIMEZONE"], $RS["OP_FLIGHT_NUMBER"], $RS["ARRIVAL_TIMEZONE"], $RS["MKT_AIRLINE_CODE"], $RS["DEPARTURE_CITY"], $RS["ARRIVAL_CITY"], $RS["AIRCRAFT_TYPE"], $RS["ARRIVAL_TERMINAL"], $RS["DEPARTURE_TERMINAL"] );
 			}
 		} else {
+		    trigger_error('Unable to create Flight Info object', E_USER_NOTICE);
 			return null;
 		}
 	}
@@ -305,30 +452,67 @@ class FlightInfo {
         $Axml .= '</param>';
         return $Axml;
     }
-	public function toXML() {
-		$xml = '';
-		$xml .= '<flight-detail tag="'. $this->getATag() .'" trip-count="' . $this->getATripCount() . '" service-level="'. $this->getAServiceLevel() .'">';
-		$xml .= '<service-class>' . $this->getServiceClass () . '</service-class>';
-		$xml .= '<flight-number>' . $this->getFlightNumber () . '</flight-number>';
-		$xml .= '<departure-airport>' . $this->getDepartureAirport () . '</departure-airport>';
-		$xml .= '<arrival-airport>' . $this->getArrivalAirport () . '</arrival-airport>';
-		$xml .= '<airline-code>' . $this->getAirline () . '</airline-code>';
-		$xml .= '<departure-date>' . $this->getDepartureDate () . '</departure-date>';
-		$xml .= '<arrival-date>' . $this->getArrivalDate () . '</arrival-date>';
+    public function toXML() : string
+    {
+        $xml = '';
+        if ($GLOBALS['oldOrderXml'] === true) {
+            $xml .= $this->_toOldXML();
+        } else {
+            $xml .= '<trip tag="'. $this->getATag() .'" seq="' . $this->getATripCount() . '">';
+            $xml .= '<origin external-id="'. $this->getDepartureAirport() .'" country-id="' . $this->getDepartureCountry() . '" time-zone="' . $this->getDeparturetTimeZone() . '" terminal="' . $this->getDepartureTerminal() . '">'. $this->getDepartureCity() .'</origin>';
+            $xml .= '<destination external-id="'. $this->getArrivalAirport() .'" country-id="' . $this->getArrivalCountry() . '" time-zone="' . $this->getArrivalTimeZone() . '" terminal="' . $this->getArrivalTerminal() . '">'. $this->getArrivalCity() .'</destination>';
+            $xml .= '<departure-time>' . $this->_getDateTimeWithZone($this->getDepartureDate ()) . '</departure-time>';
+            $xml .= '<arrival-time>' . $this->_getDateTimeWithZone($this->getArrivalDate()) . '</arrival-time>';
+            $xml .= '<departure-time-without-timezone>' . $this->getDepartureDate() . '</departure-time-without-timezone>';
+            $xml .= '<arrival-time-without-timezone>' . $this->getArrivalDate() . '</arrival-time-without-timezone>';
+            $xml .= '<booking-class>' . $this->getServiceClass () . '</booking-class>';
+            $xml .= '<service-level id="' .$this->getAServiceLevel(). '">' . $this->_getServiceLevelName($this->getAServiceLevel()) . '</service-level>';
+            $xml .= '<transportation code="'. $this->getMarketingAirline() .'" number="' . $this->getOpFlightNumber() . '">';
+            $xml .= '<carriers>';
+            $xml .= '<carrier code="'. $this->getOperatingAirline() .'" type-id="'. $this->getAircraftType() .'">';
+            $xml .= '<number>'. $this->getMktFlightNumber() .'</number>';
+            $xml .= '</carrier>';
+            $xml .= '</carriers>';
+            $xml .= '</transportation>';
+            if ($this->getAdditionalData ()) {
+                $xml .= '<additional-data>';
+                foreach ($this->getAdditionalData () as $fAdditionalData) {
+                    $xml .= $this->getAdditionalDataArr ($fAdditionalData);
+                }
+                $xml .= '</additional-data>';
+            } else {
+            }
+            $xml .= '</trip>';
+        }
+
+        return $xml;
+    }
+
+    private function _toOldXML()
+    {
+        $xml = '';
+        $xml .= '<flight-detail tag="'. $this->getATag() .'" trip-count="' . $this->getATripCount() . '" service-level="'. $this->getAServiceLevel() .'">';
+        $xml .= '<service-class>' . $this->getServiceClass () . '</service-class>';
+        $xml .= '<flight-number>' . $this->getMktFlightNumber() . '</flight-number>';
+        $xml .= '<departure-airport>' . $this->getDepartureAirport () . '</departure-airport>';
+        $xml .= '<arrival-airport>' . $this->getArrivalAirport () . '</arrival-airport>';
+        $xml .= '<airline-code>' . $this->getOperatingAirline() . '</airline-code>';
+        $xml .= '<departure-date>' . $this->getDepartureDate () . '</departure-date>';
+        $xml .= '<arrival-date>' . $this->getArrivalDate () . '</arrival-date>';
         $xml .= '<departure-country>' . $this->getDepartureCountry () . '</departure-country>';
         $xml .= '<arrival-country>' . $this->getArrivalCountry () . '</arrival-country>';
-        $xml .= '<time-zone>' . $this->getTimeZone () . '</time-zone>';
-		if ($this->getAdditionalData ()) {
-			$xml .= '<additional-data>';
-			foreach ($this->getAdditionalData () as $fAdditionalData) {
-				$xml .= $this->getAdditionalDataArr ($fAdditionalData);
-			}
-			$xml .= '</additional-data>';
-		} else {
-		}
-		$xml .= '</flight-detail>';
-		return $xml;
-	}
+        $xml .= '<time-zone>' . $this->getDeparturetTimeZone() . '</time-zone>';
+        if ($this->getAdditionalData ()) {
+            $xml .= '<additional-data>';
+            foreach ($this->getAdditionalData () as $fAdditionalData) {
+                $xml .= $this->getAdditionalDataArr ($fAdditionalData);
+            }
+            $xml .= '</additional-data>';
+        } else {
+        }
+        $xml .= '</flight-detail>';
+        return $xml;
+    }
 
     public function toAttributeLessXML()
     {
@@ -339,10 +523,10 @@ class FlightInfo {
         $xml .= '<serviceLevel>'.$this->getAServiceLevel().'</serviceLevel>';
 
         $xml .= '<serviceClass>' . $this->getServiceClass () . '</serviceClass>';
-        $xml .= '<flightNumber>' . $this->getFlightNumber () . '</flightNumber>';
+        $xml .= '<flightNumber>' . $this->getMktFlightNumber() . '</flightNumber>';
         $xml .= '<departureAirport>' . $this->getDepartureAirport () . '</departureAirport>';
         $xml .= '<arrivalAirport>' . $this->getArrivalAirport () . '</arrivalAirport>';
-        $xml .= '<airlineCode>' . $this->getAirline () . '</airlineCode>';
+        $xml .= '<airlineCode>' . $this->getOperatingAirline() . '</airlineCode>';
         $xml .= '<departureDate>' . $this->getDepartureDate () . '</departureDate>';
         $xml .= '<arrivalDate>' . $this->getArrivalDate () . '</arrivalDate>';
         if ($this->getAdditionalData ())

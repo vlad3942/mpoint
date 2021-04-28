@@ -150,6 +150,16 @@ abstract class CPMFRAUD
         return $fraudCheckResponse;
     }
 
+    public static function attemptFraudInitCallback($iStateId,$sStateName,RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    {
+        $obj_mCard = new CreditCard($obj_DB, $obj_Txt, $obj_TxnInfo);
+        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
+        while ($RS = $obj_DB->fetchName($iFSPRoutes) )
+        {
+            $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
+            $obj_FSP->initCallback($iStateId,$sStateName,$cardTypeId,$iFraudType);
+        }
+    }
 
     public static function hasFraudPassed($aFSPStatus = array())
     {
@@ -416,6 +426,88 @@ abstract class CPMFRAUD
 
         return $b;
     }
+
+    public function initCallback($iStateID, $sStateName, $iCardid,$iFraudType)
+    {
+        if(empty($this->aCONN_INFO["paths"]["callback"]))  return;
+        $obj_TxnInfo = $this->getTxnInfo();
+        $obj_PSPConfig = $this->getPSPConfig();
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
+        $code = 0;
+        $xml  = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<root>';
+        $xml .= '<callback>';
+        $xml .= '<type>'.$iFraudType.'</type>';
+        $xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+        $xml .= '<transaction>';
+        $xml .= '<id>'. $obj_TxnInfo->getID() .'</id> <order_no>'. $obj_TxnInfo->getOrderID() .'</order_no>';
+        $xml .= '<amount_info>';
+        $xml .= '<country_id>'. $obj_TxnInfo->getCountryConfig()->getID() .'</country_id>';
+        $xml .= '<currency_id>'. $obj_TxnInfo->getCurrencyConfig()->getID() .'</currency_id>';
+        $xml .= '<currency>'. $obj_TxnInfo->getCurrencyConfig()->getCode() .'</currency>';
+        $xml .= '<decimals>'. $obj_TxnInfo->getCurrencyConfig()->getDecimals() .'</decimals>';
+        $xml .= '<alpha2code>'. $obj_TxnInfo->getCountryConfig()->getAlpha2code() .'</alpha2code>';
+        $xml .= '<alpha3code>'. $obj_TxnInfo->getCountryConfig()->getAlpha3code() .'</alpha3code>';
+        $xml .= '<code>'. $obj_TxnInfo->getCountryConfig()->getNumericCode() .'</code>';
+        $xml .= '<amount>'. $iAmount .'</amount>';
+        $xml .= '</amount_info>';
+        $xml .= '<card>';
+        $xml .= '<type_id>'.$iCardid.'</type_id><psp_id>'. $obj_TxnInfo->getPSPID() .'</psp_id>';
+        $xml .= '</card>';
+        if($this->getTxnInfo()->getAdditionalData() != null)
+        {
+            $xml .= "<additional_data>";
+            foreach ($this->getTxnInfo()->getAdditionalData() as $key=>$value)
+            {
+                if (strpos($key, 'rule') === false)
+                {
+                    $xml .= '<param> <name>'. $key . '</name>' ;
+                    $xml .= '<value>'. $value . '</value> </param>';
+                }
+            }
+            $xml .="</additional_data>";
+        }
+        $xml .= '<description>'. $this->getTxnInfo()->getDescription() .'</description>';
+        $xml .= '</transaction>';
+        $xml .= '<status code="'. $iStateID .'">'. $sStateName .'</status>';
+        $xml .= '</callback>';
+        $xml .= '</root>';
+
+        try
+        {
+            $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+            $obj_HTTP->disConnect();
+
+            if($code == 200)
+            {
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+                $response = FraudResponse::produceInfoFromXML($iFraudType,$obj_XML);
+                $this->_obj_mPoint->newMessage($this->getTxnInfo()->getID(), $iStateID, $obj_HTTP->getReplyBody());
+              /*  $args = array('amount'=>$this->getTxnInfo()->getAmount(),
+                    'transact'=>$this->getTxnInfo()->getExternalID(),
+                    'cardid'=>$this->getTxnInfo()->getCardID());
+                $this->_obj_mPoint->notifyClient(Constants::iPAYMENT_PENDING_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));*/
+            }
+            else if ($code == 200)
+            {
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
+                else { throw new mPointException("Invalid response from callback controller: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+            }
+            else { throw new mPointException("Callback to mPoint callback controller: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("Callback to mPoint for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+            $code = -1*abs($code);
+        }
+        return $code;
+    }
+
     protected function _constConnInfo($path)
     {
         $aCI = $this->aCONN_INFO;
