@@ -140,7 +140,7 @@ require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Travel Fund component
 require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 // Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/paymaya_acq.php");
+require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 
 
 set_time_limit(120);

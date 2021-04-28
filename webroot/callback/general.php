@@ -155,7 +155,7 @@ require_once(sCLASS_PATH .'/voucher/TravelFund.php');
 // Require model class for Payment Authorization
 require_once(sCLASS_PATH ."/authorize.php");
 // Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/paymaya_acq.php");
+require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 
 
 /**
