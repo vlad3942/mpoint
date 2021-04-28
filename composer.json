@@ -14,7 +14,7 @@
         { "packagist": false }
     ],
     "require": {
-        "cellpointmobile/php5api": "dev-origin/feature/CBS-394",
+        "cellpointmobile/php5api": "v2.02.01",
         "google/cloud-pubsub": "^1.27"
     },
 
