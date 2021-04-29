@@ -4,7 +4,6 @@ require_once(dirname(__FILE__). '/../../../../inc/include.php');
 require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
 $obj_XML = simpledom_load_string(file_get_contents("php://input") );
-// $anonymous = ($obj_XML->login->password === 'member')?('false'):('true');
 
 header("Content-Type: text/plain");
 $xml = '<?xml version="1.0" encoding="UTF-8"?>';
