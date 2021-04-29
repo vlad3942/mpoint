@@ -1762,12 +1762,12 @@ class General
     }
 
 	 /***
-     * Function is used to process Authorize Response and based on Status Code, Do retry
+     * Function is used to process evaluate fetch-balance element value.
      *
      * @param	$obj_TxnInfo		Transaction Info
      * @param	$cardid				integer  card-id
      *
-     * @return string autoFetchBalance String
+     * @return string autoFetchBalance bool
      */
 	public static function isAutoFetchBalance(TxnInfo $obj_TxnInfo, ?int $cardId): ?bool
     {
