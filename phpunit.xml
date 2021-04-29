@@ -31,7 +31,7 @@
 		</testsuite>
 	</testsuites>
 	<coverage includeUncoveredFiles="true"
-              processUncoveredFiles="true"
+              processUncoveredFiles="false"
               ignoreDeprecatedCodeUnits="true"
               disableCodeCoverageIgnore="true">
         <include>

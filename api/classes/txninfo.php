@@ -2007,9 +2007,9 @@ class TxnInfo
 			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Billing Summary ID", 1001); }
 
 			$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl
-						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified)
+						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified, profile_seq, trip_tag, trip_seq, product_code, product_category, product_item)
 					VALUES
-						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now())";
+						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now(), ". $aBillingSummary["profile_seq"] .", ". $aBillingSummary["trip_tag"] . ", " . $aBillingSummary["trip_seq"] .", '" . $aBillingSummary["product_code"] ."', '" .$aBillingSummary["product_category"]. "', '" .$aBillingSummary["product_item"]. "')";
 			
 			if (is_resource($obj_DB->query($sql) ) === false)
 			{
@@ -2169,9 +2169,15 @@ class TxnInfo
 				// Error: Unable to generate a new Flight ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
 
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, time_zone)
-					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', '". $aFlightData["service_level"] ."', '". $aFlightData["departure_country"] ."', '". $aFlightData["arrival_country"] ."', '". $aFlightData["time_zone"] ."')";
-				$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
+            $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone, op_flight_number, arrival_timezone, mkt_airline_code, departure_city, arrival_city, aircraft_type, arrival_terminal, departure_terminal)
+					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."',
+					'". $aFlightData["mkt_flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["op_airline_code"] ."',
+					'". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', 
+					'". $aFlightData["service_level"] ."', '". $aFlightData["departure_country"] ."', '". $aFlightData["arrival_country"] ."', 
+					'". $aFlightData["departure_timezone"] ."', '". $aFlightData["op_flight_number"] ."', '". $aFlightData["arrival_timezone"] ."', '". $aFlightData["mkt_airline_code"] ."', 
+					'". $aFlightData["departure_city"] ."', '". $aFlightData["arrival_city"] ."', '". $aFlightData["aircraft_type"] ."', '". $aFlightData["arrival_terminal"] ."', '". $aFlightData["departure_terminal"] ."')";
+
+            $this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				
 				// Error: Unable to insert a new flight record in the Flight Table
 				if (is_resource($obj_DB->query($sql) ) === false)
@@ -2206,12 +2212,13 @@ class TxnInfo
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Passenger ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
-	
-				
-						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount)
-						VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."',". $aPassengerData["amount"] .")";
-				// Error: Unable to insert a new passenger record in the Passenger Table
-						$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
+
+
+                        $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount, seq)
+                            VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."',". $aPassengerData["amount"] .", ". $aPassengerData["seq"] .")";
+
+                // Error: Unable to insert a new passenger record in the Passenger Table
+                $this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				if (is_resource($obj_DB->query($sql) ) === false)
 				{
 					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Passenger: ". $RS["ID"], 1002); }

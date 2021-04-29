@@ -100,11 +100,8 @@ abstract class Callback extends EndUserAccount
         }
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         if ($oPSPConfig == null) {
-        	if(strtolower($is_legacy) == 'false'  && (int)$oTI->getPaymentMethod($oDB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE){
-                $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $oTI->getRouteConfigID());
-			}else {
-                $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
-            }
+
+			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, null, $pspID);
         }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
@@ -506,7 +503,7 @@ abstract class Callback extends EndUserAccount
 			$sBody .= "&amount=" . urlencode($this->_obj_TxnInfo->getConvertedAmount());
 			$sBody .= "&currency=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
 			$sBody .= "&decimals=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals());
-			$sBody .= "&sale_amount=" . $amt;
+			$sBody .= "&sale_amount=" . $this->_obj_TxnInfo->getInitializedAmount();
 			$sBody .= "&sale_currency=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getCode());
 			$sBody .= "&sale_decimals=" . urlencode($this->_obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals());
 			$sBody .= "&fee=" . intval($fee);
@@ -596,7 +593,8 @@ abstract class Callback extends EndUserAccount
 				$sBody .= "&billing_postal_code=" . urlencode($objb_BillingAddr['zip']);
 				$sBody .= "&billing_email=" . urlencode($objb_BillingAddr['email']);
 				$sBody .= "&billing_mobile=" . urlencode($objb_BillingAddr['mobile']);
-				$sBody .= "&billing_idc=" . urlencode($objb_BillingAddr['mobile_country_id']);
+				$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+				$sBody .= "&billing_idc=" . urlencode($obj_MobileCountryConfig->getCountryCode());
 			}
 			$fxservicetypeid = $this->_obj_TxnInfo->getFXServiceTypeID();
 			if ($fxservicetypeid != 0) {
@@ -1131,7 +1129,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['amount']= $objTransaction->getAmount();
 					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['decimals']= $objTransaction->getCurrencyConfig()->getDecimals();
-					$transactionData['sale_amount'] =  $objTransaction->getAmount();
+					$transactionData['sale_amount'] =  $objTransaction->getInitializedAmount();
 					$transactionData['sale_currency'] =  urlencode($objTransaction->getInitializedCurrencyConfig()->getCode());
 					$transactionData['sale_decimals'] =  $objTransaction->getInitializedCurrencyConfig()->getDecimals();
 					$transactionData['fee']= $objTransaction->getFee();
@@ -1206,7 +1204,8 @@ abstract class Callback extends EndUserAccount
 						$transactionData['billing_postal_code'] =  urlencode($objb_BillingAddr['zip']);
 						$transactionData['billing_email'] =  urlencode($objb_BillingAddr['email']);
 						$transactionData['billing_mobile'] =  urlencode($objb_BillingAddr['mobile']);
-						$transactionData['billing_idc'] =  urlencode($objb_BillingAddr['mobile_country_id']);
+						$obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$objb_BillingAddr['mobile_country_id']);
+						$transactionData['billing_idc'] =  urlencode($obj_MobileCountryConfig->getCountryCode());
 					}
 					$aTxnAdditionalData = $objTransaction->getAdditionalData();
 					if ($aTxnAdditionalData !== NULL) {
@@ -1282,7 +1281,7 @@ abstract class Callback extends EndUserAccount
 		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
 
 		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
-			$this->_obj_PSPConfig = PSPConfig::produceConfig($oDB, $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getPSPID());
+			$this->_obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $this->_obj_TxnInfo, $this->_obj_TxnInfo->getPSPID(), null);
 		}
 		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}

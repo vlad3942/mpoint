@@ -326,10 +326,9 @@
 					<xs:sequence>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
-									<xs:choice minOccurs="1" maxOccurs="1">
-										<xs:element name="voucher" type="voucher"/>
-										<xs:element name="card">
+								<xs:all>
+									<xs:element name="voucher" type="voucher" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="card" minOccurs="0" maxOccurs="1">
 											<xs:complexType>
 												<xs:all>
 													<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
@@ -416,7 +415,6 @@
 												<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 											</xs:complexType>
 										</xs:element>
-									</xs:choice>
 									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
@@ -438,7 +436,7 @@
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
-								</xs:sequence>
+								</xs:all>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
@@ -1588,46 +1586,57 @@
 
 <xs:complexType name="airline-data">
 	<xs:sequence>
-	    <xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
-		<xs:element ref="flight-detail"  minOccurs="1" maxOccurs="unbounded" />
-		<xs:element ref="passenger-detail" minOccurs="1" maxOccurs="unbounded" /> 
+		<xs:element ref="profiles" minOccurs="1" maxOccurs="1" />
+		<xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
+		<xs:element ref="trips"  minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
 </xs:complexType>
 
 <xs:element name="billing-summary">
 	<xs:complexType>
-		<xs:sequence>
-			<xs:element name="journey-item" minOccurs="1" maxOccurs="unbounded">
+		<xs:all>
+			<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+			<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
-					<xs:all>
-						<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-						<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
-								<xs:element name="fare" type="fare-addon-detail" minOccurs="1" maxOccurs="unbounded" />
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="add-ons" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
-								<xs:element name="add-on" type="fare-addon-detail" minOccurs="1" maxOccurs="unbounded" />
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-					</xs:all>
+					<xs:sequence>
+						<xs:element name="fare" type="fare-type-detail" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-		</xs:sequence>
+			<xs:element name="add-ons" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="add-on" type="fare-addon-detail" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
 	</xs:complexType>
 </xs:element>
 
+<xs:complexType name="fare-type-detail">
+	<xs:all>
+		<xs:element name="type" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="product-code" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="product-category" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="product-item" type="xs:string" minOccurs="1" maxOccurs="1" />
+	</xs:all>
+</xs:complexType>
+
 <xs:complexType name="fare-addon-detail">
     <xs:all>
-        <xs:element name="type-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-        <xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
-        <xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
-        <xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="profile-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="trip-tag" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="trip-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="product-code" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="product-category" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="product-item" type="xs:string" minOccurs="1" maxOccurs="1" />
     </xs:all>
 </xs:complexType>
 
@@ -1652,6 +1661,31 @@
 </xs:complexType>
 </xs:element>
 
+<xs:element name="trips">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="trip" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="trip">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="origin" type="place" minOccurs="1" maxOccurs="1" />
+			<xs:element name="destination" type="place" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="departure-time" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="arrival-time" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="booking-class" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="service-level" minOccurs="1" maxOccurs="1" />
+			<xs:element ref="transportation" minOccurs="1" maxOccurs="1" />
+			<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="tag" use="required" type="xs:positiveInteger"/>
+		<xs:attribute name="seq" use="required" type="xs:nonNegativeInteger"/>
+	</xs:complexType>
+</xs:element>
+
 <xs:element name="passenger-detail">
 <xs:complexType>
  <xs:sequence>
@@ -1664,6 +1698,29 @@
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
 </xs:complexType>
+</xs:element>
+
+<xs:element name="profiles">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="profile" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="profile">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element type="xs:positiveInteger" name="seq" minOccurs="0" maxOccurs="1" />
+			<xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
+			<xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+			<xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
+			<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
 </xs:element>
 
 <xs:element name="contact-info">
@@ -1692,6 +1749,46 @@
       </xs:extension>
      </xs:simpleContent>
    </xs:complexType>
+</xs:element>
+
+<xs:complexType name="place">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="external-id" type="xs:string" use="required" />
+			<xs:attribute name="country-id" type="xs:string" use="required" />
+			<xs:attribute name="time-zone" type="xs:string" use="required" />
+			<xs:attribute name="terminal" type="xs:string" use="optional" />
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<xs:element name="transportation">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="carriers" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="code" use="required" type="xs:string"/>
+		<xs:attribute name="number" use="optional" type="xs:string"/>
+		<xs:attribute name="id" type="xs:string" use="optional" />
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="carriers">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="carrier" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="carrier">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element type="xs:positiveInteger" name="number" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="code" use="required" type="xs:string"/>
+		<xs:attribute name="type-id" use="required" type="xs:string"/>
+	</xs:complexType>
 </xs:element>
 
 <xs:complexType name="additional-order-data" >
