@@ -13,8 +13,6 @@
  * @version 1.11
  */
 
-use phpDocumentor\Reflection\Types\Boolean;
-
 require_once sCLASS_PATH .'/Parser.php';
 /**
  * General class for functionality methods which are used by several different modules or components
