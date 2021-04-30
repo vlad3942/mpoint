@@ -3,7 +3,6 @@ INSERT INTO client.merchantaccount_tbl (clientid, pspid, "name", enabled, userna
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, "name", enabled) VALUES( 101010, 64, '-1', true);
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, "name", enabled) VALUES( 101012, 64, '-1', true);
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, "name", enabled) VALUES( 101011, 64, '-1', true);
-
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created,pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10101, 8, true, 64, NULL, 1, NULL, false, 9, 0, 0, 1, NULL, false);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created,pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10101, 7, true, 64, NULL, 1, NULL, false, 9, 0, 0, 1, NULL, false);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, created,pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled) VALUES(10101, <cardid>, true, 64, NULL, 1, NULL, false, 9, 0, 0, 1, NULL, false);
