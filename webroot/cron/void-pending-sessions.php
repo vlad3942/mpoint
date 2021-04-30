@@ -137,9 +137,12 @@ require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
 require_once(sCLASS_PATH ."/apm/swish.php");
 // Require specific Business logic for the Grab Pay component
 require_once(sCLASS_PATH ."/grabpay.php");
-
+require_once(sCLASS_PATH ."/voucher/TravelFund.php");
+require_once(sCLASS_PATH ."/MPGS.php");
+require_once(sCLASS_PATH .'/apm/paymaya.php');
+require_once(sCLASS_PATH ."/cybersource.php");
 $sql = "SELECT sn.id, sn.amount FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn
-          WHERE sn.stateid = ".Constants::iSESSION_PARTIALLY_COMPLETED." AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
+          WHERE sn.stateid not in (".Constants::iSESSION_COMPLETED.", ".Constants::iSESSION_EXPIRED.",".Constants::iSESSION_FAILED.") AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
 
 $res = $_OBJ_DB->query($sql);
 
@@ -153,7 +156,6 @@ while ($RS = $_OBJ_DB->fetchName($res))
         $obj_TxnInfo = TxnInfo::produceInfo( $RSTxn["ID"], $_OBJ_DB);
         $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($RSTxn['PSPID']), $aHTTP_CONN_INFO);
         $obj_Processor->getPSPInfo()->updateSessionState(-1, $obj_TxnInfo->getExternalID(), $obj_TxnInfo->getAmount(), $obj_TxnInfo->getCardMask(), $obj_TxnInfo->getCardID(), $obj_TxnInfo->getCardExpiry(), "", $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-
     }
 }
 
