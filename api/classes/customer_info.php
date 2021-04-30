@@ -151,7 +151,7 @@ class CustomerInfo implements JsonSerializable
     public function setProfileTypeID($profileTypeId) { $this->_iprofileTypeId = $profileTypeId; }
 	public function getProfileTypeID() { return $this->_iprofileTypeId; }
 	public function setUserType(int $userType): void { $this->_iUserType = $userType; }
-    public function getUserType(): int { return $this->_iUserType; }
+    public function getUserType() { return $this->_iUserType; }
 
 	public function toXML()
 	{
