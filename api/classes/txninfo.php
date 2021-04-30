@@ -1563,7 +1563,7 @@ class TxnInfo
 		if( empty($this->_obj_OrderConfigs) === false && in_array("orders", $aExcludeNodes) === false)
 		{
 
-			$xml .= $this->getAttributeLessOrdersXML();
+			$xml .= $this->getOrdersXML();
 		}
 		if($this->getAdditionalData() != null && in_array("additionalData", $aExcludeNodes) === false)
 		{
