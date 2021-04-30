@@ -130,5 +130,31 @@ class CardValidator extends ValidateBase
 
         return $code;
     }
-
+    /**
+     * Performs validation of the card expiry date
+     * The method will return the following status codes:
+     * 740 - Valid
+     * 741 - Invalid Card expiry date
+     * 742 - Card is expired
+     *
+     * @return integer
+     */
+    public function validateExpiry(): int
+    {
+        $code = 740;
+        if ($this->getCard() !== NULL) {
+            $cardExpiry = $this->getCard()->getExpiry();
+            if(preg_match('/^\\d{2}\\/\\d{2}$/', $cardExpiry) == 0) {
+                $code= 741;
+            }else{
+                $expiry     = explode(substr($cardExpiry, 2, 1),$cardExpiry);
+                $expiryDate = \DateTime::createFromFormat('my', $expiry[0].$expiry[1]);
+                $today      = new \DateTime();
+                if ($expiryDate < $today) {
+                    $code= 742;
+                }
+            }
+        }
+        return $code;
+    }
 }

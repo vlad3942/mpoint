@@ -71,6 +71,24 @@ class PSPConfig extends BasicConfig
     private ?array $_aRouteFeature;
 
     /**
+     * Hold the Client's MID for the Route
+     * @var string
+     */
+    private string $_sRouteMid;
+
+    /**
+     * Hold the Client's Username for the Route
+     * @var string
+     */
+    private string $_sRouteUseranme;
+
+    /**
+     * Hold the Client's Password for the Route
+     * @var string
+     */
+    private string $_sRoutePassword;
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 	Unique ID for the Payment Service Provider in mPoint
@@ -85,7 +103,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	int $routeConfigId 	     Route config id
 	 * @param 	?array $aRouteFeature     Route feature
 	 */
-	public function __construct(int $id, string $name, int $system_type, string $ma, string $msa, string $un, string $pw, array $aMsgs=array(), ?array $aAdditionalProperties=array(), int $routeConfigId = -1, ?array $aRouteFeature = array())
+	public function __construct(int $id, string $name, int $system_type, string $ma, string $msa, string $un, string $pw, array $aMsgs=array(), ?array $aAdditionalProperties=array(), int $routeConfigId = -1, ?array $aRouteFeature = array(), string $routeMID='', string $routeUsername='', string $routePassword='')
 	{
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
@@ -97,6 +115,9 @@ class PSPConfig extends BasicConfig
 		$this->_aAdditionalProperties =$aAdditionalProperties;
         $this->_iRouteConfigId = $routeConfigId;
         $this->_aRouteFeature = $aRouteFeature;
+        $this->_sRouteMid = $routeMID;
+        $this->_sRouteUseranme = $routeUsername;
+        $this->_sRoutePassword = $routePassword;
 	}
 
 	/**
@@ -148,6 +169,21 @@ class PSPConfig extends BasicConfig
      * @return 	integer
      */
 	public function getRouteConfigId(): int { return $this->_iRouteConfigId; }
+
+    /**
+     * Set the Client's MID for the Route
+     */
+    public function getRouteMID() : string {  return $this->_sRouteMid; }
+
+    /**
+     * Set the Client's Username for the Route
+     */
+    public function getRouteUsername() : string {  return $this->_sRouteUseranme; }
+
+    /**
+     * Set the Client's Password for the Route
+     */
+    public function getRoutePassword() : string {  return $this->_sRoutePassword;  }
 
 	public function toXML(?int $propertyScope=2, array $aMerchantAccountDetails = array()): string
 	{
@@ -269,9 +305,9 @@ class PSPConfig extends BasicConfig
         $xml .= '<id>'. $this->getRouteConfigId() .'</id>';
         $xml .= '<route_id>'. $this->getID() .'</route_id>';
         $xml .= '<name>'. $this->getName() .'</name>';
-        $xml .= '<mid>'. $this->getMerchantAccount() .'</mid>';
-        $xml .= '<username>'. $this->getUsername() .'</username>';
-        $xml .= '<password>'. $this->getPassword() .'</password>';
+        $xml .= '<mid>'. $this->getRouteMID() .'</mid>';
+        $xml .= '<username>'. $this->getRouteUsername() .'</username>';
+        $xml .= '<password>'. $this->getRoutePassword() .'</password>';
         $xml .= '<route_features>';
         if(empty($this->_aRouteFeature) === false && count($this->_aRouteFeature) > 0)
         {
@@ -411,7 +447,7 @@ class PSPConfig extends BasicConfig
      */
     public static function produceConfiguration(RDB $oDB, int $clid, int $accid, int $pspid, int $routeconfigid): ?PSPConfig
     {
-        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid AS ma, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
+        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON PSP.id = R.providerid AND R.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1'
@@ -473,13 +509,44 @@ class PSPConfig extends BasicConfig
                 unset($aRS);
             }
 
-            return new PSPConfig($RS["ID"], $RS["NAME"], (int)$RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature);
+            //Get merchant account details
+            $sqlQuery =  self::getQuery($clid, $accid, $pspid);
+            $aRS = $oDB->getName($sqlQuery);
+            $ma = $username = $password = '';
+            if (is_array($aRS) === true && count($aRS) > 1)
+            {
+                $ma = $aRS["MA"];
+                $username = $aRS["USERNAME"];
+                $password = $aRS["PASSWORD"];
+            }
+
+            return  new PSPConfig($RS["ID"], $RS["NAME"], (int)$RS["SYSTEM_TYPE"], $ma, $RS["MSA"], $username, $password, $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature, $RS["MID"], $RS["USERNAME"], $RS["PASSWORD"]);
         }
         else
         {
             trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
             return null;
         }
+    }
+
+    /**
+     * Build a query which will select merchant account details
+     *
+     * @param 	integer $clid 	Unique ID for the Client performing the request
+     * @param 	integer $accid 	Unique ID for the Account-id performing the request
+     * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @return 	string
+     */
+    private function getQuery(int $clid, int $accid, int $pspid): string
+    {
+        $sql = "SELECT DISTINCT  MA.name AS ma, MA.username, MA.passwd AS password
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
+				WHERE CL.id = ". $clid ." AND PSP.id = ". $pspid ." AND PSP.enabled = '1' AND Acc.id = ". $accid ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
+        return $sql;
     }
 
 }
