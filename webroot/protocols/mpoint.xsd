@@ -1781,7 +1781,8 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:restriction base="profile-phone">
-							<xs:minLength value="6" />
+							<!-- as in db min mobile no length is 4 -->
+							<xs:minLength value="4" />
 							<xs:maxLength value="15" />
 							<xs:pattern value="([0-9])*"/>
 						</xs:restriction>
