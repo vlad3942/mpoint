@@ -1921,12 +1921,12 @@ abstract class AutoCaptureType
 abstract class UserType
 {
 	/*
-   * Auto-Capture flag for mPoint to do not perform auto-capture
+   * iGuestUser to definde guest user
    */
 	const iGuestUser = 1;
 	/*
-   * Auto-Capture flag for mPoint to perform PSP level auto-capture
+   * iRegisterUser to definde register user
    */
-	const iMemberUser = 2;
+	const iRegisterUser = 2;
 }
 ?>

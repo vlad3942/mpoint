@@ -294,7 +294,7 @@ class Home extends General
 				}
 				if(isset($obj_XML->profile->anonymous)) {
                     $user_type = (string)$obj_XML->profile->anonymous;
-                    $userType = ($user_type === "false")?(UserType::iMemberUser):(UserType::iGuestUser);
+                    $userType = ($user_type === "false")?(UserType::iRegisterUser):(UserType::iGuestUser);
                     $obj_CustomerInfo->setUserType($userType);
                 }
 				return 10;

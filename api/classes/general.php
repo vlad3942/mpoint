@@ -1767,7 +1767,7 @@ class General
      *
      * @return string autoFetchBalance bool
      */
-	public static function isAutoFetchBalance(TxnInfo $obj_TxnInfo, ?int $cardId): ?bool
+	public static function isAutoFetchBalance(TxnInfo $obj_TxnInfo, int $cardId): bool
     {
 		$isAutoFetchBalance = false;
 

@@ -320,6 +320,42 @@ class GeneralTest extends baseAPITest
         $this->assertInstanceOf('PSPConfig', $obj_PSPConfig, 'Error: Missing PSP Configuration Object');
     }
 
+    public function testIsAutoFetchBalance()
+    {
+        $pspID = Constants::iTRAVELFUND_VOUCHER;
+        $userType = UserType::iRegisterUser;
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        $authenticateURL = $this->_aMPOINT_CONN_INFO['protocol'] . '://' . $this->_aMPOINT_CONN_INFO['host']. '/_test/simulators/mprofile/ciam/get-customer-profile.php';
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 2, '".$authenticateURL."')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid) VALUES (1001001, 100, 10099, 1100, 1,  $pspID, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE,10)");
+
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('SSO_PREFERENCE', 'STRICT', 10099, 'client', 0)");
+		$this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('autoFetchBalance', 'true', 10099, 'client', 0)");
+		$this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('fetchBalanceUserType', '{\"1\":2}', 10099, 'client', 0)");
+		$this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('fetchBalancePaymentMethods', '{\"1\":26}', 10099, 'client', 0)");
+
+        $iTxnID = 1001001;
+        $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
+
+        $misc = array();
+        $misc['additionaldata']['customer-type'] = $userType;
+        $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$this->_OBJ_DB, $obj_TxnInfo, $misc);
+
+        $obj_general = new General($this->_OBJ_DB, $this->_OBJ_TXT);
+        $isAutoFetchBalance = $obj_general->isAutoFetchBalance($obj_TxnInfo, 26);
+
+        $this->assertEquals(1, $isAutoFetchBalance);
+        $this->assertTrue($isAutoFetchBalance);
+    }
+
     public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();

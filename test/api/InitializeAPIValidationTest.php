@@ -789,6 +789,10 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, psp_type) VALUES (10099, 26, $pspID, true, 1, 11)");
 
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 10099, 2, '4216311')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, psp_type) VALUES (10099, 2, 2, true, 1, 1)");
+
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -811,6 +815,9 @@ class InitializeAPIValidationTest extends baseAPITest
 
 		$this->assertEquals(200, $iStatus);
 		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Voucher</name><fetch-balance>true</fetch-balance><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>Voucher</card></vouchers>', $sReplyBody);
+
+		// Assertion for FOP which done has fetch-balance node.
+		$this->assertStringContainsString('<card id="2" type-id="2" psp-id="2" min-length="16" max-length="16" cvc-length="3" state-id="1" payment-type="1" preferred="false" enabled="true" processor-type="1" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Dankort</name><prefixes><prefix><min>5019</min><max>5019</max></prefix><prefix><min>4571</min><max>4571</max></prefix></prefixes>Dankort</card>', $sReplyBody);
 	}
 
     public function testAirlineData()
