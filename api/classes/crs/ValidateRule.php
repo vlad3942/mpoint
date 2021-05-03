@@ -55,7 +55,7 @@ class ValidateRule
         $xml .= '</status>';
        return $xml;
     }
-    public function produceConfig(RDB $oDB, int $routeId, array $aCards, array $aCountries, array $aCurrencies)
+    public function produceConfig(RDB $oDB, int $routeId, array $aCards = array(), array $aCountries = array(), array $aCurrencies = array())
     {
         $obj_RuleValidation = null;
         try {
