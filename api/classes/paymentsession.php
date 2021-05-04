@@ -213,9 +213,6 @@ final class PaymentSession
                 if ($iPendingAmt != $this->getAmount() && $this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
                 }
-                if( $this->getSessionType() == 1 && $this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
-                    $stateId = Constants::iSESSION_FAILED;
-                }
 
             }
         }
