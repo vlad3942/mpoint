@@ -55,5 +55,6 @@ class SafetyPayInitTest extends InitializeAPIValidationTest
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertStringContainsString('apms',$sReplyBody);
         $this->assertStringNotContainsString('payment-method',$sReplyBody);
+        
     }
 }
