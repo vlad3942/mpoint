@@ -775,7 +775,6 @@ try
 
                             $voucherId = $newTxnInfo->getAdditionalData('voucherid');
 
-                            if ($voucherId !== NULL && $voucherId !== FALSE) {
 
                                 // <editor-fold defaultstate="collapsed" desc="Update Passbook Table">
 
@@ -805,7 +804,7 @@ try
                                     $txnPassbookObj->performPendingOperations();
                                 }
                                 // </editor-fold>
-                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher($voucherId, $iAmount);
+                                $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucherId, $iAmount);
 
                                 // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
                                 if ($isVoucherRedeemStatus === 100) {
@@ -825,7 +824,6 @@ try
                                 }
                                 // </editor-fold>
 
-                            }
                         }
                     }
                 }
