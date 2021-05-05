@@ -1668,9 +1668,9 @@
 
 <xs:complexType name="fare-addon-detail">
     <xs:all>
-		<xs:element name="profile-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-		<xs:element name="trip-tag" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-		<xs:element name="trip-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="profile-seq" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="trip-tag" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="trip-seq" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
 		<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
