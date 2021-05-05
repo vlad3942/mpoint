@@ -7,7 +7,7 @@
 
 
     <changeSet author="Anna Lagad"
-               id="2021-05-04-setup-v2.27.0-system">
+               id="2021-05-04-setup-v2.27.0-log">
 
         <sql dbms="postgresql" endDelimiter=";">
             ALTER PUBLICATION mpoint_log_pub ADD TABLE log.address_tbl
