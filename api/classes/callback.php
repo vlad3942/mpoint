@@ -1060,10 +1060,10 @@ abstract class Callback extends EndUserAccount
         $this->performCallback($body,$obj_SurePay, $attempt);
     }
 
-    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0 )
+    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null )
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
-		$isStateUpdated = $sessionObj->updateState();
+		$isStateUpdated = $sessionObj->updateState($state);
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
 			$checkSessionCallback = $sessionObj->checkSessionCompletion();
