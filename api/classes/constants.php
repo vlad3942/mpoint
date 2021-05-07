@@ -1918,4 +1918,15 @@ abstract class AutoCaptureType
    */
 	const eBatchCapt = 4;
 }
+abstract class UserType
+{
+	/*
+   * iGuestUser to definde guest user
+   */
+	const iGuestUser = 1;
+	/*
+   * iRegisterUser to definde register user
+   */
+	const iRegisterUser = 2;
+}
 ?>
