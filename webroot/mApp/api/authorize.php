@@ -548,6 +548,14 @@ try
                                         $iPrimaryRoute = 0 ;
                                         $obj_CardXML = '';
 
+                                        $issuerIdentificationNumber = NULL;
+                                        if($isStoredCardPayment === true){
+                                            $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
+                                        }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
+                                        }
+
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
@@ -568,16 +576,6 @@ try
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
-                                        }
-
-
-
-                                        $issuerIdentificationNumber = NULL;
-                                        if($isStoredCardPayment === true){
-                                            $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
-                                        }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
-                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
 
                                         //Check if card or payment method is enabled or disabled by merchant

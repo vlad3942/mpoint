@@ -24,11 +24,11 @@ class FareInfo extends BillingSummaryAbstract
     }
 
     public static function produceConfig(\RDB $oDB, $id) : ?FareInfo{
-        $sql = "SELECT id, journey_ref, bill_type, type_id, description, amount, currency, created, modified, profile_seq, trip_tag,  trip_seq, product_code, product_category, product_item
+        $sql = "SELECT id, journey_ref, bill_type, type, description, amount, currency, created, modified, profile_seq, trip_tag,  trip_seq, product_code, product_category, product_item
 					FROM log" . sSCHEMA_POSTFIX . ".billing_summary_tbl WHERE id=" . $id;
         $RS = $oDB->getName ( $sql );
         if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-            return new FareInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["TYPE_ID"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
+            return new FareInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["TYPE"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
         } else {
             trigger_error('Unable to create Fare info object', E_USER_NOTICE);
             return null;
