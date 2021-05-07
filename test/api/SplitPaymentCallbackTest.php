@@ -165,7 +165,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         }
 
-        $this->assertCount(6, $aStates);
+        $this->assertCount(9, $aStates);
         $this->assertTrue(is_int(array_search(2000, $aStates)));
 
         $res = $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'done' and performedopt=2000 ");
