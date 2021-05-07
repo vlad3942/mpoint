@@ -46,7 +46,7 @@ define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLIN
 /**
  * Online Payment Methods Card and PSP id mapping
  */
-define("OnlinePaymentCardPSPMapping", array(Constants::iFPX => Constants::iEGHL_PSP, Constants::iDRAGONPAY => Constants::iDragonPay_AGGREGATOR));
+define("OnlinePaymentCardPSPMapping", array(Constants::iFPX => Constants::iEGHL_PSP, Constants::iDRAGONPAY => Constants::iDragonPay_AGGREGATOR,Constants::iPSE => Constants::iSAFETYPAY_AGGREGATOR));
 
 
 /**
@@ -1057,6 +1057,7 @@ $aHTTP_CONN_INFO["cybersource"]["paths"]["initialize"] = "/mpoint/global-payment
 $aHTTP_CONN_INFO["cybersource"]["paths"]["refund"] = "/mpoint/global-payments/refund";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
+$aHTTP_CONN_INFO["cybersource"]["paths"]["callback"] = "/fraud/cybersource/fraud-check";
 $aHTTP_CONN_INFO["cybersource"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**

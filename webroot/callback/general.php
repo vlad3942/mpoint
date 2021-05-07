@@ -641,6 +641,11 @@ try
                     }
                 }
             }
+            else if ($iStateID == Constants::iPAYMENT_REJECTED_STATE && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_REVIEW_STATE)) === true)
+            {
+                $fraudCheckResponse = CPMFRAUD::attemptFraudInitCallback(Constants::iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE,'Review Closed',$_OBJ_DB,$_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,(int)$obj_XML->callback->transaction->card["type-id"]);
+
+            }
 
         // Transaction uses Auto Capture and Authorization was accepted
         if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false))
