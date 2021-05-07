@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+
+    <changeSet author="Anna Lagad"
+               id="2021-05-04-setup-v2.27.0-log">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.address_tbl
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
