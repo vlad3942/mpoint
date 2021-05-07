@@ -12,9 +12,7 @@ if (intval($obj_XML->{"redeem-voucher"}->transaction->amount) < 10)
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	echo '<root>';
 	if (empty($obj_XML->{"redeem-voucher"}["id"]) === false){
-		echo '<external_id>"'. $obj_XML->{"redeem-voucher"}["id"] .'"</external_id>';
-	}else{
-		echo '<external_id />';
+		echo '<external-id>"'. $obj_XML->{"redeem-voucher"}["id"] .'"</external-id>';
 	}
 	echo '<status code="2000">Payment authorized.</status>';	
 	echo '</root>';
