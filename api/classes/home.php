@@ -291,6 +291,11 @@ class Home extends General
                 if(isset($obj_XML->profile_type)) {
                     $profile_type_id = (integer)$obj_XML->profile_type;
                     $obj_CustomerInfo->setProfileTypeID($profile_type_id);
+				}
+				if(isset($obj_XML->profile->anonymous)) {
+                    $user_type = (string)$obj_XML->profile->anonymous;
+                    $userType = ($user_type === "false")?(UserType::iRegisterUser):(UserType::iGuestUser);
+                    $obj_CustomerInfo->setUserType($userType);
                 }
 				return 10;
 			}
@@ -1691,5 +1696,6 @@ class Home extends General
 
 
 }
+
 
 ?>
