@@ -291,6 +291,11 @@ class Home extends General
                 if(isset($obj_XML->profile_type)) {
                     $profile_type_id = (integer)$obj_XML->profile_type;
                     $obj_CustomerInfo->setProfileTypeID($profile_type_id);
+				}
+				if(isset($obj_XML->profile->anonymous)) {
+                    $user_type = (string)$obj_XML->profile->anonymous;
+                    $userType = ($user_type === "false")?(UserType::iRegisterUser):(UserType::iGuestUser);
+                    $obj_CustomerInfo->setUserType($userType);
                 }
 				return 10;
 			}
@@ -724,9 +729,9 @@ class Home extends General
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE ." ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id ASC";
-
+		
 		$sql2 = $sql;
-				
+
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )

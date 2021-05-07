@@ -1563,7 +1563,7 @@ class TxnInfo
 		if( empty($this->_obj_OrderConfigs) === false && in_array("orders", $aExcludeNodes) === false)
 		{
 
-			$xml .= $this->getAttributeLessOrdersXML();
+			$xml .= $this->getOrdersXML();
 		}
 		if($this->getAdditionalData() != null && in_array("additionalData", $aExcludeNodes) === false)
 		{
@@ -2007,9 +2007,9 @@ class TxnInfo
 			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Billing Summary ID", 1001); }
 
 			$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Billing_Summary_Tbl
-						(id, order_id, journey_ref, bill_type, type_id, description, amount, currency, created, modified, profile_seq, trip_tag, trip_seq, product_code, product_category, product_item)
+						(id, order_id, journey_ref, bill_type, type, description, amount, currency, created, modified, profile_seq, trip_tag, trip_seq, product_code, product_category, product_item)
 					VALUES
-						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type_id"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now(), ". $aBillingSummary["profile_seq"] .", ". $aBillingSummary["trip_tag"] . ", " . $aBillingSummary["trip_seq"] .", '" . $aBillingSummary["product_code"] ."', '" .$aBillingSummary["product_category"]. "', '" .$aBillingSummary["product_item"]. "')";
+						(". $RS["ID"] .", '". $aBillingSummary["order_id"] ."', '". $aBillingSummary["journey_ref"] ."', '". $aBillingSummary["bill_type"] ."', '". $aBillingSummary["type"] ."', '". $aBillingSummary["description"] ."', '". $aBillingSummary["amount"] ."', '". $aBillingSummary["currency"] ."',now(),now(), ". $aBillingSummary["profile_seq"] .", ". $aBillingSummary["trip_tag"] . ", " . $aBillingSummary["trip_seq"] .", '" . $aBillingSummary["product_code"] ."', '" .$aBillingSummary["product_category"]. "', '" .$aBillingSummary["product_item"]. "')";
 			
 			if (is_resource($obj_DB->query($sql) ) === false)
 			{

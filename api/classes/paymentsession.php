@@ -210,9 +210,6 @@ final class PaymentSession
                 if ($iPendingAmt != $this->getAmount() && $this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
                 }
-                if( $this->getSessionType() == 1 && $this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
-                    $stateId = Constants::iSESSION_FAILED;
-                }
 
             }
         }
@@ -244,7 +241,7 @@ final class PaymentSession
         $result = FALSE;
         $query = "SELECT COUNT(T.ID) FROM  LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL T
                   INNER JOIN LOG" . sSCHEMA_POSTFIX . ".MESSAGE_TBL M
-                  ON (T.ID=M.TXnID AND M.STATEID=".Constants::iSESSION_COMPLETED." AND SESSIONID=".$this->_id.")";
+                  ON (T.ID=M.TXnID AND M.STATEID in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_EXPIRED.",".Constants::iSESSION_FAILED." ) AND SESSIONID=".$this->_id.")";
         $RS = $this->_obj_Db->getName($query);
         if(is_array($RS) === true) {
             if($RS["COUNT"] > 0) {
