@@ -94,7 +94,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
             usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-        var_dump($aStates);
+        //var_dump($aStates);
 		$this->assertEquals(61775, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
@@ -108,11 +108,11 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(1990, $aStates[$stateIndex++]);
 		$this->assertEquals(1990, $aStates[$stateIndex++]);
 		$this->assertEquals(2001, $aStates[$stateIndex++]);
-		$this->assertEquals(1991, $aStates[$stateIndex++]);
+        $this->assertEquals(4030, $aStates[$stateIndex++]);
+        $this->assertEquals(1991, $aStates[$stateIndex++]);
 		$this->assertEquals(1992, $aStates[$stateIndex++]);
 		$this->assertEquals(1990, $aStates[$stateIndex++]);
 		$this->assertEquals(1990, $aStates[$stateIndex++]);
-		$this->assertEquals(4030, $aStates[$stateIndex++]);
 		$this->assertEquals(1991, $aStates[$stateIndex++]);
 		$this->assertEquals(1992, $aStates[$stateIndex++]);
 		$this->assertEquals(1990, $aStates[$stateIndex++]);
