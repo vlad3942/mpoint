@@ -246,7 +246,7 @@ final class PaymentSession
         $result = FALSE;
         $query = "SELECT COUNT(T.ID) FROM  LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL T
                   INNER JOIN LOG" . sSCHEMA_POSTFIX . ".MESSAGE_TBL M
-                  ON (T.ID=M.TXnID AND M.STATEID=".Constants::iSESSION_COMPLETED." AND SESSIONID=".$this->_id.")";
+                  ON (T.ID=M.TXnID AND M.STATEID in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_EXPIRED.",".Constants::iSESSION_FAILED." ) AND SESSIONID=".$this->_id.")";
         $RS = $this->_obj_Db->getName($query);
         if(is_array($RS) === true) {
             if($RS["COUNT"] > 0) {

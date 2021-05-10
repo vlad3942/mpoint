@@ -1410,7 +1410,7 @@
 	<xs:all>
 		<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
 	</xs:all>
-	<xs:attribute name="id" type="xs:string" use="required" />
+	<xs:attribute name="id" type="xs:string" use="optional" />
 	<xs:attribute name="order-no" type="order-no" use="optional" />
 </xs:complexType>
 
