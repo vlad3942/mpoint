@@ -562,8 +562,14 @@ class General
              $data["conversion-rate"] = 1;
              $txnInfo->setFXServiceTypeID(0);
              $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
+             //link parent transaction to new created txn
+             $index = count($additionalTxnData);
+             $additionalTxnData[$index]['name'] = 'linked_txn_id';
+             $additionalTxnData[$index]['value'] = (string)$txnInfo->getID();
+             $additionalTxnData[$index]['type'] = 'Transaction';
              if (count($additionalTxnData) > 0) {
                  $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
+                 //link new transaction to parent txn
                  $additionalData[0]['name'] = 'linked_txn_id';
                  $additionalData[0]['value'] = (string)$iAssociatedTxnId;
                  $additionalData[0]['type'] = 'Transaction';
