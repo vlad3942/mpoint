@@ -252,10 +252,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else { $xml .= '<messages />'; }
 							$linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-							$xml .= "<payment_status>".$obj_TxnInfo->getPaymentStatus($_OBJ_DB,$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
+							$xml .= "<payment_status>".General::getPaymentStatus($_OBJ_DB,$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
 							// add linked transaction
 							if($linkedTxnId !== null ){
-								$getLinkedTxns     = $obj_TxnInfo->getLinkedTransactions($_OBJ_DB,$linkedTxnId);
+								$getLinkedTxns     = General::getLinkedTransactions($_OBJ_DB,$linkedTxnId,$obj_TxnInfo->getID());
 								$xml               .= $getLinkedTxns;
 							}
 							$xml .= '</transaction>';
