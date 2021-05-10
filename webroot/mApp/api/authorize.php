@@ -284,6 +284,10 @@ try
                                             $additionalTxnData[0]['value'] = (string)$voucher['id'];
                                             $additionalTxnData[0]['type'] = 'Transaction';
 
+                                            $additionalTxnData[1]['name'] = 'linked_txn_id';
+                                            $additionalTxnData[1]['value'] = (string)$obj_TxnInfo->getID();
+                                            $additionalTxnData[1]['type'] = 'Transaction';
+
                                             if($obj_TxnInfo->getAdditionalData() !== null)
                                             {
 
