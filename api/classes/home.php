@@ -916,7 +916,6 @@ class Home extends General
 
 
                 $obj_TxnInfo = TxnInfo::produceInfo($txnid,  $this->getDBConn());
-
                 if( $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iTRANSACTION_CREATED))=== true && $obj_TxnInfo->getCardID()=== 0) continue;
                 $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
@@ -1070,6 +1069,13 @@ class Home extends General
                              if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
                              $xml .= '</address>';
                          }
+                        $linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                        $xml .= "<payment_status>".$obj_TxnInfo->getPaymentStatus($this->getDBConn(),$txnId,$linkedTxnId)."</payment_status>";
+                        // add linked transaction
+                        if($linkedTxnId !== null ){
+                            $getLinkedTxns     = $obj_TxnInfo->getLinkedTransactions($this->getDBConn(),$linkedTxnId);
+                            $xml               .= $getLinkedTxns;
+                        }
                          $xml .= '</transaction>';
 
                          if ( ($objCountryConf instanceof CountryConfig) === true)
