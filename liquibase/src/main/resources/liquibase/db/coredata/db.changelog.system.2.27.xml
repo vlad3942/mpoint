@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+
+    <changeSet author="Sagar Badave" id="2021-05-06-setup-v2.27-system">
+
+        <insert catalogName="system" schemaName="system" tableName="PSPCard_Tbl">
+            <column name="cardid" value="3"/>
+            <column name="pspid" value="64"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="PSPCard_Tbl">
+            <column name="cardid" value="21"/>
+            <column name="pspid" value="64"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="64"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="COP"/>
+            <column name="currencyid" value="170" />
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="64"/>
+            <column name="enabled" value="true"/>
+            <column name="name" value="BRL"/>
+            <column name="currencyid" value="986" />
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

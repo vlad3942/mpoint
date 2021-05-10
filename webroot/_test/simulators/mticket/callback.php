@@ -25,11 +25,12 @@ case Constants::iPAYMENT_REQUEST_CANCELLED_STATE:
 case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
 	$aRequiredArguments = array('status', 'mpoint-id', 'language');
 	break;
-    case Constants::iSESSION_COMPLETED:
-    case Constants::iSESSION_CREATED:
-    $aRequiredArguments = array('status', 'session-id', 'pspid');
-    break;
-    default:
+case Constants::iSESSION_COMPLETED:
+case Constants::iSESSION_CREATED:
+case Constants::iSESSION_EXPIRED:
+	$aRequiredArguments = array('status', 'session-id', 'pspid');
+	break;
+default:
 	$sMsg = "mTicket callback, Unknown payment state: ". @$_REQUEST["status"];
 	trigger_error($sMsg, E_USER_WARNING);
 	header('HTTP/1.0 400 Bad Request');
