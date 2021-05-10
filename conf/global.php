@@ -46,7 +46,7 @@ define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLIN
 /**
  * Online Payment Methods Card and PSP id mapping
  */
-define("OnlinePaymentCardPSPMapping", array(Constants::iFPX => Constants::iEGHL_PSP, Constants::iDRAGONPAY => Constants::iDragonPay_AGGREGATOR));
+define("OnlinePaymentCardPSPMapping", array(Constants::iFPX => Constants::iEGHL_PSP, Constants::iDRAGONPAY => Constants::iDragonPay_AGGREGATOR,Constants::iPSE => Constants::iSAFETYPAY_AGGREGATOR));
 
 
 /**

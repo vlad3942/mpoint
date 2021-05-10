@@ -251,4 +251,19 @@
 
     </changeSet>
 
+    <changeSet  author="Kalpesh Parikh"  id="2021-05-04-setup-v2.26-log-1">
+    <renameColumn  catalogName="Log"
+                   schemaName="Log"
+                   tableName="billing_summary_tbl"
+                   newColumnName="type"
+                   oldColumnName="type_id"/>
+
+    <modifyDataType  catalogName="Log"
+                     columnName="type"
+                     newDataType="varchar(10)"
+                     schemaName="Log"
+                     tableName="billing_summary_tbl"/>
+
+    </changeSet>
+
 </databaseChangeLog>
