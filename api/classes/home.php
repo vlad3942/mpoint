@@ -723,14 +723,14 @@ class Home extends General
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE .", ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id DESC";
 		
-		$sql1 = $sql;
+		$sqlState = $sql;
 
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE ." ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id ASC";
 		
-		$sql2 = $sql;
+		$sqlStateData = $sql;
 
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
@@ -740,7 +740,7 @@ class Home extends General
 			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				$res1 = $this->getDBConn()->executeQuery($sql1, $aParams);
+				$res1 = $this->getDBConn()->executeQuery($sqlState, $aParams);
 				if (is_resource($res1) === true)
 				{
 					$RS1 = $this->getDBConn()->fetchName($res1);
@@ -759,7 +759,7 @@ class Home extends General
 			if ($debug === true && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				$res2 = $this->getDBConn()->executeQuery($sql2, $aParams);
+				$res2 = $this->getDBConn()->executeQuery($sqlStateData, $aParams);
 				
 				if (is_resource($res2) === true)
 				{
