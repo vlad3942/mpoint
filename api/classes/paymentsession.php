@@ -477,8 +477,6 @@ final class PaymentSession
                 if ($currentState != '4001')
                     return false;
                 break;
-            case '3110' :
-                return true;
             default :
                 return false;
         }

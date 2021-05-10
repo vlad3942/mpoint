@@ -25,20 +25,6 @@ class PostStatusAPITest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-    protected function getPostTxnStatusCallbackDoc($client, $account, $txnid, $amount, $orderno, $orderref)
-    {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<root>';
-        $xml .= '<void client-id="'. $client .'" account="'. $account .'">';
-        $xml .= '<transaction id="'. $txnid .'" order-no="'.$orderno.'" order-ref="'.$orderref.'">';
-        $xml .= '<amount country-id="100">'.$amount .'</amount>';
-        $xml .= '</transaction>';
-        $xml .= '</void>';
-        $xml .= '</root>';
-
-        return $xml;
-    }
-
     protected function getPostSessionStatusCallbackDoc($id, $amount, $orderno, $typeId, $statusCode)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
