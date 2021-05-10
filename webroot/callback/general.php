@@ -735,22 +735,6 @@ try
       header("Connection: Close");
       flush();
 
-     foreach ($aStateId as $iStateId) {
-         if ($iStateId == 2000) {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-         }
-         else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
-            $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
-            //Check whether a notification has already been sent to retail system with status 20109
-            // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
-            if($count == 0)  {
-                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-            }
-         }
-         else {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-        }
-     }
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
       //update captured amt when psp returns captured callback
@@ -812,7 +796,44 @@ try
                                 $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucherId, $iAmount);
 
                                 // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
-                                if ($isVoucherRedeemStatus === 100) {
+
+                            if($isVoucherRedeemStatus !== 100)
+                            {
+                                $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_VOUCHER_FAIL"));
+                                if($bisRollBack === true)
+                                {
+                                    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                                    $passbookEnry = new PassbookEntry
+                                    (
+                                        NULL,
+                                        $obj_TxnInfo->getAmount(),
+                                        $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                        Constants::iVoidRequested
+                                    );
+                                    if ($txnPassbookObj instanceof TxnPassbook)
+                                    {
+                                        $txnPassbookObj->addEntry($passbookEnry);
+                                        try
+                                        {
+                                            $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+                                            $code = reset($codes);
+                                        }
+                                        catch (Exception $e)
+                                        {
+                                            $code = 99;
+                                            trigger_error($e, E_USER_WARNING);
+                                        }
+                                        if ($code === 1000 || $code === 1001)
+                                        {
+                                            if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { array_push($aStateId,Constants::iPAYMENT_REFUNDED_STATE); }
+                                            else { array_push($aStateId,Constants::iPAYMENT_CANCELLED_STATE); }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if ($isVoucherRedeemStatus === 100) {
                                     $xml .= '<status code="100">Payment authorized using Voucher</status>';
                                 } elseif ($isVoucherRedeemStatus === 43) {
                                     header("HTTP/1.1 402 Payment Required");
@@ -839,6 +860,23 @@ try
                 header("HTTP/1.1 202 Accepted");
                 header("Content-Length: 0");
                 header("Connection: Close");
+            }
+        }
+
+        foreach ($aStateId as $iStateId) {
+            if ($iStateId == 2000) {
+                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+            }
+            else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
+                $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
+                //Check whether a notification has already been sent to retail system with status 20109
+                // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
+                if($count == 0)  {
+                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                }
+            }
+            else {
+                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
             }
         }
     }
