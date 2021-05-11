@@ -1775,10 +1775,10 @@ class General
      *
      * @param RDB $_OBJ_DB
      * @param int $txnId
-     * @param int $linkedTxnId
+     * @param int|null $linkedTxnId
      * @return string
      */
-    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,int $linkedTxnId=0): string
+    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,?int $linkedTxnId): string
     {
         $paymentStatus = 'Pending';
         //check capture mode of transaction
@@ -1803,7 +1803,7 @@ class General
             $paymentStatus = 'Failed';
         }
         // check both the transaction status to get payment status for combined txns
-        if($linkedTxnId > 0){
+        if($linkedTxnId !== null){
             $checkLinkedTxnStatus = self::getPaymentStatus($_OBJ_DB,$linkedTxnId);
             $TxnPaymentStatus = [$paymentStatus,$checkLinkedTxnStatus];
             $checkPaymentStatus = array_count_values($TxnPaymentStatus);
