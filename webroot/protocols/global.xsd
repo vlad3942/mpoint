@@ -292,6 +292,8 @@
 		<xs:enumeration value="yo" />
 		<xs:enumeration value="za" />
 		<xs:enumeration value="zu" />
+		<xs:enumeration value="gb" />
+		<xs:enumeration value="us" />
 	</xs:restriction>
 </xs:simpleType>
 
