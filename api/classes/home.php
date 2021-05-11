@@ -1075,6 +1075,13 @@ class Home extends General
                              if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
                              $xml .= '</address>';
                          }
+                        $linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                        $xml .= "<payment_status>".General::getPaymentStatus($this->getDBConn(),$txnId,$linkedTxnId)."</payment_status>";
+                        // add linked transaction
+                        if($linkedTxnId !== null ){
+                            $getLinkedTxns     = General::getLinkedTransactions($this->getDBConn(),$linkedTxnId,$txnId);
+                            $xml               .= $getLinkedTxns;
+                        }
                          $xml .= '</transaction>';
 
                          if ( ($objCountryConf instanceof CountryConfig) === true)
