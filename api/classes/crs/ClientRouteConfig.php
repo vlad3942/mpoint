@@ -174,18 +174,14 @@ class ClientRouteConfig
                     (routeconfigid, countryid)
                     values ($1, $2)";
 
-                $resource = $this->getDBConn()->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array( $this->_iRouteConfigId, $countryId );
-                    $result = $this->getDBConn()->execute($resource, $aParam);
-                    if ($result === false) {
-                        throw new Exception("Unable to update route country", E_USER_ERROR);
-                        return FALSE;
-                    }
-                } else {
+                $aParam = array( $this->_iRouteConfigId, $countryId );
+                $result = $this->getDBConn()->executeQuery($sql, $aParam);
+                if ($result === false) {
                     trigger_error("Unable to build query for update route country", E_USER_WARNING);
+                    throw new Exception("Unable to update route country", E_USER_ERROR);
                     return FALSE;
                 }
+
             }
             return TRUE;
         } else {
@@ -208,18 +204,14 @@ class ClientRouteConfig
                     (routeconfigid, currencyid)
                     values ($1, $2)";
 
-                $resource = $this->getDBConn()->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array( $this->_iRouteConfigId, $currencyId );
-                    $result = $this->getDBConn()->execute($resource, $aParam);
-                    if ($result === false) {
-                        throw new Exception("Unable to update route currecny", E_USER_ERROR);
-                        return FALSE;
-                    }
-                } else {
+                $aParam = array( $this->_iRouteConfigId, $currencyId );
+                $result = $this->getDBConn()->executeQuery($sql, $aParam);
+                if ($result === false) {
                     trigger_error("Unable to build query for update route country", E_USER_WARNING);
+                    throw new Exception("Unable to update route currecny", E_USER_ERROR);
                     return FALSE;
                 }
+
             }
             return TRUE;
         } else {
@@ -265,29 +257,25 @@ class ClientRouteConfig
                     (routeid, name, capturetype, mid, username, password)
                     values ($1, $2, $3, $4, $5, $6) RETURNING id";
 
-            $resource = $this->getDBConn()->prepare($sql);
-            if (is_resource($resource) === true) {
+            $aParam = array(
+                $this->_iRouteId,
+                $this->_sRouteName,
+                $this->_iCaptureType,
+                $this->_sMID,
+                $this->_sUserName,
+                $this->_sPassword
+            );
 
-                $aParam = array(
-                    $this->_iRouteId,
-                    $this->_sRouteName,
-                    $this->_iCaptureType,
-                    $this->_sMID,
-                    $this->_sUserName,
-                    $this->_sPassword
-                );
+            $result = $this->getDBConn()->executeQuery($sql, $aParam);
 
-                $result = $this->getDBConn()->execute($resource, $aParam);
+            if ($result === false) {
+                return FALSE;
+            } 
 
-                if ($result === false) {
-                    return FALSE;
-                    throw new Exception("Unable to create route", E_USER_ERROR);
-                } else {
-                    $RS = $this->getDBConn()->fetchName($result);
-                    $this->_iRouteConfigId = $RS["ID"];
-                    return TRUE;
-                }
-            }
+            $RS = $this->getDBConn()->fetchName($result);
+            $this->_iRouteConfigId = $RS["ID"];
+            return TRUE;
+
         }
         return FALSE;
     }
