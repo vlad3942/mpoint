@@ -1778,7 +1778,7 @@ class General
      * @param int|null $linkedTxnId
      * @return string
      */
-    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,?int $linkedTxnId): string
+    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,?int $linkedTxnId=null): string
     {
         $paymentStatus = 'Pending';
         //check capture mode of transaction

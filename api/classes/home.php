@@ -975,7 +975,7 @@ class Home extends General
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
                             {
-                                $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                                $sTxnAdditionalDataXml .= '<param name="'.$key.'">'. $value .'</param>';
                             }
                             $sTxnAdditionalDataXml .="</additional-data>";
                         }

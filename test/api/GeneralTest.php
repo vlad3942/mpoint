@@ -176,6 +176,11 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO log.txnpassbook_tbl(id, transactionid, amount, currencyid, requestedopt, performedopt, status,clientid) VALUES(102291, 1001012, 5000, 840, 5014, NULL, 'done', 10018)");
         $this->queryDB("INSERT INTO log.txnpassbook_tbl(transactionid, amount, currencyid,  performedopt, status, extref, extrefidentifier, clientid) VALUES ( 1001012, 5000, 840,  1001, 'done', '102291', 'log.txnpassbook_tbl', 10018)");
 
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001022, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
+        $this->queryDB("INSERT INTO log.txnpassbook_tbl(id, transactionid, amount, currencyid, requestedopt, performedopt, status,clientid) VALUES(102292, 1001022, 5000, 840, 5014, NULL, 'done', 10018)");
+        $this->queryDB("INSERT INTO log.txnpassbook_tbl(transactionid, amount, currencyid,  performedopt, status, extref, extrefidentifier, clientid) VALUES ( 1001022, 5000, 840,  1001, 'done', '102291', 'log.txnpassbook_tbl', 10018)");
+
+
         $iTxnID = 1001012;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_general = new General($this->_OBJ_DB, $this->_OBJ_TXT);
@@ -191,9 +196,11 @@ class GeneralTest extends baseAPITest
 
 		$res =  $this->queryDB("SELECT id FROM Log.additional_data_tbl where externalid= '{$newTxn->getId()}'" );
 		$this->assertIsResource($res);
-		$this->assertEquals(0, pg_num_rows($res));
+		$this->assertEquals(1, pg_num_rows($res));
 
-
+        $iTxnID = 1001022;
+        $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
+        $obj_general = new General($this->_OBJ_DB, $this->_OBJ_TXT);
 		$additionalTxnData = [];
         $additionalTxnData[0]['name'] = 'voucherid';
         $additionalTxnData[0]['value'] = 'voucher';
@@ -210,7 +217,7 @@ class GeneralTest extends baseAPITest
 
 		$res =  $this->queryDB("SELECT id FROM Log.additional_data_tbl where externalid= '{$newTxn->getId()}' " );
 		$this->assertIsResource($res);
-		$this->assertEquals(1, pg_num_rows($res));
+		$this->assertEquals(2, pg_num_rows($res));
 
     }
 
