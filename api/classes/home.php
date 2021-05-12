@@ -1076,10 +1076,10 @@ class Home extends General
                              $xml .= '</address>';
                          }
                         $linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-                        $xml .= "<payment_status>".General::getPaymentStatus($this->getDBConn(),$txnId,$linkedTxnId)."</payment_status>";
+                        $xml .= "<payment_status>".General::getPaymentStatus($this->getDBConn(),$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
                         // add linked transaction
                         if($linkedTxnId !== null ){
-                            $getLinkedTxns     = General::getLinkedTransactions($this->getDBConn(),$linkedTxnId,$txnId);
+                            $getLinkedTxns     = General::getLinkedTransactions($this->getDBConn(),$linkedTxnId,$obj_TxnInfo->getID());
                             $xml               .= $getLinkedTxns;
                         }
                          $xml .= '</transaction>';
