@@ -36,4 +36,22 @@
 
     </changeSet>
 
+    <changeSet author="Sagar Badave" id="2021-05-13-setup-v2.27-system">
+
+        <insert catalogName="Log" schemaName="Log" tableName="State_Tbl">
+            <column name="id" value="3018"/>
+            <column name="name" value="Pre Auth Tech Error"/>
+            <column name="module" value="Fraud"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log" schemaName="Log" tableName="State_Tbl">
+            <column name="id" value="3118"/>
+            <column name="name" value="Post Auth Tech Error"/>
+            <column name="module" value="Fraud"/>
+            <column name="func" value=""/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>

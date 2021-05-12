@@ -515,6 +515,12 @@ abstract class Constants
 	 */
 	const iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3016;
 
+	/**
+	 * Defines the ID of the State that indicates that Techical Error Occured for PRE-Auth Fraud
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_TECH_ERROR_STATE = 3018;
+
     /**
      * Defines the ID of the State that indicates that PRE-Auth Review Success
      *
@@ -574,6 +580,12 @@ abstract class Constants
 	 *
 	 */
 	const iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE = 3117;
+
+	/**
+	 * Defines the ID of the State that indicates that Techical Error Occured for POST-Auth Fraud
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_TECH_ERROR_STATE = 3118;
 
     /**
      * Defines the ID of the State that indicates that POST-Auth Review Success
