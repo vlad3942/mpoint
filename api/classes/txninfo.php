@@ -2639,6 +2639,5 @@ class TxnInfo
 
 		}
 	}
-
 }
 ?>

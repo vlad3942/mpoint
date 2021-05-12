@@ -55,7 +55,7 @@ class ValidateRule
         $xml .= '</status>';
        return $xml;
     }
-    public function produceConfig(RDB $oDB, int $routeId, array $aCards, array $aCountries, array $aCurrencies)
+    public function produceConfig(RDB $oDB, int $routeId, array $aCards = array(), array $aCountries = array(), array $aCurrencies = array())
     {
         $obj_RuleValidation = null;
         try {
@@ -72,8 +72,10 @@ class ValidateRule
                             INNER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl C ON C.id = PCD.cardid AND C.enabled = '1'
                             INNER JOIN System" . sSCHEMA_POSTFIX . ".CardPricing_Tbl CP ON C.id = CP.cardid AND CP.enabled = '1'
                             INNER JOIN System" . sSCHEMA_POSTFIX . ".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.enabled = '1'
-                        WHERE RC.id = " . $routeId . "
-                        AND C.id IN (" . implode(",", $aCards) . ")";
+                        WHERE RC.id = " . $routeId;
+            if (empty($aCards) === false) {
+                $sql .= " AND C.id IN (" . implode(",", $aCards) . ")";
+            }
             if (empty($aCountries) === false) {
                 $sql .= " AND (RCON.countryid IN ( " . implode(",", $aCountries) . ") OR RCON.countryid IS NULL)";
             }

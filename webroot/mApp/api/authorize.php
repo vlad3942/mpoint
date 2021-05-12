@@ -282,9 +282,11 @@ try
                                         foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
                                         {
                                             $additionalTxnData = [];
-                                            $additionalTxnData[0]['name'] = 'voucherid';
-                                            $additionalTxnData[0]['value'] = (string)$voucher['id'];
-                                            $additionalTxnData[0]['type'] = 'Transaction';
+                                            if(empty($voucher['id']) === false){
+                                                $additionalTxnData[0]['name'] = 'voucherid';
+                                                $additionalTxnData[0]['value'] = (string)$voucher['id'];
+                                                $additionalTxnData[0]['type'] = 'Transaction';
+                                            }
 
                                             if($obj_TxnInfo->getAdditionalData() !== null)
                                             {
@@ -1342,7 +1344,7 @@ try
 
                                                                     $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');
                                                                     //$obj_Processor->getPSPInfo()->updateSessionState(Constants::iPAYMENT_REJECTED_STATE,$obj_Processor->getPSPInfo()->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                                                                    $xml .= '<status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
+                                                                    $xml .= '<status code="2010" sub-code="'.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.'">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
                                                                 }
                                                             }
 

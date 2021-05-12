@@ -220,6 +220,16 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
 		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
         $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid= 1 and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1001001, $linkedTxnId[0]['value'] );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid=1001001  and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1, $linkedTxnId[0]['value'] );
     }
 
     public function testSuccessfulDCCAuthorizationVoucherFirst()
@@ -368,6 +378,16 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
 		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
         $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid= 1 and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1001001, $linkedTxnId[0]['value'] );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid=1001001  and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1, $linkedTxnId[0]['value'] );
     }
 
     public function testSuccessfulDCCAuthorizationCardFirst()

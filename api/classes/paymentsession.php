@@ -229,12 +229,14 @@ final class PaymentSession
                 }
             }
 
-            $this->_iStateId = intval($stateId);
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
-            $RS1 = $this->_obj_Db->query($sql);
-            if (is_resource($RS1) === true)
-            {
-                return 1;
+            if ($this->isValidStateForLogging($stateId)) {
+                $this->_iStateId = intval($stateId);
+                $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
+                $RS1 = $this->_obj_Db->query($sql);
+                if (is_resource($RS1) === true)
+                {
+                    return 1;
+                }
             }
         }
         return 0;
@@ -244,7 +246,7 @@ final class PaymentSession
         $result = FALSE;
         $query = "SELECT COUNT(T.ID) FROM  LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL T
                   INNER JOIN LOG" . sSCHEMA_POSTFIX . ".MESSAGE_TBL M
-                  ON (T.ID=M.TXnID AND M.STATEID=".Constants::iSESSION_COMPLETED." AND SESSIONID=".$this->_id.")";
+                  ON (T.ID=M.TXnID AND M.STATEID in (".Constants::iSESSION_COMPLETED.",".Constants::iSESSION_EXPIRED.",".Constants::iSESSION_FAILED." ) AND SESSIONID=".$this->_id.")";
         $RS = $this->_obj_Db->getName($query);
         if(is_array($RS) === true) {
             if($RS["COUNT"] > 0) {
@@ -458,6 +460,27 @@ final class PaymentSession
             trigger_error("Session Get Filtered Transaction query {$sql} failed - " . $e->getMessage() , E_USER_WARNING);
         }
         return $aTransaction;
+    }
+
+    private function isValidStateForLogging($sessionState) : bool
+    {
+        $currentState = $this->_iStateId;
+        switch ($sessionState) {
+            case '4020' :
+            case '4021' :
+            case '4030' :
+            case '4010' :
+                if (in_array($currentState, ['4030', '4010', '4021', '4020']))
+                    return false;
+                break;
+            case '4031' :
+                if ($currentState != '4001')
+                    return false;
+                break;
+            default :
+                return false;
+        }
+        return true;
     }
 
 }

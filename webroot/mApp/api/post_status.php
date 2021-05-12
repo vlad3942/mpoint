@@ -59,6 +59,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem->{'psp-config'}['id']));
                 $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                 $code = $obj_PSP->postStatus($obj_Elem);
+            } else if (intval($obj_Elem->{'session'}['id']) > 0) {
+
+                $query = "SELECT  id,pspid FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl WHERE sessionid = " . $obj_Elem->{'session'}['id'] ." and pspid>0 Limit 1" ;
+                $RSTxn = $_OBJ_DB->getName ( $query );
+                if(is_array($RSTxn) === true)
+                {
+                    $obj_TxnInfo = TxnInfo::produceInfo( $RSTxn["ID"], $_OBJ_DB);
+                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($RSTxn['PSPID']), $aHTTP_CONN_INFO);
+                    $obj_Processor->getPSPInfo()->updateSessionState(-1, $obj_TxnInfo->getExternalID(), $obj_TxnInfo->getAmount(), $obj_TxnInfo->getCardMask(), $obj_TxnInfo->getCardID(), $obj_TxnInfo->getCardExpiry(), "", $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), 0, $obj_Elem->{'status'}['code']);
+
+                }
             }
 		}
 	}

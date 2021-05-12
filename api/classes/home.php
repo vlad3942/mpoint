@@ -291,6 +291,11 @@ class Home extends General
                 if(isset($obj_XML->profile_type)) {
                     $profile_type_id = (integer)$obj_XML->profile_type;
                     $obj_CustomerInfo->setProfileTypeID($profile_type_id);
+				}
+				if(isset($obj_XML->profile->anonymous)) {
+                    $user_type = (string)$obj_XML->profile->anonymous;
+                    $userType = ($user_type === "false")?(UserType::iRegisterUser):(UserType::iGuestUser);
+                    $obj_CustomerInfo->setUserType($userType);
                 }
 				return 10;
 			}
@@ -976,7 +981,7 @@ class Home extends General
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
                             {
-                                $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                                $sTxnAdditionalDataXml .= '<param name="'.$key.'">'. $value .'</param>';
                             }
                             $sTxnAdditionalDataXml .="</additional-data>";
                         }
@@ -1070,6 +1075,13 @@ class Home extends General
                              if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
                              $xml .= '</address>';
                          }
+                        $linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                        $xml .= "<payment_status>".General::getPaymentStatus($this->getDBConn(),$txnId,$linkedTxnId)."</payment_status>";
+                        // add linked transaction
+                        if($linkedTxnId !== null ){
+                            $getLinkedTxns     = General::getLinkedTransactions($this->getDBConn(),$linkedTxnId,$txnId);
+                            $xml               .= $getLinkedTxns;
+                        }
                          $xml .= '</transaction>';
 
                          if ( ($objCountryConf instanceof CountryConfig) === true)
@@ -1691,5 +1703,6 @@ class Home extends General
 
 
 }
+
 
 ?>
