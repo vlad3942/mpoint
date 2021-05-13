@@ -10,3 +10,5 @@ insert into client.additionalproperty_tbl (key,value,externalid,type,scope) valu
 
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('AIRLINE_NUMRIC_CODE',134,<client-id>,'client',2)
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('CARRIER_NAME','AVINCA',<client-id>,'client',2)
+
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('INGENICO_AUTH_MODE','SALE',<route-id>,'merchant',2);
