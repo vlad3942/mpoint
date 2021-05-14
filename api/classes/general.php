@@ -1788,7 +1788,7 @@ class General
 				WHERE id = ". $txnId;
         $RS = $_OBJ_DB->getName($sql);
         $auto_capture = $RS['AUTO_CAPTURE'];
-        if($auto_capture == AutoCaptureType::eRunTimeAutoCapt){
+        if($auto_capture == AutoCaptureType::eRunTimeAutoCapt || $auto_capture == AutoCaptureType::eMerchantLevelAutoCapt ){
             //if manual capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
             $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_ACCEPTED_STATE,$txnId);
         }else{
@@ -1832,12 +1832,12 @@ class General
     {
         $sql = "SELECT COUNT(id) AS C
 			FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-			WHERE txnid = ".$txnId." AND stateid = ".$stateId;
+			WHERE txnid = ".$txnId." AND ( stateid = ".$stateId;
         if($is_failed === false){
-            $sql .= " AND stateid NOT IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")AND enabled = '1'";
+            $sql .= " AND stateid NOT IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
 
         }else{
-            $sql .= " OR stateid IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")AND enabled = '1'";
+            $sql .= " OR stateid IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
         }
         $res = $_OBJ_DB->getName($sql);
         return $res['C'];

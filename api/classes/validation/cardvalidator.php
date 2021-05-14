@@ -149,7 +149,7 @@ class CardValidator extends ValidateBase
             }else{
                 $expiry     = explode(substr($cardExpiry, 2, 1),$cardExpiry);
                 $expiryDate = \DateTime::createFromFormat('my', $expiry[0].$expiry[1]);
-                $today      = new \DateTime();
+                $today      = new \DateTime('midnight');
                 if ($expiryDate < $today) {
                     $code= 742;
                 }
