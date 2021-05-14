@@ -217,22 +217,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			else
 			{
 				$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
-
-                if(isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}))
-                {
-                    $additionalDataParamsCount = count($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->children());
-                    for ($index = 0; $index < $additionalDataParamsCount; $index++)
-                    {
-                        $additionalTxnData[$index]['name'] = (string)$obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
-                        $additionalTxnData[$index]['value'] = (string)$obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->param[$index];
-                        $additionalTxnData[$index]['type'] = (string)'Transaction';
-                    }
-
-                    if(count($additionalTxnData) > 0)
-                    {
-                        $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
-                    }
-                }
 			}
 			if(count($aMsgCds) === 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === true)
 			{
@@ -247,6 +231,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
 					)
 				{
+                    if(isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}))
+                    {
+                        $additionalDataParamsCount = count($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->children());
+                        for ($index = 0; $index < $additionalDataParamsCount; $index++)
+                        {
+                            $additionalTxnData[$index]['name'] = (string)$obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                            $additionalTxnData[$index]['value'] = (string)$obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->param[$index];
+                            $additionalTxnData[$index]['type'] = (string)'Transaction';
+                        }
+
+                        if(count($additionalTxnData) > 0)
+                        {
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+                        }
+                    }
 
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$aObj_PSPConfigs = array();
