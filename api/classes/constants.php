@@ -1889,6 +1889,7 @@ abstract class Constants
 	 * @var array
 	 */
 	const aServiceLevelAndIdMapp = [
+		'0' => 'Unknown',
 		'1' => 'First Class',
 		'2' => 'Standard',
 		'3' => 'Economy',
