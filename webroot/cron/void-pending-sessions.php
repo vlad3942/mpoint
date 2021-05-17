@@ -141,6 +141,10 @@ require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH ."/cybersource.php");
+
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/Paymaya_Acq.php");
+
 $sql = "SELECT sn.id, sn.amount FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn
           WHERE sn.stateid not in (".Constants::iSESSION_COMPLETED.", ".Constants::iSESSION_EXPIRED.",".Constants::iSESSION_FAILED.") AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
 

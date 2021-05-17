@@ -79,6 +79,8 @@ require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 require_once(sCLASS_PATH . '/payment_route.php');
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 
 $aMsgCds = array();
 
