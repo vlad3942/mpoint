@@ -70,11 +70,11 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 
-$aDB_CONN_INFO["mpoint"]["host"] = "mpoint-db.techops.sit.cpm.dev";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
-$aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "techops";
-$aDB_CONN_INFO["mpoint"]["password"] = "kllGdVOSLpSx1e0pfARqwPbbFUouYlu8xDm8PFTs7CUAkdNG48GJtnwtGAjNrB20";
+$aDB_CONN_INFO["mpoint"]["host"] = env("database.mpoint.host", "localhost");
+$aDB_CONN_INFO["mpoint"]["port"] = env("database.mpoint.port", 5432);
+$aDB_CONN_INFO["mpoint"]["path"] = env("database.mpoint.path", "mpoint");
+$aDB_CONN_INFO["mpoint"]["username"] = env("database.mpoint.username", "mpoint");
+$aDB_CONN_INFO["mpoint"]["password"] = env("database.mpoint.password", "");
 $aDB_CONN_INFO["mpoint"]["class"] = env("database.mpoint.class", "PostGreSQL");
 $aDB_CONN_INFO["mpoint"]["timeout"] = env("database.mpoint.timeout", 10);
 $aDB_CONN_INFO["mpoint"]["charset"] = env("database.mpoint.charset", "UTF8");
@@ -112,9 +112,9 @@ $aDB_CONN_INFO["session"]["method"] = iOUTPUT_METHOD;
  * Connection info for sending error reports to a remote host
  * TODO CMP-4529 All mESB URLs must be configurable via env
  */
-$aHTTP_CONN_INFO["mesb"]["protocol"] = "https";
+$aHTTP_CONN_INFO["mesb"]["protocol"] = env("http.mesb.protocol", "http");
 $aHTTP_CONN_INFO["mesb"]["host"] = env("http.mesb.host", "localhost");
-$aHTTP_CONN_INFO["mesb"]["port"] = 443;
+$aHTTP_CONN_INFO["mesb"]["port"] = env("http.mesb.port", 10080);
 $aHTTP_CONN_INFO["mesb"]["timeout"] = env("http.mesb.timeout", 120);
 $aHTTP_CONN_INFO["mesb"]["path"] = env("http.mesb.path", "/");
 $aHTTP_CONN_INFO["mesb"]["method"] = env("http.mesb.method", "POST");
