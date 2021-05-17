@@ -2,7 +2,7 @@ insert into client.additionalproperty_tbl (key,value,externalid,type,scope) valu
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('FareBasisCode','BK',<WP-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerAddress1','AV address',<WP-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerCity','Bogata address',<WP-merchant-id>,'merchant',2);
-insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerCountryCode','CO address',<WP-merchant-id>,'merchant',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerCountryCode','12970',<WP-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerPostalCode','1200',<WP-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('RestrictedTicket','1',<WP-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('TravelAgencyCode','av',<WP-merchant-id>,'merchant',2);
