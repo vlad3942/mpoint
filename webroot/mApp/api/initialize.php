@@ -514,7 +514,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++ )
 										{
 										$flight =  $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
-                                        $data['flights']['service_level'] = (string) $flight->{'service-level'};
+
+                                        $data['flights']['service_level'] = array_search(strtoupper((string) $flight->{'service-level'}),array_map('strtoupper', Constants::aServiceLevelAndIdMapp)) ;
 										$data['flights']['service_class'] = (string) $flight->{'booking-class'};
                                         $data['flights']['arrival_date'] = (string) $flight->{'arrival-time'};
                                         $data['flights']['departure_date'] = (string) $flight->{'departure-time'};
