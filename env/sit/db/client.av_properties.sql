@@ -11,7 +11,7 @@ insert into client.additionalproperty_tbl (key,value,externalid,type,scope) valu
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('AIRLINE_NUMRIC_CODE',134,<client-id>,'client',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('CARRIER_NAME','AVINCA',<client-id>,'client',2);
 
-insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('DFP_GENERATION','true',<client-id>,'client',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('DFP_GEN','true',<client-id>,'client',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('CYBS_DM_ORGID','1snn5n9w',<client-id>,'client',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('CYBS_DM_MID','avianca_master',<client-id>,'client',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('ADOBE_TARGET_SCRIPT','true',<client-id>,'client',2);
