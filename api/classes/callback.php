@@ -605,6 +605,15 @@ abstract class Callback extends EndUserAccount
 				if ($fxservicetypeid != 0) {
 					$sBody .= "&service_type_id=" . urlencode($fxservicetypeid);
 				}
+                $pax_last_name = $this->getPaxLastName($txnId);
+                if ($pax_last_name != '') {
+                    $sBody .= "&pax_last_name=" . $pax_last_name;
+                }
+                $departureDetails = $this->getDepartureDetails($txnId);
+                if (empty($departureDetails) === FALSE) {
+                    $sBody .= "&first_departure_time=" . $departureDetails['departure_date'];
+                    $sBody .= "&first_departure_time_zone=" . $departureDetails['departure_timezone'];
+                }
                 if ($sub_code_id != 0) {
                     $sBody .= "&sub_status=" . $sub_code_id;
                 }
@@ -1207,6 +1216,15 @@ abstract class Callback extends EndUserAccount
 						if ($fxservicetypeid != 0) {
 							$transactionData['service_type_id'] = $fxservicetypeid;
 						}
+                        $pax_last_name = $this->getPaxLastName($objTransaction->getID());
+                        if ($pax_last_name != '') {
+                            $transactionData['pax_last_name'] = $pax_last_name;
+                        }
+                        $departureDetails = $this->getDepartureDetails($objTransaction->getID());
+                        if (empty($departureDetails) === FALSE) {
+                            $transactionData['first_departure_time'] = $departureDetails['departure_date'];
+                            $transactionData['first_departure_time_zone'] = $departureDetails['departure_timezone'];
+                        }
                         if ($sub_code_id != 0) {
                             $transactionData['sub_status'] = $sub_code_id;
                         }
@@ -1600,6 +1618,41 @@ abstract class Callback extends EndUserAccount
             return count($value) !== 0;
         }
         return NULL !== $value;
+    }
+
+    /* Function to get pax_last_name */
+    public function getPaxLastName(int $txnid): string{
+        $pax_last_name = '';
+        $sql = "SELECT P.last_name
+				FROM Log".sSCHEMA_POSTFIX.".Passenger_Tbl P
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on P.order_id = Ord.id 
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND P.seq=1";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $pax_last_name .= $RS ["LAST_NAME"];
+            }
+        }
+        return $pax_last_name;
+    }
+
+    /* Function to get first departure time and time zone */
+    public function getDepartureDetails(int $txnid): array{
+        $departureDetails = array();
+        $sql = "SELECT F.departure_timezone,F.departure_date
+				FROM Log".sSCHEMA_POSTFIX.".Flight_Tbl F
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on F.order_id = Ord.id 
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND F.tag= '1' AND F.trip_count='1'";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $departureDetails['departure_timezone']  = $RS ["DEPARTURE_TIMEZONE"];
+                $departureDetails['departure_date']      = $RS ["DEPARTURE_DATE"];
+            }
+        }
+        return $departureDetails;
     }
 }
 ?>
