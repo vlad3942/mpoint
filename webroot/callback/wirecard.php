@@ -127,17 +127,17 @@ try
 		
 		if ($responseCode == 1000)
 		{				
-			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 		else
 		{
-			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
 		}
 	}
 	// Callback URL has been defined for Client
-	$obj_mPoint->notifyClient($iStateID, $obj_XML, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+	$obj_mPoint->notifyClient($iStateID, $obj_XML, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 
 	$xml = '<status code="1000">Callback Success</status>';
 } 
