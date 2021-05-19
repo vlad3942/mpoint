@@ -391,7 +391,7 @@
 
 	<xs:complexType name="fare-type-detail">
 		<xs:all>
-			<xs:element name="type" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="profile-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 			<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />

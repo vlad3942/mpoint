@@ -474,7 +474,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $fareArr = array();
                                                 $fareArr['order_id'] = $order_id;
                                                 $fareArr['bill_type'] = (string) 'Fare';
-                                                $fareArr['type'] = (string) $fare->{'type'};
                                                 $fareArr['profile_seq'] = (int) $fare->{'profile-seq'};
                                                 $fareArr['trip_tag'] = (int) $fare->{'trip-tag'};
                                                 $fareArr['trip_seq'] = (int) $fare->{'trip-seq'};
@@ -496,7 +495,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $addOnArr = array();
                                                 $addOnArr['order_id'] = $order_id;
                                                 $addOnArr['bill_type'] = (string) 'Add-on';
-                                                $addOnArr['type'] = (int) $addOn->{'type'};
                                                 $addOnArr['profile_seq'] = $addOn->{'profile-seq'};
                                                 $addOnArr['trip_tag'] = $addOn->{'trip-tag'};
                                                 $addOnArr['trip_seq'] = $addOn->{'trip-seq'};
