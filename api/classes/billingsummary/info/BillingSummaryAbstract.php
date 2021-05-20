@@ -33,12 +33,6 @@ abstract class BillingSummaryAbstract
      */
     private $_BillType;
     /**
-     * Value of the Type Id
-     *
-     * @var integer
-     */
-    private $_TypeId;
-    /**
      * Value of Description
      *
      * @var string
@@ -100,11 +94,10 @@ abstract class BillingSummaryAbstract
     /**
      * Default Constructor
      */
-    public function __construct($id, $ref, $type, $typeId, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem) {
+    public function __construct($id, $ref, $type, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem) {
         $this->_iID = ( integer ) $id;
         $this->_JourneyRef = $ref;
         $this->_BillType = $type;
-        $this->_TypeId = $typeId;
         $this->_Description = $desc;
         $this->_Amount = $amt;
         $this->_Currency = $curr;
@@ -139,14 +132,6 @@ abstract class BillingSummaryAbstract
      */
     public function getBillType() {
         return $this->_BillType;
-    }
-    /**
-     * Returns the type id of Billing Summary
-     *
-     * @return integer
-     */
-    public function getTypeId() {
-        return $this->_TypeId;
     }
     /**
      * Returns the description of Billing Summary

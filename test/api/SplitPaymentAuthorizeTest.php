@@ -220,6 +220,16 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
 		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
         $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid= 1 and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1001001, $linkedTxnId[0]['value'] );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid=1001001  and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1, $linkedTxnId[0]['value'] );
     }
 
     public function testSuccessfulDCCAuthorizationVoucherFirst()
@@ -368,6 +378,16 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
 		$res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
         $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid= 1 and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1001001, $linkedTxnId[0]['value'] );
+
+        $res =  $this->queryDB("SELECT value FROM Log.additional_data_tbl where externalid=1001001  and name= 'linked_txn_id'" );
+        $this->assertTrue(is_resource($res) );
+        $linkedTxnId = pg_fetch_all($res);
+        $this->assertEquals(1, $linkedTxnId[0]['value'] );
     }
 
     public function testSuccessfulDCCAuthorizationCardFirst()
@@ -468,6 +488,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 11, 9876543210, '', '127.0.0.1', -1, 2,(NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 100, '103-1418291', '" . $sCallbackURL . "', 11, '127.0.0.1', TRUE, 208,1,11,208)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 11,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001,11,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");

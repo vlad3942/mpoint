@@ -1164,6 +1164,13 @@ abstract class Constants
 	const iTRAVELFUND_VOUCHER = 71;
 
     /**
+    * Unique PSP ID for transaction's made using CEBU Travel Fund
+     *
+     */
+    const iPAYMAYA_ACQ = 73;
+
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */

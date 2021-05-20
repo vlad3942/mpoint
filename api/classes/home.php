@@ -722,14 +722,14 @@ class Home extends General
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE .", ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id DESC";
-		
+
 		$sqlState = $sql;
 
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE ." ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id ASC";
-		
+
 		$sqlStateData = $sql;
 
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
@@ -982,7 +982,7 @@ class Home extends General
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
                             {
-                                $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                                $sTxnAdditionalDataXml .= '<param name="'.$key.'">'. $value .'</param>';
                             }
                             $sTxnAdditionalDataXml .="</additional-data>";
                         }
@@ -1076,6 +1076,13 @@ class Home extends General
                              if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
                              $xml .= '</address>';
                          }
+                        $linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                        $xml .= "<payment_status>".General::getPaymentStatus($this->getDBConn(),$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
+                        // add linked transaction
+                        if($linkedTxnId !== null ){
+                            $getLinkedTxns     = General::getLinkedTransactions($this->getDBConn(),$linkedTxnId,$obj_TxnInfo->getID());
+                            $xml               .= $getLinkedTxns;
+                        }
                          $xml .= '</transaction>';
 
                          if ( ($objCountryConf instanceof CountryConfig) === true)
@@ -1697,5 +1704,6 @@ class Home extends General
 
 
 }
+
 
 ?>

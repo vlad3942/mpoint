@@ -563,9 +563,20 @@ class General
              $data["conversion-rate"] = 1;
              $txnInfo->setFXServiceTypeID(0);
              $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
-             if (count($additionalTxnData) > 0) {
-                 $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
-             }
+
+             //link parent transaction to new created txn
+             $index = count($additionalTxnData);
+             $additionalTxnData[$index]['name'] = 'linked_txn_id';
+             $additionalTxnData[$index]['value'] = (string)$txnInfo->getID();
+             $additionalTxnData[$index]['type'] = 'Transaction';
+             $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
+
+             //link new transaction to parent txn
+             $additionalData[0]['name'] = 'linked_txn_id';
+             $additionalData[0]['value'] = (string)$iAssociatedTxnId;
+             $additionalData[0]['type'] = 'Transaction';
+             $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID());
+
              $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
              $this->logTransaction($obj_AssociatedTxnInfo);
 
@@ -1752,6 +1763,101 @@ class General
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
         }
         return $oPSPConfig;
+    }
+
+
+    /**
+     * Function to get payment status for get_transaction_status and get_status
+     *
+     * @param RDB $_OBJ_DB
+     * @param int $txnId
+     * @param int|null $linkedTxnId
+     * @return string
+     */
+    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,?int $linkedTxnId=null): string
+    {
+        $paymentStatus = 'Pending';
+        //check capture mode of transaction
+        $sql = "SELECT auto_capture
+         		FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				WHERE id = ". $txnId;
+        $RS = $_OBJ_DB->getName($sql);
+        $auto_capture = $RS['AUTO_CAPTURE'];
+        if($auto_capture == AutoCaptureType::eRunTimeAutoCapt || $auto_capture == AutoCaptureType::eMerchantLevelAutoCapt ){
+            //if manual capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
+            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_ACCEPTED_STATE,$txnId);
+        }else{
+            //if not manual capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
+            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE,$txnId);
+        }
+        if($checkTxnStatus > 0){
+            $paymentStatus = 'Complete';
+        }
+        // check if 2010 is logged and fraud state is logged
+        $checkFailedTxn = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_REJECTED_STATE,$txnId,true);
+        if($checkFailedTxn > 0){
+            $paymentStatus = 'Failed';
+        }
+        // check both the transaction status to get payment status for combined txns
+        if($linkedTxnId !== null){
+            $checkLinkedTxnStatus = self::getPaymentStatus($_OBJ_DB,$linkedTxnId);
+            $TxnPaymentStatus = [$paymentStatus,$checkLinkedTxnStatus];
+            $checkPaymentStatus = array_count_values($TxnPaymentStatus);
+            if($checkPaymentStatus['Complete'] == 2){
+                $paymentStatus = 'Complete';
+            }else if(in_array('Pending',$TxnPaymentStatus)){
+                $paymentStatus = 'Pending';
+            }else {
+                $paymentStatus = 'Failed';
+            }
+        }
+        return $paymentStatus;
+    }
+
+    /**
+     * Function to check txn status
+     *
+     * @param RDB $_OBJ_DB
+     * @param int $stateId
+     * @param int $txnId
+     * @param bool $is_failed
+     * @return int
+     */
+    public static function checkTxnStatus(RDB $_OBJ_DB,int $stateId,int $txnId, bool $is_failed=false): int
+    {
+        $sql = "SELECT COUNT(id) AS C
+			FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+			WHERE txnid = ".$txnId." AND ( stateid = ".$stateId;
+        if($is_failed === false){
+            $sql .= " AND stateid NOT IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
+
+        }else{
+            $sql .= " OR stateid IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
+        }
+        $res = $_OBJ_DB->getName($sql);
+        return $res['C'];
+    }
+
+    /**
+     * Function to create linked transaction xml
+     *
+     * @param RDB $_OBJ_DB
+     * @param int $linkedTxnId
+     * @param int $txnId
+     * @return string
+     */
+    public static function getLinkedTransactions(RDB $_OBJ_DB,int $linkedTxnId,int $txnId) : string
+    {
+        $linkedTxnData     = [$txnId,$linkedTxnId];
+        $linkedTxnXml  	   = "<linked_transactions>";
+        foreach($linkedTxnData as $linkedTxn){
+            $linkedTxnXml  .= "<transaction_details>";
+            $linkedTxnXml  .= "<id>".$linkedTxn."</id>";
+            $linkedTxnXml  .= "<status>".self::getPaymentStatus($_OBJ_DB,$linkedTxn)."</status>";
+            $linkedTxnXml  .= "</transaction_details>";
+        }
+        $linkedTxnXml .= "</linked_transactions>";
+        return $linkedTxnXml;
     }
 
 	 /***
