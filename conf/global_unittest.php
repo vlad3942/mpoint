@@ -314,6 +314,21 @@ $aHTTP_CONN_INFO["mpgs"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
 $aHTTP_CONN_INFO["mpgs"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
 $aHTTP_CONN_INFO["mpgs"]["path"] = $aHTTP_CONN_INFO["mpgs"]["paths"]["pay"];
 
+
+/**
+ * Connection info for connecting to Paymaya-Acq
+ */
+$aHTTP_CONN_INFO["paymaya_acq"]["protocol"] = "http";
+$aHTTP_CONN_INFO["paymaya_acq"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["paymaya_acq"]["port"] = 80;
+$aHTTP_CONN_INFO["paymaya_acq"]["timeout"] = 120;
+$aHTTP_CONN_INFO["paymaya_acq"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paymaya_acq"]["method"] = "POST";
+$aHTTP_CONN_INFO["paymaya_acq"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["initialize"] = "/_test/simulators/paymaya-acq/init.php";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["auth"] = "/_test/simulators/paymaya-acq/auth.php";
+
+
 /**
  * Message Queue Provider Information
  *

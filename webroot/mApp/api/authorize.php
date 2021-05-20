@@ -173,6 +173,8 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH . '/Route.php');
 require_once(sCLASS_PATH ."/voucher/TravelFund.php");
+// Require specific Business logic for the Paymaya-Acq component
+require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -1342,7 +1344,7 @@ try
 
                                                                     $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');
                                                                     //$obj_Processor->getPSPInfo()->updateSessionState(Constants::iPAYMENT_REJECTED_STATE,$obj_Processor->getPSPInfo()->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                                                                    $xml .= '<status code="2010">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
+                                                                    $xml .= '<status code="2010" sub-code="'.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.'">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
                                                                 }
                                                             }
 

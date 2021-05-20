@@ -19,16 +19,16 @@ class FareInfo extends BillingSummaryAbstract
     /**
      * Default Constructor
      */
-    public function __construct($id, $ref, $type, $typeId, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem) {
-        parent::__construct($id, $ref, $type, $typeId, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem);
+    public function __construct($id, $ref, $type, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem) {
+        parent::__construct($id, $ref, $type, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem);
     }
 
     public static function produceConfig(\RDB $oDB, $id) : ?FareInfo{
-        $sql = "SELECT id, journey_ref, bill_type, type, description, amount, currency, created, modified, profile_seq, trip_tag,  trip_seq, product_code, product_category, product_item
+        $sql = "SELECT id, journey_ref, bill_type, description, amount, currency, created, modified, profile_seq, trip_tag,  trip_seq, product_code, product_category, product_item
 					FROM log" . sSCHEMA_POSTFIX . ".billing_summary_tbl WHERE id=" . $id;
         $RS = $oDB->getName ( $sql );
         if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-            return new FareInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["TYPE"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
+            return new FareInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
         } else {
             trigger_error('Unable to create Fare info object', E_USER_NOTICE);
             return null;
@@ -51,7 +51,7 @@ class FareInfo extends BillingSummaryAbstract
     {
         $xml = '';
         $xml .= '<fare>';
-        $xml .= '<type>' . $this->getTypeId() . '</type>';
+        $xml .= '<profile-seq>' . $this->getProfileSeqence() . '</profile-seq>';
         $xml .= '<description>' . $this->getDescription() . '</description>';
         $xml .= '<currency>' . $this->getCurrency() . '</currency>';
         $xml .= '<amount>' . $this->getAmount() . '</amount>';
