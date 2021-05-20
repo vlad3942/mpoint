@@ -111,14 +111,14 @@ final class TxnPassbook
     private function _getUpdatedPassbookEntries()
     {
         $sql = 'SELECT * FROM log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl WHERE clientid = $1 and transactionid = $2 ORDER BY id ASC';
-        $res = $this->getDBConn()->prepare($sql);
-        if (is_resource($res) === TRUE) {
-            $aParams = array(
-                $this->getClientId(),
-                $this->getTransactionId()
-            );
 
-            $result = $this->getDBConn()->execute($res, $aParams);
+        $aParams = array(
+            $this->getClientId(),
+            $this->getTransactionId()
+        );
+        $result = $res = $this->getDBConn()->executeQuery($sql, $aParams);
+
+        if (is_resource($res) === TRUE) {
 
             if ($result === FALSE) {
                 throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
@@ -363,16 +363,12 @@ final class TxnPassbook
                                                AND tp.status = 'pending'
                         ) AS q8";
 
-        $res = $this->getDBConn()->prepare($sql);
-        if (is_resource($res) === TRUE) {
-            $aParams = array(
-                $this->getClientId(),
-                $this->getTransactionId()
-            );
-
-        }
-        $result = $this->getDBConn()->execute($res, $aParams);
-
+        $aParams = array(
+            $this->getClientId(),
+            $this->getTransactionId()
+        );
+        $result = $this->getDBConn()->executeQuery($sql, $aParams);
+                
         if ($result === FALSE) {
             throw new Exception('Fail to fetch transaction entry for transaction id :' . $this->_transactionId, E_USER_ERROR);
         } else {
@@ -468,14 +464,12 @@ final class TxnPassbook
                              INNER JOIN log.' . sSCHEMA_POSTFIX . 'transaction_tbl transaction
                                         ON psp.id = transaction.pspid AND transaction.clientid = merchant.clientid
                     WHERE transaction.id = $1';
-            $res = $this->getDBConn()->prepare($sql);
-            if (is_resource($res) === TRUE) {
-                $aParams = array(
-                    $this->getTransactionId()
-                );
-            }
 
-            $result = $this->getDBConn()->execute($res, $aParams);
+            $aParams = array(
+                $this->getTransactionId()
+            );
+            $result = $this->getDBConn()->executeQuery($sql, $aParams);
+                    
             while ($RS = $this->getDBConn()->fetchName($result)) {
                 $this->_pspSupportedPartialOperation = (int)$RS['PSPSUPPORTEDPARTIALOPERATIONS'];
                 $this->_merchantSupportedPartialOperation = (int)$RS['MERCHANTSUPPORTEDPARTIALOPERATIONS'];
@@ -618,28 +612,26 @@ final class TxnPassbook
                 VALUES 
                     ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
 
-        $res = $this->_obj_Db->prepare($sql);
-        if (is_resource($res) === TRUE) {
-            $aParams = array(
-                $this->getTransactionId(),
-                $passbookEntry->getAmount(),
-                $passbookEntry->getCurrencyId(),
-                $passbookEntry->getRequestedOperation(),
-                $passbookEntry->getPerformedOperation(),
-                $passbookEntry->getStatus(),
-                $passbookEntry->getExternalReference(),
-                $passbookEntry->getExternalReferenceIdentifier(),
-                $this->getClientId()
-            );
+        $aParams = array(
+            $this->getTransactionId(),
+            $passbookEntry->getAmount(),
+            $passbookEntry->getCurrencyId(),
+            $passbookEntry->getRequestedOperation(),
+            $passbookEntry->getPerformedOperation(),
+            $passbookEntry->getStatus(),
+            $passbookEntry->getExternalReference(),
+            $passbookEntry->getExternalReferenceIdentifier(),
+            $this->getClientId()
+        );
 
-            $result = $this->getDBConn()->execute($res, $aParams);
+        $result = $this->getDBConn()->executeQuery($sql, $aParams);
 
-            if ($result === FALSE) {
-                $validateEntryResponse['Status'] = 999;
-                $validateEntryResponse['Message'] = 'Fail to create passbook entry for transaction id ' . $this->_transactionId;
-                throw new Exception('Fail to create passbook entry for transaction id ' . $this->_transactionId, E_USER_ERROR);
-            }
+        if ($result === FALSE) {
+            $validateEntryResponse['Status'] = 999;
+            $validateEntryResponse['Message'] = 'Fail to create passbook entry for transaction id ' . $this->_transactionId;
+            throw new Exception('Fail to create passbook entry for transaction id ' . $this->_transactionId, E_USER_ERROR);
         }
+            
         return $validateEntryResponse;
     }
 
@@ -860,31 +852,31 @@ final class TxnPassbook
         $queryResult = FALSE;
         $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $2 WHERE clientid = $5 and transactionid = $1 and id = $3 and status <> $4;';
 
-        if ($sqlQuery != '') {
-            $res = $this->getDBConn()->prepare($sqlQuery);
-            if (is_resource($res) === TRUE) {
-                foreach ($passbookEntry as $entry) {
-                    if ($entry instanceof PassbookEntry) {
-                        $aParams = array(
-                            $this->getTransactionId(),
-                            $entry->getStatus(),
-                            $entry->getId(),
-							Constants::sPassbookStatusDone,
-                            $this->getClientId()
-                        );
-                        $result = $this->getDBConn()->execute($res, $aParams);
-                        $queryResult = (bool)$result;
-                        if ($result === FALSE) {
-                            throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
-                            return FALSE;
-                        }
+        if(count($passbookEntry) == 0) {
+            return $queryResult;
+        }
 
-                    }
+        foreach ($passbookEntry as $entry) {
+            if ($entry instanceof PassbookEntry) {
+                $aParams = array(
+                    $this->getTransactionId(),
+                    $entry->getStatus(),
+                    $entry->getId(),
+                    Constants::sPassbookStatusDone,
+                    $this->getClientId()
+                );
+                $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
+                $queryResult = (bool) $result;
+                if ($result === FALSE) {
+                    throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+                    return $queryResult;
                 }
-                return $queryResult;
+
             }
         }
-        return FALSE;
+
+        return $queryResult;
+
     }
 
     /**
@@ -900,22 +892,21 @@ final class TxnPassbook
         $amount  = (int)$amount;
         $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE clientid = $5 and transactionid = $2 and amount = $3 and performedopt = $4;';
 
-        $res = $this->getDBConn()->prepare($sqlQuery);
-        if (is_resource($res) === TRUE) {
-            $aParams = array(
-                $status,
-                $this->getTransactionId(),
-                $amount,
-                $state,
-                $this->getClientId()
-            );
-            $result = $this->getDBConn()->execute($res, $aParams);
-            if ($result === false || (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0))
-            {
-                throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
-                return FALSE;
-            }
+        $aParams = array(
+            $status,
+            $this->getTransactionId(),
+            $amount,
+            $state,
+            $this->getClientId()
+        );
+    
+        $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
+        if ($result === false || (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0))
+        {
+            throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+            return FALSE;
         }
+        
         return TRUE;
     }
 
@@ -941,26 +932,24 @@ final class TxnPassbook
                          INNER JOIN LOG.' . sSCHEMA_POSTFIX ."TXNPASSBOOK_TBL T1 ON CLIENTID=$5 and
                         T1.ID = ANY (string_to_array(trim(T2.EXTREF, ','), ',')::BIGINT[])";
 
-        $res = $this->getDBConn()->prepare($sql);
-        if (is_resource($res) === TRUE) {
-            $aParams = [
-                $this->getTransactionId(),
-                $state,
-                'inprogress',
-                $this->getClientId(),
-                $this->getClientId()
-            ];
+        $aParams = [
+            $this->getTransactionId(),
+            $state,
+            'inprogress',
+            $this->getClientId(),
+            $this->getClientId()
+        ];
 
-            $result = $this->getDBConn()->execute($res, $aParams);
+        $result = $this->getDBConn()->executeQuery($sql, $aParams);
 
-            if ($result !== FALSE) {
-                while ($rs = $this->getDBConn()->fetchName($result))
-                {
-                    $performedOptAmount = $rs['PERFORMEDOPTAMOUNT'];
-                    $return[$rs['EXTREF']] = $rs['AMOUNT'];
-                }
+        if ($result !== FALSE) {
+            while ($rs = $this->getDBConn()->fetchName($result))
+            {
+                $performedOptAmount = $rs['PERFORMEDOPTAMOUNT'];
+                $return[$rs['EXTREF']] = $rs['AMOUNT'];
             }
         }
+
         return $return;
     }
 

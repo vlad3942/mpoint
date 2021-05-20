@@ -39,34 +39,31 @@ class UATPSettlement extends mPointSettlement
                     SELECT 1 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl 
                     WHERE file_reference_number= $8 AND file_sequence_number = $9 )
                     RETURNING id, created";
-        $resource = $_OBJ_DB->prepare($sql);
 
-        if (is_resource($resource) === true) {
-            $aParam = array(
-                $this->_iRecordNumber,
-                $objCC->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME'),
-                intval(date("Ymd") ),
-                $this->_iClientId,
-                $this->_sRecordType,
-                $this->_iPspId,
-                Constants::sSETTLEMENT_REQUEST_WAITING,
-                $objCC->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME'),
-                intval(date("Ymd") )
-                );
+        $aParam = array(
+            $this->_iRecordNumber,
+            $objCC->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME'),
+            intval(date("Ymd") ),
+            $this->_iClientId,
+            $this->_sRecordType,
+            $this->_iPspId,
+            Constants::sSETTLEMENT_REQUEST_WAITING,
+            $objCC->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME'),
+            intval(date("Ymd") )
+        );
+        
+        $resource = $_OBJ_DB->executeQuery($sql, $aParam);
 
-            $result = $_OBJ_DB->execute($resource, $aParam);
-
-            if ($result === false) {
-                throw new Exception("Unable to create settlement record", E_USER_ERROR);
-            } else {
-                $RS = $_OBJ_DB->fetchName($result);
-                $this->_iSettlementId = $RS["ID"];
-                $this->_sFileCreatedDate = $RS["CREATED"];
-                $this->_sFileReferenceNumber = $objCC->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME');
-                $this->_iFileSequenceNumber = intval(date("Ymd") );
-                $this->_iRecordNumber = $this->_iRecordNumber;
-            }
+        if ($resource === false) {
+            throw new Exception("Unable to create settlement record", E_USER_ERROR);
         }
+
+        $RS = $_OBJ_DB->fetchName($resource);
+        $this->_iSettlementId = $RS["ID"];
+        $this->_sFileCreatedDate = $RS["CREATED"];
+        $this->_sFileReferenceNumber = $objCC->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME');
+        $this->_iFileSequenceNumber = intval(date("Ymd") );
+        $this->_iRecordNumber = $this->_iRecordNumber;
 
     }
 
@@ -98,20 +95,13 @@ class UATPSettlement extends mPointSettlement
                                 SET status = $1 
                                 WHERE file_reference_number = $2 AND file_sequence_number = $3;";
 
-                $resource = $_OBJ_DB->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array(
-                        (string)$sStatus,
-                        $sFileName,
-                        intval(date("Ymd") )
-                    );
-
-                    $result = $_OBJ_DB->execute($resource, $aParam);
-                }
-            }
-            else
-            {
-
+                $aParam = array(
+                    (string) $sStatus,
+                    $sFileName,
+                    intval(date("Ymd") )
+                );
+            
+                $resource = $_OBJ_DB->executeQuery($sql, $aParam);
             }
 
         }

@@ -15,4 +15,13 @@
 
     </changeSet>
 
+    <changeSet author="Sagar Badave" id="2021-05-16-setup-v2.27-log-1">
+        <modifyDataType  catalogName="log"
+                         schemaName="log"
+                         tableName="flight_tbl"
+                         columnName="service_level"
+                         newDataType="varchar(20)"
+        />
+    </changeSet>
+
 </databaseChangeLog>

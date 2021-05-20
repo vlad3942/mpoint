@@ -39,32 +39,33 @@ class ChaseSettlement extends mPointSettlement
                     (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id)
                     values ($1, $2, $3, $4, $5, $6) RETURNING id, created";
 
-        $resource = $_OBJ_DB->prepare($sql);
+        $aParam = array(
+            $this->_iRecordNumber,
+            $referenceNumber,
+            $this->_iRecordNumber,
+            $this->_iClientId,
+            $this->_sRecordType,
+            $this->_iPspId
+        );
+    
+        $resource = $_OBJ_DB->executeQuery($sql, $aParam);
 
-        if (is_resource($resource) === true) {
-            $aParam = array(
-                $this->_iRecordNumber,
-                $referenceNumber,
-                $this->_iRecordNumber,
-                $this->_iClientId,
-                $this->_sRecordType,
-                $this->_iPspId
-            );
-
-            $result = $_OBJ_DB->execute($resource, $aParam);
-
-            if ($result === false) {
-                throw new Exception("Unable to create settlement record", E_USER_ERROR);
-            } else
-            {
-                $RS = $_OBJ_DB->fetchName($result);
-                $this->_iSettlementId = $RS["ID"];
-                $this->_sFileCreatedDate = $RS["CREATED"];
-                $this->_sFileReferenceNumber = $referenceNumber;
-                $this->_iFileSequenceNumber = $this->_iRecordNumber;
-                $this->_iRecordNumber = $this->_iRecordNumber;
-            }
+        if ($resource === false) {
+            throw new Exception("Unable to create a record", E_USER_ERROR);
         }
+
+        $result = $_OBJ_DB->fetchName($resource);
+
+        if(!isset($result["ID"])) {
+            throw new Exception("Unable to create a record", E_USER_ERROR);
+        }
+
+        $this->_iSettlementId = $result["ID"];
+        $this->_sFileCreatedDate = $result["CREATED"];
+        $this->_sFileReferenceNumber = $referenceNumber;
+        $this->_iFileSequenceNumber = $this->_iRecordNumber;
+        $this->_iRecordNumber = $this->_iRecordNumber;
+
     }
 
 
@@ -277,24 +278,22 @@ class ChaseSettlement extends mPointSettlement
                                     $obj_PSP->notifyClient($stateId, $args,$this->_objClientConfig->getSurePayConfig($_OBJ_DB));
 
                                 if ($isDescriptionUpdated === true) {
+
                                     $sql = "UPDATE log.settlement_record_tbl
                                     SET description = $1
                                     WHERE id = $2;";
 
-                                    $resource = $_OBJ_DB->prepare($sql);
+                                    $aParam = array(
+                                        $finalDescription,
+                                        $pId
+                                    );
 
-                                    if (is_resource($resource) === true) {
-                                        $aParam = array(
-                                            $finalDescription,
-                                            $pId
-                                        );
+                                    $resource = $_OBJ_DB->executeQuery($sql, $aParam);
 
-                                        $result = $_OBJ_DB->execute($resource, $aParam);
-
-                                        if ($result === false) {
-                                            throw new Exception("Unable to update settlement record", E_USER_ERROR);
-                                        }
+                                    if ($resource === false) {
+                                        throw new Exception("Unable to create a record", E_USER_ERROR);
                                     }
+
                                 }
 
                                 }
@@ -313,49 +312,38 @@ class ChaseSettlement extends mPointSettlement
                         $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
                           SET description = CONCAT(description,',','".$file["desc"]."')  WHERE id = $1;";
 
-                        $resource = $_OBJ_DB->prepare($sql);
+                        $aParam = array(
+                            $fileId
+                        );
+                        $resource = $_OBJ_DB->executeQuery($sql, $aParam);
 
-                        if (is_resource($resource) === true)
-                        {
-                            $aParam = array(
-                                $fileId
-                            );
-
-                            $result = $_OBJ_DB->execute($resource, $aParam);
-                            if ($result === false)
-                            {
-                                throw new Exception("Unable to create settlement record", E_USER_ERROR);
-
-                            }
+                        if ($resource === false) {
+                            throw new Exception("Unable to create a record", E_USER_ERROR);
                         }
+
                     }
 
                     $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
                             SET record_tracking_number = $1, status = $2
                             WHERE id = $3;";
 
-                    $resource = $_OBJ_DB->prepare($sql);
-
-                    if (is_resource($resource) === true)
+                    $status = $file["status"];
+                    if($bErrorEncountered === true)
                     {
-                        $status = $file["status"];
-                        if($bErrorEncountered === true)
-                        {
-                            $status = $file["status"].' with error';
-                        }
-                        $aParam = array(
-                            $file["tracking-number"],
-                            $status,
-                            $fileId
-                        );
-
-                        $result = $_OBJ_DB->execute($resource, $aParam);
-                        if ($result === false)
-                        {
-                            throw new Exception("Unable to create settlement record", E_USER_ERROR);
-                        }
-
+                        $status = $file["status"].' with error';
                     }
+                    $aParam = array(
+                        $file["tracking-number"],
+                        $status,
+                        $fileId
+                    );
+
+                    $resource = $_OBJ_DB->executeQuery($sql, $aParam);
+
+                    if ($resource === false) {
+                        throw new Exception("Unable to create a record", E_USER_ERROR);
+                    }
+        
                 }
             }
         }

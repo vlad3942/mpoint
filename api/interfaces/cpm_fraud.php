@@ -178,6 +178,8 @@ abstract class CPMFRAUD
                 case Constants::iPOST_FRAUD_CHECK_REVIEW_STATE:
                 case Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE:
                 case Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE:
+                case Constants::iPOST_FRAUD_CHECK_TECH_ERROR_STATE:
+                case Constants::iPRE_FRAUD_CHECK_TECH_ERROR_STATE:
                  $bFraudPass = true;
                  break;
                 case Constants::iPRE_FRAUD_CHECK_REJECTED_STATE:

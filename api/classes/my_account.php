@@ -235,17 +235,16 @@ class MyAccount extends Home
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
 				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = '1'
 				 WHERE Card.id = $1";
-//		echo $sql1 ."\n";
-        $selectresource = $this->getDBConn()->prepare($sql1);
 
-        $aParams = array(
-            intval($cardid)
-        );
+		$aParams = array(
+			intval($cardid)
+		);
+		$selectresource = $this->getDBConn()->executeQuery($sql1, $aParams);
 
         if (is_resource($selectresource) === true) {
-		    $res1 = $this->getDBConn()->execute($selectresource, $aParams);
 
-            $RS = $this->getDBConn()->fetchName($res1);
+            $RS = $this->getDBConn()->fetchName($selectresource);
+
             if (is_array($RS) === true) {
                 $iTTL = intval($RS["TTL"]);
                 $this->_deletedCardToken = $RS["TICKET"];
@@ -271,18 +270,11 @@ class MyAccount extends Home
 
             $sql2 = "Update EndUser" . sSCHEMA_POSTFIX . ".Card_Tbl set enabled = '0'
 					 WHERE id = $1";
-			//echo $sql2 ."\n";
 
-            $resource = $this->getDBConn()->prepare($sql2);
-
-            if (is_resource($resource) === true) {
-                //execute() returns resource and not boolean
-                $result = $this->getDBConn()->execute($resource, $aParams);
-                if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) > 0)
-                {
-                    return 10;
-                }
-            }
+			$resource = $this->getDBConn()->executeQuery($sql2, $aParams);
+			if (is_resource($resource) === true && $this->getDBConn()->countAffectedRows($resource) > 0) {
+				return 10;
+			}
         }
 
 		return 3;
@@ -370,9 +362,9 @@ class MyAccount extends Home
 
         $aParams = array(intval($enduserid));
 
-        $res = $this->getDBConn()->prepare($sql1);
+		$res1 = $res = $this->getDBConn()->executeQuery($sql1, $aParams);
+
         if (is_resource($res) === true) {
-            $res1 = $this->getDBConn()->execute($res, $aParams);
 
             while ($RS = $this->getDBConn()->fetchName($res1) ){
                 $iTTL = intval($RS["TTL"]);
@@ -403,18 +395,18 @@ class MyAccount extends Home
                      SET enabled = FALSE
                      WHERE accountid = $1";
 
-            $resource = $this->getDBConn()->prepare($sql2);
+			$result = $resource = $this->getDBConn()->executeQuery($sql2, $aParams);
 
             if (is_resource($resource) === true) {
-                $result = $this->getDBConn()->execute($resource, $aParams);
-                if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) > 0) {
+
+				if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) > 0) {
 
                     $sql3 = "UPDATE EndUser".sSCHEMA_POSTFIX.".account_tbl 
                             SET enabled = FALSE 
                             WHERE id = $1";
 
-                    $resource1 = $this->getDBConn()->prepare($sql3);
-                    $result2 = $this->getDBConn()->execute($resource1, $aParams);
+					$result2 = $this->getDBConn()->executeQuery($sql3, $aParams);
+
                     if (is_resource($result2) && $this->getDBConn()->countAffectedRows($result2) > 0) {
                         $obj->status= 10;
                     }

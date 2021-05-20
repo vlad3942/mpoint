@@ -42,32 +42,28 @@ class PSPSettlement extends mPointSettlement
                     (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id, status)
                     values ($1, $2, $3, $4, $5, $6, $7) RETURNING id, created';
 
-        $resource = $_OBJ_DB->prepare($sql);
+        $aParam = array(
+            $this->_iRecordNumber,
+            $referenceNumber,
+            $this->_iRecordNumber,
+            $this->_iClientId,
+            $this->_sRecordType,
+            $this->_iPspId,
+            Constants::sSETTLEMENT_REQUEST_WAITING
+        );
 
-        if (is_resource($resource) === true) {
-            $aParam = array(
-                $this->_iRecordNumber,
-                $referenceNumber,
-                $this->_iRecordNumber,
-                $this->_iClientId,
-                $this->_sRecordType,
-                $this->_iPspId,
-                Constants::sSETTLEMENT_REQUEST_WAITING
-            );
-
-            $result = $_OBJ_DB->execute($resource, $aParam);
-
-            if ($result === false) {
-                throw new Exception('Unable to create settlement record', E_USER_ERROR);
-            } else {
-                $RS = $_OBJ_DB->fetchName($result);
-                $this->_iSettlementId = $RS['ID'];
-                $this->_sFileCreatedDate = $RS['CREATED'];
-                $this->_sFileReferenceNumber = $referenceNumber;
-                $this->_iFileSequenceNumber = $this->_iRecordNumber;
-                $this->_iRecordNumber = $this->_iRecordNumber;
-            }
+        $resource = $_OBJ_DB->executeQuery($sql, $aParam);
+        if($resource === false) {
+            throw new Exception('Unable to create settlement record', E_USER_ERROR);
         }
+
+        $result = $_OBJ_DB->fetchName($resource);
+        $this->_iSettlementId = $result['ID'];
+        $this->_sFileCreatedDate = $result['CREATED'];
+        $this->_sFileReferenceNumber = $referenceNumber;
+        $this->_iFileSequenceNumber = $this->_iRecordNumber;
+        $this->_iRecordNumber = $this->_iRecordNumber;
+            
     }
 
     public function _send($_OBJ_DB)
@@ -136,16 +132,12 @@ class PSPSettlement extends mPointSettlement
                             SET  status = $1 
                             WHERE id = $2;';
 
-                $resource = $_OBJ_DB->prepare($sql);
-
-                if (is_resource($resource) === true) {
-                    $aParam = array(
-                        $fileStatus,
-                        $fileId
-                    );
-
-                    $result = $_OBJ_DB->execute($resource, $aParam);
-                }
+                $aParam = array(
+                    $fileStatus,
+                    $fileId
+                );
+                $resource = $_OBJ_DB->executeQuery($sql, $aParam);
+            
             }
         } catch (Exception $e) {
             throw new Exception('Failed to updated Confirmation report', E_USER_ERROR);
