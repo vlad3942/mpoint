@@ -4,7 +4,7 @@ services:
   app:
     container_name: pgunittest_${PROJECT_NAME}_app
     image: registry.t.cpm.dev/library/pgunittestextras:master20201118102316
-    entrypoint: /sh/runtests.sh
+    #entrypoint: /sh/runtests.sh
     environment:
       - POSTGRES_DB=mpoint
       - APPROOT=$APP_ROOT
@@ -17,7 +17,8 @@ services:
       - LOG_OUTPUT_METHOD=1
       - XDEBUG_CONFIG=remote_enable=1 remote_autostart=1 remote_port=9001 remote_host=${HOST_IP}
       - PHP_IDE_CONFIG=serverName=mpoint.local.cellpointmobile.com
-    volumes: 
+      - _JAVA_OPTIONS=-Xmx1g -Xms1g -XX:MaxPermSize=1024m
+    volumes:
       - ./api:/opt/cpm/mPoint/api
       - ./conf:/opt/cpm/mPoint/conf
       - ./log:/opt/cpm/mPoint/log
