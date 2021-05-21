@@ -227,6 +227,7 @@ abstract class CPMFRAUD
         {
             trigger_error("Failed to update card details", E_USER_ERROR);
         }
+        $this->_obj_TxnInfo = TxnInfo::produceInfo( $this->_obj_TxnInfo->getID(), $this->getDBConn());
 
         $this->getTxnInfo()->produceOrderConfig($this->getDBConn());
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
