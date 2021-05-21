@@ -374,6 +374,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $data['flights']['mkt_airline_code'] = '';
                                             $data['flights']['aircraft_type'] = '';
                                             $data['flights']['op_flight_number'] = '';
+                                            $data['flights']['departure_city'] = '';
+                                            $data['flights']['arrival_city'] = '';
+                                            $data['flights']['arrival_terminal'] = '';
+                                            $data['flights']['departure_terminal'] = '';
 
                                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) > 0) {
                                                 for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()); $l++) {
