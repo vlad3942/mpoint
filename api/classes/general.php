@@ -1905,5 +1905,206 @@ class General
 		}
 		return $isAutoFetchBalance;
     }
+
+    public function saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_orderDom, $captureType=null,  $obj_Passbook=null)
+    {
+        $_OBJ_DB->query("START TRANSACTION");
+        try {
+            for ($j=0; $j<count($obj_orderDom->{'line-item'}); $j++ )
+            {
+                $ticketNumber = !empty($obj_orderDom->{'line-item'}[$j]->product["order-ref"]) ? (string) $obj_orderDom->{'line-item'}[$j]->product["order-ref"] : $obj_TxnInfo->getOrderId();
+                if ($obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB, $ticketNumber)) {
+                    $data['orders'][0]['product-sku'] = (string)$obj_orderDom->{'line-item'}[$j]->product["sku"];
+                    $data['orders'][0]['orderref'] = $ticketNumber;
+                    $data['orders'][0]['product-name'] = (string)$obj_orderDom->{'line-item'}[$j]->product->name;
+                    $data['orders'][0]['type'] = (string)$obj_orderDom->{'line-item'}[$j]->product->type;
+                    $data['orders'][0]['product-description'] = (string)$obj_orderDom->{'line-item'}[$j]->product->description;
+                    $data['orders'][0]['product-image-url'] = (string)$obj_orderDom->{'line-item'}[$j]->product->{'image-url'};
+                    $data['orders'][0]['amount'] = (float)$obj_orderDom->{'line-item'}[$j]->amount;
+                    $collectiveFees = 0;
+                    if ($obj_orderDom->{'line-item'}[$j]->fees->fee) {
+                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->fees->fee); $k++) {
+                            $collectiveFees += $obj_orderDom->{'line-item'}[$j]->fees->fee[$k];
+                        }
+                    }
+                    $data['orders'][0]['fees'] = (float)$collectiveFees;
+                    $data['orders'][0]['country-id'] = $obj_CountryConfig->getID();
+                    $data['orders'][0]['points'] = (float)$obj_orderDom->{'line-item'}[$j]->points;
+                    $data['orders'][0]['reward'] = (float)$obj_orderDom->{'line-item'}[$j]->reward;
+                    $data['orders'][0]['quantity'] = (float)$obj_orderDom->{'line-item'}[$j]->quantity;
+
+                    if (isset($obj_orderDom->{'line-item'}[$j]->{'additional-data'})) {
+                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
+                            $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_orderDom->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
+                            $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_orderDom->{'line-item'}[$j]->{'additional-data'}->param[$k];
+                            $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
+                        }
+                    }
+
+                    $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+
+                    if ($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'}) {
+                        $billingSummary = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'};
+                        if (count($billingSummary->{'fare-detail'}->fare) > 0) {
+                            for ($k = 0; $k < count($billingSummary->{'fare-detail'}->fare); $k++) {
+                                $fare = $billingSummary->{'fare-detail'}->fare[$k];
+                                $fareArr = array();
+                                $fareArr['order_id'] = $order_id;
+                                $fareArr['bill_type'] = (string)'Fare';
+                                $fareArr['type'] = (string)$fare->{'type'};
+                                $fareArr['profile_seq'] = (int)$fare->{'profile-seq'};
+                                $fareArr['trip_tag'] = (int)$fare->{'trip-tag'};
+                                $fareArr['trip_seq'] = (int)$fare->{'trip-seq'};
+                                $fareArr['description'] = (string)$fare->{'description'};
+                                $fareArr['currency'] = (string)$fare->{'currency'};
+                                $fareArr['amount'] = (string)$fare->{'amount'};
+                                $fareArr['product_code'] = (string)$fare->{'product-code'};
+                                $fareArr['product_category'] = (string)$fare->{'product-category'};
+                                $fareArr['product_item'] = (string)$fare->{'product-item'};
+                                $obj_TxnInfo->setBillingSummary($_OBJ_DB, $fareArr);
+                            }
+                        }
+
+                        if (count($billingSummary->{'add-ons'}->{'add-on'}) > 0) {
+                            for ($k = 0; $k < count($billingSummary->{'add-ons'}->{'add-on'}); $k++) {
+                                $addOn = $billingSummary->{'add-ons'}->{'add-on'}[$k];
+                                $addOnArr = array();
+                                $addOnArr['order_id'] = $order_id;
+                                $addOnArr['bill_type'] = (string)'Add-on';
+                                $addOnArr['type'] = (int)$addOn->{'type'};
+                                $addOnArr['profile_seq'] = $addOn->{'profile-seq'};
+                                $addOnArr['trip_tag'] = $addOn->{'trip-tag'};
+                                $addOnArr['trip_seq'] = $addOn->{'trip-seq'};
+                                $addOnArr['description'] = (string)$addOn->{'description'};
+                                $addOnArr['currency'] = (string)$addOn->{'currency'};
+                                $addOnArr['amount'] = (string)$addOn->{'amount'};
+                                $addOnArr['product_code'] = (string)$addOn->{'product-code'};
+                                $addOnArr['product_category'] = (string)$addOn->{'product-category'};
+                                $addOnArr['product_item'] = (string)$addOn->{'product-item'};
+                                $obj_TxnInfo->setBillingSummary($_OBJ_DB, $addOnArr);
+                            }
+                        }
+                    }
+
+                    if (count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip) > 0) {
+                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++) {
+                            $flight = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
+                            $serviceClass = strtoupper(preg_replace('/\s+/', '', $flight->{'service-level'}));
+                            $data['flights']['service_level'] = (string)constant("Constants::$serviceClass");
+                            $data['flights']['service_class'] = (string)$flight->{'booking-class'};
+                            $data['flights']['arrival_date'] = (string)$flight->{'arrival-time'};
+                            $data['flights']['departure_date'] = (string)$flight->{'departure-time'};
+                            $data['flights']['departure_terminal'] = (string)$flight->origin['terminal'];
+                            $data['flights']['arrival_terminal'] = (string)$flight->destination['terminal'];
+                            $data['flights']['departure_city'] = (string)$flight->origin;
+                            $data['flights']['arrival_city'] = (string)$flight->destination;
+                            $data['flights']['departure_timezone'] = (string)$flight->origin['time-zone'];
+                            $data['flights']['arrival_timezone'] = (string)$flight->destination['time-zone'];
+
+                            $data['flights']['departure_airport'] = (string)$flight->origin['external-id'];
+                            $data['flights']['arrival_airport'] = (string)$flight->destination['external-id'];
+                            $data['flights']['op_airline_code'] = (string)$flight->transportation->carriers->carrier['code'];
+                            $data['flights']['mkt_airline_code'] = (string)$flight->transportation['code'];
+                            $data['flights']['aircraft_type'] = (string)$flight->transportation->carriers->carrier['type-id'];
+                            $data['flights']['op_flight_number'] = (string)$flight->transportation['number'];
+                            $data['flights']['mkt_flight_number'] = (string)$flight->transportation->carriers->carrier->number;
+                            $data['flights']['departure_country'] = (int)$flight->origin['country-id'];
+                            $data['flights']['arrival_country'] = (int)$flight->destination['country-id'];
+                            $data['flights']['order_id'] = $order_id;
+                            $data['flights']['tag'] = (string)$flight['tag'];
+                            $data['flights']['trip_count'] = (string)$flight['seq'];
+
+                            if (count($flight->{'additional-data'}) > 0) {
+                                for ($l = 0; $l < count($flight->{'additional-data'}->children()); $l++) {
+                                    $data['additional'][$l]['name'] = (string)$flight->{'additional-data'}->param[$l]['name'];
+                                    $data['additional'][$l]['value'] = (string)$flight->{'additional-data'}->param[$l];
+                                    $data['additional'][$l]['type'] = (string)"Flight";
+                                }
+                            } else {
+                                $data['additional'] = array();
+                            }
+                            $flight = $obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
+                        }
+                    }
+
+                    if (count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile) > 0) {
+                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile); $k++) {
+                            $profile = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile[$k];
+                            $data['passenger']['seq'] = (integer)$profile->{'seq'};
+                            $data['passenger']['first_name'] = (string)$profile->{'first-name'};
+                            $data['passenger']['last_name'] = (string)$profile->{'last-name'};
+                            $data['passenger']['type'] = (string)$profile->{'type'};
+                            $data['passenger']['amount'] = (integer)$profile->{'amount'};
+                            $data['passenger']['order_id'] = $order_id;
+                            $data['passenger']['title'] = (string)$profile->{'title'};
+                            $data['passenger']['email'] = (string)$profile->{'contact-info'}->email;
+                            $data['passenger']['mobile'] = (string)$profile->{'contact-info'}->mobile;
+                            $data['passenger']['country_id'] = (string)$profile->{'contact-info'}->mobile["country-id"];
+
+                            if (count($profile->{'additional-data'}) > 0) {
+                                for ($l = 0; $l < count($profile->{'additional-data'}->children()); $l++) {
+                                    $data['additionalp'][$l]['name'] = (string)$profile->{'additional-data'}->param[$l]['name'];
+                                    $data['additionalp'][$l]['value'] = (string)$profile->{'additional-data'}->param[$l];
+                                    $data['additionalp'][$l]['type'] = (string)"Passenger";
+                                }
+                            } else {
+                                $data['additionalp'] = array();
+                            }
+                            $passenger = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
+                        }
+                    }
+                    if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eTicketLevelAutoCapt) {
+                        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                        $passbookEntry = new PassbookEntry
+                        (
+                            NULL,
+                            $data['orders'][0]['amount'],
+                            $obj_TxnInfo->getCurrencyConfig()->getID(),
+                            Constants::iCaptureRequested,
+                            $ticketNumber,
+                            'log.order_tbl  - orderref'
+                        );
+                        if ($txnPassbookObj instanceof TxnPassbook) {
+                            try {
+                                $txnPassbookObj->addEntry($passbookEntry);
+                            } catch (Exception $e) {
+                                trigger_error($e, E_USER_WARNING);
+                                throw $e;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(count($obj_orderDom->{'shipping-address'}) > 0)
+            {
+                for ($j=0; $j<count($obj_orderDom->{'shipping-address'}); $j++ )
+                {
+
+                    $data['shipping_address'][$j]['first_name'] = (string) $obj_orderDom->{'shipping-address'}[$j]->name;
+                    $data['shipping_address'][$j]['last_name'] = "";
+                    $data['shipping_address'][$j]['street'] = (string) $obj_orderDom->{'shipping-address'}[$j]->street;
+                    $data['shipping_address'][$j]['street2'] = (string) $obj_orderDom->{'shipping-address'}[$j]->street2;
+                    $data['shipping_address'][$j]['city'] = (string) $obj_orderDom->{'shipping-address'}[$j]->city;
+                    $data['shipping_address'][$j]['state'] = (string) $obj_orderDom->{'shipping-address'}[$j]->state;
+                    $data['shipping_address'][$j]['zip'] = (string) $obj_orderDom->{'shipping-address'}[$j]->zip;
+                    $data['shipping_address'][$j]['country'] = (string) $obj_orderDom->{'shipping-address'}[$j]->country;
+                    $data['shipping_address'][$j]['reference_type'] = (string) "order";
+                    if($order_id!="")
+                    {
+                        $data['shipping_address'][$j]['reference_id'] = $order_id;
+                    }
+                }
+                $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
+            }
+
+            $_OBJ_DB->query("COMMIT");
+            return true;
+        } catch (Exception $exception) {
+            $_OBJ_DB->query("ROLLBACK");
+            return false;
+        }
+    }
 }
 ?>
