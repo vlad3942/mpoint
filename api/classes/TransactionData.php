@@ -91,8 +91,6 @@ class TransactionData implements JsonSerializable
 
     private int $service_type_id;
 
-    private int $sub_status;
-
     private int $pos;
 
     private string $ip_address;
@@ -289,16 +287,6 @@ class TransactionData implements JsonSerializable
     {
         if($service_type_id > 0) {
             $this->service_type_id = $service_type_id;
-        }
-    }
-
-    /**
-     * @param int $sub_code_id
-     */
-    public function setSubStatus(int $sub_code_id): void
-    {
-        if($sub_code_id > 0) {
-            $this->sub_status = $sub_code_id;
         }
     }
 

@@ -1377,7 +1377,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,null,-1,$sub_code_id));
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id,null,-1));
 				}
 			}
 		}
@@ -1385,7 +1385,7 @@ abstract class Callback extends EndUserAccount
 		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
-			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn, $sid, $amt,$sub_code_id);
+			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn,$sub_code_id, $sid, $amt);
 			$aTransactionData = [$obj_TransactionData];
 			$isIgnoreRequest = FALSE;
 		}
@@ -1411,7 +1411,7 @@ abstract class Callback extends EndUserAccount
 	 * @return \TransactionData
 	 * @throws \Exception
 	 */
-	private function constructTransactionInfo(TxnInfo $txnInfo, $sid = NULL, $amt = -1,$sub_code_id)
+	private function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1)
     {
 
         $obj_CustomerInfo = NULL;
@@ -1459,11 +1459,9 @@ abstract class Callback extends EndUserAccount
         ];
         $obj_CardInfo = new Card($aCardInfo);
 
-        if ($this->hasTransactionFailureState($sid) === TRUE) {
-            $status = substr($sid, 0, 4);
-            $sub_code=$sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
-        } else {
-            $status = $sid;
+        $status      = $sid;
+        if($sub_code_id > 0){
+            $sub_code= $sub_code_id;
         }
         $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
 
@@ -1560,7 +1558,6 @@ abstract class Callback extends EndUserAccount
         $transactionData->setBillingAddress($aBillingAddress);
 
         $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
-        $transactionData->setSubStatus($sub_code_id);
         $transactionData->setPos($txnInfo->getCountryConfig()->getID());
         $transactionData->setIpAddress($txnInfo->getIP());
 
