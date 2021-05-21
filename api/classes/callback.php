@@ -626,7 +626,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, $amt,FALSE,$sub_code_id);
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE);
 		if ($callbackMessageRequest !== NULL) {
                 $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
             }
@@ -1283,7 +1283,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, NULL, TRUE,$sub_code_id);
+		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
 		if ($callbackMessageRequest !== NULL) {
 			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
 		}
@@ -1350,7 +1350,7 @@ abstract class Callback extends EndUserAccount
 	 * @param int $sub_code_id
 	 * @return \CallbackMessageRequest|null
 	 */
-	private function constructMessage($sid = NULL, $amt = NULL, $isSessionCallback = FALSE,int $sub_code_id=0)
+	private function constructMessage($sid = NULL, int $sub_code_id=0,$amt = NULL, $isSessionCallback = FALSE)
     {
     	$isIgnoreRequest = TRUE;
 		$aTransactionData = [];
@@ -1392,12 +1392,10 @@ abstract class Callback extends EndUserAccount
 
 		if($isIgnoreRequest === FALSE) {
 			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(), NULL);
-			if ($this->hasTransactionFailureState($sid) === TRUE) {
-				$status = substr($sid, 0, 4);
-				$sub_code = $sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
-			} else {
-				$status = $sid;
-			}
+            $status      = $sid;
+			if($sub_code_id > 0){
+                $sub_code= $sub_code_id;
+            }
 			$obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid));
 			return new CallbackMessageRequest($this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$this->_obj_TxnInfo->getCallbackURL());
 		}
