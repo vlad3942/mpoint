@@ -60,7 +60,6 @@ class FraudStatusCallbackTest extends baseAPITest
         while ($row = pg_fetch_assoc($res)) {
             $aStates[] = $row["stateid"];
         }
-        print_r($aStates);
         $this->assertEquals(6, count($aStates) );
 
         $s = 0;
