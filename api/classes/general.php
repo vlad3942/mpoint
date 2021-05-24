@@ -1905,7 +1905,8 @@ class General
     {
         $_OBJ_DB->query("START TRANSACTION");
         try {
-            for ($j=0; $j<count($obj_orderDom->{'line-item'}); $j++ )
+            $lineItemCnt = count($obj_orderDom->{'line-item'});
+            for ($j=0; $j<$lineItemCnt; $j++ )
             {
                 $ticketNumber = !empty($obj_orderDom->{'line-item'}[$j]->product["order-ref"]) ? (string) $obj_orderDom->{'line-item'}[$j]->product["order-ref"] : $obj_TxnInfo->getOrderId();
                 if (!$obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB, $ticketNumber)) {
@@ -1918,7 +1919,8 @@ class General
                     $data['orders'][0]['amount'] = (float)$obj_orderDom->{'line-item'}[$j]->amount;
                     $collectiveFees = 0;
                     if ($obj_orderDom->{'line-item'}[$j]->fees->fee) {
-                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->fees->fee); $k++) {
+                        $feeCnt = count($obj_orderDom->{'line-item'}[$j]->fees->fee);
+                        for ($k = 0; $k < $feeCnt; $k++) {
                             $collectiveFees += $obj_orderDom->{'line-item'}[$j]->fees->fee[$k];
                         }
                     }
@@ -1929,7 +1931,8 @@ class General
                     $data['orders'][0]['quantity'] = (float)$obj_orderDom->{'line-item'}[$j]->quantity;
 
                     if (isset($obj_orderDom->{'line-item'}[$j]->{'additional-data'})) {
-                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
+                        $orderAdditionalDataCnt = count($obj_orderDom->{'line-item'}[$j]->{'additional-data'}->children());
+                        for ($k = 0; $k < $orderAdditionalDataCnt; $k++) {
                             $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_orderDom->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
                             $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_orderDom->{'line-item'}[$j]->{'additional-data'}->param[$k];
                             $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
@@ -1940,8 +1943,9 @@ class General
 
                     if ($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'}) {
                         $billingSummary = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'};
-                        if (count($billingSummary->{'fare-detail'}->fare) > 0) {
-                            for ($k = 0; $k < count($billingSummary->{'fare-detail'}->fare); $k++) {
+                        $fareCnt = count($billingSummary->{'fare-detail'}->fare);
+                        if ($fareCnt > 0) {
+                            for ($k = 0; $k < $fareCnt; $k++) {
                                 $fare = $billingSummary->{'fare-detail'}->fare[$k];
                                 $fareArr = array();
                                 $fareArr['order_id'] = $order_id;
@@ -1960,8 +1964,9 @@ class General
                             }
                         }
 
-                        if (count($billingSummary->{'add-ons'}->{'add-on'}) > 0) {
-                            for ($k = 0; $k < count($billingSummary->{'add-ons'}->{'add-on'}); $k++) {
+                        $addOnCnt = count($billingSummary->{'add-ons'}->{'add-on'});
+                        if ($addOnCnt > 0) {
+                            for ($k = 0; $k < $addOnCnt; $k++) {
                                 $addOn = $billingSummary->{'add-ons'}->{'add-on'}[$k];
                                 $addOnArr = array();
                                 $addOnArr['order_id'] = $order_id;
@@ -1981,8 +1986,9 @@ class General
                         }
                     }
 
-                    if (count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip) > 0) {
-                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++) {
+                    $tripCnt = count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip);
+                    if ($tripCnt > 0) {
+                        for ($k = 0; $k < $tripCnt; $k++) {
                             $flight = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
                             $service_level = array_search(strtoupper((string) $flight->{'service-level'}),array_map('strtoupper', Constants::aServiceLevelAndIdMapp));
                             if($service_level === false) { $service_level = '0'; }
@@ -2011,7 +2017,8 @@ class General
                             $data['flights']['trip_count'] = (string)$flight['seq'];
 
                             if (count($flight->{'additional-data'}) > 0) {
-                                for ($l = 0; $l < count($flight->{'additional-data'}->children()); $l++) {
+                                $flightAdditionalDataCnt = count($flight->{'additional-data'}->children());
+                                for ($l = 0; $l < $flightAdditionalDataCnt; $l++) {
                                     $data['additional'][$l]['name'] = (string)$flight->{'additional-data'}->param[$l]['name'];
                                     $data['additional'][$l]['value'] = (string)$flight->{'additional-data'}->param[$l];
                                     $data['additional'][$l]['type'] = (string)"Flight";
@@ -2023,8 +2030,9 @@ class General
                         }
                     }
 
-                    if (count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile) > 0) {
-                        for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile); $k++) {
+                    $profileCnt = count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile);
+                    if ($profileCnt > 0) {
+                        for ($k = 0; $k < count($profileCnt); $k++) {
                             $profile = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile[$k];
                             $data['passenger']['seq'] = (integer)$profile->{'seq'};
                             $data['passenger']['first_name'] = (string)$profile->{'first-name'};
@@ -2038,7 +2046,8 @@ class General
                             $data['passenger']['country_id'] = (string)$profile->{'contact-info'}->mobile["country-id"];
 
                             if (count($profile->{'additional-data'}) > 0) {
-                                for ($l = 0; $l < count($profile->{'additional-data'}->children()); $l++) {
+                                $profileAdditionalDataChildCnt = count($profile->{'additional-data'}->children());
+                                for ($l = 0; $l < $profileAdditionalDataChildCnt; $l++) {
                                     $data['additionalp'][$l]['name'] = (string)$profile->{'additional-data'}->param[$l]['name'];
                                     $data['additionalp'][$l]['value'] = (string)$profile->{'additional-data'}->param[$l];
                                     $data['additionalp'][$l]['type'] = (string)"Passenger";
@@ -2073,9 +2082,10 @@ class General
                 }
             }
 
-            if(count($obj_orderDom->{'shipping-address'}) > 0)
+            $shippingAddressCnt = count($obj_orderDom->{'shipping-address'});
+            if(count($shippingAddressCnt) > 0)
             {
-                for ($j=0; $j<count($obj_orderDom->{'shipping-address'}); $j++ )
+                for ($j=0; $j<$shippingAddressCnt; $j++ )
                 {
                     $data['shipping_address'][$j]['first_name'] = (string) $obj_orderDom->{'shipping-address'}[$j]->name;
                     $data['shipping_address'][$j]['last_name'] = "";
