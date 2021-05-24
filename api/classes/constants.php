@@ -1924,6 +1924,15 @@ abstract class AutoCaptureType
    * Auto-Capture flag for mPoint to perform batch-capture
    */
 	const eBatchCapt = 4;
+	/*
+   * Auto-Capture flag for mPoint to perform ticket level manual-capture
+   */
+	const eTicketLevelManualCapt = 5;
+	/*
+   * Auto-Capture flag for mPoint to perform ticket level auto-capture
+   */
+	const eTicketLevelAutoCapt = 6;
+
 }
 abstract class UserType
 {

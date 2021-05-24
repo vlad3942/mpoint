@@ -1913,7 +1913,7 @@ class General
             for ($j=0; $j<count($obj_orderDom->{'line-item'}); $j++ )
             {
                 $ticketNumber = !empty($obj_orderDom->{'line-item'}[$j]->product["order-ref"]) ? (string) $obj_orderDom->{'line-item'}[$j]->product["order-ref"] : $obj_TxnInfo->getOrderId();
-                if ($obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB, $ticketNumber)) {
+                if (!$obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB, $ticketNumber)) {
                     $data['orders'][0]['product-sku'] = (string)$obj_orderDom->{'line-item'}[$j]->product["sku"];
                     $data['orders'][0]['orderref'] = $ticketNumber;
                     $data['orders'][0]['product-name'] = (string)$obj_orderDom->{'line-item'}[$j]->product->name;
@@ -2081,7 +2081,6 @@ class General
             {
                 for ($j=0; $j<count($obj_orderDom->{'shipping-address'}); $j++ )
                 {
-
                     $data['shipping_address'][$j]['first_name'] = (string) $obj_orderDom->{'shipping-address'}[$j]->name;
                     $data['shipping_address'][$j]['last_name'] = "";
                     $data['shipping_address'][$j]['street'] = (string) $obj_orderDom->{'shipping-address'}[$j]->street;
