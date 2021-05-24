@@ -1,4 +1,4 @@
-DELETE from client.card_currency_mapping_tbl where client_id = 10077 AND card_id = 96
+DELETE from client.card_currency_mapping_tbl where client_id = 10077 AND card_id = 96;
 
 
 --AUD--

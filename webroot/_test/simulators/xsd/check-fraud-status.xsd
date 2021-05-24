@@ -166,6 +166,7 @@
 										<xs:element type="xs:string" name="expiry" minOccurs="0"/>
 										<xs:element type="xs:string" name="approvalCode" minOccurs="0"/>
 										<xs:element ref="additionalData" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="session_id" minOccurs="0" maxOccurs="1" />
 
 									</xs:sequence>
 								</xs:complexType>

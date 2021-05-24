@@ -108,18 +108,13 @@ class ClientRouteCurrency
                     (routeconfigid, currencyid)
                     values ($1, $2)";
 
-                $resource = $this->objDB->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array( $routeConfigId, $currencyId );
-                    $result = $this->objDB->execute($resource, $aParam);
-                    if ($result === false) {
-                        throw new Exception("Unable to add route currency", E_USER_ERROR);
-                        return false;
-                    }
-                } else {
+                $aParam = array( $routeConfigId, $currencyId );
+                $result = $this->objDB->executeQuery($sql, $aParam);
+                if ($result === false) {
                     trigger_error("Unable to build query for add route currency", E_USER_WARNING);
-                    return false;
+                    throw new Exception("Unable to add route currency", E_USER_ERROR);
                 }
+
             }
             return true;
         } else {

@@ -621,17 +621,14 @@ class General
 					(txnid, stateid, data)
 				VALUES
 					($1, $2, $3)";
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->prepare($sql);
-		if (is_resource($res) === true)
-		{
-			$aParams = array($txnid, $sid, $data);
-			if ($this->getDBConn()->execute($res, $aParams) === false)
-			{
-				throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
-			}
+
+		$bindParam = array($txnid, $sid, $data);
+		$resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
+		
+		if (!is_resource($resultSet)) {
+			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
 		}
-		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
+			
 	}
 
 	/**
@@ -1602,28 +1599,26 @@ class General
         $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
 					(txnid, pspid, status, msg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm, protocol)
 				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10)";
-        $res = $this->getDBConn()->prepare($sql);
 
-        if (is_resource($res) === TRUE)
-        {
-            $aParams = array(
-                $paymentSecureInfo->getTransactionID(),
-                $paymentSecureInfo->getPSPID(),
-                $paymentSecureInfo->getStatus(),
-                $paymentSecureInfo->getMsg(),
-                $paymentSecureInfo->getVeresEnrolledStatus(),
-                $paymentSecureInfo->getParestxstatus(),
-                $paymentSecureInfo->getECI(),
-                $paymentSecureInfo->getCAVV(),
-                $paymentSecureInfo->getCavvAlgorithm(),
-                $paymentSecureInfo->getProtocol()
-            );
-            $result = $this->getDBConn()->execute($res, $aParams);
-            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
-            {
-                trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
-            }
-        }
+		$aParams = array(
+			$paymentSecureInfo->getTransactionID(),
+			$paymentSecureInfo->getPSPID(),
+			$paymentSecureInfo->getStatus(),
+			$paymentSecureInfo->getMsg(),
+			$paymentSecureInfo->getVeresEnrolledStatus(),
+			$paymentSecureInfo->getParestxstatus(),
+			$paymentSecureInfo->getECI(),
+			$paymentSecureInfo->getCAVV(),
+			$paymentSecureInfo->getCavvAlgorithm(),
+			$paymentSecureInfo->getProtocol()
+		);
+	
+		$resource = $this->getDBConn()->executeQuery($sql, $aParams);
+
+		if ($resource === false) {
+			trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+		}
+		
     }
 
     /**
@@ -1906,7 +1901,7 @@ class General
 		return $isAutoFetchBalance;
     }
 
-    public function saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_orderDom, $captureType=null,  $obj_Passbook=null)
+    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom) : bool
     {
         $_OBJ_DB->query("START TRANSACTION");
         try {
@@ -1989,8 +1984,9 @@ class General
                     if (count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip) > 0) {
                         for ($k = 0; $k < count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++) {
                             $flight = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
-                            $serviceClass = strtoupper(preg_replace('/\s+/', '', $flight->{'service-level'}));
-                            $data['flights']['service_level'] = (string)constant("Constants::$serviceClass");
+                            $service_level = array_search(strtoupper((string) $flight->{'service-level'}),array_map('strtoupper', Constants::aServiceLevelAndIdMapp));
+                            if($service_level === false) { $service_level = '0'; }
+                            $data['flights']['service_level'] = $service_level;
                             $data['flights']['service_class'] = (string)$flight->{'booking-class'};
                             $data['flights']['arrival_date'] = (string)$flight->{'arrival-time'};
                             $data['flights']['departure_date'] = (string)$flight->{'departure-time'};

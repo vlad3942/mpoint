@@ -17,7 +17,17 @@ require_once(sAPI_CLASS_PATH ."/simpledom.php");
 $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 
 $password = $obj_XML->login->password;
-
+if (strpos($password, 'ciammember') !== false) {
+    header('HTTP/1.1 200 OK');
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+    $xml .= '<root>';
+    $xml .= '<profile>';
+    $xml .= '<anonymous>false</anonymous>';
+    $xml .= '</profile>';
+    $xml .= '</root>';
+    echo $xml;
+    return;
+}
 if (strpos($password, 'success') !== false) {
     header('HTTP/1.1 200 OK');
     return;

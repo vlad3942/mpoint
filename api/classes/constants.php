@@ -515,6 +515,12 @@ abstract class Constants
 	 */
 	const iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3016;
 
+	/**
+	 * Defines the ID of the State that indicates that Techical Error Occured for PRE-Auth Fraud
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_TECH_ERROR_STATE = 3018;
+
     /**
      * Defines the ID of the State that indicates that PRE-Auth Review Success
      *
@@ -574,6 +580,12 @@ abstract class Constants
 	 *
 	 */
 	const iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE = 3117;
+
+	/**
+	 * Defines the ID of the State that indicates that Techical Error Occured for POST-Auth Fraud
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_TECH_ERROR_STATE = 3118;
 
     /**
      * Defines the ID of the State that indicates that POST-Auth Review Success
@@ -1878,6 +1890,25 @@ abstract class Constants
 	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_NOT_APPLICABLE_SUB_STATE = 2016998;
 	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_UNKNOWN_ERROR_SUB_STATE = 2016999;
 
+	/**
+	 * Indicates the service level id and name mapping
+	 *
+	 * @var array
+	 */
+	const aServiceLevelAndIdMapp = [
+		'0' => 'Unknown',
+		'1' => 'First Class',
+		'2' => 'Standard',
+		'3' => 'Economy',
+		'4' => 'Premier',
+		'5' => 'Business',
+		'6' => 'XS',
+		'7' => 'S',
+		'8' => 'M',
+		'9' => 'L',
+		'10' => 'XL',
+		'11' => 'XXL'
+	];
 	/**
 	 * Initialize API flight info Service class constants for First Class
 	 */

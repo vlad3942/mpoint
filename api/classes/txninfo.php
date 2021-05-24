@@ -1590,6 +1590,7 @@ class TxnInfo
 		{
 			$xml .= '<profileid>'.htmlspecialchars($this->getProfileID(), ENT_NOQUOTES).'</profileid>';
 		}
+		$xml .= '<session_id>'.$this->getSessionId().'</session_id>';
 
 		$xml .= '</transaction>';
 
