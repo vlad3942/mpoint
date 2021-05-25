@@ -255,8 +255,6 @@ require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 </root>';
  */
 
-header("HTTP/1.0 200 OK");
-
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
@@ -266,18 +264,17 @@ $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true) {
 
     if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'update-order-data'}) > 0) {
-        $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'update-order-data'}["client-id"]);
+
         $_OBJ_DB->query("START TRANSACTION");
         try {
                 $transaction = $obj_DOM->{'update-order-data'}->transaction;
 
-                $obj_TxnInfo = TxnInfo::produceInfo(intval($transaction['id']), $_OBJ_DB);
+                $obj_TxnInfo = TxnInfo::produceInfo((integer) $transaction['id'], $_OBJ_DB);
                 $obj_ClientConfig = $obj_TxnInfo->getClientConfig();
                 $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
-                echo trim($_SERVER['PHP_AUTH_USER']);
                 if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
                     $obj_DOMOrder = $transaction->orders;
-                    if (!$obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder)) {
+                    if ($obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder) === false) {
                         throw new mPointSimpleControllerException(200, 99, "Operation Failed");
                     }
                 } else {
