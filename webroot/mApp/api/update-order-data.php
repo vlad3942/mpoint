@@ -269,7 +269,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         try {
                 $transaction = $obj_DOM->{'update-order-data'}->transaction;
 
-                $obj_TxnInfo = TxnInfo::produceInfo((integer) $transaction['id'], $_OBJ_DB);
+                $obj_TxnInfo = TxnInfo::produceInfo((int) $transaction['id'], $_OBJ_DB);
                 $obj_ClientConfig = $obj_TxnInfo->getClientConfig();
                 $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                 if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
