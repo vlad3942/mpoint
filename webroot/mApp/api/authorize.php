@@ -712,7 +712,7 @@ try
                                                 
                                                 if ( $sosPreference === 'STRICT' )
 						                        {
-						                        	$userAuthcode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
+						                        	$userAuthenticationCode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
 
 						                        	if ($userAuthenticationCode == 212)
 														{
