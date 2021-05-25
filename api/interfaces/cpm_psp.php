@@ -798,7 +798,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		if($iVoucherID === ""){
+		if(empty($iVoucherID) === true){
 			$b .= '<redeem-voucher>';
 		}else{
 			$b .= '<redeem-voucher id="'. $iVoucherID .'">';
