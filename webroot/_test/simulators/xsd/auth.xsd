@@ -515,6 +515,7 @@
 							<xs:element name="product" minOccurs="1" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
+										<xs:element name="type" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="name" type="name" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="description" type="name" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="image-url" type="url" minOccurs="0" maxOccurs="1"/>
