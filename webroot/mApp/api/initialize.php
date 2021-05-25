@@ -514,8 +514,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++ )
 										{
 										$flight =  $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
-                                        $serviceClass = strtoupper(preg_replace('/\s+/','',$flight->{'service-level'}));
-										$data['flights']['service_level'] = (string) constant("Constants::$serviceClass");
+										$service_level = array_search(strtoupper((string) $flight->{'service-level'}),array_map('strtoupper', Constants::aServiceLevelAndIdMapp));
+										if($service_level === false) { $service_level = '0'; }
+
+                                        $data['flights']['service_level'] = $service_level;
 										$data['flights']['service_class'] = (string) $flight->{'booking-class'};
                                         $data['flights']['arrival_date'] = (string) $flight->{'arrival-time'};
                                         $data['flights']['departure_date'] = (string) $flight->{'departure-time'};
@@ -726,16 +728,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 {
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                     $fraudDettectedForPMType = $obj_mPoint->findFraudDetected($sessionId);
-                                }
-                                // Call mProfile to get customer type
-                                if (empty($authenticationURL) === false && empty($authToken) === false && empty($profileTypeId) === true) {
-                                    $obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"]);
-                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                    $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
-                                    if ($code == 10) {
-                                        $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
-                                    }
                                 }
 
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);

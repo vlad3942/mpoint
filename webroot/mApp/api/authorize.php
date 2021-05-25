@@ -1344,7 +1344,7 @@ try
 
                                                                     $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');
                                                                     //$obj_Processor->getPSPInfo()->updateSessionState(Constants::iPAYMENT_REJECTED_STATE,$obj_Processor->getPSPInfo()->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-                                                                    $xml .= '<status code="2010" sub-code="'.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.'">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
+                                                                    $xml .= '<status code="2010" sub-code="'.Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.'">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status>';
                                                                 }
                                                             }
 

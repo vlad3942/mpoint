@@ -178,6 +178,8 @@ abstract class CPMFRAUD
                 case Constants::iPOST_FRAUD_CHECK_REVIEW_STATE:
                 case Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE:
                 case Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE:
+                case Constants::iPOST_FRAUD_CHECK_TECH_ERROR_STATE:
+                case Constants::iPRE_FRAUD_CHECK_TECH_ERROR_STATE:
                  $bFraudPass = true;
                  break;
                 case Constants::iPRE_FRAUD_CHECK_REJECTED_STATE:
@@ -225,6 +227,7 @@ abstract class CPMFRAUD
         {
             trigger_error("Failed to update card details", E_USER_ERROR);
         }
+        $this->_obj_TxnInfo = TxnInfo::produceInfo( $this->_obj_TxnInfo->getID(), $this->getDBConn());
 
         $this->getTxnInfo()->produceOrderConfig($this->getDBConn());
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
