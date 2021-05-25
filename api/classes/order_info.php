@@ -194,7 +194,6 @@ class OrderInfo
         $this->_BillingSummaryFareConfigs =  (array) $billingSummaryFared;
         $this->_BillingSummaryAddonConfigs =  (array) $billingSummaryAddond;
         $this->_iProductType = (integer) $productType;
-
 	}
 
 	/**
