@@ -73,6 +73,21 @@
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="update-order-data" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
+								</xs:all>
+								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+								<xs:attribute name="order-no" type="order-no" use="optional" />
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="pay" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
@@ -1658,7 +1673,7 @@
 	<xs:complexType>
 		<xs:all>
 			<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-			<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
+			<xs:element name="fare-detail" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="fare" type="fare-type-detail" minOccurs="1" maxOccurs="unbounded" />
