@@ -1903,7 +1903,6 @@ class General
 
     public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom) : bool
     {
-        $_OBJ_DB->query("START TRANSACTION");
         try {
             $lineItemCnt = count($obj_orderDom->{'line-item'});
             for ($j=0; $j<$lineItemCnt; $j++ )
@@ -2103,11 +2102,8 @@ class General
                 }
                 $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
             }
-
-            $_OBJ_DB->query("COMMIT");
             return true;
         } catch (Exception $exception) {
-            $_OBJ_DB->query("ROLLBACK");
             return false;
         }
     }
