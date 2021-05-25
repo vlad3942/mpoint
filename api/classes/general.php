@@ -2032,7 +2032,7 @@ class General
 
                     $profileCnt = count($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile);
                     if ($profileCnt > 0) {
-                        for ($k = 0; $k < count($profileCnt); $k++) {
+                        for ($k = 0; $k < $profileCnt; $k++) {
                             $profile = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile[$k];
                             $data['passenger']['seq'] = (integer)$profile->{'seq'};
                             $data['passenger']['first_name'] = (string)$profile->{'first-name'};
@@ -2083,7 +2083,7 @@ class General
             }
 
             $shippingAddressCnt = count($obj_orderDom->{'shipping-address'});
-            if(count($shippingAddressCnt) > 0)
+            if($shippingAddressCnt > 0)
             {
                 for ($j=0; $j<$shippingAddressCnt; $j++ )
                 {
