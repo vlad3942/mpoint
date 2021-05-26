@@ -411,7 +411,9 @@ class OrderInfo
         $xml .= '<type>'. $this->getProductType() .'</type>';
         $xml .= '<name>'. $this->getProductName() .'</name>';
         $xml .= '<description>'. $this->getProductDesc() .'</description>';
-        $xml .= '<image-url>'. $this->getProductImageURL() .'</image-url>';
+        if($this->getProductImageURL() != '') {
+            $xml .= '<image-url>' . $this->getProductImageURL() . '</image-url>';
+        }
         if(count($this->getFlightConfigs()) > 0 ) {
             $xml .= '<airline-data>';
             if ($GLOBALS['oldOrderXml'] === true) {
@@ -483,8 +485,12 @@ class OrderInfo
         $xml .= '<fees>';
         $xml .= '<fee country-id="'. $this->getCountryID() .'">'. $this->getFees() .'</fee>';
         $xml .= '</fees>';
-        $xml .= '<points>'. $this->getPoints() .'</points>';
-        $xml .= '<reward>'. $this->getReward() .'</reward>';
+        if($this->getPoints() > 0) {
+            $xml .= '<points>' . $this->getPoints() . '</points>';
+        }
+        if($this->getReward() > 0) {
+            $xml .= '<reward>' . $this->getReward() . '</reward>';
+        }
         $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
         $additionalData = $this->getAdditionalData();
         if (empty($additionalData) === false ) {
@@ -514,7 +520,8 @@ class OrderInfo
         $xml .= '<sku>'. $this->getProductSKU() .'</sku>';
         $xml .= '<name>'. $this->getProductName() .'</name>';
         $xml .= '<description>'. $this->getProductDesc() .'</description>';
-        $xml .= '<imageUrl>'. $this->getProductImageURL() .'</imageUrl>';
+        $xml .= '<imageUrl>' . $this->getProductImageURL() . '</imageUrl>';
+
         if(count($this->getFlightConfigs()) > 0 )
         {
             $xml .= '<airlineData>';

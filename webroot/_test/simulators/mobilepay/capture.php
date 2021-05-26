@@ -6,7 +6,8 @@ require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
 $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 $validate = $obj_XML->validate(dirname(__FILE__). '/../xsd/capture.xsd');
-if ( $validate && $obj_XML->capture->transactions->transaction->orderid == 'ticketlevel' && $obj_XML->capture->transactions->transaction->orders[0]->{"line-item"}[0]->product["order-ref"] == "SOCGN6" )
+$orderref = (string)$obj_XML->capture->transactions->transaction->orders[0]->{"line-item"}[0]->product["order-ref"];
+if ( $validate && $obj_XML->capture->transactions->transaction->orderid == 'ticketlevel' &&  ($orderref === "SOCGN6" || $orderref === "SOCGN7") )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 

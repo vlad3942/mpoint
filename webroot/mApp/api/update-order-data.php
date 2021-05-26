@@ -267,46 +267,60 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
         $_OBJ_DB->query("START TRANSACTION");
         try {
-                $transaction = $obj_DOM->{'update-order-data'}->transaction;
+            $txnPassbookObj = null;
+            $transaction = $obj_DOM->{'update-order-data'}->transaction;
+            $obj_TxnInfo = TxnInfo::produceInfo((int) $transaction['id'], $_OBJ_DB);
+            $obj_ClientConfig = $obj_TxnInfo->getClientConfig();
+            $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
+            if ($obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])) {
 
-                $obj_TxnInfo = TxnInfo::produceInfo((int) $transaction['id'], $_OBJ_DB);
-                $obj_ClientConfig = $obj_TxnInfo->getClientConfig();
-                $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
-                if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
-                    $obj_DOMOrder = $transaction->orders;
-                    if ($obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder) === false) {
-                        throw new mPointSimpleControllerException(200, 99, "Operation Failed");
-                    }
-                } else {
-                    $_OBJ_DB->query("ROLLBACK");
-                    header("HTTP/1.0 401 Unauthorized");
-                    throw new mPointSimpleControllerException(401, 401, "Username / Password doesn't match");
+                if($obj_TxnInfo->useAutoCapture() === AutoCaptureType::eTicketLevelAutoCapt){
+                    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+                }
+
+                $obj_DOMOrder = $transaction->orders;
+
+                if ($obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, $txnPassbookObj) === false) {
+                    throw new mPointSimpleControllerException(200, 99, "Operation Failed");
                 }
 
                 $_OBJ_DB->query("COMMIT");
-            $xml = '<status code = "100">Operation Success</status>';
-        } catch (mPointControllerException $e) {
+                $xml = '<status code = "100">Operation Success</status>';
+                header("HTTP/1.0 202 Accepted");
+                sendResonse($xml);
+                if( $txnPassbookObj instanceof TxnPassbook && $obj_TxnInfo->useAutoCapture() === AutoCaptureType::eTicketLevelAutoCapt)
+                {
+                    global $aHTTP_CONN_INFO;
+                    $isConsolidate = false;
+                    $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+                    $isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
+                    $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, TRUE, $obj_TxnInfo->useAutoCapture());
+                }
+
+            } else {
+                $_OBJ_DB->query("ROLLBACK");
+                header("HTTP/1.0 401 Unauthorized");
+                throw new mPointSimpleControllerException(401, 401, "Username / Password doesn't match");
+            }
+        } catch (mPointControllerException | Exception $e) {
             $_OBJ_DB->query("ROLLBACK");
             $xml = '<status code = "' . $e->getCode() . '">' . $e->getMessage() . '</status>';
-        } catch (mPointException $e) {
-            $_OBJ_DB->query("ROLLBACK");
-            $xml = '<status code = "' . $e->getCode() . '">' . $e->getMessage() . '</status>';
-        } catch (Exception $e) {
-            $_OBJ_DB->query("ROLLBACK");
-            $xml = '<status code = "' . $e->getCode() . '">' . $e->getMessage() . '</status>';
+            sendResonse($xml);
         }
     } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
         header("HTTP/1.1 415 Unsupported Media Type");
 
         $xml = '<status code="415">Invalid XML Document</status>';
+        sendResonse($xml);
     } // Error: Wrong operation
     elseif (count($obj_DOM->{'update-order-data'}) == 0) {
         header("HTTP/1.1 400 Bad Request");
 
         $xml = '';
         foreach ($obj_DOM->children() as $obj_Elem) {
-            $xml = '<status code="400">Wrong operation: ' . $obj_Elem->getName() . '</status>';
+            $xml .= '<status code="400">Wrong operation: ' . $obj_Elem->getName() . '</status>';
         }
+        sendResonse($xml);
     } // Error: Invalid Input
     else {
         header("HTTP/1.1 400 Bad Request");
@@ -314,19 +328,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
         $xml = '';
         for ($i = 0, $iMax = count($aObj_Errs); $i < $iMax; $i++) {
-            $xml = '<status code="400">' . htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) . '</status>';
+            $xml .= '<status code="400">' . htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) . '</status>';
         }
+        sendResonse($xml);
     }
 } else {
     header("HTTP/1.1 401 Unauthorized");
 
     $xml = '<status code="401">Authorization required</status>';
+    sendResonse($xml);
 }
 
-header("Content-Type: text/xml; charset=\"UTF-8\"");
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
-echo $xml;
-echo '</root>';
+function sendResonse(string $xml) : void
+{
+    header("Content-Type: text/xml; charset=\"UTF-8\"");
+    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    echo '<root>';
+    echo $xml;
+    echo '</root>';
+}
 
 ?>

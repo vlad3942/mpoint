@@ -193,7 +193,7 @@ abstract class Callback extends EndUserAccount
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null, $sSwishPaymentID=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null, $authOriginalData=null)
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
@@ -203,9 +203,9 @@ abstract class Callback extends EndUserAccount
 		{
 			 $sql .= ", issuing_bank = '".$issuingbank."'";
 		}
-		if(empty($sSwishPaymentID) === false)
+		if(empty($authOriginalData) === false)
 		{
-            $sql .= ", authoriginaldata = '".$sSwishPaymentID."'";
+            $sql .= ", authoriginaldata = '".$authOriginalData."'";
 		}
 		if(intval($fee) > 0)
 		{

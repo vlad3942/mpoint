@@ -53,14 +53,14 @@ class UpdateOrderDataAPIValidationTest extends baseAPITest
 	{
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iWIRE_CARD_PSP;
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100780, 10078)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10078, 'CPM', true)");
-        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10078, $pspID, '4216310')");
-        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100780, $pspID, '-1')");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10078, 2, $pspID, true, 1)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10078, 100780, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10078, 100780, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100990, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100990, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 2, $pspID, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 100990, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 100990, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
 
         $orderXml = '<orders> <line-item> <product order-ref="ABC1234" sku="product-ticket"> <type>100</type> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>1</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <billing-summary> <fare-detail> <fare> <profile-seq>1</profile-seq> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </fare> </fare-detail> </billing-summary> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="key">value</param> </additional-data> </line-item>  </orders>';
 		$xml = $this->getInitDoc(1001001, 1100, $orderXml);
@@ -154,15 +154,15 @@ class UpdateOrderDataAPIValidationTest extends baseAPITest
         </root>*/
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iWIRE_CARD_PSP;
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10078, 4, 'http://mpoint.local.cellpointmobile.com/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100780, 10078)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10078, 'CPM', TRUE)");
-        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10078, $pspID, '4216310')");
-        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100780, $pspID, '-1')");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10078, 2, $pspID, true, 1)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10078, 100780, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10078, 100780, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100990, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100990, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 2, $pspID, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 100990, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 100990, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', 1, TRUE, 208,3,5000,208)");
 
         $orderXml = '<orders> <line-item> <product order-ref="ABC1234" sku="product-ticket"> <type>100</type> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>1</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <billing-summary> <fare-detail> <fare> <profile-seq>1</profile-seq> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </fare> </fare-detail> </billing-summary> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="key">value</param> </additional-data> </line-item>  </orders>';
 
@@ -173,7 +173,7 @@ class UpdateOrderDataAPIValidationTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
         $this->assertStringContainsString('<status code = "100">Operation Success</status>', $sReplyBody);
 
         //Check passenger_tbl entry
@@ -250,19 +250,72 @@ class UpdateOrderDataAPIValidationTest extends baseAPITest
 
     }
 
+    public function testTicketLevelCapture()
+    {
+
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        $pspID = Constants::iMOBILEPAY_PSP;
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100990, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100990, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 2, $pspID, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (3, 10099, 100990, 208, 100, 4001, 'ticketlevel', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled, currencyid, sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 100990, 1,  ". $pspID .", 100, 'ticketlevel', '". $sCallbackURL ."', 5000, '127.0.0.1', 6, TRUE, 208,3,5000,208)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status, clientid) VALUES (100,1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref, clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status, clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref, clientid) VALUES (103,1001001, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'done',102,10099)");
+
+        $orderXml = '<orders><line-item><product order-ref="SOCGN6" sku="product-ticket"><type>100</type><name>ONE WAY</name><description>MNL-CEB</description><airline-data><profiles><profile><seq>1</seq><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></profile></profiles><billing-summary><fare-detail><fare><profile-seq>1</profile-seq><description>adult</description><currency>PHP</currency><amount>60</amount><product-code>ABF</product-code><product-category>FARE</product-category><product-item>Base fare for adult</product-item></fare></fare-detail></billing-summary><trips><trip tag="1" seq="1"><origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin><destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination><departure-time>2021-03-07T19:35:00Z</departure-time><arrival-time>2021-03-07T21:05:00Z</arrival-time><booking-class>Z</booking-class><service-level>Economy</service-level><transportation code="5J" number="1"><carriers><carrier code="5J" type-id="Aircraft Boeing-737-9"><number>563</number></carrier></carriers></transportation><additional-data><param name="fare_basis">we543s3</param></additional-data></trip></trips></airline-data></product><amount>2500</amount><quantity>1</quantity><additional-data><param name="key">value</param></additional-data></line-item><line-item><product order-ref="SOCGN7" sku="product-ticket"><type>200</type><name>ONE WAY</name><description>MNL-CEB</description><airline-data><profiles><profile><seq>1</seq><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></profile></profiles><billing-summary><add-ons><add-on><profile-seq>1</profile-seq><trip-tag>2</trip-tag><trip-seq>2</trip-seq><description>adult</description><currency>PHP</currency><amount>60</amount><product-code>ABF</product-code><product-category>FARE</product-category><product-item>Base fare for adult</product-item></add-on></add-ons></billing-summary><trips><trip tag="1" seq="1"><origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin><destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination><departure-time>2021-03-07T19:35:00Z</departure-time><arrival-time>2021-03-07T21:05:00Z</arrival-time><booking-class>Z</booking-class><service-level>Economy</service-level><transportation code="5J" number="1"><carriers><carrier code="5J" type-id="Aircraft Boeing-737-9"><number>563</number></carrier></carriers></transportation><additional-data><param name="fare_basis">we543s3</param></additional-data></trip></trips></airline-data></product><amount>2500</amount><quantity>1</quantity><additional-data><param name="key">value</param></additional-data></line-item></orders>';
+
+        $xml = $this->getInitDoc(1001001, "ticketlevel",  $orderXml);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(202, $iStatus);
+        $this->assertStringContainsString('<status code = "100">Operation Success</status>', $sReplyBody);
+        //sleep(10);
+
+        $res =  $this->queryDB("SELECT id FROM Log.order_tbl where txnid= 1001001" );
+        $this->assertIsResource($res);
+        $this->assertEquals(2, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'done' and requestedopt=5011 and extref = 'SOCGN6'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'done' and requestedopt=5011 and extref = 'SOCGN7'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'done' and performedopt=2001 and extref = '1'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'done' and performedopt=2001 and extref = '2'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+    }
+
     public function testUpdateExistingAID()
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iWIRE_CARD_PSP;
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10078, 4, 'http://mpoint.local.cellpointmobile.com/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100780, 10078)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10078, 'CPM', TRUE)");
-        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10078, $pspID, '4216310')");
-        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100780, $pspID, '-1')");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10078, 2, $pspID, true, 1)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10078, 100780, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 10078, 100780, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100990, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100990, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 2, $pspID, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 100990, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 10099, 100990, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
         $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('FCTxnID', '243001', 'Transaction','1001001')");
         $this->queryDB("INSERT INTO Log.Order_Tbl (id, orderref, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees) VALUES (10, 'SOCGN6', 1001001, 100, 100, 1, '103-1418291', 'return journey', 'return journey', 'https://www.cpm.com', 300, 1, 0);");
         $this->queryDB("INSERT INTO Log.Flight_Tbl (id, service_class,mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone) VALUES (10, 'X', '1850', 'CEB', 'MNL', 'PR', '10', '2020-05-23 13:55:00', '2020-05-23 12:40:00', '1', '2', '3', 200, 200, '+08:30')");
@@ -273,13 +326,13 @@ class UpdateOrderDataAPIValidationTest extends baseAPITest
 
         $orderXml = '<orders> <line-item> <product order-ref="SOCGN6" sku="product-ticket"> <type>200</type> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>2</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <billing-summary> <fare-detail> <fare> <profile-seq>1</profile-seq> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </fare> </fare-detail> </billing-summary> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="key">value</param> </additional-data> </line-item>  </orders>';
 
-        $xml = $this->getInitDoc(1001001, 100780, $orderXml);
+        $xml = $this->getInitDoc(1001001, 100990, $orderXml);
 
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 
-        $this->assertEquals(200, $iStatus);
+        $this->assertEquals(202, $iStatus);
 
         //Check passenger_tbl entry
         $res =  $this->queryDB("SELECT seq from Log.Order_Tbl ot join Log.passenger_tbl pt on ot.id = pt.order_id WHERE ot.orderref='SOCGN6'");
@@ -311,19 +364,19 @@ class UpdateOrderDataAPIValidationTest extends baseAPITest
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iWIRE_CARD_PSP;
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10078, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10078, 4, 'http://mpoint.local.cellpointmobile.com/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100780, 10078)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10078, 'CPM', TRUE)");
-        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10078, $pspID, '4216310')");
-        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100780, $pspID, '-1')");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10078, 2, $pspID, true, 1)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10078, 100780, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 10078, 100780, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 640, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (100990, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100990, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 2, $pspID, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 100990, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, 100, 10099, 100990, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
 
         $orderXml = '<orders> <line-item> <product order-ref="SOCGN6" sku="product-ticket"> <type>200</type> <name>ONE WAY</name> <description>MNL-CEB</description> <airline-data> <profiles> <profile> <seq>2</seq> <title>Mr</title> <first-name>dan</first-name> <last-name>dan</last-name> <type>ADT</type> <contact-info> <email>dan@dan.com</email> <mobile country-id="640">9187231231</mobile> </contact-info> <additional-data> <param name="loyality_id">345rtyu</param> </additional-data> </profile> </profiles> <billing-summary> <fare-detail> <fare> <profile-seq>1</profile-seq> <description>adult</description> <currency>PHP</currency> <amount>60</amount> <product-code>ABF</product-code> <product-category>FARE</product-category> <product-item>Base fare for adult</product-item> </fare> </fare-detail> </billing-summary> <trips> <trip tag="1" seq="1"> <origin external-id="MNL" country-id="640" time-zone="+08:00" terminal="1">Ninoy Aquino International Airport</origin> <destination external-id="CEB" country-id="640" time-zone="+08:00" terminal="2">Mactan Cebu International Airport</destination> <departure-time>2021-03-07T19:35:00Z</departure-time> <arrival-time>2021-03-07T21:05:00Z</arrival-time> <booking-class>Z</booking-class> <service-level>Economy</service-level> <transportation code="5J" number="1"> <carriers> <carrier code="5J" type-id="Aircraft Boeing-737-9"> <number>563</number> </carrier> </carriers> </transportation> <additional-data> <param name="fare_basis">we543s3</param> </additional-data> </trip> </trips> </airline-data> </product> <amount>125056</amount> <quantity>1</quantity> <additional-data> <param name="key">value</param> </additional-data> </line-item>  </orders>';
 
-        $xml = $this->getInitDoc(1001002, 100780, $orderXml);
+        $xml = $this->getInitDoc(1001002, 100990, $orderXml);
 
         $this->_httpClient->connect();
 

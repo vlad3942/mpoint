@@ -1085,12 +1085,12 @@ final class TxnPassbook
     {
         $externalRef = [];
         try {
-            $passbookEntryIds = explode(',', $passbookEntryIdStr);
+            $passbookEntryIds = array_flip(explode(',', $passbookEntryIdStr));
             foreach ($this->getEntries() as $entry) {
                 $entryId = (string)$entry->getId();
                 if(isset($passbookEntryIds[$entryId]))
                 {
-                    array_push($externalRef, $entry->getExternalReference());
+                    $externalRef[$entry->getExternalReference()] = $entry->getAmount();
                 }
             }
         }catch (Exception $exception)

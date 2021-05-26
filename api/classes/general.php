@@ -1901,7 +1901,7 @@ class General
 		return $isAutoFetchBalance;
     }
 
-    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom) : bool
+    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom, TxnPassbook $txnPassbookObj = NULL) : bool
     {
         try {
             $lineItemCnt = count($obj_orderDom->{'line-item'});
@@ -1942,7 +1942,12 @@ class General
 
                     if ($obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'}) {
                         $billingSummary = $obj_orderDom->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'};
-                        $fareCnt = count($billingSummary->{'fare-detail'}->fare);
+                        $fareCnt = 0;
+                        if($billingSummary->{'fare-detail'}->fare !== null)
+                        {
+                            $fareCnt = count($billingSummary->{'fare-detail'}->fare);
+                        }
+
                         if ($fareCnt > 0) {
                             for ($k = 0; $k < $fareCnt; $k++) {
                                 $fare = $billingSummary->{'fare-detail'}->fare[$k];
@@ -2057,8 +2062,7 @@ class General
                             $passenger = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
                         }
                     }
-                    if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eTicketLevelAutoCapt) {
-                        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+                    if ($obj_TxnInfo->useAutoCapture() === AutoCaptureType::eTicketLevelAutoCapt) {
 
                         $passbookEntry = new PassbookEntry
                         (

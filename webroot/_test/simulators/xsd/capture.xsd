@@ -372,7 +372,7 @@
 		<xs:complexType>
 			<xs:all>
 				<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-				<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
+				<xs:element name="fare-detail" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="fare" type="fare-type-detail" minOccurs="1" maxOccurs="unbounded" />
