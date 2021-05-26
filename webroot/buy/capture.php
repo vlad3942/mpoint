@@ -157,7 +157,19 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		/* ========== Input Validation Start ========== */
 		if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 		/* ========== Input Validation End ========== */
-		
+        $ticketNumber = '';
+        $ticketReferenceIdentifier = '';
+        if(isset($_REQUEST['orderref']) && empty($_REQUEST['orderref']) === false)
+        {
+            $ticketNumber = $_REQUEST['orderref'];
+            $ticketReferenceIdentifier = 'log.additional_data_tbl - TicketNumber';
+        }
+
+        if($ticketNumber === '' && ($obj_TxnInfo->useAutoCapture() === AutoCaptureType::eTicketLevelManualCapt || $obj_TxnInfo->useAutoCapture() === AutoCaptureType::eTicketLevelAutoCapt))
+        {
+            $aMsgCds[191]= "Order reference (ticket number) is missing in capture request for mPoint ID: ". @$_REQUEST['mpointid'];
+        }
+
 		// Success: Input Valid
 		if (count($aMsgCds) == 0)
 		{
@@ -188,7 +200,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					$txnPassbookObj->addEntry($passbookEntry);
 					try {
-						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, TRUE);
+						$codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, TRUE, $obj_TxnInfo->useAutoCapture());
 						$code = reset($codes);
 					} catch (Exception $e) {
 						trigger_error($e, E_USER_WARNING);
