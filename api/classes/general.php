@@ -1963,7 +1963,7 @@ class General
                             }
                         }
 
-                        $addOnCnt = count($billingSummary->{'add-ons'}->{'add-on'});
+                        $addOnCnt = ($billingSummary->{'add-ons'}->{'add-on'}) ? count($billingSummary->{'add-ons'}->{'add-on'}) : 0;
                         if ($addOnCnt > 0) {
                             for ($k = 0; $k < $addOnCnt; $k++) {
                                 $addOn = $billingSummary->{'add-ons'}->{'add-on'}[$k];
