@@ -1639,7 +1639,7 @@ abstract class Callback extends EndUserAccount
         $sql = "SELECT P.last_name
 				FROM Log".sSCHEMA_POSTFIX.".Passenger_Tbl P
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on P.order_id = Ord.id 
-				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND P.seq=1";
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND P.seq=1 limit 1";
         $res =  $this->getDBConn()->query($sql);
         if (is_resource($res) === true) {
             while ($RS = $this->getDBConn()->fetchName($res) )
