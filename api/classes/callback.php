@@ -384,13 +384,14 @@ abstract class Callback extends EndUserAccount
 	 * @param integer             $sid         Unique ID of the State that the Transaction terminated in
 	 * @param array               $vars
 	 * @param \SurePayConfig|null $obj_SurePay SurePay Configuration Object. Default value null
+     * @param integer             $sub_code_id Granular status code
 	 *
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 *
 	 */
 
-	public function notifyClient(int $sid, array $vars, ?SurePayConfig $obj_SurePay=null)
+	public function notifyClient(int $sid, array $vars, ?SurePayConfig $obj_SurePay=null, int $sub_code_id=0)
 	{
 		$pspId=  "";
 		$amount =(int)$vars["amount"];
@@ -442,7 +443,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee );
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id);
 	}
 
 	/**
@@ -472,12 +473,13 @@ abstract class Callback extends EndUserAccount
 	 * @param string              $sAdditionalData
 	 * @param \SurePayConfig|null $obj_SurePay
 	 * @param integer             $fee    The amount the customer will pay in fee�s for the Transaction. Default value 0
+     * @param integer             $sub_code_id Granular status code
 	 *
 	 * @throws \Exception
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 */
-	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0): void
+	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
@@ -603,7 +605,20 @@ abstract class Callback extends EndUserAccount
 				if ($fxservicetypeid != 0) {
 					$sBody .= "&service_type_id=" . urlencode($fxservicetypeid);
 				}
-
+                $pax_last_name = $this->getPaxLastName($txnId);
+                if ($pax_last_name != '') {
+                    $sBody .= "&pax_last_name=" . $pax_last_name;
+                }
+                $departureDetails = $this->getDepartureDetails($txnId);
+                if (empty($departureDetails) === FALSE) {
+                    $sBody .= "&first_departure_time=" . $departureDetails['departure_date'];
+                    $sBody .= "&first_departure_time_zone=" . $departureDetails['departure_timezone'];
+                }
+                if ($sub_code_id != 0) {
+                    $sBody .= "&sub_status=" . $sub_code_id;
+                }
+                $sBody .= "&pos=" .$this->_obj_TxnInfo->getCountryConfig()->getID();
+                $sBody .= "&ip_address=" .$this->_obj_TxnInfo->getIP();
 				if ($sBody !== "") {
 					/* ----- Construct Body End ----- */
 					$this->performCallback($sBody, $obj_SurePay, 0, $sid);
@@ -611,7 +626,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, $amt);
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE);
 		if ($callbackMessageRequest !== NULL) {
                 $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
             }
@@ -1066,7 +1081,7 @@ abstract class Callback extends EndUserAccount
         $this->performCallback($body,$obj_SurePay, $attempt);
     }
 
-    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null )
+    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null, int $sub_code_id=0 )
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
 		$isStateUpdated = $sessionObj->updateState($state);
@@ -1201,6 +1216,20 @@ abstract class Callback extends EndUserAccount
 						if ($fxservicetypeid != 0) {
 							$transactionData['service_type_id'] = $fxservicetypeid;
 						}
+                        $pax_last_name = $this->getPaxLastName($objTransaction->getID());
+                        if ($pax_last_name != '') {
+                            $transactionData['pax_last_name'] = $pax_last_name;
+                        }
+                        $departureDetails = $this->getDepartureDetails($objTransaction->getID());
+                        if (empty($departureDetails) === FALSE) {
+                            $transactionData['first_departure_time'] = $departureDetails['departure_date'];
+                            $transactionData['first_departure_time_zone'] = $departureDetails['departure_timezone'];
+                        }
+                        if ($sub_code_id != 0) {
+                            $transactionData['sub_status'] = $sub_code_id;
+                        }
+                        $transactionData['pos'] = $this->_obj_TxnInfo->getCountryConfig()->getID();
+                        $transactionData['ip_address'] = $this->_obj_TxnInfo->getIP();
 						$objb_BillingAddr = $objTransaction->getBillingAddr();
 						if (empty($objb_BillingAddr) === false) {
 							$transactionData['billing_first_name'] = urlencode($objb_BillingAddr['first_name']);
@@ -1254,7 +1283,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, NULL, TRUE);
+		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
 		if ($callbackMessageRequest !== NULL) {
 			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
 		}
@@ -1336,10 +1365,10 @@ abstract class Callback extends EndUserAccount
 	 * @param bool $isSessionCallback
 	 * @param      $sid
 	 * @param null $amt
-	 *
+	 * @param int $sub_code_id
 	 * @return \CallbackMessageRequest|null
 	 */
-	private function constructMessage($sid = NULL, $amt = NULL, $isSessionCallback = FALSE)
+	private function constructMessage($sid = NULL, int $sub_code_id=0,$amt = NULL, $isSessionCallback = FALSE)
     {
     	$isIgnoreRequest = TRUE;
 		$aTransactionData = [];
@@ -1366,7 +1395,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData));
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id,null,-1));
 				}
 			}
 		}
@@ -1374,19 +1403,17 @@ abstract class Callback extends EndUserAccount
 		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
-			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn, $sid, $amt);
+			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn,$sub_code_id, $sid, $amt);
 			$aTransactionData = [$obj_TransactionData];
 			$isIgnoreRequest = FALSE;
 		}
 
 		if($isIgnoreRequest === FALSE) {
 			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(), NULL);
-			if ($this->hasTransactionFailureState($sid) === TRUE) {
-				$status = substr($sid, 0, 4);
-				$sub_code = $sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
-			} else {
-				$status = $sid;
-			}
+            $status      = $sid;
+			if($sub_code_id > 0){
+                $sub_code= $sub_code_id;
+            }
 			$obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid));
 			return new CallbackMessageRequest($this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$this->_obj_TxnInfo->getCallbackURL());
 		}
@@ -1397,11 +1424,12 @@ abstract class Callback extends EndUserAccount
 	 * @param \TxnInfo $txnInfo
 	 * @param int|null $sid
 	 * @param int      $amt
+     * @param int $sub_code_id
 	 *
 	 * @return \TransactionData
 	 * @throws \Exception
 	 */
-	private function constructTransactionInfo(TxnInfo $txnInfo, $sid = NULL, $amt = -1)
+	private function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1)
     {
 
         $obj_CustomerInfo = NULL;
@@ -1449,11 +1477,9 @@ abstract class Callback extends EndUserAccount
         ];
         $obj_CardInfo = new Card($aCardInfo);
 
-        if ($this->hasTransactionFailureState($sid) === TRUE) {
-            $status = substr($sid, 0, 4);
-            $sub_code=$sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
-        } else {
-            $status = $sid;
+        $status      = $sid;
+        if($sub_code_id > 0){
+            $sub_code= $sub_code_id;
         }
         $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
 
@@ -1550,6 +1576,8 @@ abstract class Callback extends EndUserAccount
         $transactionData->setBillingAddress($aBillingAddress);
 
         $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
+        $transactionData->setPos($txnInfo->getCountryConfig()->getID());
+        $transactionData->setIpAddress($txnInfo->getIP());
 
         $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
 		if (empty($getFraudStatusCode) === FALSE) {
@@ -1603,6 +1631,41 @@ abstract class Callback extends EndUserAccount
             return count($value) !== 0;
         }
         return NULL !== $value;
+    }
+
+    /* Function to get pax_last_name */
+    public function getPaxLastName(int $txnid): string{
+        $pax_last_name = '';
+        $sql = "SELECT P.last_name
+				FROM Log".sSCHEMA_POSTFIX.".Passenger_Tbl P
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on P.order_id = Ord.id 
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND P.seq=1 limit 1";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $pax_last_name .= $RS ["LAST_NAME"];
+            }
+        }
+        return $pax_last_name;
+    }
+
+    /* Function to get first departure time and time zone */
+    public function getDepartureDetails(int $txnid): array{
+        $departureDetails = array();
+        $sql = "SELECT F.departure_timezone,F.departure_date
+				FROM Log".sSCHEMA_POSTFIX.".Flight_Tbl F
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on F.order_id = Ord.id 
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND F.tag= '1' AND F.trip_count='1'";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $departureDetails['departure_timezone']  = $RS ["DEPARTURE_TIMEZONE"];
+                $departureDetails['departure_date']      = $RS ["DEPARTURE_DATE"];
+            }
+        }
+        return $departureDetails;
     }
 }
 ?>
