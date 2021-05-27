@@ -1521,4 +1521,72 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$response->body = $body;
         return $response;
     }
+
+	public function generateCoupon()
+	{
+        $isCouponGenerated = false;
+
+		try {
+
+			$objTxn = $this->getTxnInfo();
+			$objPaymentSession = $objTxn->getPaymentSession();
+			$obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $objTxn, null, (int) $objTxn->getPSPID());
+
+			$doGenerateCoupon = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, "COUPON_GEN");
+			$couponBucketName = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, "COUPON_BUCKET_NAME");
+
+			if($doGenerateCoupon != "true" || empty($couponBucketName)) {
+				return $isCouponGenerated;
+			}
+
+			$objClientConfig = $objPaymentSession->getClientConfig();
+			$aMerchantAccountDetails = $this->genMerchantAccountDetails();
+
+			$this->updateTxnInfoObject();
+			$this->genInvoiceId(NULL);
+
+			$code = 0;
+			$body  = '<?xml version="1.0" encoding="UTF-8"?>';
+			$body .= '<root>';
+			$body .= '<generate-coupon>';
+			$body .= '<bucket-name>'.$couponBucketName.'</bucket-name>';
+
+			// psp details
+			$body .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+			
+			// transaction details
+			$body .= $this->_constTxnXML();
+			
+			// order details
+			$body .= $this->_constOrderDetails($this->getTxnInfo()) ;
+
+			// client details
+			$body .= $objClientConfig->toXML();
+
+            $body .= '<additional-config>';
+            foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty) {
+                $body .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+            }
+            $body .= '</additional-config>';
+
+			$body .= '</generate-coupon>';
+			$body .= '</root>';
+
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["generate-coupon"]);
+
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $body);
+			$obj_HTTP->disConnect();
+
+			if ($code == 200) {
+				$isCouponGenerated = true;
+			} 
+		} catch (\Throwable $e) {
+			trigger_error("Coupon generation failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		} finally {
+			return $isCouponGenerated;
+		}
+
+	}
 }

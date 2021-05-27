@@ -722,6 +722,13 @@ try
                 }
             }
         }
+
+
+        // Generating a coupon
+        if(in_array($iStateId, [Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_PENDING_STATE])) {
+            $isCouponGenerated = $obj_mPoint->generateCoupon();
+        }
+
       }
 
       $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
