@@ -178,7 +178,7 @@ INSERT INTO client.additionalproperty_tbl
 VALUES('isnewcardconfig', 'true', true, 10063, 'client', 0);
 INSERT INTO client.additionalproperty_tbl
 ("key", value, enabled, externalid, "type", "scope")
-VALUES('TIMEZONE', 'Asia/Kuala_Lumpur', true, 10063, 'client', 2);
+VALUES('TIMEZONE', 'Asia/Manila', true, 10063, 'client', 2);
 INSERT INTO client.additionalproperty_tbl
 ("key", value, enabled, externalid, "type", "scope")
 VALUES('HPP_HOST_URL', 'cpm-pay-dev2.cellpointmobile.com', true, 10063, 'client', 2);
