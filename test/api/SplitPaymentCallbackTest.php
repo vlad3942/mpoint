@@ -125,7 +125,6 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackVoucherIdNotSet()
     {
-        $this->markTestIncomplete('Temporary disabling the test case, as its getting pass on local but fail on jenkins.');
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
