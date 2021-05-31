@@ -28,7 +28,7 @@ update client.additionalproperty_tbl set value = 'Avianca' where key = 'CARRIER_
 update client.additionalproperty_tbl set value='0' where key = 'RestrictedTicket' and type = 'merchant' and scope = 2 and externalid in (select id from client.route_tbl where clientid = 10101 and providerid = 4);
 
 -- Update from 'av' to '134'
-update client.additionalproperty_tbl set value='AV' where key = 'TravelAgencyCode' and type = 'merchant' and scope = 2 and externalid in  (select id from client.route_tbl where clientid = 10101 and providerid = 4);
+update client.additionalproperty_tbl set value='134' where key = 'TravelAgencyCode' and type = 'merchant' and scope = 2 and externalid in  (select id from client.route_tbl where clientid = 10101 and providerid = 4);
 
 -- Update from 'Avinca' to 'Avianca'
 update client.additionalproperty_tbl set value='Avianca' where key = 'TravelAgencyName' and type = 'merchant' and scope = 2 and externalid in  (select id from client.route_tbl where clientid = 10101 and providerid = 4);
