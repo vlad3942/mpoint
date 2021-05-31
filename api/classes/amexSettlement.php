@@ -39,9 +39,6 @@ class AmexSettlement extends mPointSettlement
                     (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id)
                     values ($1, $2, $3, $4, $5, $6) RETURNING id, created";
 
-        $resource = $_OBJ_DB->prepare($sql);
-
-        if (is_resource($resource) === true) {
             $aParam = array(
                 $this->_iRecordNumber,
                 $referenceNumber,
@@ -51,7 +48,7 @@ class AmexSettlement extends mPointSettlement
                 $this->_iPspId
             );
 
-            $result = $_OBJ_DB->execute($resource, $aParam);
+            $result = $_OBJ_DB->executeQuery($sql, $aParam);
 
             if ($result === false) {
                 throw new Exception("Unable to create settlement record", E_USER_ERROR);
@@ -63,7 +60,6 @@ class AmexSettlement extends mPointSettlement
                 $this->_iFileSequenceNumber = $this->_iRecordNumber;
                 $this->_iRecordNumber = $this->_iRecordNumber;
             }
-        }
     }
 
 
@@ -137,16 +133,13 @@ class AmexSettlement extends mPointSettlement
                             WHERE id = $3;";
 
 
-                    $resource = $_OBJ_DB->prepare($sql);
-
-                    if (is_resource($resource) === true) {
                         $aParam = array(
                             $file["tracking-number"],
                             $file["status"],
                             $fileId
                         );
 
-                        $result = $_OBJ_DB->execute($resource, $aParam);
+                        $result = $_OBJ_DB->executeQuery($sql, $aParam);
 
                         if ($result === false) {
                             throw new Exception("Unable to create settlement record", E_USER_ERROR);
@@ -259,27 +252,22 @@ class AmexSettlement extends mPointSettlement
                                             SET description = $1 
                                             WHERE id = $2;";
 
-                                        $resource = $_OBJ_DB->prepare($sql);
-
-                                        if (is_resource($resource) === true)
-                                        {
                                             $aParam = array(
                                                 $finalDescription,
                                                 $pId
                                             );
 
-                                            $result = $_OBJ_DB->execute($resource, $aParam);
+                                            $result = $_OBJ_DB->executeQuery($sql, $aParam);
 
                                             if ($result === false)
                                             {
                                                 throw new Exception("Unable to update settlement record", E_USER_ERROR);
                                             }
-                                        }
                                     }
                                 }
                             }
                         }
-                    }
+                    
                 }
             }
         }

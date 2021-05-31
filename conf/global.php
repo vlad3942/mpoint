@@ -41,7 +41,7 @@ define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
 /**
  * Offline Payment Methods Card and PSP id mapping
  */
-define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM));
+define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM,Constants::iBOLETO => Constants::iSAFETYPAY_AGGREGATOR,Constants::iEFECTY => Constants::iSAFETYPAY_AGGREGATOR,Constants::iBANCODEBOGATA => Constants::iSAFETYPAY_AGGREGATOR));
 
 /**
  * Online Payment Methods Card and PSP id mapping
@@ -1184,6 +1184,21 @@ $aHTTP_CONN_INFO["safetypay"]["paths"]["cancel"] = "/mpoint/aggregator/safetypay
 $aHTTP_CONN_INFO["safetypay"]["paths"]["status"] = "/mpoint/aggregator/safetypay/status";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/safetypay/get-payment-methods";
 
+/**
+ * Connection info for connecting to Paymaya-Acq
+ */
+$aHTTP_CONN_INFO["paymaya_acq"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paymaya_acq"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paymaya_acq"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paymaya_acq"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paymaya_acq"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paymaya_acq"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paymaya_acq"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["initialize"] = "/mpsp/paymaya-acq/initialize";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["auth"] = "/mpsp/paymaya-acq/authorize-payment";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["refund"] = "/mpsp/paymaya-acq/refund";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["status"] = "/mpsp/paymaya-acq/status";
+$aHTTP_CONN_INFO["paymaya_acq"]["paths"]["void"] = "/mpsp/paymaya-acq/refund";
 
 /**
  * GoMobile Connection Info.

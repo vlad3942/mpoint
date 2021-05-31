@@ -621,17 +621,14 @@ class General
 					(txnid, stateid, data)
 				VALUES
 					($1, $2, $3)";
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->prepare($sql);
-		if (is_resource($res) === true)
-		{
-			$aParams = array($txnid, $sid, $data);
-			if ($this->getDBConn()->execute($res, $aParams) === false)
-			{
-				throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
-			}
+
+		$bindParam = array($txnid, $sid, $data);
+		$resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
+		
+		if (!is_resource($resultSet)) {
+			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
 		}
-		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
+			
 	}
 
 	/**
@@ -1602,28 +1599,26 @@ class General
         $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
 					(txnid, pspid, status, msg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm, protocol)
 				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10)";
-        $res = $this->getDBConn()->prepare($sql);
 
-        if (is_resource($res) === TRUE)
-        {
-            $aParams = array(
-                $paymentSecureInfo->getTransactionID(),
-                $paymentSecureInfo->getPSPID(),
-                $paymentSecureInfo->getStatus(),
-                $paymentSecureInfo->getMsg(),
-                $paymentSecureInfo->getVeresEnrolledStatus(),
-                $paymentSecureInfo->getParestxstatus(),
-                $paymentSecureInfo->getECI(),
-                $paymentSecureInfo->getCAVV(),
-                $paymentSecureInfo->getCavvAlgorithm(),
-                $paymentSecureInfo->getProtocol()
-            );
-            $result = $this->getDBConn()->execute($res, $aParams);
-            if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0)
-            {
-                trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
-            }
-        }
+		$aParams = array(
+			$paymentSecureInfo->getTransactionID(),
+			$paymentSecureInfo->getPSPID(),
+			$paymentSecureInfo->getStatus(),
+			$paymentSecureInfo->getMsg(),
+			$paymentSecureInfo->getVeresEnrolledStatus(),
+			$paymentSecureInfo->getParestxstatus(),
+			$paymentSecureInfo->getECI(),
+			$paymentSecureInfo->getCAVV(),
+			$paymentSecureInfo->getCavvAlgorithm(),
+			$paymentSecureInfo->getProtocol()
+		);
+	
+		$resource = $this->getDBConn()->executeQuery($sql, $aParams);
+
+		if ($resource === false) {
+			trigger_error("Unable to insert new payment secure message for txn id: ". $paymentSecureInfo->getTransactionID(), E_USER_ERROR);
+		}
+		
     }
 
     /**
@@ -1788,7 +1783,7 @@ class General
 				WHERE id = ". $txnId;
         $RS = $_OBJ_DB->getName($sql);
         $auto_capture = $RS['AUTO_CAPTURE'];
-        if($auto_capture == AutoCaptureType::eRunTimeAutoCapt){
+        if($auto_capture == AutoCaptureType::eRunTimeAutoCapt || $auto_capture == AutoCaptureType::eMerchantLevelAutoCapt ){
             //if manual capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
             $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_ACCEPTED_STATE,$txnId);
         }else{
@@ -1832,12 +1827,12 @@ class General
     {
         $sql = "SELECT COUNT(id) AS C
 			FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-			WHERE txnid = ".$txnId." AND stateid = ".$stateId;
+			WHERE txnid = ".$txnId." AND ( stateid = ".$stateId;
         if($is_failed === false){
-            $sql .= " AND stateid NOT IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")AND enabled = '1'";
+            $sql .= " AND stateid NOT IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
 
         }else{
-            $sql .= " OR stateid IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")AND enabled = '1'";
+            $sql .= " OR stateid IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
         }
         $res = $_OBJ_DB->getName($sql);
         return $res['C'];

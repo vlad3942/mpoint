@@ -101,7 +101,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2010" sub-code="3014">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><root><status code="2010" sub-code="3015">Authorization Declined Due to Failed Fraud Check And Authorization is not attempted.</status></root>', $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );

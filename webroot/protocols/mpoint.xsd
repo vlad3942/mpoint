@@ -141,6 +141,7 @@
 											</xs:all>
 										</xs:complexType>
 									</xs:element>
+									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
@@ -1675,7 +1676,7 @@
 
 <xs:complexType name="fare-type-detail">
 	<xs:all>
-		<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="profile-seq" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
 		<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />

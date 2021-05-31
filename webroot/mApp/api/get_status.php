@@ -251,6 +251,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '</messages>';
 							}
 							else { $xml .= '<messages />'; }
+
+							$xml .= '</transaction>';
 							$linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
 							$xml .= "<payment_status>".General::getPaymentStatus($_OBJ_DB,$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
 							// add linked transaction
@@ -258,7 +260,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$getLinkedTxns     = General::getLinkedTransactions($_OBJ_DB,$linkedTxnId,$obj_TxnInfo->getID());
 								$xml               .= $getLinkedTxns;
 							}
-							$xml .= '</transaction>';
 						}
 						catch (TxnInfoException $e)
 						{
