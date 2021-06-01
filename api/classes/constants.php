@@ -1849,6 +1849,32 @@ abstract class Constants
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
     const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
 
+	/**
+	 * Indicates the list of sub-codes which are exclueded from alternate gateway routing from 20103XX list.
+	 *
+	 * @var array
+	 */
+	const aEXCLUDE_DECLINED_SUB_CODE = [
+		2010305,
+		2010310,
+		2010314,
+		2010315,
+		2010316,
+		2010317,
+		2010319,
+		2010321,
+		2010322,
+		2010325,
+		2010326,
+		2010327,
+		2010328,
+		2010330,
+		2010331,
+		2010332,
+		2010333,
+		2010334
+	];
+
    /*
     * Defines unique ID of the State that indicates payment decline due to
     * authentication failed
