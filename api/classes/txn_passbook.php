@@ -1070,4 +1070,19 @@ final class TxnPassbook
         }
         return FALSE;
     }
+    /**
+     * Sql cost of this method is very high DO NOT use this for normal cases
+     * so use this in CRITICAL cases only and it is not recommended to use this for normal cases
+     */
+    public function UpdateAmounts() : void
+    {
+        if($this->getAuthorizedAmount() === 0)
+        {
+            try {
+                $this->_getUpdatedTransactionAmounts();
+            } catch (Exception $e) {
+                trigger_error("Error");
+            }
+        }
+    }
 }
