@@ -1783,12 +1783,12 @@ class General
 				WHERE id = ". $txnId;
         $RS = $_OBJ_DB->getName($sql);
         $auto_capture = $RS['AUTO_CAPTURE'];
-        if($auto_capture == AutoCaptureType::eRunTimeAutoCapt || $auto_capture == AutoCaptureType::eMerchantLevelAutoCapt ){
-            //if manual capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
-            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_ACCEPTED_STATE,$txnId);
-        }else{
-            //if not manual capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
+        if($auto_capture == AutoCaptureType::ePSPLevelAutoCapt ){
+            //if psp level capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
             $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE,$txnId);
+        }else{
+            //if other capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
+            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_ACCEPTED_STATE,$txnId);
         }
         if($checkTxnStatus > 0){
             $paymentStatus = 'Complete';
