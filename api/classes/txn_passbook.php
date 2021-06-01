@@ -98,6 +98,7 @@ final class TxnPassbook
     public function getEntries($getUpdatedEntries = FALSE)
     {
         if ($getUpdatedEntries || count($this->_passbookEntries) === 0) {
+            $this->_passbookEntries = array();
             $this->_getUpdatedPassbookEntries();
         }
         return $this->_passbookEntries;
@@ -556,9 +557,11 @@ final class TxnPassbook
                     if(empty($_OBJ_TXT) || empty($aHTTP_CONN_INFO))
                     {
                         $passbookEntry->setStatus(Constants::sPassbookStatusError);
+                        $this->_updatePassbookEntries(array($passbookEntry));
                     }
                     else
                     {
+						$code = -1;
 						if($isPSPCallRequired === TRUE)
 						{
 						    $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
@@ -595,8 +598,8 @@ final class TxnPassbook
                         {
                             $passbookEntry->setStatus(Constants::sPassbookStatusError);
                         }
+                        $this->_updatePassbookEntries(array($passbookEntry));
                     }
-                    $this->_updatePassbookEntries(array($passbookEntry));
                     $codes[] = $code;
                 }
             }
@@ -1098,5 +1101,20 @@ final class TxnPassbook
             trigger_error($exception);
         }
         return  $externalRef;
+    }
+    /**
+     * Sql cost of this method is very high DO NOT use this for normal cases
+     * so use this in CRITICAL cases only and it is not recommended to use this for normal cases
+     */
+    public function UpdateAmounts() : void
+    {
+        if($this->getAuthorizedAmount() === 0)
+        {
+            try {
+                $this->_getUpdatedTransactionAmounts();
+            } catch (Exception $e) {
+                trigger_error("Error");
+            }
+        }
     }
 }
