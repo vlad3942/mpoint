@@ -129,7 +129,7 @@ class RoutingService extends General
         $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
 
         //Type will hard coded 1 - design - https://confluence.t.cpm.dev/display/CS/Feature+-+Add-on+Product+type+and+Fee
-        $b .= '<fees><fee><value>' . $this->_obj_TxnInfo->getFee() . '</value><type>1</type></fee></fees>';
+        $body .= '<fees><fee><value>' . $this->_obj_TxnInfo->getFee() . '</value><type>1</type></fee></fees>';
         $body .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
