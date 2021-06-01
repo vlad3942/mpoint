@@ -1,5 +1,8 @@
 <?php
 
+use api\classes\billingsummary\info\AddonInfo;
+use api\classes\billingsummary\info\FareInfo;
+
 class RoutingService extends General
 {
     /**
@@ -124,6 +127,7 @@ class RoutingService extends General
         $body .= '<transaction>';
         $body .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
         $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
+
         $body .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -190,6 +194,8 @@ class RoutingService extends General
         $b .= '<transaction>';
         $b .= '<id>'.$this->_obj_TxnInfo->getID().'</id>';
         $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
+        //Type will hard coded 1 - design - https://confluence.t.cpm.dev/display/CS/Feature+-+Add-on+Product+type+and+Fee
+        $b .= '<fees><fee><value>' . $this->_obj_TxnInfo->getFee() . '</value><type>1</type></fee></fees>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -303,7 +309,7 @@ class RoutingService extends General
         return $firstPSP;
     }
 
-    private function toAttributeLessOrderDataXML()
+    private function toAttributeLessOrderDataXML() : string
     {
         $objOrderConfig = $this->_obj_TxnInfo->getOrderConfigs();
         $xml = '';
@@ -348,6 +354,49 @@ class RoutingService extends General
                             }
                         }
                         $xml .= '</flight_details>';
+
+                        if (count($obj_OrderInfo->getBillingSummaryFareConfigs()) > 0 || count($obj_OrderInfo->getBillingSummaryAddonConfigs()) > 0) {
+                            $xml .= '<billing_summary>';
+                            if (count($obj_OrderInfo->getBillingSummaryFareConfigs()) > 0) {
+                                $xml .= '<fare_detail>';
+                                foreach ($obj_OrderInfo->getBillingSummaryFareConfigs() as $billSummaryFare_Obj) {
+                                    if (($billSummaryFare_Obj instanceof FareInfo) === TRUE) {
+                                        $xml .= '<fare>';
+                                        $xml .= '<profile_seq>' . $billSummaryFare_Obj->getProfileSeqence() . '</profile_seq>';
+                                        $xml .= '<description>' . $billSummaryFare_Obj->getDescription() . '</description>';
+                                        $xml .= '<currency>' . $billSummaryFare_Obj->getCurrency() . '</currency>';
+                                        $xml .= '<amount>' . $billSummaryFare_Obj->getAmount() . '</amount>';
+                                        $xml .= '<product_code>' . $billSummaryFare_Obj->getProductCode() . '</product_code>';
+                                        $xml .= '<product_category>' . $billSummaryFare_Obj->getProductCategory() . '</product_category>';
+                                        $xml .= '<product_item>' . $billSummaryFare_Obj->getProductItem() . '</product_item>';
+                                        $xml .= '</fare>';
+                                    }
+                                }
+                                $xml .= '</fare_detail>';
+                            }
+
+                            if (count($obj_OrderInfo->getBillingSummaryAddonConfigs()) > 0) {
+                                $xml .= '<add_ons>';
+                                foreach ($obj_OrderInfo->getBillingSummaryAddonConfigs() as $billSummaryAddon_Obj) {
+                                    if (($billSummaryAddon_Obj instanceof AddonInfo) === TRUE) {
+                                        $xml .= '<add_on>';
+                                        $xml .= '<profile_seq>' . $billSummaryAddon_Obj->getProfileSeqence() . '</profile_seq>';
+                                        $xml .= '<trip_tag>' . $billSummaryAddon_Obj->getTripTag() . '</trip_tag>';
+                                        $xml .= '<trip_seq>' . $billSummaryAddon_Obj->getTripSeq() . '</trip_seq>';
+                                        $xml .= '<description>' . $billSummaryAddon_Obj->getDescription() . '</description>';
+                                        $xml .= '<currency>' . $billSummaryAddon_Obj->getCurrency() . '</currency>';
+                                        $xml .= '<amount>' . $billSummaryAddon_Obj->getAmount() . '</amount>';
+                                        $xml .= '<product_code>' . $billSummaryAddon_Obj->getProductCode() . '</product_code>';
+                                        $xml .= '<product_category>' . $billSummaryAddon_Obj->getProductCategory() . '</product_category>';
+                                        $xml .= '<product_item>' . $billSummaryAddon_Obj->getProductItem() . '</product_item>';
+                                        $xml .= '</add_on>';
+                                    }
+                                }
+                                $xml .= '</add_ons>';
+                            }
+
+                            $xml .= '</billing_summary>';
+                        }
                         $xml .= '</airline_data>';
                     }
                 }
