@@ -244,6 +244,22 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Captured
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_CAPTURED_STATE = 2201;
+	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Cancelled
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_CANCELLED_STATE = 2202;
+	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Refunded
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_REFUNDED_STATE = 2203;
+
+	/**
 	 * Defines the ID of the State that indicates that Card is not enrolled for 3DS by Issuer
 	 *
 	 */
