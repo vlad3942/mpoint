@@ -98,7 +98,6 @@ final class TxnPassbook
     public function getEntries($getUpdatedEntries = FALSE)
     {
         if ($getUpdatedEntries || count($this->_passbookEntries) === 0) {
-            $this->_passbookEntries = array();
             $this->_getUpdatedPassbookEntries();
         }
         return $this->_passbookEntries;
@@ -557,11 +556,9 @@ final class TxnPassbook
                     if(empty($_OBJ_TXT) || empty($aHTTP_CONN_INFO))
                     {
                         $passbookEntry->setStatus(Constants::sPassbookStatusError);
-                        $this->_updatePassbookEntries(array($passbookEntry));
                     }
                     else
                     {
-						$code = -1;
 						if($isPSPCallRequired === TRUE)
 						{
 						    $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
@@ -598,8 +595,8 @@ final class TxnPassbook
                         {
                             $passbookEntry->setStatus(Constants::sPassbookStatusError);
                         }
-                        $this->_updatePassbookEntries(array($passbookEntry));
                     }
+                    $this->_updatePassbookEntries(array($passbookEntry));
                     $codes[] = $code;
                 }
             }
