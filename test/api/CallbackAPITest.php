@@ -374,9 +374,8 @@ class CallbackAPITest extends baseAPITest
 		$this->assertEquals(6, $affectedRows);
     }
 
-    public function testSuccessfulPartialCapture()
+    public function successfulPartialCapture($pspID,$iTransStatus)
     {
-        $pspID = Constants::iWIRE_CARD_PSP;
         $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -403,7 +402,7 @@ class CallbackAPITest extends baseAPITest
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
 
-        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, Constants::iPAYMENT_CAPTURED_STATE, false,3000);
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false,3000);
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -422,7 +421,7 @@ class CallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (106,1001001, 2000,208,". Constants::iCaptureRequested. ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (107,1001001, 2000,208,NULL,". Constants::iPAYMENT_CAPTURED_STATE. ",'inprogress',106,10099)");
 
-        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, Constants::iPAYMENT_CAPTURED_STATE, false,2000);
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false,2000);
         $this->constHTTPClient();
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -463,9 +462,8 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(Constants::sPassbookStatusDone, $cStates[0]);
     }
 
-    public function testSuccessfulPartialRefund()
+    public function successfulPartialRefund($pspID,$iTransStatus)
     {
-        $pspID = Constants::iWIRE_CARD_PSP;
         $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -495,7 +493,7 @@ class CallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_CAPTURED_STATE . ")");
 
-        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, Constants::iPAYMENT_REFUNDED_STATE, false,3000);
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false,3000);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -514,7 +512,7 @@ class CallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (108,1001001, 2000,208,". Constants::iRefundRequested. ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (109,1001001, 2000,208,NULL,". Constants::iPAYMENT_REFUNDED_STATE. ",'inprogress',108,10099)");
 
-        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, Constants::iPAYMENT_REFUNDED_STATE, false,2000);
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false,2000);
         $this->constHTTPClient();
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -541,7 +539,7 @@ class CallbackAPITest extends baseAPITest
                 $aStates[] = $row["stateid"];
             }
             if (count($aStates) >= 9) { break; }
-            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            usleep(200000);// As callback happens asynchronously, sleep a bit here in order to wait for transaction to complete in other thread
         }
         $this->assertTrue(is_int(array_search(Constants::iPAYMENT_PARTIALLY_REFUNDED_STATE, $aStates) ) );
         $this->assertTrue(is_int(array_search(Constants::iPAYMENT_REFUNDED_STATE, $aStates) ) );
@@ -555,9 +553,8 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(Constants::sPassbookStatusDone, $cStates[0]);
     }
 
-    public function testSuccessfulPartialCancel()
+    public function successfulPartialCancel($pspID,$iTransStatus)
     {
-        $pspID = Constants::iWIRE_CARD_PSP;
         $this->bIgnoreErrors = true;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -587,7 +584,7 @@ class CallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_ACCEPTED_STATE . ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, " . Constants::iPAYMENT_CAPTURED_STATE . ")");
 
-        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, Constants::iPAYMENT_CANCELLED_STATE, false,3000);
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false,3000);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -607,7 +604,7 @@ class CallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (108,1001001, 2000,208,". Constants::iCancelRequested. ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (109,1001001, 2000,208,NULL,". Constants::iPAYMENT_CANCELLED_STATE. ",'inprogress',108,10099)");
 
-        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, Constants::iPAYMENT_CANCELLED_STATE, false,2000);
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false,2000);
         $this->constHTTPClient();
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
