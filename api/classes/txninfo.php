@@ -2627,7 +2627,7 @@ class TxnInfo
 
     public function hasEitherSoftDeclinedState($subCodeID)
     {
-        if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT) {
+		if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT && in_array($subCodeID, Constants::aEXCLUDE_DECLINED_SUB_CODE) === false) {
             return true;
         }
         return false;
