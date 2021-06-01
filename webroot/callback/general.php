@@ -760,7 +760,7 @@ try
       //update captured amt when psp returns captured callback
       if($iStateId == Constants::iPAYMENT_CAPTURED_STATE || $iStateId == Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE) {
           $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
-          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
+          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount + $obj_TxnInfo->getCapturedAmount());
       }
 
         if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
