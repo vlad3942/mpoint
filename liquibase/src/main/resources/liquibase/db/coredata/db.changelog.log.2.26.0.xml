@@ -274,36 +274,5 @@
         </dropColumn>
     </changeSet>
 
-    <changeSet author="Priya Alamwar"
-               id="2021-05-26-setup-v2.26-log">
-
-        <insert catalogName="Log"
-                schemaName="Log"
-                tableName="State_Tbl">
-
-            <column name="id" value="2201"/>
-            <column name="name" value="Partial Capture"/>
-            <column name="func" value="Payment"/>
-        </insert>
-
-        <insert catalogName="Log"
-                schemaName="Log"
-                tableName="State_Tbl">
-
-            <column name="id" value="2202"/>
-            <column name="name" value="Partial Cancel"/>
-            <column name="func" value="Payment"/>
-        </insert>
-
-        <insert catalogName="Log"
-                schemaName="Log"
-                tableName="State_Tbl">
-
-            <column name="id" value="2203"/>
-            <column name="name" value="Partial Refund"/>
-            <column name="func" value="Payment"/>
-        </insert>
-
-    </changeSet>
 
 </databaseChangeLog>
