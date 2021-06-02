@@ -18,3 +18,9 @@ insert into client.additionalproperty_tbl (key,value,externalid,type,scope) valu
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('ADOBE_TARGET_SCRIPT_PATH','6ac3e976c146/92ff2d2716e2/launch-9a08edba7641-staging.min.js',<client-id>,'client',2);
 
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('INGENICO_AUTH_MODE','SALE',<route-id>,'merchant',2);
+
+-- CMP-5595 & CMP-5596
+INSERT INTO client.additionalproperty_tbl ( key, value, externalid, type, enabled, scope) VALUES ('COUPON_GEN', 'true',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10101 and pspid = 70) ,'merchant', true, 1);
+INSERT INTO client.additionalproperty_tbl ( key, value, externalid, type, enabled, scope) VALUES ('COUPON_BUCKET_NAME', 'av-sp',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10101 and pspid = 70) ,'merchant', true, 1);
+
+

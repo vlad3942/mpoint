@@ -210,7 +210,7 @@ try
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
-    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, (int)$obj_XML->callback->{"psp-config"}["id"]);
+    $obj_PSPConfig = null;
 
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
@@ -372,6 +372,13 @@ try
         $fee = 0;
         $sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
         $sSwishPaymentID = (string) $obj_XML->callback->{'swishPaymentID'};
+
+         if( $iStateID === Constants::iPAYMENT_PENDING_STATE ||
+             ($obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE  && $iStateID === Constants::iPAYMENT_ACCEPTED_STATE))
+         {
+             $obj_mPoint->getTxnInfo()->setExternalId($obj_XML->callback->transaction["external-id"]);
+             $obj_mPoint->generate_receipt();
+         }
         $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
             $obj_XML->callback->transaction["external-id"],
             (integer)$obj_XML->callback->transaction->card["type-id"],
@@ -533,7 +540,7 @@ try
                 "amount" => $obj_TxnInfo->getAmount(),
                 "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
         $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-        $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+       // $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
             $paymentSecureInfo = null;
             if($obj_XML->callback->transaction->card->{'info-3d-secure'})
@@ -674,7 +681,7 @@ try
             }
 
             // Refresh transactioninfo object once the capture is performed
-            $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+           // $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 
             if ($code == 1000 || $code == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
             {
@@ -724,10 +731,6 @@ try
         }
 
 
-        // Generating a coupon
-        if(in_array($iStateId, [Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_PENDING_STATE])) {
-            $isCouponGenerated = $obj_mPoint->generateCoupon();
-        }
 
       }
 
