@@ -443,7 +443,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id);
+		$this->notifyToClient($sid, $pspId, $amount, $cardId, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id);
 	}
 
 	/**
@@ -467,9 +467,7 @@ abstract class Callback extends EndUserAccount
 	 * @param integer             $sid    Unique ID of the State that the Transaction terminated in
 	 * @param string              $pspid  The Payment Service Provider's (PSP) unique ID for the transaction
 	 * @param integer             $amt    Total amount the customer will pay for the Transaction without fee
-	 * @param string              $cardno The masked card number for the card that was used for the payment
 	 * @param integer             $cardid mPoint's unique ID for the card type
-	 * @param null                $exp
 	 * @param string              $sAdditionalData
 	 * @param \SurePayConfig|null $obj_SurePay
 	 * @param integer             $fee    The amount the customer will pay in fee�s for the Transaction. Default value 0
@@ -479,7 +477,7 @@ abstract class Callback extends EndUserAccount
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 */
-	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
+	public function notifyToClient(int $sid, string $pspid, int $amt, int $cardid=0, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
@@ -518,8 +516,8 @@ abstract class Callback extends EndUserAccount
 				if (intval($cardid) > 0) {
 					$sBody .= "&card-id=" . $cardid;
 				}
-				if (empty($cardno) === FALSE) {
-					$sBody .= "&card-number=" . urlencode($cardno);
+				if (empty($this->_obj_TxnInfo->getCardMask()) === FALSE) {
+					$sBody .= "&card-number=" . urlencode($this->_obj_TxnInfo->getCardMask());
 				}
 				if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === TRUE) {
 					$pspId = $this->_obj_TxnInfo->getPSPID();
@@ -537,8 +535,8 @@ abstract class Callback extends EndUserAccount
 				if (empty($sEmail) === FALSE) {
 					$sBody .= "&email=" . urlencode($sEmail);
 				}
-				if (empty($exp) === FALSE) {
-					$sBody .= "&expiry=" . $exp;
+				if (empty($this->_obj_TxnInfo->getCardExpiry()) === FALSE) {
+					$sBody .= "&expiry=" . $this->_obj_TxnInfo->getCardExpiry();
 				}
 				$sBody .= "&session-id=" . $this->_obj_TxnInfo->getSessionId();
 				/* Adding customer Info as part of the callback query params */
@@ -1108,8 +1106,8 @@ abstract class Callback extends EndUserAccount
 					if (intval($cardid) > 0) {
 						$sBody .= "&card-id=" . $cardid;
 					}
-					if (empty($cardno) === FALSE) {
-						$sBody .= "&card-number=" . urlencode($cardno);
+					if (empty($this->_obj_TxnInfo->getCardMask()) === FALSE) {
+						$sBody .= "&card-number=" . urlencode($this->_obj_TxnInfo->getCardMask());
 					}
 					if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === TRUE) {
 						$sBody .= "&pspid=" . urlencode($pspid);
@@ -1124,8 +1122,8 @@ abstract class Callback extends EndUserAccount
 					if (empty($sEmail) === FALSE) {
 						$sBody .= "&email=" . urlencode($sEmail);
 					}
-					if (empty($exp) === FALSE) {
-						$sBody .= "&expiry=" . $exp;
+					if (empty($this->_obj_TxnInfo->getCardExpiry()) === FALSE) {
+						$sBody .= "&expiry=" . $this->_obj_TxnInfo->getCardExpiry();
 					}
 
 					/* Adding customer Info as part of the callback query params */
