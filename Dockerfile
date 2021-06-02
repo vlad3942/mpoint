@@ -2,7 +2,7 @@
 
 FROM registry.t.cpm.dev/library/phpcomposerbuildimage:latest as devbuilder
 COPY api api
-COPY composer.json composer.lock* ./
+COPY composer.json composer.lock ./
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
