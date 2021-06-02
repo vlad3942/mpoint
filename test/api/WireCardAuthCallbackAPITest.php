@@ -38,4 +38,16 @@ class WireCardAuthCallbackAPITest extends CallbackAPITest
     {
         $this->successfulAutoCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_ACCEPTED_STATE);
     }
+    public function testSuccessfulPartialCapture()
+    {
+        $this->successfulPartialCapture(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CAPTURED_STATE);
+    }
+    public function testSuccessfulPartialRefund()
+    {
+        $this->successfulPartialRefund(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_REFUNDED_STATE);
+    }
+    public function testSuccessfulPartialCancel()
+    {
+        $this->successfulPartialCancel(Constants::iWIRE_CARD_PSP, Constants::iPAYMENT_CANCELLED_STATE);
+    }
 }
