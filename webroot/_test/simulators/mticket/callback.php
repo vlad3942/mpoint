@@ -29,6 +29,7 @@ case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
 case Constants::iSESSION_COMPLETED:
 case Constants::iSESSION_CREATED:
 case Constants::iSESSION_EXPIRED:
+case Constants::iSESSION_FAILED:
 	$aRequiredArguments = array('status', 'session-id', 'pspid');
 	break;
 default:
