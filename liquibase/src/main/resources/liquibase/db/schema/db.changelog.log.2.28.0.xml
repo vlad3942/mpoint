@@ -32,6 +32,4 @@
                 referencedTableSchemaName="system" />
     </changeSet>
 
-
-
 </databaseChangeLog>
