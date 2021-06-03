@@ -2627,7 +2627,28 @@ class TxnInfo
 
     public function hasEitherSoftDeclinedState($subCodeID)
     {
-        if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT) {
+		$aHardDeclined = array(
+			Constants::iPAYMENT_CANCELLED,
+			Constants::iDUPLICATE_TXN,
+			Constants::iTXN_REJECTED_ISSUER,
+			Constants::iEMI_UNAVAILABLE,
+			Constants::iVOID_NOT_SUPPORTED,
+			Constants::iCAPTURED_ALREADY,
+			Constants::iINVALID_CAPTURE,
+			Constants::iRECURRING_NOT_SUPPORTED,
+			Constants::iSTORED_CARD_DISABLED,
+			Constants::iTXN_GENERATION_FAIL,
+			Constants::iINSTALLMENT_DISABLED,
+			Constants::iTICKET_ISSUE_FAIL,
+			Constants::iCUP_SIGN_FAIL,
+			Constants::iISSUE_BANK_UNAVAILABLE,
+			Constants::iTXN_EXCEED_LIMIT,
+			Constants::iUNVOIDABLE,
+			Constants::iUNREFUNDABLE,
+			Constants::iAMOUNT_LIMIT_EXCEEDS
+		);
+
+		if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT && in_array($subCodeID, $aHardDeclined) === false) {
             return true;
         }
         return false;
