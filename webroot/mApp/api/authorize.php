@@ -714,7 +714,7 @@ try
                                                 
                                                 if ( $sosPreference === 'STRICT' )
 						                        {
-						                        	$userAuthcode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
+						                        	$userAuthenticationCode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
 
 						                        	if ($userAuthenticationCode == 212)
 														{
@@ -1339,7 +1339,7 @@ try
                                                                     $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_Elem["pspid"], $aHTTP_CONN_INFO);
                                                                     $aCallbackArgs = array("amount" => $obj_TxnInfo->getAmount(),
                                                                         "cardid" =>  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]);
-                                                                    if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+                                                                    if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),Constants::iPRE_FRAUD_CHECK_REVIEW_STATE); }
 
 
                                                                     $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');

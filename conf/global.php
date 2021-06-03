@@ -41,7 +41,7 @@ define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
 /**
  * Offline Payment Methods Card and PSP id mapping
  */
-define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM));
+define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM,Constants::iBOLETO => Constants::iSAFETYPAY_AGGREGATOR,Constants::iEFECTY => Constants::iSAFETYPAY_AGGREGATOR,Constants::iBANCODEBOGATA => Constants::iSAFETYPAY_AGGREGATOR));
 
 /**
  * Online Payment Methods Card and PSP id mapping

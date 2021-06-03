@@ -253,11 +253,7 @@ try
             $year = substr(strftime("%Y"), 0, 2);
         }
         $sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
-        // If transaction is in Account Validated i.e 1998 state no action to be done
 
-        if($iStateID === Constants::iPAYMENT_REJECTED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID) === false){
-            array_push($aStateId,$iStateID);
-        }
 
         $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
 
@@ -369,9 +365,30 @@ try
             // E-Mail has been provided for the transaction
             if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
         }
+        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
+        // check if the transaction is partial txn
+        if($obj_XML->callback->transaction->amount  != $obj_TxnInfo->getAmount()) {
+            //check if the total captured amount is matching the txn amt i.e. partial capture case
+            $totalCapturedAmt = $obj_XML->callback->transaction->amount + $obj_TxnInfo->getCapturedAmount();
+            if ($iStateID === Constants::iPAYMENT_CAPTURED_STATE && ($totalCapturedAmt != $obj_TxnInfo->getAmount())) {
+                $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+            } else {
+                //the sql cost for the below function is very high but for the below two cases there is no other way so have to use this but it is not recommended
+                $txnPassbookObj->UpdateAmounts();
+                if ($iStateID === Constants::iPAYMENT_REFUNDED_STATE && ($txnPassbookObj->getRefundedAmount() < $txnPassbookObj->getAuthorizedAmount())) {
+                    $iStateID = Constants::iPAYMENT_PARTIALLY_REFUNDED_STATE;
+                } elseif ($iStateID === Constants::iPAYMENT_CANCELLED_STATE && ($txnPassbookObj->getCancelledAmount() < $txnPassbookObj->getAuthorizedAmount())) {
+                    $iStateID = Constants::iPAYMENT_PARTIALLY_CANCELLED_STATE;
+                }
+            }
+        }
+        // If transaction is in Account Validated i.e 1998 state no action to be done
+        if($iStateID === Constants::iPAYMENT_REJECTED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID) === false){
+            array_push($aStateId,$iStateID);
+        }
         $fee = 0;
         $sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
-        $sSwishPaymentID = (string) $obj_XML->callback->{'swishPaymentID'};
+        $authOriginalData = (string) $obj_XML->callback->{'auth-original-data'};
 
          if( $iStateID === Constants::iPAYMENT_PENDING_STATE ||
              ($obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE  && $iStateID === Constants::iPAYMENT_ACCEPTED_STATE))
@@ -386,7 +403,7 @@ try
             $iSubCodeID,
             $fee,
             array(file_get_contents("php://input")),
-            $sIssuingBank, $sSwishPaymentID);
+            $sIssuingBank, $authOriginalData);
         // Payment Authorized: Perform a callback to the 3rd party Wallet if required
         if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
@@ -466,7 +483,6 @@ try
         $data['card-id'] =  $obj_XML->callback->transaction->card["type-id"];
         $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 
-        $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $id, $obj_TxnInfo->getClientConfig()->getID());
         $paymentType = (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType;
         $currencyId = (int) $obj_XML->callback->transaction->amount["currency-id"];
         if($currencyId > 0  && ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_REJECTED_STATE || $iStateID === Constants::iPAYMENT_REQUEST_CANCELLED_STATE || $iStateID === Constants::iPAYMENT_REQUEST_EXPIRED_STATE) && $paymentType === Constants::iPAYMENT_TYPE_OFFLINE && $currencyId !== $obj_TxnInfo->getCurrencyConfig()->getID())
@@ -484,7 +500,6 @@ try
                 $txnPassbookObj->updatePerformedOptEntry($paymentType, $offlineAmount, $currencyId);
             }
         }
-
         if ($txnPassbookObj instanceof TxnPassbook) {
             foreach ($aStateId as $iStateId) {
                 $state = 0;
@@ -501,6 +516,7 @@ try
                         $status = Constants::sPassbookStatusError;
                         break;
                     case Constants::iPAYMENT_CAPTURED_STATE:
+                    case Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE:
                         $state = Constants::iPAYMENT_CAPTURED_STATE;
                         $status = Constants::sPassbookStatusDone;
                         break;
@@ -509,6 +525,7 @@ try
                         $status = Constants::sPassbookStatusError;
                         break;
                     case Constants::iPAYMENT_REFUNDED_STATE:
+                    case Constants::iPAYMENT_PARTIALLY_REFUNDED_STATE:
                         $state = Constants::iPAYMENT_REFUNDED_STATE;
                         $status = Constants::sPassbookStatusDone;
                         break;
@@ -517,6 +534,7 @@ try
                         $status = Constants::sPassbookStatusError;
                         break;
                     case Constants::iPAYMENT_CANCELLED_STATE:
+                    case Constants::iPAYMENT_PARTIALLY_CANCELLED_STATE:
                         $state = Constants::iPAYMENT_CANCELLED_STATE;
                         $status = Constants::sPassbookStatusDone;
                         break;
@@ -750,13 +768,13 @@ try
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
       //update captured amt when psp returns captured callback
-      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
+      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE || $iStateId == Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE) {
           $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
-          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
+          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount + $obj_TxnInfo->getCapturedAmount());
       }
 
         if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
-            $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+            $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
             $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
             if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_CAPTURED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
                 try {
@@ -877,18 +895,18 @@ try
 
         foreach ($aStateId as $iStateId) {
             if ($iStateId == 2000) {
-                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
             }
             else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
                 $count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
                 //Check whether a notification has already been sent to retail system with status 20109
                 // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
                 if($count == 0)  {
-                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
                 }
             }
             else {
-                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
             }
         }
     }
