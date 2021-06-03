@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Kalpesh Parikh"
+               id="2021-05-21-setup-v2.28-log-1">
+
+        <addColumn catalogName="log"
+                   schemaName= "log"
+                   tableName="order_tbl" >
+            <column name="type"
+                    type="int"
+                    remarks="type of the product"
+                    defaultValue="100" />
+        </addColumn>
+
+        <addForeignKeyConstraint
+                baseColumnNames="type"
+                baseTableCatalogName="log"
+                baseTableName="order_tbl"
+                baseTableSchemaName="log"
+                constraintName="order2producttypeid_fk"
+                onDelete="RESTRICT"
+                onUpdate="CASCADE"
+                referencedColumnNames="id"
+                referencedTableCatalogName="system"
+                referencedTableName="producttype_tbl"
+                referencedTableSchemaName="system" />
+    </changeSet>
+
+    <changeSet author="Priya Alamwar"
+               id="2021-05-26-setup-v2.26-log">
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2201"/>
+            <column name="name" value="Partial Capture"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2202"/>
+            <column name="name" value="Partial Cancel"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2203"/>
+            <column name="name" value="Partial Refund"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
