@@ -1243,7 +1243,7 @@ abstract class Callback extends EndUserAccount
 						$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
 						if ($iSessionStateValidation !== 1) {
 							$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
-							if ($sessionObj->getPendingAmount() === 0 || $sessionObj->getStateId() === Constants::iSESSION_EXPIRED) {
+							if ($sessionObj->getPendingAmount() === 0 || $sessionObj->getStateId() === Constants::iSESSION_EXPIRED  || $sessionObj->getStateId() === Constants::iSESSION_FAILED) {
 								$this->performCallback($sBody, $obj_SurePay);
 							}
 						}
