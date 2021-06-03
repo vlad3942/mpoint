@@ -558,7 +558,7 @@ try
                 "amount" => $obj_TxnInfo->getAmount(),
                 "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
         $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-       // $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+        $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
             $paymentSecureInfo = null;
             if($obj_XML->callback->transaction->card->{'info-3d-secure'})
@@ -699,7 +699,7 @@ try
             }
 
             // Refresh transactioninfo object once the capture is performed
-           // $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+            $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 
             if ($code == 1000 || $code == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
             {
