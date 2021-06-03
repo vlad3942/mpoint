@@ -15,8 +15,15 @@ update client.additionalproperty_tbl set value='134' where key = 'TravelAgencyCo
 -- Update from 'Avinca' to 'Avianca'
 update client.additionalproperty_tbl set value='Avianca' where key = 'TravelAgencyName' and type = 'merchant' and scope = 2 and externalid in  (select id from client.route_tbl where clientid = 10101 and providerid = 4);
 
+-- Update from '12970' to 'CO'
+update client.additionalproperty_tbl set value='CO' where key = 'IssuerCountryCode' and type = 'merchant' and scope = 2 and externalid in  (select id from client.route_tbl where clientid = 10101 and providerid = 4);
 
 --  Add below properties for AV-CYBS
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('FareBasisCode','BK',<CYBS-merchant-id>,'merchant',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerAddress1','AV address',<CYBS-merchant-id>,'merchant',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerCity','Bogata address',<CYBS-merchant-id>,'merchant',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerCountryCode','CO',<CYBS-merchant-id>,'merchant',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('IssuerPostalCode','1200',<CYBS-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('RestrictedTicket','0',<CYBS-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('TravelAgencyCode','134',<CYBS-merchant-id>,'merchant',2);
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('TravelAgencyName','Avianca',<CYBS-merchant-id>,'merchant',2);
