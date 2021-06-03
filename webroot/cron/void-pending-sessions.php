@@ -102,7 +102,6 @@ require_once(sCLASS_PATH ."/citcon.php");
 // Require specific Business logic for the PPRO component
 require_once(sCLASS_PATH ."/ppro.php");
 
-require_once(sCLASS_PATH ."/bre.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
@@ -122,7 +121,6 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
-require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
 // Require specific Business logic for the VeriTrans4G component

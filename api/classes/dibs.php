@@ -164,9 +164,7 @@ class DIBS extends Callback implements Captureable, Refundable
 			trigger_error(trim("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
-	
-		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
-		
+
 		return $aStatus["transact"];
 	}
 	
@@ -225,7 +223,6 @@ class DIBS extends Callback implements Captureable, Refundable
 			trigger_error(trim("Authorisation declined by DIBS for Card Details: ". $this->_getMaskedCardNumber($cardno) .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
-		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
 		return $aStatus["transact"];
 	}
 

@@ -1,4 +1,7 @@
 <?php
+
+use api\classes\core\Product;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Anna Lagad
@@ -14,59 +17,65 @@ class ClientPaymentMetadata
      * Configuration for the client payment route
      * @Array ClientRouteConfig
      */
-    private ?array $_obj_ClientRouteConfig;
+    private array $_obj_ClientRouteConfig;
 
     /**
      * Configuration for the client payment route country
      * @Array ClientCountryCurrencyConfig
      */
-    private ?array $_obj_ClientCountryConfig;
+    private array $_obj_ClientCountryConfig;
 
     /**
      * Configuration for the client payment route currency
      * @Array ClientCountryCurrencyConfig
      */
-    private ?array $_obj_ClientCurrencyConfig;
+    private array $_obj_ClientCurrencyConfig;
 
     /**
      * Configuration for the client supported payment methods
      * @Array ClientPaymentMethodConfig
      */
-    private ?array $_obj_ClientPaymentMethodConfig;
+    private array $_obj_ClientPaymentMethodConfig;
 
     /**
      * Configuration for the client route feature
      * @Array RouteFeature
      */
-    private ?array $_obj_ClientRouteFeatureConfig;
+    private array $_obj_ClientRouteFeatureConfig;
 
     /**
      * Object that holds the transaction type configurations
      *
      * @Array TransactionTypeConfig
      */
-    private ?array $_obj_TransactionTypeConfig;
+    private array $_obj_TransactionTypeConfig;
 
     /**
      * Object that holds the card state configurations
      *
      * @Array CardState
      */
-    private ?array $_obj_CardStateConfig;
+    private array $_obj_CardStateConfig;
 
     /**
      * Object that holds the Account configurations
      *
      * @Array AccountConfig
      */
-    private ?array $_obj_AccountsConfigurations;
+    private array $_obj_AccountsConfigurations;
 
     /**
      * Object that holds the Foreign Exchange Service Type Configurations
      *
      * @Array FxServiceType
      */
-    private ?array $_obj_FxServiceTypeConfig;
+    private array $_obj_FxServiceTypeConfig;
+
+
+    /**
+     * @var Product[]
+     */
+    private array $products;
 
     /**
      * Default Constructor
@@ -78,7 +87,7 @@ class ClientPaymentMetadata
      * @param   ?Array FxServiceType $aObj_FxServiceTypeConfig                          Hold an array of object of Foreign Exchange Service Type Configurations
      * @param   ?Array ClientCountryCurrencyConfig $aObj_ClientCurrencyConfig            Hold Configuration for the client payment route currency
      */
-	public function __construct(?array $aObj_ClientRouteConfig, ?array $aObj_ClientCountryConfig, ?array $aObj_ClientPaymentMethodConfig, ?array $aObj_ClientRouteFeatureConfig, ?array $aObj_AccountsConfigurations, ?array $obj_TransactionTypeConfig, ?array $aObj_CardStateConfig, ?array $aObj_FxServiceTypeConfig, ?array $aObj_ClientCurrencyConfig)
+	public function __construct(array $aObj_ClientRouteConfig, array $aObj_ClientCountryConfig, array $aObj_ClientPaymentMethodConfig, array $aObj_ClientRouteFeatureConfig, array $aObj_AccountsConfigurations, array $obj_TransactionTypeConfig, array $aObj_CardStateConfig, array $aObj_FxServiceTypeConfig, array $aObj_ClientCurrencyConfig, array $products)
 	{
         $this->_obj_ClientRouteConfig = $aObj_ClientRouteConfig;
         $this->_obj_ClientCountryConfig = $aObj_ClientCountryConfig;
@@ -89,6 +98,7 @@ class ClientPaymentMetadata
         $this->_obj_CardStateConfig = $aObj_CardStateConfig;
         $this->_obj_AccountsConfigurations = $aObj_AccountsConfigurations;
         $this->_obj_FxServiceTypeConfig = $aObj_FxServiceTypeConfig;
+        $this->products = $products;
 	}
 
     /**
@@ -291,6 +301,28 @@ class ClientPaymentMetadata
         return $xml;
     }
 
+    /**
+     * Returns the xml string of product list
+     * @return 	String
+     */
+    private function getProductsAsXML() : string
+    {
+        // If not found object Return blank
+        if(count($this->products) === 0) return '';
+
+        $xml = '<products>';
+        foreach ($this->products as $product)
+        {
+            if ( ($product instanceof Product) === true)
+            {
+                $xml .= $product->toXML();
+            }
+        }
+        $xml .= '</products>';
+
+        return $xml;
+    }
+
 	public function toXML() : string
     {
         $xml = '<payment_metadata>';
@@ -303,6 +335,7 @@ class ClientPaymentMetadata
         $xml .= $this->getCardStateAsXML();
         $xml .= $this->getAccountsConfigurationsAsXML();
         $xml .= $this->getFxServiceTypeConfigAsXML();
+        $xml .= $this->getProductsAsXML();
         $xml .= '</payment_metadata>';
         return $xml;
     }
@@ -328,6 +361,7 @@ class ClientPaymentMetadata
         $restrictRequiredData['fx_service']     = !($restrictData['fx_service'] === 'false');
         $restrictRequiredData['account_config']     = !($restrictData['account_config'] === 'false');
         $restrictRequiredData['transaction_type']   = !($restrictData['transaction_type'] === 'false');
+        $restrictRequiredData['products']   = !($restrictData['products'] === 'false');
 
         // If no GET PARAM found,
         if(count($restrictData) === 0) { return $restrictRequiredData; }
@@ -377,6 +411,7 @@ class ClientPaymentMetadata
         $obj_TransactionTypeConfig = array();
         $aObj_CardStateConfig = array();
         $aObj_FxServiceTypeConfig = array();
+        $products = array();
 
         if(empty($clientId) === false)
         {
@@ -418,7 +453,11 @@ class ClientPaymentMetadata
             $aObj_FxServiceTypeConfig = FxServiceType::produceConfig($oDB);
         }
 
-        return new ClientPaymentMetadata($aObj_ClientRouteConfig, $aObj_ClientCountryConfig, $aObj_ClientPaymentMethodConfig, $aObj_ClientRouteFeatureConfig, $aObj_AccountsConfigurations, $obj_TransactionTypeConfig, $aObj_CardStateConfig, $aObj_FxServiceTypeConfig, $aObj_ClientCurrencyConfig);
+        if($restrictData['products'] === true) {
+            $products = Product::produceProducts($oDB, $clientId);
+        }
+
+        return new ClientPaymentMetadata($aObj_ClientRouteConfig, $aObj_ClientCountryConfig, $aObj_ClientPaymentMethodConfig, $aObj_ClientRouteFeatureConfig, $aObj_AccountsConfigurations, $obj_TransactionTypeConfig, $aObj_CardStateConfig, $aObj_FxServiceTypeConfig, $aObj_ClientCurrencyConfig, $products);
     }
 }
 ?>
