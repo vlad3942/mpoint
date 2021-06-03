@@ -1912,7 +1912,7 @@ class General
                     $data['orders'][0]['product-sku'] = (string)$obj_orderDom->{'line-item'}[$j]->product["sku"];
                     $data['orders'][0]['orderref'] = $ticketNumber;
                     $data['orders'][0]['product-name'] = (string)$obj_orderDom->{'line-item'}[$j]->product->name;
-                    $data['orders'][0]['type'] = !empty($obj_orderDom->{'line-item'}[$j]->product->type) ? (string)$obj_orderDom->{'line-item'}[$j]->product->type : '100';
+                    $data['orders'][0]['type'] = (empty($obj_orderDom->{'line-item'}[$j]->product->type) === false) ? (string)$obj_orderDom->{'line-item'}[$j]->product->type : '100';
                     $data['orders'][0]['product-description'] = (string)$obj_orderDom->{'line-item'}[$j]->product->description;
                     $data['orders'][0]['product-image-url'] = (string)$obj_orderDom->{'line-item'}[$j]->product->{'image-url'};
                     $data['orders'][0]['amount'] = (float)$obj_orderDom->{'line-item'}[$j]->amount;
