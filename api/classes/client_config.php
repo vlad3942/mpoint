@@ -363,18 +363,6 @@ class ClientConfig extends BasicConfig
      * @var array
      */
     private $_aAdditionalProperties=array();
-    /**
-     * Configuration for the Products supported for the client.
-     *
-     * @var Array
-     */
-    private $_aObj_Products=array();
-    /**
-     * Configuration for the DR gateways supported for the client.
-     *
-     * @var Array
-     */
-    private $_aObj_DRGateways=array();
 
     /**
      * Setting to enable installment option for merchant:
@@ -458,7 +446,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, $obj_TransactionTypeConfig=NULL)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, $obj_TransactionTypeConfig=NULL)
 	{
 		parent::__construct($id, $name);
 
@@ -517,8 +505,6 @@ class ClientConfig extends BasicConfig
 		$this->_aObj_GoMobileConfigurations = $aObj_GMPs;
 		$this->_obj_CommunicationChannelsConfig = $obj_CCConfig;
 		$this->_aAdditionalProperties=$aAdditionalProperties;
-		$this->_aObj_Products=$aProducts;
-		$this->_aObj_DRGateways=$aDRGateways;
 		$this->_iInstallment = (integer) $installment;
 		$this->_iMaxInstallments = (integer) $maxInstallments;
 		$this->_iInstallmentFrequency = (integer) $installmentFrequency;
@@ -628,22 +614,7 @@ class ClientConfig extends BasicConfig
         }
         return $this->_obj_CommunicationChannelsConfig;
     }
-    
 
-    /**
-     * Returns the array of Products supported for the client
-     *
-     * @return 	array
-     */
-    public function getProducts(){ return $this->$_aObj_Products; }
-    
-    /**
-     * Returns the array of DR gateways supported for the client
-     *
-     * @return 	array
-     */
-    public function getDRGateways(){ return $this->$_aObj_DRGateways; }
-    
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 *
@@ -1221,24 +1192,6 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getIINRangesConfigAsXML($oDB);
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
-		
-		$xml .= '<products>';
-		foreach ($this->_aObj_Products as $aObj_Product)
-		{
-			$xml .= '<product id="'.$aObj_Product['id'].'" code="'.$aObj_Product['code'].'" name="'.$aObj_Product['name'].'" />';
-		}
-		$xml .= '</products>';
-		
-
-		$xml .= '<dynamic-routing-gateways>';
-		foreach ($this->_aObj_DRGateways as $aObj_DRGateway)
-		{
-			$enabled = 0 ;
-			if($aObj_DRGateway['enabled'] ==1)
-				$enabled = $aObj_DRGateway['enabled'];
-			$xml .= '<gateway id="'.$aObj_DRGateway['id'].'" name="'.$aObj_DRGateway['name'].'" enabled="'.$enabled.'" />';
-		}
-		$xml .= '</dynamic-routing-gateways>';
         $xml .= '<additional-config>';
         foreach ($this->getAdditionalProperties($propertyScope) as $aAdditionalProperty)
         {
@@ -1311,12 +1264,11 @@ class ClientConfig extends BasicConfig
 					CL.identification, CL.transaction_ttl, CL.num_masked_digits, CL.salt,CL.secretkey,CL.communicationchannels AS channels, CL.installment, CL.max_installments, CL.installment_frequency,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup, Acc.businesstype, 
-					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
+					KW.id AS keywordid, KW.name AS keyword
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
 				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Keyword_Tbl KW ON CL.id = KW.clientid AND KW.enabled = '1'
-				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'	
                 WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -1364,7 +1316,7 @@ class ClientConfig extends BasicConfig
 		{
 			$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"], array(),$RS["BUSINESSTYPE"]);
-			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
+			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], 0);
 			$aObj_AccountsConfigurations = NULL;//AccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientMerchantAccountConfigurations = NULL;//ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientCardsAccountConfigurations = NULL;//ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
@@ -1471,39 +1423,8 @@ class ClientConfig extends BasicConfig
                 	$aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
                 }
             }
-            
-            
-            //Adding Products supported for the client
-            
-            $sql = "SELECT pt.id,pt.name FROM Client". sSCHEMA_POSTFIX .".producttype_tbl tp JOIN System". sSCHEMA_POSTFIX .".producttype_tbl pt ON (tp.productid = pt.id) WHERE clientid =". intval($id)  ;        
-            $aRS = $oDB->getAllNames($sql);
-            $aProducts = array();
-            if (is_array($aRS) === true && count($aRS) > 0)
-            {
-            	for ($i=0; $i<count($aRS); $i++)
-            	{
-            		$aProducts[$i]["id"] =$aRS[$i]["ID"];
-            		//$aProducts[$i]["code"] = $aRS[$i]["CODE"];
-            		$aProducts[$i]["name"] = $aRS[$i]["NAME"];
-            	}
-            }
-            
-            $sql = "SELECT gatewayid AS id,pt.name AS name,gt.status AS enabled FROM client". sSCHEMA_POSTFIX .".gatewaytrigger_tbl gt JOIN system". sSCHEMA_POSTFIX .".psp_tbl pt ON (gt.gatewayid = pt.id) WHERE gt.enabled = '1' AND clientid = ".intval($id);
-            //echo $sql;
-            $aRS = $oDB->getAllNames($sql);
-            
-            $aDRGateways= array();
-            if (is_array($aRS) === true && count($aRS) > 0)
-            {
-            	for ($i=0; $i<count($aRS); $i++)
-            	{
-            		$aDRGateways[$i]["id"] =$aRS[$i]["ID"];
-            		$aDRGateways[$i]["name"] = $aRS[$i]["NAME"];
-            		$aDRGateways[$i]["enabled"] = $aRS[$i]["ENABLED"];
-            	}
-            }
-            
-            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts,$aDRGateways,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig);
+
+            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
