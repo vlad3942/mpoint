@@ -54,7 +54,24 @@ if(isset($_REQUEST['tickernumbers']))
 	$ticketNumbers = $_REQUEST['tickernumbers'];
 }
 
-$status = $_REQUEST['status'];
+$status = (int)$_REQUEST['status'];
+
+/**
+ * Partial State are not scoped for SWA-UATP
+ */
+switch ($status)
+{
+    CASE Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+        $status = Constants::iPAYMENT_CAPTURED_STATE;
+        break;
+    CASE Constants::iPAYMENT_PARTIALLY_CANCELLED_STATE;
+        $status = Constants::iPAYMENT_CANCELLED_STATE;
+        break;
+    CASE Constants::iPAYMENT_PARTIALLY_REFUNDED_STATE;
+        $status = Constants::iPAYMENT_REFUNDED_STATE;
+        break;
+}
+
 
 $sPassbookStatus = 'done';
 if($status == Constants::iPAYMENT_CAPTURE_FAILED_STATE || $status == Constants::iPAYMENT_CANCEL_FAILED_STATE || $status == Constants::iPAYMENT_REFUND_FAILED_STATE) { $sPassbookStatus = 'error'; }
