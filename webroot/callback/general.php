@@ -210,7 +210,7 @@ try
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
-    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, (int)$obj_XML->callback->{"psp-config"}["id"]);
+    $obj_PSPConfig = null;
 
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
@@ -389,6 +389,13 @@ try
         $fee = 0;
         $sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
         $authOriginalData = (string) $obj_XML->callback->{'auth-original-data'};
+
+         if( $iStateID === Constants::iPAYMENT_PENDING_STATE ||
+             ($obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE  && $iStateID === Constants::iPAYMENT_ACCEPTED_STATE))
+         {
+             $obj_mPoint->getTxnInfo()->setExternalId($obj_XML->callback->transaction["external-id"]);
+             $obj_mPoint->generate_receipt();
+         }
         $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
             $obj_XML->callback->transaction["external-id"],
             (integer)$obj_XML->callback->transaction->card["type-id"],
@@ -740,6 +747,9 @@ try
                 }
             }
         }
+
+
+
       }
 
       $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};

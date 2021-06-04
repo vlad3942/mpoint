@@ -117,7 +117,6 @@ require_once(sCLASS_PATH ."/googlepay.php");
 
 // Require specific Business logic for the PPro component
 require_once(sCLASS_PATH ."/ppro.php");
-require_once(sCLASS_PATH ."/bre.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
@@ -139,7 +138,6 @@ require_once(sCLASS_PATH ."/cellulant.php");
 
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
-require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the cybs component

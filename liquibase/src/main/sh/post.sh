@@ -126,7 +126,6 @@ GRANT SELECT ON TABLE client.additionalproperty_tbl TO repuser;
 GRANT SELECT ON TABLE client.cardaccess_tbl TO repuser;
 GRANT SELECT ON TABLE client.client_tbl TO repuser;
 GRANT SELECT ON TABLE client.countrycurrency_tbl TO repuser;
-GRANT SELECT ON TABLE client.gatewaytrigger_tbl TO repuser;
 GRANT SELECT ON TABLE client.iinlist_tbl TO repuser;
 GRANT SELECT ON TABLE client.keyword_tbl TO repuser;
 GRANT SELECT ON TABLE client.merchantaccount_tbl TO repuser;
