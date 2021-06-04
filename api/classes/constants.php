@@ -244,6 +244,22 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Captured
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_CAPTURED_STATE = 2201;
+	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Cancelled
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_CANCELLED_STATE = 2202;
+	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Refunded
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_REFUNDED_STATE = 2203;
+
+	/**
 	 * Defines the ID of the State that indicates that Card is not enrolled for 3DS by Issuer
 	 *
 	 */
@@ -1849,6 +1865,31 @@ abstract class Constants
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
     const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
 
+	/**
+	 * Define the hard decline sub-codes which belongs to 20103XX series.
+	 *
+	 */
+
+	const iPAYMENT_CANCELLED = 2010305;
+	const iDUPLICATE_TXN = 2010310;
+	const iTXN_REJECTED_ISSUER = 2010314;
+	const iEMI_UNAVAILABLE = 2010315;
+	const iVOID_NOT_SUPPORTED = 2010316;
+	const iCAPTURED_ALREADY = 2010317;
+	const iINVALID_CAPTURE = 2010319;
+	const iRECURRING_NOT_SUPPORTED = 2010321;
+	const iSTORED_CARD_DISABLED = 2010322;
+	const iTXN_GENERATION_FAIL = 2010325;
+	const iINSTALLMENT_DISABLED = 2010326;
+	const iTICKET_ISSUE_FAIL = 2010327;
+	const iCUP_SIGN_FAIL = 2010328;
+	const iISSUE_BANK_UNAVAILABLE = 2010330;
+	const iTXN_EXCEED_LIMIT = 2010331;
+	const iUNVOIDABLE = 2010332;
+	const iUNREFUNDABLE = 2010333;
+	const iAMOUNT_LIMIT_EXCEEDS = 2010334;
+	const iNO_RESPONSE = 2010335;
+
    /*
     * Defines unique ID of the State that indicates payment decline due to
     * authentication failed
@@ -1955,6 +1996,15 @@ abstract class AutoCaptureType
    * Auto-Capture flag for mPoint to perform batch-capture
    */
 	const eBatchCapt = 4;
+	/*
+   * Auto-Capture flag for mPoint to perform ticket level manual-capture
+   */
+	const eTicketLevelManualCapt = 5;
+	/*
+   * Auto-Capture flag for mPoint to perform ticket level auto-capture
+   */
+	const eTicketLevelAutoCapt = 6;
+
 }
 abstract class UserType
 {
