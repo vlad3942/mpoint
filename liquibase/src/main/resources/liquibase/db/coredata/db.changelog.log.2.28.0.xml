@@ -6,32 +6,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
     objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
-    <changeSet author="Kalpesh Parikh"
-               id="2021-05-21-setup-v2.28-log-1">
-
-        <addColumn catalogName="log"
-                   schemaName= "log"
-                   tableName="order_tbl" >
-            <column name="type"
-                    type="int"
-                    remarks="type of the product"
-                    defaultValue="100" />
-        </addColumn>
-
-        <addForeignKeyConstraint
-                baseColumnNames="type"
-                baseTableCatalogName="log"
-                baseTableName="order_tbl"
-                baseTableSchemaName="log"
-                constraintName="order2producttypeid_fk"
-                onDelete="RESTRICT"
-                onUpdate="CASCADE"
-                referencedColumnNames="id"
-                referencedTableCatalogName="system"
-                referencedTableName="producttype_tbl"
-                referencedTableSchemaName="system" />
-    </changeSet>
-
     <changeSet author="Priya Alamwar"
                id="2021-05-26-setup-v2.26-log">
 
