@@ -32,4 +32,26 @@
                 referencedTableSchemaName="system" />
     </changeSet>
 
+    <changeSet author="Kalpesh Parikh"
+               id="2021-06-04-setup-v2.28-log-2">
+
+        <modifyDataType  catalogName="Log"
+                         columnName="description"
+                         newDataType="varchar(100)"
+                         schemaName="Log"
+                         tableName="billing_summary_tbl"/>
+
+        <modifyDataType  catalogName="Log"
+                         columnName="product_code"
+                         newDataType="varchar(50)"
+                         schemaName="Log"
+                         tableName="billing_summary_tbl"/>
+
+        <modifyDataType  catalogName="Log"
+                         columnName="product_category"
+                         newDataType="varchar(50)"
+                         schemaName="Log"
+                         tableName="billing_summary_tbl"/>
+    </changeSet>
+
 </databaseChangeLog>
