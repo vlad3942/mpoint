@@ -38,4 +38,21 @@
 
     </changeSet>
 
+    <changeSet author="Amar kumar"
+               id="2021-06-04-setup-v2.26-log">
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2010335"/>
+            <column name="name" value="No Response"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value="completeTransaction"/>
+        </insert>
+
+    </changeSet>
+
+
+
 </databaseChangeLog>

@@ -1888,6 +1888,7 @@ abstract class Constants
 	const iUNVOIDABLE = 2010332;
 	const iUNREFUNDABLE = 2010333;
 	const iAMOUNT_LIMIT_EXCEEDS = 2010334;
+	const iNO_RESPONSE = 2010335;
 
    /*
     * Defines unique ID of the State that indicates payment decline due to
