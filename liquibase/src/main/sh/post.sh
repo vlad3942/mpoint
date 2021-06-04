@@ -144,7 +144,8 @@ GRANT SELECT ON TABLE client.routeconfig_tbl TO repuser;
 GRANT SELECT ON TABLE client.routecountry_tbl TO repuser;
 GRANT SELECT ON TABLE client.routecurrency_tbl TO repuser;
 GRANT SELECT ON TABLE client.routefeature_tbl TO repuser;
-GRANT SELECT ON TABLE system.routefeature_tbl TO repuser;"
+GRANT SELECT ON TABLE system.routefeature_tbl TO repuser;
+GRANT SELECT ON TABLE log.address_tbl TO repuser;"
 
 
 
