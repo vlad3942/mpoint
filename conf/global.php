@@ -1183,6 +1183,7 @@ $aHTTP_CONN_INFO["safetypay"]["paths"]["refund"] = "/mpoint/aggregator/safetypay
 $aHTTP_CONN_INFO["safetypay"]["paths"]["cancel"] = "/mpoint/aggregator/safetypay/void";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["status"] = "/mpoint/aggregator/safetypay/status";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/safetypay/get-payment-methods";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["generate-receipt"] = "/mpoint/generate-receipt";
 
 /**
  * Connection info for connecting to Paymaya-Acq
