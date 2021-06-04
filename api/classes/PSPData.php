@@ -15,11 +15,11 @@ use JsonSerializable;
 
 class PSPData implements JsonSerializable
 {
-    public int $id;
+    private int $id;
 
-    public ?string $name;
+    private ?string $name;
 
-    public ?string $external_id;
+    private ?string $external_id;
 
     /**
      * PSPData constructor.

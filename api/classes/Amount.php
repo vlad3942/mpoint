@@ -20,11 +20,11 @@ use JsonSerializable;
  */
 class Amount implements JsonSerializable
 {
-    public int $value;
+    private int $value;
 
-    public int $currency_id;
+    private int $currency_id;
 
-    public float $conversion_rate;
+    private float $conversion_rate;
 
     /**
      * Amount constructor.

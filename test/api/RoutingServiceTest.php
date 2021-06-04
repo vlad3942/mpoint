@@ -338,6 +338,43 @@ class RoutingServiceTest extends baseAPITest
         }
     }
 
+    public function testToAttributeLessOrderDataXML()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '1513-2001', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, extid, orderid, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001,". Constants::iPURCHASE_VIA_APP .", 10099, 1100, 100, '1515', '1513-2001',  5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('FCTxnID', '243001', 'Transaction','1001001')");
+        $this->queryDB("INSERT INTO Log.Order_Tbl (id, orderref, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees) VALUES (10, 'SOCGN6', 1001001, 100, 100, 1, '103-1418291', 'return journey', 'return journey', 'https://www.cpm.com', 300, 1, 0);");
+        $this->queryDB("INSERT INTO Log.Flight_Tbl (id, service_class,mkt_flight_number, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone) VALUES (10, 'X', '1850', 'CEB', 'MNL', 'PR', '10', '2020-05-23 13:55:00', '2020-05-23 12:40:00', '1', '2', '3', 200, 200, '+08:30')");
+        $this->queryDB("INSERT INTO log.passenger_tbl (id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id, amount, seq) VALUES (24, 'dan', 'dan', 'ADT', 10, '2021-04-09 13:06:23.420245', '2021-04-09 13:06:23.420245', 'Mr', 'dan@dan.com', '9187231231', '640', 0, 1)");
+        $this->queryDB("INSERT INTO log.additional_data_tbl (id, name, value, type, created, modified, externalid) VALUES (109, 'loyality_id', '345rtyu', 'Passenger', '2021-04-09 13:06:23.406019', '2021-04-09 13:06:23.406019', 24);");
+        $this->queryDB("INSERT INTO log.billing_summary_tbl (id, order_id, journey_ref, bill_type, description, amount, currency, created, modified, profile_seq, trip_tag, trip_seq, product_code, product_category, product_item) VALUES (45, 10, '', 'Fare', 'adult', '60', 'PHP', '2021-04-09 13:06:23.336965', '2021-04-09 13:06:23.336965', 1, 0, 0, 'ABF', 'FARE', 'Base fare for adult')");
+        $this->queryDB("INSERT INTO log.billing_summary_tbl (id, order_id, journey_ref, bill_type, description, amount, currency, created, modified, profile_seq, trip_tag, trip_seq, product_code, product_category, product_item) VALUES (46, 10, '', 'Add-on', 'adult', '60', 'PHP', '2021-04-09 13:06:23.353398', '2021-04-09 13:06:23.353398', 1, 2, 2, 'ABF', 'FARE', 'Base fare for adult')");
+
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+
+        $obj_TxnInfo = TxnInfo::produceInfo(1001001, $this->_OBJ_DB);
+        $obj_TxnInfo->produceOrderConfig($this->_OBJ_DB);
+        $obj_ClientInfo = ClientInfo::produceInfo(simpledom_load_string($this->getClientInfo()), CountryConfig::produceConfig($this->_OBJ_DB, 10), '0.0.0.0');
+
+        $this->_aHTTP_CONN_INFO['routing-service']['port'] = '';
+        $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], 10099, 100, 208, 5000);
+
+        if($obj_RS instanceof RoutingService)
+        {
+            $getMockMethod = self::getReflectionMethod('RoutingService', 'toAttributeLessOrderDataXML');
+            self::assertEquals("<orders><line_item><product><name>return journey</name><sku>103-1418291</sku><description>return journey</description><airline_data><flight_details><flight_detail><tag>1</tag><trip_count>2</trip_count><service_level>3</service_level><service_class>X</service_class><departure_date>2020-05-23T12:40:00Z</departure_date><arrival_date>2020-05-23T01:55:00Z</arrival_date><departure_country>200</departure_country><arrival_country>200</arrival_country><departure_airport><iata>CEB</iata></departure_airport><arrival_airport><iata>MNL</iata></arrival_airport><time_zone>+08:30</time_zone></flight_detail></flight_details><billing_summary><fare_detail><fare><profile_seq>1</profile_seq><description>adult</description><currency>PHP</currency><amount>60</amount><product_code>ABF</product_code><product_category>FARE</product_category><product_item>Base fare for adult</product_item></fare></fare_detail><add_ons><add_on><profile_seq>1</profile_seq><trip_tag>2</trip_tag><trip_seq>2</trip_seq><description>adult</description><currency>PHP</currency><amount>60</amount><product_code>ABF</product_code><product_category>FARE</product_category><product_item>Base fare for adult</product_item></add_on></add_ons></billing_summary></airline_data></product></line_item><amount><country_id>100</country_id><value>100</value></amount></orders>", $getMockMethod->invoke($obj_RS));
+        }else
+        {
+            self::assertTrue(false);
+        }
+
+    }
+
     public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();

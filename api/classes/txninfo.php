@@ -2101,6 +2101,7 @@ class TxnInfo
 				else
 				{
 					$additional_id = $RS["ID"];
+					$this->_aAdditionalData[$name] = $value;
 				}
 			}	
 			return $additional_id;	
@@ -2660,6 +2661,11 @@ class TxnInfo
 			$this->_iPSPID = $pspId;
 
 		}
+	}
+
+	public function setExternalId(string $sExternalID)
+	{
+		$this->_sExternalID = $sExternalID;
 	}
 }
 ?>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Sagar Narayane"
+               id="2021-06-02-client-v2.28-pre-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            DROP EVENT TRIGGER IF EXISTS no_ddl_allowed
+        </sql>
+    </changeSet>
+
+    <changeSet author="Sagar Narayane" id="2021-06-02-v2.28.0-client-drop-tables">
+
+        <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="product_tbl"/>
+        <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="producttype_tbl"/>
+        <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="gatewaystat_tbl"/>
+        <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="gatewaytrigger_tbl"/>
+
+    </changeSet>
+
+    <changeSet author="Sagar Narayane" id="2021-06-01-setup-v2.28.0-client">
+
+        <createTable catalogName="client"
+                     schemaName="client"
+                     tableName="product_tbl"
+                     remarks="Client specific product list">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="code"
+                    type="varchar(20)"
+                    remarks="Product Code">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description"
+                    type="varchar(200)"
+                    remarks="Product Description">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="clientid"
+                    type="int"
+                    remarks="Client Id">
+                <constraints nullable="false"
+                             foreignKeyName="client_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="client"
+                             referencedTableName="client_tbl"
+                             referencedTableSchemaName="client"/>
+            </column>
+
+            <column name="producttypeid"
+                    type="int"
+                    remarks="Product Category Id">
+                <constraints nullable="false"
+                             foreignKeyName="product_type_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="system"
+                             referencedTableName="producttype_tbl"
+                             referencedTableSchemaName="system"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating whether entry is enabled or not"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createIndex catalogName="client"
+                     schemaName="client"
+                     tableName="product_tbl"
+                     indexName="product_tbl_id_idx">
+            <column name="id"/>
+        </createIndex>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.Product_tbl OWNER TO mpoint;
+            CREATE TRIGGER Update_Product_tbl BEFORE UPDATE ON Client.Product_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="product_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <!-- Recreate event trigger to disable changes to replicated tables -->
+    <changeSet author="Sagar Narayane"
+               id="2021-06-02-client-v2.28-post-process">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE EVENT TRIGGER no_ddl_allowed ON ddl_command_end
+            WHEN TAG IN ('ALTER TABLE')
+            EXECUTE FUNCTION public.no_ddl()
+        </sql>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER EVENT TRIGGER no_ddl_allowed OWNER TO postgres
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
