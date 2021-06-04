@@ -48,7 +48,7 @@
             <column name="id" value="2010335"/>
             <column name="name" value="No Response"/>
             <column name="module" value="sub-code"/>
-            <column name="func" value="''"/>
+            <column name="func" value="completeTransaction"/>
         </insert>
 
     </changeSet>
