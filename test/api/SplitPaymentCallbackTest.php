@@ -125,7 +125,6 @@ class SplitPaymentCallbackTest extends baseAPITest
 
     public function testSuccessfulCallbackVoucherIdNotSet()
     {
-        $this->markTestIncomplete('Temporary disabling the test case, as its getting pass on local but fail on jenkins.');
         $pspID = Constants::iDSB_PSP;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
 
@@ -167,7 +166,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         }
 
-        $this->assertCount(9, $aStates);  // Strange: Sometime it's return 6 and sometime it return 9.
+        $this->assertCount(2, $aStates);
         $this->assertTrue(is_int(array_search(2000, $aStates)));
 
         $res = $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001001 and status= 'done' and performedopt=2000 ");
