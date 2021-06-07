@@ -12,6 +12,7 @@
 namespace api\classes;
 
 use JsonSerializable;
+use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * Class TransactionData
@@ -98,6 +99,8 @@ class TransactionData implements JsonSerializable
     private string $fraud_status_code;
 
     private string $fraud_status_desc;
+
+    private int $route_config_id;
 
     /**
      * TransactionData constructor.
@@ -334,5 +337,21 @@ class TransactionData implements JsonSerializable
     public function setFraudStatusDesc(string $fraud_status_desc): void
     {
         $this->fraud_status_desc = $fraud_status_desc;
+    }
+
+    /**
+     * @param int $fraud_status_desc
+     */
+    public function setRouteConfigId(int $route_config_id): void
+    {
+        $this->route_config_id = $route_config_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSRouteConfigId(): int
+    {
+        return $this->route_config_id;
     }
 }

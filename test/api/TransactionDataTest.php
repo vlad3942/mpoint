@@ -150,4 +150,10 @@ class TransactionDataTest extends baseAPITest
         $this->transactionData->setFraudStatusDesc("reject");
         $this->assertStringContainsString('"fraud_status_desc":"reject"}', json_encode($this->transactionData));
     }
+
+    public function testSetRouteConfigId()
+    {
+        $this->transactionData->setRouteConfigId(1);
+        $this->assertStringContainsString('"route_config_id":1}', json_encode($this->transactionData));
+    }
 }

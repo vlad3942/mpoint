@@ -1504,6 +1504,7 @@ abstract class Callback extends EndUserAccount
 
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
 
+        $transactionData->setRouteConfigId($txnInfo->getRouteConfigID());
         $transactionData->setFee($txnInfo->getFee());
         $transactionData->setDescription($txnInfo->getDescription());
         $transactionData->setHmac($txnInfo->getHMAC());
