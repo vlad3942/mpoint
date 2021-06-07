@@ -339,7 +339,7 @@ class TransactionData implements JsonSerializable
     }
 
     /**
-     * @param int $fraud_status_desc
+     * @param int $route_config_id
      */
     public function setRouteConfigId(int $route_config_id): void
     {
