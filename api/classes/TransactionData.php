@@ -12,7 +12,6 @@
 namespace api\classes;
 
 use JsonSerializable;
-use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * Class TransactionData
