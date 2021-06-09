@@ -2014,7 +2014,7 @@
 		<xs:extension base="xs:string">
 			<xs:attribute name="external-id" type="xs:string" use="required" />
 			<xs:attribute name="country-id" type="xs:string" use="required" />
-			<xs:attribute name="time-zone" type="xs:string" use="required" />
+			<xs:attribute name="time-zone" type="xs:string" use="optional" />
 			<xs:attribute name="terminal" type="xs:string" use="optional" />
 			<xs:attribute name="type-id" use="optional" type="xs:string"/>
 		</xs:extension>
