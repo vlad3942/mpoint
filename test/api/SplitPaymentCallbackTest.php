@@ -183,7 +183,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         }
 
-        $this->assertEquals(1, pg_num_rows($res));
+        $this->assertTrue( count($aStates) === 1);
         $this->assertTrue(is_int(array_search(1000, $aStates)));
     }
 
