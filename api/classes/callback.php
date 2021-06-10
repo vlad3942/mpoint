@@ -485,7 +485,7 @@ abstract class Callback extends EndUserAccount
 			$txnId = $this->_obj_TxnInfo->getID();
 			/* ----- Construct Body Start ----- */
 			// check legacy callback flow to follow or cpds callback flow
-			$checkLeagcyCallback = "true";//$this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY_CALLBACK_FLOW');
+			$checkLeagcyCallback = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY_CALLBACK_FLOW');
 			if(strtolower($checkLeagcyCallback) == 'true') {
 				$sBody = "";
 				$sBody .= "mpoint-id=" . $txnId;
@@ -1071,7 +1071,7 @@ abstract class Callback extends EndUserAccount
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
 			// check legacy callback flow to follow or cpds callback flow
-            $checkLeagcyCallback = "true";//$this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY_CALLBACK_FLOW');
+            $checkLeagcyCallback = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY_CALLBACK_FLOW');
 			if (strtolower($checkLeagcyCallback) == 'true') {
 				$checkSessionCallback = $sessionObj->checkSessionCompletion();
 				if (empty($checkSessionCallback) === TRUE && $this->getTxnInfo()->getCallbackURL() != '') {
