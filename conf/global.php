@@ -41,7 +41,7 @@ define("sERROR_LOG", sLOG_PATH ."app_error_".".log");
 /**
  * Offline Payment Methods Card and PSP id mapping
  */
-define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM));
+define("OfflinePaymentCardPSPMapping", array(Constants::iCEBUPAYMENTCENTEROFFLINE => Constants::iCEBUPAYMENTCENTER_APM,Constants::iBOLETO => Constants::iSAFETYPAY_AGGREGATOR,Constants::iEFECTY => Constants::iSAFETYPAY_AGGREGATOR,Constants::iBANCODEBOGATA => Constants::iSAFETYPAY_AGGREGATOR));
 
 /**
  * Online Payment Methods Card and PSP id mapping
@@ -1183,6 +1183,7 @@ $aHTTP_CONN_INFO["safetypay"]["paths"]["refund"] = "/mpoint/aggregator/safetypay
 $aHTTP_CONN_INFO["safetypay"]["paths"]["cancel"] = "/mpoint/aggregator/safetypay/void";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["status"] = "/mpoint/aggregator/safetypay/status";
 $aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/safetypay/get-payment-methods";
+$aHTTP_CONN_INFO["safetypay"]["paths"]["generate-receipt"] = "/mpoint/generate-receipt";
 
 /**
  * Connection info for connecting to Paymaya-Acq

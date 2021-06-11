@@ -133,8 +133,6 @@
 										<xs:element type="xs:string" name="issuer-identification-number-ranges"/>
 										<xs:element type="xs:string" name="salt"/>
 										<xs:element type="xs:string" name="secret-key"/>
-										<xs:element type="xs:string" name="products"/>
-										<xs:element type="xs:string" name="dynamic-routing-gateways"/>
 										<xs:element type="xs:string" name="additional-config"/>
 										<xs:element type="xs:nonNegativeInteger" name="decimal" />
 										<xs:element name="transaction-types" minOccurs="0" maxOccurs="1">

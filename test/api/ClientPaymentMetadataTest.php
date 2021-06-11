@@ -107,6 +107,26 @@ class ClientPaymentMetadataTest extends baseAPITest
         $this->assertStringContainsString('<payment_metadata><payment_methods><payment_method><id>1</id><type_id>1</type_id><name>American Express</name></payment_method><payment_method><id>2</id><type_id>1</type_id><name>Dankort</name></payment_method><payment_method><id>3</id><type_id>1</type_id><name>Diners Club</name></payment_method><payment_method><id>5</id><type_id>1</type_id><name>JCB</name></payment_method><payment_method><id>6</id><type_id>1</type_id><name>Maestro</name></payment_method><payment_method><id>7</id><type_id>1</type_id><name>Master Card</name></payment_method><payment_method><id>8</id><type_id>1</type_id><name>VISA</name></payment_method><payment_method><id>9</id><type_id>1</type_id><name>VISA Electron</name></payment_method><payment_method><id>12</id><type_id>1</type_id><name>Switch</name></payment_method><payment_method><id>13</id><type_id>1</type_id><name>Solo</name></payment_method><payment_method><id>14</id><type_id>1</type_id><name>Delta</name></payment_method><payment_method><id>15</id><type_id>3</type_id><name>Apple Pay</name></payment_method><payment_method><id>16</id><type_id>3</type_id><name>VISA Checkout</name></payment_method><payment_method><id>22</id><type_id>1</type_id><name>Discover</name></payment_method><payment_method><id>23</id><type_id>3</type_id><name>Master Pass</name></payment_method><payment_method><id>25</id><type_id>3</type_id><name>AMEX Express Checkout</name></payment_method><payment_method><id>27</id><type_id>3</type_id><name>Android Pay</name></payment_method><payment_method><id>41</id><type_id>3</type_id><name>Google Pay</name></payment_method></payment_methods></payment_metadata>', $xml);
     }
 
+    public function testGetProducts()
+    {
+        $this->queryDB('INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, \'Test Client\', \'Tuser\', \'Tpass\')');
+        $this->queryDB('INSERT INTO Client.Product_tbl (id, code, description, producttypeid, clientid, enabled) VALUES (1, \'P1\', \'Product1\', 100, 10099, true)');
+        $this->queryDB('INSERT INTO Client.Product_tbl (id, code, description, producttypeid, clientid, enabled) VALUES (2, \'P2\', \'Product2\', 200, 10099, true)');
+        $this->queryDB('INSERT INTO Client.Product_tbl (id, code, description, producttypeid, clientid, enabled) VALUES (3, \'P3\', \'Product2\', 200, 10099, false)');
+
+
+        $requestParam = array('products' => 'true');
+        $obj_Config = ClientPaymentMetadata::produceConfig($this->_OBJ_DB, 10099, $requestParam);
+        $this->assertInstanceOf(ClientPaymentMetadata::class, $obj_Config);
+        $xml = '';
+        if ($obj_Config instanceof ClientPaymentMetadata)
+        {
+            $xml = $obj_Config->toXML();
+        }
+
+        $this->assertStringContainsString('<payment_metadata><products><product><id>1</id><code>P1</code><description>Product1</description><product_category_id>100</product_category_id><enabled>true</enabled></product><product><id>2</id><code>P2</code><description>Product2</description><product_category_id>200</product_category_id><enabled>true</enabled></product><product><id>3</id><code>P3</code><description>Product2</description><product_category_id>200</product_category_id><enabled>false</enabled></product></products></payment_metadata>', $xml);
+    }
+
     public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();

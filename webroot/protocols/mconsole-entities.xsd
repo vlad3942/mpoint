@@ -1380,22 +1380,6 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="products" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="product" type="product" minOccurs="0"
-							maxOccurs="unbounded" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="dynamic-routing-gateways" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="gateway" type="gateway" minOccurs="0"
-							maxOccurs="unbounded" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
 			<xs:element name="additional-config" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>

@@ -137,7 +137,6 @@ require_once(sINTERFACE_PATH ."/voidable.php");
 require_once(sINTERFACE_PATH ."/redeemable.php");
 require_once(sINTERFACE_PATH ."/invoiceable.php");
 
-require_once(sCLASS_PATH ."post_auth_action.php");
 require_once(sCLASS_PATH ."/crs/TransactionTypeConfig.php");
 
 // Require specific Business logic for the Status component
