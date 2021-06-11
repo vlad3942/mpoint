@@ -1078,12 +1078,15 @@ class Home extends General
                          }
 
                          $xml .= '</transaction>';
-                         $linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-                         $xml .= "<payment_status>".General::getPaymentStatus($this->getDBConn(),$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
-                         // add linked transaction
-                         if($linkedTxnId !== null ){
-                            $getLinkedTxns     = General::getLinkedTransactions($this->getDBConn(),$linkedTxnId,$obj_TxnInfo->getID());
-                            $xml               .= $getLinkedTxns;
+                         if($index == 0) {
+                             // this needs to be added only for parent txn
+                             $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                             $xml .= "<payment_status>" . General::getPaymentStatus($this->getDBConn(), $obj_TxnInfo->getID(), $linkedTxnId) . "</payment_status>";
+                             // add linked transaction
+                             if ($linkedTxnId !== null) {
+                                 $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID());
+                                 $xml .= $getLinkedTxns;
+                             }
                          }
 
                          if ( ($objCountryConf instanceof CountryConfig) === true)
