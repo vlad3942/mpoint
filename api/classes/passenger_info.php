@@ -233,14 +233,14 @@ class PassengerInfo {
 	}
 	
 	public function getAdditionalDataArr($aDataArr) {
-		$Axml = '<param name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</param>';
+		$Axml = '<param name="' . $aDataArr ["NAME"] . '">' . htmlspecialchars($aDataArr ["VALUE"]) . '</param>';
 		return $Axml;
 	}
 
     public function getAdditionalDataAttributeLess($aDataArr) {
         $Axml = '<param>';
         $Axml .=  '<name>'. $aDataArr ["NAME"] . '</name>';
-        $Axml .=  '<value>'. $aDataArr ["VALUE"] . '</value>';
+        $Axml .=  '<value>'. htmlspecialchars($aDataArr ["VALUE"]) . '</value>';
         $Axml .= '</param>';
         return $Axml;
     }
