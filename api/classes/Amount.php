@@ -24,6 +24,10 @@ class Amount implements JsonSerializable
 
     private int $currency_id;
 
+    private int $decimals;
+
+    private string $alpha3code;
+
     private float $conversion_rate;
 
     /**
@@ -31,13 +35,17 @@ class Amount implements JsonSerializable
      *
      * @param int $value
      * @param int $currency_id
+     * @param int $decimals
+     * @param string $code
      * @param float|null $conversion_rate
      */
-    public function __construct(int $value, int $currency_id, ?float $conversion_rate = NULL)
+    public function __construct(int $value, int $currency_id,int $decimals, string $code,?float $conversion_rate = NULL)
     {
         if($value > 0 && $currency_id > 0) {
             $this->value = $value;
             $this->currency_id = $currency_id;
+            $this->decimals = $decimals;
+            $this->alpha3code = $code;
             if (empty($conversion_rate) === false){
                 $this->conversion_rate = $conversion_rate;
             }
