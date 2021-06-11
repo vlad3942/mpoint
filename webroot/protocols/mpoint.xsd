@@ -1353,6 +1353,7 @@
 								<xs:restriction base="xs:string">
 									<xs:enumeration value="{CURRENCY}{PRICE}" />
 									<xs:enumeration value="{PRICE} {CURRENCY}" />
+									<xs:enumeration value="" />
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -1740,6 +1741,14 @@
 			<xs:element type="xs:string" name="service-level" minOccurs="1" maxOccurs="1" />
 			<xs:element ref="transportation" minOccurs="1" maxOccurs="1" />
 			<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+			<xs:element name="traffic-info" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:anyAttribute processContents="lax" />
+				</xs:complexType>
+			</xs:element>
 		</xs:all>
 		<xs:attribute name="tag" use="required" type="xs:positiveInteger"/>
 		<xs:attribute name="seq" use="required" type="xs:nonNegativeInteger"/>
@@ -1774,13 +1783,16 @@
 			<xs:element type="xs:positiveInteger" name="seq" minOccurs="0" maxOccurs="1" />
 			<xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
 			<xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+			<xs:element type="xs:string" name="middle-name" minOccurs="1"  maxOccurs="1" />
 			<xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
+			<xs:element name="date-of-birth" type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+		<xs:attribute name="external-id" use="optional" type="xs:string"/>
 	</xs:complexType>
 </xs:element>
 
