@@ -1809,6 +1809,7 @@
 		</xs:sequence>
 		<xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
 		<xs:attribute name="profileId" use="optional" type="xs:positiveInteger"/>
+		<xs:attribute name="external-id" use="optional" type="xs:string"/>
 	</xs:complexType>
 </xs:element>
 
