@@ -135,6 +135,7 @@ class CallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, ".$pspID.", '1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, capture_type) VALUES (10099, 8, $pspID, 3)");
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client',0)");
 
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
@@ -167,18 +168,19 @@ class CallbackAPITest extends baseAPITest
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
             $this->assertTrue(is_resource($res) );
             $aStates = array();
-            $trow = null;
             while ($row = pg_fetch_assoc($res) )
             {
-                $trow = $row;
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) >= 9) { break; }
+            if (count($aStates) >= 15) { break; }
             usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-        $this->assertTrue(is_int(array_search(Constants::iPAYMENT_ACCEPTED_STATE, $aStates) ) );
-        $this->assertTrue(is_int(array_search(Constants::iPAYMENT_CAPTURED_STATE, $aStates) ) );
+        self::assertCount(15,$aStates );
+
+        $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[0] );
+        $this->assertEquals(Constants::iPAYMENT_CAPTURED_STATE, $aStates[1] );
+        $this->assertEquals(Constants::iSESSION_COMPLETED, $aStates[10] );
 
         $captureStateStatus = $this->queryDB("SELECT status FROM Log.Txnpassbook_Tbl WHERE transactionid = 1001001 and performedopt = 2000");
         $this->assertTrue(is_resource($captureStateStatus));
