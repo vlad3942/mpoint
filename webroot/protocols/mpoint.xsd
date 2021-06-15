@@ -1802,6 +1802,7 @@
 			<xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
 			<xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
+			<xs:element name="date-of-birth" type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
 			<xs:element name="gender" minOccurs="0" type="xs:string"  maxOccurs="1" />
