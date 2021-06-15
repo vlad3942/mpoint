@@ -770,7 +770,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(200, $iStatus);
-		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Voucher</name><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>Voucher</card></vouchers>', $sReplyBody);
+		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>TravelFund</name><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>TravelFund</card></vouchers>', $sReplyBody);
 	}
 
 
@@ -814,7 +814,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Voucher</name><fetch-balance>true</fetch-balance><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>Voucher</card></vouchers>', $sReplyBody);
+		$this->assertStringContainsString('<vouchers><card id="26" type-id="26" psp-id="71" min-length="-1" max-length="-1" cvc-length="-1" state-id="1" payment-type="2" preferred="false" enabled="true" processor-type="11" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>TravelFund</name><fetch-balance>true</fetch-balance><prefixes><prefix><min>0</min><max>0</max></prefix></prefixes>TravelFund</card></vouchers>', $sReplyBody);
 
 		// Assertion for FOP which done has fetch-balance node.
 		$this->assertStringContainsString('<card id="2" type-id="2" psp-id="2" min-length="16" max-length="16" cvc-length="3" state-id="1" payment-type="1" preferred="false" enabled="true" processor-type="1" installment="0" cvcmandatory="false" dcc="false" presentment-currency="false" splittable="false"><name>Dankort</name><prefixes><prefix><min>5019</min><max>5019</max></prefix><prefix><min>4571</min><max>4571</max></prefix></prefixes>Dankort</card>', $sReplyBody);

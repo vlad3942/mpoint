@@ -38,4 +38,11 @@
 
     </changeSet>
 
+    <changeSet author="Chaitenya Yadav" id="2021-06-15-Travel-fund">
+        <update catalogName="system" schemaName="system" tableName="Card_tbl">
+            <column name="name" value="TravelFund" />
+            <where>id = 26</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
