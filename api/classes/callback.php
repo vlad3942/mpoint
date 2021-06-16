@@ -409,6 +409,10 @@ abstract class Callback extends EndUserAccount
 			$exp = $vars["expiry"];
 		}
 
+        if(isset($vars["additionaldata"]) === TRUE ){
+        	$sAdditionalData = $vars["additionaldata"];
+        }
+
         if(isset($vars["cardnomask"]) === TRUE )
 		{
 			if(isset($vars['cardprefix']) === TRUE)
@@ -439,7 +443,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $obj_SurePay, $fee,$sub_code_id);
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id);
 	}
 
 	/**
@@ -466,6 +470,7 @@ abstract class Callback extends EndUserAccount
 	 * @param string              $cardno The masked card number for the card that was used for the payment
 	 * @param integer             $cardid mPoint's unique ID for the card type
 	 * @param null                $exp
+	 * @param string              $sAdditionalData
 	 * @param \SurePayConfig|null $obj_SurePay
 	 * @param integer             $fee    The amount the customer will pay in fee�s for the Transaction. Default value 0
      * @param integer             $sub_code_id Granular status code
@@ -474,7 +479,7 @@ abstract class Callback extends EndUserAccount
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 */
-	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
+	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
@@ -488,6 +493,9 @@ abstract class Callback extends EndUserAccount
 			if(strtolower($checkLeagcyCallback) == 'true') {
 				$sBody = "";
 				$sBody .= "mpoint-id=" . $txnId;
+				if (strlen($sAdditionalData) > 0) {
+					$sBody .= "&" . $sAdditionalData;
+				}
 				$sBody .= "&orderid=" . urlencode($this->_obj_TxnInfo->getOrderID());
 				if ($this->hasTransactionFailureState($sid) === TRUE) {
 					$sBody .= "&status=" . substr($sid, 0, 4);
