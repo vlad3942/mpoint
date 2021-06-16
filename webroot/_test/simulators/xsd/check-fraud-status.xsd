@@ -8,6 +8,7 @@
 						<xs:sequence>
 							<xs:element name="type"></xs:element>
 							<xs:element name="client-config"></xs:element>
+							<xs:element name="auth-token" type="auth-token" minOccurs="0" maxOccurs="1" />
 							<xs:element name="pspConfig"></xs:element>
 							<xs:element name="transaction">
 								<xs:complexType>
@@ -228,6 +229,12 @@
 		<xs:attribute name="sdk-version" type="version" use="optional"/>
 		<xs:attribute name="app-version" type="version" use="optional"/>
 	</xs:complexType>
+
+	<xs:simpleType name="auth-token">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1" />
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:complexType name="mobile">
 		<xs:simpleContent>

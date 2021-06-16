@@ -128,9 +128,10 @@ abstract class CPMFRAUD
      * @param 	CreditCard $obj_mCard	CreditCard obj used to fetch routes
      * @param 	integer $cardTypeId	Card Type
      * @param 	integer $iFraudType	Fraud Check Type
+     * @param  null $authToken
      * @return FraudResult
      */
-    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
         $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
 
@@ -141,7 +142,7 @@ abstract class CPMFRAUD
             if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
             {
                 $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
-                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_Card,$clientInfo,$iFraudType);
+                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_Card,$clientInfo,$iFraudType,$authToken);
                 $fraudCheckResponse->setFraudCheckAttempted(true);
                 array_push($aFSPStatus, $iFSPCode);
             }
@@ -199,9 +200,10 @@ abstract class CPMFRAUD
      * @param	RDB $obj_DB	Reference to the Database Object that holds the active connection to the mPoint Database
      * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
      * @param 	integer $iFraudType	Fraud Check Type
+     * @param null $authToken
      * @return integer $iStatusCode
      */
-    public function initiateFraudCheck($obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public function initiateFraudCheck($obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
         if($obj_Card === null)
         {
@@ -250,7 +252,9 @@ abstract class CPMFRAUD
         $b .= '</additionalConfig>';
 
         $b .= '</client-config>';
-
+        if($authToken !== null) {
+            $b .= '<auth-token>' . $authToken . '</auth-token>';
+        }
         $b .= $this->getPSPConfig()->toAttributeLessXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
         $b .= $this->getTxnInfo()->toAttributeLessXML();
