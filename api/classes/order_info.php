@@ -496,7 +496,7 @@ class OrderInfo
         if (empty($additionalData) === false ) {
             $xml .= '<additional-data>';
             foreach ($additionalData as $fAdditionalData) {
-                $xml .= '<param name="' . $fAdditionalData ["NAME"] . '">' . $fAdditionalData ["VALUE"] . '</param>';
+                $xml .= '<param name="' . $fAdditionalData ["NAME"] . '">' . htmlspecialchars($fAdditionalData ["VALUE"]) . '</param>';
             }
             $xml .= '</additional-data>';
         }
