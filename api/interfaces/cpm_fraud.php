@@ -142,7 +142,7 @@ abstract class CPMFRAUD
             if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
             {
                 $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
-                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_Card,$clientInfo,$iFraudType,$authToken);
+                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
                 $fraudCheckResponse->setFraudCheckAttempted(true);
                 array_push($aFSPStatus, $iFSPCode);
             }
@@ -203,7 +203,7 @@ abstract class CPMFRAUD
      * @param null $authToken
      * @return integer $iStatusCode
      */
-    public function initiateFraudCheck($obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
+    public function initiateFraudCheck(RDB $obj_DB,$obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
         if($obj_Card === null)
         {
@@ -238,6 +238,7 @@ abstract class CPMFRAUD
         $b .= '<root>';
         $b .= '<fraudCheck>';
         $b .= '<type>'.$iFraudType.'</type>';
+        $b .= '<fail-txn-count>'.FailedPaymentMethodConfig::getFailedFraudTxnCount($obj_DB, $this->_obj_TxnInfo->getSessionId(), $this->getTxnInfo()->getClientConfig()->getID(),$this->getFSPID()).'</fail-txn-count>';
         $b .= '<client-config>';
         $b .=  '<clientId>'.$this->getTxnInfo()->getClientConfig()->getID().'</clientId>';
         $b .=  '<account>'.$this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID().'</account>';
