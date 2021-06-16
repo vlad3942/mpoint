@@ -340,5 +340,4 @@ $aMessage_Queue_Provider_info['keyfilepath'] = '';
 $aMessage_Queue_Provider_info['projectid'] = 'cpm-development';
 $aMessage_Queue_Provider_info['topicname'] = 'mpoint-phpunittest';
 
-
 ?>
