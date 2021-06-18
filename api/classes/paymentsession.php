@@ -106,7 +106,7 @@ final class PaymentSession
         if ($expire != null) {
             $this->_expire = $expire;
         } else {
-            $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+            $this->_expire = date("Y-m-d H:i:s.u", time() + (30 * 60));
         }
         $this->_obj_CurrencyConfig = $currencyConfig;
         $currencyConfigId = $this->_obj_CurrencyConfig->getId();
