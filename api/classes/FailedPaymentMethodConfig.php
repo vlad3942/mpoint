@@ -65,7 +65,7 @@ class FailedPaymentMethodConfig
     /**
      * Produces a failed payment method Configuration object.
      *
-     * @param 	RDB $oDB 		     Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	RDB $obj 		     Reference to the Database Object that holds the active connection to the mPoint Database
      * @param 	integer $sessionId   Unique session ID for payment transaction
      * @param 	integer $clientId    Hold unique client ID
      * @return  FailedPaymentMethodConfig $aObj_Configurations  Data object with the failed payment method information
@@ -91,6 +91,46 @@ class FailedPaymentMethodConfig
         }
         return $aObj_Configurations;
     }
-	
+
+    /**
+     * Get failed fraud txn count from psp id
+     *
+     * @param 	RDB $obj 		     Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $sessionId   Unique session ID for payment transaction
+     * @param 	integer $clientId    Hold unique client ID
+     * @param  integer $FPSPId
+     * @return  integer $failTxnCount  Count of failed fraud txn
+     */
+    public static function getFailedFraudTxnCount(RDB $obj, int $sessionId, int $clientId, int $FPSPId):int
+    {
+        $cardId = array();
+        if($obj instanceof RDB && $FPSPId > 0 && $clientId > 0) {
+            $sql = "SELECT cardid
+                FROM Client" . sSCHEMA_POSTFIX . ".Cardaccess_Tbl
+				WHERE pspid = " . $FPSPId . " AND clientid= ".$clientId." AND enabled= true";
+            $result = $obj->query($sql);
+            while ($RS = $obj->fetchName($result)) {
+                if (empty($RS["CARDID"]) === false) {
+                    $cardId[] = $RS["CARDID"];
+                }
+            }
+        }
+        $failTxnCount = 0;
+        if (empty($cardId) === false) {
+            $cardString = implode(',',$cardId);
+            $CountSql = "SELECT DISTINCT COUNT(Txn.id)
+                FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
+                INNER JOIN Log" . sSCHEMA_POSTFIX . ".Session_Tbl S ON Txn.sessionid = S.id AND S.stateid != " . Constants::iSESSION_COMPLETED . ".
+				INNER JOIN (select transactionid,performedopt as st, status from log.txnpassbook_tbl where clientid = $clientId) p2 ON (Txn.id = p2.transactionid)
+				WHERE Txn.sessionid = " . $sessionId . " AND Txn.cardid IN (".$cardString.") AND p2.st = ".Constants::iPAYMENT_ACCEPTED_STATE ." AND p2.status = 'error'";
+            $res = $obj->query($CountSql);
+            while ($RES = $obj->fetchName($res)) {
+                if (empty($RES["COUNT"]) === false) {
+                    $failTxnCount = $RES["COUNT"];
+                }
+            }
+        }
+        return $failTxnCount;
+    }
 }
 ?>

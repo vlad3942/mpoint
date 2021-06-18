@@ -32,12 +32,13 @@ class PayEx extends Callback
      * @param integer $sid Unique ID of the State that the Transaction terminated in
      * @param array $_post Array of data received from DIBS via HTTP POST
      * @param SurePayConfig|null $obj_SurePay
+     * @param int $sub_code_id
      * @see    Callback::notifyClient()
      * @see    Callback::send()
      * @see    Callback::getVariables()
      *
      */
-	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null)
+	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null,int $sub_code_id=0)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")

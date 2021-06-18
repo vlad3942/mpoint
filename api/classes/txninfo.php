@@ -1801,6 +1801,8 @@ class TxnInfo
 			if (array_key_exists("conversion-rate", $misc) === false) { $misc["conversion-rate"] = $obj->getConversationRate(); }
 			if (array_key_exists("profileid", $misc) === false) { $misc["profileid"] = -1; }
 			if (array_key_exists("fee", $misc) === false) { $misc["fee"] = 0; }
+			if (array_key_exists("additionaldata", $misc) === false) { $misc["additionaldata"] = array(); }
+
 
 			if((int)$misc["fxservicetypeid"] >0)
 			{
@@ -1818,7 +1820,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",array(),array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"",array(),null,$fxservicetypeid);
+            $obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), AutoCaptureType::eRunTimeAutoCapt, $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"],$misc["installment-value"], $misc["profileid"],-1,$misc["fee"],0,-1,-1,"","","","","","","",$misc["additionaldata"],array(),$misc["converted-amount"],$misc["converted-currency-config"],$misc["conversion-rate"],"",array(),null,$fxservicetypeid);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1969,11 +1971,12 @@ class TxnInfo
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Order ID", 1001); }
 
 				$orderFees = isset($aOrderDataObj["fees"]) ? $aOrderDataObj["fees"] : 0;
+				$orderType = isset($aOrderDataObj["type"]) ? $aOrderDataObj["type"] : 100;
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Order_Tbl
-							(id, orderref, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees)
+							(id, orderref, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward,fees, type)
 						VALUES
 							(". $RS["ID"] .", '". (string)$aOrderDataObj["orderref"] ."', ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
-							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." ,".$orderFees.")";
+							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." ,".$orderFees.", ".$orderType.")";
 				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
@@ -2101,6 +2104,10 @@ class TxnInfo
 				else
 				{
 					$additional_id = $RS["ID"];
+					if($aAdditionalDataObj["type"] === 'Transaction')
+					{
+						$this->_aAdditionalData[$name] = $value;
+					}
 				}
 			}	
 			return $additional_id;	
@@ -2627,7 +2634,28 @@ class TxnInfo
 
     public function hasEitherSoftDeclinedState($subCodeID)
     {
-        if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT) {
+		$aHardDeclined = array(
+			Constants::iPAYMENT_CANCELLED,
+			Constants::iDUPLICATE_TXN,
+			Constants::iTXN_REJECTED_ISSUER,
+			Constants::iEMI_UNAVAILABLE,
+			Constants::iVOID_NOT_SUPPORTED,
+			Constants::iCAPTURED_ALREADY,
+			Constants::iINVALID_CAPTURE,
+			Constants::iRECURRING_NOT_SUPPORTED,
+			Constants::iSTORED_CARD_DISABLED,
+			Constants::iTXN_GENERATION_FAIL,
+			Constants::iINSTALLMENT_DISABLED,
+			Constants::iTICKET_ISSUE_FAIL,
+			Constants::iCUP_SIGN_FAIL,
+			Constants::iISSUE_BANK_UNAVAILABLE,
+			Constants::iTXN_EXCEED_LIMIT,
+			Constants::iUNVOIDABLE,
+			Constants::iUNREFUNDABLE,
+			Constants::iAMOUNT_LIMIT_EXCEEDS
+		);
+
+		if ($subCodeID >= Constants::iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT && $subCodeID <= Constants::iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT && in_array($subCodeID, $aHardDeclined) === false) {
             return true;
         }
         return false;
@@ -2639,6 +2667,11 @@ class TxnInfo
 			$this->_iPSPID = $pspId;
 
 		}
+	}
+
+	public function setExternalId(string $sExternalID)
+	{
+		$this->_sExternalID = $sExternalID;
 	}
 }
 ?>

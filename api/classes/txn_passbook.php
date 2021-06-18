@@ -92,13 +92,12 @@ final class TxnPassbook
     /**
      * @param bool $getUpdatedEntries
      *
-     * @return array
+     * @return PassbookEntry[]
      * @throws Exception
      */
     public function getEntries($getUpdatedEntries = FALSE)
     {
         if ($getUpdatedEntries || count($this->_passbookEntries) === 0) {
-            $this->_passbookEntries = array();
             $this->_getUpdatedPassbookEntries();
         }
         return $this->_passbookEntries;
@@ -123,6 +122,8 @@ final class TxnPassbook
             if ($result === FALSE) {
                 throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
             } else {
+                $this->_passbookEntries = array();
+
                 while ($RS = $this->getDBConn()->fetchName($result)) {
 
                     $passbookEntry = new PassbookEntry
@@ -523,7 +524,7 @@ final class TxnPassbook
      * @return array
      * @throws \Exception
      */
-    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE, $isPSPCallRequired = TRUE)
+    public function performPendingOperations($_OBJ_TXT = NULL, $aHTTP_CONN_INFO = NULL, $isConsolidate = FALSE, $isMutualExclusive = FALSE, $isRetryRequest = FALSE, $isPSPCallRequired = TRUE, int $captureType= AutoCaptureType::eRunTimeAutoCapt)
     {
         $codes = array();
         if ($isRetryRequest === FALSE) {
@@ -539,6 +540,7 @@ final class TxnPassbook
         $this->_getUpdatedPassbookEntries();
         foreach ($this->_passbookEntries as $passbookEntry) {
             if ($passbookEntry instanceof PassbookEntry && $passbookEntry->getPerformedOperation() != '' && $passbookEntry->getStatus() === Constants::sPassbookStatusPending) {
+                $code = -1;
                 if($passbookEntry->getPerformedOperation() === Constants::iINPUT_VALID_STATE)
                 {
                     $passbookEntry->setStatus(Constants::sPassbookStatusDone);
@@ -554,18 +556,22 @@ final class TxnPassbook
                     if(empty($_OBJ_TXT) || empty($aHTTP_CONN_INFO))
                     {
                         $passbookEntry->setStatus(Constants::sPassbookStatusError);
-                        $this->_updatePassbookEntries(array($passbookEntry));
                     }
                     else
                     {
-						$code = -1;
 						if($isPSPCallRequired === TRUE)
 						{
 						    $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
 							$obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
+
 							switch ($passbookEntry->getPerformedOperation())
 							{
 								case Constants::iPAYMENT_CAPTURED_STATE;
+								    if($captureType === AutoCaptureType::eTicketLevelManualCapt || $captureType === AutoCaptureType::eTicketLevelAutoCapt)
+                                    {
+                                        $extRef = $this->_getExtrefFromReqOpt($passbookEntry->getExternalReference());
+                                        $txnInfoObj->produceOrderConfig($this->getDBConn(), $extRef);
+                                    }
 									$code = $obj_PSP->capture($passbookEntry->getAmount());
 									break;
 								case Constants::iPAYMENT_CANCELLED_STATE;
@@ -589,8 +595,8 @@ final class TxnPassbook
                         {
                             $passbookEntry->setStatus(Constants::sPassbookStatusError);
                         }
-                        $this->_updatePassbookEntries(array($passbookEntry));
                     }
+                    $this->_updatePassbookEntries(array($passbookEntry));
                     $codes[] = $code;
                 }
             }
@@ -1069,5 +1075,43 @@ final class TxnPassbook
             trigger_error('Can not to update passbook amount and currency for transaction id ' . $this->getTransactionId() . ', Updation allowed only for offline payment type', E_USER_WARNING );
         }
         return FALSE;
+    }
+
+    /**
+     * @param string $passbookEntryIdStr
+     * @return array
+     */
+    private function _getExtrefFromReqOpt(string $passbookEntryIdStr) : array
+    {
+        $externalRef = [];
+        try {
+            $passbookEntryIds = array_flip(explode(',', $passbookEntryIdStr));
+            foreach ($this->getEntries() as $entry) {
+                $entryId = (string)$entry->getId();
+                if(isset($passbookEntryIds[$entryId]))
+                {
+                    $externalRef[$entry->getExternalReference()] = $entry->getAmount();
+                }
+            }
+        }catch (Exception $exception)
+        {
+            trigger_error($exception);
+        }
+        return  $externalRef;
+    }
+    /**
+     * Sql cost of this method is very high DO NOT use this for normal cases
+     * so use this in CRITICAL cases only and it is not recommended to use this for normal cases
+     */
+    public function UpdateAmounts() : void
+    {
+        if($this->getAuthorizedAmount() === 0)
+        {
+            try {
+                $this->_getUpdatedTransactionAmounts();
+            } catch (Exception $e) {
+                trigger_error("Error");
+            }
+        }
     }
 }

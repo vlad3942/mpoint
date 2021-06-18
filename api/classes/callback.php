@@ -193,7 +193,7 @@ abstract class Callback extends EndUserAccount
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null, $sSwishPaymentID=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $sub_code_id = 0, $fee=0, array $debug=null, $issuingbank=null, $authOriginalData=null)
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
@@ -203,9 +203,9 @@ abstract class Callback extends EndUserAccount
 		{
 			 $sql .= ", issuing_bank = '".$issuingbank."'";
 		}
-		if(empty($sSwishPaymentID) === false)
+		if(empty($authOriginalData) === false)
 		{
-            $sql .= ", authoriginaldata = '".$sSwishPaymentID."'";
+            $sql .= ", authoriginaldata = '".$authOriginalData."'";
 		}
 		if(intval($fee) > 0)
 		{
@@ -384,13 +384,14 @@ abstract class Callback extends EndUserAccount
 	 * @param integer             $sid         Unique ID of the State that the Transaction terminated in
 	 * @param array               $vars
 	 * @param \SurePayConfig|null $obj_SurePay SurePay Configuration Object. Default value null
+     * @param integer             $sub_code_id Granular status code
 	 *
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 *
 	 */
 
-	public function notifyClient(int $sid, array $vars, ?SurePayConfig $obj_SurePay=null)
+	public function notifyClient(int $sid, array $vars, ?SurePayConfig $obj_SurePay=null, int $sub_code_id=0)
 	{
 		$pspId=  "";
 		$amount =(int)$vars["amount"];
@@ -442,7 +443,7 @@ abstract class Callback extends EndUserAccount
 			$cardId = (int)$vars["card-id"];
 		}
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardId, $sAdditionalData, $obj_SurePay, $fee );
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id);
 	}
 
 	/**
@@ -466,16 +467,19 @@ abstract class Callback extends EndUserAccount
 	 * @param integer             $sid    Unique ID of the State that the Transaction terminated in
 	 * @param string              $pspid  The Payment Service Provider's (PSP) unique ID for the transaction
 	 * @param integer             $amt    Total amount the customer will pay for the Transaction without fee
+	 * @param string              $cardno The masked card number for the card that was used for the payment
 	 * @param integer             $cardid mPoint's unique ID for the card type
+	 * @param null                $exp
 	 * @param string              $sAdditionalData
 	 * @param \SurePayConfig|null $obj_SurePay
 	 * @param integer             $fee    The amount the customer will pay in fee�s for the Transaction. Default value 0
+     * @param integer             $sub_code_id Granular status code
 	 *
 	 * @throws \Exception
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 */
-	public function notifyToClient(int $sid, string $pspid, int $amt, int $cardid=0, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0): void
+	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
@@ -601,7 +605,20 @@ abstract class Callback extends EndUserAccount
 				if ($fxservicetypeid != 0) {
 					$sBody .= "&service_type_id=" . urlencode($fxservicetypeid);
 				}
-
+                $pax_last_name = $this->getPaxLastName($txnId);
+                if ($pax_last_name != '') {
+                    $sBody .= "&pax_last_name=" . $pax_last_name;
+                }
+                $departureDetails = $this->getDepartureDetails($txnId);
+                if (empty($departureDetails) === FALSE) {
+                    $sBody .= "&first_departure_time=" . $departureDetails['departure_date'];
+                    $sBody .= "&first_departure_time_zone=" . $departureDetails['departure_timezone'];
+                }
+                if ($sub_code_id != 0) {
+                    $sBody .= "&sub_status=" . $sub_code_id;
+                }
+                $sBody .= "&pos=" .$this->_obj_TxnInfo->getCountryConfig()->getID();
+                $sBody .= "&ip_address=" .$this->_obj_TxnInfo->getIP();
 				if ($sBody !== "") {
 					/* ----- Construct Body End ----- */
 					$this->performCallback($sBody, $obj_SurePay, 0, $sid);
@@ -609,7 +626,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, $amt);
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE);
 		if ($callbackMessageRequest !== NULL) {
                 $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
             }
@@ -914,123 +931,123 @@ abstract class Callback extends EndUserAccount
 		switch ($iPSPID)
 		{
 		case (Constants::iDIBS_PSP):
-			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"]);
+			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"],$obj_PSPConfig);
 		case (Constants::iWORLDPAY_PSP):
-			return new WorldPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["worldpay"]);
+			return new WorldPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["worldpay"],$obj_PSPConfig);
 		case (Constants::iWANNAFIND_PSP):
-			return new WannaFind($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wannafind"]);
+			return new WannaFind($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wannafind"],$obj_PSPConfig);
 		case (Constants::iNETAXEPT_PSP):
-			return new NetAxept($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["netaxept"]);
+			return new NetAxept($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["netaxept"],$obj_PSPConfig);
 		case (Constants::iMOBILEPAY_PSP):
-			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
+			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"],$obj_PSPConfig);
 		case (Constants::iADYEN_PSP):
-			return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
+			return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"],$obj_PSPConfig);
 		case (Constants::iDSB_PSP):
 			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
 		case (Constants::iVISA_CHECKOUT_PSP) :
-			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
+			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"],$obj_PSPConfig);
 		case (Constants::iAPPLE_PAY_PSP):
-			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
+			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"],$obj_PSPConfig);
 		case (Constants::iCPG_PSP):
-			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"]);
+			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"],$obj_PSPConfig);
 		case (Constants::iMASTER_PASS_PSP):
-			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"]);
+			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"],$obj_PSPConfig);
 		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
-			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"]);
+			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"],$obj_PSPConfig);
 		case (Constants::iWIRE_CARD_PSP):
-			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"],$obj_PSPConfig);
 		case (Constants::iDATA_CASH_PSP):
-			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
+			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"],$obj_PSPConfig);
 		case (Constants::iMADA_MPGS_PSP):
-			return new MadaMpgs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mada-mpgs"]);
+			return new MadaMpgs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mada-mpgs"],$obj_PSPConfig);
 		case (Constants::iGLOBAL_COLLECT_PSP):
-			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
+			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"],$obj_PSPConfig);
 		case (Constants::iSECURE_TRADING_PSP):
-			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"]);
+			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"],$obj_PSPConfig);
 		case (Constants::iPAYFORT_PSP):
-			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"]);
+			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"],$obj_PSPConfig);
 		case (Constants::iPAYPAL_PSP):
-			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"]);
+			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"],$obj_PSPConfig);
 		case (Constants::iCCAVENUE_PSP):
-			return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"]);
+			return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"],$obj_PSPConfig);
 		case (Constants::i2C2P_PSP):
-			return new CCPP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p"]);
+			return new CCPP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p"],$obj_PSPConfig);
 		case (Constants::iMAYBANK_PSP):
-			return new MayBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["maybank"]);			
+			return new MayBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["maybank"],$obj_PSPConfig);
 		case (Constants::iPUBLIC_BANK_PSP):
-			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
+			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"],$obj_PSPConfig);
 		case (Constants::iALIPAY_PSP):
-	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"],$obj_PSPConfig);
 		case (Constants::iQIWI_PSP):
-			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
+			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"],$obj_PSPConfig);
 		case (Constants::iPOLI_PSP):
-            return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);
+            return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"],$obj_PSPConfig);
 		case (Constants::iKLARNA_PSP):
-				return new Klarna($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["klarna"]);
+				return new Klarna($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["klarna"],$obj_PSPConfig);
         case (Constants::iMVAULT_PSP):
-            return new MVault($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mvault"]);
+            return new MVault($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mvault"],$obj_PSPConfig);
         case (Constants::iNETS_ACQUIRER):
-            return new Nets($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nets"]);
+            return new Nets($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nets"],$obj_PSPConfig);
         case (Constants::iTRUSTLY_PSP):
-            	return new Trustly($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["trustly"]);
+            	return new Trustly($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["trustly"],$obj_PSPConfig);
         case (Constants::iPAY_TABS_PSP):
-        	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"]);
+        	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"],$obj_PSPConfig);
         case (Constants::i2C2P_ALC_PSP):
-        		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"]);
+        		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"],$obj_PSPConfig);
         case (Constants::iALIPAY_CHINESE_PSP):
-                return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"]);
+                return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"],$obj_PSPConfig);
         case (Constants::iCITCON_PSP):
-                return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
+                return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"],$obj_PSPConfig);
         case (Constants::iPPRO_GATEWAY):
-            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ppro"]);
+            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ppro"],$obj_PSPConfig);
         case (Constants::iAMEX_ACQUIRER):
-                return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
+                return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"],$obj_PSPConfig);
         case (Constants::iCHUBB_PSP):
-            return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
+            return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"],$obj_PSPConfig);
         case (Constants::iUATP_ACQUIRER):
-            return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
+            return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"],$obj_PSPConfig);
 		case (Constants::iUATP_CARD_ACCOUNT):
-            return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
+            return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"],$obj_PSPConfig);
         case (Constants::iEGHL_PSP):
-            return new EGHL($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["eghl"]);
+            return new EGHL($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["eghl"],$obj_PSPConfig);
         case (Constants::iGOOGLE_PAY_PSP) :
-            return new GooglePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["google-pay"]);
+            return new GooglePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["google-pay"],$obj_PSPConfig);
         case (Constants::iCHASE_ACQUIRER):
-            return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"]);
+            return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"],$obj_PSPConfig);
         case (Constants::iPAYU_PSP):
-            return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payu"]);
+            return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payu"],$obj_PSPConfig);
 		case (Constants::iCielo_ACQUIRER):
-            return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"]);
+            return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"],$obj_PSPConfig);
 		case (Constants::iGlobal_Payments_PSP):
-			return new GlobalPayments($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-payments"]);
+			return new GlobalPayments($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-payments"],$obj_PSPConfig);
 		case (Constants::iVeriTrans4G_PSP):
-		    return new VeriTrans4G($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["veritrans4g"]);
+		    return new VeriTrans4G($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["veritrans4g"],$obj_PSPConfig);
         case (Constants::iEZY_PSP):
-			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
+			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"],$obj_PSPConfig);
 		case (Constants::iCellulant_PSP):
-				return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"]);
+				return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"],$obj_PSPConfig);
 		case (Constants::iDragonPay_AGGREGATOR):
-		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"]);
+		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"],$obj_PSPConfig);
         case (Constants::iFirstData_PSP):
-			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"]);
+			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"],$obj_PSPConfig);
         case (Constants::iCyberSource_PSP):
-			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
+			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"],$obj_PSPConfig);
         case (Constants::iSWISH_APM):
-            return new SWISH($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["swish"]);
+            return new SWISH($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["swish"],$obj_PSPConfig);
         case (Constants::iPAYMAYA_WALLET):
-            return new Paymaya($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya"]);
+            return new Paymaya($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya"],$obj_PSPConfig);
 		case (Constants::iGRAB_PAY_PSP):
-			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"],$obj_PSPConfig);
 		case (Constants::iCEBUPAYMENTCENTER_APM):
-			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"]);
+			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"],$obj_PSPConfig);
 		case (Constants::iMPGS_PSP):
-			return new MPGS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mpgs"]);	
+			return new MPGS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mpgs"],$obj_PSPConfig);
 		case (Constants::iSAFETYPAY_AGGREGATOR):
-		    return new SafetyPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"]);
+		    return new SafetyPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"],$obj_PSPConfig);
 		case (Constants::iTRAVELFUND_VOUCHER):
-			return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["travel-fund"]);
+			return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["travel-fund"],$obj_PSPConfig);
 		case (Constants::iPAYMAYA_ACQ):
-			return new Paymaya_Acq($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya_acq"]);
+			return new Paymaya_Acq($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya_acq"],$obj_PSPConfig);
 	
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
@@ -1064,7 +1081,7 @@ abstract class Callback extends EndUserAccount
         $this->performCallback($body,$obj_SurePay, $attempt);
     }
 
-    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null )
+    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null, int $sub_code_id=0 )
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
 		$isStateUpdated = $sessionObj->updateState($state);
@@ -1199,6 +1216,20 @@ abstract class Callback extends EndUserAccount
 						if ($fxservicetypeid != 0) {
 							$transactionData['service_type_id'] = $fxservicetypeid;
 						}
+                        $pax_last_name = $this->getPaxLastName($objTransaction->getID());
+                        if ($pax_last_name != '') {
+                            $transactionData['pax_last_name'] = $pax_last_name;
+                        }
+                        $departureDetails = $this->getDepartureDetails($objTransaction->getID());
+                        if (empty($departureDetails) === FALSE) {
+                            $transactionData['first_departure_time'] = $departureDetails['departure_date'];
+                            $transactionData['first_departure_time_zone'] = $departureDetails['departure_timezone'];
+                        }
+                        if ($sub_code_id != 0) {
+                            $transactionData['sub_status'] = $sub_code_id;
+                        }
+                        $transactionData['pos'] = $this->_obj_TxnInfo->getCountryConfig()->getID();
+                        $transactionData['ip_address'] = $this->_obj_TxnInfo->getIP();
 						$objb_BillingAddr = $objTransaction->getBillingAddr();
 						if (empty($objb_BillingAddr) === false) {
 							$transactionData['billing_first_name'] = urlencode($objb_BillingAddr['first_name']);
@@ -1252,7 +1283,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, NULL, TRUE);
+		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
 		if ($callbackMessageRequest !== NULL) {
 			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
 		}
@@ -1334,10 +1365,10 @@ abstract class Callback extends EndUserAccount
 	 * @param bool $isSessionCallback
 	 * @param      $sid
 	 * @param null $amt
-	 *
+	 * @param int $sub_code_id
 	 * @return \CallbackMessageRequest|null
 	 */
-	private function constructMessage($sid = NULL, $amt = NULL, $isSessionCallback = FALSE)
+	private function constructMessage($sid = NULL, int $sub_code_id=0,$amt = NULL, $isSessionCallback = FALSE)
     {
     	$isIgnoreRequest = TRUE;
 		$aTransactionData = [];
@@ -1364,7 +1395,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData));
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id,null,-1));
 				}
 			}
 		}
@@ -1372,19 +1403,17 @@ abstract class Callback extends EndUserAccount
 		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
-			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn, $sid, $amt);
+			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn,$sub_code_id, $sid, $amt);
 			$aTransactionData = [$obj_TransactionData];
 			$isIgnoreRequest = FALSE;
 		}
 
 		if($isIgnoreRequest === FALSE) {
 			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(), NULL);
-			if ($this->hasTransactionFailureState($sid) === TRUE) {
-				$status = substr($sid, 0, 4);
-				$sub_code = $sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
-			} else {
-				$status = $sid;
-			}
+            $status      = $sid;
+			if($sub_code_id > 0){
+                $sub_code= $sub_code_id;
+            }
 			$obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid));
 			return new CallbackMessageRequest($this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$this->_obj_TxnInfo->getCallbackURL());
 		}
@@ -1395,11 +1424,12 @@ abstract class Callback extends EndUserAccount
 	 * @param \TxnInfo $txnInfo
 	 * @param int|null $sid
 	 * @param int      $amt
+     * @param int $sub_code_id
 	 *
 	 * @return \TransactionData
 	 * @throws \Exception
 	 */
-	private function constructTransactionInfo(TxnInfo $txnInfo, $sid = NULL, $amt = -1)
+	private function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1)
     {
 
         $obj_CustomerInfo = NULL;
@@ -1447,11 +1477,9 @@ abstract class Callback extends EndUserAccount
         ];
         $obj_CardInfo = new Card($aCardInfo);
 
-        if ($this->hasTransactionFailureState($sid) === TRUE) {
-            $status = substr($sid, 0, 4);
-            $sub_code=$sid; //Once all PSP Connector start sending sub code this logic needs to be refactor
-        } else {
-            $status = $sid;
+        $status      = $sid;
+        if($sub_code_id > 0){
+            $sub_code= $sub_code_id;
         }
         $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
 
@@ -1548,6 +1576,8 @@ abstract class Callback extends EndUserAccount
         $transactionData->setBillingAddress($aBillingAddress);
 
         $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
+        $transactionData->setPos($txnInfo->getCountryConfig()->getID());
+        $transactionData->setIpAddress($txnInfo->getIP());
 
         $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
 		if (empty($getFraudStatusCode) === FALSE) {
@@ -1601,6 +1631,41 @@ abstract class Callback extends EndUserAccount
             return count($value) !== 0;
         }
         return NULL !== $value;
+    }
+
+    /* Function to get pax_last_name */
+    public function getPaxLastName(int $txnid): string{
+        $pax_last_name = '';
+        $sql = "SELECT P.last_name
+				FROM Log".sSCHEMA_POSTFIX.".Passenger_Tbl P
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on P.order_id = Ord.id 
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND P.seq=1 limit 1";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $pax_last_name .= $RS ["LAST_NAME"];
+            }
+        }
+        return $pax_last_name;
+    }
+
+    /* Function to get first departure time and time zone */
+    public function getDepartureDetails(int $txnid): array{
+        $departureDetails = array();
+        $sql = "SELECT F.departure_timezone,F.departure_date
+				FROM Log".sSCHEMA_POSTFIX.".Flight_Tbl F
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Order_Tbl Ord on F.order_id = Ord.id 
+				WHERE Ord.txnid = ". $txnid." AND Ord.enabled = '1' AND F.tag= '1' AND F.trip_count='1'";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $departureDetails['departure_timezone']  = $RS ["DEPARTURE_TIMEZONE"];
+                $departureDetails['departure_date']      = $RS ["DEPARTURE_DATE"];
+            }
+        }
+        return $departureDetails;
     }
 
 

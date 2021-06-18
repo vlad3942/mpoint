@@ -113,7 +113,6 @@ require_once(sCLASS_PATH ."/citcon.php");
 // Require specific Business logic for the PPRO component
 require_once(sCLASS_PATH ."/ppro.php");
 
-require_once(sCLASS_PATH ."/bre.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
@@ -134,7 +133,6 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
-require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
 // Require specific Business logic for the VeriTrans4G component
@@ -251,6 +249,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '</messages>';
 							}
 							else { $xml .= '<messages />'; }
+
+							$xml .= '</transaction>';
 							$linkedTxnId       = $obj_TxnInfo->getAdditionalData('linked_txn_id');
 							$xml .= "<payment_status>".General::getPaymentStatus($_OBJ_DB,$obj_TxnInfo->getID(),$linkedTxnId)."</payment_status>";
 							// add linked transaction
@@ -258,7 +258,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$getLinkedTxns     = General::getLinkedTransactions($_OBJ_DB,$linkedTxnId,$obj_TxnInfo->getID());
 								$xml               .= $getLinkedTxns;
 							}
-							$xml .= '</transaction>';
 						}
 						catch (TxnInfoException $e)
 						{

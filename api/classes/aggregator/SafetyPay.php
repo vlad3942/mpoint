@@ -26,8 +26,6 @@ class SafetyPay extends CPMPSP
 {
     public function capture($iAmount=-1) { throw new SafetyPayException("Method: capture is not supported for SAFETYPAY."); }
 	/* SAFETYPAY reversal requires txn status query and txn can be reversed only if not yet settled. */
-    public function cancel($amount = -1) { throw new SafetyPayException("Method: cancel is not supported by SAFETYPAY"); }
-    public function refund($iAmount=-1, $iStatus = NULL) { throw new safetypayException("Method: refund is not supported by SAFETYPAY"); }
     
     public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new SafetyPayException("Method: getPaymentData is not supported by SAFETYPAY"); }
     public function authorize(PSPConfig $obj_PSPConfig, $ticket,$clientInfo=null) { throw new SafetyPayException("Method: authorize is not supported by SAFETYPAY"); }

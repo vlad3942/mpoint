@@ -15,11 +15,11 @@ use JsonSerializable;
 
 class StateInfo implements JsonSerializable
 {
-    public int $code;
+    private int $code;
 
-    public ?int $sub_code;
+    private ?int $sub_code;
 
-    public ?string $message;
+    private ?string $message;
 
     /**
      * StateInfo constructor.

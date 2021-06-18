@@ -117,7 +117,6 @@ require_once(sCLASS_PATH ."/googlepay.php");
 
 // Require specific Business logic for the PPro component
 require_once(sCLASS_PATH ."/ppro.php");
-require_once(sCLASS_PATH ."/bre.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
@@ -139,7 +138,6 @@ require_once(sCLASS_PATH ."/cellulant.php");
 
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
-require_once(sCLASS_PATH ."/post_auth_action.php");
 // Require specific Business logic for the Global payments component
 require_once(sCLASS_PATH ."/global-payments.php");
 // Require specific Business logic for the cybs component
@@ -714,7 +712,7 @@ try
                                                 
                                                 if ( $sosPreference === 'STRICT' )
 						                        {
-						                        	$userAuthcode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
+						                        	$userAuthenticationCode = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, $authToken, $clientId, $sosPreference);
 
 						                        	if ($userAuthenticationCode == 212)
 														{
@@ -1054,7 +1052,7 @@ try
                                                                 if($obj_card->getPaymentType() === 3)
                                                                 $obj_TxnInfo =  TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
 
-                                                                $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+                                                                $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken);
                                                                 if ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)
                                                                 {
                                                                     if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
@@ -1339,7 +1337,7 @@ try
                                                                     $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_Elem["pspid"], $aHTTP_CONN_INFO);
                                                                     $aCallbackArgs = array("amount" => $obj_TxnInfo->getAmount(),
                                                                         "cardid" =>  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]);
-                                                                    if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB)); }
+                                                                    if ($obj_TxnInfo->getCallbackURL() != "") { $obj_Processor->notifyClient(Constants::iPAYMENT_REJECTED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),Constants::iPRE_FRAUD_CHECK_REVIEW_STATE); }
 
 
                                                                     $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iPAYMENT_REJECTED_STATE,'Authorization Declined Due to Failed Fraud Check And Authorization is not attempted');

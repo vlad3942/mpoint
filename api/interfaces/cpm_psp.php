@@ -1524,4 +1524,48 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$response->body = $body;
         return $response;
     }
+
+	public function generate_receipt(): bool
+    {
+
+		try
+        {
+
+			$isGenerateCoupon = $this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "COUPON_GEN");
+			$couponBucketName = $this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "COUPON_BUCKET_NAME");
+
+			if(General::xml2bool($isGenerateCoupon) === false || strlen($this->aCONN_INFO["paths"]["generate-receipt"]) == 0 ) { return false; }
+
+            $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
+
+            $body  = '<?xml version="1.0" encoding="UTF-8"?>';
+			$body .= '<root>';
+			$body .= '<generate-receipt>';
+			$body .= '<bucket-name>'.$couponBucketName.'</bucket-name>';
+			// transaction details
+			$body .= str_replace("</transaction>","<card-name>".$objPaymentMethod->CardName."</card-name>" . "</transaction>", $this->getTxnInfo()->toXML() );
+
+			$body .= '</generate-receipt>';
+			$body .= '</root>';
+
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["generate-receipt"]);
+
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $body);
+			$obj_HTTP->disConnect();
+
+			if ($code == 200) { return true; }
+			else
+			{
+			    trigger_error("Receipt Generation failed for txn:".$this->getTxnInfo()->getID()." with HTTP Status Code  - " .$code, E_USER_ERROR);
+			    return false;
+			}
+
+		}
+		catch (mPointException | HTTPSendException | HTTPConnectionException $e)
+        {
+			trigger_error("Receipt Generation for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+    }
 }
