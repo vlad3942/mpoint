@@ -106,7 +106,7 @@ final class PaymentSession
         if ($expire != null) {
             $this->_expire = $expire;
         } else {
-            $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+            $this->_expire = date("Y-m-d H:i:s.u", time() + (30 * 60));
         }
         $this->_obj_CurrencyConfig = $currencyConfig;
         $currencyConfigId = $this->_obj_CurrencyConfig->getId();
@@ -269,7 +269,7 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.")) s where s.rn =1 and s.stateid != ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE."
+                AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")
                 ";
 
                 $res = $this->_obj_Db->query($sql);
