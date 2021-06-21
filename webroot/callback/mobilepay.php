@@ -96,7 +96,7 @@ try
 				{
 					// Perform capture
 					$code = $obj_PSP->capture();
-					if ($code == 1000) { $bPaymentIsCaptured = true; }
+					if ($code == Constants::iTRANSACTION_CREATED) { $bPaymentIsCaptured = true; }
 					// Auto-capture failed
 					else
 					{

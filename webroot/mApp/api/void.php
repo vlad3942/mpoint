@@ -283,7 +283,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 												$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
 												// Refund or Cancel operation succeeded
-												if ($code == 1000 || $code == 1001)
+												if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
 												{
 													header("HTTP/1.0 200 OK");
 													$xml .= '<status code="1000"></status>';
@@ -298,7 +298,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													}
 
 												}
-												else if($code == 1100) //Refund or Cancel initiated
+												else if($code == Constants::i3D_SECURE_ACTIVATED_STATE) //Refund or Cancel initiated
                                                 {
                                                     header("HTTP/1.0 200 OK");
 													$xml .= '<status code="1000"></status>';

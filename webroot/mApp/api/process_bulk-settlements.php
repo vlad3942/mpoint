@@ -439,7 +439,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                             }
 
-                            if ($code > 0 && ($code === 1000 || $code === 1001) )
+                            if ($code > 0 && in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]) )
                             {
                                 $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >'.$sMessage.'</status>';
                             }

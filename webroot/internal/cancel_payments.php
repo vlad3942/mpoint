@@ -57,14 +57,14 @@ foreach ($aTxns as $txn)
 		{
 		case Constants::iDIBS_PSP:
 			$iStatus = $obj_PSP->refund($obj_TxnInfo->getAmount(), 2); //Second argument "2" orders a cancel ONLY refund behavior @see DIBS class
-			if ($iStatus == 1000 || $iStatus == 1001)
+			if (in_array($iStatus, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
 			{
 				$obj_PSP->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array('transact' => $obj_TxnInfo->getExternalID(), 'amount' => $obj_TxnInfo->getAmount() ) );
 			}
 			break;
 		case Constants::iNETAXEPT_PSP:
 			$iStatus = $obj_PSP->refund($obj_TxnInfo->getAmount(), 2); //Second argument "2" orders a cancel ONLY refund behavior @see Netaxept class
-			if ($iStatus == 1000 || $iStatus == 1001)
+			if (in_array($iStatus, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
 			{
 				$obj_PSP->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array('transact' => $obj_TxnInfo->getExternalID(), 'amount' => $obj_TxnInfo->getAmount(), 'fee' => $obj_TxnInfo->getFee(), 'cardid' => 0, 'cardnomask' => "") );
 			}
@@ -77,7 +77,7 @@ foreach ($aTxns as $txn)
 			throw new InvalidArgumentException("Transaction is active, but cancel for PSP: ". $obj_TxnInfo->getPSPID() ." is not supported", E_USER_WARNING);
 		}
 
-		if ($iStatus == 1001) { $aSuccess[] = intval($txn["ID"]); }
+		if ($iStatus == Constants::iINPUT_VALID_STATE) { $aSuccess[] = intval($txn["ID"]); }
 		else { throw new RuntimeException("Cancel failed with status code: ". $iStatus); }
 	}
 	catch (Exception $e)

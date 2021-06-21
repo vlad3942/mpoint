@@ -657,7 +657,7 @@ try
                                         $code = 99;
                                         trigger_error($e, E_USER_WARNING);
                                     }
-                                    if ($code === 1000 || $code === 1001)
+                                    if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
                                     {
                                         if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { array_push($aStateId,Constants::iPAYMENT_REFUNDED_STATE); }
                                         else { array_push($aStateId,Constants::iPAYMENT_CANCELLED_STATE); }
@@ -701,7 +701,7 @@ try
             // Refresh transactioninfo object once the capture is performed
             $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 
-            if ($code == 1000 || $code == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
+            if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT]))
             {
                 array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
                 //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
@@ -775,7 +775,7 @@ try
 
 
         foreach ($aStateId as $iStateId) {
-            if ($iStateId == 2000) {
+            if ($iStateId == Constants::iPAYMENT_ACCEPTED_STATE) {
                 $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
             }
             else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
@@ -794,7 +794,7 @@ try
         if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
             $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
             $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
-            if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE || $iStateID === Constants::iPAYMENT_CAPTURED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === 4031 ) {
+            if (in_array($iStateID, [Constants::iPAYMENT_ACCEPTED_STATE , Constants::iPAYMENT_CAPTURED_STATE]) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() === Constants::iSESSION_PARTIALLY_COMPLETED ) {
                 try {
                     $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
                     $newTxnInfoIds = $obj_TxnInfo->getPaymentSession()->getFilteredTransaction($whereClause);
@@ -872,7 +872,7 @@ try
                                             $code = 99;
                                             trigger_error($e, E_USER_WARNING);
                                         }
-                                        if ($code === 1000 || $code === 1001)
+                                        if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
                                         {
                                             if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { $iStateId=Constants::iPAYMENT_REFUNDED_STATE; }
                                             else { $iStateId=Constants::iPAYMENT_CANCELLED_STATE; }

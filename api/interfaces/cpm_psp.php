@@ -74,8 +74,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
                     {
                         $iStatusCode = (integer)$obj_Txn->status["code"];
-                        if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
-                        else if ($iStatusCode == 1100)
+                        if ($iStatusCode == Constants::iTRANSACTION_CREATED) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
+                        else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
                         {
                             $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
                             $iStatusCode = 1000;
@@ -166,12 +166,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
 					{
 						$iStatusCode = (integer)$obj_Txn->status["code"];
-						if ($iStatusCode == 1000)
+						if ($iStatusCode == Constants::iTRANSACTION_CREATED)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
 						}
-						else if ($iStatusCode == 1100)
+						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
@@ -263,8 +263,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
 				{
 					$iStatusCode = (integer)$obj_Txn->status["code"];
-					if ($iStatusCode == 1000) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
-					elseif ($iStatusCode == 1001) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
+					if ($iStatusCode == Constants::iTRANSACTION_CREATED) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
+					elseif ($iStatusCode == Constants::iINPUT_VALID_STATE) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
 					
 					return $iStatusCode;
 				}
@@ -356,7 +356,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 							'transact'=>$this->getTxnInfo()->getExternalID(),
 							'cardid'=>$this->getTxnInfo()->getCardID());
 
-					if ($iStatusCode == 1000)
+					if ($iStatusCode == Constants::iTRANSACTION_CREATED)
 					{
 						$paymentState = Constants::iPAYMENT_CANCELLED_STATE;
 						$retStatusCode = 1001;
@@ -669,7 +669,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				}
 
 				// In case of 3D verification status code 2005 will be received
-				if($code == 2005)
+				if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
 				{
 				    $obj_XML= simplexml_load_string($obj_HTTP->getReplyBody() );
 				    $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'} = '***** REMOVED *****';

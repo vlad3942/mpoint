@@ -125,7 +125,7 @@ try
 		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount() );
 		
 		
-		if ($responseCode == 1000)
+		if ($responseCode == Constants::iTRANSACTION_CREATED)
 		{				
 			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
