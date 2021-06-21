@@ -437,15 +437,15 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Pending', $checkPaymentStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Complete', $checkPaymentStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Failed', $checkPaymentStatus);
     }
 
@@ -466,11 +466,11 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Pending', $checkPaymentStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Pending', $checkPaymentStatus);
     }
 
@@ -492,11 +492,11 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Failed', $checkPaymentStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1001002);
+        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
         $this->assertEquals('Failed', $checkPaymentStatus);
     }
 
@@ -546,7 +546,7 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
-        $checkLinkedTxn = General::getLinkedTransactions($this->_OBJ_DB, 1001002,1001001);
+        $checkLinkedTxn = General::getLinkedTransactions($this->_OBJ_DB, 1001002,1001001,1);
         $this->assertEquals('<linked_transactions><transaction_details><id>1001001</id><status>Complete</status></transaction_details><transaction_details><id>1001002</id><status>Pending</status></transaction_details></linked_transactions>', $checkLinkedTxn);
     }
 
