@@ -27,4 +27,19 @@
 
     </changeSet>
 
+    <changeSet author="Nitin Gaikwad" id="2021-06-08-setup-v2.28-system-CMP-5645-1">
+        <update catalogName="system" schemaName="system" tableName="card_tbl">
+            <column name="name" value="Via Baloto" />
+            <where>id = 98</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Nitin Gaikwad" id="2021-06-08-setup-v2.28-system-CMP-5646-1">
+        <update catalogName="system" schemaName="system" tableName="currency_tbl">
+            <column name="symbol" value="$" />
+            <where>id = 986</where>
+        </update>
+    </changeSet>
+
+
 </databaseChangeLog>

@@ -518,8 +518,8 @@ abstract class Callback extends EndUserAccount
 				if (intval($cardid) > 0) {
 					$sBody .= "&card-id=" . $cardid;
 				}
-				if (empty($cardno) === FALSE) {
-					$sBody .= "&card-number=" . urlencode($cardno);
+				if (empty($this->_obj_TxnInfo->getCardMask()) === FALSE) {
+					$sBody .= "&card-number=" . urlencode($this->_obj_TxnInfo->getCardMask());
 				}
 				if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === TRUE) {
 					$pspId = $this->_obj_TxnInfo->getPSPID();
@@ -537,8 +537,8 @@ abstract class Callback extends EndUserAccount
 				if (empty($sEmail) === FALSE) {
 					$sBody .= "&email=" . urlencode($sEmail);
 				}
-				if (empty($exp) === FALSE) {
-					$sBody .= "&expiry=" . $exp;
+				if (empty($this->_obj_TxnInfo->getCardExpiry()) === FALSE) {
+					$sBody .= "&expiry=" . $this->getFormattedDate($this->_obj_TxnInfo->getCardExpiry());
 				}
 				$sBody .= "&session-id=" . $this->_obj_TxnInfo->getSessionId();
 				/* Adding customer Info as part of the callback query params */
@@ -1088,7 +1088,7 @@ abstract class Callback extends EndUserAccount
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
 			// check legacy callback flow to follow or cpds callback flow
-			$checkLeagcyCallback = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY_CALLBACK_FLOW');
+            $checkLeagcyCallback = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY_CALLBACK_FLOW');
 			if (strtolower($checkLeagcyCallback) == 'true') {
 				$checkSessionCallback = $sessionObj->checkSessionCompletion();
 				if (empty($checkSessionCallback) === TRUE && $this->getTxnInfo()->getCallbackURL() != '') {
@@ -1108,8 +1108,8 @@ abstract class Callback extends EndUserAccount
 					if (intval($cardid) > 0) {
 						$sBody .= "&card-id=" . $cardid;
 					}
-					if (empty($cardno) === FALSE) {
-						$sBody .= "&card-number=" . urlencode($cardno);
+					if (empty($this->_obj_TxnInfo->getCardMask()) === FALSE) {
+						$sBody .= "&card-number=" . urlencode($this->_obj_TxnInfo->getCardMask());
 					}
 					if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === TRUE) {
 						$sBody .= "&pspid=" . urlencode($pspid);
@@ -1124,8 +1124,8 @@ abstract class Callback extends EndUserAccount
 					if (empty($sEmail) === FALSE) {
 						$sBody .= "&email=" . urlencode($sEmail);
 					}
-					if (empty($exp) === FALSE) {
-						$sBody .= "&expiry=" . $exp;
+					if (empty($this->_obj_TxnInfo->getCardExpiry()) === FALSE) {
+						$sBody .= "&expiry=" . $this->getFormattedDate($this->_obj_TxnInfo->getCardExpiry());
 					}
 
 					/* Adding customer Info as part of the callback query params */
@@ -1186,7 +1186,7 @@ abstract class Callback extends EndUserAccount
 
 						$expiry = $objTransaction->getCardExpiry();
 						if (empty($expiry) === FALSE) {
-							$transactionData['expiry'] = $expiry;
+							$transactionData['expiry'] = $this->getFormattedDate($expiry);
 						}
 
 						if ($objTransaction->getApprovalCode() !== '') {
@@ -1671,6 +1671,13 @@ abstract class Callback extends EndUserAccount
             }
         }
         return $departureDetails;
+    }
+
+
+    public function getFormattedDate(string $expiryDate): string
+    {
+        $date = DateTime::createFromFormat('m/y', $expiryDate);
+        return $date->format('Y-m');
     }
 }
 ?>
