@@ -318,6 +318,11 @@ try
                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
             }
         }
+        $fraudCheckResponse = new FraudResult();
+        $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID());
+        $isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
+        $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+        $isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
 
         if($iAccountValidation != 1)
         {
@@ -524,10 +529,6 @@ try
             }
         }
 
-        $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID());
-        $isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
-        $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
-        $isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
 
         $aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
                 "amount" => $obj_TxnInfo->getAmount(),
@@ -544,7 +545,6 @@ try
             }
 
             //Post-Auth-Fraud Check call
-            $fraudCheckResponse = new FraudResult();
             if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE)) === false && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE  && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
                 || ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt)))
             {
@@ -649,45 +649,6 @@ try
 
             }
 
-        // Transaction uses Auto Capture and Authorization was accepted
-        if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false))
-        {
-
-            $code=0;
-            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
-            $passbookEntry = new PassbookEntry
-            (
-                    NULL,
-                    $obj_TxnInfo->getAmount(),
-                    $obj_TxnInfo->getCurrencyConfig()->getID(),
-                    Constants::iCaptureRequested
-            );
-            if ($txnPassbookObj instanceof TxnPassbook)
-            {
-                $txnPassbookObj->addEntry($passbookEntry);
-                try {
-                    $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
-                    $code = reset($codes);
-                } catch (Exception $e) {
-                    trigger_error($e, E_USER_WARNING);
-                }
-            }
-
-            // Refresh transactioninfo object once the capture is performed
-            $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-
-            if ($code == 1000 || $code == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
-            {
-                array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
-                //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
-            }
-            else
-            {
-                array_push($aStateId,Constants::iPAYMENT_CAPTURE_FAILED_STATE);
-                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
-            }
-        }
-
         // Transaction uses one step authorization then no need of PSP call
         if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
         {
@@ -745,10 +706,10 @@ try
           $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
       }
 
+      $isTxnRollInitiated = false;
         if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
             $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-            // Refresh transactioninfo
-            $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+
             $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
             if (( ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt ) || ($iStateID === Constants::iPAYMENT_CAPTURED_STATE && $obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt)) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == 4031 ) {
                 try {
@@ -806,6 +767,7 @@ try
                                 $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_VOUCHER_FAIL"));
                                 if($bisRollBack === true)
                                 {
+                                    $isTxnRollInitiated = true;
                                     $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 
                                     $passbookEnry = new PassbookEntry
@@ -866,6 +828,46 @@ try
                 header("Connection: Close");
             }
         }
+
+        // Transaction uses Auto Capture and Authorization was accepted
+        if ($isTxnRollInitiated === false && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false))
+        {
+
+            $code=0;
+            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+            $passbookEntry = new PassbookEntry
+            (
+                NULL,
+                $obj_TxnInfo->getAmount(),
+                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                Constants::iCaptureRequested
+            );
+            if ($txnPassbookObj instanceof TxnPassbook)
+            {
+                $txnPassbookObj->addEntry($passbookEntry);
+                try {
+                    $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+                    $code = reset($codes);
+                } catch (Exception $e) {
+                    trigger_error($e, E_USER_WARNING);
+                }
+            }
+
+            // Refresh transactioninfo object once the capture is performed
+            $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+
+            if ($code == 1000 || $code == Constants::iPAYMENT_CAPTURED_AND_CALLBACK_SENT)
+            {
+                array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
+                //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+            }
+            else
+            {
+                array_push($aStateId,Constants::iPAYMENT_CAPTURE_FAILED_STATE);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
+            }
+        }
+
 
         foreach ($aStateId as $iStateId) {
             if ($iStateId == 2000) {
