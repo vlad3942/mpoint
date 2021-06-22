@@ -398,6 +398,7 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
 				</address>';
         $xml .= '</card>';
         $xml .= '</transaction>';
+        $xml .= '<auth-token>success</auth-token>';
         $xml .= '<client-info platform="iOS" version="1.00" language="da">';
         $xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
         $xml .= '<email>jona@oismail.com</email>';
