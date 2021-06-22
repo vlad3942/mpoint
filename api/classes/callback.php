@@ -626,7 +626,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE);
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
 		if ($callbackMessageRequest !== NULL) {
                 $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
             }
@@ -1395,7 +1395,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id,null,-1));
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id));
 				}
 			}
 		}
@@ -1447,20 +1447,7 @@ abstract class Callback extends EndUserAccount
 
         if($amt === -1)
 		{
-			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $txnInfo->getID(), $txnInfo->getClientConfig()->getID());
-			switch ($sid){
-				case 2001:
-					$amt = $txnPassbookObj->getCapturedAmount();
-					break;
-				case 2002:
-					$amt = $txnPassbookObj->getCancelledAmount();
-					break;
-				case 2003:
-					$amt = $txnPassbookObj->getRefundedAmount();
-					break;
-				default:
-					$amt = $txnPassbookObj->getAuthorizedAmount();
-			}
+            $amt = $txnInfo->getConvertedAmount();
 		}
 
         $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(),$txnInfo->getCurrencyConfig()->getDecimals(),$txnInfo->getCurrencyConfig()->getCode(), $txnInfo->getConversationRate());
