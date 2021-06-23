@@ -938,16 +938,13 @@ class Home extends General
                     $RSMsg = false;
 
                     if(($obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_COMPLETED ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iPAYMENT_3DS_FAILURE_STATE) ||
-                        $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iPAYMENT_REJECTED_STATE ,Constants::iPRE_FRAUD_CHECK_REJECTED_STATE,Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,$state)))
+                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS) ||
+                        $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iPAYMENT_CANCELLED_STATE,Constants::iPAYMENT_REFUNDED_STATE,Constants::iPAYMENT_REJECTED_STATE ,Constants::iPRE_FRAUD_CHECK_REJECTED_STATE,Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,$state)))
                     {
                         $sql = "WITH WT1 as
                            (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
                             WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
-                            ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",
-                            ".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
+                            ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
                             ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
                             ".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.",
                             ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".$state.")) s where s.rank=1
