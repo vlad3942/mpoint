@@ -505,7 +505,7 @@ abstract class Callback extends EndUserAccount
 				}
 				$sBody .= "&desc=" . urlencode($this->getStatusMessage($sid));
 				$sBody .= "&exchange_rate=" . urlencode($conversionRate);
-				$sBody .= "&amount=" . urlencode($this->_obj_TxnInfo->getConvertedAmount());
+				$sBody .= "&amount=" . $amt;
 				$sBody .= "&currency=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getCode());
 				$sBody .= "&decimals=" . urlencode($this->_obj_TxnInfo->getConvertedCurrencyConfig()->getDecimals());
 				$sBody .= "&sale_amount=" . $this->_obj_TxnInfo->getInitializedAmount();
@@ -626,7 +626,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE);
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
 		if ($callbackMessageRequest !== NULL) {
                 $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
             }
@@ -1395,7 +1395,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id,null,-1));
+					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id));
 				}
 			}
 		}
@@ -1409,7 +1409,7 @@ abstract class Callback extends EndUserAccount
 		}
 
 		if($isIgnoreRequest === FALSE) {
-			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(), NULL);
+			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(),$this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getDecimals(),$this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
             $status      = $sid;
 			if($sub_code_id > 0){
                 $sub_code= $sub_code_id;
@@ -1436,7 +1436,7 @@ abstract class Callback extends EndUserAccount
         $obj_PSPInfo = NULL;
         $obj_StateInfo= NULL;
         $aClientData = [];
-        $aProductÌnfo = [];
+        $aProductInfo = [];
         $aDeliveryInfo = [];
         $aShippingInfo = [];
         $additionalData = [];
@@ -1447,23 +1447,10 @@ abstract class Callback extends EndUserAccount
 
         if($amt === -1)
 		{
-			$txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $txnInfo->getID(), $txnInfo->getClientConfig()->getID());
-			switch ($sid){
-				case 2001:
-					$amt = $txnPassbookObj->getCapturedAmount();
-					break;
-				case 2002:
-					$amt = $txnPassbookObj->getCancelledAmount();
-					break;
-				case 2003:
-					$amt = $txnPassbookObj->getRefundedAmount();
-					break;
-				default:
-					$amt = $txnPassbookObj->getAuthorizedAmount();
-			}
+            $amt = $txnInfo->getConvertedAmount();
 		}
 
-        $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(), $txnInfo->getConversationRate());
+        $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(),$txnInfo->getCurrencyConfig()->getDecimals(),$txnInfo->getCurrencyConfig()->getCode(), $txnInfo->getConversationRate());
 
         if(empty($sid))
 		{
@@ -1507,6 +1494,7 @@ abstract class Callback extends EndUserAccount
         $transactionData->setFee($txnInfo->getFee());
         $transactionData->setDescription($txnInfo->getDescription());
         $transactionData->setHmac($txnInfo->getHMAC());
+        $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
         $transactionData->setShortCode($this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
@@ -1548,11 +1536,11 @@ abstract class Callback extends EndUserAccount
         // Add Purchased Products
         if (count($aProducts) > 0) {
             foreach ($aProducts["names"] as $key => $name) {
-                $aProductÌnfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+                $aProductInfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
             }
         }
 
-        $transactionData->setProductInfo($aProductÌnfo);
+        $transactionData->setProductInfo($aProductInfo);
 
         // Add Delivery Information
         foreach ($adeliveryinfo as $name => $value) {
@@ -1570,6 +1558,10 @@ abstract class Callback extends EndUserAccount
 
         // Add Billing address
         foreach ($abillingaddress as $name => $value) {
+            if($name == 'mobile_country_id'){
+                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(),(integer)$value);
+                $value = $obj_MobileCountryConfig->getCountryCode();
+            }
             $aBillingAddress[] = new AdditionalData($name, $value);
         }
 
