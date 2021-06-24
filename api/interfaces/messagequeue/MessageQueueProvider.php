@@ -33,11 +33,11 @@ namespace api\interfaces\messagequeue {
         }
 
         /**
-         * @param string $message
-         *
+         * @param string $data
+         * @param array|null $filter
          * @return bool
          */
-        abstract public function publish(string $message);
+        abstract public function publish(string $data, array $filter = null): bool;
 
         /**
          * @return array|null
