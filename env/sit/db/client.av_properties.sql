@@ -18,7 +18,9 @@ insert into client.additionalproperty_tbl (key,value,externalid,type,scope) valu
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('ADOBE_TARGET_SCRIPT_PATH','6ac3e976c146/92ff2d2716e2/launch-9a08edba7641-staging.min.js',<client-id>,'client',2);
 
 insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('INGENICO_AUTH_MODE','SALE',<route-id>,'merchant',2);
-insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('CYBS_MerchantDescriptor','Avianca S.A.',<CYBS-fraud-route-id>,'merchant',2);
+insert into client.additionalproperty_tbl (key,value,externalid,type,scope) values ('CYBS_MerchantDescriptor','Avianca S.A.',<CYBS-route-id>,'merchant',2);
+-- Insert the Property for CYBS
+INSERT INTO client.additionalproperty_tbl ( key, value, externalid, type, enabled, scope) VALUES ('CYBS_MerchantDescriptor', 'Avianca S.A.',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10101 and pspid = 63) ,'merchant', true, 1);
 
 -- CMP-5616 - Corrected existing properties for AV-WP
 update client.additionalproperty_tbl set value = 'Avianca' where key = 'CARRIER_NAME' and externalid = 10101;
