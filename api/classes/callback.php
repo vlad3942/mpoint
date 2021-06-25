@@ -629,6 +629,12 @@ abstract class Callback extends EndUserAccount
 		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
 		if ($callbackMessageRequest !== NULL) {
                 $filter = ['status_code' => (string)$sid];
+                if($sid === 2000 || $sid === 2010) {
+                    $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
+                    if ($kpiUsed != false) {
+                        $filter['is_volume_kpi_used'] = 'true';
+                    }
+                }
                 $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
             }
 
