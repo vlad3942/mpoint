@@ -374,12 +374,12 @@ class CallbackAPITest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                $affectedRows++;
             }
-            if ($affectedRows >= 6) {
+            if ($affectedRows >= 12) {
                 break;
             }
             sleep(2);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-		$this->assertEquals(6, $affectedRows);
+		$this->assertEquals(12, $affectedRows);
     }
 
     public function successfulPartialCapture($pspID,$iTransStatus)
