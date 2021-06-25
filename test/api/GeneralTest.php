@@ -515,7 +515,7 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
         $checkTxnStatus = General::checkTxnStatus($this->_OBJ_DB, Constants::iPAYMENT_ACCEPTED_STATE,1001001);
-        $this->assertEquals(1, $checkTxnStatus);
+        $this->assertEquals('Complete', $checkTxnStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ")");
         $checkTxnStatus = General::checkTxnStatus($this->_OBJ_DB, Constants::iPAYMENT_REJECTED_STATE,1001001,true);
@@ -547,7 +547,7 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
         $checkLinkedTxn = General::getLinkedTransactions($this->_OBJ_DB, 1001002,1001001,1);
-        $this->assertEquals('<linked_transactions><transaction_details><id>1001001</id><status>Complete</status></transaction_details><transaction_details><id>1001002</id><status>Pending</status></transaction_details></linked_transactions>', $checkLinkedTxn);
+        $this->assertEquals('<payment_status>Pending</payment_status><linked_transactions><transaction_details><id>1001001</id><status>Complete</status></transaction_details><transaction_details><id>1001002</id><status>Pending</status></transaction_details></linked_transactions>', $checkLinkedTxn);
     }
 
     public function tearDown() : void
