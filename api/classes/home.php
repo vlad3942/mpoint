@@ -1051,44 +1051,12 @@ class Home extends General
                         $cancelUrl = $obj_TxnInfo->getCancelURL();
                         $cssUrl = $obj_TxnInfo->getCSSURL();
                         $logoUrl = $obj_TxnInfo->getLogoURL();
-                        $ipAddress = $obj_TxnInfo->getIP();
                         $issuingBank = $obj_TxnInfo->getIssuingBankName();
                         if($sessionId > 0 && $index === 0)
                         {
                             $xml .= $obj_TxnInfo->getPaymentSessionXML();
                         }
                         $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
-
-                        $fxservicetypeid = $obj_TxnInfo->getFXServiceTypeID();
-                        if ($fxservicetypeid != 0) {
-                            $xml .= '<exchange>';
-                            $xml .= '<service-type-id>'. $fxservicetypeid .'</service-type-id>';
-                            $xml .= '</exchange>';
-                        }
-
-                        $getFraudStatusCode = $this->getFraudDetails($obj_TxnInfo->getID());
-                        if (empty($getFraudStatusCode) === FALSE) {
-                            $fraudCheckAdditionalData = '';
-
-                            if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
-                                $fraudCheckAdditionalData .= ' pre_auth_ext_id = ' . $aTxnAdditionalData['pre_auth_ext_id'];
-                            }
-                            if (isset($aTxnAdditionalData['pre_auth_ext_status_code'])) {
-                                $fraudCheckAdditionalData .= ' pre_auth_ext_status_code = ' . $aTxnAdditionalData['pre_auth_ext_status_code'];
-                            }
-                            if (isset($aTxnAdditionalData['post_auth_ext_id'])) {
-                                $fraudCheckAdditionalData .= ' post_auth_ext_id = ' . $aTxnAdditionalData['post_auth_ext_id'];
-                            }
-                            if (isset($aTxnAdditionalData['post_auth_ext_status_code'])) {
-                                $fraudCheckAdditionalData .= ' post_auth_ext_status_code = ' . $aTxnAdditionalData['post_auth_ext_status_code'];
-                            }
-
-                            $xml .= '<fraud ' . $fraudCheckAdditionalData . '>';
-
-                            $xml .= '<fraud-status-code>' . $getFraudStatusCode['status_code'] . '</fraud-status-code>';
-                            $xml .= '<fraud-status-eesc>' . $getFraudStatusCode['status_desc'] . '</fraud-status-eesc>';
-                            $xml .= '</fraud>';
-                        }
 
                         $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
                         if($obj_TxnInfo->getConversationRate() !=1 )
@@ -1105,7 +1073,6 @@ class Home extends General
                         $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
                         $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
                         $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
-                        $xml .= '<ip-address>' . $ipAddress . '</ip-address>';
                         $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
                         if (empty($isEmbeddedHpp) === false) { $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>'; }
                         if (empty($isAutoRedirect) === false) { $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>'; }
