@@ -1236,37 +1236,7 @@ class Home extends General
         $sTxnDetailsXml .= '<payment-type>' . $objPaymentMethod->PaymentMethod .'</payment-type>';
         $sTxnDetailsXml .= '<payment-method>' . $objPaymentMethod->PaymentMethod .'</payment-method>';
         $sTxnDetailsXml .= '<date-time>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) . 'T' . htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</date-time>'; //YYMMDD
-
-        $aShippingAddress = $obj_TxnInfo->getBillingAddr();
-        if (empty($aShippingAddress) === false)
-        {
-            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
-            $addressXml = '<address>';
-            $addressXml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
-            $addressXml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
-            $addressXml .= '<street>' . $aShippingAddress['street'] . '</street>';
-            $addressXml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
-            $addressXml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
-            $addressXml .= '<city>' . $aShippingAddress['city'] . '</city>';
-            $addressXml .= '<state>' . $aShippingAddress['state'] . '</state>';
-            if (($obj_CountryConfig instanceof CountryConfig) === true)
-            {
-                $addressXml .= '<country>';
-                $addressXml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
-                $addressXml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
-                $addressXml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
-                $addressXml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
-                $addressXml .= '</country>';
-            }
-            if (empty($aShippingAddress['mobile']) === false)
-            {
-                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
-                $addressXml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
-            }
-            if (empty($aShippingAddress['email']) === false){ $addressXml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
-            $addressXml .= '</address>';
-        }
-        $sTxnDetailsXml .= $addressXml;
+        $sTxnDetailsXml .= $this->getTxnBillingAddressXml($obj_TxnInfo);
 
         return $sTxnDetailsXml;
     }
@@ -1343,6 +1313,41 @@ class Home extends General
     {
         $sTxnStatusDetailsXml = "";
         return $sTxnStatusDetailsXml;
+    }
+
+    public function getTxnBillingAddressXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $addressXml = "";
+        $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+        if (empty($aShippingAddress) === false)
+        {
+            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+            $addressXml = '<address>';
+            $addressXml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+            $addressXml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
+            $addressXml .= '<street>' . $aShippingAddress['street'] . '</street>';
+            $addressXml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+            $addressXml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+            $addressXml .= '<city>' . $aShippingAddress['city'] . '</city>';
+            $addressXml .= '<state>' . $aShippingAddress['state'] . '</state>';
+            if (($obj_CountryConfig instanceof CountryConfig) === true)
+            {
+                $addressXml .= '<country>';
+                $addressXml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
+                $addressXml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
+                $addressXml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
+                $addressXml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
+                $addressXml .= '</country>';
+            }
+            if (empty($aShippingAddress['mobile']) === false)
+            {
+                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                $addressXml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+            }
+            if (empty($aShippingAddress['email']) === false){ $addressXml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
+            $addressXml .= '</address>';
+        }
+        return $addressXml;
     }
 
     public function getSessionAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
