@@ -916,7 +916,8 @@ class Home extends General
                 while ($RS = $this->getDBConn()->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
             }
 		    else { $aTxnId[0] = $txnId; }
-
+            $txnXml = "";
+		    $txnCnt = count($aTxnId);
             foreach ($aTxnId as $index => $txnid)
             {
 
@@ -970,11 +971,51 @@ class Home extends General
 
                 }
 
-                    $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
-                    $objCountryConf = $obj_TxnInfo->getCountryConfig();
-            		$objClientConf = $obj_TxnInfo->getClientConfig();
-            		if($objClientConf->getID() === $clientid)
-            		{
+                $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
+                $objCountryConf = $obj_TxnInfo->getCountryConfig();
+                $objClientConf = $obj_TxnInfo->getClientConfig();
+
+                if($objClientConf->getID() === $clientid)
+                {
+
+                    if ($mode == 3) {
+                        $sTxnAdditionalDataXml = $this->getTxnAdditionalDataXml($obj_TxnInfo);
+                        $sCardDetailsXml = $this->getTxnCardDetailsXml($obj_TxnInfo);
+                        $sPspDetailsXml = $this->getTxnPspDetailsXml($obj_TxnInfo);
+                        $sAmtDetailsXml = $this->getTxnAmountDetailsXml($obj_TxnInfo);
+                        $sTxnStatusDetailsXml = $this->getTxnStatusDetailsXml($obj_TxnInfo);
+                        $sExchangeDetailsXml = $this->getTxnExchangeDetailsXml($obj_TxnInfo);
+                        $sFraudCheckDetailsXml = $this->getFraudCheckDetailsXml($obj_TxnInfo);
+                        $sTxnDetailsXml = $this->getTxnDetailsXml($obj_TxnInfo);
+                        $sSaleAmtXml = $this->getSaleAmtXml($obj_TxnInfo);
+                        $sSessionDetailsXml = $this->getSessionDetailsXml($obj_TxnInfo);
+                        $sSessionAdditionalDataXml = $this->getSessionAdditionalDataXml($obj_TxnInfo);
+                        $sSessionStatusXml = $this->getSessionStatusXml($obj_TxnInfo);
+
+                        if ($index == 0) {
+                            $xml .= $sSessionDetailsXml;
+                            $xml .= $sSessionStatusXml;
+                            $xml .= $sSessionAdditionalDataXml;
+                            $xml .= $sSaleAmtXml;
+                            $xml .= '<transactions>';
+                        }
+                        $txnXml .= '<transaction>';
+                        $txnXml .= $sTxnDetailsXml;
+                        $txnXml .= $sTxnAdditionalDataXml;
+                        $txnXml .= $sFraudCheckDetailsXml;
+                        $txnXml .= $sExchangeDetailsXml;
+                        $txnXml .= $sPspDetailsXml;
+                        $txnXml .= $sCardDetailsXml;
+                        $txnXml .= $sAmtDetailsXml;
+                        $txnXml .= $sTxnStatusDetailsXml;
+                        $txnXml .= '</transaction>';
+
+                        if ($index == $txnCnt - 1) {
+                            $xml .= $txnXml;
+                            $xml .= '</transactions>';
+                        }
+
+                    } else {
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
                         if($aTxnAdditionalData !== null)
@@ -987,134 +1028,366 @@ class Home extends General
                             $sTxnAdditionalDataXml .="</additional-data>";
                         }
 
-                         $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
-                         $pendingAmount = intval($obj_paymentSession->getPendingAmount());
-                         $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
+                        $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
+                        $pendingAmount = intval($obj_paymentSession->getPendingAmount());
+                        $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
 
-                         $amount = $obj_TxnInfo->getAmount();
+                        $amount = $obj_TxnInfo->getAmount();
 
-                         $sStatusMessagesXML = '';
-                         while ($RS = $this->getDBConn()->fetchName($RSMsg) )
-                         {
-                             $sStatusMessagesXML .= '<status-message id = "'.$RS['STATEID'].'" position = "'.$RS['ROWNUM'] .'">' . $RS['NAME'] . '</status-message>';
-                         }
+                        $sStatusMessagesXML = '';
+                        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+                        {
+                            $sStatusMessagesXML .= '<status-message id = "'.$RS['STATEID'].'" position = "'.$RS['ROWNUM'] .'">' . $RS['NAME'] . '</status-message>';
+                        }
 
-                         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
-                         $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
-                         $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
-                         $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
-                         $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
-                         $cardMask = $obj_TxnInfo->getCardMask();
-                         $cardExpiry = $obj_TxnInfo->getCardExpiry();
-                         $acceptUrl = $obj_TxnInfo->getAcceptURL();
-                         $cancelUrl = $obj_TxnInfo->getCancelURL();
-                         $cssUrl = $obj_TxnInfo->getCSSURL();
-                         $logoUrl = $obj_TxnInfo->getLogoURL();
-                         $issuingBank = $obj_TxnInfo->getIssuingBankName();
-                         if($sessionId > 0 && $index === 0)
-                         {
-                             $xml .= $obj_TxnInfo->getPaymentSessionXML();
-                         }
-                         $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
-                         $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
-                         if($obj_TxnInfo->getConversationRate() !=1 )
-                         {
-                             $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
-                         }
-                         if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
-                         if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
-                         if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
-                         $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
-                         $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
-                         $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
-                         $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
-                         $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
-                         $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
-                         $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
-                         $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
-                         if (empty($isEmbeddedHpp) === false) { $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>'; }
-                         if (empty($isAutoRedirect) === false) { $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>'; }
-            		     $xml .= '<createdDate>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //YYMMDD
-            		     $xml .= '<createdTime>'. htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
+                        $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+                        $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
+                        $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
+                        $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
+                        $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
+                        $cardMask = $obj_TxnInfo->getCardMask();
+                        $cardExpiry = $obj_TxnInfo->getCardExpiry();
+                        $acceptUrl = $obj_TxnInfo->getAcceptURL();
+                        $cancelUrl = $obj_TxnInfo->getCancelURL();
+                        $cssUrl = $obj_TxnInfo->getCSSURL();
+                        $logoUrl = $obj_TxnInfo->getLogoURL();
+                        $ipAddress = $obj_TxnInfo->getIP();
+                        $issuingBank = $obj_TxnInfo->getIssuingBankName();
+                        if($sessionId > 0 && $index === 0)
+                        {
+                            $xml .= $obj_TxnInfo->getPaymentSessionXML();
+                        }
+                        $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
 
-                         $xml .= '<status>' . $sStatusMessagesXML . '</status>';
-                         $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
-                     //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
-            		     $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
-            		     if ($obj_TxnInfo->getProfileID() !== '') { $xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"'; }
-            		     $xml .= '>';
-                         $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
-                         $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
-                         $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
-                         $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
-                         $xml .= '</client-info>';
-                         $xml .= $sTxnAdditionalDataXml;
-                         $aShippingAddress = $obj_TxnInfo->getBillingAddr();
-                         if (empty($aShippingAddress) === false)
-                         {
-                             $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
-                             $xml .= '<address>';
-                             $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
-                             $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
-                             $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
-                             $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
-                             $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
-                             $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
-                             $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
-                             if (($obj_CountryConfig instanceof CountryConfig) === true)
-                             {
-                                 $xml .= '<country>';
-                                 $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
-                                 $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
-                                 $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
-            		     		 $xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
-            		     		 $xml .= '</country>';
-                             }
-                             if (empty($aShippingAddress['mobile']) === false)
-                             {
-                                 $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
-                                 $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
-                             }
-                             if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
-                             $xml .= '</address>';
-                         }
+                        $fxservicetypeid = $obj_TxnInfo->getFXServiceTypeID();
+                        if ($fxservicetypeid != 0) {
+                            $xml .= '<exchange>';
+                            $xml .= '<service-type-id>'. $fxservicetypeid .'</service-type-id>';
+                            $xml .= '</exchange>';
+                        }
 
-                         $xml .= '</transaction>';
-                         if($index == 0) {
-                             // this needs to be added only for parent txn
-                             $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-                             $xml .= "<payment_status>" . General::getPaymentStatus($this->getDBConn(), $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType, $linkedTxnId) . "</payment_status>";
-                             // add linked transaction
-                             if ($linkedTxnId !== null) {
-                                 $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
-                                 $xml .= $getLinkedTxns;
-                             }
-                         }
+                        $getFraudStatusCode = $this->getFraudDetails($obj_TxnInfo->getID());
+                        if (empty($getFraudStatusCode) === FALSE) {
+                            $fraudCheckAdditionalData = '';
 
-                         if ( ($objCountryConf instanceof CountryConfig) === true)
-                         {
-                             $iAccountID = $obj_TxnInfo->getAccountID();
+                            if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
+                                $fraudCheckAdditionalData .= ' pre_auth_ext_id = ' . $aTxnAdditionalData['pre_auth_ext_id'];
+                            }
+                            if (isset($aTxnAdditionalData['pre_auth_ext_status_code'])) {
+                                $fraudCheckAdditionalData .= ' pre_auth_ext_status_code = ' . $aTxnAdditionalData['pre_auth_ext_status_code'];
+                            }
+                            if (isset($aTxnAdditionalData['post_auth_ext_id'])) {
+                                $fraudCheckAdditionalData .= ' post_auth_ext_id = ' . $aTxnAdditionalData['post_auth_ext_id'];
+                            }
+                            if (isset($aTxnAdditionalData['post_auth_ext_status_code'])) {
+                                $fraudCheckAdditionalData .= ' post_auth_ext_status_code = ' . $aTxnAdditionalData['post_auth_ext_status_code'];
+                            }
 
-                             $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
-                                          WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
-                                          ORDER BY EC.created DESC LIMIT 1";
-                             $resultSet = $this->getDBConn()->getName($cardsSql);
-                             if (empty($resultSet) === false)
-                             {
-                                 $xml .= '<stored-card>';
-                                 $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
-                                 $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
-                                 $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
-                                 $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
-                                 $xml .= '</stored-card>';
-                             }
-            		     }
-            		}
-            		else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
+                            $xml .= '<fraud ' . $fraudCheckAdditionalData . '>';
+
+                            $xml .= '<fraud-status-code>' . $getFraudStatusCode['status_code'] . '</fraud-status-code>';
+                            $xml .= '<fraud-status-eesc>' . $getFraudStatusCode['status_desc'] . '</fraud-status-eesc>';
+                            $xml .= '</fraud>';
+                        }
+
+                        $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
+                        if($obj_TxnInfo->getConversationRate() !=1 )
+                        {
+                            $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
+                        }
+                        if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
+                        if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
+                        if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
+                        $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
+                        $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
+                        $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
+                        $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
+                        $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
+                        $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
+                        $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
+                        $xml .= '<ip-address>' . $ipAddress . '</ip-address>';
+                        $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
+                        if (empty($isEmbeddedHpp) === false) { $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>'; }
+                        if (empty($isAutoRedirect) === false) { $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>'; }
+                        $xml .= '<createdDate>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //YYMMDD
+                        $xml .= '<createdTime>'. htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
+
+                        $xml .= '<status>' . $sStatusMessagesXML . '</status>';
+                        $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
+                        //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
+                        $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
+                        if ($obj_TxnInfo->getProfileID() !== '') { $xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"'; }
+                        $xml .= '>';
+                        $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
+                        $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
+                        $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
+                        $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
+                        $xml .= '</client-info>';
+                        $xml .= $sTxnAdditionalDataXml;
+                        $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+                        if (empty($aShippingAddress) === false)
+                        {
+                            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+                            $xml .= '<address>';
+                            $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+                            $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
+                            $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
+                            $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+                            $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+                            $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
+                            $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
+                            if (($obj_CountryConfig instanceof CountryConfig) === true)
+                            {
+                                $xml .= '<country>';
+                                $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
+                                $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
+                                $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
+                                $xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
+                                $xml .= '</country>';
+                            }
+                            if (empty($aShippingAddress['mobile']) === false)
+                            {
+                                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                                $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+                            }
+                            if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
+                            $xml .= '</address>';
+                        }
+
+                        $xml .= '</transaction>';
+                        if($index == 0) {
+                            // this needs to be added only for parent txn
+                            $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                            $xml .= "<payment_status>" . General::getPaymentStatus($this->getDBConn(), $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType, $linkedTxnId) . "</payment_status>";
+                            // add linked transaction
+                            if ($linkedTxnId !== null) {
+                                $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
+                                $xml .= $getLinkedTxns;
+                            }
+                        }
+
+                        if ( ($objCountryConf instanceof CountryConfig) === true)
+                        {
+                            $iAccountID = $obj_TxnInfo->getAccountID();
+
+                            $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
+                                      WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
+                                      ORDER BY EC.created DESC LIMIT 1";
+                            $resultSet = $this->getDBConn()->getName($cardsSql);
+                            if (empty($resultSet) === false)
+                            {
+                                $xml .= '<stored-card>';
+                                $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
+                                $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
+                                $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
+                                $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
+                                $xml .= '</stored-card>';
+                            }
+                        }
+                    }
+                }
+                else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
             }
         }
         catch (mPointException $e) { return $xml; }
         return $xml;
+    }
+
+    public function getTxnAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sTxnAdditionalDataXml = "";
+        $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
+        if($aTxnAdditionalData !== null)
+        {
+            $sTxnAdditionalDataXml ="<additional-data>";
+            foreach ($aTxnAdditionalData as $key => $value)
+            {
+                $sTxnAdditionalDataXml .= '<param name="'.$key.'">'. $value .'</param>';
+            }
+            $sTxnAdditionalDataXml .="</additional-data>";
+        }
+        return $sTxnAdditionalDataXml;
+    }
+
+    public function getTxnCardDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sCardDetailsXml = "";
+        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+        $sCardDetailsXml .= '<card>';
+        $sCardDetailsXml .= '<id>' . $obj_TxnInfo->getCardID() .'</id>';
+        if ($objPaymentMethod !== null) {
+            $sCardDetailsXml .= '<card-name>' . $objPaymentMethod->CardName .'</card-name>';
+        }
+
+        $sCardDetailsXml .= '<expiry>' . $obj_TxnInfo->getCardExpiry() .'</expiry>';
+        $sCardDetailsXml .= '<mask-card-number>' . $obj_TxnInfo->getCardExpiry() .'</mask-card-number>';
+        $sCardDetailsXml .= '</card>';
+
+        return $sCardDetailsXml;
+    }
+
+    public function getTxnPspDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sPspDetailsXml = "";
+        $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
+        $sPspDetailsXml .= '<psp>';
+        $sPspDetailsXml .= '<id>' . $obj_TxnInfo->getPSPID() .'</id>';
+        $sPspDetailsXml .= '<name>' . $objPSPType->PSPName .'</name>';
+        $sPspDetailsXml .= '<reference-id>' . $obj_TxnInfo->getExternalID() .'</reference-id>';
+        $sPspDetailsXml .= '</psp>';
+
+        return $sPspDetailsXml;
+    }
+
+    public function getTxnAmountDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sAmtDetailsXml = "";
+        $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
+
+        $sAmtDetailsXml .= '<amount>';
+        $sAmtDetailsXml .= '<conversion-rate>' . $obj_TxnInfo->getConversationRate() .'</conversion-rate>';
+        $sAmtDetailsXml .= '<currency-id>' . $objCurrConf->getID() .'</currency-id>';
+        $sAmtDetailsXml .= '<decimals>' . $objCurrConf->getDecimals() .'</decimals>';
+        $sAmtDetailsXml .= '<value>' . $obj_TxnInfo->getAmount() .'</value>';
+        $sAmtDetailsXml .= '</amount>';
+
+        return $sAmtDetailsXml;
+    }
+
+    public function getTxnDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sTxnDetailsXml = "";
+        $objClientConf = $obj_TxnInfo->getClientConfig();
+        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
+        $sTxnDetailsXml .= '<id>'. $obj_TxnInfo->getID() .'</id>';
+        $sTxnDetailsXml .= '<installment>'. $objClientConf->getInstallment() .'</installment>';
+        $sTxnDetailsXml .= '<ip-address>'. $obj_TxnInfo->getIP() .'</ip-address>';
+        $sTxnDetailsXml .= '<issuing-bank>'. $obj_TxnInfo->getIssuingBankName() .'</issuing-bank>';
+        $sTxnDetailsXml .= '<order-id>'. $obj_TxnInfo->getOrderID() .'</order-id>';
+        $sTxnDetailsXml .= '<approval-code>'. $obj_TxnInfo->getApprovalCode() .'</approval-code>';
+        $sTxnDetailsXml .= '<payment-type>' . $objPaymentMethod->PaymentMethod .'</payment-type>';
+        $sTxnDetailsXml .= '<payment-method>' . $objPaymentMethod->PaymentMethod .'</payment-method>';
+        $sTxnDetailsXml .= '<date-time>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) . 'T' . htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</date-time>'; //YYMMDD
+
+        $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+        if (empty($aShippingAddress) === false)
+        {
+            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+            $addressXml = '<address>';
+            $addressXml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+            $addressXml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
+            $addressXml .= '<street>' . $aShippingAddress['street'] . '</street>';
+            $addressXml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+            $addressXml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+            $addressXml .= '<city>' . $aShippingAddress['city'] . '</city>';
+            $addressXml .= '<state>' . $aShippingAddress['state'] . '</state>';
+            if (($obj_CountryConfig instanceof CountryConfig) === true)
+            {
+                $addressXml .= '<country>';
+                $addressXml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
+                $addressXml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
+                $addressXml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
+                $addressXml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
+                $addressXml .= '</country>';
+            }
+            if (empty($aShippingAddress['mobile']) === false)
+            {
+                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                $addressXml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+            }
+            if (empty($aShippingAddress['email']) === false){ $addressXml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
+            $addressXml .= '</address>';
+        }
+        $sTxnDetailsXml .= $addressXml;
+
+        return $sTxnDetailsXml;
+    }
+
+    public function getSaleAmtXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sSaleAmtXml = "";
+        $sSaleAmtXml .= '<sale-amount>';
+        $sSaleAmtXml .= '<currency-id>' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() .'</currency-id>';
+        $sSaleAmtXml .= '<decimals>' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() .'</decimals>';
+        $sSaleAmtXml .= '<value>' . $obj_TxnInfo->getInitializedAmount() .'</value>';
+        $sSaleAmtXml .= '</sale-amount>';
+
+        return $sSaleAmtXml;
+    }
+
+    public function getSessionDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sSessionDetailsXml = "";
+        $objClientConf = $obj_TxnInfo->getClientConfig();
+        $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+
+        $sSessionDetailsXml .= '<session-id>' . $obj_TxnInfo->getSessionId() .'</session-id>';
+        $sSessionDetailsXml .= '<session-type>' . $sessionType .'</session-type>';
+
+        return $sSessionDetailsXml;
+    }
+
+    public function getTxnExchangeDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sExchangeDetailsXml = "";
+        $fxservicetypeid = $obj_TxnInfo->getFXServiceTypeID();
+        if ($fxservicetypeid != 0) {
+            $sExchangeDetailsXml .= '<exchange>';
+            $sExchangeDetailsXml .= '<service-type-id>'. $fxservicetypeid .'</service-type-id>';
+            $sExchangeDetailsXml .= '</exchange>';
+        }
+
+        return $sExchangeDetailsXml;
+    }
+
+    public function getFraudCheckDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sFraudCheckDetailsXml = "";
+        $getFraudStatusCode = true;//Callback::getFraudDetails($obj_TxnInfo->getID());
+        $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
+        if (empty($getFraudStatusCode) === FALSE) {
+            $fraudCheckAdditionalDataXml = '';
+
+            if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
+                $fraudCheckAdditionalDataXml .= '<pre_auth_ext_id>' . $aTxnAdditionalData['pre_auth_ext_id'] . '</pre_auth_ext_id>';
+            }
+            if (isset($aTxnAdditionalData['pre_auth_ext_status_code'])) {
+                $fraudCheckAdditionalDataXml .= '<pre_auth_ext_status_code>' . $aTxnAdditionalData['pre_auth_ext_status_code'] . '</pre_auth_ext_status_code>';
+            }
+            if (isset($aTxnAdditionalData['post_auth_ext_id'])) {
+                $fraudCheckAdditionalDataXml .= '<post_auth_ext_id>' . $aTxnAdditionalData['post_auth_ext_id'] . '</post_auth_ext_id>';
+            }
+            if (isset($aTxnAdditionalData['post_auth_ext_status_code'])) {
+                $fraudCheckAdditionalDataXml .= '<post_auth_ext_status_code>' . $aTxnAdditionalData['post_auth_ext_status_code'] . '</post_auth_ext_status_code>';
+            }
+
+            $sFraudCheckDetailsXml .= '<fraud>';
+            $sFraudCheckDetailsXml .= $fraudCheckAdditionalDataXml;
+            $sFraudCheckDetailsXml .= '<fraud-status-code>' . $getFraudStatusCode['status_code'] . '</fraud-status-code>';
+            $sFraudCheckDetailsXml .= '<fraud-status-desc>' . $getFraudStatusCode['status_desc'] . '</fraud-status-desc>';
+            $sFraudCheckDetailsXml .= '</fraud>';
+        }
+
+        return $sFraudCheckDetailsXml;
+    }
+
+    public function getTxnStatusDetailsXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sTxnStatusDetailsXml = "";
+        return $sTxnStatusDetailsXml;
+    }
+
+    public function getSessionAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sSessionAdditionalDataXml = "";
+        return $sSessionAdditionalDataXml;
+    }
+
+    public function getSessionStatusXml(TxnInfo $obj_TxnInfo) : string
+    {
+        $sSessionStatusXml = "";
+        return $sSessionStatusXml;
     }
 
 	/**
