@@ -417,7 +417,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $additionalTxnDataIndex++;
                                     $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
                                     $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
-                                    $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+                                    $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Session';
                                 }
                             }
                             if($additionalTxnDataIndex > -1)

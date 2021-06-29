@@ -387,6 +387,13 @@ class TxnInfo
      */
     private $_aAdditionalData;
 
+	/**
+	 * Session's Additional Data
+	 *
+	 * @var array
+	 */
+	private $_aSessionAdditionalData;
+
 
     /*
      *  Payment type based on card used for transaction
@@ -521,7 +528,7 @@ class TxnInfo
      * @param int|null $routeConfigId
      * @param int $fxservicetypeid
      */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,int $fxservicetypeid=0)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac=1, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt=1, $paymentSession = 1, $productType = 100, $installmentValue=0, $profileid='', $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$walletid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[],$aExternalRef = [],$ofAmt = -1,CurrencyConfig &$oFCR = null,$fconversionRate = 1, $sIssuingBank = "", $aBillingAddr = [],?int $routeConfigId = -1,int $fxservicetypeid=0, $sessionAdditionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -612,6 +619,7 @@ class TxnInfo
         $this->_aBillingAddr = $aBillingAddr;
         $this->_iRouteConfigId = $routeConfigId;
 		$this->_fxServiceTypeID = $fxservicetypeid;
+		$this->_aSessionAdditionalData = $sessionAdditionalData;
     }
 
 	/**
@@ -1062,6 +1070,37 @@ class TxnInfo
         }
         return null;
     }
+
+	/*
+     * Returns the Session's Additional data
+     * if param is sent returns value of property
+     *
+     * @param string    key
+     * @return 	string
+     * */
+	public function getSessionAdditionalData($key = "")
+	{
+		try
+		{
+			if (empty($key) === true)
+			{
+				if (is_array($this->_aSessionAdditionalData) && count($this->_aSessionAdditionalData) > 0)
+				{
+					return $this->_aSessionAdditionalData;
+				}
+				return null;
+			}
+			if (is_array($this->_aSessionAdditionalData) && $this->_aSessionAdditionalData != null && array_key_exists($key, $this->_aSessionAdditionalData) === true)
+			{
+				return $this->_aSessionAdditionalData[$key];
+			}
+		}
+		catch (Exception $e)
+		{
+
+		}
+		return null;
+	}
 
 
 	/*
@@ -1875,6 +1914,21 @@ class TxnInfo
         }
         return $additionalData;
     }
+
+	public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId)
+	{
+		$additionalData = [];
+		$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
+		$rsa = $_OBJ_DB->getAllNames ( $sqlA );
+		if (empty($rsa) === false )
+		{
+			foreach ($rsa as $rs)
+			{
+				$additionalData[$rs["NAME"] ] = $rs ["VALUE"];
+			}
+		}
+		return $additionalData;
+	}
 
 	public static function  _produceBillingAddr($_OBJ_DB, $txnId)
 	{
