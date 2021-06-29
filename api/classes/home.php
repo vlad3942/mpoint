@@ -1160,6 +1160,10 @@ class Home extends General
         return $xml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
     {
         $sTxnAdditionalDataXml = "";
@@ -1175,7 +1179,10 @@ class Home extends General
         }
         return $sTxnAdditionalDataXml;
     }
-
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnCardDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sCardDetailsXml = "";
@@ -1193,6 +1200,10 @@ class Home extends General
         return $sCardDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnPspDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sPspDetailsXml = "";
@@ -1206,6 +1217,10 @@ class Home extends General
         return $sPspDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnAmountDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sAmtDetailsXml = "";
@@ -1221,6 +1236,10 @@ class Home extends General
         return $sAmtDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sTxnDetailsXml = "";
@@ -1228,7 +1247,9 @@ class Home extends General
         $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
         $sTxnDetailsXml .= '<id>'. $obj_TxnInfo->getID() .'</id>';
-        $sTxnDetailsXml .= '<installment>'. $objClientConf->getInstallment() .'</installment>';
+        if (empty($objClientConf->getInstallment()) === FALSE) {
+            $sTxnDetailsXml .= '<installment>'. $objClientConf->getInstallment() .'</installment>';
+        }
         $sTxnDetailsXml .= '<ip-address>'. $obj_TxnInfo->getIP() .'</ip-address>';
         $sTxnDetailsXml .= '<issuing-bank>'. $obj_TxnInfo->getIssuingBankName() .'</issuing-bank>';
         $sTxnDetailsXml .= '<order-id>'. $obj_TxnInfo->getOrderID() .'</order-id>';
@@ -1241,6 +1262,10 @@ class Home extends General
         return $sTxnDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getSaleAmtXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSaleAmtXml = "";
@@ -1253,6 +1278,10 @@ class Home extends General
         return $sSaleAmtXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getSessionDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionDetailsXml = "";
@@ -1265,6 +1294,10 @@ class Home extends General
         return $sSessionDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnExchangeDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sExchangeDetailsXml = "";
@@ -1278,6 +1311,10 @@ class Home extends General
         return $sExchangeDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getFraudCheckDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sFraudCheckDetailsXml = "";
@@ -1309,12 +1346,20 @@ class Home extends General
         return $sFraudCheckDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnStatusDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sTxnStatusDetailsXml = "";
         return $sTxnStatusDetailsXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getTxnBillingAddressXml(TxnInfo $obj_TxnInfo) : string
     {
         $addressXml = "";
@@ -1350,12 +1395,20 @@ class Home extends General
         return $addressXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getSessionAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionAdditionalDataXml = "";
         return $sSessionAdditionalDataXml;
     }
 
+    /**
+     * @param	TxnInfo $obj_TxnInfo
+     * @return 	string
+     */
     public function getSessionStatusXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionStatusXml = "";
