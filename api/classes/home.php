@@ -1230,7 +1230,7 @@ class Home extends General
         $sAmtDetailsXml .= '<conversion-rate>' . $obj_TxnInfo->getConversationRate() .'</conversion-rate>';
         $sAmtDetailsXml .= '<currency-id>' . $objCurrConf->getID() .'</currency-id>';
         $sAmtDetailsXml .= '<decimals>' . $objCurrConf->getDecimals() .'</decimals>';
-        $sAmtDetailsXml .= '<value>' . $obj_TxnInfo->getAmount() .'</value>';
+        $sAmtDetailsXml .= '<value>' . htmlspecialchars($obj_TxnInfo->getAmount(), ENT_NOQUOTES) .'</value>';
         $sAmtDetailsXml .= '</amount>';
 
         return $sAmtDetailsXml;
@@ -1285,12 +1285,16 @@ class Home extends General
     public function getSessionDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionDetailsXml = "";
-        $objClientConf = $obj_TxnInfo->getClientConfig();
-        $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
-
-        $sSessionDetailsXml .= '<session-id>' . $obj_TxnInfo->getSessionId() .'</session-id>';
-        $sSessionDetailsXml .= '<session-type>' . $sessionType .'</session-type>';
-
+        $aSessionAdditionalData = $obj_TxnInfo->getAdditionalData();
+        if($aSessionAdditionalData !== null)
+        {
+            $sSessionDetailsXml ="<additional-data>";
+            foreach ($aSessionAdditionalData as $key => $value)
+            {
+                $sSessionDetailsXml .= '<param name="'.$key.'">'. $value .'</param>';
+            }
+            $sSessionDetailsXml .="</additional-data>";
+        }
         return $sSessionDetailsXml;
     }
 
@@ -1353,6 +1357,10 @@ class Home extends General
     public function getTxnStatusDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sTxnStatusDetailsXml = "";
+        $sTxnStatusDetailsXml .= '<status>';
+        $sTxnStatusDetailsXml .= '<code>' . $obj_TxnInfo->getLatestPaymentState() .'</code>';
+        $sTxnStatusDetailsXml .= '<message>' . urlencode($this->getStatusMessage($obj_TxnInfo->getLatestPaymentState())) .'</message>';
+        $sTxnStatusDetailsXml .= '</status>';
         return $sTxnStatusDetailsXml;
     }
 
