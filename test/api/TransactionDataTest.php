@@ -18,7 +18,7 @@ class TransactionDataTest extends baseAPITest
     public function setUp() : void
     {
         parent::setUp(FALSE);
-        $amount = new Amount(100, 840, 1);
+        $amount = new Amount(100, 840,2,"PHP",1);
         $stateInfo = new StateInfo(2010, 20103, 'Transaction Failed');
         $pspData = new PSPData(18, 'Wirecard', '23b7d8c8-b2a6-4817-af0a-af24ab66fd83');
         $card = new Card(['ID' => 7, 'MASKEDCARDNUMBER' => '411111******1111', 'EXPIRY' => '01/21']);
@@ -26,7 +26,7 @@ class TransactionDataTest extends baseAPITest
         $custmoerInfo->setDeviceId('device-id');
         $custmoerInfo->setOperator(20000);
         $this->transactionData = new TransactionData(1, 'abc_1', 'CD', '1', $amount, $stateInfo, $pspData, $card, $custmoerInfo);
-        $this->assertEquals('{"id":1,"order_id":"abc_1","payment_method":"CD","payment_type":"1","amount":{"value":100,"currency_id":840,"conversion_rate":1},"status":{"code":2010,"sub_code":20103,"message":"Transaction Failed"},"psp":{"id":18,"name":"Wirecard","external_id":"23b7d8c8-b2a6-4817-af0a-af24ab66fd83"},"card":{"id":7,"masked_card_number":"411111******1111","expiry":"01\/21"},"customer_info":{"language":"en","email":"sagar@cellpointmobile.com","country_id":200,"mobile":9876543210,"operator":20000,"device_id":"device-id"}}', json_encode($this->transactionData));
+        $this->assertEquals('{"id":1,"order_id":"abc_1","payment_method":"CD","payment_type":"1","amount":{"value":100,"currency_id":840,"decimals":2,"alpha3code":"PHP","conversion_rate":1},"status":{"code":2010,"sub_code":20103,"message":"Transaction Failed"},"psp":{"id":18,"name":"Wirecard","external_id":"23b7d8c8-b2a6-4817-af0a-af24ab66fd83"},"card":{"id":7,"masked_card_number":"411111******1111","expiry":"01\/21"},"customer_info":{"language":"en","email":"sagar@cellpointmobile.com","country_id":200,"mobile":9876543210,"operator":20000,"device_id":"device-id"}}', json_encode($this->transactionData));
     }
 
     

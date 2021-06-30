@@ -267,6 +267,13 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $res_TxnSessionTbl = pg_fetch_all($SQL_TxnSessionTbl);
         $this->assertEquals(2, count($res_TxnSessionTbl) );
 
+        $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001002 and type = 'Transaction'");
+        $this->assertTrue(is_resource($sql));
+        while ($row = pg_fetch_assoc($sql) )
+        {
+            $this->assertTrue((bool)$row["value"]);
+        }
+
         // States check
         $SQL_MessageTbl =  $this->queryDB("select * from log.message_tbl where txnid in (select id from log.transaction_tbl where sessionid = 1) ORDER BY ID ASC");
         $this->assertTrue(is_resource($SQL_MessageTbl));
