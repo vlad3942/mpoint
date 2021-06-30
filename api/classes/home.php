@@ -979,36 +979,17 @@ class Home extends General
                 {
 
                     if ($mode == 3) {
-                        $sTxnAdditionalDataXml = $this->getTxnAdditionalDataXml($obj_TxnInfo);
-                        $sCardDetailsXml = $this->getTxnCardDetailsXml($obj_TxnInfo);
-                        $sPspDetailsXml = $this->getTxnPspDetailsXml($obj_TxnInfo);
-                        $sAmtDetailsXml = $this->getTxnAmountDetailsXml($obj_TxnInfo);
-                        $sTxnStatusDetailsXml = $this->getTxnStatusDetailsXml($obj_TxnInfo);
-                        $sExchangeDetailsXml = $this->getTxnExchangeDetailsXml($obj_TxnInfo);
-                        $sFraudCheckDetailsXml = $this->getFraudCheckDetailsXml($obj_TxnInfo);
-                        $sTxnDetailsXml = $this->getTxnDetailsXml($obj_TxnInfo);
                         $sSaleAmtXml = $this->getSaleAmtXml($obj_TxnInfo);
                         $sSessionDetailsXml = $this->getSessionDetailsXml($obj_TxnInfo);
                         $sSessionAdditionalDataXml = $this->getSessionAdditionalDataXml($obj_TxnInfo);
-                        $sSessionStatusXml = $this->getSessionStatusXml($obj_TxnInfo);
 
                         if ($index == 0) {
                             $xml .= $sSessionDetailsXml;
-                            $xml .= $sSessionStatusXml;
                             $xml .= $sSessionAdditionalDataXml;
                             $xml .= $sSaleAmtXml;
                             $xml .= '<transactions>';
                         }
-                        $txnXml .= '<transaction>';
-                        $txnXml .= $sTxnDetailsXml;
-                        $txnXml .= $sTxnAdditionalDataXml;
-                        $txnXml .= $sFraudCheckDetailsXml;
-                        $txnXml .= $sExchangeDetailsXml;
-                        $txnXml .= $sPspDetailsXml;
-                        $txnXml .= $sCardDetailsXml;
-                        $txnXml .= $sAmtDetailsXml;
-                        $txnXml .= $sTxnStatusDetailsXml;
-                        $txnXml .= '</transaction>';
+                        $txnXml .= $this->getTxnDetailsXml($obj_TxnInfo);
 
                         if ($index == $txnCnt - 1) {
                             $xml .= $txnXml;
@@ -1246,6 +1227,15 @@ class Home extends General
         $objClientConf = $obj_TxnInfo->getClientConfig();
         $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
+        $sTxnAdditionalDataXml = $this->getTxnAdditionalDataXml($obj_TxnInfo);
+        $sCardDetailsXml = $this->getTxnCardDetailsXml($obj_TxnInfo);
+        $sPspDetailsXml = $this->getTxnPspDetailsXml($obj_TxnInfo);
+        $sAmtDetailsXml = $this->getTxnAmountDetailsXml($obj_TxnInfo);
+        $sTxnStatusDetailsXml = $this->getTxnStatusDetailsXml($obj_TxnInfo);
+        $sExchangeDetailsXml = $this->getTxnExchangeDetailsXml($obj_TxnInfo);
+        $sFraudCheckDetailsXml = $this->getFraudCheckDetailsXml($obj_TxnInfo);
+
+        $sTxnDetailsXml .= '<transaction>';
         $sTxnDetailsXml .= '<id>'. $obj_TxnInfo->getID() .'</id>';
         if (empty($objClientConf->getInstallment()) === FALSE) {
             $sTxnDetailsXml .= '<installment>'. $objClientConf->getInstallment() .'</installment>';
@@ -1258,6 +1248,15 @@ class Home extends General
         $sTxnDetailsXml .= '<payment-method>' . $objPaymentMethod->PaymentMethod .'</payment-method>';
         $sTxnDetailsXml .= '<date-time>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) . 'T' . htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</date-time>'; //YYMMDD
         $sTxnDetailsXml .= $this->getTxnBillingAddressXml($obj_TxnInfo);
+
+        $sTxnDetailsXml .= $sTxnAdditionalDataXml;
+        $sTxnDetailsXml .= $sFraudCheckDetailsXml;
+        $sTxnDetailsXml .= $sExchangeDetailsXml;
+        $sTxnDetailsXml .= $sPspDetailsXml;
+        $sTxnDetailsXml .= $sCardDetailsXml;
+        $sTxnDetailsXml .= $sAmtDetailsXml;
+        $sTxnDetailsXml .= $sTxnStatusDetailsXml;
+        $sTxnDetailsXml .= '</transaction>';
 
         return $sTxnDetailsXml;
     }
@@ -1285,16 +1284,12 @@ class Home extends General
     public function getSessionDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionDetailsXml = "";
-        $aSessionAdditionalData = $obj_TxnInfo->getAdditionalData();
-        if($aSessionAdditionalData !== null)
-        {
-            $sSessionDetailsXml ="<additional-data>";
-            foreach ($aSessionAdditionalData as $key => $value)
-            {
-                $sSessionDetailsXml .= '<param name="'.$key.'">'. $value .'</param>';
-            }
-            $sSessionDetailsXml .="</additional-data>";
-        }
+        $objClientConf = $obj_TxnInfo->getClientConfig();
+        $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+
+        $sSessionDetailsXml .= '<session-id>' . $obj_TxnInfo->getSessionId() .'</session-id>';
+        $sSessionDetailsXml .= '<session-type>' . $sessionType .'</session-type>';
+
         return $sSessionDetailsXml;
     }
 
@@ -1410,17 +1405,17 @@ class Home extends General
     public function getSessionAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionAdditionalDataXml = "";
+        $aSessionAdditionalData = $obj_TxnInfo->getAdditionalData();
+        if($aSessionAdditionalData !== null)
+        {
+            $sSessionAdditionalDataXml ="<additional-data>";
+            foreach ($aSessionAdditionalData as $key => $value)
+            {
+                $sSessionAdditionalDataXml .= '<param name="'.$key.'">'. $value .'</param>';
+            }
+            $sSessionAdditionalDataXml .="</additional-data>";
+        }
         return $sSessionAdditionalDataXml;
-    }
-
-    /**
-     * @param	TxnInfo $obj_TxnInfo
-     * @return 	string
-     */
-    public function getSessionStatusXml(TxnInfo $obj_TxnInfo) : string
-    {
-        $sSessionStatusXml = "";
-        return $sSessionStatusXml;
     }
 
 	/**
