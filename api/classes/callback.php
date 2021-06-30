@@ -1322,44 +1322,6 @@ abstract class Callback extends EndUserAccount
 		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}
 
-	/* Function to get fraud status code and description */
-	public function getFraudDetails($txnid): array{
-		$statusDetails =array();
-		$aStateId = array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,
-            Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE,
-            Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE,
-            Constants::iPRE_FRAUD_CHECK_REVIEW_STATE,
-            Constants::iPRE_FRAUD_CHECK_REJECTED_STATE,
-            Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE,
-            Constants::iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE,
-            Constants::iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE,
-            Constants::iPRE_FRAUD_CHECK_TECH_ERROR_STATE,
-            Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE,
-            Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE,
-            Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE,
-            Constants::iPOST_FRAUD_CHECK_REVIEW_STATE,
-            Constants::iPOST_FRAUD_CHECK_REVIEW_SUCCESS_STATE,
-            Constants::iPOST_FRAUD_CHECK_REVIEW_FAIL_STATE,
-            Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,
-            Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE,
-            Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE,
-            Constants::iPOST_FRAUD_CHECK_TECH_ERROR_STATE);
-
-		$sql = "SELECT M.stateid, S.name
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl M
-				INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id 
-				WHERE M.txnid = ". $txnid." AND M.enabled = '1' AND M.stateid IN (". implode(", ", $aStateId) .") order by M.id desc limit 1";
-		$res =  $this->getDBConn()->query($sql);
-		if (is_resource($res) === true) {
-			while ($RS = $this->getDBConn()->fetchName($res) )
-			{
-				$statusDetails['status_code' ] = $RS ["STATEID"];
-				$statusDetails['status_desc' ] = $RS ["NAME"];
-			}
-		}
-		return $statusDetails;
-	}
-
 
 	/**
 	 * @param bool $isSessionCallback
