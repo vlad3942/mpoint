@@ -553,6 +553,12 @@ abstract class Constants
 	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
 	 *
 	 */
+	const iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE = 3100;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
+	 *
+	 */
 	const iPOST_FRAUD_CHECK_INITIATED_STATE = 3110;
 
 	/**

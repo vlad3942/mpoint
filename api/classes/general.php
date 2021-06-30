@@ -1765,81 +1765,101 @@ class General
         return $oPSPConfig;
     }
 
-
-    /**
-     * Function to get payment status for get_transaction_status and get_status
-     *
-     * @param RDB $_OBJ_DB
-     * @param int $txnId
-     * @param int $paymentMethod
-     * @param int|null $linkedTxnId
-     * @return string
-     */
-    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,int $paymentMethod,?int $linkedTxnId=null): string
-    {
-        $paymentStatus = 'Pending';
-        //check capture mode of transaction
-        $sql = "SELECT auto_capture
-         		FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				WHERE id = ". $txnId;
-        $RS = $_OBJ_DB->getName($sql);
-        $auto_capture = $RS['AUTO_CAPTURE'];
-        if($paymentMethod ==  Constants::iPAYMENT_TYPE_OFFLINE ){
-            //if payment type is offline then check for 1041 is logged and fraud states are not logged, if so payment is complete
-            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_PENDING_STATE,$txnId);
-        }else if($auto_capture == AutoCaptureType::ePSPLevelAutoCapt ){
-            //if psp level capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
-            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE,$txnId);
-        }else{
-            //if other capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
-            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_ACCEPTED_STATE,$txnId);
-        }
-        if($checkTxnStatus > 0){
-            $paymentStatus = 'Complete';
-        }
-        // check if 2010 is logged and fraud state is logged
-        $checkFailedTxn = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_REJECTED_STATE,$txnId,true);
-        if($checkFailedTxn > 0){
-            $paymentStatus = 'Failed';
-        }
-        // check both the transaction status to get payment status for combined txns
-        if($linkedTxnId !== null){
-            $checkLinkedTxnStatus = self::getPaymentStatus($_OBJ_DB,$linkedTxnId,$paymentMethod);
-            $TxnPaymentStatus = [$paymentStatus,$checkLinkedTxnStatus];
-            $checkPaymentStatus = array_count_values($TxnPaymentStatus);
-            if($checkPaymentStatus['Complete'] == 2){
-                $paymentStatus = 'Complete';
-            }else if(in_array('Pending',$TxnPaymentStatus)){
-                $paymentStatus = 'Pending';
-            }else {
-                $paymentStatus = 'Failed';
-            }
-        }
-        return $paymentStatus;
-    }
-
     /**
      * Function to check txn status
      *
      * @param RDB $_OBJ_DB
      * @param int $stateId
      * @param int $txnId
-     * @param bool $is_failed
-     * @return int
+     * @return string
      */
-    public static function checkTxnStatus(RDB $_OBJ_DB,int $stateId,int $txnId, bool $is_failed=false): int
+    public static function checkTxnStatus(RDB $_OBJ_DB,int $paymentMethod,int $txnId): string
     {
-        $sql = "SELECT COUNT(id) AS C
-			FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-			WHERE txnid = ".$txnId." AND ( stateid = ".$stateId;
-        if($is_failed === false){
-            $sql .= " AND stateid NOT IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
+        if ($paymentMethod == Constants::iPAYMENT_TYPE_OFFLINE) {
+            $stateId = Constants::iPAYMENT_PENDING_STATE;
+        } else
+        {
+            $sql = 'SELECT auto_capture
+         		FROM Log'.sSCHEMA_POSTFIX.'.Transaction_Tbl
+				WHERE id = '. $txnId;
+            $RS = $_OBJ_DB->getName($sql);
+            $auto_capture = (int)$RS['AUTO_CAPTURE'];
 
-        }else{
-            $sql .= " OR stateid IN (".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.")) AND enabled = '1'";
+            if($auto_capture === AutoCaptureType::ePSPLevelAutoCapt ){
+                //if psp level capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
+                $stateId = Constants::iPAYMENT_CAPTURED_STATE;
+            }else{
+                //if other capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
+                $stateId = Constants::iPAYMENT_ACCEPTED_STATE;
+            }
         }
+
+
+        $sql = 'WITH WT1 as
+                         (SELECT DISTINCT stateid, m.id
+                          FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m
+                          WHERE txnid = '.$txnId.'
+                            and M.enabled = true),
+                     WT2 as (SELECT payment_status,
+                                    (
+                                        SELECT fraud_status
+                                        FROM (SELECT stateid as fraud_status, rank() over (order by id desc)
+                                              FROM WT1
+                                              WHERE stateid in (
+                                                                    '.Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                                    '.Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                                    '.Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                                    '.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.',
+                                                                    '.Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.',
+                                                                    '.Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                                    '.Constants::iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                                    '.Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.'
+                                                  )) s1
+                                        where s1.rank = 1)
+                             FROM (SELECT stateid as payment_status, rank() over (order by id desc)
+                                   FROM WT1
+                                   WHERE stateid in (
+                                                    '.Constants::iPAYMENT_REJECTED_STATE.',
+                                                    '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
+                                                    '.Constants::iPAYMENT_REQUEST_EXPIRED_STATE.', 
+                                                    '.$stateId.'
+                                                )) s
+                             where s.rank = 1
+                     )
+                SELECT *
+                FROM WT2;';
+
         $res = $_OBJ_DB->getName($sql);
-        return $res['C'];
+        $fraudStatus = (int)$res['FRAUD_STATUS'];
+        $paymentStatus = (int)$res['PAYMENT_STATUS'];
+        $TransactionStatus = 'Pending';
+        if($fraudStatus !== 0 || $paymentStatus !== 0)
+        {
+            if($fraudStatus === Constants::iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE)
+            {
+                $TransactionStatus = 'Pending';
+            }
+            elseif ( true === in_array($fraudStatus, [Constants::iPRE_FRAUD_CHECK_REJECTED_STATE, Constants::iPOST_FRAUD_CHECK_REJECTED_STATE] ))
+            {
+                $TransactionStatus = 'Failed';
+            }
+            elseif ($paymentStatus === $stateId)
+            {
+                $TransactionStatus = 'Complete';
+            }
+            else
+            {
+                $TransactionStatus = 'Failed';
+            }
+        }
+
+        return $TransactionStatus;
     }
 
     /**
@@ -1854,15 +1874,29 @@ class General
     public static function getLinkedTransactions(RDB $_OBJ_DB,int $linkedTxnId,int $txnId,int $paymentMethod) : string
     {
         $linkedTxnData     = [$txnId,$linkedTxnId];
-        $linkedTxnXml  	   = "<linked_transactions>";
+        $TxnPaymentStatus  = [];
+        $linkedTxnXml  	   = '<linked_transactions>';
         foreach($linkedTxnData as $linkedTxn){
-            $linkedTxnXml  .= "<transaction_details>";
-            $linkedTxnXml  .= "<id>".$linkedTxn."</id>";
-            $linkedTxnXml  .= "<status>".self::getPaymentStatus($_OBJ_DB,$linkedTxn,$paymentMethod)."</status>";
-            $linkedTxnXml  .= "</transaction_details>";
+            $status = self::checkTxnStatus($_OBJ_DB,$paymentMethod,$linkedTxn);
+            array_push($TxnPaymentStatus, $status);
+            $linkedTxnXml  .= '<transaction_details>';
+            $linkedTxnXml  .= '<id>'.$linkedTxn.'</id>';
+            $linkedTxnXml  .= '<status>'.$status.'</status>';
+            $linkedTxnXml  .= '</transaction_details>';
         }
         $linkedTxnXml .= "</linked_transactions>";
-        return $linkedTxnXml;
+
+        $checkPaymentStatus = array_count_values($TxnPaymentStatus);
+        if($checkPaymentStatus['Complete'] == 2){
+            $paymentStatus = 'Complete';
+        }else if(in_array('Pending',$TxnPaymentStatus)){
+            $paymentStatus = 'Pending';
+        }else {
+            $paymentStatus = 'Failed';
+        }
+        $paymentStatusXML = '<payment_status>' . $paymentStatus . '</payment_status>';
+
+        return $paymentStatusXML.$linkedTxnXml;
     }
 
 	 /***

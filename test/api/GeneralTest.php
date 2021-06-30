@@ -421,85 +421,6 @@ class GeneralTest extends baseAPITest
         $this->assertTrue($isAutoFetchBalance);
     }
 
-    public function testGetPaymentStatusComplete()
-    {
-        $pspID = Constants::iWIRE_CARD_PSP;
-        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10018, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10018, 'app')");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10018, 'CPM', true)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10018, 'client',0)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
-
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Pending', $checkPaymentStatus);
-
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Complete', $checkPaymentStatus);
-
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Failed', $checkPaymentStatus);
-    }
-
-    public function testGetPaymentStatusPending()
-    {
-        $pspID = Constants::iWIRE_CARD_PSP;
-        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10018, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10018, 'app')");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10018, 'CPM', true)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10018, 'client',0)");
-
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
-
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
-
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Pending', $checkPaymentStatus);
-
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Pending', $checkPaymentStatus);
-    }
-
-    public function testGetPaymentStatusFailed()
-    {
-        $pspID = Constants::iWIRE_CARD_PSP;
-        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10018, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 10018, 'app')");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10018, 'CPM', true)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10018, 'client',0)");
-
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10018, 1100, 208, 100, 4001, '1513-005', 5000, 29612109, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ")");
-
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid, sessionid,currencyid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10018, 1100, 100, $pspID, '1512', '1234abc', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1,840,5000,840)");
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
-
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Failed', $checkPaymentStatus);
-
-        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE. ")");
-        $checkPaymentStatus = General::getPaymentStatus($this->_OBJ_DB, 1001001,1,1001002);
-        $this->assertEquals('Failed', $checkPaymentStatus);
-    }
-
     public function testCheckTxnStatus()
     {
         $pspID = Constants::iWIRE_CARD_PSP;
@@ -515,18 +436,18 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
         $checkTxnStatus = General::checkTxnStatus($this->_OBJ_DB, Constants::iPAYMENT_ACCEPTED_STATE,1001001);
-        $this->assertEquals(1, $checkTxnStatus);
+        $this->assertEquals('Complete', $checkTxnStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ")");
         $checkTxnStatus = General::checkTxnStatus($this->_OBJ_DB, Constants::iPAYMENT_REJECTED_STATE,1001001,true);
-        $this->assertEquals(1, $checkTxnStatus);
+        $this->assertEquals('Failed', $checkTxnStatus);
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE. ")");
         $checkTxnStatus = General::checkTxnStatus($this->_OBJ_DB, Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE,1001001);
-        $this->assertEquals(0, $checkTxnStatus);
+        $this->assertEquals('Failed', $checkTxnStatus);
 
         $checkTxnStatus = General::checkTxnStatus($this->_OBJ_DB, Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE,1001001,true);
-        $this->assertEquals(1, $checkTxnStatus);
+        $this->assertEquals('Failed', $checkTxnStatus);
     }
 
     public function testGetLinkedTransactions()
@@ -547,7 +468,7 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
         $checkLinkedTxn = General::getLinkedTransactions($this->_OBJ_DB, 1001002,1001001,1);
-        $this->assertEquals('<linked_transactions><transaction_details><id>1001001</id><status>Complete</status></transaction_details><transaction_details><id>1001002</id><status>Pending</status></transaction_details></linked_transactions>', $checkLinkedTxn);
+        $this->assertEquals('<payment_status>Pending</payment_status><linked_transactions><transaction_details><id>1001001</id><status>Complete</status></transaction_details><transaction_details><id>1001002</id><status>Pending</status></transaction_details></linked_transactions>', $checkLinkedTxn);
     }
 
     public function tearDown() : void
