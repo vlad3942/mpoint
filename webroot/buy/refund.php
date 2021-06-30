@@ -225,7 +225,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
 					// Refund operation succeeded
-					if ($code == 1000 || $code == 1001)
+					if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
 					{
 						header("HTTP/1.0 200 OK");
 						
@@ -240,7 +240,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                         }
 
 					}
-                    else if ($code == 1100) {
+                    else if ($code == Constants::i3D_SECURE_ACTIVATED_STATE) {
                         header("HTTP/1.0 200 OK");
                         $aMsgCds[$code] = "Success";
                     }

@@ -25,23 +25,23 @@ if (is_array($aRS) === TRUE && count($aRS) > 0) {
         $state2 = (int)$rs["STATEID"];
         $state1 = 0;
 
-        if($state2 === 1001)
+        if($state2 === Constants::iINPUT_VALID_STATE)
         {
             $state1 = 5014;
         }
-        elseif($state2 === 2000)
+        elseif($state2 === Constants::iPAYMENT_ACCEPTED_STATE)
         {
             $state1 = 5010;
         }
-        elseif($state2 === 2001)
+        elseif($state2 === Constants::iPAYMENT_CAPTURED_STATE)
         {
             $state1 = 5011;
         }
-        elseif($state2 === 2002)
+        elseif($state2 === Constants::iPAYMENT_CANCELLED_STATE)
         {
             $state1 = 5012;
         }
-        elseif($state2 === 2003)
+        elseif($state2 === Constants::iPAYMENT_REFUNDED_STATE)
         {
             $state1 = 5013;
         }
