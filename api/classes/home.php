@@ -1244,7 +1244,7 @@ class Home extends General
         $sTxnDetailsXml .= '<issuing-bank>'. $obj_TxnInfo->getIssuingBankName() .'</issuing-bank>';
         $sTxnDetailsXml .= '<order-id>'. $obj_TxnInfo->getOrderID() .'</order-id>';
         $sTxnDetailsXml .= '<approval-code>'. $obj_TxnInfo->getApprovalCode() .'</approval-code>';
-        $sTxnDetailsXml .= '<payment-type>' . $objPaymentMethod->PaymentMethod .'</payment-type>';
+        $sTxnDetailsXml .= '<payment-type>' . $objPaymentMethod->PaymentType .'</payment-type>';
         $sTxnDetailsXml .= '<payment-method>' . $objPaymentMethod->PaymentMethod .'</payment-method>';
         $sTxnDetailsXml .= '<date-time>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) . 'T' . htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</date-time>'; //YYMMDD
         $sTxnDetailsXml .= $this->getTxnBillingAddressXml($obj_TxnInfo);
@@ -1317,7 +1317,7 @@ class Home extends General
     public function getFraudCheckDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
         $sFraudCheckDetailsXml = "";
-        $getFraudStatusCode = true;//Callback::getFraudDetails($obj_TxnInfo->getID());
+        $getFraudStatusCode = $this->getFraudDetails($obj_TxnInfo->getID());
         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
         if (empty($getFraudStatusCode) === FALSE) {
             $fraudCheckAdditionalDataXml = '';
@@ -1351,10 +1351,14 @@ class Home extends General
      */
     public function getTxnStatusDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
+        // this needs to be added only for parent txn
+        $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
         $sTxnStatusDetailsXml = "";
         $sTxnStatusDetailsXml .= '<status>';
-        $sTxnStatusDetailsXml .= '<code>' . $obj_TxnInfo->getLatestPaymentState() .'</code>';
-        $sTxnStatusDetailsXml .= '<message>' . urlencode($this->getStatusMessage($obj_TxnInfo->getLatestPaymentState())) .'</message>';
+        $sTxnStatusDetailsXml .= '<code>' . $obj_TxnInfo->getPaymentSession()->getStateId() .'</code>';
+        $sTxnStatusDetailsXml .= '<message>' . General::getPaymentStatus($this->getDBConn(), $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType, $linkedTxnId) .'</message>';
         $sTxnStatusDetailsXml .= '</status>';
         return $sTxnStatusDetailsXml;
     }
@@ -1405,7 +1409,7 @@ class Home extends General
     public function getSessionAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
     {
         $sSessionAdditionalDataXml = "";
-        $aSessionAdditionalData = $obj_TxnInfo->getAdditionalData();
+        $aSessionAdditionalData = $obj_TxnInfo->getSessionAdditionalData();
         if($aSessionAdditionalData !== null)
         {
             $sSessionAdditionalDataXml ="<additional-data>";
