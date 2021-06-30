@@ -931,29 +931,11 @@ class Home extends General
              // only final payment status code will be returned to avoid extra checks at API consumer side
                 if($mode === 1)
                 {
-                    $sql = 'SELECT stateid, S.name, 1 AS rownum
-                            FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m
-                                     INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S on M.stateid = S.id
-                            WHERE txnid = '.$txnid.'
-                              and M.enabled = true
-                              and stateid in (
-                                '.Constants::iPAYMENT_ACCEPTED_STATE.', 
-                                '.Constants::iPAYMENT_CAPTURED_STATE.',
-                                '.Constants::iPAYMENT_REJECTED_STATE.',
-                                '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
-                                '.Constants::iPAYMENT_PENDING_STATE.'
-                              )
-                            order by M.id desc
-                            limit 1;';
-                    $RSMsg = $this->getDBConn()->query($sql);
+                    $RSMsg = $this->getLatestTxnState($obj_TxnInfo->getID());
                 }
                 else
                 {
-                    $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
-                                  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
-                                  WHERE txnid = ".$txnid." and M.enabled = true";
-                    $RSMsg = $this->getDBConn()->query($sql);
-
+                    $RSMsg = $this->getAllTxnState($obj_TxnInfo->getID());
                 }
 
                 $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
@@ -1001,9 +983,9 @@ class Home extends General
                         $amount = $obj_TxnInfo->getAmount();
 
                         $sStatusMessagesXML = '';
-                        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+                        foreach ($RSMsg as $msg )
                         {
-                            $sStatusMessagesXML .= '<status-message id = "'.$RS['STATEID'].'" position = "'.$RS['ROWNUM'] .'">' . $RS['NAME'] . '</status-message>';
+                            $sStatusMessagesXML .= '<status-message id = "'.$msg['STATEID'].'" position = "'.$msg['ROWNUM'] .'">' . $msg['NAME'] . '</status-message>';
                         }
 
                         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
@@ -1339,14 +1321,15 @@ class Home extends General
      */
     public function getTxnStatusDetailsXml(TxnInfo $obj_TxnInfo) : string
     {
-        // this needs to be added only for parent txn
-        $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-        $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
+        $RSMsg = $this->getLatestTxnState($obj_TxnInfo->getID());
 
         $sTxnStatusDetailsXml = "";
         $sTxnStatusDetailsXml .= '<status>';
-        $sTxnStatusDetailsXml .= '<code>' . $obj_TxnInfo->getPaymentSession()->getStateId() .'</code>';
-        $sTxnStatusDetailsXml .= '<message>' . General::getPaymentStatus($this->getDBConn(), $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType, $linkedTxnId) .'</message>';
+        foreach ($RSMsg as $msg )
+        {
+            $sTxnStatusDetailsXml .= '<code>' . $msg['STATEID'] . '</code>';
+            $sTxnStatusDetailsXml .= '<message>' . $msg['NAME'] . '</message>';
+        }
         $sTxnStatusDetailsXml .= '</status>';
         return $sTxnStatusDetailsXml;
     }

@@ -2188,5 +2188,48 @@ class General
         }
         return $statusDetails;
     }
+
+    /* Function to get latest txn status code and description */
+    public function getLatestTxnState($txnId)
+    {
+        $result = [];
+        $sql = 'SELECT stateid, S.name, 1 AS rownum
+                            FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m
+                                     INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S on M.stateid = S.id
+                            WHERE txnid = '.$txnId.'
+                              and M.enabled = true
+                              and stateid in (
+                                '.Constants::iPAYMENT_ACCEPTED_STATE.', 
+                                '.Constants::iPAYMENT_CAPTURED_STATE.',
+                                '.Constants::iPAYMENT_REJECTED_STATE.',
+                                '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
+                                '.Constants::iPAYMENT_PENDING_STATE.'
+                              )
+                            order by M.id desc
+                            limit 1;';
+        $RSMsg = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+        {
+            $result[] = $RS;
+        }
+        return $result;
+    }
+
+    /* Function to get all txn status codes and description */
+    public function getAllTxnState($txnId)
+    {
+        $result = [];
+        $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
+                                  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
+                                  WHERE txnid = ".$txnid." and M.enabled = true";
+        $RSMsg = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+        {
+            $result[] = $RS;
+        }
+        return $result;
+    }
 }
 ?>
