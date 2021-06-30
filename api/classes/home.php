@@ -1237,8 +1237,8 @@ class Home extends General
 
         $sTxnDetailsXml .= '<transaction>';
         $sTxnDetailsXml .= '<id>'. $obj_TxnInfo->getID() .'</id>';
-        if (empty($objClientConf->getInstallment()) === FALSE) {
-            $sTxnDetailsXml .= '<installment>'. $objClientConf->getInstallment() .'</installment>';
+        if (empty($obj_TxnInfo->getInstallmentValue()) === FALSE) {
+            $sTxnDetailsXml .= '<installment>'. $obj_TxnInfo->getInstallmentValue() .'</installment>';
         }
         $sTxnDetailsXml .= '<ip-address>'. $obj_TxnInfo->getIP() .'</ip-address>';
         $sTxnDetailsXml .= '<issuing-bank>'. $obj_TxnInfo->getIssuingBankName() .'</issuing-bank>';
