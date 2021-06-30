@@ -255,11 +255,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if($index == 0) {
 								// this needs to be added only for parent txn
 								$linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-								$xml .= "<payment_status>" . General::getPaymentStatus($_OBJ_DB, $obj_TxnInfo->getID(), $objPaymentMethod->PaymentType,$linkedTxnId) . "</payment_status>";
-								// add linked transaction
 								if ($linkedTxnId !== null) {
 									$getLinkedTxns = General::getLinkedTransactions($_OBJ_DB, $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
 									$xml .= $getLinkedTxns;
+								}
+								else
+								{
+									$xml .= "<payment_status>" . General::checkTxnStatus($_OBJ_DB,$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
 								}
 							}
 						}
