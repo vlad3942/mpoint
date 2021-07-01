@@ -1621,12 +1621,5 @@ abstract class Callback extends EndUserAccount
         }
         return $departureDetails;
     }
-
-
-    public function getFormattedDate(string $expiryDate): string
-    {
-        $date = DateTime::createFromFormat('m/y', $expiryDate);
-        return $date->format('Y-m');
-    }
 }
 ?>

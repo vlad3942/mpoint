@@ -1138,16 +1138,20 @@ class Home extends General
     {
         $sCardDetailsXml = "";
         $objPaymentMethod = $obj_TxnInfo->getPaymentMethod($this->getDBConn());
-        $sCardDetailsXml .= '<card>';
-        $sCardDetailsXml .= '<id>' . $obj_TxnInfo->getCardID() .'</id>';
-        if ($objPaymentMethod !== null) {
-            $sCardDetailsXml .= '<card-name>' . $objPaymentMethod->CardName .'</card-name>';
+        if ($obj_TxnInfo->getCardID() > 0) {
+            $sCardDetailsXml .= '<card>';
+            $sCardDetailsXml .= '<id>' . $obj_TxnInfo->getCardID() .'</id>';
+            if ($objPaymentMethod !== null) {
+                $sCardDetailsXml .= '<card-name>' . $objPaymentMethod->CardName .'</card-name>';
+            }
+            if (empty($obj_TxnInfo->getCardExpiry()) === FALSE) {
+                $sCardDetailsXml .= '<expiry>' . $this->getFormattedDate($obj_TxnInfo->getCardExpiry()) . '</expiry>';
+            }
+            if (empty($obj_TxnInfo->getCardMask()) === FALSE) {
+                $sCardDetailsXml .= '<mask-card-number>' . $obj_TxnInfo->getCardMask() . '</mask-card-number>';
+            }
+            $sCardDetailsXml .= '</card>';
         }
-
-        $sCardDetailsXml .= '<expiry>' . $obj_TxnInfo->getCardExpiry() .'</expiry>';
-        $sCardDetailsXml .= '<mask-card-number>' . $obj_TxnInfo->getCardExpiry() .'</mask-card-number>';
-        $sCardDetailsXml .= '</card>';
-
         return $sCardDetailsXml;
     }
 
@@ -1159,11 +1163,17 @@ class Home extends General
     {
         $sPspDetailsXml = "";
         $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
-        $sPspDetailsXml .= '<psp>';
-        $sPspDetailsXml .= '<id>' . $obj_TxnInfo->getPSPID() .'</id>';
-        $sPspDetailsXml .= '<name>' . $objPSPType->PSPName .'</name>';
-        $sPspDetailsXml .= '<reference-id>' . $obj_TxnInfo->getExternalID() .'</reference-id>';
-        $sPspDetailsXml .= '</psp>';
+        if ($obj_TxnInfo->getPSPID() > 0) {
+            $sPspDetailsXml .= '<psp>';
+            $sPspDetailsXml .= '<id>' . $obj_TxnInfo->getPSPID() .'</id>';
+            if (empty($objPSPType->PSPName) === FALSE) {
+                $sPspDetailsXml .= '<name>' . $objPSPType->PSPName .'</name>';
+            }
+            if (empty($obj_TxnInfo->getExternalID()) === FALSE) {
+                $sPspDetailsXml .= '<reference-id>' . $obj_TxnInfo->getExternalID() .'</reference-id>';
+            }
+            $sPspDetailsXml .= '</psp>';
+        }
 
         return $sPspDetailsXml;
     }
@@ -1211,9 +1221,13 @@ class Home extends General
             $sTxnDetailsXml .= '<installment>'. $obj_TxnInfo->getInstallmentValue() .'</installment>';
         }
         $sTxnDetailsXml .= '<ip-address>'. $obj_TxnInfo->getIP() .'</ip-address>';
-        $sTxnDetailsXml .= '<issuing-bank>'. $obj_TxnInfo->getIssuingBankName() .'</issuing-bank>';
+        if (empty($obj_TxnInfo->getIssuingBankName()) === FALSE) {
+            $sTxnDetailsXml .= '<issuing-bank>' . $obj_TxnInfo->getIssuingBankName() . '</issuing-bank>';
+        }
         $sTxnDetailsXml .= '<order-id>'. $obj_TxnInfo->getOrderID() .'</order-id>';
-        $sTxnDetailsXml .= '<approval-code>'. $obj_TxnInfo->getApprovalCode() .'</approval-code>';
+        if (empty($obj_TxnInfo->getApprovalCode()) === FALSE) {
+            $sTxnDetailsXml .= '<approval-code>' . $obj_TxnInfo->getApprovalCode() . '</approval-code>';
+        }
         $sTxnDetailsXml .= '<payment-type>' . $objPaymentMethod->PaymentType .'</payment-type>';
         $sTxnDetailsXml .= '<payment-method>' . $objPaymentMethod->PaymentMethod .'</payment-method>';
         $sTxnDetailsXml .= '<date-time>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) . 'T' . htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</date-time>'; //YYMMDD
@@ -1258,7 +1272,9 @@ class Home extends General
         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
 
         $sSessionDetailsXml .= '<session-id>' . $obj_TxnInfo->getSessionId() .'</session-id>';
-        $sSessionDetailsXml .= '<session-type>' . $sessionType .'</session-type>';
+        if (empty($sessionType) === FALSE) {
+            $sSessionDetailsXml .= '<session-type>' . $sessionType . '</session-type>';
+        }
 
         return $sSessionDetailsXml;
     }
@@ -1324,13 +1340,15 @@ class Home extends General
         $RSMsg = $this->getLatestTxnState($obj_TxnInfo->getID());
 
         $sTxnStatusDetailsXml = "";
-        $sTxnStatusDetailsXml .= '<status>';
-        foreach ($RSMsg as $msg )
-        {
-            $sTxnStatusDetailsXml .= '<code>' . $msg['STATEID'] . '</code>';
-            $sTxnStatusDetailsXml .= '<message>' . $msg['NAME'] . '</message>';
+        if (empty($RSMsg) === FALSE) {
+            $sTxnStatusDetailsXml .= '<status>';
+            foreach ($RSMsg as $msg )
+            {
+                $sTxnStatusDetailsXml .= '<code>' . $msg['STATEID'] . '</code>';
+                $sTxnStatusDetailsXml .= '<message>' . $msg['NAME'] . '</message>';
+            }
+            $sTxnStatusDetailsXml .= '</status>';
         }
-        $sTxnStatusDetailsXml .= '</status>';
         return $sTxnStatusDetailsXml;
     }
 

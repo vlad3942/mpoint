@@ -2231,5 +2231,11 @@ class General
         }
         return $result;
     }
+
+    public function getFormattedDate(string $expiryDate): string
+    {
+        $date = DateTime::createFromFormat('m/y', $expiryDate);
+        return $date->format('Y-m');
+    }
 }
 ?>
