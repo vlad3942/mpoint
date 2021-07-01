@@ -1745,18 +1745,16 @@ class General
     }
 
     // Get PSP Config Object
-    public static function producePSPConfigObject(RDB $oDB, TxnInfo $oTI, ?int $cardId, ?int $pspID, bool $bForceLegacy = false): ?PSPConfig
+    public static function producePSPConfigObject(RDB $oDB, TxnInfo $oTI, ?int $pspID, bool $bForceLegacy = false): ?PSPConfig
     {
         $isLegacy           = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         $iProcessorType     = self::getPSPType($oDB, $pspID);
-        $iCardType          = OnlinePaymentCardPSPMapping[$cardId];
-        $isOfflineType      = (int)$oTI->getPaymentMethod($oDB)->PaymentType;
         $routeConfigID      = (int)$oTI->getRouteConfigID();
 
         if($bForceLegacy === true || strtolower($isLegacy) == 'true') {
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
         }
-        else if(strtolower($isLegacy) == 'false' && ($isOfflineType !== Constants::iPAYMENT_TYPE_OFFLINE || !isset($iCardType) || $iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0 ){
+        else if(strtolower($isLegacy) == 'false' && ($iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0 ){
             $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $routeConfigID);
         }
         else {

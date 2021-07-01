@@ -239,11 +239,11 @@ try
 
         if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE)
         {
-            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, (int) $obj_TxnInfo->getPSPID());
+            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, (int) $obj_TxnInfo->getPSPID());
         }
         else
         {
-            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, (int) $obj_XML->callback->{"psp-config"}["id"]);
+            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, (int) $obj_XML->callback->{"psp-config"}["id"]);
         }
         $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 
@@ -414,15 +414,15 @@ try
             {
             case (Constants::iVISA_CHECKOUT_WALLET):
                 $obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]);
-                $objWallet_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, Constants::iVISA_CHECKOUT_PSP);
+                $objWallet_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iVISA_CHECKOUT_PSP);
                 break;
             case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
                 $obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
-                $objWallet_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+                $objWallet_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
                 break;
             case (Constants::iMASTER_PASS_WALLET):
                 $obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
-                $objWallet_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, Constants::iMASTER_PASS_PSP);
+                $objWallet_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iMASTER_PASS_PSP);
                 if($obj_XML->callback->transaction->PurchaseDate == "")
                 {
                     $purchaseDate = date('c',time());
@@ -765,7 +765,7 @@ try
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
       //update captured amt when psp returns captured callback
-      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE || $iStateId == Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE) {
+      if($iStateID == Constants::iPAYMENT_CAPTURED_STATE || $iStateID == Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE) {
           $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
           $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount + $obj_TxnInfo->getCapturedAmount());
       }
@@ -789,7 +789,7 @@ try
         }
 
         if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
-            $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
+            $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
             // Refresh transactioninfo
             $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
             $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
@@ -803,7 +803,7 @@ try
                         $iPSPID = $newTxnInfo->getPSPID();
                         $iAmount = (int)$newTxnInfo->getAmount();
 
-                        $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $newTxnInfo, null, $iPSPID);
+                        $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $newTxnInfo, $iPSPID);
 
                         if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
                             && ($newTxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_WITH_VOUCHER_STATE) === FALSE)) {
@@ -874,10 +874,10 @@ try
                                         }
                                         if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
                                         {
-                                            if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { $iStateId=Constants::iPAYMENT_REFUNDED_STATE; }
-                                            else { $iStateId=Constants::iPAYMENT_CANCELLED_STATE; }
+                                            if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { $iStateID=Constants::iPAYMENT_REFUNDED_STATE; }
+                                            else { $iStateID=Constants::iPAYMENT_CANCELLED_STATE; }
 
-                                            $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
+                                            $obj_mPoint->notifyClient($iStateID, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 
                                         }
                                     }

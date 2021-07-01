@@ -326,10 +326,10 @@ class GeneralTest extends baseAPITest
         $iTxnID = 1001012;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
 
-        $obj_PSPConfig = General::producePSPConfigObject($this->_OBJ_DB, $obj_TxnInfo, null, $pspID);
+        $obj_PSPConfig = General::producePSPConfigObject($this->_OBJ_DB, $obj_TxnInfo, $pspID);
         $this->assertInstanceOf('PSPConfig', $obj_PSPConfig, 'Error: Missing PSP Configuration Object');
 
-        $obj_PSPConfig = General::producePSPConfigObject($this->_OBJ_DB, $obj_TxnInfo, null, $pspID, true);
+        $obj_PSPConfig = General::producePSPConfigObject($this->_OBJ_DB, $obj_TxnInfo, $pspID, true);
         $this->assertInstanceOf('PSPConfig', $obj_PSPConfig, 'Error: Missing PSP Configuration Object with Force Legacy');
     }
 
@@ -380,7 +380,7 @@ class GeneralTest extends baseAPITest
 
         $iTxnID = 1001012;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
-        $obj_PSPConfig = General::producePSPConfigObject($this->_OBJ_DB, $obj_TxnInfo, null, $pspID);
+        $obj_PSPConfig = General::producePSPConfigObject($this->_OBJ_DB, $obj_TxnInfo, $pspID);
         $this->assertInstanceOf('PSPConfig', $obj_PSPConfig, 'Error: Missing PSP Configuration Object');
     }
 

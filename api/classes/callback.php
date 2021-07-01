@@ -101,7 +101,7 @@ abstract class Callback extends EndUserAccount
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         if ($oPSPConfig == null) {
 
-			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, null, $pspID);
+			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, $pspID);
         }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
@@ -1325,7 +1325,7 @@ abstract class Callback extends EndUserAccount
 		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
 
 		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
-			$this->_obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $this->_obj_TxnInfo, $this->_obj_TxnInfo->getPSPID(), null);
+			$this->_obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $this->_obj_TxnInfo, $this->_obj_TxnInfo->getPSPID());
 		}
 		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}

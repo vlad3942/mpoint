@@ -693,13 +693,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPAYMENT_TYPE_ONLINE_BANKING) {
                                         try {
                                             $pspId  = (int)$obj_XML->item[$j]['pspid'];
-                                            $cardId = NULL;
-                                            if (strtolower($is_legacy) == 'false') {
-                                                $cardId = (int)$obj_XML->item[$j]["id"];
-                                                $pspId  = OnlinePaymentCardPSPMapping[$cardId];
-                                            }
-
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$cardId);
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
@@ -787,7 +781,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								switch ($aPSPs[$j])
 								{
 								case (Constants::iDSB_PSP):
-                                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, Constants::iDSB_PSP);
+                                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iDSB_PSP);
 									$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
 									$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
 									break;
