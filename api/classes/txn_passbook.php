@@ -168,6 +168,14 @@ final class TxnPassbook
     public function addEntry(PassbookEntry $passbookEntry, $isCancelPriority = FALSE)
     {
         $validateEntryResponse = null;
+
+        if($passbookEntry->getAmount() <= 0)
+        {
+            $validateEntryResponse = [];
+            $validateEntryResponse['Status'] = Constants::iAmountIsLower;
+            $validateEntryResponse['Message'] = 'Operation Not Allowed - Invalid Amount';
+            return $validateEntryResponse;
+        }
         $passbookEntries = array($passbookEntry);
         $this->_getUpdatedTransactionAmounts();
         if($passbookEntry->getRequestedOperation() === Constants::iVoidRequested)

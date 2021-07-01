@@ -1803,6 +1803,7 @@ abstract class Constants
 	const iInvalidOperation = 6100;
 	const iOperationNotAllowed = 6200;
 	const iAmountIsHigher = 6201;
+	const iAmountIsLower = 6202;
 
 	/*
 	 * Passbook Error Code
