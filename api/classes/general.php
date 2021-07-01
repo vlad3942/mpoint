@@ -2222,7 +2222,7 @@ class General
         $result = [];
         $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
                                   FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
-                                  WHERE txnid = ".$txnid." and M.enabled = true";
+                                  WHERE txnid = ".$txnId." and M.enabled = true";
         $RSMsg = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($RSMsg) )
