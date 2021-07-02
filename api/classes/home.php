@@ -1118,7 +1118,7 @@ class Home extends General
     public function getTxnAdditionalDataXml(TxnInfo $obj_TxnInfo) : string
     {
         $sTxnAdditionalDataXml = "";
-        $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
+        $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData("", true);
         if($aTxnAdditionalData !== null)
         {
             $sTxnAdditionalDataXml ="<additional-data>";
