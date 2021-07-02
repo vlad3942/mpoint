@@ -930,20 +930,42 @@ class Home extends General
              // only final payment status code will be returned to avoid extra checks at API consumer side
                 if($mode === 1)
                 {
-                    $sql = 'SELECT stateid, S.name, 1 AS rownum
-                            FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m
-                                     INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S on M.stateid = S.id
-                            WHERE txnid = '.$txnid.'
-                              and M.enabled = true
-                              and stateid in (
-                                '.Constants::iPAYMENT_ACCEPTED_STATE.', 
-                                '.Constants::iPAYMENT_CAPTURED_STATE.',
-                                '.Constants::iPAYMENT_REJECTED_STATE.',
-                                '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
-                                '.Constants::iPAYMENT_PENDING_STATE.'
-                              )
-                            order by M.id desc
-                            limit 1;';
+                    $sql = 'WITH WT1 as
+                             (SELECT DISTINCT stateid, txnid, S.name, m.id
+                              FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S
+                              on M.stateid = S.id
+                              WHERE txnid = '.$txnid.' and M.enabled = true),
+                         WT2 as (SELECT stateid, txnid, name, id
+                                 FROM (SELECT *, rank() over (partition by txnid order by id desc)
+                                       FROM WT1
+                                       WHERE stateid in (
+                                                         '.Constants::iPAYMENT_ACCEPTED_STATE.',
+                                                         '.Constants::iPAYMENT_CAPTURED_STATE.',
+                                                         '.Constants::iPAYMENT_REJECTED_STATE.',
+                                                         '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
+                                                         '.Constants::iPAYMENT_PENDING_STATE.')) s
+                                 where s.rank = 1
+                                 UNION
+                                 SELECT *
+                                 FROM WT1
+                                 WHERE stateid in (
+                                                   '.Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.')
+                         )
+                    SELECT *, row_number() OVER (ORDER BY id ASC) AS rownum
+                    FROM WT2';
+
                     $RSMsg = $this->getDBConn()->query($sql);
                 }
                 else
