@@ -1889,10 +1889,11 @@ class General
         $checkPaymentStatus = array_count_values($TxnPaymentStatus);
         if($checkPaymentStatus['Complete'] == 2){
             $paymentStatus = 'Complete';
-        }else if(in_array('Pending',$TxnPaymentStatus)){
-            $paymentStatus = 'Pending';
-        }else {
+        }
+        else if(in_array('Failed',$TxnPaymentStatus)){
             $paymentStatus = 'Failed';
+        }else {
+            $paymentStatus = 'Pending';
         }
         $paymentStatusXML = '<payment_status>' . $paymentStatus . '</payment_status>';
 
