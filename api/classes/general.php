@@ -1771,10 +1771,11 @@ class General
      *
      * @param RDB $_OBJ_DB
      * @param int $txnId
+     * @param int $paymentMethod
      * @param int|null $linkedTxnId
      * @return string
      */
-    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,?int $linkedTxnId=null): string
+    public static function getPaymentStatus(RDB $_OBJ_DB,int $txnId,int $paymentMethod,?int $linkedTxnId=null): string
     {
         $paymentStatus = 'Pending';
         //check capture mode of transaction
@@ -1783,7 +1784,10 @@ class General
 				WHERE id = ". $txnId;
         $RS = $_OBJ_DB->getName($sql);
         $auto_capture = $RS['AUTO_CAPTURE'];
-        if($auto_capture == AutoCaptureType::ePSPLevelAutoCapt ){
+        if($paymentMethod ==  Constants::iPAYMENT_TYPE_OFFLINE ){
+            //if payment type is offline then check for 1041 is logged and fraud states are not logged, if so payment is complete
+            $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_PENDING_STATE,$txnId);
+        }else if($auto_capture == AutoCaptureType::ePSPLevelAutoCapt ){
             //if psp level capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
             $checkTxnStatus = self::checkTxnStatus($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE,$txnId);
         }else{
@@ -1800,7 +1804,7 @@ class General
         }
         // check both the transaction status to get payment status for combined txns
         if($linkedTxnId !== null){
-            $checkLinkedTxnStatus = self::getPaymentStatus($_OBJ_DB,$linkedTxnId);
+            $checkLinkedTxnStatus = self::getPaymentStatus($_OBJ_DB,$linkedTxnId,$paymentMethod);
             $TxnPaymentStatus = [$paymentStatus,$checkLinkedTxnStatus];
             $checkPaymentStatus = array_count_values($TxnPaymentStatus);
             if($checkPaymentStatus['Complete'] == 2){
@@ -1844,16 +1848,17 @@ class General
      * @param RDB $_OBJ_DB
      * @param int $linkedTxnId
      * @param int $txnId
+     * @param int $paymentMethod
      * @return string
      */
-    public static function getLinkedTransactions(RDB $_OBJ_DB,int $linkedTxnId,int $txnId) : string
+    public static function getLinkedTransactions(RDB $_OBJ_DB,int $linkedTxnId,int $txnId,int $paymentMethod) : string
     {
         $linkedTxnData     = [$txnId,$linkedTxnId];
         $linkedTxnXml  	   = "<linked_transactions>";
         foreach($linkedTxnData as $linkedTxn){
             $linkedTxnXml  .= "<transaction_details>";
             $linkedTxnXml  .= "<id>".$linkedTxn."</id>";
-            $linkedTxnXml  .= "<status>".self::getPaymentStatus($_OBJ_DB,$linkedTxn)."</status>";
+            $linkedTxnXml  .= "<status>".self::getPaymentStatus($_OBJ_DB,$linkedTxn,$paymentMethod)."</status>";
             $linkedTxnXml  .= "</transaction_details>";
         }
         $linkedTxnXml .= "</linked_transactions>";

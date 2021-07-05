@@ -31,6 +31,8 @@ class TransactionData implements JsonSerializable
 
     private string $hmac;
 
+    private int $product_type;
+
     private string $approval_code;
 
     private int $wallet_id;
@@ -151,6 +153,14 @@ class TransactionData implements JsonSerializable
     public function setHmac(string $hmac)
     {
         $this->hmac = $hmac;
+    }
+
+    /**
+     * @param int $product_type
+     */
+    public function setProductType(int $product_type)
+    {
+        $this->product_type = $product_type;
     }
 
     /**

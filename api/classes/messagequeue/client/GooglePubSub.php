@@ -20,14 +20,19 @@ namespace api\classes\messagequeue\client {
         private ?object $_messageQueueClient = NULL;
 
         /**
-         * @param string $message
-         *
+         * @param string $data
+         * @param array|null $filter
          * @return bool
          */
-        public function publish(string $message)
+        public function publish(string $data, array $filter = null): bool
         {
             $topic = $this->getMessageQueueClient()->topic($this->getTopicName());
-            $topic->publish(['data' => $message]);
+            $message = ['data' => $data];
+            if($filter !== null)
+            {
+                $message['attributes'] = $filter;
+            }
+            $topic->publish($message);
             return TRUE;
         }
 

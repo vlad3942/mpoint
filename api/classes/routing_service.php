@@ -126,6 +126,7 @@ class RoutingService extends General
         $body .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $body .= '<transaction>';
         $body .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
+        $body .= '<order_no>'.$this->_obj_TxnInfo->getOrderID().'</order_no>';
         $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
 
         //Type will hard coded 1 - design - https://confluence.t.cpm.dev/display/CS/Feature+-+Add-on+Product+type+and+Fee
@@ -283,6 +284,15 @@ class RoutingService extends General
         {
             $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
             $aRoutes = $aObj_Route->routes->route;
+
+            if(empty($aObj_Route->kpi_used) === false && $aObj_Route->kpi_used === true)
+            {
+                $additionalTxnData[0]['name'] = 'kpi_used';
+                $additionalTxnData[0]['value'] = 'true';
+                $additionalTxnData[0]['type'] = 'Transaction';
+                $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
+            }
+
         }
         $firstPSP = -1;
         if (count ( $aRoutes ) > 0) {

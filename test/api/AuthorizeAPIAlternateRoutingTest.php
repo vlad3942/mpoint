@@ -79,6 +79,8 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 16, $pspID, true, 1)");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, $pspID, true, 1)");
 
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10099, 'client',0)");
+
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 200, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 16, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -264,6 +266,13 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->assertTrue(is_resource($SQL_TxnSessionTbl));
         $res_TxnSessionTbl = pg_fetch_all($SQL_TxnSessionTbl);
         $this->assertEquals(2, count($res_TxnSessionTbl) );
+
+        $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001002 and type = 'Transaction'");
+        $this->assertTrue(is_resource($sql));
+        while ($row = pg_fetch_assoc($sql) )
+        {
+            $this->assertTrue((bool)$row["value"]);
+        }
 
         // States check
         $SQL_MessageTbl =  $this->queryDB("select * from log.message_tbl where txnid in (select id from log.transaction_tbl where sessionid = 1) ORDER BY ID ASC");

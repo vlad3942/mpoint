@@ -48,7 +48,7 @@ class PaymentRoute
     /**
      * @return mixed
      */
-    private function getDBConn()
+    public function getDBConn()
     {
         return $this->_obj_DB;
     }

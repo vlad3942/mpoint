@@ -131,7 +131,7 @@ try
 		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			$responseCode = $obj_mPoint->capture();
-			if ($responseCode == 1000)
+			if ($responseCode == Constants::iTRANSACTION_CREATED)
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
