@@ -400,7 +400,7 @@ try
         //Post-Auth-Fraud Check call
         $isPostAuthFraudGatewayEnabled = false;
         $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-        if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE)) === false && ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE || $iStateID == Constants::iPAYMENT_CAPTURED_STATE )
+        if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE)) === false && ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE || $iStateID == Constants::iPAYMENT_CAPTURED_STATE )
             && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
         {
             $isPostAuthFraudGatewayEnabled = true;
@@ -670,7 +670,7 @@ try
                                 if ($code === 1000 || $code === 1001)
                                 {
                                     if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { array_push($aStateId,Constants::iPAYMENT_REFUNDED_STATE); }
-                                    else { array_push($aStateId,Constants::iPAYMENT_CANCELLED_STATE); }
+                                    //else { array_push($aStateId,Constants::iPAYMENT_CANCELLED_STATE); }
                                 }
                             }
                         }
@@ -814,7 +814,7 @@ try
                         $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $newTxnInfo, null, $iPSPID);
 
                         if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
-                            && ($newTxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_WITH_VOUCHER_STATE) === FALSE)) {
+                            && ($newTxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_VOUCHER_STATE,Constants::iPAYMENT_ACCEPTED_STATE,Constants::iPAYMENT_REJECTED_STATE)) === FALSE)) {
                             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
                             $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $obj_PSP);
 
@@ -883,7 +883,7 @@ try
                                         if ($code === 1000 || $code === 1001)
                                         {
                                             if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) { $iStateId=Constants::iPAYMENT_REFUNDED_STATE; }
-                                            else { $iStateId=Constants::iPAYMENT_CANCELLED_STATE; }
+                                            //else { $iStateId=Constants::iPAYMENT_CANCELLED_STATE; }
 
                                             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "additionaldata" => $sAdditionalData), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 
