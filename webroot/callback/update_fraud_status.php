@@ -169,7 +169,13 @@ $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
     $sComment = (string) $obj_DOM->comment;
     $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
-    $sql = "SELECT id from log".sSCHEMA_POSTFIX.".Transaction_tbl where orderid ='".$OrderNo."'";
+    $sql = "SELECT id from log".sSCHEMA_POSTFIX.".Transaction_tbl where";
+    if(empty($obj_DOM->{'transaction_id'}) === false)
+    { $sql .= " id =".$obj_DOM->{'transaction_id'}.""; }
+    else
+    {
+        $sql .= " orderid ='".$OrderNo."'";
+    }
     $res = $_OBJ_DB->query($sql);
     $iStatusId = 0;
 
