@@ -1892,11 +1892,8 @@ class General
         }
         else if(in_array('Failed',$TxnPaymentStatus)){
             $paymentStatus = 'Failed';
-        }
-        else if(in_array('Pending',$TxnPaymentStatus)){
-            $paymentStatus = 'Pending';
         }else {
-            $paymentStatus = 'Failed';
+            $paymentStatus = 'Pending';
         }
         $paymentStatusXML = '<payment_status>' . $paymentStatus . '</payment_status>';
 
