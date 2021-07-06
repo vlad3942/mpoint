@@ -693,6 +693,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPAYMENT_TYPE_ONLINE_BANKING) {
                                         try {
                                             $pspId  = (int)$obj_XML->item[$j]['pspid'];
+                                            if (strtolower($is_legacy) == 'false') {
+                                                $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), (int)$obj_XML->item[$j]["type-id"], NULL,(string)$obj_XML->item[$j]->name,(int)$obj_XML->item[$j]["walletid"]);
+                                                $pspId = (int)$obj_CardResultSet['PSPID'];
+                                            }
                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();

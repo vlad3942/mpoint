@@ -303,7 +303,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         $obj_CardResultSet = FALSE;
 						$aRoutes = array();
-                        $iPrimaryRoute = 0 ;
                         $pspId = -1;
 
                         if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE)
@@ -319,15 +318,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
 
                         if (strtolower($is_legacy) == 'false') {
-                            $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
-                            if ($obj_RS instanceof RoutingService) {
-                                $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-                            }
-                            if ($iPrimaryRoute > 0) {
-                                $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject((integer)$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
-                            }
+                            $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
                         } else {
                             $obj_CardResultSet = $obj_mPoint->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
                         }
