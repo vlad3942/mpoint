@@ -101,6 +101,8 @@ class TransactionData implements JsonSerializable
 
     private string $fraud_status_desc;
 
+    private FraudStatus $fraud_status_info;
+
     /**
      * TransactionData constructor.
      *
@@ -114,7 +116,7 @@ class TransactionData implements JsonSerializable
      * @param \Card $card
      * @param \CustomerInfo $customer_info
      */
-    public function __construct(int $id, string $order_id, string $payment_method, string $payment_type, Amount $amount, StateInfo $status, PSPData $psp, \Card $card, \CustomerInfo $customer_info)
+    public function __construct(int $id, string $order_id, string $payment_method, string $payment_type, Amount $amount, StateInfo $status, PSPData $psp, \Card $card, \CustomerInfo $customer_info, FraudStatus $fraud_status_info)
     {
         $this->id = $id;
         $this->order_id = $order_id;
@@ -125,6 +127,7 @@ class TransactionData implements JsonSerializable
         $this->psp = $psp;
         $this->card = $card;
         $this->customer_info = $customer_info;
+        $this->fraud_status_info = $fraud_status_info;
     }
 
     /**

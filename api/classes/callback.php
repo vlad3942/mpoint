@@ -14,6 +14,7 @@ require_once(sCLASS_PATH ."/core/card.php");
 
 use api\classes\AdditionalData;
 use api\classes\Amount;
+use api\classes\FraudStatus;
 use api\classes\CallbackMessageRequest;
 use api\classes\ProductInfo;
 use api\classes\PSPData;
@@ -1450,8 +1451,8 @@ abstract class Callback extends EndUserAccount
             $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
             $obj_CustomerInfo->setOperator($txnInfo->getOperator());
         }
-
-        $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
+        $obj_FraudStatus = new FraudStatus($txnInfo);
+        $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo, $obj_FraudStatus);
 
         $transactionData->setFee($txnInfo->getFee());
         $transactionData->setDescription($txnInfo->getDescription());
