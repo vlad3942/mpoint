@@ -37,28 +37,14 @@ class FraudStatus implements JsonSerializable
      *
      * @param \TxnInfo $obj_TxnInfo
      */
-    public function __construct(\TxnInfo $obj_TxnInfo)
+    public function __construct($status_code=null, $status_desc=null, $pre_auth_ext_id=null, $pre_auth_ext_status_code=null,$post_auth_ext_id=null,$post_auth_ext_status_code=null)
     {
-        $getFraudStatusCode = $this->getFraudDetails($obj_TxnInfo->getID());
-        $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
-        if (empty($getFraudStatusCode) === FALSE) {
-
-            if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
-                $this->pre_auth_ext_id = $aTxnAdditionalData['pre_auth_ext_id'];
-            }
-            if (isset($aTxnAdditionalData['pre_auth_ext_status_code'])) {
-                $this->pre_auth_ext_status_code = $aTxnAdditionalData['pre_auth_ext_status_code'];
-            }
-            if (isset($aTxnAdditionalData['post_auth_ext_id'])) {
-                $this->post_auth_ext_id = $aTxnAdditionalData['post_auth_ext_id'];
-            }
-            if (isset($aTxnAdditionalData['post_auth_ext_status_code'])) {
-                $this->post_auth_ext_status_code = $aTxnAdditionalData['post_auth_ext_status_code'];
-            }
-
-            $this->status_code = $getFraudStatusCode['status_code'];
-            $this->status_desc = $getFraudStatusCode['status_desc'];
-        }
+        $this->status_code = $status_desc;
+        $this->status_desc = $status_desc;
+        $this->pre_auth_ext_id = $pre_auth_ext_id;
+        $this->pre_auth_ext_status_code = $pre_auth_ext_status_code;
+        $this->post_auth_ext_id = $post_auth_ext_id;
+        $this->post_auth_ext_status_code = $post_auth_ext_status_code;
     }
 
 
