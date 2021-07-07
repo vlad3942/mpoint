@@ -1751,13 +1751,9 @@ class General
         $iProcessorType     = self::getPSPType($oDB, $pspID);
         $routeConfigID      = (int)$oTI->getRouteConfigID();
 
-        if($bForceLegacy === true || strtolower($isLegacy) == 'true') {
-            $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
-        }
-        else if(strtolower($isLegacy) == 'false' && ($iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0 ){
+        if(strtolower($isLegacy) == 'false' && ($iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0  && $bForceLegacy === false ){
             $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $routeConfigID);
-        }
-        else {
+        }else{
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
         }
         return $oPSPConfig;
