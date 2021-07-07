@@ -43,7 +43,7 @@ class UATPCardAccount extends CPMPSP
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 foreach ($obj_XML->status as $statusCode)
                 {
-                    if(intval($statusCode["code"]) === 1000)
+                    if(intval($statusCode["code"]) === Constants::iTRANSACTION_CREATED)
                     {
                         $code = intval($statusCode["code"]);
                     }

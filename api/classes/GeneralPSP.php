@@ -155,7 +155,7 @@ final class GeneralPSP extends CPMACQUIRER
             }
             $this->updateTxnInfoObject();
             // Refund operation succeeded
-            if ($code === 1000 || $code === 1001) {
+            if (in_array($code, [ Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE ])) {
                 $aMsgCds[$code] = "Success";
                 // Perform callback to Client
                 if ($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUNDED_STATE) === TRUE) {
@@ -166,7 +166,7 @@ final class GeneralPSP extends CPMACQUIRER
                         parent::notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
                     }
                 }
-            } elseif ($code === 1100) {
+            } elseif ($code === Constants::i3D_SECURE_ACTIVATED_STATE) {
          //       header("HTTP/1.0 200 OK");
                 $aMsgCds[$code] = "Success";
             } else {

@@ -629,7 +629,14 @@ abstract class Callback extends EndUserAccount
 
 		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
 		if ($callbackMessageRequest !== NULL) {
-                $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
+                $filter = ['status_code' => (string)$sid];
+                if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
+                    $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
+                    if ($kpiUsed != false) {
+                        $filter['is_volume_kpi_used'] = 'true';
+                    }
+                }
+                $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
             }
 
 	}
@@ -1286,7 +1293,8 @@ abstract class Callback extends EndUserAccount
 
 		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
 		if ($callbackMessageRequest !== NULL) {
-			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $obj_SurePay, $sid);
+            $filter = ['status_code' => (string) $sid];
+			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
 		}
     }
 
@@ -1454,6 +1462,7 @@ abstract class Callback extends EndUserAccount
         $obj_FraudStatus = new FraudStatus($txnInfo);
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo, $obj_FraudStatus);
 
+        $transactionData->setRouteConfigId($txnInfo->getRouteConfigID());
         $transactionData->setFee($txnInfo->getFee());
         $transactionData->setDescription($txnInfo->getDescription());
         $transactionData->setHmac($txnInfo->getHMAC());
@@ -1543,19 +1552,19 @@ abstract class Callback extends EndUserAccount
 		return $transactionData;
     }
 
-	/**
-	 * @param string              $body
-	 * @param \SurePayConfig|null $obj_SurePay
-	 * @param int                 $attempt
-	 * @param int                 $sid
-	 */
-	private function publishMessage($body, SurePayConfig &$obj_SurePay = NULL, $attempt = 0, $sid = 0)
+    /**
+     * @param string $body
+     * @param array|null $filter
+     * @param SurePayConfig|null $obj_SurePay
+     * @param int $attempt
+     */
+	private function publishMessage(string $body, array $filter = null, SurePayConfig &$obj_SurePay = NULL, int $attempt = 0)
     {
         try {
             $messageQueueClient = MessageQueueClient::GetClient();
             $messageQueueClient->authenticate();
             try {
-                $response = $messageQueueClient->publish($body);
+                $response = $messageQueueClient->publish($body, $filter);
                 if ($response === TRUE) {
                     $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, 'Message Successfully Publish :  '. $body);
                 } else {
@@ -1576,7 +1585,7 @@ abstract class Callback extends EndUserAccount
             sleep($obj_SurePay->getDelay() * $attempt);
             trigger_error("mPoint Callback request retried for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
             $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt " . $attempt . " of " . $obj_SurePay->getMax());
-            $this->publishMessage($body, $obj_SurePay, $attempt);
+            $this->publishMessage($body, $filter, $obj_SurePay, $attempt);
         }
     }
 
