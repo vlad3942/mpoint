@@ -249,7 +249,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 									$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
 									// Capture operation succeeded
-									if ($code == 1000)
+									if ($code == Constants::iTRANSACTION_CREATED)
 									{
 										header("HTTP/1.0 200 OK");
 											
@@ -265,7 +265,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                                         }
 									}
-                                    elseif ($code == 1002)
+                                    elseif ($code == Constants::iPRODUCTS_STATE)
                                     {
                                         header("HTTP/1.0 200 OK");
 

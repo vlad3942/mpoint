@@ -287,7 +287,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 		}
 	
 	
-		if ($code == 2000)
+		if ($code == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_ACCEPTED_STATE, $obj_Client->getReplyBody());
 		}

@@ -202,7 +202,7 @@ try
 			}
 
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
-			if (array_key_exists("capturenow", $_POST) === true || $code == 1000)
+			if (array_key_exists("capturenow", $_POST) === true || $code == Constants::iTRANSACTION_CREATED)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 				if (array_key_exists("capturenow", $_POST) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }

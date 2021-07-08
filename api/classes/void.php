@@ -77,7 +77,7 @@ class Void extends General
 		if ( ($this->_obj_PSP instanceof Voiadable) === true) { $code = $this->_obj_PSP->void($iAmount); }
 		else { throw new BadMethodCallException("Void not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
-		if ($code === 1000)
+		if ($code === Constants::iTRANSACTION_CREATED)
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET refund = refund + ". intval($iAmount) ."

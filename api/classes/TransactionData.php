@@ -31,6 +31,8 @@ class TransactionData implements JsonSerializable
 
     private string $hmac;
 
+    private int $product_type;
+
     private string $approval_code;
 
     private int $wallet_id;
@@ -99,6 +101,8 @@ class TransactionData implements JsonSerializable
 
     private string $fraud_status_desc;
 
+    private int $route_config_id;
+
     /**
      * TransactionData constructor.
      *
@@ -149,6 +153,14 @@ class TransactionData implements JsonSerializable
     public function setHmac(string $hmac)
     {
         $this->hmac = $hmac;
+    }
+
+    /**
+     * @param int $product_type
+     */
+    public function setProductType(int $product_type)
+    {
+        $this->product_type = $product_type;
     }
 
     /**
@@ -334,5 +346,21 @@ class TransactionData implements JsonSerializable
     public function setFraudStatusDesc(string $fraud_status_desc): void
     {
         $this->fraud_status_desc = $fraud_status_desc;
+    }
+
+    /**
+     * @param int $route_config_id
+     */
+    public function setRouteConfigId(int $route_config_id): void
+    {
+        $this->route_config_id = $route_config_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSRouteConfigId(): int
+    {
+        return $this->route_config_id;
     }
 }

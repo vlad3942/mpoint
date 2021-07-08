@@ -159,7 +159,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 
 					// Refund operation succeeded
 					$code = $obj_mPoint->refund($_REQUEST['amount']);
-					if ($code == 1000 || $code == 1001)
+					if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
 					{
 						header("HTTP/1.0 200 OK");
 						
@@ -170,7 +170,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                                       "amount" => $_REQUEST['amount']);
                         $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
                     }
-                    else if ($code == 1100) {
+                    else if ($code == Constants::i3D_SECURE_ACTIVATED_STATE) {
                         header("HTTP/1.0 200 OK");
                         $aMsgCds[$code] = "Success";
 					}
