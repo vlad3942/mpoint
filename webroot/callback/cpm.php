@@ -29,7 +29,7 @@ $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/globa
 $obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB), $aCPM_CONN_INFO);
 
 // Success: Premium SMS accepted by GoMobile or Stored Value Account charged
-if ($_POST['status'] == 200 || $_POST['status'] == 2000)
+if ($_POST['status'] == 200 || $_POST['status'] == Constants::iPAYMENT_ACCEPTED_STATE)
 {
 	$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
 }

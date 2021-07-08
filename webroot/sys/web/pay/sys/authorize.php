@@ -379,7 +379,7 @@ if (count($aMsgCds) == 0)
 				$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=". $saveCardCode;
 			}
 			
-			if($code == 2005)
+			if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
 			{
 				$html = "";
 				$timestamp = date("YmdHis");

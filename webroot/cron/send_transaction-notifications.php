@@ -120,7 +120,7 @@ while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $txnStateName, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 
-		if($code === 1000)
+		if($code === Constants::iTRANSACTION_CREATED)
 		{
 			$xml .= '<transaction id="'.$txnid.'"><status code="1000">Callback Success</status></transaction>';
 		}

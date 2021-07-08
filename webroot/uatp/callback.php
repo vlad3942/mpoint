@@ -108,7 +108,7 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $sPassbookStatus, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 		
-		if($code === 1000)
+		if($code === Constants::iTRANSACTION_CREATED)
 		{
 			header("HTTP/1.1 200 Ok");
 			header("Content-Type: text/xml; charset=\"UTF-8\"");

@@ -109,14 +109,14 @@ class PSPSettlement extends mPointSettlement
                             if($captureAmount === 0)
                                 $captureAmount=null;
                             $iStatusCode = $obj_PSP->capture($captureAmount);
-                            if ($iStatusCode === 1000 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === false) {
+                            if ($iStatusCode === Constants::iTRANSACTION_CREATED && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === false) {
                                 $totalSuccessfulTxnCount++;
                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                     "amount" => $obj_TxnInfo->getAmount(),
                                     "fee" => $obj_TxnInfo->getFee());
 
                                 $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
-                            } elseif ($iStatusCode === 1100) {
+                            } elseif ($iStatusCode === Constants::i3D_SECURE_ACTIVATED_STATE) {
                                 $totalSuccessfulTxnCount++;
                             }
                         }

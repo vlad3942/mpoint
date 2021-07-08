@@ -96,11 +96,11 @@ Class CHUBB extends CPMPSP
                 }
                 else { $code = $obj_XML->status["code"]; }
 
-                if($code == 2005)
+                if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
                 $this->getTxnInfo()->getPaymentSession()->updateState();
                 // In case of 3D verification status code 2005 will be received
-                if($code == 2005)
+                if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
                 {
                     $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
                     $str = str_replace("<root>","",$str);
