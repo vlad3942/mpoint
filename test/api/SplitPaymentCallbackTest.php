@@ -73,7 +73,6 @@ class SplitPaymentCallbackTest extends baseAPITest
         $aStates = [];
         while ($row = pg_fetch_assoc($res)) {
             $aStates[] = $row["stateid"];
-
         }
 
         $this->assertCount(2, $aStates);
