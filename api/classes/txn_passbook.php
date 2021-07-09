@@ -873,7 +873,7 @@ final class TxnPassbook
                 }
                 else if($this->getDBConn()->countAffectedRows($result) === 0 )
                 {
-                    trigger_error('Passbook entry is not updated for transaction id :' . $this->_transactionId, E_USER_ERROR);
+                    trigger_error('Passbook entry is not updated for transaction id :' . $this->_transactionId);
                     return false;
                 }
             }
