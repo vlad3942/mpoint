@@ -3,6 +3,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 isPostFraudAttemp1::=<eci>=="02"AND<isCryptogrm>!==""
 isPostFraudAttemp2::=<eci>=="05"AND<isCryptogrm>!==""
 isPostFraudAttemp3::=<eci>=="01"AND<isCryptogrm>!==""
-isPostFraudAttemp4::=<eci>=="07"AND<isCryptogrm>!==""
+isPostFraudAttemp4::=<eci>=="06"AND<isCryptogrm>!==""
 eci::=(card.info-3d-secure.cryptogram.@eci)
 isCryptogrm::={trim.(card,info-3d-secure,cryptogram)}', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10077 AND pspid=72;
