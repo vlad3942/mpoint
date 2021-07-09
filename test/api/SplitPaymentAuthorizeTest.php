@@ -323,6 +323,9 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             if (count($aStates) >= 5) { break; }
             usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
+
+        var_dump($aStates);
+
         $this->assertEquals(5, count($aStates) );
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1 ORDER BY ID ASC");
