@@ -504,7 +504,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->assertEquals(402, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
         $aStates = [];
-
+        $retries = 0;
         while ($retries++ <= 5)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");

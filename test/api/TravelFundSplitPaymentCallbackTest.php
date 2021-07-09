@@ -92,6 +92,7 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals("", $sReplyBody);
 
         $aStates = [];
+        $retries = 0;
         while ($retries++ <= 6)
         {
             $aStates = [];
@@ -160,8 +161,8 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-
         $aStates = [];
+        $retries = 0;
         while ($retries++ <= 6)
         {
             $aStates = [];

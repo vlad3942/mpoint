@@ -89,7 +89,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
             while ($row = pg_fetch_assoc($res) )
             {
                 $trow = $row;
-                $aStates[] = $row["stateid"];
+                $aStates[] = (int)$row["stateid"];
             }
             if (count($aStates) == 16) { break; }
             usleep(1000000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
@@ -101,11 +101,11 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(2, $trow["amount"]);
 
 		$this->assertCount(16, $aStates);
-		self::assertTrue(in_array(2007,$aStates));
-		self::assertTrue(in_array(2000,$aStates));
-		self::assertTrue(in_array(2001,$aStates));
-		self::assertTrue(in_array(4030,$aStates));
-		self::assertTrue(in_array(2007,$aStates));
+		self::assertContains(2007,$aStates);
+		self::assertContains(2000,$aStates);
+		self::assertContains(2001,$aStates);
+		self::assertContains(4030,$aStates);
+		self::assertContains(2007,$aStates);
     }
 
 	public function testVoucherRedemptionDeniedByIssuer()
@@ -142,7 +142,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
 
 		$aStates = array();
-
+        $retries = 0;
         while ($retries++ <= 5)
         {
             $res =  $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");

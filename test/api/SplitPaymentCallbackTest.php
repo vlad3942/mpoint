@@ -69,6 +69,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals("", $sReplyBody);
 
         $aStates = [];
+        $retries = 0;
         while ($retries++ <= 6)
         {
             $aStates = [];
@@ -180,6 +181,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(1, pg_num_rows($res));
 
         $aStates = [];
+        $retries = 0;
         while ($retries++ <= 6)
         {
             $aStates = [];
@@ -236,6 +238,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals("", $sReplyBody);
 
         $aStates = [];
+        $retries = 0;
         while ($retries++ <= 6)
         {
             $aStates = [];
@@ -311,6 +314,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals("", $sReplyBody);
 
         $aStates = [];
+        $retries = 0;
         while ($retries++ <= 6)
         {
             $aStates = [];
@@ -331,6 +335,8 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
+        $retries = 0;
+        $aStates = [];
         while ($retries++ <= 12)
         {
             $aStates = [];
@@ -399,21 +405,26 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
         $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('voucherid', 'voucherid', 'Transaction',1)");
 
-
         $xml = $this->getCallbackDoc(1001001, 'tst233', $pspID);
         $this->_httpClient->connect();
         $this->bIgnoreErrors = TRUE;
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(202, $iStatus);
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
-        $this->assertTrue(is_resource($res));
 
+        $retries = 0;
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = (int)$row["stateid"];
+        while ($retries++ <= 10)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 10) { break; }
+            usleep(100000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, $aStates);
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
         $this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
@@ -488,8 +499,17 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertTrue(is_resource($res));
 
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = (int)$row["stateid"];
+        $retries = 0;
+        while ($retries++ <= 10)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 10) { break; }
+            usleep(100000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, $aStates);
