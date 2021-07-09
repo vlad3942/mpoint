@@ -503,15 +503,21 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $this->assertEquals(402, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
-
-        $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
-        $this->assertTrue(is_resource($res));
-
         $aStates = [];
-        $trow = NULL;
-        while ($row = pg_fetch_assoc($res)) {
-            $trow = $row;
-            $aStates[] = $row["stateid"];
+
+        while ($retries++ <= 5)
+        {
+            $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
+            $this->assertTrue(is_resource($res));
+
+            $aStates = [];
+            $trow = NULL;
+            while ($row = pg_fetch_assoc($res)) {
+                $trow = $row;
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 5) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertEquals(NULL, $trow["extid"]);

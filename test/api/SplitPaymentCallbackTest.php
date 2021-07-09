@@ -68,12 +68,17 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(1200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);
@@ -174,14 +179,17 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
-
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(1, $aStates);
@@ -227,12 +235,17 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);
@@ -297,12 +310,17 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);
@@ -313,13 +331,16 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
-        $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        while ($retries++ <= 12)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 12) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(12, $aStates);
@@ -396,12 +417,6 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, $aStates);
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
         $this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
-        //$this->assertContains(Constants::iSESSION_FAILED, $aStates);
-
-       /* Session Will not be closed on fraud detected based on new user story CEBU-18
-        *  $res = $this->queryDB("SELECT id FROM Log.session_tbl where id= 1 and stateid= 4020");
-        $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));*/
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
         $this->assertIsResource($res);
@@ -409,7 +424,6 @@ class SplitPaymentCallbackTest extends baseAPITest
         $aStates = [];
         while ($row = pg_fetch_assoc($res)) {
             $aStates[] = $row["stateid"];
-
         }
 
         $this->assertCount(1, $aStates);
@@ -481,12 +495,6 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, $aStates);
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
         $this->assertNotContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
-
-
-  /*   Session Will not be closed on fraud detected based on new user story CEBU-18
-   *       $res = $this->queryDB("SELECT id FROM Log.session_tbl where id= 1 and stateid= 4020");
-        $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));*/
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
         $this->assertIsResource($res);

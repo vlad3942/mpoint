@@ -91,12 +91,17 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(700000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);
@@ -155,12 +160,18 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
 
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(700000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);
