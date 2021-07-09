@@ -203,7 +203,23 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 		$this->assertIsResource($res);
 		$this->assertEquals(1, pg_num_rows($res));
 
-		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1 ORDER BY ID ASC");
+        $aStates = [];
+        $retries = 0;
+        while ($retries++ <= 5)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 5) { break; }
+            usleep(500000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+
+        $this->assertEquals(5, count($aStates) );
+
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1 ORDER BY ID ASC");
 		$this->assertTrue(is_resource($res) );
 
 		$aStates = array();
