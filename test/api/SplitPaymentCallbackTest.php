@@ -66,15 +66,14 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
+        usleep(1000000);
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 100100112  ORDER BY id ASC");
         $this->assertIsResource($res);
-
         $aStates = [];
         while ($row = pg_fetch_assoc($res)) {
             $aStates[] = $row["stateid"];
         }
-
         $this->assertCount(2, $aStates);
         $this->assertTrue(is_int(array_search(2000, $aStates)));
 
@@ -93,7 +92,7 @@ class SplitPaymentCallbackTest extends baseAPITest
                 $aStates[] = $row["stateid"];
             }
             if (count($aStates) >= 5) { break; }
-            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount( 5, $aStates);
@@ -263,13 +262,17 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
-        $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        $retries = 0;
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);

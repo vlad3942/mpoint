@@ -80,7 +80,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment authorized using Voucher</status></root>', $sReplyBody);
 
         $retries = 0;
-
+        $aStates = array();
         while ($retries++ <= 16)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
@@ -93,20 +93,17 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
                 $aStates[] = $row["stateid"];
             }
             if (count($aStates) == 16) { break; }
-            usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            usleep(500000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-        //var_dump($aStates);
 		$this->assertEquals(61775, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
-
 		$this->assertCount(16, $aStates);
-		self::assertContains(2007,$aStates);
-		self::assertContains(2000,$aStates);
-		self::assertContains(2001,$aStates);
-		self::assertContains(4030,$aStates);
-		self::assertContains(2007,$aStates);
+		self::assertTrue(in_array(2000,$aStates));
+        self::assertTrue(in_array(2001,$aStates));
+        self::assertTrue(in_array(4030,$aStates));
+        self::assertTrue(in_array(2007,$aStates));
     }
 
 	public function testVoucherRedemptionDeniedByIssuer()
@@ -142,16 +139,22 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(402, $iStatus);
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
 
-		$res =  $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
-		$this->assertTrue(is_resource($res) );
-
-		$aStates = array();
-		$trow = null;
-		while ($row = pg_fetch_assoc($res) )
-		{
-			$trow = $row;
-			$aStates[] = $row["stateid"];
-		}
+        $retries = 0;
+        $aStates = array();
+        while ($retries++ <= 5)
+        {
+            $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
+            $this->assertTrue(is_resource($res) );
+            $aStates = array();
+            $trow = null;
+            while ($row = pg_fetch_assoc($res) )
+            {
+                $trow = $row;
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) == 5) { break; }
+            usleep(500000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
 
 		$this->assertEquals(null, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
