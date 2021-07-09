@@ -54,16 +54,21 @@ abstract class RefundAPITest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals("msg=1000", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
-        $this->assertTrue(is_resource($res) );
-
-        $aStates = array();
-        while ($row = pg_fetch_assoc($res) )
+        $retries=0;
+        $aStates = [];
+        while ($retries++ <= 4)
         {
-            $aStates[] = $row["stateid"];
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 4) { break; }
+            usleep(50000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-        $this->assertTrue(is_int(array_search(Constants::iPAYMENT_REFUNDED_STATE, $aStates) ) );
+        $this->assertContains(Constants::iPAYMENT_REFUNDED_STATE, $aStates);
 
         //Check refund amount got updated
 		$res =  $this->queryDB("SELECT refund FROM Log.transaction_Tbl WHERE id = 1001001");
@@ -116,16 +121,21 @@ abstract class RefundAPITest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals("msg=1000", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
-        $this->assertTrue(is_resource($res) );
-
-        $aStates = array();
-        while ($row = pg_fetch_assoc($res) )
+        $retries=0;
+        $aStates = [];
+        while ($retries++ <= 4)
         {
-            $aStates[] = $row["stateid"];
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 4) { break; }
+            usleep(50000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-        $this->assertTrue(is_int(array_search(Constants::iPAYMENT_REFUNDED_STATE, $aStates) ) );
+        $this->assertContains(Constants::iPAYMENT_REFUNDED_STATE, $aStates);
 
         //Check refund amount got updated
         $res =  $this->queryDB("SELECT refund FROM Log.transaction_Tbl WHERE id = 1001001");
@@ -171,13 +181,21 @@ abstract class RefundAPITest extends baseAPITest
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
 		$this->assertTrue(is_resource($res) );
 
-		$aStates = array();
-		while ($row = pg_fetch_assoc($res) )
-		{
-			$aStates[] = $row["stateid"];
-		}
+        $retries=0;
+        $aStates = [];
+        while ($retries++ <= 4)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 4) { break; }
+            usleep(50000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
 
-		$this->assertTrue(is_int(array_search(Constants::iPAYMENT_CANCELLED_STATE, $aStates) ) );
+		$this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
 	}
 
 

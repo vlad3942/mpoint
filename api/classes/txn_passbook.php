@@ -735,7 +735,7 @@ final class TxnPassbook
         $currency = 0;
         foreach ($this->getEntries(TRUE) as $entry) {
 
-            if ($entry instanceof PassbookEntry && $entry->getStatus() === Constants::sPassbookStatusPending) {
+            if ($entry instanceof PassbookEntry && $entry->getStatus() === Constants::sPassbookStatusPending && $entry->getPerformedOperation() == 0) {
 
                 $entry->setStatus(Constants::sPassbookStatusDone);
                 $currency = $entry->getCurrencyId();
@@ -882,10 +882,14 @@ final class TxnPassbook
                 $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
                 $queryResult = (bool) $result;
                 if ($result === FALSE) {
-                    throw new Exception('Fail to fetch passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
+                    throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
                     return $queryResult;
                 }
-
+                else if($this->getDBConn()->countAffectedRows($result) === 0 )
+                {
+                    trigger_error('Passbook entry is not updated for transaction id :' . $this->_transactionId);
+                    return false;
+                }
             }
         }
 
