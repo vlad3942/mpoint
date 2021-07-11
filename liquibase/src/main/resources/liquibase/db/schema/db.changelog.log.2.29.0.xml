@@ -10,7 +10,22 @@
                id="2021-06-30-setup-v2.29.0-log-1">
 
         <sql dbms="postgresql" endDelimiter=";">
-            ALTER TYPE LOG.ADDITIONAL_DATA_REF ADD VALUE 'Session';
+            ALTER TABLE log.additional_data_tbl
+            ALTER COLUMN type TYPE VARCHAR(255);
+
+            DROP TYPE IF EXISTS log.additional_data_ref;
+
+            CREATE TYPE log.additional_data_ref AS ENUM (
+            'Flight',
+            'Passenger',
+            'Order',
+            'Transaction',
+            'Session'
+            );
+
+            ALTER TABLE log.additional_data_tbl
+            ALTER COLUMN type TYPE log.additional_data_ref
+            USING (type::log.additional_data_ref);
         </sql>
 
     </changeSet>
