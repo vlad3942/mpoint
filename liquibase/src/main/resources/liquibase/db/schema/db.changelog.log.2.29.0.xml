@@ -6,12 +6,26 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
 
+    <changeSet author="Sagar Badave" id="2021-05-16-setup-v2.27-log-1">
+        <modifyDataType  catalogName="log"
+                         schemaName="log"
+                         tableName="flight_tbl"
+                         columnName="service_level"
+                         newDataType="varchar(20)"
+        />
+    </changeSet>
+
     <changeSet author="Kalpesh Parikh"
                id="2021-06-30-setup-v2.29.0-log-1">
 
+        <modifyDataType  catalogName="log"
+                         schemaName="log"
+                         tableName="additional_data_tbl"
+                         columnName="type"
+                         newDataType="varchar(255)"
+        />
+
         <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE log.additional_data_tbl
-            ALTER COLUMN type TYPE VARCHAR(255);
 
             DROP TYPE IF EXISTS log.additional_data_ref;
 
