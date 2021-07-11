@@ -17,7 +17,9 @@ use JsonSerializable;
  *
  * @package api\classes
  */
-class CallbackMessageRequest implements JsonSerializable
+use api\interfaces\XMLSerializable;
+
+class CallbackMessageRequest implements JsonSerializable, XMLSerializable
 {
     public int $client_id;
 
@@ -36,6 +38,10 @@ class CallbackMessageRequest implements JsonSerializable
 
     public string $callback_url;
 
+    public int $session_type;
+
+    public $additional_data;
+
     /**
      * CallbackMessageRequest constructor.
      *
@@ -47,7 +53,7 @@ class CallbackMessageRequest implements JsonSerializable
      * @param TransactionData[] $transactions
      * @param string $callback_url
      */
-    public function __construct(int $client_id, int $account_id, int $session_id, Amount $sale_amount, StateInfo $status, array $transactions,string $callback_url)
+    public function __construct(int $client_id, int $account_id, int $session_id, Amount $sale_amount, StateInfo $status, array $transactions,string $callback_url, int $session_type=null, $additional_data=null)
     {
         $this->client_id = $client_id;
         $this->account_id = $account_id;
@@ -56,12 +62,23 @@ class CallbackMessageRequest implements JsonSerializable
         $this->status = $status;
         $this->transactions = $transactions;
         $this->callback_url = $callback_url;
+        $this->session_type = $session_type;
+        $this->additional_data = $additional_data;
     }
 
     /**
      * @inheritDoc
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

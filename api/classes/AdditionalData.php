@@ -11,9 +11,10 @@
 
 namespace api\classes;
 
+use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
-class AdditionalData implements JsonSerializable
+class AdditionalData implements JsonSerializable, XMLSerializable
 {
     public string $key;
 
@@ -37,6 +38,15 @@ class AdditionalData implements JsonSerializable
      * @return array
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

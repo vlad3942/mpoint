@@ -12,25 +12,26 @@
 namespace api\classes;
 
 use JsonSerializable;
+use api\interfaces\XMLSerializable;
 
 /**
  * Class Amount
  *
  * @package api\classes
  */
-class FraudStatus implements JsonSerializable
+class FraudStatus implements JsonSerializable, XMLSerializable
 {
-    private int $status_code;
+    private $status_code;
 
-    private string $status_desc;
+    private $status_desc;
 
-    private string $pre_auth_ext_id;
+    private $pre_auth_ext_id;
 
-    private int $pre_auth_ext_status_code;
+    private $pre_auth_ext_status_code;
 
-    private string $post_auth_ext_id;
+    private $post_auth_ext_id;
 
-    private int $post_auth_ext_status_code;
+    private $post_auth_ext_status_code;
 
     /**
      * Amount constructor.
@@ -52,6 +53,15 @@ class FraudStatus implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

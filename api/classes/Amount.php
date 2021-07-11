@@ -11,6 +11,7 @@
 
 namespace api\classes;
 
+use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
 /**
@@ -18,7 +19,7 @@ use JsonSerializable;
  *
  * @package api\classes
  */
-class Amount implements JsonSerializable
+class Amount implements JsonSerializable, XMLSerializable
 {
     private int $value;
 
@@ -59,6 +60,15 @@ class Amount implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

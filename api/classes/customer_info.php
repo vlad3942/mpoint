@@ -14,7 +14,9 @@
  * Data class for hold all data relevant for a Customer
  *
  */
-class CustomerInfo implements JsonSerializable
+use api\interfaces\XMLSerializable;
+
+class CustomerInfo implements JsonSerializable, XMLSerializable
 {
 	/**
 	 * Unique ID for the Customer
@@ -300,5 +302,39 @@ class CustomerInfo implements JsonSerializable
 
         return $response;
     }
+
+    /**
+     * @return array
+    */
+    public function xmlSerialize()
+    {
+        $response = [
+            'language' => $this->_sLanguage
+        ];
+
+        if(empty($this->_sEMail) === FALSE) {
+            $response['email'] = $this->_sEMail;
+        }
+
+        if(empty($this->_iCountryID) === FALSE) {
+            $response['country_id'] = $this->_iCountryID;
+        }
+
+        if(empty($this->_lMobile) === FALSE) {
+            $response['mobile'] = $this->_lMobile;
+        }
+
+        if(empty($this->_iOperator) === FALSE) {
+            $response['operator'] = $this->_iOperator;
+        }
+
+        if(empty($this->_sDeviceId) === FALSE) {
+            $response['device_id'] = $this->_sDeviceId;
+        }
+
+        return $response;
+    }
+
+
 }
 ?>

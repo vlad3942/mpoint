@@ -8,8 +8,9 @@
  * Package:
  * File Name:Card.php
  */
+use api\interfaces\XMLSerializable;
 
-class Card implements JsonSerializable
+class Card implements JsonSerializable, XMLSerializable
 {
     private $sCvc = '';
     private $sCardNumber = '';
@@ -374,4 +375,23 @@ class Card implements JsonSerializable
         }
         return $response;
     }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
+    {
+        $response = ['id' => $this->getCardTypeId()];
+        if(empty($this->sMaskedCardNumber) === false)
+        {
+            $response['masked_card_number'] = $this->sMaskedCardNumber;
+        }
+        if(empty($this->sExpiry) === false)
+        {
+            $response['expiry'] = $this->sExpiry;
+        }
+        return $response;
+    }
+
+
 }
