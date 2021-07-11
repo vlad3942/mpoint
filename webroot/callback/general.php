@@ -683,6 +683,41 @@ try
                 $fraudCheckResponse = CPMFRAUD::attemptFraudInitCallback(Constants::iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE,'Review Closed',$_OBJ_DB,$_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,(int)$obj_XML->callback->transaction->card["type-id"]);
 
             }
+
+            // Transaction uses one step authorization then no need of PSP call
+            if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+            {
+
+                $code=0;
+                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+                $passbookEntry = new PassbookEntry
+                (
+                    NULL,
+                    $obj_TxnInfo->getAmount(),
+                    $obj_TxnInfo->getCurrencyConfig()->getID(),
+                    Constants::iCaptureRequested,
+                    '',
+                    0,
+                    '',
+                    '',
+                    TRUE,
+                    NULL,
+                    NULL,
+                    $obj_TxnInfo->getClientConfig()->getID(),
+                    $obj_TxnInfo->getInitializedAmount()
+
+                );
+                if ($txnPassbookObj instanceof TxnPassbook)
+                {
+                    $txnPassbookObj->addEntry($passbookEntry);
+                    try {
+                        $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive, FALSE, FALSE);
+                        $code = reset($codes);
+                    } catch (Exception $e) {
+                        trigger_error($e, E_USER_WARNING);
+                    }
+                }
+            }
     }
 
       $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
