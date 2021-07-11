@@ -12,13 +12,14 @@
 namespace api\classes;
 
 use JsonSerializable;
+use api\interfaces\XMLSerializable;
 
 /**
  * Class TransactionData
  *
  * @package api\classes
  */
-class TransactionData implements JsonSerializable
+class TransactionData implements JsonSerializable, XMLSerializable
 {
 
     private int $id;
@@ -87,7 +88,7 @@ class TransactionData implements JsonSerializable
     private array $shipping_info;
 
     /**
-     * @var \AdditionalData[]
+     * @var \BillingAddress
      */
     private array $billing_address;
 
@@ -104,6 +105,8 @@ class TransactionData implements JsonSerializable
     private int $route_config_id;
 
     private FraudStatus $fraud;
+
+    private int $installment;
 
     /**
      * TransactionData constructor.
@@ -270,9 +273,9 @@ class TransactionData implements JsonSerializable
     }
 
     /**
-     * @param \AdditionalData[] $billing_address
+     * @param \BillingAddress $billing_address
      */
-    public function setBillingAddress(array $billing_address)
+    public function setBillingAddress(BillingAddress $billing_address)
     {
         $this->billing_address = $billing_address;
     }
@@ -380,6 +383,31 @@ class TransactionData implements JsonSerializable
     public function getFraudStatus(): FraudStatus
     {
         return $this->fraud;
+    }
+
+    /**
+     * @param int
+     */
+    public function setInstallment(int $installment): void
+    {
+        $this->installment = $installment;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInstallment(): int
+    {
+        return $this->installment;
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
     }
 
 }
