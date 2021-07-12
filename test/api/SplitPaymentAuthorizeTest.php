@@ -175,7 +175,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 200, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 200, 9876543210, '', '127.0.0.1', -1, 1,(NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid, euaid) VALUES (1001001, 100, 10099, 1100, 1, 100, '103-1418291', '" . $sCallbackURL . "', 200, '127.0.0.1', TRUE, 208,1,2,208, 5001)");
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 200,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
@@ -219,10 +219,21 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                 $aStates[] = $row["stateid"];
             }
+
+            $res_s = $this->queryDB("SELECT stateid FROM log.session_tbl WHERE id = 1 and stateid=4031  ORDER BY id ASC");
+            $this->assertIsResource($res_s);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
             usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
-            if (count($aStates) >= 5) { break; }
+            if (count($aStates) >= 5 && pg_num_rows($res_s) == 1)
+            {
+                usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+                break;
+            }
         }
-        
+
+
 
         $this->assertEquals(5, count($aStates) );
 
