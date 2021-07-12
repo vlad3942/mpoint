@@ -205,7 +205,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $aStates = [];
         $retries = 0;
-        while ($retries++ <= 5)
+        while ($retries++ <= 15)
         {
             $aStates = [];
             $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
@@ -310,7 +310,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $aStates = [];
         $retries = 0;
-        while ($retries++ <= 5)
+        while ($retries++ <= 15)
         {
             $aStates = [];
             $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
