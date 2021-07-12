@@ -216,6 +216,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             if (count($aStates) >= 5) { break; }
             usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
+        
 
         $this->assertEquals(5, count($aStates) );
 
