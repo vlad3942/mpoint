@@ -15,9 +15,10 @@ use JsonSerializable;
 use api\interfaces\XMLSerializable;
 
 /**
- * Class Amount
+ * Class FraudStatus
  *
  * @package api\classes
+ * @xmlName fraud
  */
 class FraudStatus implements JsonSerializable, XMLSerializable
 {

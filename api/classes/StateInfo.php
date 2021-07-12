@@ -14,6 +14,12 @@ namespace api\classes;
 use JsonSerializable;
 use api\interfaces\XMLSerializable;
 
+/**
+ * Class StateInfo
+ *
+ * @package api\classes
+ * @xmlName status
+ */
 class StateInfo implements JsonSerializable, XMLSerializable
 {
     private int $code;

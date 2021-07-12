@@ -18,6 +18,7 @@ use JsonSerializable;
  * Class Amount
  *
  * @package api\classes
+ * @xmlName amount
  */
 class Amount implements JsonSerializable, XMLSerializable
 {

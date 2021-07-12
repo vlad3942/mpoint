@@ -10,6 +10,12 @@
  */
 use api\interfaces\XMLSerializable;
 
+/**
+ * Class Card
+ *
+ * @package
+ * @xmlName card
+ */
 class Card implements JsonSerializable, XMLSerializable
 {
     private $sCvc = '';

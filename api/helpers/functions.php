@@ -8,15 +8,27 @@ if (!function_exists('xml_encode')) {
                 $DOMDocument =new DOMDocument();
                 $DOMDocument->formatOutput = true;
                 xml_encode($mixed, $DOMDocument, $DOMDocument);
-                echo $DOMDocument->saveXML();
+                return $DOMDocument->saveHTML();
             }
             else{
                 if(is_object($mixed))
                 {
                     $className= get_class($mixed);
+
+                    // get xml node name for a class
+                    $annotation = getClassAnnotations($className);
+                    foreach ($annotation as $item) {
+                        if (strpos($item, 'xmlName') !== false) {
+                            $index = strpos($item, 'xmlName') + strlen("xmlName") + 1;
+                            $xmlNodeName = substr($item, $index);
+                        }
+                    }
                     $path = explode('\\', $className);
                     $className = array_pop($path);
-                    $element = $DOMDocument->createElement($className);
+                    if (empty($xmlNodeName) === true) {
+                        $xmlNodeName = $className;
+                    }
+                    $element = $DOMDocument->createElement($xmlNodeName);
                     $DOMEelement->appendChild($element);
                     if(method_exists($mixed, 'xmlSerialize')){
                         $mixed = $mixed->xmlSerialize();
@@ -51,5 +63,13 @@ if (!function_exists('xml_encode')) {
         }
 
     }
+}
+
+function getClassAnnotations($class)
+{
+    $r = new ReflectionClass($class);
+    $doc = $r->getDocComment();
+    preg_match_all('#@(.*?)\n#s', $doc, $annotations);
+    return $annotations[1];
 }
 ?>

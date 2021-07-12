@@ -14,6 +14,12 @@ namespace api\classes;
 use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
+/**
+ * Class AdditionalData
+ *
+ * @package api\classes
+ * @xmlName params
+ */
 class AdditionalData implements JsonSerializable, XMLSerializable
 {
     public string $key;

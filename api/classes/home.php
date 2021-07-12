@@ -969,7 +969,18 @@ class Home extends General
                                 $additional_data =$obj_TxnInfo->getPaymentSession()->getSessionAdditionalData();
                                 $response = new CallbackMessageRequest($obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTxnData,"", $session_type, $additional_data);
                                 //print_r($response);exit;
-                                return xml_encode($response);
+                                $xml .= xml_encode($response);
+
+                                $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                                // add linked transaction
+                                if ($linkedTxnId !== null) {
+                                    $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
+                                    $xml .= $getLinkedTxns;
+                                }
+                                else
+                                {
+                                    $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(),$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                                }
                         }
 
 

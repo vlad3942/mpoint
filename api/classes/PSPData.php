@@ -14,6 +14,12 @@ namespace api\classes;
 use JsonSerializable;
 use api\interfaces\XMLSerializable;
 
+/**
+ * Class PSPData
+ *
+ * @package api\classes
+ * @xmlName psp
+ */
 class PSPData implements JsonSerializable, XMLSerializable
 {
     private int $id;

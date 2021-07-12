@@ -12,14 +12,9 @@
 
 require_once(sCLASS_PATH ."/core/card.php");
 
-use api\classes\AdditionalData;
 use api\classes\Amount;
-use api\classes\FraudStatus;
 use api\classes\CallbackMessageRequest;
-use api\classes\ProductInfo;
-use api\classes\PSPData;
 use api\classes\StateInfo;
-use api\classes\TransactionData;
 use api\classes\messagequeue\client\MessageQueueClient;
 /* ==================== Callback Exception Classes Start ==================== */
 /**

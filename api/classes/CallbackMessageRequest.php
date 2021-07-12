@@ -16,6 +16,7 @@ use JsonSerializable;
  * Class CallbackMessageRequest
  *
  * @package api\classes
+ * @xmlName session
  */
 use api\interfaces\XMLSerializable;
 

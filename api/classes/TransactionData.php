@@ -18,6 +18,7 @@ use api\interfaces\XMLSerializable;
  * Class TransactionData
  *
  * @package api\classes
+ * @xmlName transaction
  */
 class TransactionData implements JsonSerializable, XMLSerializable
 {
