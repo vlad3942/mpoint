@@ -38,7 +38,7 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
 
     public string $callback_url;
 
-    public int $session_type;
+    public $session_type;
 
     public $additional_data;
 
@@ -53,7 +53,7 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
      * @param TransactionData[] $transactions
      * @param string $callback_url
      */
-    public function __construct(int $client_id, int $account_id, int $session_id, Amount $sale_amount, StateInfo $status, array $transactions,string $callback_url, int $session_type=null, $additional_data=null)
+    public function __construct(int $client_id, int $account_id, int $session_id, Amount $sale_amount, StateInfo $status, array $transactions,string $callback_url, $session_type=null, $additional_data=null)
     {
         $this->client_id = $client_id;
         $this->account_id = $account_id;

@@ -90,7 +90,7 @@ class TransactionData implements JsonSerializable, XMLSerializable
     /**
      * @var \BillingAddress
      */
-    private array $billing_address;
+    private BillingAddress $billing_address;
 
     private int $service_type_id;
 
