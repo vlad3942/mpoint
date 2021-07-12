@@ -1479,7 +1479,7 @@ We recommend that you contact this customer directly and complete the payment pr
 
 Thank you for using SurePay @@@
 
-#: /api/classes/home.php:61
+#: /api/classes/home.php:70
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Please enter the one time password: {OTP}.
 The password will automatically expire in an hour. @@@

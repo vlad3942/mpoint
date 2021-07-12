@@ -1468,7 +1468,7 @@ msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
-#: /api/classes/home.php:61
+#: /api/classes/home.php:70
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP}.
 Kodeordet vil automatisk udløbe om en time. @@@

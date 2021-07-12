@@ -1446,7 +1446,7 @@ Orderdatum: {TIMESTAMP}
 
 We rekommenderar att ni kontaktar den h�r kunden manuellt f�r att slutf�ra k�pet. @@@
 
-#: /api/classes/home.php:61
+#: /api/classes/home.php:70
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ mPoint - Send One Time Password @@@
 
