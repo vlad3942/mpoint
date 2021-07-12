@@ -219,8 +219,8 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) >= 5) { break; }
             usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            if (count($aStates) >= 5) { break; }
         }
         
 
@@ -327,8 +327,8 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) >= 5) { break; }
             usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            if (count($aStates) >= 5) { break; }
         }
 
         $this->assertEquals(5, count($aStates) );
@@ -563,8 +563,10 @@ class SplitPaymentAuthorizeTest extends baseAPITest
                 $trow = $row;
                 $aStates[] = $row["stateid"];
             }
+
+            usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+
             if (count($aStates) >= 5) { break; }
-            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertEquals(NULL, $trow["extid"]);
