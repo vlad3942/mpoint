@@ -1,4 +1,5 @@
 -- CMP-5546
+DELETE FROM client.additionalproperty_tbl WHERE key = 'post_fraud_rule' AND externalid = (SELECT id from client.merchantaccount_tbl WHERE clientid=10077 AND pspid=72);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'post_fraud_rule', 'isPostFraudAttemp::=<isPostFraudAttemp1>OR<isPostFraudAttemp2>OR<isPostFraudAttemp3>OR<isPostFraudAttemp4>
 isPostFraudAttemp1::=<eci>=="02"AND<isCryptogrm>!==""
 isPostFraudAttemp2::=<eci>=="05"AND<isCryptogrm>!==""
