@@ -386,6 +386,12 @@ abstract class Constants
 	const iPAYMENT_DUPLICATED_STATE = 2019;
 
 	/**
+	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
+	 *
+	 */
+	const iCALLBACK_DUPLICATED_STATE = 2018;
+
+	/**
 	 * Defines the ID of the State that indicates that payment has been settled
 	 *
 	 */
