@@ -22,7 +22,7 @@ class SurePayConfig
 	{
 		$sql = "SELECT max, resend
 				FROM Client.SurePay_Tbl
-				WHERE clientid = ". (int)$id;
+				WHERE enabled = '1' and clientid = ". (int)$id;
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 

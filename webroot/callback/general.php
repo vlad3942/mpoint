@@ -692,13 +692,17 @@ try
      * Return the success code 202 to indicate Request Accepted and
      * the request to notify the upstream  retail system.
     */
-      ignore_user_abort(true);
-      header("HTTP/1.1 202 Accepted");
-      header("Content-Length: 0");
-      header("Connection: Close");
-      flush();
+    ignore_user_abort(true);//not required
+    set_time_limit(0);
+    ob_start(); // do initial processing here
+    header("HTTP/1.1 202 Accepted");
+    header("Content-Length: 0");
+    header("Connection: Close");
+    ob_end_flush();
+    flush();
+    fastcgi_finish_request();
 
-     $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
+    $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
       //update captured amt when psp returns captured callback
       if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
@@ -822,10 +826,6 @@ try
                 catch (Exception $e) {
                     trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
                 }
-
-                header("HTTP/1.1 202 Accepted");
-                header("Content-Length: 0");
-                header("Connection: Close");
             }
         }
 

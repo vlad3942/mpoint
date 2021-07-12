@@ -203,7 +203,24 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 		$this->assertIsResource($res);
 		$this->assertEquals(1, pg_num_rows($res));
 
-		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1 ORDER BY ID ASC");
+        $aStates = [];
+        $retries = 0;
+        while ($retries++ <= 30)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 5) { break; }
+            usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+        
+
+        $this->assertEquals(5, count($aStates) );
+
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1 ORDER BY ID ASC");
 		$this->assertTrue(is_resource($res) );
 
 		$aStates = array();
@@ -291,6 +308,22 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $res =  $this->queryDB("SELECT convertedcurrencyid FROM Log.Transaction_Tbl where convertedcurrencyid = 840 and currencyid=208 and convertedamount=380");
         $this->assertTrue(is_resource($res) );
         $this->assertEquals(1, pg_num_rows($res));
+
+        $aStates = [];
+        $retries = 0;
+        while ($retries++ <= 30)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 5) { break; }
+            usleep(2000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+
+        $this->assertEquals(5, count($aStates) );
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
@@ -503,15 +536,21 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $this->assertEquals(402, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
-
-        $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
-        $this->assertTrue(is_resource($res));
-
         $aStates = [];
-        $trow = NULL;
-        while ($row = pg_fetch_assoc($res)) {
-            $trow = $row;
-            $aStates[] = $row["stateid"];
+        $retries = 0;
+        while ($retries++ <= 5)
+        {
+            $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
+            $this->assertTrue(is_resource($res));
+
+            $aStates = [];
+            $trow = NULL;
+            while ($row = pg_fetch_assoc($res)) {
+                $trow = $row;
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 5) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertEquals(NULL, $trow["extid"]);
