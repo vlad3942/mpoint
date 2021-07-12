@@ -2021,7 +2021,7 @@ class Home extends General
      * @return \TransactionData
      * @throws \Exception
      */
-    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig)
+    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
     {
 
         $obj_CustomerInfo = NULL;
@@ -2065,7 +2065,10 @@ class Home extends General
             $pspId = $txnInfo->getPSPID();
             $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
         }
-
+        if ($obj_PSPConfig === null)
+        {
+            $obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $txnInfo, null, $txnInfo->getPSPID());
+        }
         if (($txnInfo->getAccountID() > 0) === TRUE) {
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
             $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
