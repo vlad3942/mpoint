@@ -13,6 +13,15 @@
  * @license Cellpoint Mobile
  */
 
+require_once(sCLASS_PATH ."/core/card.php");
+use api\classes\AdditionalData;
+use api\classes\Amount;
+use api\classes\FraudStatus;
+use api\classes\CallbackMessageRequest;
+use api\classes\PSPData;
+use api\classes\StateInfo;
+use api\classes\TransactionData;
+use \api\classes\BillingAddress;
 /**
  * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
@@ -918,6 +927,7 @@ class Home extends General
 		    else { $aTxnId[0] = $txnId; }
             $txnXml = "";
 		    $txnCnt = count($aTxnId);
+            $aTxnData = [];
             foreach ($aTxnId as $index => $txnid)
             {
 
@@ -946,22 +956,22 @@ class Home extends General
                 {
 
                     if ($mode == 3) {
-                        $sSaleAmtXml = $this->getSaleAmtXml($obj_TxnInfo);
-                        $sSessionDetailsXml = $this->getSessionDetailsXml($obj_TxnInfo);
-                        $sSessionAdditionalDataXml = $this->getSessionAdditionalDataXml($obj_TxnInfo);
 
-                        if ($index == 0) {
-                            $xml .= $sSessionDetailsXml;
-                            $xml .= $sSessionAdditionalDataXml;
-                            $xml .= $sSaleAmtXml;
-                            $xml .= '<transactions>';
-                        }
-                        $txnXml .= $this->getTxnDetailsXml($obj_TxnInfo);
 
+                        array_push($aTxnData, $this->constructTransactionInfo($obj_TxnInfo));
                         if ($index == $txnCnt - 1) {
-                            $xml .= $txnXml;
-                            $xml .= '</transactions>';
+
+                                $sale_amount = new Amount($obj_TxnInfo->getPaymentSession()->getAmount(), $obj_TxnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$obj_TxnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$obj_TxnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+                                $status = $obj_TxnInfo->getLatestPaymentState($this->getDBConn());
+
+                                $obj_StateInfo = new StateInfo($status, null, $this->getStatusMessage($status));
+                                $session_type = $obj_TxnInfo->getPaymentSession()->getSessionType();
+                                $additional_data =$obj_TxnInfo->getPaymentSession()->getSessionAdditionalData();
+                                $response = new CallbackMessageRequest($obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTxnData,"", $session_type, $additional_data);
+                                //print_r($response);exit;
+                                return xml_encode($response);
                         }
+
 
                     } else {
                         $sTxnAdditionalDataXml = "";
@@ -2002,7 +2012,192 @@ class Home extends General
         return [];
     }
 
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int      $amt
+     * @param int $sub_code_id
+     *
+     * @return \TransactionData
+     * @throws \Exception
+     */
+    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig)
+    {
 
+        $obj_CustomerInfo = NULL;
+        $obj_PSPInfo = NULL;
+        $obj_StateInfo= NULL;
+        $aClientData = [];
+        $aProductInfo = [];
+        $aDeliveryInfo = [];
+        $aShippingInfo = [];
+        $additionalData = [];
+        $aBillingAddress = [];
+        $sub_code = NULL;
+
+        $obj_getPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
+        if($amt === -1)
+        {
+            $amt = $txnInfo->getConvertedAmount();
+        }
+
+        $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(),$txnInfo->getCurrencyConfig()->getDecimals(),$txnInfo->getCurrencyConfig()->getCode(), $txnInfo->getConversationRate());
+
+        if(empty($sid))
+        {
+            $sid = $txnInfo->getLatestPaymentState($this->getDBConn());
+        }
+
+        $aCardInfo = [
+            'ID' => $txnInfo->getCardID(),
+            'MASKEDCARDNUMBER' => $txnInfo->getCardMask(),
+            'EXPIRY' => $txnInfo->getCardExpiry()
+        ];
+        $obj_CardInfo = new Card($aCardInfo);
+
+        $status      = $sid;
+        if($sub_code_id > 0){
+            $sub_code= $sub_code_id;
+        }
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
+
+        if ($txnInfo->getClientConfig()->sendPSPID() === TRUE) {
+            $pspId = $txnInfo->getPSPID();
+            $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
+        }
+
+        if (($txnInfo->getAccountID() > 0) === TRUE) {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setEMail($txnInfo->getEMail());
+            $obj_CustomerInfo->setMobile($txnInfo->getMobile());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+            $obj_CustomerInfo->setLanguage($txnInfo->getLanguage());
+        }
+        else{
+            $obj_CustomerInfo = new CustomerInfo(-1,null, $txnInfo->getMobile(),$txnInfo->getEMail(),'','',$txnInfo->getLanguage() );
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+        }
+
+        $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
+
+        $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
+        $aTxnAdditionalData = $txnInfo->getAdditionalData();
+        if (empty($getFraudStatusCode) === FALSE) {
+
+            if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
+                $pre_auth_ext_id = $aTxnAdditionalData['pre_auth_ext_id'];
+            }
+            if (isset($aTxnAdditionalData['pre_auth_ext_status_code'])) {
+                $pre_auth_ext_status_code = $aTxnAdditionalData['pre_auth_ext_status_code'];
+            }
+            if (isset($aTxnAdditionalData['post_auth_ext_id'])) {
+                $post_auth_ext_id = $aTxnAdditionalData['post_auth_ext_id'];
+            }
+            if (isset($aTxnAdditionalData['post_auth_ext_status_code'])) {
+                $post_auth_ext_status_code = $aTxnAdditionalData['post_auth_ext_status_code'];
+            }
+
+            $status_code = $getFraudStatusCode['status_code'];
+            $status_desc = $getFraudStatusCode['status_desc'];
+            $obj_FraudStatus = new FraudStatus($status_code, $status_desc, $pre_auth_ext_id, $pre_auth_ext_status_code, $post_auth_ext_id, $post_auth_ext_status_code);
+            $transactionData->setFraudStatus($obj_FraudStatus);
+        }
+
+        $transactionData->setRouteConfigId($txnInfo->getRouteConfigID());
+        $transactionData->setFee($txnInfo->getFee());
+        $transactionData->setDescription($txnInfo->getDescription());
+        $transactionData->setHmac($txnInfo->getHMAC());
+        $transactionData->setProductType($txnInfo->getProductType());
+        $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
+        $transactionData->setWalletId($txnInfo->getWalletID());
+        $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
+        $foreignExchangeId = $txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID());
+        if(empty($foreignExchangeId) === false) {
+            $transactionData->setForeignExchangeId($foreignExchangeId);
+        }
+        $dateTime = new DateTime($txnInfo->getCreatedTimestamp());
+        $transactionData->setDateTime($dateTime->format('c'));
+        $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
+        if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
+            $dateTime->setTimezone(new DateTimeZone($timeZone));
+            $transactionData->setLocalDateTime($dateTime->format('c'));
+        }
+        $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
+
+        $aTxnAdditionalData = $txnInfo->getAdditionalData();
+        if ($aTxnAdditionalData !== NULL) {
+            foreach ($aTxnAdditionalData as $name => $value) {
+                array_push($additionalData, new AdditionalData($name, $value));
+            }
+        }
+        $transactionData->setAdditionalData($additionalData);
+
+        $transactionId = $txnInfo->getID();
+        $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);
+        $aProducts = $this->getMessageData($transactionId, Constants::iPRODUCTS_STATE);
+        $adeliveryinfo = $this->getMessageData($transactionId, Constants::iDELIVERY_INFO_STATE);
+        $ashippinginfo = $this->getMessageData($transactionId, Constants::iSHIPPING_INFO_STATE);
+        $abillingaddress = $txnInfo->getBillingAddr();
+
+        // Add custom Client Variables
+        foreach ($aClientVars as $name => $value) {
+            $aClientData[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setClientData($aClientData);
+
+        // Add Purchased Products
+        if (count($aProducts) > 0) {
+            foreach ($aProducts["names"] as $key => $name) {
+                $aProductInfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+            }
+        }
+
+        $transactionData->setProductInfo($aProductInfo);
+
+        // Add Delivery Information
+        foreach ($adeliveryinfo as $name => $value) {
+            $aDeliveryInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setDeliveryInfo($aDeliveryInfo);
+
+        // Add Shipping Information
+        foreach ($ashippinginfo as $name => $value) {
+            $aShippingInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setShippingInfo($aShippingInfo);
+
+        // Add Billing address
+        foreach ($abillingaddress as $name => $value) {
+            if($name == 'mobile_country_id'){
+                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(),(integer)$value);
+                $value = $obj_MobileCountryConfig->getCountryCode();
+            }
+            $aBillingAddress[] = new AdditionalData($name, $value);
+        }
+
+        if (empty($abillingaddress) === false) {
+            $objBillingAddr = new BillingAddress($abillingaddress);
+            $transactionData->setBillingAddress($objBillingAddr);
+        }
+
+
+        $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
+        $transactionData->setPos($txnInfo->getCountryConfig()->getID());
+        $transactionData->setIpAddress($txnInfo->getIP());
+
+        $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
+        if (empty($getFraudStatusCode) === FALSE) {
+            $transactionData->setFraudStatusCode($getFraudStatusCode['status_code']);
+            $transactionData->setFraudStatusDesc($getFraudStatusCode['status_desc']);
+        }
+
+        return $transactionData;
+    }
 }
 
 

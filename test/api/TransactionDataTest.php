@@ -6,6 +6,7 @@ use api\classes\ProductInfo;
 use api\classes\PSPData;
 use api\classes\StateInfo;
 use api\classes\TransactionData;
+use api\classes\BillingAddress;
 
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
@@ -128,9 +129,9 @@ class TransactionDataTest extends baseAPITest
 
     public function testSetBillingAddress()
     {
-        $additionalData = new AdditionalData('BillingAddress', 'Test');
-        $this->transactionData->setBillingAddress([$additionalData]);
-        $this->assertStringContainsString('"billing_address":[{"key":"BillingAddress","value":"Test"}]', json_encode($this->transactionData));
+        $billingAddr = new BillingAddress(['first_name' => 'test_first_name', 'last_name' => 'test_last_name']);
+        $this->transactionData->setBillingAddress($billingAddr);
+        $this->assertStringContainsString('"billing_address":{"first_name":"test_first_name","last_name":"test_last_name"}', json_encode($this->transactionData));
     }
 
     public function testSetServiceTypeId()

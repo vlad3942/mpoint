@@ -2237,5 +2237,39 @@ class General
         $date = DateTime::createFromFormat('m/y', $expiryDate);
         return $date->format('Y-m');
     }
+
+    /**
+     * Returns the Status Messgae for mPoint's internal status codes
+     *
+     * @param 	integer $sid	mPoint ststua code
+     * @return 	string
+     */
+    public function getStatusMessage($sid)
+    {
+        $sql = "SELECT name
+				FROM Log".sSCHEMA_POSTFIX.".State_Tbl
+				WHERE id = ". intval($sid);
+        //echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+    }
+
+    /**
+     * Returns the specified PSP's name
+     *
+     * @param 	integer $pspid	Unique ID for the PSP
+     * @return 	string
+     */
+    public function getPSPName($pspid)
+    {
+        $sql = "SELECT name
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl
+				WHERE id = ". intval($pspid) ." AND enabled = '1'";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+    }
 }
 ?>
