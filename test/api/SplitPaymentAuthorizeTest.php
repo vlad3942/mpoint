@@ -25,6 +25,8 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
     public function constHTTPClient()
     {
+        
+        $this->bIgnoreErrors = true;
         global $aMPOINT_CONN_INFO;
         $aMPOINT_CONN_INFO['path'] = "/mApp/api/authorize.php";
         $aMPOINT_CONN_INFO["contenttype"] = "text/xml";
