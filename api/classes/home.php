@@ -2192,7 +2192,7 @@ class Home extends General
         $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
         $transactionData->setPos($txnInfo->getCountryConfig()->getID());
         $transactionData->setIpAddress($txnInfo->getIP());
-
+        $transactionData->setInstallment($txnInfo->getInstallmentValue());
         $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
         if (empty($getFraudStatusCode) === FALSE) {
             $transactionData->setFraudStatusCode($getFraudStatusCode['status_code']);
