@@ -23,7 +23,7 @@ class GenerateReceiptTest extends baseAPITest
     {
         global $aMPOINT_CONN_INFO;
 
-        $aMPOINT_CONN_INFO["paths"]["generate-receipt"] =  "/_test/simulators/safetypay/generate-receipt.php";
+        $aMPOINT_CONN_INFO["paths"]["generate-receipt"] = empty($param["couponGenerateUrl"]) ? "/_test/simulators/safetypay/generate-receipt.php" : $param["couponGenerateUrl"];
         $couponGenerate = isset($param["couponGenerate"]) && $param["couponGenerate"] != "true" ? "false" : "true";
         $bucketName = @$param["bucketName"];
         $pspID = @$param["pspID"];
@@ -41,7 +41,6 @@ class GenerateReceiptTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10099, 8, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4030, '900-55150298', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, $pspID, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001002, '900-55150298', 100, 10099, 1100, 100, $pspID, '', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
@@ -62,7 +61,19 @@ class GenerateReceiptTest extends baseAPITest
 		$this->assertTrue($this->_obj_PSP->generate_receipt());
     }
 
-    public function testSafetyPayGenerateReceiptNoCoponFlag()
+    public function testSafetyPayGenerateReceiptFailure()
+    {
+        $this->bIgnoreErrors = true;
+        $param["couponGenerateUrl"] = "/_test/simulators/safetypay/server-error.php";
+        $param["couponGenerate"] = "true";
+        $param["bucketName"] = "test-client-bucket-name";
+        $param["pspID"] = Constants::iSAFETYPAY_AGGREGATOR;
+
+        $this->setupData($param);
+		$this->assertFalse($this->_obj_PSP->generate_receipt());
+    }
+
+    public function testSafetyPayGenerateReceiptFailureNoCoponFlag()
     {
         $param["bucketName"] = "test-client-bucket-name";
         $param["pspID"] = Constants::iSAFETYPAY_AGGREGATOR;
@@ -71,7 +82,7 @@ class GenerateReceiptTest extends baseAPITest
 		$this->assertTrue($this->_obj_PSP->generate_receipt());
     }
 
-    public function testSafetyPayGenerateReceiptNoBucket()
+    public function testSafetyPayGenerateReceiptFailureNoBucket()
     {
         $param["couponGenerate"] = "true";
         $param["pspID"] = Constants::iSAFETYPAY_AGGREGATOR;
