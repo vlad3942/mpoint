@@ -1341,15 +1341,11 @@ abstract class Callback extends EndUserAccount
 		}
 
 		if($isIgnoreRequest === FALSE) {
-			$sale_amount = new Amount($this->getTxnInfo()->getPaymentSession()->getAmount(), $this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getID(),$this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getDecimals(),$this->getTxnInfo()->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
-            $status      = $sid;
+			$status      = $sid;
 			if($sub_code_id > 0){
                 $sub_code= $sub_code_id;
             }
-			$obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid));
-			$session_type = $this->getTxnInfo()->getPaymentSession()->getSessionType();
-			$additional_data = $this->getTxnInfo()->getPaymentSession()->getSessionAdditionalData();
-			return new CallbackMessageRequest($this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $this->_obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$this->_obj_TxnInfo->getCallbackURL(), $session_type, $additional_data);
+			return $this->constructSessionInfo($this->_obj_TxnInfo, $aTransactionData, $status, $sub_code);
 		}
 		return  NULL;
     }

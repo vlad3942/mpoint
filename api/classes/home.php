@@ -955,20 +955,15 @@ class Home extends General
                 if($objClientConf->getID() === $clientid)
                 {
 
-                    if ($mode == 3) {
+                    if ($mode == 2) {
 
 
                         array_push($aTxnData, $this->constructTransactionInfo($obj_TxnInfo));
                         if ($index == $txnCnt - 1) {
 
-                                $sale_amount = new Amount($obj_TxnInfo->getPaymentSession()->getAmount(), $obj_TxnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$obj_TxnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$obj_TxnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
                                 $status = $obj_TxnInfo->getLatestPaymentState($this->getDBConn());
-
-                                $obj_StateInfo = new StateInfo($status, null, $this->getStatusMessage($status));
-                                $session_type = $obj_TxnInfo->getPaymentSession()->getSessionType();
-                                $additional_data =$obj_TxnInfo->getPaymentSession()->getSessionAdditionalData();
-                                $response = new CallbackMessageRequest($obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $obj_TxnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTxnData,"", $session_type, $additional_data);
-                                //print_r($response);exit;
+                                $sub_code = null;
+                                $response = $this->constructSessionInfo($obj_TxnInfo, $aTxnData, $status, $sub_code);
                                 $xml .= xml_encode($response);
 
                                 $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
@@ -2211,6 +2206,29 @@ class Home extends General
         }
 
         return $transactionData;
+    }
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int|null $sub_code_id
+     * @return \CallbackMessageRequestTest
+     * @throws \Exception
+     */
+    public function constructSessionInfo(TxnInfo $txnInfo, array $aTransactionData, int $status=null, $sub_code = null)
+    {
+
+        $sale_amount = new Amount($txnInfo->getPaymentSession()->getAmount(), $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL, $txnInfo->getPaymentSession()->getPendingAmount());
+        $status      = $status;
+        if($sub_code > 0){
+            $sub_code= $sub_code;
+        }
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($status));
+        $session_type = $txnInfo->getPaymentSession()->getSessionType();
+        $additional_data = $txnInfo->getPaymentSession()->getSessionAdditionalData();
+
+        return new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additional_data);
+
     }
 }
 

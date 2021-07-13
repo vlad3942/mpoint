@@ -32,6 +32,8 @@ class Amount implements JsonSerializable, XMLSerializable
 
     private float $conversion_rate;
 
+    private int $pending_amt;
+
     /**
      * Amount constructor.
      *
@@ -41,7 +43,7 @@ class Amount implements JsonSerializable, XMLSerializable
      * @param string $code
      * @param float|null $conversion_rate
      */
-    public function __construct(int $value, int $currency_id,int $decimals, string $code,?float $conversion_rate = NULL)
+    public function __construct(int $value, int $currency_id,int $decimals, string $code,?float $conversion_rate = NULL, int $pending_amt=0)
     {
         if($value > 0 && $currency_id > 0 && $decimals > 0) {
             $this->value = $value;
@@ -52,6 +54,9 @@ class Amount implements JsonSerializable, XMLSerializable
             }
             if (empty($conversion_rate) === false){
                 $this->conversion_rate = $conversion_rate;
+            }
+            if ($pending_amt > 0) {
+                $this->pending_amount = $pending_amt;
             }
         }
     }

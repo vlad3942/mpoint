@@ -28,6 +28,9 @@ if (!function_exists('xml_encode')) {
                     if (empty($xmlNodeName) === true) {
                         $xmlNodeName = $className;
                     }
+                    if ($xmlNodeName == 'amount' && $DOMEelement->nodeName == 'session') {
+                        $xmlNodeName = 'sale_amount';
+                    }
                     $element = $DOMDocument->createElement($xmlNodeName);
                     $DOMEelement->appendChild($element);
                     if(method_exists($mixed, 'xmlSerialize')){
