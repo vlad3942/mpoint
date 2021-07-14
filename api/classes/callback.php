@@ -270,7 +270,7 @@ abstract class Callback extends EndUserAccount
                     $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
                 }
             }
-            $retStatus = $txnPassbookObj->updateInProgressOperations($amount, $iStateID, Constants::sPassbookStatusDone);
+            $retStatus = $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CAPTURED_STATE, Constants::sPassbookStatusDone);
             if($retStatus === TRUE)
             {
             	$this->newMessage($this->_obj_TxnInfo->getID(), $iStateID, var_export($debug, true));
