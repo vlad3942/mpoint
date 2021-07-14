@@ -236,6 +236,19 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                 "cardid" => $obj_TxnInfo->getCardID(),
                                 "amount" => $_REQUEST['amount']);
+
+                            ignore_user_abort(true);//not required
+                            set_time_limit(0);
+
+                            ob_start(); // do initial processing here
+                            echo 'msg=' . $code;
+                            $aMsgCds = [];; // send the response
+                            header('Connection: close');
+                            header('Content-Length: '.ob_get_length());
+                            ob_end_flush();
+                            flush();
+                            fastcgi_finish_request();
+
                             $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                         }
 
@@ -332,10 +345,11 @@ else
 	header("HTTP/1.0 400 Bad Request");	
 	$aMsgCds[Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account'])+10] = "Client: ". $_REQUEST['clientid'] .", Account: ". $_REQUEST['account'];
 }
-$str = "";
-foreach (array_keys($aMsgCds) as $code)
-{
-	$str .= "&msg=". $code;
+if(count($aMsgCds) > 0) {
+    $str = "";
+    foreach (array_keys($aMsgCds) as $code) {
+        $str .= "&msg=" . $code;
+    }
+    echo substr($str, 1);
 }
-echo substr($str, 1);
 ?>
