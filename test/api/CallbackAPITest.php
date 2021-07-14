@@ -108,7 +108,7 @@ class CallbackAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(202, $iStatus);
+        $this->assertEquals(400, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
@@ -120,8 +120,9 @@ class CallbackAPITest extends baseAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertCount(4, $aStates);
+        $this->assertCount(5, $aStates);
         $this->assertTrue(is_int(array_search($iTransStatus, $aStates) ) );
+        $this->assertTrue(is_int(array_search(Constants::iCALLBACK_DUPLICATED_STATE, $aStates) ) );
     }
 
     public function successfulAutoCapture($pspID, $iTransStatus)
