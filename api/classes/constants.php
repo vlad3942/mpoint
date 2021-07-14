@@ -559,6 +559,12 @@ abstract class Constants
 	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
 	 *
 	 */
+	const iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE = 3100;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
+	 *
+	 */
 	const iPOST_FRAUD_CHECK_INITIATED_STATE = 3110;
 
 	/**
@@ -1803,6 +1809,7 @@ abstract class Constants
 	const iInvalidOperation = 6100;
 	const iOperationNotAllowed = 6200;
 	const iAmountIsHigher = 6201;
+	const iAmountIsLower = 6202;
 
 	/*
 	 * Passbook Error Code

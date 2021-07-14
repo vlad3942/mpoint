@@ -53,6 +53,19 @@
 
     </changeSet>
 
+    <changeSet author="Sagar Narayane"
+               id="2021-06-25-setup-v2.28-log">
+
+        <insert catalogName="log"
+                schemaName="log"
+                tableName="state_tbl">
+
+            <column name="id" value="3100"/>
+            <column name="name" value="Post Auth Fraud Check Required"/>
+            <column name="module" value="Fraud"/>
+        </insert>
+    </changeSet>
+
     <changeSet author="Priya Alamwar"
                id="2021-09-07-setup-v2.26-log">
 
