@@ -95,7 +95,7 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('DeliveryInfo', 'Test');
         $this->transactionData->setDeliveryInfo([$additionalData]);
-        $this->assertStringContainsString('"delivery_info":[{"key":"DeliveryInfo","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"delivery_info":[{"name":"DeliveryInfo","text":"Test"}]', json_encode($this->transactionData));
 
     }
 
@@ -103,7 +103,7 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('AdditionalData', 'Test');
         $this->transactionData->setAdditionalData([$additionalData]);
-        $this->assertStringContainsString('"additional_data":[{"key":"AdditionalData","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"additional_data":[{"name":"AdditionalData","text":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetProductInfo()
@@ -117,14 +117,14 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('ShippingInfo', 'Test');
         $this->transactionData->setShippingInfo([$additionalData]);
-        $this->assertStringContainsString('"shipping_info":[{"key":"ShippingInfo","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"shipping_info":[{"name":"ShippingInfo","text":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetClientData()
     {
         $additionalData = new AdditionalData('ClientData', 'Test');
         $this->transactionData->setClientData([$additionalData]);
-        $this->assertStringContainsString('"client_data":[{"key":"ClientData","value":"Test"}]', json_encode($this->transactionData));
+        $this->assertStringContainsString('"client_data":[{"name":"ClientData","text":"Test"}]', json_encode($this->transactionData));
     }
 
     public function testSetBillingAddress()
