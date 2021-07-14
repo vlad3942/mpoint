@@ -261,10 +261,19 @@ abstract class Callback extends EndUserAccount
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-            $retStatus = $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CAPTURED_STATE, Constants::sPassbookStatusDone);
+            $iStateID = Constants::iPAYMENT_CAPTURED_STATE;
+            // check if the transaction is partial txn
+            if ($amount != $this->_obj_TxnInfo->getAmount()) {
+                //check if the total captured amount is matching the txn amt i.e. partial capture case
+                $totalCapturedAmt = $amount + $this->_obj_TxnInfo->getCapturedAmount();
+                if ($totalCapturedAmt != $this->_obj_TxnInfo->getAmount()) {
+                    $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+                }
+            }
+            $retStatus = $txnPassbookObj->updateInProgressOperations($amount, $iStateID, Constants::sPassbookStatusDone);
             if($retStatus === TRUE)
             {
-            	$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            	$this->newMessage($this->_obj_TxnInfo->getID(), $iStateID, var_export($debug, true));
             }
 			return true;
 		}
