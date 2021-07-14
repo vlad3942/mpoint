@@ -2660,14 +2660,6 @@ class TxnInfo
         }
         return false;
     }
-    public function setPSPId(int $pspId) : void
-	{
-		if(in_array($pspId, OfflinePaymentCardPSPMapping, TRUE))
-		{
-			$this->_iPSPID = $pspId;
-
-		}
-	}
 
 	public function setExternalId(string $sExternalID)
 	{
