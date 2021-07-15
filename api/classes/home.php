@@ -1895,11 +1895,9 @@ class Home extends General
         }
 
         if (empty($abillingaddress) === false) {
-            print_r($abillingaddress);
             $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (int)$abillingaddress['country']);
 
             // get country iso code
-            echo "\n".$obj_CountryConfig->getNumericCode();
             $abillingaddress['country'] = $obj_CountryConfig->getNumericCode();
             $objBillingAddr = new BillingAddress($abillingaddress);
             $transactionData->setBillingAddress($objBillingAddr);
