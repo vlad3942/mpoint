@@ -1945,6 +1945,7 @@ class Home extends General
             $obj_PendingAmt = new PendingAmount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
             $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
         }
+        return $obj_CallbackMessageRequest;
     }
 }
 
