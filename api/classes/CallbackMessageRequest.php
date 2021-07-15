@@ -43,6 +43,8 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
 
     public $additional_data;
 
+    private PendingAmount $pending_amount;
+
     /**
      * CallbackMessageRequest constructor.
      *
@@ -83,5 +85,15 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    public function setPendingAmt(PendingAmount $pendingAmount)
+    {
+        $this->pending_amount = $pendingAmount;
+    }
+
+    public function getPendingAmount(): PendingAmount
+    {
+        return $this->pending_amount;
     }
 }

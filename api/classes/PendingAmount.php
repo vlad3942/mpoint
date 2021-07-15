@@ -15,12 +15,12 @@ use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
 /**
- * Class Amount
+ * Class PendingAmount
  *
  * @package api\classes
- * @xmlName amount
+ * @xmlName pending_amount
  */
-class Amount implements JsonSerializable, XMLSerializable
+class PendingAmount implements JsonSerializable, XMLSerializable
 {
     private int $value;
 

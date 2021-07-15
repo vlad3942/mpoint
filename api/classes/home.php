@@ -22,6 +22,7 @@ use api\classes\PSPData;
 use api\classes\StateInfo;
 use api\classes\TransactionData;
 use \api\classes\BillingAddress;
+use \api\classes\PendingAmount;
 /**
  * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
@@ -1928,7 +1929,8 @@ class Home extends General
     public function constructSessionInfo(TxnInfo $txnInfo, array $aTransactionData, int $status=null, $sub_code = null)
     {
 
-        $sale_amount = new Amount($txnInfo->getPaymentSession()->getAmount(), $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL, $txnInfo->getPaymentSession()->getPendingAmount());
+        $sale_amount = new Amount($txnInfo->getPaymentSession()->getAmount(), $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+
         $status      = $status;
         if($sub_code > 0){
             $sub_code= $sub_code;
@@ -1937,8 +1939,12 @@ class Home extends General
         $session_type = $txnInfo->getPaymentSession()->getSessionType();
         $additional_data = $txnInfo->getPaymentSession()->getSessionAdditionalData();
 
-        return new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additional_data);
-
+        $obj_CallbackMessageRequest = new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additional_data);
+        if ($txnInfo->getPaymentSession()->getPendingAmount() > 0) {
+            $pending_amount = $txnInfo->getPaymentSession()->getPendingAmount();
+            $obj_PendingAmt = new PendingAmount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+            $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
+        }
     }
 }
 
