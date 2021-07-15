@@ -1753,9 +1753,10 @@ class Home extends General
         {
             $sid = $txnInfo->getLatestPaymentState($this->getDBConn());
         }
-
+        $objPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
         $aCardInfo = [
             'ID' => $txnInfo->getCardID(),
+            'NAME' => $objPaymentMethod->CardName,
             'MASKEDCARDNUMBER' => $txnInfo->getCardMask(),
             'EXPIRY' => $txnInfo->getCardExpiry()
         ];
@@ -1821,7 +1822,10 @@ class Home extends General
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
-        $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
+        if (!is_null($obj_PSPConfig)) {
+            $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
+        }
+
         $foreignExchangeId = $txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID());
         if(empty($foreignExchangeId) === false) {
             $transactionData->setForeignExchangeId($foreignExchangeId);
@@ -1890,6 +1894,12 @@ class Home extends General
         }
 
         if (empty($abillingaddress) === false) {
+            print_r($abillingaddress);
+            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (int)$abillingaddress['country']);
+
+            // get country iso code
+            echo "\n".$obj_CountryConfig->getNumericCode();
+            $abillingaddress['country'] = $obj_CountryConfig->getNumericCode();
             $objBillingAddr = new BillingAddress($abillingaddress);
             $transactionData->setBillingAddress($objBillingAddr);
         }

@@ -15,9 +15,10 @@ use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
 /**
- * Class Amount
+ * Class BillingAddress
  *
  * @package api\classes
+ * @xmlName billing_address
  */
 class BillingAddress implements JsonSerializable, XMLSerializable
 {
@@ -27,7 +28,7 @@ class BillingAddress implements JsonSerializable, XMLSerializable
     private $street2;
     private $city;
     private $state;
-    private $zip;
+    private $postal_code;
     private $country;
     private $mobile;
     private $email;
@@ -75,10 +76,6 @@ class BillingAddress implements JsonSerializable, XMLSerializable
         {
             $this->street = $address['street'];
         }
-        if(empty($address['street2']) === FALSE)
-        {
-            $this->street2 = $address['street2'];
-        }
         if(empty($address['city']) === FALSE)
         {
             $this->city = $address['city'];
@@ -91,17 +88,9 @@ class BillingAddress implements JsonSerializable, XMLSerializable
         {
             $this->country = $address['country'];
         }
-        if(empty($address['mobile']) === FALSE)
+        if(empty($address['zip']) === FALSE)
         {
-            $this->mobile = $address['mobile'];
-        }
-        if(empty($address['email']) === FALSE)
-        {
-            $this->email = $address['email'];
-        }
-        if(empty($address['mobile_country_id']) === FALSE)
-        {
-            $this->mobile_country_id = $address['mobile_country_id'];
+            $this->postal_code = $address['zip'];
         }
     }
 }
