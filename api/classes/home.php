@@ -1087,7 +1087,7 @@ class Home extends General
                          }
 
                          $xml .= '</transaction>';
-                         if($index == 0) {
+                         if($sessionId > 0 && $index == 0) {
                              // this needs to be added only for parent txn
                              $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
                              // add linked transaction
