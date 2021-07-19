@@ -55,7 +55,7 @@ class WalletProcessor extends PaymentProcessor
         }
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo,$cardId=NULL)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
     {
         if (empty(self::$aWalletConstants[$iTypeId] ) === false) {
             return new WalletProcessor($oDB, $oTxt, $oTI, $iTypeId, $aConnInfo);

@@ -101,7 +101,7 @@ abstract class Callback extends EndUserAccount
         $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         if ($oPSPConfig == null) {
 
-			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, null, $pspID);
+			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, $pspID);
         }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
@@ -222,17 +222,10 @@ abstract class Callback extends EndUserAccount
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-				$iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState ( $this->getDBConn (), $sid );
-				if ($iIsCompleteTransactionStateLogged > 0 && $sid == Constants::iPAYMENT_ACCEPTED_STATE) {
-					$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iPAYMENT_DUPLICATED_STATE, var_export ( $debug, true ) );
-					$sid = Constants::iPAYMENT_DUPLICATED_STATE;
-				} else if ($iIsCompleteTransactionStateLogged == 0 ) {
-					$this->newMessage ( $this->_obj_TxnInfo->getID (), $sid, var_export ( $debug, true ) );
-					if($sub_code_id != 0) {
-						$this->newMessage ( $this->_obj_TxnInfo->getID (), $sub_code_id, var_export ( $debug, true ) );
-					}
-				}
-			
+                $this->newMessage ( $this->_obj_TxnInfo->getID (), $sid, var_export ( $debug, true ) );
+                if($sub_code_id != 0) {
+                    $this->newMessage ( $this->_obj_TxnInfo->getID (), $sub_code_id, var_export ( $debug, true ) );
+                }
 		}
 		// Error: Unable to complete log for Transaction
 		else
@@ -268,10 +261,19 @@ abstract class Callback extends EndUserAccount
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
+            $iStateID = Constants::iPAYMENT_CAPTURED_STATE;
+            // check if the transaction is partial txn
+            if ($amount != $this->_obj_TxnInfo->getAmount()) {
+                //check if the total captured amount is matching the txn amt i.e. partial capture case
+                $totalCapturedAmt = $amount + $this->_obj_TxnInfo->getCapturedAmount();
+                if ($totalCapturedAmt != $this->_obj_TxnInfo->getAmount()) {
+                    $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+                }
+            }
             $retStatus = $txnPassbookObj->updateInProgressOperations($amount, Constants::iPAYMENT_CAPTURED_STATE, Constants::sPassbookStatusDone);
             if($retStatus === TRUE)
             {
-            	$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            	$this->newMessage($this->_obj_TxnInfo->getID(), $iStateID, var_export($debug, true));
             }
 			return true;
 		}
@@ -1325,7 +1327,7 @@ abstract class Callback extends EndUserAccount
 		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
 
 		if($oldPSPId !=  $this->_obj_TxnInfo->getPSPID()) {
-			$this->_obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $this->_obj_TxnInfo, $this->_obj_TxnInfo->getPSPID(), null);
+			$this->_obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $this->_obj_TxnInfo, $this->_obj_TxnInfo->getPSPID());
 		}
 		$this->setClientConfig($this->_obj_TxnInfo->getClientConfig());
 	}
