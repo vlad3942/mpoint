@@ -1033,6 +1033,9 @@ class Home extends General
                          if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
                          $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
                          $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
+                         if($obj_TxnInfo->getInstallmentValue() > 0) {
+                             $xml .= '<installment-value>' . $obj_TxnInfo->getInstallmentValue() . '</installment-value>';
+                         }
                          $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
                          $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
                          $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
