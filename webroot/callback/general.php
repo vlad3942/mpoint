@@ -725,8 +725,7 @@ try
                 $isTxnRollInitiated = false;
                 $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
-                if (( $iStateID === Constants::iPAYMENT_ACCEPTED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == iSESSION_PARTIALLY_COMPLETED ) {
-
+                if (($iStateID === Constants::iPAYMENT_ACCEPTED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED) {
                     try {
                         $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
                         $newTxnInfoIds = $obj_TxnInfo->getPaymentSession()->getFilteredTransaction($whereClause);
