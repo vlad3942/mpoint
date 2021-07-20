@@ -1940,7 +1940,8 @@ class Home extends General
         $obj_CallbackMessageRequest = new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additional_data);
         if ($txnInfo->getPaymentSession()->getPendingAmount() > 0) {
             $pending_amount = $txnInfo->getPaymentSession()->getPendingAmount();
-            $obj_PendingAmt = new PendingAmount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+            $amt = new Amount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+            $obj_PendingAmt = new PendingAmount($amt);
             $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
         }
         return $obj_CallbackMessageRequest;

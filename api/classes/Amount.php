@@ -74,4 +74,29 @@ class Amount implements JsonSerializable, XMLSerializable
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");
     }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getCurrency()
+    {
+        return $this->currency_id;
+    }
+
+    public function getCode()
+    {
+        return $this->alpha3code;
+    }
+
+    public function getDecimal()
+    {
+        return $this->decimals;
+    }
+
+    public function getConversionRate()
+    {
+        return $this->conversion_rate;
+    }
 }

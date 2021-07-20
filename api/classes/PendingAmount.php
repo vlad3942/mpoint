@@ -33,25 +33,22 @@ class PendingAmount implements JsonSerializable, XMLSerializable
     private float $conversion_rate;
 
     /**
-     * Amount constructor.
+     * Pending Amount constructor.
      *
-     * @param int $value
-     * @param int $currency_id
-     * @param int $decimals
-     * @param string $code
-     * @param float|null $conversion_rate
+     * @param Amount
      */
-    public function __construct(int $value, int $currency_id,int $decimals, string $code,?float $conversion_rate = NULL)
+    public function __construct(Amount $pendingAmt)
     {
-        if($value > 0 && $currency_id > 0 && $decimals > 0) {
-            $this->value = $value;
-            $this->currency_id = $currency_id;
-            $this->decimals = $decimals;
-            if(strlen($code) > 0){
-                $this->alpha3code = $code;
+
+        if($pendingAmt->getValue() > 0 && $pendingAmt->getCurrency() > 0 && $pendingAmt->getDecimal() > 0) {
+            $this->value = $pendingAmt->getValue();
+            $this->currency_id = $pendingAmt->getCurrency();
+            $this->decimals = $pendingAmt->getDecimal();
+            if(strlen($pendingAmt->getCode()) > 0){
+                $this->alpha3code = $pendingAmt->getCode();
             }
-            if (empty($conversion_rate) === false){
-                $this->conversion_rate = $conversion_rate;
+            if (empty($pendingAmt->getConversionRate()) === false){
+                $this->conversion_rate = $pendingAmt->getConversionRate();
             }
         }
     }
