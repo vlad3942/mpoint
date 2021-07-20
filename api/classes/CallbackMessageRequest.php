@@ -22,28 +22,35 @@ use api\interfaces\XMLSerializable;
 
 class CallbackMessageRequest implements JsonSerializable, XMLSerializable
 {
-    public int $client_id;
+    private int $client_id;
 
-    public int $account_id;
+    private int $account_id;
 
-    public int $session_id;
+    private int $session_id;
 
-    public Amount $sale_amount;
+    private Amount $sale_amount;
 
-    public StateInfo $status;
+    private StateInfo $status;
 
     /**
      * @var TransactionData[]
      */
-    public array $transactions = [];
+    private array $transactions = [];
 
-    public string $callback_url;
+    /*
+     * @xmlExclude
+     *
+     */
+    private string $callback_url;
 
-    public $session_type;
+    private $session_type;
 
-    public $additional_data;
+    private $additional_data;
 
-    private PendingAmount $pending_amount;
+    /*
+     *
+     */
+    private Amount $pending_amount;
 
     /**
      * CallbackMessageRequest constructor.
@@ -87,12 +94,12 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
         return array_filter($vars, "Callback::EmptyValueComparator");
     }
 
-    public function setPendingAmt(PendingAmount $pendingAmount)
+    public function setPendingAmt(Amount $pendingAmount)
     {
         $this->pending_amount = $pendingAmount;
     }
 
-    public function getPendingAmount(): PendingAmount
+    public function getPendingAmount(): Amount
     {
         return $this->pending_amount;
     }
