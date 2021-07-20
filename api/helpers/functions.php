@@ -1,38 +1,38 @@
 <?php
-if (!function_exists('xml_encode')) {
+if (function_exists('xml_encode') === false) {
 
-    function xml_encode($mixed, $DOMDocument = null, $DOMEelement = null)
+    function xml_encode($mixed, $DOMDocument = null, $DOMEelement = null, $useClassRef = false)
     {
-        try {
+
             if (is_null($DOMDocument)) {
                 $DOMDocument =new DOMDocument();
                 $DOMDocument->formatOutput = true;
-                xml_encode($mixed, $DOMDocument, $DOMDocument);
+                xml_encode($mixed, $DOMDocument, $DOMDocument, true);
                 return $DOMDocument->saveHTML();
             }
             else{
                 if(is_object($mixed))
                 {
-                    $className= get_class($mixed);
+                    $element = $DOMEelement;
+                    if ($useClassRef === true) {
 
-                    // get xml node name for a class
-                    $annotation = getClassAnnotations($className);
-                    foreach ($annotation as $item) {
-                        if (strpos($item, 'xmlName') !== false) {
-                            $index = strpos($item, 'xmlName') + strlen("xmlName") + 1;
-                            $xmlNodeName = substr($item, $index);
+                        $className = get_class($mixed);
+                        // get xml node name for a class
+                        $annotation = getClassAnnotations($className);
+                        foreach ($annotation as $item) {
+                            if (strpos($item, 'xmlName') !== false) {
+                                $index = strpos($item, 'xmlName') + strlen("xmlName") + 1;
+                                $xmlNodeName = substr($item, $index);
+                            }
                         }
+                        $path = explode('\\', $className);
+                        $className = array_pop($path);
+                        if (empty($xmlNodeName) === true) {
+                            $xmlNodeName = $className;
+                        }
+
+                        $element = $DOMDocument->createElement($xmlNodeName);
                     }
-                    $path = explode('\\', $className);
-                    $className = array_pop($path);
-                    if (empty($xmlNodeName) === true) {
-                        $xmlNodeName = $className;
-                    }
-                    if ($xmlNodeName == 'amount' && $DOMEelement->nodeName == 'session') {
-                        $xmlNodeName = 'sale_amount';
-                    }
-                    $element = $DOMDocument->createElement($xmlNodeName);
-                    $DOMEelement->appendChild($element);
                     if(method_exists($mixed, 'xmlSerialize')){
                         $mixed = $mixed->xmlSerialize();
                     }
@@ -40,16 +40,26 @@ if (!function_exists('xml_encode')) {
                         $mixed = get_object_vars($mixed);
                     }
                     xml_encode($mixed, $DOMDocument, $element);
+                    if($useClassRef === true) {
+                        $DOMEelement->appendChild($element);
+                    }
                 }
                 elseif (is_array($mixed)) {
                     foreach ($mixed as $index => $mixedElement) {
-                        if(is_array($mixedElement))
+                        if(is_array($mixedElement) )
                         {
                             $element = $DOMDocument->createElement($index);
                             xml_encode($mixedElement, $DOMDocument, $element);
                             $DOMEelement->appendChild($element);
                         }elseif(is_object($mixedElement)) {
-                            xml_encode($mixedElement, $DOMDocument, $DOMEelement);
+                            if (is_numeric($index) === true) {
+                                xml_encode($mixedElement, $DOMDocument, $DOMEelement, true);
+                            } else {
+                                $element = $DOMDocument->createElement($index);
+                                xml_encode($mixedElement, $DOMDocument, $element);
+                                $DOMEelement->appendChild($element);
+                            }
+
                         }
                         else
                         {
@@ -60,10 +70,6 @@ if (!function_exists('xml_encode')) {
                     }
                 }
             }
-
-        } catch (Exception $e) {
-            trigger_error($e->getMessage());
-        }
 
     }
 }

@@ -22,7 +22,6 @@ use api\classes\PSPData;
 use api\classes\StateInfo;
 use api\classes\TransactionData;
 use \api\classes\BillingAddress;
-use \api\classes\PendingAmount;
 /**
  * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
@@ -1940,8 +1939,7 @@ class Home extends General
         $obj_CallbackMessageRequest = new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additional_data);
         if ($txnInfo->getPaymentSession()->getPendingAmount() > 0) {
             $pending_amount = $txnInfo->getPaymentSession()->getPendingAmount();
-            $amt = new Amount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
-            $obj_PendingAmt = new PendingAmount($amt);
+            $obj_PendingAmt = new Amount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
             $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
         }
         return $obj_CallbackMessageRequest;
