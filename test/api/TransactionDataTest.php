@@ -106,7 +106,6 @@ class TransactionDataTest extends baseAPITest
     {
         $additionalData = new AdditionalData('DeliveryInfo', 'Test');
         $this->transactionData->setDeliveryInfo([$additionalData]);
-        trigger_error(xml_encode($this->transactionData));
         $this->assertStringContainsString('"delivery_info":[{"name":"DeliveryInfo","text":"Test"}]', json_encode($this->transactionData));
         $this->assertStringContainsString('<delivery_info><params><name>DeliveryInfo</name><text>Test</text></params></delivery_info>', xml_encode($this->transactionData));
 
