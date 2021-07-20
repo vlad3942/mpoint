@@ -390,10 +390,9 @@ try
                         }
                     }
                 }
-                // If transaction is in Account Validated i.e 1998 state no action to be done
-                if ($iStateID === Constants::iPAYMENT_REJECTED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID) === false) {
-                    array_push($aStateId, $iStateID);
-                }
+
+                array_push($aStateId, $iStateID);
+
                 $fee = 0;
                 $sIssuingBank = (string)$obj_XML->callback->{'issuing-bank'};
                 $authOriginalData = (string)$obj_XML->callback->{'auth-original-data'};
@@ -407,12 +406,10 @@ try
                 //Post-Auth-Fraud Check call
                 $isPostAuthFraudGatewayEnabled = false;
                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-                if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE, Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE)) === false && ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE || $iStateID == Constants::iPAYMENT_CAPTURED_STATE)
+                if (($iStateID == Constants::iPAYMENT_ACCEPTED_STATE) && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE, Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE)) === false
                     && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"], Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0) {
                     $isPostAuthFraudGatewayEnabled = true;
-                    if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE) {
-                        $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE, '');
-                    }
+                    $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE, '');
                 }
 
                 $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
@@ -575,9 +572,7 @@ try
                 }
 
                 $fraudCheckResponse = new FraudResult();
-                if ($isPostAuthFraudGatewayEnabled === true
-                    && (($iStateID === Constants::iPAYMENT_CAPTURED_STATE && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt)
-                        || ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt))) {
+                if ($isPostAuthFraudGatewayEnabled === true) {
                     $aFraudRule = array();
                     $bIsSkipFraud = false;
 
@@ -727,11 +722,10 @@ try
                 }
             }
 
-            $isTxnRollInitiated = false;
-            if (($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt && $iStateID !== Constants::iPAYMENT_ACCEPTED_STATE) || $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) {
+                $isTxnRollInitiated = false;
                 $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
-                if ((($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->useAutoCapture() !== AutoCaptureType::ePSPLevelAutoCapt) || ($iStateID === Constants::iPAYMENT_CAPTURED_STATE && $obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt)) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED) {
+                if (( $iStateID === Constants::iPAYMENT_ACCEPTED_STATE) && $sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == iSESSION_PARTIALLY_COMPLETED ) {
 
                     try {
                         $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
@@ -840,7 +834,6 @@ try
                         trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
                     }
                 }
-            }
 
             // Transaction uses Auto Capture and Authorization was accepted
             if ($isTxnRollInitiated === false && $obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)) {
