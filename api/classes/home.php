@@ -1934,9 +1934,13 @@ class Home extends General
         }
         $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($status));
         $session_type = $txnInfo->getPaymentSession()->getSessionType();
-        $additional_data = $txnInfo->getPaymentSession()->getSessionAdditionalData();
-
-        $obj_CallbackMessageRequest = new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additional_data);
+        $aSessionAdditionalData = $txnInfo->getPaymentSession()->getSessionAdditionalData();
+        if ($aSessionAdditionalData !== NULL) {
+            foreach ($aSessionAdditionalData as $name => $value) {
+                array_push($additionalData, new AdditionalData($name, $value));
+            }
+        }
+        $obj_CallbackMessageRequest = new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additionalData);
         if ($txnInfo->getPaymentSession()->getPendingAmount() > 0) {
             $pending_amount = $txnInfo->getPaymentSession()->getPendingAmount();
             $obj_PendingAmt = new Amount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);

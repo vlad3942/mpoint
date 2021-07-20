@@ -37,19 +37,12 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
      */
     private array $transactions = [];
 
-    /*
-     * @xmlExclude
-     *
-     */
     private string $callback_url;
 
     private $session_type;
 
     private $additional_data;
 
-    /*
-     *
-     */
     private Amount $pending_amount;
 
     /**
@@ -97,10 +90,5 @@ class CallbackMessageRequest implements JsonSerializable, XMLSerializable
     public function setPendingAmt(Amount $pendingAmount)
     {
         $this->pending_amount = $pendingAmount;
-    }
-
-    public function getPendingAmount(): Amount
-    {
-        return $this->pending_amount;
     }
 }
