@@ -1567,5 +1567,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         {
 			trigger_error("Receipt Generation for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
+
+		return false;
     }
 }
