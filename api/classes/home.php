@@ -1935,6 +1935,7 @@ class Home extends General
         $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($status));
         $session_type = $txnInfo->getPaymentSession()->getSessionType();
         $aSessionAdditionalData = $txnInfo->getPaymentSession()->getSessionAdditionalData();
+        $additionalData = [];
         if ($aSessionAdditionalData !== NULL) {
             foreach ($aSessionAdditionalData as $name => $value) {
                 array_push($additionalData, new AdditionalData($name, $value));
