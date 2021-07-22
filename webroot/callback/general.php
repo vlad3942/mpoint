@@ -648,6 +648,40 @@ try
 
                 }
 
+                if (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_CAPTURED_STATE
+                        || $obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+                    && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE) == true)
+                )
+                {
+                    $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_FRAUD_FAIL"));
+                    if ($bisRollBack === true) {
+                        $passbookEntry = new PassbookEntry
+                        (
+                            NULL,
+                            $obj_TxnInfo->getAmount(),
+                            $obj_TxnInfo->getCurrencyConfig()->getID(),
+                            Constants::iVoidRequested
+                        );
+                        if ($txnPassbookObj instanceof TxnPassbook) {
+                            $txnPassbookObj->addEntry($passbookEntry);
+                            try {
+                                $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
+                                $code = reset($codes);
+                            } catch (Exception $e) {
+                                $code = 99;
+                                trigger_error($e, E_USER_WARNING);
+                            }
+                            if ($code === 1000 || $code === 1001) {
+                                if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) {
+                                    array_push($aStateId, Constants::iPAYMENT_REFUNDED_STATE);
+                                } else {
+                                    array_push($aStateId, Constants::iPAYMENT_CANCELLED_STATE);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Transaction uses one step authorization then no need of PSP call
                 if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE) {
 
