@@ -647,11 +647,10 @@ try
                                 $code = 99;
                                 trigger_error($e, E_USER_WARNING);
                             }
-                            if ($code === 1000 || $code === 1001) {
-                                if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) {
-                                    array_push($aStateId, Constants::iPAYMENT_REFUNDED_STATE);
-                                } else {
-                                    array_push($aStateId, Constants::iPAYMENT_CANCELLED_STATE);
+                            if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
+                            {
+                                if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) {
+                                    array_push($aStateId,Constants::iPAYMENT_REFUNDED_STATE);
                                 }
                             }
                         }
