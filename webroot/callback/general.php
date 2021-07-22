@@ -810,10 +810,9 @@ try
                                             if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE])) {
                                                 if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) {
                                                     $iStateID = Constants::iPAYMENT_REFUNDED_STATE;
+                                                    $obj_mPoint->notifyClient($iStateID, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                                                 }
                                                 // else { $iStateID=Constants::iPAYMENT_CANCELLED_STATE; }
-
-                                                $obj_mPoint->notifyClient($iStateID, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                                             }
                                         }
                                     }
