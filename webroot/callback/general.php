@@ -616,8 +616,8 @@ try
                         if ($paymentSecureInfo !== null && $obj_CardElem !== null) {
                             $paymentSecureInfo->attachPaymentSecureNode($obj_CardElem);
                         }
+                        $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_CardElem, $_OBJ_DB, null, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mCard, (int)$obj_XML->callback->transaction->card["type-id"], Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY);
                     }
-
                 } else if ($iStateID == Constants::iPAYMENT_REJECTED_STATE && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_REVIEW_STATE)) === true) {
                     $fraudCheckResponse = CPMFRAUD::attemptFraudInitCallback(Constants::iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE, 'Review Closed', $_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, (int)$obj_XML->callback->transaction->card["type-id"]);
 
