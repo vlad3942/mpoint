@@ -1872,7 +1872,15 @@ abstract class Constants
      */
     const iPAYMENT_SOFT_DECLINED_STATE = 20103;
 
-    /*
+	/*
+     * Defines unique ID of the State that indicates payment fraud decline subcode
+     */
+	const iPAYMENT_REJECTED_FRAUD_SUSPICION_STATE = 2010401;
+	const iPAYMENT_REJECTED_FRAUD_CARD_BLOCKED_STATE = 2010405;
+	const iPAYMENT_REJECTED_FRAUD_CARD_STOLEN_STATE = 2010407;
+
+
+	/*
      * Define upper and lower limit for soft decline status sub code
      */
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
