@@ -557,6 +557,10 @@ try
                     }
                 }
 
+                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID());
+                $isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'), FILTER_VALIDATE_BOOLEAN);
+                $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
+                $isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
 
                 $aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
                     "amount" => $obj_TxnInfo->getAmount(),
@@ -612,37 +616,8 @@ try
                         if ($paymentSecureInfo !== null && $obj_CardElem !== null) {
                             $paymentSecureInfo->attachPaymentSecureNode($obj_CardElem);
                         }
-
-                        $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_CardElem, $_OBJ_DB, null, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mCard, (int)$obj_XML->callback->transaction->card["type-id"], Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY);
-                        if ($fraudCheckResponse->isFraudCheckAccepted() === false && $fraudCheckResponse->isFraudCheckAttempted() === true) {
-                            $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_FRAUD_FAIL"));
-                            if ($bisRollBack === true) {
-                                $passbookEntry = new PassbookEntry
-                                (
-                                    NULL,
-                                    $obj_TxnInfo->getAmount(),
-                                    $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                    Constants::iVoidRequested
-                                );
-                                if ($txnPassbookObj instanceof TxnPassbook) {
-                                    $txnPassbookObj->addEntry($passbookEntry);
-                                    try {
-                                        $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
-                                        $code = reset($codes);
-                                    } catch (Exception $e) {
-                                        $code = 99;
-                                        trigger_error($e, E_USER_WARNING);
-                                    }
-                                    if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE])) {
-                                        if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) {
-                                            array_push($aStateId, Constants::iPAYMENT_REFUNDED_STATE);
-                                        }
-                                        //else { array_push($aStateId,Constants::iPAYMENT_CANCELLED_STATE); }
-                                    }
-                                }
-                            }
-                        }
                     }
+
                 } else if ($iStateID == Constants::iPAYMENT_REJECTED_STATE && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_REVIEW_STATE)) === true) {
                     $fraudCheckResponse = CPMFRAUD::attemptFraudInitCallback(Constants::iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE, 'Review Closed', $_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, (int)$obj_XML->callback->transaction->card["type-id"]);
 
