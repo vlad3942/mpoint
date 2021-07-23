@@ -1793,7 +1793,7 @@ class Home extends General
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
 
         $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
-        $aTxnAdditionalData = $txnInfo->getAdditionalData();
+
         if (empty($getFraudStatusCode) === FALSE) {
 
             if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
@@ -1839,7 +1839,7 @@ class Home extends General
         }
         $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
 
-        $aTxnAdditionalData = $txnInfo->getAdditionalData();
+        $aTxnAdditionalData = $txnInfo->getAdditionalData("", true);
         if ($aTxnAdditionalData !== NULL) {
             foreach ($aTxnAdditionalData as $name => $value) {
                 array_push($additionalData, new AdditionalData($name, $value));
