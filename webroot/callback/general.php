@@ -792,6 +792,7 @@ try
 
             if($isTxnRollInitiated === true)
             {
+                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
                 $passbookEntry = new PassbookEntry
                 (
                     NULL,
@@ -808,10 +809,12 @@ try
                 }
             }
 
-            if (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_CAPTURED_STATE
-                    || $obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE))
+            if (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
+                && ($iStateID == Constants::iPAYMENT_CAPTURED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE) === true))
+                    || ($obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE))
             {
                 try {
+                    $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
                     $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO, $isConsolidate, $isMutualExclusive);
                     $code = reset($codes);
                 } catch (Exception $e) {
