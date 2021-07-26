@@ -51,6 +51,11 @@ COMMIT;
 
 -------CMP-5454 ------
 --Sarvesh (Scripts for AV)
+create table log.temp_txnpassbook_tbl_10101_default
+as select * from log.txnpassbook_tbl_default where clientid=10101;
+
+DELETE from log.txnpassbook_tbl_default where clientid=10101;
+
 select * from log.fn_generate_txnpassbook_partitions('log.txnpassbook_tbl',10101,'Y',1,50000000,1000000);
 select * from log.fn_add_primary_key_nested_partitions('log.txnpassbook_tbl',10101,1,50000000,1000000);
 select * from log.fn_generate_txnpassbook_indexes_nested_partitions('log.txnpassbook_tbl',10101,1,50000000,1000000);
@@ -75,6 +80,10 @@ CREATE TRIGGER update_txnpassbook_tbl_10101_default
 ALTER PUBLICATION mpoint_log_pub ADD TABLE log.txnpassbook_tbl_10101_default;
 GRANT SELECT ON log.txnpassbook_tbl_10101_default TO repuser;
 
+insert into Log.TxnPassbook_Tbl_10101
+select * from log.temp_txnpassbook_tbl_10101_default;
+
+Commit;
 
 ----Sarvesh (Scripts for CEBU)
 create table log.temp_txnpassbook_tbl_10077_default
