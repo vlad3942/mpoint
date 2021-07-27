@@ -167,7 +167,7 @@ try
 	$iStateID = (integer) $obj_XML->{'threed-redirect'}->status["code"];
     $iSubCodeID = (integer) $obj_XML->{'threed-redirect'}->status["sub-code"];
 
-    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, (int)$obj_XML->{'threed-redirect'}->transaction->card["type-id"],$obj_TxnInfo->getPSPID());
+    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo,$obj_TxnInfo->getPSPID());
 
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 

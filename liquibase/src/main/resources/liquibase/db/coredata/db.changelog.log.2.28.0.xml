@@ -66,5 +66,20 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Priya Alamwar"
+               id="2021-09-07-setup-v2.26-log">
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2018"/>
+            <column name="name" value="Callback duplicated"/>
+            <column name="module" value="Callback"/>
+        </insert>
+
+    </changeSet>
+
+
 
 </databaseChangeLog>

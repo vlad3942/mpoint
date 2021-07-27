@@ -108,7 +108,7 @@ class CallbackAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        $this->assertEquals(202, $iStatus);
+        $this->assertEquals(400, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
@@ -120,8 +120,9 @@ class CallbackAPITest extends baseAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertCount(4, $aStates);
+        $this->assertCount(5, $aStates);
         $this->assertTrue(is_int(array_search($iTransStatus, $aStates) ) );
+        $this->assertTrue(is_int(array_search(Constants::iCALLBACK_DUPLICATED_STATE, $aStates) ) );
     }
 
     public function successfulAutoCapture($pspID, $iTransStatus)
@@ -160,30 +161,27 @@ class CallbackAPITest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertTrue(is_resource($res) );
-
         $aStates = array();
         $cStates = array();
         $retries = 0;
-        while ($retries++ <= 9)
+        while ($retries++ <= 20)
         {
-            $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
+            $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
             $this->assertTrue(is_resource($res) );
             $aStates = array();
             while ($row = pg_fetch_assoc($res) )
             {
-                $aStates[] = $row["stateid"];
+                $aStates[] =$row["stateid"];
             }
             if (count($aStates) >= 15) { break; }
-            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         self::assertCount(15,$aStates );
 
         $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[0] );
-        $this->assertEquals(Constants::iPAYMENT_CAPTURED_STATE, $aStates[1] );
-        $this->assertEquals(Constants::iSESSION_COMPLETED, $aStates[10] );
+        $this->assertEquals(Constants::iPAYMENT_CAPTURED_STATE, $aStates[10] );
+        $this->assertEquals(Constants::iSESSION_COMPLETED, $aStates[5] );
 
         $captureStateStatus = $this->queryDB("SELECT status FROM Log.Txnpassbook_Tbl WHERE transactionid = 1001001 and performedopt = 2000");
         $this->assertTrue(is_resource($captureStateStatus));
@@ -367,7 +365,7 @@ class CallbackAPITest extends baseAPITest
 
         $affectedRows=0;
         $retries = 0;
-        while ($retries++ <= 10) {
+        while ($retries++ <= 20) {
             $res = $this->queryDB("SELECT STATEID FROM LOG.MESSAGE_TBL WHERE TXNID = 1001001 AND STATEID=1999");
             $this->assertTrue(is_resource($res));
             $affectedRows=0;

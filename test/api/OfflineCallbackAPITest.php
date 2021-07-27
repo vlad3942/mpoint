@@ -55,6 +55,7 @@ class OfflineCallbackAPITest extends CallbackAPITest
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
+        sleep(1);
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl where txnid=1001014 and stateid=".$stateid);
         $this->assertIsResource($res);
         $this->assertEquals(1,pg_num_rows($res));

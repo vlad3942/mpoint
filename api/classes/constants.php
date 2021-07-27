@@ -386,6 +386,12 @@ abstract class Constants
 	const iPAYMENT_DUPLICATED_STATE = 2019;
 
 	/**
+	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
+	 *
+	 */
+	const iCALLBACK_DUPLICATED_STATE = 2018;
+
+	/**
 	 * Defines the ID of the State that indicates that payment has been settled
 	 *
 	 */
@@ -1803,6 +1809,7 @@ abstract class Constants
 	const iInvalidOperation = 6100;
 	const iOperationNotAllowed = 6200;
 	const iAmountIsHigher = 6201;
+	const iAmountIsLower = 6202;
 
 	/*
 	 * Passbook Error Code
