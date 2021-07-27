@@ -2193,20 +2193,41 @@ class General
     public function getLatestTxnState($txnId)
     {
         $result = [];
-        $sql = 'SELECT stateid, S.name, 1 AS rownum
-                            FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m
-                                     INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S on M.stateid = S.id
-                            WHERE txnid = '.$txnId.'
-                              and M.enabled = true
-                              and stateid in (
-                                '.Constants::iPAYMENT_ACCEPTED_STATE.', 
-                                '.Constants::iPAYMENT_CAPTURED_STATE.',
-                                '.Constants::iPAYMENT_REJECTED_STATE.',
-                                '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
-                                '.Constants::iPAYMENT_PENDING_STATE.'
-                              )
-                            order by M.id desc
-                            limit 1;';
+        $sql = 'WITH WT1 as
+                             (SELECT DISTINCT stateid, txnid, S.name, m.id
+                              FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S
+                              on M.stateid = S.id
+                              WHERE txnid = '.$txnId.' and M.enabled = true),
+                         WT2 as (SELECT stateid, txnid, name, id
+                                 FROM (SELECT *, rank() over (partition by txnid order by id desc)
+                                       FROM WT1
+                                       WHERE stateid in (
+                                                         '.Constants::iPAYMENT_ACCEPTED_STATE.',
+                                                         '.Constants::iPAYMENT_CAPTURED_STATE.',
+                                                         '.Constants::iPAYMENT_REJECTED_STATE.',
+                                                         '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
+                                                         '.Constants::iPAYMENT_PENDING_STATE.')) s
+                                 where s.rank = 1
+                                 UNION
+                                 SELECT *
+                                 FROM WT1
+                                 WHERE stateid in (
+                                                   '.Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.')
+                         )
+                    SELECT *, row_number() OVER (ORDER BY id ASC) AS rownum
+                    FROM WT2';
         $RSMsg = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($RSMsg) )
@@ -2270,6 +2291,42 @@ class General
         $RS = $this->getDBConn($sql)->getName($sql);
 
         return $RS["NAME"];
+    }
+
+    /***
+     * Function used to get route from CRS
+     *
+     * @param RDB $_OBJ_DB
+     * @param $obj_mPoint
+     * @param TxnInfo $obj_TxnInfo Data object with the Transaction Information
+     * @param ClientInfo $obj_ClientInfo Reference to the Data object with the client information
+     * @param $obj_ConnInfo Reference to the HTTP connection information
+     * @param int $clientid Associated client ID
+     * @param int $countryId Hold ID of the country
+     * @param int|null $currencyId The currency id that is used to display currency id for amount
+     * @param null $amount The amount that has been captured for the customer Transaction. Default value 0
+     * @param int|null $cardTypeId Card Type id
+     * @param null $issuerIdentificationNumber
+     * @param string|null $cardName
+     * @param null $obj_FailedPaymentMethod
+     * @param int|null $walletId
+     */
+    public static function getRouteConfiguration(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
+
+    {
+        $iPrimaryRoute = 0;
+        $obj_CardResultSet = FALSE;
+        $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $obj_ConnInfo, $clientid, $countryId, $currencyId, $amount, $cardTypeId,$issuerIdentificationNumber,$cardName,$obj_FailedPaymentMethod,$walletId);
+        if ($obj_RS instanceof RoutingService) {
+            $objTxnRoute   = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+
+        }
+        if ($iPrimaryRoute > 0) {
+            $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+        }
+        return $obj_CardResultSet;
     }
 }
 ?>
