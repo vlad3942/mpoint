@@ -1379,6 +1379,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '<get-payment-method client-id="' . $this->getClientConfig()->getID() . '" account="' . $this->getClientConfig()->getAccountConfig()->getID() . '" store-card="' . parent::bool2xml($sc) . '">';
             $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML());
             $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
+            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            {
+                $b .= $this->getPSPConfig()->toRouteConfigXML();
+            }
             $b .= $this->_constTxnXML();
             $b .= '</get-payment-method>';
             $b .= '</root>';
@@ -1567,5 +1571,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         {
 			trigger_error("Receipt Generation for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
+
+		return false;
     }
 }

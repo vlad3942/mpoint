@@ -364,13 +364,18 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $iStatus = $httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $httpClient->getReplyBody();
         $this->assertEquals(202, $iStatus);
-        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
-        $this->assertTrue(is_resource($res) );
-
-        $aStates = array();
-        while ($row = pg_fetch_assoc($res) )
+        $retries = 0;
+        $aStates = [];
+        while ($retries++ <= 20)
         {
-            $aStates[] = (int)$row["stateid"];
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 16) { break; }
+            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );

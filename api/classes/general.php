@@ -1773,19 +1773,7 @@ class General
             $stateId = Constants::iPAYMENT_PENDING_STATE;
         } else
         {
-            $sql = 'SELECT auto_capture
-         		FROM Log'.sSCHEMA_POSTFIX.'.Transaction_Tbl
-				WHERE id = '. $txnId;
-            $RS = $_OBJ_DB->getName($sql);
-            $auto_capture = (int)$RS['AUTO_CAPTURE'];
-
-            if($auto_capture === AutoCaptureType::ePSPLevelAutoCapt ){
-                //if psp level capture then check for 2001 is logged and fraud states are not logged, if so payment is complete
-                $stateId = Constants::iPAYMENT_CAPTURED_STATE;
-            }else{
-                //if other capture then check for 2000 is logged and fraud states are not logged, if so payment is complete
-                $stateId = Constants::iPAYMENT_ACCEPTED_STATE;
-            }
+           $stateId = Constants::iPAYMENT_ACCEPTED_STATE;
         }
 
 
