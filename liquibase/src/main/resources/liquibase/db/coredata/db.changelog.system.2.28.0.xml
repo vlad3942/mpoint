@@ -41,5 +41,16 @@
         </update>
     </changeSet>
 
+    <changeSet author="Nitin Gaikwad" id="2021-07-28-setup-v2.28-system-CMP-5807">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="cardprefix_tbl">
+
+            <column name="cardid" value="3"/>
+            <column name="min" value="300000"/>
+            <column name="max" value="361480"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
