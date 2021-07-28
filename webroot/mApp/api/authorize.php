@@ -557,6 +557,12 @@ try
                                         }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
+                                        // Validate card IIN
+                                        $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), $issuerIdentificationNumber);
+                                        if ($code != 10) {
+                                            $msg = General::getMsgForInvalidIIN($code);
+                                            $aMsgCds[] = $msg;
+                                        }
 
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {

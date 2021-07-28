@@ -2167,5 +2167,33 @@ class General
         }
         return $obj_CardResultSet;
     }
+
+    /***
+     * Function to get error msg text
+     * @param int $code Error code
+     * @return string $msg Error message
+    */
+    public static function getMsgForInvalidIIN(int $code) : string
+    {
+        $msg = '';
+        switch ($code) {
+            case 1:
+                $msg = 'Undefined Issuer Identification Number';
+                break;
+            case 2:
+                $msg = 'Issuer Identification Number is too small';
+                break;
+            case 3:
+                $msg = 'Issuer Identification Number is too great';
+                break;
+            case 4:
+                $msg = 'Issuer Identification Number is blocked';
+                break;
+            case 11:
+                $msg = 'Card has been whitelisted';
+
+        }
+        return $msg;
+    }
 }
 ?>
