@@ -558,7 +558,7 @@ try
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
 
-                                        if (!empty($issuerIdentificationNumber)) {
+                                        if (empty($issuerIdentificationNumber) === false) {
                                             // Validate card IIN
                                             $validationCode = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), $issuerIdentificationNumber);
                                             if ($validationCode < 10) {
