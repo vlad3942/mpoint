@@ -202,8 +202,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-        trigger_error($sReplyBody);
-		$this->assertEquals(403, $iStatus);
+        $this->assertEquals(403, $iStatus);
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="89">Card has been blocked</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY id ASC");
@@ -212,8 +211,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$aStates = array();
 		while ($row = pg_fetch_assoc($res) )
 		{
-		    trigger_error($row['stateid']);
-			$aStates[] = $row["stateid"];
+		    $aStates[] = $row["stateid"];
 		}
 
 		// Assert that there is no futher txn states than
@@ -858,7 +856,6 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        trigger_error($sReplyBody);
         $this->assertEquals(403, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="87">Card has been blocked</status></root>', $sReplyBody);
 
@@ -868,7 +865,6 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            trigger_error($row['stateid']);
             $aStates[] = $row["stateid"];
         }
 
