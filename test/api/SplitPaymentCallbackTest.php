@@ -66,7 +66,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
-        usleep(1000000);
+        usleep(2000000);
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 100100112  ORDER BY id ASC");
         $this->assertIsResource($res);
@@ -174,7 +174,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertTrue(is_int(array_search(1000, $aStates)));
     }
 
-    public function getCallbackDoc($transactionId, $orderId, $pspID)
+    public function getCallbackDoc($transactionId, $orderId, $pspID, $stateId = 2000)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
@@ -192,7 +192,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $xml .= '</expiry>';
         $xml .= '</card>';
         $xml .= '</transaction>';
-        $xml .= '<status code="2000">Transaction is Authorized.</status>';
+        $xml .= '<status code="'.$stateId.'">Transaction is Authorized.</status>';
         $xml .= '<approval-code>035747</approval-code>';
         $xml .= '</callback>';
         $xml .= '</root>';
@@ -421,7 +421,7 @@ class SplitPaymentCallbackTest extends baseAPITest
 
         $retries = 0;
         $aStates = [];
-        while ($retries++ <= 10)
+        while ($retries++ <= 20)
         {
             $aStates = [];
             $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
@@ -429,12 +429,187 @@ class SplitPaymentCallbackTest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                 $aStates[] = (int)$row["stateid"];
             }
-            if (count($aStates) >= 10) { break; }
-            usleep(100000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            if (count($aStates) >= 16) { break; }
+            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, $aStates);
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
         $this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
+
+        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
+        $this->assertIsResource($res);
+
+        $aStates = [];
+        while ($row = pg_fetch_assoc($res)) {
+            $aStates[] = $row["stateid"];
+        }
+
+        $this->assertCount(1, $aStates);
+        $this->assertTrue(is_int(array_search(1000, $aStates)));
+
+    }
+
+    public function testPostAuthFraudCheckRejectedAutoCapture()
+    {
+        $pspID = Constants::iWIRE_CARD_PSP;
+        $fraudCheckPspID = Constants::iEZY_PSP;
+
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 10099, 14, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 14, '-1')");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (3, 10099, 60, 'EZY')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 60, '-1')");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (4, 10099, 36, 'mvault')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 36, '-1')");
+
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 15, $pspID, 100,true, 1)");
+        $this->queryDB("INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, enabled, stateid, psp_type) VALUES (10099, 8, $fraudCheckPspID, 100, true, 1, 10)");//psp_type = Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid,walletid) VALUES (10099, 8, $pspID, 100, true, 1,14)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 8, $pspID, 100, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 5002, 9876543210, '', '127.0.0.1', -1, 2);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid,token,auto_capture) VALUES (1001001, 100, 10099, 1100, 1,  $pspID, 100, '103-1418291', '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,'93736e0408d5cd3793615f6e132c89a8f32337483a74739674a5bb2a9c18f6eb91eae4960e5ff9bad1bf62e60282de3c0605ececa6a82f7d14cbe5305fd1983d', 2)");
+        $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('FCTxnID', '243002', 'Transaction','1001001')");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES('ISROLLBACK_ON_FRAUD_FAIL', 'true', 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208," . Constants::iAuthorizeRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (103,1001001, 5000,208,NULL," . Constants::iPAYMENT_ACCEPTED_STATE . ",'inprogress',102,10099)");
+
+        $pspID2 = Constants::iDSB_PSP;
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (10, 10099, " . $pspID2 . ", '1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID2, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, " . Constants::iVOUCHER_CARD . ", $pspID2, false)"); //Authorize must be possible even with disabled cardac
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1, 'tst233', 100, 10099, 1100, 100, $pspID2, '" . $sCallbackURL . "', 2, '127.0.0.1', TRUE, 1, 1,2)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1,1000)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('voucherid', 'voucherid', 'Transaction',1)");
+
+        $xml = $this->getCallbackDoc(1001001, 'tst233', $pspID);
+        $this->_httpClient->connect();
+        $this->bIgnoreErrors = TRUE;
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(202, $iStatus);
+
+        $retries = 0;
+        $aStates = [];
+        while ($retries++ <= 20)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 16) { break; }
+            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+        $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE, $aStates);
+        $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
+        $this->assertNotContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
+
+        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
+        $this->assertIsResource($res);
+
+        $aStates = [];
+        while ($row = pg_fetch_assoc($res)) {
+            $aStates[] = $row["stateid"];
+        }
+
+        $this->assertCount(1, $aStates);
+        $this->assertTrue(is_int(array_search(1000, $aStates)));
+
+    }
+
+    public function testPostAuthFraudCheckRejectedAutoCaptureRollback()
+    {
+        $pspID = Constants::iWIRE_CARD_PSP;
+        $fraudCheckPspID = Constants::iEZY_PSP;
+
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 10099, 14, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 14, '-1')");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (3, 10099, 60, 'EZY')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 60, '-1')");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (4, 10099, 36, 'mvault')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 36, '-1')");
+
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 15, $pspID, 100,true, 1)");
+        $this->queryDB("INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, enabled, stateid, psp_type) VALUES (10099, 8, $fraudCheckPspID, 100, true, 1, 10)");//psp_type = Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid,walletid) VALUES (10099, 8, $pspID, 100, true, 1,14)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, countryid, enabled, stateid) VALUES (10099, 8, $pspID, 100, true, 1)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4031, '103-1418291', 5002, 9876543210, '', '127.0.0.1', -1, 2);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid,token,auto_capture) VALUES (1001001, 100, 10099, 1100, 1,  $pspID, 100, '103-1418291', '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 208, 1,5000,208,'93736e0408d5cd3793615f6e132c89a8f32337483a74739674a5bb2a9c18f6eb91eae4960e5ff9bad1bf62e60282de3c0605ececa6a82f7d14cbe5305fd1983d', 2)");
+        $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('FCTxnID', '243002', 'Transaction','1001001')");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES('ISROLLBACK_ON_FRAUD_FAIL', 'true', 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208," . Constants::iAuthorizeRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (103,1001001, 5000,208,NULL," . Constants::iPAYMENT_ACCEPTED_STATE . ",'done',102,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (104,1001001, 5000,208," . Constants::iCaptureRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (105,1001001, 5000,208,NULL," . Constants::iPAYMENT_CAPTURED_STATE . ",'inprogress',102,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (106,1001001, 5000,208," . Constants::iRefundRequested . ",NULL,'pending',10099)");
+
+
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1001001,1001)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1001001,1009)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1001001,2000)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1001001,3100)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1001001,3111)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1001001,3115)");
+
+        $pspID2 = Constants::iDSB_PSP;
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (10, 10099, " . $pspID2 . ", '1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID2, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, " . Constants::iVOUCHER_CARD . ", $pspID2, false)"); //Authorize must be possible even with disabled cardac
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1, 'tst233', 100, 10099, 1100, 100, $pspID2, '" . $sCallbackURL . "', 2, '127.0.0.1', TRUE, 1, 1,2)");
+        $this->queryDB("INSERT INTO log.message_tbl (txnid, stateid) VALUES (1,1000)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO log.additional_data_tbl(name, value, type, externalid) VALUES('voucherid', 'voucherid', 'Transaction',1)");
+
+        $xml = $this->getCallbackDoc(1001001, 'tst233', $pspID, 2001);
+        $this->_httpClient->connect();
+        $this->bIgnoreErrors = TRUE;
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(202, $iStatus);
+
+        $retries = 0;
+        $aStates = [];
+        while ($retries++ <= 20)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+            $this->assertTrue(is_resource($res));
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = (int)$row["stateid"];
+            }
+            if (count($aStates) >= 16) { break; }
+            usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+        $this->assertContains(Constants::iPAYMENT_REFUNDED_STATE, $aStates);
 
         $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1  ORDER BY id ASC");
         $this->assertIsResource($res);

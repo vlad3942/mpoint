@@ -920,7 +920,7 @@ class Home extends General
 		    $aTxnId = array();
 		    if($sessionId !== 0)
             {
-                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId;
+                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId ." order by id asc ";
                 $RSTxnId = $this->getDBConn()->query($sql);
                 while ($RS = $this->getDBConn()->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
             }
@@ -928,6 +928,9 @@ class Home extends General
             $txnXml = "";
 		    $txnCnt = count($aTxnId);
             $aTxnData = [];
+
+            $objPaymentMethod = null;
+            $obj_TxnInfo = null;
             foreach ($aTxnId as $index => $txnid)
             {
 
@@ -1004,44 +1007,46 @@ class Home extends General
                             $sStatusMessagesXML .= '<status-message id = "'.$msg['STATEID'].'" position = "'.$msg['ROWNUM'] .'">' . $msg['NAME'] . '</status-message>';
                         }
 
-                        $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
-                        $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
-                        $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
-                        $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
-                        $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
-                        $cardMask = $obj_TxnInfo->getCardMask();
-                        $cardExpiry = $obj_TxnInfo->getCardExpiry();
-                        $acceptUrl = $obj_TxnInfo->getAcceptURL();
-                        $cancelUrl = $obj_TxnInfo->getCancelURL();
-                        $cssUrl = $obj_TxnInfo->getCSSURL();
-                        $logoUrl = $obj_TxnInfo->getLogoURL();
-                        $issuingBank = $obj_TxnInfo->getIssuingBankName();
-                        if($sessionId > 0 && $index === 0)
-                        {
-                            $xml .= $obj_TxnInfo->getPaymentSessionXML();
-                        }
-                        $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
-
-                        $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
-                        if($obj_TxnInfo->getConversationRate() !=1 )
-                        {
-                            $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
-                        }
-                        if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
-                        if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
-                        if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
-                        $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
-                        $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
-                        $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
-                        $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
-                        $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
-                        $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
-                        $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
-                        $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
-                        if (empty($isEmbeddedHpp) === false) { $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>'; }
-                        if (empty($isAutoRedirect) === false) { $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>'; }
-                        $xml .= '<createdDate>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //YYMMDD
-                        $xml .= '<createdTime>'. htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
+                         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+                         $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
+                         $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
+                         $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
+                         $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
+                         $cardMask = $obj_TxnInfo->getCardMask();
+                         $cardExpiry = $obj_TxnInfo->getCardExpiry();
+                         $acceptUrl = $obj_TxnInfo->getAcceptURL();
+                         $cancelUrl = $obj_TxnInfo->getCancelURL();
+                         $cssUrl = $obj_TxnInfo->getCSSURL();
+                         $logoUrl = $obj_TxnInfo->getLogoURL();
+                         $issuingBank = $obj_TxnInfo->getIssuingBankName();
+                         if($sessionId > 0 && $index === 0)
+                         {
+                             $xml .= $obj_TxnInfo->getPaymentSessionXML();
+                         }
+                         $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
+                         $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
+                         if($obj_TxnInfo->getConversationRate() !=1 )
+                         {
+                             $xml .= '<initialize_amount country-id="' . $obj_TxnInfo->getID() . '" currency="' . $obj_TxnInfo->getInitializedCurrencyConfig()->getID() . '" symbol="' . utf8_encode($obj_TxnInfo->getInitializedCurrencyConfig()->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getCode() . '" decimals = "' . $obj_TxnInfo->getInitializedCurrencyConfig()->getDecimals() . '">' . htmlspecialchars($obj_TxnInfo->getInitializedAmount(), ENT_NOQUOTES) . '</initialize_amount>';
+                         }
+                         if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
+                         if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
+                         if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
+                         $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
+                         $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
+                         if($obj_TxnInfo->getInstallmentValue() > 0) {
+                             $xml .= '<installment-value>' . $obj_TxnInfo->getInstallmentValue() . '</installment-value>';
+                         }
+                         $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
+                         $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
+                         $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
+                         $xml .= '<logo-url>' . htmlspecialchars($logoUrl, ENT_NOQUOTES) . '</logo-url>';
+                         $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
+                         $xml .= '<form-method>' . $paymentCompleteMethod . '</form-method>';
+                         if (empty($isEmbeddedHpp) === false) { $xml .= '<embedded-hpp>' . $isEmbeddedHpp . '</embedded-hpp>'; }
+                         if (empty($isAutoRedirect) === false) { $xml .= '<auto-redirect>' . $isAutoRedirect . '</auto-redirect>'; }
+            		     $xml .= '<createdDate>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //YYMMDD
+            		     $xml .= '<createdTime>'. htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
 
                         $xml .= '<status>' . $sStatusMessagesXML . '</status>';
                         $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
@@ -1086,7 +1091,7 @@ class Home extends General
                         }
 
                          $xml .= '</transaction>';
-                         if($index == 0) {
+                         if($sessionId == 0 && $index == 0) {
                              // this needs to be added only for parent txn
                              $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
                              // add linked transaction
@@ -1122,6 +1127,24 @@ class Home extends General
                 }
                 else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
             }
+            /**
+             * Below block is added as workaround and applicable for AGNI release
+             * CMP-5791
+             */
+            if($sessionId > 0) {
+                // this needs to be added only for parent txn
+                $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                // add linked transaction
+                if ($linkedTxnId !== null) {
+                    $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
+                    $xml .= $getLinkedTxns;
+                }
+                else
+                {
+                    $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(),$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                }
+            }
+            // Workaround End
         }
         catch (mPointException $e) { return $xml; }
         return $xml;

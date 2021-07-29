@@ -23,5 +23,14 @@
                          newDataType="varchar(20)"
         />
     </changeSet>
+    <changeSet author="Priya Alamwar"
+               id="2020-07-23-setup-v2.27-log-2">
+
+        <sqlFile dbms="postgresql"
+                 encoding="utf8"
+                 path="txnpassbook_partitions.sql"
+                 splitStatements="false"
+                 relativeToChangelogFile="true" />
+    </changeSet>
 
 </databaseChangeLog>

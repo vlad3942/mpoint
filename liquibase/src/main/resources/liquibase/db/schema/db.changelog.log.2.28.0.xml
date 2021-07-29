@@ -54,4 +54,15 @@
                          tableName="billing_summary_tbl"/>
     </changeSet>
 
+    <changeSet author="Priya Alamwar"
+               id="2021-07-19-setup-v2.28-log-3">
+
+        <modifyDataType  catalogName="Log"
+                         columnName="name"
+                         newDataType="varchar(50)"
+                         schemaName="Log"
+                         tableName="additional_data_tbl"/>
+
+    </changeSet>
+
 </databaseChangeLog>

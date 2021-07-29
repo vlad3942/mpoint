@@ -103,6 +103,8 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["pay"] = "/_test/simulators/wire-card/pay
 $aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/_test/simulators/wire-card/capture.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/_test/simulators/mobilepay/cancel.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/_test/simulators/mobilepay/refund.php";
+unset($aHTTP_CONN_INFO["wire-card"]["paths"]["status"]);
 
 /**
  * Connection info for connecting to 2C2P ALC
