@@ -903,7 +903,6 @@ class AuthorizeAPIValidationTest extends baseAPITest
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        trigger_error($sReplyBody);
         $this->assertEquals(403, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="86">Card has been blocked</status></root>', $sReplyBody);
 
@@ -913,7 +912,6 @@ class AuthorizeAPIValidationTest extends baseAPITest
         $aStates = array();
         while ($row = pg_fetch_assoc($res) )
         {
-            trigger_error($row['stateid']);
             $aStates[] = $row["stateid"];
         }
 
