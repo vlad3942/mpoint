@@ -2189,9 +2189,6 @@ class General
             case 4:
                 $msg = 'Issuer Identification Number is blocked';
                 break;
-            case 11:
-                $msg = 'Card has been whitelisted';
-
         }
         return $msg;
     }
