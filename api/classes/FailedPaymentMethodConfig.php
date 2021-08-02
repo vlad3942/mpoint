@@ -27,36 +27,53 @@ class FailedPaymentMethodConfig
      */
     private $_iCardCategoryId;
     /**
-     * Payment statu ID for the transaction
+     * Payment status IDs for the transaction
      *
-     * @var integer
+     * @var array
      */
-    private $_iTransactionStateId;
+    private $_aTransactionStateId;
+
+    /**
+     * ID of transaction
+     *
+     * @var int
+     */
+    private $_iTransactionID;
 
     /**
      * Default constructor
      *
      * @param integer $cardId		The unique ID for the Payment Method (Card)
      * @param integer $paymentType	The unique ID for the psp category
-     * @param integer $stateid      The unique ID for transaction status
+     * @param array $aStateid      The unique ID for transaction status
+     * @param integer $iTransactionID      The unique ID for transaction status
      */
-	public function __construct($cardId, $paymentType, $stateid)
+	public function __construct($cardId, $paymentType, $aStateid, $iTransactionID)
 	{
 		$this->_iCardID = $cardId;
         $this->_iCardCategoryId = $paymentType;
-        $this->_iTransactionStateId = $stateid;
+        $this->_aTransactionStateId = $aStateid;
+        $this->_iTransactionID = $iTransactionID;
 	}
 
     public function getCardID() { return $this->_iCardID; }
     public function getSystemType() { return $this->_iCardCategoryId; }
-    public function getPaymentState() { return $this->_iTransactionStateId; }
+    public function getPaymentState() { return $this->_aTransactionStateId; }
+    public function getTransactionID() { return $this->_iTransactionID; }
 
 
 	public function toAttributeLessXML()
 	{
         $xml = '<retry_attempt>';
+        $xml .= '<transaction_id>'. $this->getTransactionID() .'</transaction_id>';
         $xml .= '<card_id>'. $this->getCardID() .'</card_id>';
-        $xml .= '<transaction_state_id>'. $this->getPaymentState() .'</transaction_state_id>';
+        $xml .= '<payment_states>';
+        foreach ( $this->getPaymentState()  as $iStateID )
+        {
+            $xml .= '<payment_state>'.$iStateID . '</payment_state>';
+
+        }
+        $xml .= '</payment_states>';
         $xml .= '<card_category_id>'. $this->getSystemType() .'</card_category_id>';
         $xml .= '</retry_attempt>';
         return $xml;
@@ -73,22 +90,30 @@ class FailedPaymentMethodConfig
     public static function produceFailedTxnInfoFromSession(RDB $obj, $sessionId, $clientId)
     {
         $aObj_Configurations = array();
-        if($obj instanceof RDB && $sessionId > 0 && $clientId > 0) {
-            $sql = "SELECT Txn.cardid, C.paymenttype, p2.st AS stateid
+        if($obj instanceof RDB && $sessionId > 0 && $clientId > 0)
+        {
+            $sql = "SELECT Txn.id as txnid,Txn.cardid, C.paymenttype, txnpass.performedopt as stateid,txnpass.status AS status,msg.stateid as fraudstateId
                 FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
-                INNER JOIN Log" . sSCHEMA_POSTFIX . ".Session_Tbl S ON Txn.sessionid = S.id AND S.stateid != " . Constants::iSESSION_COMPLETED . ".
-                INNER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				INNER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl C ON Txn.cardid = C.id
-				INNER JOIN (select transactionid,performedopt as st, status from log.txnpassbook_tbl where clientid = $clientId) p2 ON (Txn.id = p2.transactionid)
-				WHERE Txn.sessionid = " . $sessionId . " AND p2.st = ".Constants::iPAYMENT_ACCEPTED_STATE ." AND p2.status = 'error'";
+				INNER JOIN  log" . sSCHEMA_POSTFIX . ".txnpassbook_tbl txnpass ON (Txn.id = txnpass.transactionid and txnpass.clientid=  " . $clientId . " )
+				LEFT OUTER JOIN  log" . sSCHEMA_POSTFIX . ".MESSAGE_TBL msg ON (Txn.id = msg.txnid and msg.stateid in (" . Constants::iPRE_FRAUD_CHECK_REJECTED_STATE . "," . Constants::iPOST_FRAUD_CHECK_REJECTED_STATE . "," . Constants::iPAYMENT_REJECTED_FRAUD_SUSPICION_STATE . "," . Constants::iPAYMENT_REJECTED_FRAUD_CARD_BLOCKED_STATE . "," . Constants::iPAYMENT_REJECTED_FRAUD_CARD_STOLEN_STATE . "))
+				WHERE Txn.sessionid = " . $sessionId . " AND txnpass.performedopt = " . Constants::iPAYMENT_ACCEPTED_STATE . "  and txn.clientid = " . $clientId;
+
 
             $res = $obj->query($sql);
-            while ($RS = $obj->fetchName($res)) {
-                if (empty($RS["CARDID"]) === false && empty($RS["PAYMENTTYPE"]) === false && empty($RS["STATEID"]) === false) {
-                    $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $RS["STATEID"]);
+            while ($RS = $obj->fetchName($res))
+            {
+                if (empty($RS["CARDID"]) === false && empty($RS["PAYMENTTYPE"]) === false)
+                {
+                    $aStates = array();
+                    if (empty($RS["STATEID"]) === false && $RS["STATUS"] === Constants::sPassbookStatusError) { array_push($aStates, $RS["STATEID"]); }
+                    if (empty($RS["FRAUDSTATEID"]) === false) { array_push($aStates, $RS["FRAUDSTATEID"]); }
+                    if(empty($aStates) === false) { $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $aStates,$RS["TXNID"]); }
                 }
             }
+
         }
+
         return $aObj_Configurations;
     }
 
