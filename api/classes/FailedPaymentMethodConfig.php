@@ -108,7 +108,7 @@ class FailedPaymentMethodConfig
                     $aStates = array();
                     if (empty($RS["STATEID"]) === false && $RS["STATUS"] === Constants::sPassbookStatusError) { array_push($aStates, $RS["STATEID"]); }
                     if (empty($RS["FRAUDSTATEID"]) === false) { array_push($aStates, $RS["FRAUDSTATEID"]); }
-                       $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $aStates,$RS["TXNID"]);
+                    if(empty($aStates) === false) { $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $aStates,$RS["TXNID"]); }
                 }
             }
 
