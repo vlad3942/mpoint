@@ -911,12 +911,14 @@ class Home extends General
 		    $aTxnId = array();
 		    if($sessionId !== 0)
             {
-                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId;
+                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId ." order by id asc ";
                 $RSTxnId = $this->getDBConn()->query($sql);
                 while ($RS = $this->getDBConn()->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
             }
 		    else { $aTxnId[0] = $txnId; }
 
+            $objPaymentMethod = null;
+            $obj_TxnInfo = null;
             foreach ($aTxnId as $index => $txnid)
             {
 
@@ -1033,6 +1035,9 @@ class Home extends General
                          if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
                          $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
                          $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
+                         if($obj_TxnInfo->getInstallmentValue() > 0) {
+                             $xml .= '<installment-value>' . $obj_TxnInfo->getInstallmentValue() . '</installment-value>';
+                         }
                          $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
                          $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
                          $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
@@ -1122,6 +1127,24 @@ class Home extends General
             		}
             		else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
             }
+            /**
+             * Below block is added as workaround and applicable for AGNI release
+             * CMP-5791
+             */
+            if($sessionId > 0) {
+                // this needs to be added only for parent txn
+                $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                // add linked transaction
+                if ($linkedTxnId !== null) {
+                    $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
+                    $xml .= $getLinkedTxns;
+                }
+                else
+                {
+                    $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(),$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                }
+            }
+            // Workaround End
         }
         catch (mPointException $e) { return $xml; }
         return $xml;
