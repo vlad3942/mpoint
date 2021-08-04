@@ -127,7 +127,7 @@ class OfflineCallbackAPITest extends CallbackAPITest
     {
         $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_REQUEST_EXPIRED_STATE, 640, 1000);
 
-        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 640 and status= 'error'" );
+        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 640 and status= 'inprogress'" );
 
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
