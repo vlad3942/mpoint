@@ -1808,8 +1808,7 @@ class General
                                    FROM WT1
                                    WHERE stateid in (
                                                     '.Constants::iPAYMENT_REJECTED_STATE.',
-                                                    '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
-                                                    '.Constants::iPAYMENT_REQUEST_EXPIRED_STATE.', 
+                                                    '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.' 
                                                     '.$stateId.'
                                                 )) s
                              where s.rank = 1
