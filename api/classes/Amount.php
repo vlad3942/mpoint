@@ -54,7 +54,6 @@ class Amount implements JsonSerializable
         }
     }
 
-
     /**
      * @inheritDoc
      */
