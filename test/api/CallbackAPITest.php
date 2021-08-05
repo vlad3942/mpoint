@@ -377,7 +377,7 @@ class CallbackAPITest extends baseAPITest
             }
             sleep(2);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-		$this->assertEquals(12, $affectedRows);
+		$this->assertEquals(6, $affectedRows);
     }
 
     public function successfulPartialCapture($pspID,$iTransStatus)
