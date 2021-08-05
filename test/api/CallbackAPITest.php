@@ -372,7 +372,7 @@ class CallbackAPITest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                $affectedRows++;
             }
-            if ($affectedRows >= 12) {
+            if ($affectedRows >= 6) {
                 break;
             }
             sleep(2);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
