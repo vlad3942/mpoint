@@ -84,9 +84,9 @@ class OfflineCallbackAPITest extends CallbackAPITest
     {
         $this->setUpPrerequisite( Constants::iCEBUPAYMENTCENTER_APM, Constants::iCEBUPAYMENTCENTEROFFLINE,Constants::iPAYMENT_REQUEST_EXPIRED_STATE);
 
-        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001014 and status= 'error' and performedopt=2000" );
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001014 and status= 'inprogress' and performedopt=2000" );
         $this->assertIsResource($res);
-        $this->assertEquals(0, pg_num_rows($res));
+        $this->assertEquals(1, pg_num_rows($res));
     }
 
     public function testPaymentPendingCallback()
