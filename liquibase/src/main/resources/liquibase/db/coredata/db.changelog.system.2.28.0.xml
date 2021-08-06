@@ -53,4 +53,103 @@
         </insert>
     </changeSet>
 
+
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-1">
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="53"/>
+            <column name="name" value="PayU"/>
+            <column name="system_type" value="4"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-2">
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_tbl">
+            <column name="currencyid" value="986"/>
+            <column name="pspid" value="53"/>
+            <column name="name" value="BRL"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCurrency_tbl">
+            <column name="currencyid" value="170"/>
+            <column name="pspid" value="53"/>
+            <column name="name" value="COP"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-3">
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="53"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="53"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-4">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCard_tbl">
+            <column name="cardid" value="97"/>
+            <column name="pspid" value="53"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCard_tbl">
+            <column name="cardid" value="98"/>
+            <column name="pspid" value="53"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCard_tbl">
+            <column name="cardid" value="99"/>
+            <column name="pspid" value="53"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="PSPCard_tbl">
+            <column name="cardid" value="100"/>
+            <column name="pspid" value="53"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-5">
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="53"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="53"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
+
 </databaseChangeLog>
