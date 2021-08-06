@@ -260,14 +260,16 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		{
 			$aStates[] = $row["stateid"];
 		}
+		//trigger_error($aStates);
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
+		$this->assertTrue(in_array(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_ACCEPTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONSTRUCTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONNECTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_ACCEPTED_STATE, $aStates));
+        
 	}
 
 	public function testIINOpen4DigitsInputNoRules()
@@ -311,12 +313,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
+        $this->assertTrue(in_array(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_ACCEPTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONSTRUCTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONNECTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_ACCEPTED_STATE, $aStates));
 	}
 
 	public function testIINOpen6DigitsInputNoRules()
@@ -360,12 +362,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
+		$this->assertTrue(in_array(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_ACCEPTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONSTRUCTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONNECTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_ACCEPTED_STATE, $aStates));
 	}
 
 	public function testIINOpen6DigitsInput4DigitRule()
@@ -410,12 +412,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
+        $this->assertTrue(in_array(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iPAYMENT_ACCEPTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONSTRUCTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_CONNECTED_STATE, $aStates));
+        $this->assertTrue(in_array(Constants::iCB_ACCEPTED_STATE, $aStates));
 	}
 
 	public function testIINBlocked6DigitsInput6DigitRule()
@@ -505,12 +507,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
+		$this->assertTrue(in_array(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iPAYMENT_ACCEPTED_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iCB_CONSTRUCTED_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iCB_CONNECTED_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iCB_ACCEPTED_STATE, $aStates));
 	}
 
 	public function testIINOpen6DigitsInput6DigitRule()
@@ -555,12 +557,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
+		$this->assertTrue(in_array(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iPAYMENT_ACCEPTED_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iCB_CONSTRUCTED_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iCB_CONNECTED_STATE, $aStates));
+		$this->assertTrue(in_array(Constants::iCB_ACCEPTED_STATE, $aStates));
 	}
 
    public function testInvalidTransactionAmount()
