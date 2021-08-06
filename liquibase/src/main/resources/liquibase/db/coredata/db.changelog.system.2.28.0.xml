@@ -77,13 +77,6 @@
         <insert catalogName="system"
                 schemaName="system"
                 tableName="PSPCard_tbl">
-            <column name="cardid" value="60"/>
-            <column name="pspid" value="53"/>
-        </insert>
-
-        <insert catalogName="system"
-                schemaName="system"
-                tableName="PSPCard_tbl">
             <column name="cardid" value="97"/>
             <column name="pspid" value="53"/>
         </insert>
