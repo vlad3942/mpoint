@@ -127,14 +127,14 @@ abstract class AuthorizeAPITest extends baseAPITest
 
 		$s = 0;
 		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
-		if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertEquals(Constants::iCARD_PURCHASE_TYPE, $aStates[$s++]); }
-		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[$s++]);
+		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
+		if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertContains(Constants::iCARD_PURCHASE_TYPE, $aStates); }
+		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
 		if ($pspID == Constants::iDIBS_PSP)
 		{
-			$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
-			$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
-			$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
+			$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+			$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+			$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
 		}
 
 		/* Test that euaid has been set on txn */
@@ -198,14 +198,14 @@ abstract class AuthorizeAPITest extends baseAPITest
 
         $s = 0;
         //TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
-        if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertEquals(Constants::iCARD_PURCHASE_TYPE, $aStates[$s++]); }
-        $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[$s++]);
+        $this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
+        if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertContains(Constants::iCARD_PURCHASE_TYPE, $aStates); }
+        $this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
         if ($pspID == Constants::iDIBS_PSP)
         {
-            $this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
-            $this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
-            $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
+            $this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+            $this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+            $this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
         }
 
         /* Test that euaid has been set on txn */
@@ -263,14 +263,14 @@ abstract class AuthorizeAPITest extends baseAPITest
 
         $s = 0;
         //TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
-        if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertEquals(Constants::iCARD_PURCHASE_TYPE, $aStates[$s++]); }
-        $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[$s++]);
+        $this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
+        if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertContains(Constants::iCARD_PURCHASE_TYPE, $aStates); }
+        $this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
         if ($pspID == Constants::iDIBS_PSP)
         {
-            $this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
-            $this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
-            $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
+            $this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+            $this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+            $this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
         }
 
         /* Test that euaid has been set on txn */
@@ -331,31 +331,31 @@ abstract class AuthorizeAPITest extends baseAPITest
 
 		$s = 0;
 		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
-		if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertEquals(Constants::iCARD_PURCHASE_TYPE, $aStates[$s++]); }
-		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[$s++]);
+		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
+		if ($pspID == Constants::iNETAXEPT_PSP) { $this->assertContains(Constants::iCARD_PURCHASE_TYPE, $aStates); }
+		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
 		if ($pspID == Constants::iDIBS_PSP)
 		{
-			$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
-			$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
-			$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
+			$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+			$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+			$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
 		}
 		if(env('APP_ENV') === 'local')
         { //On local Google Pub is not setup so callback will fail
-            $this->assertEquals(Constants::iCB_REJECTED_STATE, $aStates[$s++]);
+            $this->assertContains(Constants::iCB_REJECTED_STATE, $aStates);
         }
 		else
         {
-            $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
+            $this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
         }
 
-		$this->assertEquals(Constants::iPAYMENT_CAPTURED_STATE, $aStates[$s++]);
+		$this->assertContains(Constants::iPAYMENT_CAPTURED_STATE, $aStates);
 
 		if ($pspID == Constants::iDIBS_PSP)
 		{
-			$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
-			$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
-			$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
+			$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+			$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+			$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
 		}
 
 		$this->assertContains("Message: CAPTURE APPROVED BY PSP ". $pspID, parent::getErrorLogContent() );
