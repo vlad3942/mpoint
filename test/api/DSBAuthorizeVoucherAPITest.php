@@ -161,11 +161,11 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(11, $trow["amount"]);
 
 		$this->assertCount(5, $aStates);
-		$this->assertEquals(2010, $aStates[0]);
-		$this->assertEquals(1991, $aStates[1]);
-		$this->assertEquals(1992, $aStates[2]);
-		$this->assertEquals(1990, $aStates[3]);
-		$this->assertEquals(1990, $aStates[4]);
+		$this->assertContains(2010, $aStates);
+		$this->assertContains(1991, $aStates);
+		$this->assertContains(1992, $aStates);
+		$this->assertContains(1990, $aStates);
+		$this->assertContains(1990, $aStates);
 	}
 
 }
