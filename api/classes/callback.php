@@ -483,7 +483,7 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
-
+        $isMessagePublished = false;
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
 			$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 			$sEmail = $this->_obj_TxnInfo->getEMail();
@@ -621,25 +621,38 @@ abstract class Callback extends EndUserAccount
                 }
                 $sBody .= "&pos=" .$this->_obj_TxnInfo->getCountryConfig()->getID();
                 $sBody .= "&ip_address=" .$this->_obj_TxnInfo->getIP();
-
                 $callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
-                if ($callbackMessageRequest !== NULL) {
-                    $filter = ['status_code' => (string)$sid];
-                    if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
-                        $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
-                        if ($kpiUsed != false) {
-                            $filter['is_volume_kpi_used'] = 'true';
-                        }
-                    }
-                    $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
-                }
-
 				if ($sBody !== "") {
+                    // Publish message before callback
+                    if ($callbackMessageRequest !== NULL) {
+                        $filter = ['status_code' => (string)$sid];
+                        if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
+                            $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
+                            if ($kpiUsed != false) {
+                                $filter['is_volume_kpi_used'] = 'true';
+                            }
+                        }
+                        $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
+                        $isMessagePublished = true;
+                    }
 					/* ----- Construct Body End ----- */
 					$this->performCallback($sBody, $obj_SurePay, 0, $sid);
 				}
 			}
 		}
+
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
+		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
+            $filter = ['status_code' => (string)$sid];
+            if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
+                $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
+                if ($kpiUsed != false) {
+                    $filter['is_volume_kpi_used'] = 'true';
+                }
+            }
+            $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
+        }
+
 	}
 
 	/*
@@ -1094,6 +1107,7 @@ abstract class Callback extends EndUserAccount
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
 		$isStateUpdated = $sessionObj->updateState($state);
+        $isMessagePublished = false;
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
 			// check legacy callback flow to follow or cpds callback flow
@@ -1278,24 +1292,32 @@ abstract class Callback extends EndUserAccount
 					}
 
 					$sBody .= '&' . http_build_query($aTransactionData);
-
                     $callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
-                    if ($callbackMessageRequest !== NULL) {
-                        $filter = ['status_code' => (string) $sid];
-                        $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
-                    }
 
 					if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED) {
 						$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
 						if ($iSessionStateValidation !== 1) {
 							$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
 							if ($sessionObj->getPendingAmount() === 0 || $sessionObj->getStateId() === Constants::iSESSION_EXPIRED  || $sessionObj->getStateId() === Constants::iSESSION_FAILED) {
-								$this->performCallback($sBody, $obj_SurePay);
+                                // Publish message before callback
+							    if ($callbackMessageRequest !== NULL) {
+                                    $filter = ['status_code' => (string) $sid];
+                                    $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
+                                    $isMessagePublished = true;
+                                }
+                                $this->performCallback($sBody, $obj_SurePay);
 							}
 						}
 					}
 				}
 			}
+		}
+
+		// Publish message if not already
+		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
+		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
+            $filter = ['status_code' => (string) $sid];
+			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
 		}
     }
 
