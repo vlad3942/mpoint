@@ -262,12 +262,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
-		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
-		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
-		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates);
-		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates);
-		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates);
+		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
+		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
+		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
+		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
 	}
 
 	public function testIINOpen4DigitsInputNoRules()
@@ -311,12 +311,12 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		}
 
 		$this->assertEquals(7, count($aStates) );
-		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
-		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
-		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
-		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
-		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
-		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+		$this->assertContains(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates);
+		$this->assertContains(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates);
+		$this->assertContains(Constants::iPAYMENT_ACCEPTED_STATE, $aStates);
+		$this->assertContains(Constants::iCB_CONSTRUCTED_STATE, $aStates);
+		$this->assertContains(Constants::iCB_CONNECTED_STATE, $aStates);
+		$this->assertContains(Constants::iCB_ACCEPTED_STATE, $aStates);
 	}
 
 	public function testIINOpen6DigitsInputNoRules()
