@@ -61,7 +61,7 @@ class RoutingServiceResponse
                 $aObjRoute->routes->route[$i]->preference = (int)$aObj_XML->routes->route[$i]->preference;
             }
             $isKPIUsed = false;
-            if(empty($aObj_XML->kpi_used) === false && $aObj_XML->kpi_used === "true")
+            if(empty($aObj_XML->kpi_used) === false && $aObj_XML->kpi_used == "true")
             {
                 $isKPIUsed = true;
             }
