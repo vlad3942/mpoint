@@ -364,6 +364,10 @@ class Card implements JsonSerializable
     public function jsonSerialize()
     {
         $response = ['id' => $this->getCardTypeId()];
+        if(empty($this->sCardName) === false)
+        {
+            $response['name'] = $this->sCardName;
+        }
         if(empty($this->sMaskedCardNumber) === false)
         {
             $response['masked_card_number'] = $this->sMaskedCardNumber;
