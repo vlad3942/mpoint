@@ -132,6 +132,7 @@ abstract class AuthorizeAPITest extends baseAPITest
         $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[$s++]);
         if ($pspID == Constants::iDIBS_PSP)
         {
+            $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
             $this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
             $this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
             $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
@@ -268,6 +269,7 @@ abstract class AuthorizeAPITest extends baseAPITest
         $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[$s++]);
         if ($pspID == Constants::iDIBS_PSP)
         {
+            $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
             $this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[$s++]);
             $this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[$s++]);
             $this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[$s++]);
