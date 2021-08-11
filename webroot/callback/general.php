@@ -519,7 +519,6 @@ try
                                 break;
                             case Constants::iPAYMENT_REJECTED_STATE:
                             case Constants::iPAYMENT_REQUEST_CANCELLED_STATE:
-                            case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
                                 $state = Constants::iPAYMENT_ACCEPTED_STATE;
                                 $status = Constants::sPassbookStatusError;
                                 break;
