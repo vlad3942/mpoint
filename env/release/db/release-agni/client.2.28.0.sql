@@ -36,12 +36,17 @@ isCryptogrm::={trim.(card,info-3d-secure,cryptogram)}', id, 'merchant' from clie
 ---CMP-5454,CMP-5795 ---
 
 --Sarvesh (Scripts for OD)
+
 create table log.temp_txnpassbook_tbl_10018_default
 as select * from log.txnpassbook_tbl_10018_default;
 
 delete from log.txnpassbook_tbl_10018_default;
 
 Commit;
+
+BEGIN;
+LOCK TABLE ONLY log.txnpassbook_tbl_10018  IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl_10018_default  IN EXCLUSIVE MODE NOWAIT;
 
 select * from log.fn_generate_txnpassbook_partitions('log.txnpassbook_tbl',10018,'-1',30000001,50000000,1000000);
 select * from log.fn_add_primary_key_nested_partitions('log.txnpassbook_tbl',10018,30000001,50000000,1000000);
