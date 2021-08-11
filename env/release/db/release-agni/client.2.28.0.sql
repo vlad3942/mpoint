@@ -45,8 +45,8 @@ delete from log.txnpassbook_tbl_10018_default;
 Commit;
 
 BEGIN;
-LOCK TABLE ONLY log.txnpassbook_tbl_10018  IN EXCLUSIVE MODE NOWAIT;
-LOCK TABLE ONLY log.txnpassbook_tbl_10018_default  IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl_default IN EXCLUSIVE MODE NOWAIT;
 
 select * from log.fn_generate_txnpassbook_partitions('log.txnpassbook_tbl',10018,'-1',30000001,50000000,1000000);
 select * from log.fn_add_primary_key_nested_partitions('log.txnpassbook_tbl',10018,30000001,50000000,1000000);
@@ -72,6 +72,10 @@ delete from log.txnpassbook_tbl_10020_default;
 
 COMMIT;
 
+BEGIN;
+LOCK TABLE ONLY log.txnpassbook_tbl IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl_default IN EXCLUSIVE MODE NOWAIT;
+
 select * from log.fn_generate_txnpassbook_partitions('log.txnpassbook_tbl',10020,'-1',30000001,50000000,1000000);
 select * from log.fn_add_primary_key_nested_partitions('log.txnpassbook_tbl',10020,30000001,50000000,1000000);
 select * from log.fn_generate_txnpassbook_indexes_nested_partitions('log.txnpassbook_tbl',10020,30000001,50000000,1000000);
@@ -95,6 +99,10 @@ as select * from log.txnpassbook_tbl_default where clientid=10077;
 delete from log.txnpassbook_tbl_default where clientid=10077;
 
 Commit;
+
+BEGIN;
+LOCK TABLE ONLY log.txnpassbook_tbl IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl_default IN EXCLUSIVE MODE NOWAIT;
 
 select * from log.fn_generate_txnpassbook_partitions('log.txnpassbook_tbl',10077,'Y',1,50000000,1000000);
 select * from log.fn_add_primary_key_nested_partitions('log.txnpassbook_tbl',10077,1,50000000,1000000);
