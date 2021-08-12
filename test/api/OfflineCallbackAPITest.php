@@ -84,7 +84,7 @@ class OfflineCallbackAPITest extends CallbackAPITest
     {
         $this->setUpPrerequisite( Constants::iCEBUPAYMENTCENTER_APM, Constants::iCEBUPAYMENTCENTEROFFLINE,Constants::iPAYMENT_REQUEST_EXPIRED_STATE);
 
-        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001014 and status= 'error' and performedopt=2000" );
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001014 and status= 'inprogress' and performedopt=2000" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
     }
@@ -104,9 +104,9 @@ class OfflineCallbackAPITest extends CallbackAPITest
 
     public function testCallbackWithCurrencyChange()
     {
-        $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_ACCEPTED_STATE, 840, 1000);
+        $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_ACCEPTED_STATE, 640, 1000);
 
-        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 840 and status= 'done'" );
+        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 640 and status= 'done'" );
 
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
@@ -115,9 +115,9 @@ class OfflineCallbackAPITest extends CallbackAPITest
 
     public function testCancelledCallbackWithCurrencyChange()
     {
-        $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_REQUEST_CANCELLED_STATE, 840, 1000);
+        $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_REQUEST_CANCELLED_STATE, 640, 1000);
 
-        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 840 and status= 'error'" );
+        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 640 and status= 'error'" );
 
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
@@ -125,9 +125,9 @@ class OfflineCallbackAPITest extends CallbackAPITest
 
     public function testExpiredCallbackWithCurrencyChange()
     {
-        $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_REQUEST_EXPIRED_STATE, 840, 1000);
+        $this->setUpPrerequisite( Constants::iDragonPay_AGGREGATOR, Constants::iDRAGONPAYOFFLINE,Constants::iPAYMENT_REQUEST_EXPIRED_STATE, 640, 1000);
 
-        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 840 and status= 'error'" );
+        $res =  $this->queryDB("SELECT * FROM Log.txnpassbook_tbl where transactionid= 1001014 and performedopt=2000 and amount=1000 and currencyid = 640 and status= 'inprogress'" );
 
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
