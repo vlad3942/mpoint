@@ -64,6 +64,42 @@ select * from log.temp_txnpassbook_tbl_10018_default;
 Commit;
 
 
+--## TEST---------------------------------
+-- Create new punlication for test
+CREATE PUBLICATION mpoint_test FOR table log.txnpassbook_tbl_10018_36000001_37000001;
+-- Drop after test completes
+DROP PUBLICATION mpoint_test;
+-- Add table back to origional publication if test goes fine.
+ALTER PUBLICATION mpoint_log_pub ADD table log.txnpassbook_tbl_10018_36000001_37000001;
+
+--## Fallback option-------------------
+BEGIN
+LOCK TABLE ONLY log.txnpassbook_tbl IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl_default IN EXCLUSIVE MODE NOWAIT;
+
+create table log.temp_txnpassbook_tbl_10018_36000001_37000001
+as select * from log.txnpassbook_tbl_10018_36000001_37000001;
+
+drop table log.txnpassbook_tbl_10018_36000001_37000001;
+
+Commit;
+
+BEGIN;
+LOCK TABLE ONLY log.txnpassbook_tbl IN EXCLUSIVE MODE NOWAIT;
+LOCK TABLE ONLY log.txnpassbook_tbl_default IN EXCLUSIVE MODE NOWAIT;37000001
+
+select * from log.fn_generate_txnpassbook_partitions('log.txnpassbook_tbl',10018,'-1',36000001,37000000,1000000);
+select * from log.fn_add_primary_key_nested_partitions('log.txnpassbook_tbl',10018,36000001,37000000,1000000);
+select * from log.fn_generate_txnpassbook_indexes_nested_partitions('log.txnpassbook_tbl',10018,36000001,37000000,1000000);
+select * from log.fn_add_txnpassbook_triggers('log.txnpassbook_tbl',10018,'Y',36000001,37000000,1000000);
+select * from log.fn_generate_txnpassbook_publications('log.txnpassbook_tbl',10018,'Y',36000001,37000000,1000000);
+select * from log.fn_add_txnpassbook_permissions('log.txnpassbook_tbl',10018,'Y',36000001,37000000,1000000);
+select * from log.fn_add_txnpassbook_permissions_repuser('log.txnpassbook_tbl',10018,'Y',36000001,37000000,1000000);
+
+Commit;
+--------------------------------------
+----
+
 ----Sarvesh (Scripts for PAL)
 create table log.temp_txnpassbook_tbl_10020_default
 as select * from log.txnpassbook_tbl_10020_default;
