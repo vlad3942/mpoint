@@ -53,6 +53,13 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-1">
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="system_type" value="4" />
+            <where>id = 53</where>
+        </update>
+    </changeSet>
+
     <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-2">
         <insert catalogName="system"
                 schemaName="system"
@@ -72,7 +79,7 @@
 
     </changeSet>
 
-    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-4">
+    <changeSet author="Ramesh Tiwari" id="2021-08-06-setup-v2.28-system-CMP-5806-3">
 
         <insert catalogName="system"
                 schemaName="system"
