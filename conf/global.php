@@ -890,6 +890,7 @@ $aHTTP_CONN_INFO["payu"]["paths"]["initialize"] = "/mpoint/aggregator/payu/initi
 $aHTTP_CONN_INFO["payu"]["paths"]["auth"] = "/mpoint/aggregator/payu/authorize-payment";
 $aHTTP_CONN_INFO["payu"]["paths"]["refund"] = "/mpoint/aggregator/payu/refund";
 $aHTTP_CONN_INFO["payu"]["paths"]["callback"] = "/mpoint/aggregator/payu/callback";
+$aHTTP_CONN_INFO["payu"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/payu/get-payment-methods";
 
 /**
  * Connection info for connecting to Cielo
