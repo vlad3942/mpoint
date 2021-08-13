@@ -1719,30 +1719,6 @@ class General
         return -1;
     }
 
-    /**
-     * Finds if txn under session has logged 3015,3115 state means fraud detected
-     * returned value will be used to disable FOP.
-     * temporary implementation later will be moved to CRS
-     * @param \RDB $obj_DB
-     * @param int  $pspId
-     *
-     * @return int
-     */
-    public function findFraudDetected(int $sessionId) : int
-    {
-
-        $sql = "SELECT t.cardid FROM LOG".sSCHEMA_POSTFIX.".transaction_tbl t INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL m on t.id = m.txnid
-                WHERE m.stateid in (".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.")
-                AND t.sessionid = ".$sessionId.";
-				";
-        $res = $this->getDBConn()->getName($sql);
-        if (is_array($res) === true)
-        {
-            //Returning hardcoded paymentmethod because dcc will be offered only on card and later FOP disable on fraud deteccted functionality will be moved to crs
-           return Constants::iPAYMENT_TYPE_CARD;
-        }
-        return -1;
-    }
 
     // Get PSP Config Object
     public static function producePSPConfigObject(RDB $oDB, TxnInfo $oTI, ?int $pspID, bool $bForceLegacy = false): ?PSPConfig

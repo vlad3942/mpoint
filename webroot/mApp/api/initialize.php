@@ -541,12 +541,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
 
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                                $fraudDettectedForPMType = -1;
-                                if (empty($sessionId) === false)
-                                {
-                                    $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
-                                    $fraudDettectedForPMType = $obj_mPoint->findFraudDetected($sessionId);
-                                }
 
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
                                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
@@ -557,7 +551,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     if ($obj_PaymentMethodResponse instanceof RoutingServiceResponse) {
                                         $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                                        $obj_PM = PaymentMethod::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods,$fraudDettectedForPMType);
+                                        $obj_PM = PaymentMethod::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
                                         ksort($obj_PM, 1);
                                         $obj_XML = '<cards>';
                                         foreach ($obj_PM as $key => $value) {
