@@ -541,7 +541,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
 
                                 $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-
+                                if (empty($sessionId) === false)
+                                {
+                                    $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+                                }
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
                                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
