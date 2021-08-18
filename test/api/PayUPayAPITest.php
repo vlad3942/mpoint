@@ -12,17 +12,17 @@ require_once __DIR__ . '/PayAPITest.php';
 
 class PayUPayAPITest extends PayAPITest
 {
-    public function testSuccessfulPayUPay()
+    public function estSuccessfulPayUPay()
     {
         parent::testSuccessfulPay(Constants::iPAYU_PSP, 98, 4, 7, 405,170 );
     }
 
-    public function testSuccessfulPayUPaymentPending()
+    public function estSuccessfulPayUPaymentPending()
     {
         parent::testSuccessfulPay(Constants::iPAYU_PSP, 98, 4, 7, 403,986, 1041 );
     }
 
-    public function testSuccessfulPSEPay()
+    public function estSuccessfulPSEPay()
     {
         parent::testSuccessfulPay(Constants::iPAYU_PSP, 97, 4, 7, 405,170);
     }

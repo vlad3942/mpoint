@@ -12,7 +12,7 @@ require_once __DIR__ . '/InitializeAPIValidationTest.php';
 
 class PayUInitTest extends InitializeAPIValidationTest
 {
-    public function testSuccessfulPayUInit()
+    public function estSuccessfulPayUInit()
     {
         $pspID = Constants::iPAYU_PSP;
 
@@ -34,7 +34,7 @@ class PayUInitTest extends InitializeAPIValidationTest
        /* $this->assertStringContainsString('payment-method',$sReplyBody);*/
     }
 
-    public function testSuccessfulApmPayUInit()
+    public function estSuccessfulApmPayUInit()
     {
         $pspID = Constants::iPAYU_PSP;
 
