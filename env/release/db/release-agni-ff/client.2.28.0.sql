@@ -1,44 +1,4 @@
-INSERT INTO client.product_tbl (clientid, producttypeid, code, description)
-values  (10101, 200, 'ASST', 'TRAVEL ASSISTANCE'),
-        (10101, 200, 'AVIH', 'PET IN HOLD'),
-        (10101, 200, 'BBAG', '2ND CHECKED BAG 23KG'),
-        (10101, 200, 'BLND', 'BLIND PASSENGER INFORMATION'),
-        (10101, 200, 'BSCT', 'BASSINET / BABY COT REQUEST'),
-        (10101, 200, 'CBAG', '3RD CHECKED BAG OR MORE 23KG'),
-        (10101, 200, 'DEAF', 'DEAF PASSENGER INFORMATION'),
-        (10101, 200, 'DEPA', 'ACCOMPANIED DEPORTEE INFORMATION'),
-        (10101, 200, 'DEPU', 'DEPORTEE - ACCOMPANIED BY AN ESCORT'),
-        (10101, 200, 'DOCA', 'PASSENGER CREW ADDRESS INFORMATION'),
-        (10101, 200, 'DOCO', 'PASSENGER/CREW OTHER TRAVEL RELATED INFO'),
-        (10101, 200, 'DOCS', 'PASSENGER/CREW PRIMARY TRAVEL DOCUMENT INFO'),
-        (10101, 200, 'DPNA', 'DISABLED PASSENGER NEEDING ASSISTANCE'),
-        (10101, 200, 'ESAN', 'PASSENGER WITH EMOTIONAL SUPPORT/PSYCHIATRIC ASSIS...'),
-        (10101, 200, 'FOID', 'FORM OF IDENTIFICATION FOR ETICKET'),
-        (10101, 200, 'HBAG', 'PREPAID OVERWEIGHT'),
-        (10101, 200, 'MEDA', 'MEDICAL ASSISTANCE INFORMATION'),
-        (10101, 200, 'MEQT', 'MEDICAL EQUIPMENT'),
-        (10101, 200, 'PETC', 'PET IN CABIN'),
-        (10101, 200, 'SPEQ', 'GOLF EQUIPMENT'),
-        (10101, 200, 'SPEQ', 'SKI EQUIPMENT'),
-        (10101, 200, 'SPEQ', 'BICYCLE'),
-        (10101, 200, 'SPEQ', 'SCUBA EQUIPMENT'),
-        (10101, 200, 'SPEQ', 'SURFBOARD UPTO70LB 32KG'),
-        (10101, 200, 'SPEQ', 'WINDSURF EQUIP UPTO70LB 32KG'),
-        (10101, 200, 'SPEQ', 'KITE SURFBOARD UP TO 22LB 10KG'),
-        (10101, 200, 'SVAN', 'PASSENGER WITH SERVICE ANIMAL IN CABIN'),
-        (10101, 200, 'TIME', 'TIME TO THINK'),
-        (10101, 200, 'UMNR', 'UNACCOMPANIED MINOR'),
-        (10101, 200, 'WCBD', 'WHEELCHAIR DRY-CELL BATTERY REQUEST'),
-        (10101, 200, 'WCBW', 'WHEELCHAIR WET-CELL BATTERY REQUEST'),
-        (10101, 200, 'WCHC', 'WHEELCHAIR TO SEAT REQUEST'),
-        (10101, 200, 'WCHR', 'WHEELCHAIR TO AIRCRAFT DOOR REQUEST'),
-        (10101, 200, 'WCHS', 'WHEELCHAIR UP/DOWN STAIRS REQUEST'),
-        (10101, 200, 'WCLB', 'WHEELCHAIR LITHIUM ION BATTERY REQUEST'),
-        (10101, 200, 'WCMP', 'WHEELCHAIR MANUAL POWERED REQUEST'),
-        (10101, 200, 'WCOB', 'WHEELCHAIR ON BOARD REQUEST');
-
-
-    --Create Client
+--Create Client
 INSERT INTO client.client_tbl
 (id, countryid, flowid, "name", username, passwd, logourl, cssurl, callbackurl, accepturl, cancelurl, maxamount, lang, smsrcpt, emailrcpt, "method", terms, enabled, "mode", send_pspid, store_card, iconurl, show_all_cards, max_cards, identification, transaction_ttl, num_masked_digits, declineurl, salt, secretkey, communicationchannels, installment, max_installments, installment_frequency, enable_cvv)
 VALUES(10101, 405, 1, 'Avianca', 'avianca', 'zf4Bc6$TyF', 'https://cpd-hpp2-prodassests.s3.eu-central-1.amazonaws.com/10101/logo.png', 'https://cpd-hpp2-prodassests.s3.eu-central-1.amazonaws.com/10101', 'https://av.mretail.prod-02.cellpoint.cloud/mOrder/sys/mpoint.php', '', '', 999999999, 'gb', false, false, 'mPoint', NULL, true, 1, true, 0, NULL, false, -1, 7, 0, 4, '', 'c1mig48m9n7', NULL, 0, 0, 0, 0, true);
@@ -247,3 +207,43 @@ VALUES('minPollingInterval', '5', now(), now(), true, 10101, 'client', 2);
 INSERT INTO client.additionalproperty_tbl
 ("key", value, modified, created, enabled, externalid, "type", "scope")
 VALUES('maxPollingInterval', '30', now(), now(), true, 10101, 'client', 2);
+
+
+INSERT INTO client.product_tbl (clientid, producttypeid, code, description)
+values  (10101, 200, 'ASST', 'TRAVEL ASSISTANCE'),
+        (10101, 200, 'AVIH', 'PET IN HOLD'),
+        (10101, 200, 'BBAG', '2ND CHECKED BAG 23KG'),
+        (10101, 200, 'BLND', 'BLIND PASSENGER INFORMATION'),
+        (10101, 200, 'BSCT', 'BASSINET / BABY COT REQUEST'),
+        (10101, 200, 'CBAG', '3RD CHECKED BAG OR MORE 23KG'),
+        (10101, 200, 'DEAF', 'DEAF PASSENGER INFORMATION'),
+        (10101, 200, 'DEPA', 'ACCOMPANIED DEPORTEE INFORMATION'),
+        (10101, 200, 'DEPU', 'DEPORTEE - ACCOMPANIED BY AN ESCORT'),
+        (10101, 200, 'DOCA', 'PASSENGER CREW ADDRESS INFORMATION'),
+        (10101, 200, 'DOCO', 'PASSENGER/CREW OTHER TRAVEL RELATED INFO'),
+        (10101, 200, 'DOCS', 'PASSENGER/CREW PRIMARY TRAVEL DOCUMENT INFO'),
+        (10101, 200, 'DPNA', 'DISABLED PASSENGER NEEDING ASSISTANCE'),
+        (10101, 200, 'ESAN', 'PASSENGER WITH EMOTIONAL SUPPORT/PSYCHIATRIC ASSIS...'),
+        (10101, 200, 'FOID', 'FORM OF IDENTIFICATION FOR ETICKET'),
+        (10101, 200, 'HBAG', 'PREPAID OVERWEIGHT'),
+        (10101, 200, 'MEDA', 'MEDICAL ASSISTANCE INFORMATION'),
+        (10101, 200, 'MEQT', 'MEDICAL EQUIPMENT'),
+        (10101, 200, 'PETC', 'PET IN CABIN'),
+        (10101, 200, 'SPEQ', 'GOLF EQUIPMENT'),
+        (10101, 200, 'SPEQ', 'SKI EQUIPMENT'),
+        (10101, 200, 'SPEQ', 'BICYCLE'),
+        (10101, 200, 'SPEQ', 'SCUBA EQUIPMENT'),
+        (10101, 200, 'SPEQ', 'SURFBOARD UPTO70LB 32KG'),
+        (10101, 200, 'SPEQ', 'WINDSURF EQUIP UPTO70LB 32KG'),
+        (10101, 200, 'SPEQ', 'KITE SURFBOARD UP TO 22LB 10KG'),
+        (10101, 200, 'SVAN', 'PASSENGER WITH SERVICE ANIMAL IN CABIN'),
+        (10101, 200, 'TIME', 'TIME TO THINK'),
+        (10101, 200, 'UMNR', 'UNACCOMPANIED MINOR'),
+        (10101, 200, 'WCBD', 'WHEELCHAIR DRY-CELL BATTERY REQUEST'),
+        (10101, 200, 'WCBW', 'WHEELCHAIR WET-CELL BATTERY REQUEST'),
+        (10101, 200, 'WCHC', 'WHEELCHAIR TO SEAT REQUEST'),
+        (10101, 200, 'WCHR', 'WHEELCHAIR TO AIRCRAFT DOOR REQUEST'),
+        (10101, 200, 'WCHS', 'WHEELCHAIR UP/DOWN STAIRS REQUEST'),
+        (10101, 200, 'WCLB', 'WHEELCHAIR LITHIUM ION BATTERY REQUEST'),
+        (10101, 200, 'WCMP', 'WHEELCHAIR MANUAL POWERED REQUEST'),
+        (10101, 200, 'WCOB', 'WHEELCHAIR ON BOARD REQUEST');
