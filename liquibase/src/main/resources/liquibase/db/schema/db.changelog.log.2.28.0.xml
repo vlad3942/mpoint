@@ -69,4 +69,19 @@
         <modifyDataType  catalogName="Log" columnName="product_item" newDataType="varchar(100)" schemaName="Log" tableName="billing_summary_tbl"/>
     </changeSet>
 
+
+    <changeSet author="Sagar Narayane"
+               id="2021-08-20-master-v2.28"
+               runInTransaction="false">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            create index billing_summary_tbl_order_id_bill_type_index
+            on log.billing_summary_tbl (order_id desc, bill_type asc);
+        </sql>
+        <rollback>
+            <sql>DROP INDEX billing_summary_tbl_order_id_bill_type_index</sql>
+        </rollback>
+
+    </changeSet>
+
 </databaseChangeLog>
