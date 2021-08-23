@@ -12,8 +12,15 @@
 namespace api\classes;
 
 use JsonSerializable;
+use api\interfaces\XMLSerializable;
 
-class StateInfo implements JsonSerializable
+/**
+ * Class StateInfo
+ *
+ * @package api\classes
+ * @xmlName status
+ */
+class StateInfo implements JsonSerializable, XMLSerializable
 {
     private int $code;
 
@@ -45,6 +52,15 @@ class StateInfo implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

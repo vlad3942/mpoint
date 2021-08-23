@@ -1408,7 +1408,7 @@ msgstr @@@ Gem kort informationer @@@
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør Betaling @@@
 
-#: /api/classes/callback.php:148
+#: /api/classes/callback.php:144
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
@@ -1468,7 +1468,7 @@ msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
-#: /api/classes/home.php:61
+#: /api/classes/home.php:70
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP}.
 Kodeordet vil automatisk udløbe om en time. @@@

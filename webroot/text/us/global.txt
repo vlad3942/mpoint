@@ -1450,7 +1450,7 @@ Kind Regards
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 
-#: /api/classes/callback.php:148
+#: /api/classes/callback.php:144
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}
@@ -1479,7 +1479,7 @@ We recommend that you contact this customer directly and complete the payment pr
 
 Thank you for using SurePay @@@
 
-#: /api/classes/home.php:61
+#: /api/classes/home.php:70
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Please enter the one time password: {OTP}.
 The password will automatically expire in an hour. @@@

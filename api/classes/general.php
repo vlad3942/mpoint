@@ -1870,8 +1870,7 @@ class General
         $checkPaymentStatus = array_count_values($TxnPaymentStatus);
         if($checkPaymentStatus['Complete'] == 2){
             $paymentStatus = 'Complete';
-        }
-        else if(in_array('Failed',$TxnPaymentStatus)){
+        } else if(in_array('Failed',$TxnPaymentStatus)){
             $paymentStatus = 'Failed';
         }else {
             $paymentStatus = 'Pending';
@@ -2133,6 +2132,148 @@ class General
         }
     }
 
+    /* Function to get fraud status code and description */
+    public function getFraudDetails($txnid): array{
+        $statusDetails =array();
+        $aStateId = array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE,
+            Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE,
+            Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE,
+            Constants::iPRE_FRAUD_CHECK_REVIEW_STATE,
+            Constants::iPRE_FRAUD_CHECK_REJECTED_STATE,
+            Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE,
+            Constants::iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE,
+            Constants::iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE,
+            Constants::iPRE_FRAUD_CHECK_TECH_ERROR_STATE,
+            Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE,
+            Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE,
+            Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE,
+            Constants::iPOST_FRAUD_CHECK_REVIEW_STATE,
+            Constants::iPOST_FRAUD_CHECK_REVIEW_SUCCESS_STATE,
+            Constants::iPOST_FRAUD_CHECK_REVIEW_FAIL_STATE,
+            Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,
+            Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE,
+            Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE,
+            Constants::iPOST_FRAUD_CHECK_TECH_ERROR_STATE);
+
+        $sql = "SELECT M.stateid, S.name
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl M
+				INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id 
+				WHERE M.txnid = ". $txnid." AND M.enabled = '1' AND M.stateid IN (". implode(", ", $aStateId) .") order by M.id desc limit 1";
+        $res =  $this->getDBConn()->query($sql);
+        if (is_resource($res) === true) {
+            while ($RS = $this->getDBConn()->fetchName($res) )
+            {
+                $statusDetails['status_code' ] = $RS ["STATEID"];
+                $statusDetails['status_desc' ] = $RS ["NAME"];
+            }
+        }
+        return $statusDetails;
+    }
+
+    /* Function to get latest txn status code and description */
+    public function getLatestTxnState($txnId)
+    {
+        $result = [];
+        $sql = 'WITH WT1 as
+                             (SELECT DISTINCT stateid, txnid, S.name, m.id
+                              FROM Log'.sSCHEMA_POSTFIX.'.Message_Tbl m INNER JOIN Log'.sSCHEMA_POSTFIX.'.State_Tbl S
+                              on M.stateid = S.id
+                              WHERE txnid = '.$txnId.' and M.enabled = true),
+                         WT2 as (SELECT stateid, txnid, name, id
+                                 FROM (SELECT *, rank() over (partition by txnid order by id desc)
+                                       FROM WT1
+                                       WHERE stateid in (
+                                                         '.Constants::iPAYMENT_ACCEPTED_STATE.',
+                                                         '.Constants::iPAYMENT_CAPTURED_STATE.',
+                                                         '.Constants::iPAYMENT_REJECTED_STATE.',
+                                                         '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
+                                                         '.Constants::iPAYMENT_PENDING_STATE.')) s
+                                 where s.rank = 1
+                                 UNION
+                                 SELECT *
+                                 FROM WT1
+                                 WHERE stateid in (
+                                                   '.Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.',
+                                                   '.Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.',
+                                                   '.Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.')
+                         )
+                    SELECT *, row_number() OVER (ORDER BY id ASC) AS rownum
+                    FROM WT2';
+        $RSMsg = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+        {
+            $result[] = $RS;
+        }
+        return $result;
+    }
+
+    /* Function to get all txn status codes and description */
+    public function getAllTxnState($txnId)
+    {
+        $result = [];
+        $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
+                                  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
+                                  WHERE txnid = ".$txnId." and M.enabled = true";
+        $RSMsg = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+        {
+            $result[] = $RS;
+        }
+        return $result;
+    }
+
+    public function getFormattedDate(string $expiryDate): string
+    {
+        $date = DateTime::createFromFormat('m/y', $expiryDate);
+        return $date->format('Y-m');
+    }
+
+    /**
+     * Returns the Status Messgae for mPoint's internal status codes
+     *
+     * @param 	integer $sid	mPoint ststua code
+     * @return 	string
+     */
+    public function getStatusMessage($sid)
+    {
+        $sql = "SELECT name
+				FROM Log".sSCHEMA_POSTFIX.".State_Tbl
+				WHERE id = ". intval($sid);
+        //echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+    }
+
+    /**
+     * Returns the specified PSP's name
+     *
+     * @param 	integer $pspid	Unique ID for the PSP
+     * @return 	string
+     */
+    public function getPSPName($pspid)
+    {
+        $sql = "SELECT name
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl
+				WHERE id = ". intval($pspid) ." AND enabled = '1'";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+    }
+
     /***
      * Function used to get route from CRS
      *
@@ -2152,6 +2293,7 @@ class General
      * @param int|null $walletId
      */
     public static function getRouteConfiguration(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
+
     {
         $iPrimaryRoute = 0;
         $obj_CardResultSet = FALSE;
@@ -2159,6 +2301,7 @@ class General
         if ($obj_RS instanceof RoutingService) {
             $objTxnRoute   = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+
         }
         if ($iPrimaryRoute > 0) {
             $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
