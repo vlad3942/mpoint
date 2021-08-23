@@ -31,6 +31,7 @@ class PayUInitTest extends InitializeAPIValidationTest
         $this->bIgnoreErrors = true; //User Warning Expected
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertStringContainsString('PSE',$sReplyBody);
         $this->assertStringContainsString('payment-method',$sReplyBody);
     }
 
