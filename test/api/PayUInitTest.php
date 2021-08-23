@@ -12,7 +12,7 @@ require_once __DIR__ . '/InitializeAPIValidationTest.php';
 
 class PayUInitTest extends InitializeAPIValidationTest
 {
-    public function estSuccessfulPayUInit()
+    public function testSuccessfulPayUInit()
     {
         $pspID = Constants::iPAYU_PSP;
 
@@ -31,10 +31,10 @@ class PayUInitTest extends InitializeAPIValidationTest
         $this->bIgnoreErrors = true; //User Warning Expected
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-       /* $this->assertStringContainsString('payment-method',$sReplyBody);*/
+        $this->assertStringContainsString('payment-method',$sReplyBody);
     }
 
-    public function estSuccessfulApmPayUInit()
+    public function testSuccessfulApmPayUInit()
     {
         $pspID = Constants::iPAYU_PSP;
 
@@ -52,9 +52,9 @@ class PayUInitTest extends InitializeAPIValidationTest
         $this->_httpClient->connect();
         $this->bIgnoreErrors = true; //User Warning Expected
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
-        $sReplyBody = $this->_httpClient->getReplyBody();/*
+        $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertStringContainsString('apms',$sReplyBody);
-        $this->assertStringNotContainsString('payment-method',$sReplyBody);*/
+        $this->assertStringNotContainsString('payment-method',$sReplyBody);
 
     }
 }
