@@ -539,7 +539,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     <payment_type><id>1</id><sequence>1</sequence></payment_type>
                                                     <payment_type><id>1</id><sequence>2</sequence></payment_type>
                                                     <is_one_step_authorization>false</is_one_step_authorization>
-                                                </combination></configuration>";
+                                                </combination></applicable_combinations></configuration>";
                                         $xml .= "</split_payment>";
                                     } else {
                                         $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
