@@ -2663,5 +2663,15 @@ class TxnInfo
 	{
 		$this->_sExternalID = $sExternalID;
 	}
+
+	public function setCardMask($cardNo)
+	{
+		$this->_mask = $cardNo;
+	}
+
+	public function setCardExpiry($exp)
+	{
+		$this->_expiry = $exp;
+	}
 }
 ?>
