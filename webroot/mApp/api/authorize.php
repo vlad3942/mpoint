@@ -489,6 +489,15 @@ try
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
+                                        // Update installment value if explicitly passed in the request
+                                        $installment = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->installment->value;
+                                        if($installment > 0){
+                                            $data['installment-value'] = $installment;
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            unset($data);
+                                        }
+
                                         // Call get payment data API for wallet and stored card payment
                                         $card_psp_id = -1;
                                         if ($isStoredCardPayment === true)
@@ -531,6 +540,13 @@ try
                                                 $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
                                             }
                                         }
+                                        if ($fxServiceTypeId)
+                                        {
+                                            $data['fxservicetypeid'] = $fxServiceTypeId;
+                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
+                                            $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            unset($data);
+                                        }
 
                                         $aRoutes = array();
                                         $iPrimaryRoute = 0 ;
@@ -564,21 +580,6 @@ try
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
-                                        }
-
-                                        // Update installment value if explicitly passed in the request
-                                        $installment = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->installment->value;
-                                        if($installment > 0){
-                                            $data['installment-value'] = $installment;
-                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
-                                            $obj_mPoint->logTransaction($obj_TxnInfo);
-                                        }
-
-                                        if ($fxServiceTypeId)
-                                        {
-                                            $data['fxservicetypeid'] = $fxServiceTypeId;
-                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
-                                            $obj_mPoint->logTransaction($obj_TxnInfo);
                                         }
 
                                         //Check if card or payment method is enabled or disabled by merchant
@@ -663,6 +664,7 @@ try
                                                    $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
+                                                   unset($data);
                                                }
                                              else if( $iSessionType > 1 && $iSaleAmount > $pendingAmount) {
                                                  $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
@@ -694,6 +696,7 @@ try
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            unset($data);
                                         }
 
                                         // sso verification conditions checking 
