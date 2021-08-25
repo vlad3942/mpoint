@@ -494,7 +494,6 @@ abstract class Callback extends EndUserAccount
                 $this->_obj_TxnInfo->setCardExpiry($exp);
             }
         }
-	    $this->logTransaction($this->_obj_TxnInfo);
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
 			$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
