@@ -483,17 +483,17 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
-	    if (empty($this->_obj_TxnInfo->getCardMask())) {
-	        if (empty($cardno) === false) {
-                $this->_obj_TxnInfo->setCardMask($cardno);
-            }
-        }
-
-	    if (empty($this->_obj_TxnInfo->getCardExpiry())) {
-	        if (empty($exp) === false && self::isValidExpiry($exp)) {
-                $this->_obj_TxnInfo->setCardExpiry($exp);
-            }
-        }
+//	    if (empty($this->_obj_TxnInfo->getCardMask())) {
+//	        if (empty($cardno) === false) {
+//                $this->_obj_TxnInfo->setCardMask($cardno);
+//            }
+//        }
+//
+//	    if (empty($this->_obj_TxnInfo->getCardExpiry())) {
+//	        if (empty($exp) === false && self::isValidExpiry($exp)) {
+//                $this->_obj_TxnInfo->setCardExpiry($exp);
+//            }
+//        }
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
 			$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
