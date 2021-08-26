@@ -53,7 +53,7 @@ class CallbackAPITest extends baseAPITest
         return $status;
     }
 
-    public function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true,$amt=5000, $year='2020', $month='01')
+    public function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true,$amt=5000, $year='20', $month='01')
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
@@ -721,5 +721,14 @@ class CallbackAPITest extends baseAPITest
             $cStates[] = $row["status"];
         }
         $this->assertEquals(Constants::sPassbookStatusDone, $cStates[0]);
+
+        $res =  $this->queryDB("SELECT data FROM Log.Message_Tbl WHERE txnid = 1001001  and stateid= 4030");
+        $this->assertTrue(is_resource($res) );
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $data[] =$row["data"];
+        }
+        $this->assertContains('card-number', $data[0]);
+        $this->assertContains('expiry', $data[0]);
     }
 }

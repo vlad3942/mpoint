@@ -475,7 +475,12 @@ class General
 					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType()).",
 					convertedamount = ". $oTI->getConvertedAmount() .",convertedcurrencyid = ". ($oTI->getConvertedCurrencyConfig() === null ?"NULL": $oTI->getConvertedCurrencyConfig()->getID()).",
 					conversionrate = ". $oTI->getConversationRate().", fee = ".$oTI->getFee();
-
+        if (empty($oTI->getCardMask() === false)) {
+            $sql .= " , mask = '". $oTI->getCardMask() ."'";
+        }
+        if (empty($oTI->getCardExpiry() === false)) {
+            $sql .= " , expiry = '". $oTI->getCardExpiry() ."'";
+        }
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
