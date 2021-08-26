@@ -728,7 +728,7 @@ class CallbackAPITest extends baseAPITest
         {
             $data[] =$row["data"];
         }
-        $this->assertContains('card-number', $data[0]);
-        $this->assertContains('expiry', $data[0]);
+        $this->assertStringContains('card-number', $data[0]);
+        $this->assertStringContains('expiry', $data[0]);
     }
 }
