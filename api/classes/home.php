@@ -1921,6 +1921,8 @@ class Home extends General
 
             // get country iso code
             $abillingaddress['country'] = $obj_CountryConfig->getNumericCode();
+            // get country alpha2code code
+            $abillingaddress['alpha2code'] = $obj_CountryConfig->getAlpha2code();
             $objBillingAddr = new BillingAddress($abillingaddress);
             $transactionData->setBillingAddress($objBillingAddr);
         }
