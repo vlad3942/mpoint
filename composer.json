@@ -29,7 +29,10 @@
     },
     "autoload": {
         "psr-4": {"api\\": "./api"},
-        "classmap": ["api/"]
+        "classmap": ["api/"],
+        "files": [
+            "api/helpers/functions.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

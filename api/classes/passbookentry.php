@@ -8,8 +8,9 @@
  * Package:
  * File Name:passbookentry.php
  */
+use api\interfaces\XMLSerializable;
 
-class PassbookEntry implements JsonSerializable
+class PassbookEntry implements JsonSerializable, XMLSerializable
 {
     /**
      * @var int
@@ -234,6 +235,17 @@ class PassbookEntry implements JsonSerializable
      * @return array|mixed
      */
     public function jsonSerialize()
+    {
+        return get_object_vars($this);
+    }
+
+    /**
+     * To convert Object to XML using json_encode function
+     * e.g. json_encode($passBookEntryObj)
+     *
+     * @return array|mixed
+     */
+    public function xmlSerialize()
     {
         return get_object_vars($this);
     }

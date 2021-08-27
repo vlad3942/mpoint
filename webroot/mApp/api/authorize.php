@@ -495,6 +495,7 @@ try
                                             $data['installment-value'] = $installment;
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            unset($data);
                                         }
 
                                         // Call get payment data API for wallet and stored card payment
@@ -544,6 +545,7 @@ try
                                             $data['fxservicetypeid'] = $fxServiceTypeId;
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            unset($data);
                                         }
 
                                         $aRoutes = array();
@@ -556,6 +558,14 @@ try
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
                                         }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
+                                        }
+
+                                        if (empty($issuerIdentificationNumber) === false) {
+                                            // Validate card IIN
+                                            $validationCode = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), $issuerIdentificationNumber);
+                                            if ($validationCode < 10) {
+                                                $code = $validationCode;
+                                            }
                                         }
 
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
@@ -662,6 +672,7 @@ try
                                                    $data['conversion-rate'] = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'conversion-rate'};
                                                    $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                                    $obj_mPoint->logTransaction($obj_TxnInfo);
+                                                   unset($data);
                                                }
                                              else if( $iSessionType > 1 && $iSaleAmount > $pendingAmount) {
                                                  $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
@@ -693,6 +704,7 @@ try
                                             $data['auto-capture'] = intval($obj_Elem->capture_type);
                                             $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
                                             $obj_mPoint->logTransaction($obj_TxnInfo);
+                                            unset($data);
                                         }
 
                                         // sso verification conditions checking 
