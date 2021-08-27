@@ -558,6 +558,14 @@ try
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
                                         }
 
+                                        if (empty($issuerIdentificationNumber) === false) {
+                                            // Validate card IIN
+                                            $validationCode = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), $issuerIdentificationNumber);
+                                            if ($validationCode < 10) {
+                                                $code = $validationCode;
+                                            }
+                                        }
+
                                         $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
