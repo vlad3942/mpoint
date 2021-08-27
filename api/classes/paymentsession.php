@@ -55,6 +55,8 @@ final class PaymentSession
 
     private string $_created;
 
+    private $_aSessionAdditionalData;
+
     protected function __construct()
     {
         $args = func_get_args();
@@ -171,6 +173,7 @@ final class PaymentSession
             if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
                 $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
             }
+            $this->_aSessionAdditionalData = self::_produceSessionAdditionalData($this->_obj_Db, $this->_id);
             /* $RS["MOBILE"];
              $RS["DEVICEID"];
              $RS["IPADDRESS"];*/
@@ -478,6 +481,92 @@ final class PaymentSession
                 return false;
         }
         return true;
+    }
+
+    /*
+     * Returns the Session's Additional data
+     * if param is sent returns value of property
+     *
+     * @param string    key
+     * @return 	string
+     * */
+    public function getSessionAdditionalData($key = "")
+    {
+        try
+        {
+            if (empty($key) === true)
+            {
+                if (is_array($this->_aSessionAdditionalData) && count($this->_aSessionAdditionalData) > 0)
+                {
+                    return $this->_aSessionAdditionalData;
+                }
+                return null;
+            }
+            if (is_array($this->_aSessionAdditionalData) && $this->_aSessionAdditionalData != null && array_key_exists($key, $this->_aSessionAdditionalData) === true)
+            {
+                return $this->_aSessionAdditionalData[$key];
+            }
+        }
+        catch (Exception $e)
+        {
+
+        }
+        return null;
+    }
+
+    /**
+     * Function to insert new records in the Additional Data table that are send as part of the session
+     *
+     * @param 	Array $sessionAdditionalData	Data object with the Additional Data details
+     *
+     */
+    public function setSessionAdditionalDetails(RDB $obj_DB, $sessionAdditionalData, $ExternalID)
+    {
+        $additional_id = "";
+        if( is_array($sessionAdditionalData) === true )
+        {
+            foreach ($sessionAdditionalData as $aAdditionalDataObj)
+            {
+                $name = $aAdditionalDataObj["name"];
+                $value = $aAdditionalDataObj["value"];
+                if($name === null || empty($name) === true || $value === null || empty($value) === true)
+                {
+                    return $additional_id;
+                }
+                $sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".additional_data_Tbl_id_seq') AS id FROM DUAL";
+                $RS = $obj_DB->getName($sql);
+                // Error: Unable to generate a new Additional Data ID
+                if (is_array($RS) === false) { throw new mPointException("Unable to generate new Additional Data ID", 1001); }
+                $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(id, name, value, type, externalid)
+								VALUES(". $RS["ID"] .", '". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."')";
+                // Error: Unable to insert a new Additional Data record in the Additional Data Table
+                if (is_resource($obj_DB->query($sql) ) === false)
+                {
+                    if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002); }
+                }
+                else
+                {
+                    $additional_id = $RS["ID"];
+                    $this->_aSessionAdditionalData[$name] = $value;
+                }
+            }
+            return $additional_id;
+        }
+    }
+
+    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId)
+    {
+        $additionalData = [];
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
+        $rsa = $_OBJ_DB->getAllNames ( $sqlA );
+        if (empty($rsa) === false )
+        {
+            foreach ($rsa as $rs)
+            {
+                $additionalData[$rs["NAME"] ] = $rs ["VALUE"];
+            }
+        }
+        return $additionalData;
     }
 
 }

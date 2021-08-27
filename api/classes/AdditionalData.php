@@ -11,25 +11,32 @@
 
 namespace api\classes;
 
+use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
-class AdditionalData implements JsonSerializable
+/**
+ * Class AdditionalData
+ *
+ * @package api\classes
+ * @xmlName params
+ */
+class AdditionalData implements JsonSerializable, XMLSerializable
 {
-    public string $key;
+    public string $name;
 
-    public string $value;
+    public string $text;
 
     /**
      * AdditionalData constructor.
      *
-     * @param $key
-     * @param $value
+     * @param $name
+     * @param $text
      */
-    public function __construct(string $key, string $value)
+    public function __construct(string $name, string $text)
     {
-        if(empty($key) === FALSE) {
-            $this->key = $key;
-            $this->value = $value;
+        if(empty($name) === FALSE) {
+            $this->name = $name;
+            $this->text = $text;
         }
     }
 
@@ -37,6 +44,15 @@ class AdditionalData implements JsonSerializable
      * @return array
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

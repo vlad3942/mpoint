@@ -410,19 +410,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["locale"];
                                 $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
                             }
+							$aSessionAdditionalData = [];
                             if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
                                 for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
                                 {
-                                    $additionalTxnDataIndex++;
-                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
-                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
-                                    $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+                                    $aSessionAdditionalData[$index]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                                    $aSessionAdditionalData[$index]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
+                                    $aSessionAdditionalData[$index]['type'] = (string)'Session';
                                 }
                             }
                             if($additionalTxnDataIndex > -1)
                             {
                                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+                            }
+                            if (empty($aSessionAdditionalData) === FALSE) {
+                                $obj_TxnInfo->getPaymentSession()->setSessionAdditionalDetails($_OBJ_DB, $aSessionAdditionalData, $obj_TxnInfo->getSessionId());
                             }
 
                                 //Test if the order/cart details are passed as part of the input XML request.
