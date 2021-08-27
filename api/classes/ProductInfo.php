@@ -12,8 +12,9 @@
 namespace api\classes;
 
 use JsonSerializable;
+use api\interfaces\XMLSerializable;
 
-class ProductInfo implements JsonSerializable
+class ProductInfo implements JsonSerializable, XMLSerializable
 {
     public string $name;
 
@@ -42,6 +43,15 @@ class ProductInfo implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");
