@@ -535,7 +535,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $xml .= "</split_payment>";
                                     } else if ($obj_ClientConfig->getID() === 10101) {
                                         $xml .= "<split_payment>";
-                                        if (empty($session) === true) {
+                                        if (empty($session) === false) {
                                             $xml .= $activeSplit;
                                         }
                                         $xml .= "<configuration><applicable_combinations><combination>
