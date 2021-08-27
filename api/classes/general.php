@@ -2241,8 +2241,12 @@ class General
 
     public function getFormattedDate(string $expiryDate): string
     {
-        $date = DateTime::createFromFormat('m/y', $expiryDate);
-        return $date->format('Y-m');
+        if (DateTime::createFromFormat('Y-m', $expiryDate) !== false) {
+            return $expiryDate;
+        } else if (DateTime::createFromFormat('m/y', $expiryDate) !== false) {
+            $date = DateTime::createFromFormat('m/y', $expiryDate);
+            return $date->format('Y-m');
+        }
     }
 
     /**
