@@ -514,7 +514,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $session = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                                     if ($obj_ClientConfig->getID() === 10077) {
                                         $xml .= "<split_payment>";
-                                        if (empty($session) === false) {
+                                        if (!empty($session)) {
                                             $xml .= $activeSplit;
                                         }
                                         $xml .= "<configuration><applicable_combinations><combination>
@@ -535,7 +535,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $xml .= "</split_payment>";
                                     } else if ($obj_ClientConfig->getID() === 10101) {
                                         $xml .= "<split_payment>";
-                                        if (empty($session) === false) {
+                                        if (!empty($session)) {
                                             $xml .= $activeSplit;
                                         }
                                         $xml .= "<configuration><applicable_combinations><combination>
