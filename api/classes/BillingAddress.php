@@ -33,6 +33,7 @@ class BillingAddress implements JsonSerializable, XMLSerializable
     private $mobile;
     private $email;
     private $mobile_country_id;
+    private $alpha2code;
     /**
      * BillingAddress constructor.
      *
@@ -91,6 +92,10 @@ class BillingAddress implements JsonSerializable, XMLSerializable
         if(empty($address['zip']) === FALSE)
         {
             $this->postal_code = $address['zip'];
+        }
+        if(empty($address['alpha2code']) === FALSE)
+        {
+            $this->alpha2code = $address['alpha2code'];
         }
     }
 }
