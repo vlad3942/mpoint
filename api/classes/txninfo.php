@@ -387,6 +387,13 @@ class TxnInfo
      */
     private $_aAdditionalData;
 
+	/**
+	 * Session's Additional Data
+	 *
+	 * @var array
+	 */
+	private $_aSessionAdditionalData;
+
 
     /*
      *  Payment type based on card used for transaction
@@ -1037,28 +1044,37 @@ class TxnInfo
 	 * @param string    key
      * @return 	string
      * */
-	public function getAdditionalData($key = "")
+	public function getAdditionalData($key = "", $isTxnOnly = false)
     {
-        try
+    	$additionalData = [];
+    	$sessionAdditionalData = $this->getPaymentSession()->getSessionAdditionalData($key);
+    	try
         {
             if (empty($key) === true)
             {
-                if (is_array($this->_aAdditionalData) && count($this->_aAdditionalData) > 0)
-                {
-                    return $this->_aAdditionalData;
-                }
-                return null;
-            }
-            if (is_array($this->_aAdditionalData) && $this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
-            {
-                return $this->_aAdditionalData[$key];
-            }
+				$additionalData = $this->_aAdditionalData;
+				if (!$isTxnOnly && empty($sessionAdditionalData) === FALSE) {
+					$additionalData =  array_merge($additionalData, $sessionAdditionalData);
+				}
+            } else {
+				if (is_array($this->_aAdditionalData) && $this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
+				{
+					$additionalData = $this->_aAdditionalData[$key];
+				}
+				else if (!$isTxnOnly && isset($sessionAdditionalData[$key]))
+				{
+					$additionalData = $sessionAdditionalData[$key];
+				}
+			}
         }
         catch (Exception $e)
         {
 
         }
-        return null;
+        if (empty($additionalData))
+        	return null;
+        else
+        	return $additionalData;
     }
 
 
@@ -2662,6 +2678,20 @@ class TxnInfo
 	public function setExternalId(string $sExternalID)
 	{
 		$this->_sExternalID = $sExternalID;
+	}
+
+	public function setCardMask($cardNo)
+	{
+		$this->_mask = $cardNo;
+	}
+
+	public function setCardExpiry($exp)
+	{
+		if (DateTime::createFromFormat('Y-m', $exp) !== false) {
+			$date = DateTime::createFromFormat('Y-m', $exp);
+			$exp = $date->format('m/y');
+		}
+		$this->_expiry = $exp;
 	}
 }
 ?>

@@ -12,8 +12,15 @@
 namespace api\classes;
 
 use JsonSerializable;
+use api\interfaces\XMLSerializable;
 
-class PSPData implements JsonSerializable
+/**
+ * Class PSPData
+ *
+ * @package api\classes
+ * @xmlName psp
+ */
+class PSPData implements JsonSerializable, XMLSerializable
 {
     private int $id;
 
@@ -41,6 +48,15 @@ class PSPData implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");

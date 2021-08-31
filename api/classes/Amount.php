@@ -11,14 +11,16 @@
 
 namespace api\classes;
 
+use api\interfaces\XMLSerializable;
 use JsonSerializable;
 
 /**
  * Class Amount
  *
  * @package api\classes
+ * @xmlName amount
  */
-class Amount implements JsonSerializable
+class Amount implements JsonSerializable, XMLSerializable
 {
     private int $value;
 
@@ -62,5 +64,39 @@ class Amount implements JsonSerializable
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getCurrency()
+    {
+        return $this->currency_id;
+    }
+
+    public function getCode()
+    {
+        return $this->alpha3code;
+    }
+
+    public function getDecimal()
+    {
+        return $this->decimals;
+    }
+
+    public function getConversionRate()
+    {
+        return $this->conversion_rate;
     }
 }
