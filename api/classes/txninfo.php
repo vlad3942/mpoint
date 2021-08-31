@@ -2679,5 +2679,19 @@ class TxnInfo
 	{
 		$this->_sExternalID = $sExternalID;
 	}
+
+	public function setCardMask($cardNo)
+	{
+		$this->_mask = $cardNo;
+	}
+
+	public function setCardExpiry($exp)
+	{
+		if (DateTime::createFromFormat('Y-m', $exp) !== false) {
+			$date = DateTime::createFromFormat('Y-m', $exp);
+			$exp = $date->format('m/y');
+		}
+		$this->_expiry = $exp;
+	}
 }
 ?>
