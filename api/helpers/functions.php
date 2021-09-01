@@ -8,7 +8,7 @@ if (function_exists('xml_encode') === false) {
                 $DOMDocument =new DOMDocument();
                 $DOMDocument->formatOutput = false;
                 xml_encode($mixed, $DOMDocument, $DOMDocument, true);
-                return preg_replace('!\s+!', '', $DOMDocument->saveHTML());
+                return preg_replace("/\r|\n/", '', $DOMDocument->saveHTML());
             }
             else{
                 if(is_object($mixed))
