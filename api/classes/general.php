@@ -2309,5 +2309,29 @@ class General
         }
         return $obj_CardResultSet;
     }
+
+    public function getSuccessfulTxnFromSession(int $sessionId, int $clientId) : array
+    {
+        $result = [];
+
+        $sql = 'SELECT id
+                FROM (SELECT txn.id, msg.stateid, rank() over (partition by msg.txnid order by msg.id desc) as rn
+                      FROM log.transaction_tbl txn
+                               INNER JOIN log.message_tbl msg
+                                          ON txn.id = msg.txnid
+                      WHERE sessionid = '.$sessionId.'
+                      AND clientid = '.$clientId.'
+                      AND msg.stateid in ('.Constants::iPAYMENT_PENDING_STATE.', '.Constants::iPAYMENT_ACCEPTED_STATE.', '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.')) s
+                where s.rn = 1
+                  and s.stateid <>  '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE;
+
+        $RSMsg = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($RSMsg) )
+        {
+            $result[] = (int)$RS['ID'];
+        }
+        return $result;
+    }
 }
 ?>

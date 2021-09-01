@@ -1795,10 +1795,7 @@ class Home extends General
             $pspId = $txnInfo->getPSPID();
             $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
         }
-        if ($obj_PSPConfig === null)
-        {
-            $obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $txnInfo, null, $txnInfo->getPSPID());
-        }
+
         if (($txnInfo->getAccountID() > 0) === TRUE) {
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
             $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
@@ -1845,6 +1842,7 @@ class Home extends General
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
+
         if (!is_null($obj_PSPConfig)) {
             $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
         }
