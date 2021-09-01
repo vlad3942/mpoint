@@ -28,6 +28,30 @@ class PayU extends CPMPSP
     public function void($iAmount=-1) { throw new PayUException("Method: void is not supported by PayU"); }
     public function cancel($amount = -1) { throw new PayUException("Method: cancel is not supported by PayU"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayUException("Method: getPaymentData is not supported by PayU."); }
+    public function getPSPID() { return Constants::iPAYU_PSP; }
+    public function getPaymentMethods(PSPConfig $obj_PSPConfig)
+    {
+        $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
+        $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
+        $sortable = array();
+        if(is_object($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) && count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) >= 1){
+            foreach ($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
+                $issuingBank = strtolower($node->issuingBank);
+                $usageCount = (int)$aStatisticalData['issuing_bank_' . $issuingBank];
+                $node->addChild('usage', $usageCount);
+                $sortable[] = $node;
+            }
+        }
+        usort($sortable,   'compare_usage');
+        $newSortedList = "<root><active-payment-menthods>";
+        foreach ($sortable as $node)
+        {
+            unset($node->usage);
+            $newSortedList .= $node->asXML();
+        }
+        $newSortedList .= "</active-payment-menthods></root>";
+        $sxml = simplexml_load_string($newSortedList);
+        return $sxml;
 
-	public function getPSPID() { return Constants::iPAYU_PSP; }
+    }
 }
