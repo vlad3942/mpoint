@@ -1372,6 +1372,7 @@ abstract class Callback extends EndUserAccount
      */
 	private function publishMessage(string $body, array $filter = null, SurePayConfig &$obj_SurePay = NULL, int $attempt = 0)
     {
+        $response = false;
         try {
             $messageQueueClient = MessageQueueClient::GetClient();
             $messageQueueClient->authenticate();
@@ -1392,7 +1393,7 @@ abstract class Callback extends EndUserAccount
             $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_SEND_FAILED_STATE, $e->getMessage());
         }
 
-        if (($obj_SurePay instanceof SurePayConfig) === TRUE && $attempt < $obj_SurePay->getMax()) {
+        if ($response === false && ($obj_SurePay instanceof SurePayConfig) === TRUE && $attempt < $obj_SurePay->getMax()) {
             $attempt++;
             sleep($obj_SurePay->getDelay() * $attempt);
             trigger_error("mPoint Callback request retried for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
