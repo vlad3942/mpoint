@@ -1887,7 +1887,7 @@ class Home extends General
         // Add Purchased Products
         if (count($aProducts) > 0) {
             foreach ($aProducts["names"] as $key => $name) {
-                $aProductInfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+                $aProductInfo[] = new ProductInfo($name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
             }
         }
 
