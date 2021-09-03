@@ -279,7 +279,7 @@ try
                                             }
                                         }
                                         $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
-                                        $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : TRUE;
+                                        $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : 'true';
                                         $isVoucherRedeem = !empty($processVoucher) ? $processVoucher['isVoucherRedeem'] : FALSE;
 
                                         $cardNode = $obj_DOM->{'authorize-payment'}[$i]->transaction->card;
@@ -320,7 +320,7 @@ try
                                         $misc = [];
                                         $misc["routeconfigid"] = -1;
 
-                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc,$isVoucherPreferred);
+                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
                                         if ($txnObj !== NULL) {
 
                                             $obj_TxnInfo = $txnObj;

@@ -262,7 +262,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
 
                             $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
-                            $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : TRUE;
+                            $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : 'true';
                             $isVoucherRedeem = !empty($processVoucher) ? $processVoucher['isVoucherRedeem'] : FALSE;
 
                             $cardNode = $obj_DOM->{'pay'}[$i]->transaction->card;
@@ -301,9 +301,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $misc = [];
                             $misc["routeconfigid"] = -1;
 
-                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc,$isVoucherPreferred);
+                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
                             if ($txnObj !== NULL) {
-
                                 $obj_TxnInfo = $txnObj;
                                 $_OBJ_DB->query('COMMIT');
                                 $_OBJ_DB->query('START TRANSACTION');

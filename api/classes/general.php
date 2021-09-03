@@ -549,7 +549,7 @@ class General
      * @throws \SQLQueryException
      * @throws \mPointException
      */
-    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = [],array $misc = [],bool $isVoucherPreferred = null): ?TxnInfo
+    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = [],array $misc = []): ?TxnInfo
     {
         $iAssociatedTxnId =  $this->newTransaction($txnInfo->getClientConfig(), $txnInfo->getTypeID());
 	    try
@@ -583,11 +583,7 @@ class General
              $additionalData[0]['value'] = (string)$iAssociatedTxnId;
              $additionalData[0]['type'] = 'Transaction';
              $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID());
-             if($isVoucherPreferred === false){
-                 $txnIDs = [$iAssociatedTxnId,$txnInfo->getID()];
-             }else{
-                 $txnIDs = [$txnInfo->getID(),$iAssociatedTxnId];
-             }
+             $txnIDs = [$txnInfo->getID(),$iAssociatedTxnId];
              $txnInfo->setSplitSessionDetails($this->getDBConn(),$txnInfo->getSessionId(),$txnIDs);
 
              $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
@@ -2446,7 +2442,7 @@ class General
                     $misc["routeconfigid"] = $obj_CardResultSet['routeconfigid'];
                     $iPSPID                = $obj_CardResultSet['pspid'];
                 }
-                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc,$isVoucherPreferred);
+                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
                 if ($txnObj !== NULL) {
                     $_OBJ_DB->query('COMMIT');
                     $_OBJ_DB->query('START TRANSACTION');
