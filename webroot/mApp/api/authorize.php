@@ -320,7 +320,7 @@ try
                                         $misc = [];
                                         $misc["routeconfigid"] = -1;
 
-                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
+                                        $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc,$isVoucherPreferred);
                                         if ($txnObj !== NULL) {
 
                                             $obj_TxnInfo = $txnObj;

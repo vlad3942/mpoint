@@ -549,7 +549,7 @@ class General
      * @throws \SQLQueryException
      * @throws \mPointException
      */
-    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = [],array $misc = []): ?TxnInfo
+    public function createTxnFromTxn(TxnInfo $txnInfo, int $newAmount, bool $isInitiateTxn = TRUE, string $pspid = '', array $additionalTxnData = [],array $misc = [],bool $isVoucherPreferred = null): ?TxnInfo
     {
         $iAssociatedTxnId =  $this->newTransaction($txnInfo->getClientConfig(), $txnInfo->getTypeID());
 	    try
@@ -582,8 +582,12 @@ class General
              $additionalData[0]['name'] = 'linked_txn_id';
              $additionalData[0]['value'] = (string)$iAssociatedTxnId;
              $additionalData[0]['type'] = 'Transaction';
-             $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID(),);
-             $txnIDs = [$txnInfo->getSessionId(),$txnInfo->getID()];
+             $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID());
+             if($isVoucherPreferred === false){
+                 $txnIDs = [$iAssociatedTxnId,$txnInfo->getID()];
+             }else{
+                 $txnIDs = [$txnInfo->getID(),$iAssociatedTxnId];
+             }
              $txnInfo->setSplitSessionDetails($this->getDBConn(),$txnInfo->getSessionId(),$txnIDs);
 
              $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
@@ -2442,7 +2446,7 @@ class General
                     $misc["routeconfigid"] = $obj_CardResultSet['routeconfigid'];
                     $iPSPID                = $obj_CardResultSet['pspid'];
                 }
-                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
+                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc,$isVoucherPreferred);
                 if ($txnObj !== NULL) {
                     $_OBJ_DB->query('COMMIT');
                     $_OBJ_DB->query('START TRANSACTION');
@@ -2472,6 +2476,20 @@ class General
         $result['isVoucherPreferred']  = $isVoucherPreferred;
         $result['isVoucherRedeem']     = $isVoucherRedeem;
         return $result;
+    }
+
+    public static function getApplicableCombinations($_OBJ_DB,array $paymentTypes=NULL)
+    {
+        $paymentTypeString = implode(", ", $paymentTypes);
+        $sql = "with q1 as (
+                     SELECT split_config_id, count(split_config_id) as allcount 
+                     FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl GROUP BY split_config_id),";
+        $sql .=  "q2 as (
+                        SELECT split_config_id, count(split_config_id) as matchcount
+                        FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl WHERE payment_type IN (".$paymentTypeString.") GROUP BY split_config_id)";
+        $sql .=  " SELECT q1.split_config_id FROM q1 INNER JOIN q2 on q1.split_config_id = q2.split_config_id and q1.allcount = q2.matchcount;";
+        $aRS = $_OBJ_DB->getAllNames($sql);
+        return $aRS;
     }
 }
 ?>

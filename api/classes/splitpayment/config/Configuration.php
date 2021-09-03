@@ -133,15 +133,7 @@ class Configuration
                     $configuration->setActiveSplit($activeSplit);
                 }
             }
-            $paymentTypeString = implode(", ", $paymentTypes);
-            $sql = "with q1 as (
-                     SELECT split_config_id, count(split_config_id) as allcount 
-                     FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl GROUP BY split_config_id),";
-            $sql .=  "q2 as (
-                        SELECT split_config_id, count(split_config_id) as matchcount
-                        FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl WHERE payment_type IN (".$paymentTypeString.") GROUP BY split_config_id)";
-            $sql .=  " SELECT q1.split_config_id FROM q1 INNER JOIN q2 on q1.split_config_id = q2.split_config_id and q1.allcount = q2.matchcount;";
-            $aRS = $_OBJ_DB->getAllNames($sql);
+            $aRS = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes);
             $objConfig = array();
             if (is_array($aRS) === true && count($aRS) > 0)
             {
