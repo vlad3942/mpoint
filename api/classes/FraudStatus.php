@@ -41,7 +41,7 @@ class FraudStatus implements JsonSerializable, XMLSerializable
      */
     public function __construct($status_code=null, $status_desc=null, $pre_auth_ext_id=null, $pre_auth_ext_status_code=null,$post_auth_ext_id=null,$post_auth_ext_status_code=null)
     {
-        $this->status_code = $status_desc;
+        $this->status_code = $status_code;
         $this->status_desc = $status_desc;
         $this->pre_auth_ext_id = $pre_auth_ext_id;
         $this->pre_auth_ext_status_code = $pre_auth_ext_status_code;

@@ -1814,7 +1814,7 @@ class Home extends General
         }
 
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
-
+        $aTxnAdditionalData = $txnInfo->getAdditionalData("", true);
         $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
 
         if (empty($getFraudStatusCode) === FALSE) {
@@ -1862,7 +1862,6 @@ class Home extends General
         }
         $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
 
-        $aTxnAdditionalData = $txnInfo->getAdditionalData("", true);
         if ($aTxnAdditionalData !== NULL) {
             foreach ($aTxnAdditionalData as $name => $value) {
                 array_push($additionalData, new AdditionalData($name, $value));
@@ -1887,7 +1886,7 @@ class Home extends General
         // Add Purchased Products
         if (count($aProducts) > 0) {
             foreach ($aProducts["names"] as $key => $name) {
-                $aProductInfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+                $aProductInfo[] = new ProductInfo($name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
             }
         }
 
