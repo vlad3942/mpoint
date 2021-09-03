@@ -203,6 +203,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
+        $xml = '';
 		for ($i=0, $iMax = count($obj_DOM->pay); $i< $iMax; $i++)
 		{
 			// Set Global Defaults
@@ -229,11 +230,88 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				
 				
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
-					)
+ 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])) {
+                    $isVoucherRedeem = FALSE;
+                    $isVoucherRedeemStatus = -1;
+                    $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
+                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
+                    $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+                    $iPaymentTypes= array();
+                    for ($j = 0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j < $jMax; $j++) {
+                        $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
+                        $iPaymentTypes[] = $obj_card->getPaymentType();
+                    }
+                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0) // voucher payment
 				{
-                    if(isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}))
-                    {
+                        array_push($iPaymentTypes,Constants::iPAYMENT_TYPE_VOUCHER);
+                        if (in_array(Constants::iPAYMENT_TYPE_APM, $iPaymentTypes)) {
+                            $getNodes = $obj_DOM->xpath('//pay/transaction/*');
+                            $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $getNodes, $sessiontype, $is_legacy);
+                            if(isset($processVoucher['code'])) {
+                                if ($processVoucher['code'] == 52) {
+                                    $aMsgCds[52] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
+                                    $isVoucherErrorFound = TRUE;
+                                    $xml .= '<status code="52">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
+                                    $isVoucherRedeem = TRUE;
+                                } else if ($processVoucher['code'] == 53) {
+                                    $aMsgCds[53] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
+                                    $xml .= '<status code="53">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
+                                } else {
+                                    $isVoucherRedeem = TRUE;
+                                }
+                            }
+
+                            $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
+                            $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : TRUE;
+                            $isVoucherRedeem = !empty($processVoucher) ? $processVoucher['isVoucherRedeem'] : FALSE;
+
+                            $cardNode = $obj_DOM->{'pay'}[$i]->transaction->card;
+                            if ($isVoucherErrorFound === FALSE && ((is_object($cardNode) === false || count($cardNode) === 0) || $isVoucherPreferred !== "false")) {
+                                $VoucherRedeemStatus = General::redeemVoucherAuth($_OBJ_DB, $aHTTP_CONN_INFO, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $_OBJ_TXT, $obj_mCard, $is_legacy);
+                                $isVoucherRedeemStatus = $VoucherRedeemStatus['code'];
+                                $isVoucherRedeem       = $VoucherRedeemStatus['isVoucherRedeem'];
+                                if($isVoucherRedeemStatus === 24){
+                                    $xml .= '<status code="24">The selected payment card is not available</status>';
+                                }else if ($isVoucherRedeemStatus === 100) {
+                                    $xml .= '<status code="100">Payment authorized using Voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 43) {
+                                    header("HTTP/1.1 402 Payment Required");
+                                    $xml .= '<status code="43">Insufficient balance on voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 45) {
+                                    header("HTTP/1.1 401 Unauthorized");
+                                    $xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
+                                } elseif ($isVoucherRedeemStatus === 48) {
+                                    header("HTTP/1.1 423 Locked");
+                                    $xml .= '<status code="48">Voucher payment temporarily locked</status>';
+                                } else {
+                                    header("HTTP/1.1 502 Bad Gateway");
+                                    $xml .= '<status code="92">Payment rejected by voucher issuer</status>';
+                                }
+                            } else if ($isVoucherErrorFound === FALSE) {
+                                header("HTTP/1.1 412 Precondition Failed");
+                                $isVoucherRedeemStatus = 99;
+                                $xml .= '<status code="99">Voucher payment not configured for client</status>';
+                            }
+                        }
+                    }
+
+                    if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'pay'}[$i]->transaction->card) && count($obj_DOM->{'pay'}[$i]->transaction->card) > 0) {
+                        if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && (in_array(Constants::iPAYMENT_TYPE_APM, $iPaymentTypes)))
+                        {
+                            $misc = [];
+                            $misc["routeconfigid"] = -1;
+
+                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
+                            if ($txnObj !== NULL) {
+
+                                $obj_TxnInfo = $txnObj;
+                                $_OBJ_DB->query('COMMIT');
+                                $_OBJ_DB->query('START TRANSACTION');
+                            } else {
+                                $_OBJ_DB->query('ROLLBACK');
+                            }
+                        }
+                        if (isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'})) {
                         $additionalDataParamsCount = count($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->children());
                         for ($index = 0; $index < $additionalDataParamsCount; $index++)
                         {
@@ -315,12 +393,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
-                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
 
                         if (strtolower($is_legacy) == 'false') {
-                            $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
+                                $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
                         } else {
-                            $obj_CardResultSet = $obj_mPoint->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
+                                $obj_CardResultSet = $obj_mCard->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
                         }
 
                         if ($obj_CardResultSet === FALSE) {
@@ -776,6 +853,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 					}	// Card Loop End
+                    }else if($isVoucherRedeem === FALSE)
+                    {
+                        $_OBJ_DB->query("ROLLBACK");
+                        if($isVoucherRedeemStatus === -1) {
+                            header("HTTP/1.1 400 Bad Request");
+                            $xml .= '<status code="400">Invalid Tender</status>';
+                        }
+                    }
 				}
 				else
 				{

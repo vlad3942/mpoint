@@ -565,6 +565,7 @@ class General
              $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
 
              //link parent transaction to new created txn
+             /* to be removed after split payment changes */
              $index = count($additionalTxnData);
              $additionalTxnData[$index]['name'] = 'linked_txn_id';
              $additionalTxnData[$index]['value'] = (string)$txnInfo->getID();
@@ -572,10 +573,13 @@ class General
              $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
 
              //link new transaction to parent txn
+             /* to be removed after split payment changes */
              $additionalData[0]['name'] = 'linked_txn_id';
              $additionalData[0]['value'] = (string)$iAssociatedTxnId;
              $additionalData[0]['type'] = 'Transaction';
-             $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID());
+             $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID(),);
+             $txnIDs = [$txnInfo->getSessionId(),$txnInfo->getID()];
+             $txnInfo->setSplitSessionDetails($this->getDBConn(),$txnInfo->getSessionId(),$txnIDs);
 
              $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
              $this->logTransaction($obj_AssociatedTxnInfo);
@@ -2282,7 +2286,7 @@ class General
      * @param TxnInfo $obj_TxnInfo Data object with the Transaction Information
      * @param ClientInfo $obj_ClientInfo Reference to the Data object with the client information
      * @param $obj_ConnInfo Reference to the HTTP connection information
-     * @param int $clientid Associated client ID
+     * @param $clientid Associated client ID
      * @param int $countryId Hold ID of the country
      * @param int|null $currencyId The currency id that is used to display currency id for amount
      * @param null $amount The amount that has been captured for the customer Transaction. Default value 0
@@ -2301,13 +2305,188 @@ class General
         if ($obj_RS instanceof RoutingService) {
             $objTxnRoute   = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-
         }
         if ($iPrimaryRoute > 0) {
             $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
             $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
         }
         return $obj_CardResultSet;
+    }
+
+    public static function getRouteConfigurationAuth(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo,$clientid, $countryId,$currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL,$is_Associated_txn=TRUE)
+    {
+        $iPrimaryRoute = 0;
+        $obj_CardResultSet = FALSE;
+        $result = array();
+        $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $obj_ConnInfo, $clientid, $countryId, $currencyId, $amount, $cardTypeId,$issuerIdentificationNumber,$cardName,$obj_FailedPaymentMethod,$walletId);
+        if ($obj_RS instanceof RoutingService) {
+            $objTxnRoute   = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+
+        }
+        if ($iPrimaryRoute > 0) {
+            if($is_Associated_txn == false){
+            $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+            }
+            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+        }
+            $result['pspid']         = !empty($obj_CardResultSet)?$obj_CardResultSet['PSPID']:-1;
+            $result['routeconfigid'] = $iPrimaryRoute;
+            return $result;
+        }
+    /***
+     * Function used for voucher processing
+     *
+     */
+    public static function redeemVoucherAuth($_OBJ_DB,$aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$_OBJ_TXT,$obj_mCard,$is_legacy)
+    {
+        $isVoucherRedeemStatus = array();
+        foreach ($TXN_DOM->transaction->voucher as $voucher) {
+            $isVoucherRedeem = TRUE;
+            $misc = [];
+            if(isset($voucher->amount)){
+            $iAmount = (float)$voucher->amount;
+            }else{
+                $iAmount = $obj_TxnInfo->getAmount();
+            }
+            $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
+            $iPSPID = -1;
+            if (strtolower($is_legacy) === 'false') {
+                $typeId = Constants::iVOUCHER_CARD;
+                $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
+                $obj_ClientInfo = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $obj_CardResultSet = General::getRouteConfigurationAuth($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL, FALSE);
+                $iPSPID = $obj_CardResultSet['pspid'];
+            }else{
+                $aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
+                foreach ($aPaymentMethods as $m) {
+                    if ($m->getPaymentMethodID() === Constants::iVOUCHER_CARD) {
+                        $iPSPID = $m->getPSPID();
+                    }
+                }
+            }
+            if ($iPSPID > 0){
+                $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $iPSPID);
+
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB, $obj_TxnInfo, $misc);
+                $obj_mPoint->logTransaction($obj_TxnInfo);
+
+                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+
+                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                $passbookEntry = new PassbookEntry
+                (
+                    NULL,
+                    $iAmount,
+                    $obj_TxnInfo->getCurrencyConfig()->getID(),
+                    Constants::iAuthorizeRequested
+                );
+                if ($txnPassbookObj instanceof TxnPassbook) {
+                    $txnPassbookObj->addEntry($passbookEntry);
+                    $txnPassbookObj->performPendingOperations();
+                }
+                $redeemVoucher = $obj_Authorize->redeemVoucher((string)$voucher["id"], $iAmount);
+                $isVoucherRedeemStatus['code'] = $redeemVoucher;
+                $isVoucherRedeemStatus['isVoucherRedeem'] = $isVoucherRedeem;
+            }else{
+                $isVoucherRedeemStatus['code'] = 24;
+                $isVoucherRedeemStatus['isVoucherRedeem'] = $isVoucherRedeem;
+            }
+                return $isVoucherRedeemStatus;
+        }
+    }
+
+    public static function processVoucher($_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$aHTTP_CONN_INFO,$getNodes,$sessiontype,$is_legacy)
+    {
+        $isVoucherRedeem = FALSE;
+        $cardNode = $TXN_DOM->transaction->card;
+        $iAmount = (int)$obj_TxnInfo->getAmount();
+        $vAmount = 0;
+        $result  = [];
+        foreach($TXN_DOM->transaction->voucher as $voucher)
+        {
+            if(isset($voucher->amount) === TRUE)
+            {
+                $vAmount += (int) $voucher->amount;
+            }
+        }
+        if($vAmount > 0){
+            $iAmount = $vAmount;
+        }
+        // check voucher node is appearing before card node and according to that set preference
+        foreach($getNodes as $voucherPreferred) {
+            $preference[] = $voucherPreferred->getName();
+        }
+        $isVoucherPreferred = "true";
+        if($preference[0] == 'card'){
+            $isVoucherPreferred = "false";
+        }
+        $isVoucherErrorFound = FALSE;
+        if($sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0)
+        {
+            foreach ($TXN_DOM->transaction->voucher as $voucher)
+            {
+                $additionalTxnData = [];
+                if(empty($voucher['id']) === false){
+                    $additionalTxnData[0]['name'] = 'voucherid';
+                    $additionalTxnData[0]['value'] = (string)$voucher['id'];
+                    $additionalTxnData[0]['type'] = 'Transaction';
+                }
+
+                if($obj_TxnInfo->getAdditionalData() !== null)
+                {
+                    foreach ($obj_TxnInfo->getAdditionalData() as $key=>$value)
+                    {
+                        $index = count($additionalTxnData);
+                        $additionalTxnData[$index]['name'] = $key;
+                        $additionalTxnData[$index]['value'] = $value;
+                        $additionalTxnData[$index]['type'] = 'Transaction';
+                    }
+                }
+                $misc = [];
+                $misc['auto-capture'] = 2;
+                $iPSPID = -1;
+                if (strtolower($is_legacy) === 'false')
+                {
+                    $typeId   = Constants::iVOUCHER_CARD;
+                    $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
+                    $obj_ClientInfo     = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                    $obj_CardResultSet  = General::getRouteConfigurationAuth($_OBJ_DB,$obj_mCard,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $voucher->amount,$typeId, NULL,$cardName);
+                    $misc["routeconfigid"] = $obj_CardResultSet['routeconfigid'];
+                    $iPSPID                = $obj_CardResultSet['pspid'];
+                }
+                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
+                if ($txnObj !== NULL) {
+                    $_OBJ_DB->query('COMMIT');
+                    $_OBJ_DB->query('START TRANSACTION');
+                } else {
+                    $_OBJ_DB->query('ROLLBACK');
+                }
+            }
+            $isVoucherErrorFound = TRUE; //TO Bypass error flow
+        }else if($sessiontype > 1){
+            $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+            if ($iAmount > $pendingAmount) {
+                $isVoucherErrorFound = TRUE;
+                $result['code']     = 53;
+                $result['iAmount']  = $iAmount;
+            } else {
+                $obj_TxnInfo->updateTransactionAmount($_OBJ_DB, $iAmount);
+            }
+            $isVoucherRedeem = TRUE;
+        }else if((int)$obj_TxnInfo->getAmount() !== $iAmount)
+        {
+            $isVoucherErrorFound = TRUE;
+            $isVoucherRedeem = TRUE;
+            $result['code']     = 52;
+            $result['iAmount']  = $iAmount;
+        }
+        $result['isVoucherErrorFound'] = $isVoucherErrorFound;
+        $result['isVoucherPreferred']  = $isVoucherPreferred;
+        $result['isVoucherRedeem']     = $isVoucherRedeem;
+        return $result;
     }
 }
 ?>

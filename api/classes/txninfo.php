@@ -2679,5 +2679,52 @@ class TxnInfo
 	{
 		$this->_sExternalID = $sExternalID;
 	}
+
+	/**
+	 * Function to add split session details
+	 *
+	 * @param RDB $obj_DB
+	 * @param int $sessionID
+	 * @param int $txnID
+	 * @return void
+	 * @throws SQLQueryException
+	 * @throws mPointException
+	 */
+	public function setSplitSessionDetails(RDB $obj_DB, int $sessionID, array $txnIDs) : bool
+	{
+		if($sessionID > 0) {
+			//insert details into split session tbl
+			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Split_Session_Tbl_id_seq') AS id FROM DUAL";
+			$RS = $obj_DB->getName($sql);
+			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Split Session ID", 1001); }
+
+			$sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl(id,sessionid,status)
+						VALUES(". $RS["ID"] ."," . $sessionID. ", 'Active')";
+			if (is_resource($obj_DB->query($sql) ) === false)
+			{
+				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Split Session : ". $RS["ID"], 1002); }
+			}else{
+				$sequenceNo  = 1;
+				foreach($txnIDs as $insetTxnID){
+					$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Split_Details_Tbl_id_seq') AS id FROM DUAL";
+					$splitRS = $obj_DB->getName($sql);
+					if (is_array($splitRS) === false) {
+						throw new mPointException("Unable to generate new Split Details ID", 1001);
+					}
+					// insert record into split details table
+					$sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".Split_Details_Tbl
+							(id,split_session_id,transaction_id,sequence_no,payment_status)
+						VALUES
+							(". $splitRS["ID"] ."," . $RS["ID"]. ", ".$insetTxnID.",".$sequenceNo.",'Pending')";
+					if (is_resource($obj_DB->query($sql) ) === false)
+					{
+						if (is_array($RS) === false) { throw new mPointException("Unable to insert new record of Split Details: ". $RS["ID"], 1002); }
+					}
+					$sequenceNo++;
+				}
+			}
+		}
+		return true;
+	}
 }
 ?>
