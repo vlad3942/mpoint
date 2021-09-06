@@ -53,7 +53,7 @@ class CallbackAPITest extends baseAPITest
         return $status;
     }
 
-    public function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true,$amt=5000)
+    public function getCallbackDoc($transactionId, $orderId, $pspID, $iTransStatus, $bSendToken = true,$amt=5000, $year='20', $month='01')
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
@@ -69,8 +69,8 @@ class CallbackAPITest extends baseAPITest
             $xml .= '<token>4819253888096002</token>';
         }
         $xml .= '<expiry>';
-        $xml .= '<month>01</month>';
-        $xml .= '<year>20</year>';
+        $xml .= '<month>' .$month. '</month>';
+        $xml .= '<year>' .$year. '</year>';
         $xml .= '</expiry>';
         $xml .= '</card>';
         $xml .= '</transaction>';
@@ -372,12 +372,12 @@ class CallbackAPITest extends baseAPITest
             while ($row = pg_fetch_assoc($res)) {
                $affectedRows++;
             }
-            if ($affectedRows >= 12) {
+            if ($affectedRows >= 6) {
                 break;
             }
             sleep(2);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-		$this->assertEquals(12, $affectedRows);
+		$this->assertEquals(6, $affectedRows);
     }
 
     public function successfulPartialCapture($pspID,$iTransStatus)
@@ -652,5 +652,83 @@ class CallbackAPITest extends baseAPITest
             $cStates[] = $row["status"];
         }
         $this->assertEquals(Constants::sPassbookStatusDone, $cStates[0]);
+    }
+
+    public function successfulAutoCaptureUnionpay($pspID, $iTransStatus)
+    {
+        $this->bIgnoreErrors = true;
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', true)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, ".$pspID.", '1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, capture_type) VALUES (10099, 8, $pspID, 3)");
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10099, 'client',0)");
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client',0)");
+
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '900-55150298', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid, auto_capture,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1, 3,5000)");
+        $this->queryDB("INSERT INTO Log.additional_data_tbl (name, value, externalid, type) VALUES ('kpi_used', 'true', 1001001, 'Transaction')");
+
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (103,1001001, 5000,208,NULL,". Constants::iPAYMENT_ACCEPTED_STATE. ",'inprogress',102,10099)");
+
+        $xml = $this->getCallbackDoc(1001001, '900-55150298', $pspID, $iTransStatus, false, 5000, '2020', '01');
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(202, $iStatus);
+        $this->assertEquals("", $sReplyBody);
+
+        $aStates = array();
+        $cStates = array();
+        $retries = 0;
+        while ($retries++ <= 20)
+        {
+            $res =  $this->queryDB("SELECT stateid, data FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertTrue(is_resource($res) );
+            $aStates = array();
+            while ($row = pg_fetch_assoc($res) )
+            {
+                $aStates[] =$row["stateid"];
+                trigger_error($row['stateid']);
+                trigger_error($row['data']);
+            }
+            if (count($aStates) >= 15) { break; }
+            usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+
+        self::assertCount(15,$aStates );
+
+        $this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[0] );
+        $this->assertEquals(Constants::iPAYMENT_CAPTURED_STATE, $aStates[10] );
+        $this->assertEquals(Constants::iSESSION_COMPLETED, $aStates[5] );
+
+        $captureStateStatus = $this->queryDB("SELECT status FROM Log.Txnpassbook_Tbl WHERE transactionid = 1001001 and performedopt = 2000");
+        $this->assertTrue(is_resource($captureStateStatus));
+        while ($row = pg_fetch_assoc($captureStateStatus))
+        {
+            $cStates[] = $row["status"];
+        }
+        $this->assertEquals(Constants::sPassbookStatusDone, $cStates[0]);
+
+        $res =  $this->queryDB("SELECT data FROM Log.Message_Tbl WHERE txnid = 1001001  and stateid= 4030");
+        $this->assertTrue(is_resource($res) );
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $data[] =$row["data"];
+        }
+        $this->assertStringContainsString('card-number', $data[0]);
+        $this->assertStringContainsString('expiry', $data[0]);
     }
 }

@@ -6,9 +6,9 @@ if (function_exists('xml_encode') === false) {
 
             if (is_null($DOMDocument)) {
                 $DOMDocument =new DOMDocument();
-                $DOMDocument->formatOutput = true;
+                $DOMDocument->formatOutput = false;
                 xml_encode($mixed, $DOMDocument, $DOMDocument, true);
-                return $DOMDocument->saveHTML();
+                return preg_replace("/\r|\n/", '', $DOMDocument->saveHTML());
             }
             else{
                 if(is_object($mixed))
@@ -22,7 +22,7 @@ if (function_exists('xml_encode') === false) {
                         foreach ($annotation as $item) {
                             if (strpos($item, 'xmlName') !== false) {
                                 $index = strpos($item, 'xmlName') + strlen("xmlName") + 1;
-                                $xmlNodeName = substr($item, $index);
+                                $xmlNodeName = trim(preg_replace('/\s\s+/', ' ', substr($item, $index)));
                             }
                         }
                         $path = explode('\\', $className);

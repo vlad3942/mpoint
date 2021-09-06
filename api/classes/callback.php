@@ -479,6 +479,18 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
 	{
+	    if (empty($this->_obj_TxnInfo->getCardMask())) {
+	        if (empty($cardno) === false) {
+                $this->_obj_TxnInfo->setCardMask($cardno);
+            }
+        }
+
+	    if (empty($this->_obj_TxnInfo->getCardExpiry())) {
+	        if (empty($exp) === false && self::isValidExpiry($exp)) {
+                $this->_obj_TxnInfo->setCardExpiry($exp);
+            }
+        }
+	    $this->logTransaction($this->_obj_TxnInfo);
 
 		if($this->_obj_TxnInfo->getCallbackURL() != "") {
 			$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
@@ -1360,6 +1372,7 @@ abstract class Callback extends EndUserAccount
      */
 	private function publishMessage(string $body, array $filter = null, SurePayConfig &$obj_SurePay = NULL, int $attempt = 0)
     {
+        $response = false;
         try {
             $messageQueueClient = MessageQueueClient::GetClient();
             $messageQueueClient->authenticate();
@@ -1380,7 +1393,7 @@ abstract class Callback extends EndUserAccount
             $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_SEND_FAILED_STATE, $e->getMessage());
         }
 
-        if (($obj_SurePay instanceof SurePayConfig) === TRUE && $attempt < $obj_SurePay->getMax()) {
+        if ($response === false && ($obj_SurePay instanceof SurePayConfig) === TRUE && $attempt < $obj_SurePay->getMax()) {
             $attempt++;
             sleep($obj_SurePay->getDelay() * $attempt);
             trigger_error("mPoint Callback request retried for Transaction: " . $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
@@ -1430,6 +1443,14 @@ abstract class Callback extends EndUserAccount
             }
         }
         return $departureDetails;
+    }
+
+    public static function isValidExpiry(string $expiryDate)
+    {
+        if (DateTime::createFromFormat('Y-m', $expiryDate) !== false || DateTime::createFromFormat('m/y', $expiryDate) !== false) {
+            return true;
+        }
+        return false;
     }
 }
 ?>

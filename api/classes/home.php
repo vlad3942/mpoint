@@ -1795,10 +1795,7 @@ class Home extends General
             $pspId = $txnInfo->getPSPID();
             $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
         }
-        if ($obj_PSPConfig === null)
-        {
-            $obj_PSPConfig = General::producePSPConfigObject($this->getDBConn(), $txnInfo, null, $txnInfo->getPSPID());
-        }
+
         if (($txnInfo->getAccountID() > 0) === TRUE) {
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
             $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
@@ -1814,7 +1811,7 @@ class Home extends General
         }
 
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
-
+        $aTxnAdditionalData = $txnInfo->getAdditionalData("", true);
         $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
 
         if (empty($getFraudStatusCode) === FALSE) {
@@ -1845,6 +1842,7 @@ class Home extends General
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
+
         if (!is_null($obj_PSPConfig)) {
             $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
         }
@@ -1862,7 +1860,6 @@ class Home extends General
         }
         $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
 
-        $aTxnAdditionalData = $txnInfo->getAdditionalData("", true);
         if ($aTxnAdditionalData !== NULL) {
             foreach ($aTxnAdditionalData as $name => $value) {
                 array_push($additionalData, new AdditionalData($name, $value));
@@ -1887,7 +1884,7 @@ class Home extends General
         // Add Purchased Products
         if (count($aProducts) > 0) {
             foreach ($aProducts["names"] as $key => $name) {
-                $aProductInfo[] = new ProductInfo(name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+                $aProductInfo[] = new ProductInfo($name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
             }
         }
 
