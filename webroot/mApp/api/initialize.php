@@ -506,51 +506,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if($sessionType > 1)
                             {
                                 try {
-                                    $activeSplit = "<active_split><current_split_sequence>2</current_split_sequence>
-                                                        <transactions>
-                                                            <transaction><payment_type>1</payment_type><id>1</id><sequence>1</sequence></transaction>
-                                                        </transactions>
-                                                    </active_split>";
-                                    $session = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                                    if ($obj_ClientConfig->getID() === 10077) {
+                                    $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
+                                    if ($splitPaymentConfig instanceof Configuration) {
                                         $xml .= "<split_payment>";
-                                        if (empty($session) === false) {
-                                            $xml .= $activeSplit;
-                                        }
-                                        $xml .= "<configuration><applicable_combinations><combination>
-                                                    <payment_type><id>1</id><sequence>1</sequence></payment_type>
-                                                    <payment_type><id>2</id><sequence>2</sequence></payment_type>
-                                                    <is_one_step_authorization>true</is_one_step_authorization>
-                                                </combination>
-                                                <combination>
-                                                    <payment_type><id>3</id><sequence>1</sequence></payment_type>
-                                                    <payment_type><id>2</id><sequence>2</sequence></payment_type>
-                                                    <is_one_step_authorization>true</is_one_step_authorization>
-                                                </combination>
-                                                <combination>
-                                                    <payment_type><id>4</id><sequence>1</sequence></payment_type>
-                                                    <payment_type><id>2</id><sequence>2</sequence></payment_type>
-                                                    <is_one_step_authorization>true</is_one_step_authorization>
-                                                </combination></applicable_combinations></configuration>";
+                                        $xml .= $splitPaymentConfig->toXML();
                                         $xml .= "</split_payment>";
-                                    } else if ($obj_ClientConfig->getID() === 10101) {
-                                        $xml .= "<split_payment>";
-                                        if (empty($session) === true) {
-                                            $xml .= $activeSplit;
-                                        }
-                                        $xml .= "<configuration><applicable_combinations><combination>
-                                                    <payment_type><id>1</id><sequence>1</sequence></payment_type>
-                                                    <payment_type><id>1</id><sequence>2</sequence></payment_type>
-                                                    <is_one_step_authorization>false</is_one_step_authorization>
-                                                </combination></applicable_combinations></configuration>";
-                                        $xml .= "</split_payment>";
-                                    } else {
-                                        $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
-                                        if ($splitPaymentConfig instanceof Configuration) {
-                                            $xml .= "<split_payment>";
-                                            $xml .= $splitPaymentConfig->toXML();
-                                            $xml .= "</split_payment>";
-                                        }
                                     }
                                 }
                                 catch (JsonException $e) {

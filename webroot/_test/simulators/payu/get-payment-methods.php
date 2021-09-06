@@ -13,10 +13,10 @@ if (true )
             <root>
                 <active-payment-menthods>
                     <payment-method>
-                        <logoName>8224_CASH</logoName>
-                        <logoURL>8224_CASH</logoURL>
+                        <logoName>1022_CASH</logoName>
+                        <logoURL>1022_CASH</logoURL>
                         <displayName>Efecty</displayName>
-                        <issuingBank>8224</issuingBank>
+                        <issuingBank>1022</issuingBank>
                     </payment-method>
                 </active-payment-menthods>
             </root>';

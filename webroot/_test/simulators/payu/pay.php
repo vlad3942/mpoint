@@ -19,7 +19,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/../xsd/pay.xsd') )
 
     echo '<?xml version="1.0" encoding="utf-8"?>
         <root>
-            <url content-type="application/x-www-form-urlencoded" method="POST">https://osafetypay.com/gateway.do</url>
+            <url content-type="application/x-www-form-urlencoded" method="POST">https://sandbox.api.payulatam.com/payments-api/pse-caller</url>
             <hidden-fields>
             </hidden-fields>
             <accept-url>http://localhost/mpoint/alipay/process-response</accept-url>
