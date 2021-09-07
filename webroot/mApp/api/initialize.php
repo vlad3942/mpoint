@@ -687,16 +687,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), (int)$obj_XML->item[$j]["type-id"], NULL,(string)$obj_XML->item[$j]->name,(int)$obj_XML->item[$j]["walletid"]);
                                                 $pspId = (int)$obj_CardResultSet['PSPID'];
                                             }
-
                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
-                                            echo "test1";print_r($obj_Processor);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
-                                                echo "test2";print_r($activePaymentMenthodsResponseXML);
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
                                                     $cardXML .= $activePaymentMenthodsResponseXML->{'active-payment-menthods'}->asXML();
                                                 }
-                                                echo "cardtest";print_r($cardXML);die;
                                             }
                                         }
                                         catch (Exception $e) {}
