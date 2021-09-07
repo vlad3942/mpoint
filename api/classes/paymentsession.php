@@ -195,7 +195,7 @@ final class PaymentSession
         return $this->_id;
     }
 
-    public function updateState($stateId = null)
+    public function updateState(int $stateId = null)
     {
         if ($stateId == null)
         {
@@ -230,11 +230,29 @@ final class PaymentSession
             }
 
             if ($this->isValidStateForLogging($stateId)) {
-                $this->_iStateId = intval($stateId);
+                $this->_iStateId = $stateId;
                 $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
                 $RS1 = $this->_obj_Db->query($sql);
                 if (is_resource($RS1) === true)
                 {
+                    if($stateId === Constants::iSESSION_EXPIRED || $stateId === Constants::iSESSION_FAILED || $stateId === Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS)
+                    {
+                        if($this->getSessionType() > 1) {
+                            $isReoffer = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
+                            $isManualRefund = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                            if ($isReoffer === true) {
+                                global $_OBJ_TXT;
+                                $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
+                                $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);
+                            }
+                        }
+                    }
+                    elseif($stateId === Constants::iSESSION_COMPLETED)
+                    {
+                        global $_OBJ_TXT;
+                        $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
+                        $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Success');
+                    }
                     return 1;
                 }
             }
@@ -272,6 +290,11 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
+                AND txn.id not in (SELECT Sdt.Transaction_Id
+                                    FROM Log.Split_Details_Tbl AS Sdt
+                                             INNER JOIN Log.Split_Session_Tbl Sst ON Sst.Id = Sdt.Split_Session_Id
+                                    WHERE Sessionid = " . $this->_id . "
+                                      AND Sst.Status = 'failed')
                 AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")
                 ";
 
@@ -466,15 +489,15 @@ final class PaymentSession
     {
         $currentState = $this->_iStateId;
         switch ($sessionState) {
-            case '4020' :
-            case '4021' :
-            case '4030' :
-            case '4010' :
-                if (in_array($currentState, ['4030', '4010', '4021', '4020']))
+            case 4020 :
+            case 4021 :
+            case 4030 :
+            case 4010 :
+                if (in_array($currentState, [4030, 4010, 4021, 4020]))
                     return false;
                 break;
-            case '4031' :
-                if ($currentState != '4001')
+            case 4031 :
+                if ($currentState != 4001)
                     return false;
                 break;
             default :

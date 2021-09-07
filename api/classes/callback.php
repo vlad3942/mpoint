@@ -1067,7 +1067,7 @@ abstract class Callback extends EndUserAccount
     public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null, int $sub_code_id=0 )
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
-		$isStateUpdated = $sessionObj->updateState($state);
+		$isStateUpdated = $sessionObj->updateState((int)$state);
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
 			// check legacy callback flow to follow or cpds callback flow
