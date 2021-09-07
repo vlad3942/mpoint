@@ -146,6 +146,18 @@ final class GeneralPSP extends CPMACQUIRER
             if ($txnPassbookObj instanceof TxnPassbook) {
                 try {
                     $txnPassbookObj->addEntry($passbookEntry);
+                }
+                catch (Exception $e) {
+                    trigger_error($e, E_USER_WARNING);
+                }
+            }
+
+            if($txnPassbookObj instanceof TxnPassbook && (($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
+                    &&  $this->getTxnInfo()->hasEitherState($this->getDBConn(),[Constants::iPAYMENT_CAPTURED_STATE]) === true)
+                    || ($this->getTxnInfo()->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt
+                        && $this->getTxnInfo()->hasEitherState($this->getDBConn(),[Constants::iPAYMENT_ACCEPTED_STATE]))))
+            {
+                try {
                     $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO);
                     $code = reset($codes);
                 }
@@ -153,9 +165,14 @@ final class GeneralPSP extends CPMACQUIRER
                     trigger_error($e, E_USER_WARNING);
                 }
             }
-            $this->updateTxnInfoObject();
+            else
+            {
+                return $aMsgCds;
+            }
+
             // Refund operation succeeded
-            if (in_array($code, [ Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE ])) {
+            if (in_array($code, [ 1000, 1001 ])) {
+                $this->updateTxnInfoObject();
                 $aMsgCds[$code] = "Success";
                 // Perform callback to Client
                 if ($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUNDED_STATE) === TRUE) {

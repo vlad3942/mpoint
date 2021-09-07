@@ -554,7 +554,7 @@ class GeneralTest extends baseAPITest
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001005, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
         $obj_general = new General($this->_OBJ_DB, $this->_OBJ_TXT);
-        $aSuccessfulTxn = $obj_general->getSuccessfulTxnFromSession(1, 10018);
+        $aSuccessfulTxn = $obj_general->getSuccessfulTxnFromSession(10018,1);
 
         self::assertContains(1001001, $aSuccessfulTxn);
         self::assertContains(1001002, $aSuccessfulTxn);
@@ -562,7 +562,7 @@ class GeneralTest extends baseAPITest
         self::assertNotContains(1001004, $aSuccessfulTxn);
         self::assertNotContains(1001005, $aSuccessfulTxn);
 
-        $aSuccessfulTxn = $obj_general->getSuccessfulTxnFromSession(1, 10099);
+        $aSuccessfulTxn = $obj_general->getSuccessfulTxnFromSession(10099, 1);
         self::assertCount(0, $aSuccessfulTxn);
 
     }

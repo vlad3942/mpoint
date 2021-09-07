@@ -37,7 +37,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
 
         $aTxnData = [];
-        $aTxnId = $obj_mPoint->getSuccessfulTxnFromSession($sessionid, $clientid);
+        $aTxnId = $obj_mPoint->getSuccessfulTxnFromSession($clientid, $sessionid);
         $obj_TxnInfo = null;
 
         foreach ($aTxnId as $txnId) {

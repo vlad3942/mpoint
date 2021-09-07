@@ -2489,7 +2489,7 @@ class General
         return $aRS;
     }
 
-    public function getSuccessfulTxnFromSession(int $sessionId, int $clientId) : array
+    public function getSuccessfulTxnFromSession(int $clientId, int $sessionId, string $excludeStateFilter = '') : array
     {
         $result = [];
 
@@ -2500,9 +2500,9 @@ class General
                                           ON txn.id = msg.txnid
                       WHERE sessionid = '.$sessionId.'
                       AND clientid = '.$clientId.'
-                      AND msg.stateid in ('.Constants::iPAYMENT_PENDING_STATE.', '.Constants::iPAYMENT_ACCEPTED_STATE.', '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.')) s
+                      AND msg.stateid in ('.Constants::iPAYMENT_PENDING_STATE.', '.Constants::iPAYMENT_ACCEPTED_STATE.', '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE. $excludeStateFilter.')) s
                 where s.rn = 1
-                  and s.stateid <>  '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE;
+                  and s.stateid not in  ('.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE . $excludeStateFilter . ')';
 
         $RSMsg = $this->getDBConn()->query($sql);
 
@@ -2512,5 +2512,78 @@ class General
         }
         return $result;
     }
+
+    /**
+     * @param int $clientId
+     * @param int $sessionId
+     * @return array
+     */
+    public function rollbackTransaction(int $clientId, int $sessionId ) : array
+    {
+        global $aHTTP_CONN_INFO;
+        $responses = [];
+        $additionalFilter = ', '.Constants::iPAYMENT_CANCELLED_STATE.', ' . Constants::iPAYMENT_REFUNDED_STATE;
+        $aTransactionId = $this->getSuccessfulTxnFromSession($clientId, $sessionId, $additionalFilter);
+        foreach ($aTransactionId as $transactionId) {
+            $objTxnInfo = TxnInfo::produceInfo($transactionId, $this->getDBConn());
+            $objGeneralPSP = new GeneralPSP($this->getDBConn(), $this->getText(), $objTxnInfo, $aHTTP_CONN_INFO, NULL, NULL);
+            $response = $objGeneralPSP->voidTransaction($objGeneralPSP->getTxnInfo()->getAmount(), 'Void triggered from Auto Rollback module');
+            $responses[$transactionId] = array_key_first($response);
+        }
+        return $responses;
+    }
+
+    /**
+     * @param int $clientId Client Id
+     * @param int $sessionId Session Id
+     * @param string $status Split Session status
+     * @return bool
+     */
+    public function changeSplitSessionStatus(int $clientId, int $sessionId, string $status, bool $isManualRefund = false): bool
+    {
+        //Once Auto Refund cron is in place below function call will be replaced by function where
+        //Successful transaction will be mark for rollback.
+        if($status !== 'Success' && $isManualRefund === false) {
+            $this->rollbackTransaction($clientId, $sessionId);
+        }
+
+        $paymentSession = PaymentSession::Get($this->getDBConn(), $sessionId);
+        if($status !== 'Success' || $paymentSession->getPendingAmount() === 0) {
+            try {
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl
+				SET	status = '" . $status . "'
+				WHERE sessionid = " . $sessionId . " and status = 'Active'";
+                $res = $this->getDBConn()->query($sql);
+
+                return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
+            } catch (SQLQueryException $SQLQueryException) {
+                trigger_error('Unable to update Split Session status. Payment Session id: ' . $sessionId, E_USER_ERROR);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param int $txnId
+     * @param string $status Split Session status
+     * @return bool
+     */
+    public function changeSplitDetailStatus(int $txnId, string $status): bool
+    {
+        try {
+            $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Split_Details_Tbl
+				SET	payment_status = '". $status ."'
+				WHERE transaction_id = ". $txnId ;
+            $res = $this->getDBConn()->query($sql);
+
+            return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
+        }
+        catch (SQLQueryException $SQLQueryException)
+        {
+            trigger_error('Unable to update Split Details Status. Transaction id: '. $txnId, E_USER_ERROR);
+        }
+        return false;
+    }
+
 }
 ?>
