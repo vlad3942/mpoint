@@ -34,13 +34,4 @@
 
     </changeSet>
 
-    <changeSet author="Kalpesh Parikh"
-               id="2021-09-07-setup-v2.29.0-log-1">
-
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.order_tbl;
-        </sql>
-
-    </changeSet>
-
 </databaseChangeLog>
