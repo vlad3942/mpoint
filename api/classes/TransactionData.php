@@ -109,6 +109,11 @@ class TransactionData implements JsonSerializable, XMLSerializable
 
     private int $installment;
 
+    private string $accept_url;
+
+    private string $cancel_url;
+
+
     /**
      * TransactionData constructor.
      *
@@ -409,6 +414,38 @@ class TransactionData implements JsonSerializable, XMLSerializable
     {
         $vars = get_object_vars($this);
         return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return string
+     */
+    public function getAcceptUrl(): string
+    {
+        return $this->accept_url;
+    }
+
+    /**
+     * @param string $accept_url
+     */
+    public function setAcceptUrl(string $accept_url): void
+    {
+        $this->accept_url = $accept_url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCancelUrl(): string
+    {
+        return $this->cancel_url;
+    }
+
+    /**
+     * @param string $cancel_url
+     */
+    public function setCancelUrl(string $cancel_url): void
+    {
+        $this->cancel_url = $cancel_url;
     }
 
 }

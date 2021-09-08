@@ -45,8 +45,8 @@ class CombinationTest extends baseAPITest
     {
         $paymentType = new PaymentType(1, 1);
         $paymentType1 = new PaymentType(3, 2);
-        $combinations = new Combination(array($paymentType,$paymentType1));
-        $this->assertEquals('<combination><payment_type><id>1</id><index>1</index><is_clubbable>false</is_clubbable></payment_type><payment_type><id>3</id><index>2</index><is_clubbable>false</is_clubbable></payment_type></combination>',$combinations->toXML());
+        $combinations = new Combination(array($paymentType,$paymentType1),false);
+        $this->assertEquals('<combination><payment_type><id>1</id><sequence>1</sequence></payment_type><payment_type><id>3</id><sequence>2</sequence></payment_type><is_one_step_authorization>false</is_one_step_authorization></combination>',$combinations->toXML());
     }
 
     public function test__construct(): void

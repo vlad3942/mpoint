@@ -111,15 +111,19 @@ class SplitPaymentAuthorizeTest extends baseAPITest
     }
 
 
-    protected function getAuthDoc($client, $account, $txn = 1, $amount = 100,$aDccParams=null,$currecyid = null,$hmac = null)
+    protected function getAuthDoc($client, $account, $txn = 1, $amount = 100,$aDccParams=null,$currecyid = null,$hmac = null,$voucherFirst=true)
     {
+        $voucher = '<voucher id="61775" order-no="800-123456">';
+        $voucher .= '<amount country-id="100">'.($amount-95).'</amount>';
+        $voucher .= '</voucher>';
+
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<authorize-payment client-id="' . $client . '" account="' . $account . '">';
         $xml .= '<transaction id="' . $txn . '">';
-        $xml .= '<voucher id="61775" order-no="800-123456">';
-        $xml .= '<amount country-id="100">'.($amount-95).'</amount>';
-        $xml .= '</voucher>';
+        if($voucherFirst==true){
+            $xml .= $voucher;
+        }
         $xml .= '<card id="61775" type-id="1">';
         $xml .= '<amount country-id="100"';
         if(isset($currecyid) === true) $xml .= ' currency-id="'.$currecyid.'"';
@@ -130,6 +134,9 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         }
         else  $xml .=  ($amount-5) . '</amount>';
         $xml .= '</card>';
+        if($voucherFirst==False){
+            $xml .= $voucher;
+        }
         if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
         if(isset($aDccParams))
         {
@@ -400,7 +407,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('isVoucherPreferred', 'false', true, 10099, 'client', 0);");
 
 
-        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100);
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,null,null,null,false);
 
         $this->_httpClient->connect();
 
@@ -485,7 +492,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             "12345",
             "4","208","95"
         );
-        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,$aDccParams,840,'df71f2bfd28803159cec82017c01a6c023174e81b8db85c0c4c8a5ad0df98c31f5a8455a19dfe1aa90b4881eeaf0693d7242a6346621cedf3acdae7acd20a1ab');
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,$aDccParams,840,'df71f2bfd28803159cec82017c01a6c023174e81b8db85c0c4c8a5ad0df98c31f5a8455a19dfe1aa90b4881eeaf0693d7242a6346621cedf3acdae7acd20a1ab',false);
 
 
         $this->_httpClient->connect();
@@ -588,10 +595,11 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $this->assertCount(5, $aStates);
         $this->assertEquals(2010, $aStates[0]);
-        $this->assertEquals(1991, $aStates[1]);
-        $this->assertEquals(1992, $aStates[2]);
-        $this->assertEquals(1990, $aStates[3]);
+        $this->assertEquals(1990, $aStates[1]);
+        $this->assertEquals(1991, $aStates[2]);
+        $this->assertEquals(1992, $aStates[3]);
         $this->assertEquals(1990, $aStates[4]);
+
     }
 
 
