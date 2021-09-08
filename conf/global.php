@@ -886,10 +886,11 @@ $aHTTP_CONN_INFO["payu"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["payu"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["payu"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["payu"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["payu"]["paths"]["initialize"] = "/mpoint/payu/initialize";
-$aHTTP_CONN_INFO["payu"]["paths"]["auth"] = "/mpoint/payu/authorize-payment";
-$aHTTP_CONN_INFO["payu"]["paths"]["refund"] = "/mpoint/payu/refund";
-$aHTTP_CONN_INFO["payu"]["paths"]["callback"] = "/mpoint/payu/callback";
+$aHTTP_CONN_INFO["payu"]["paths"]["initialize"] = "/mpoint/aggregator/payu/initialize";
+$aHTTP_CONN_INFO["payu"]["paths"]["auth"] = "/mpoint/aggregator/payu/authorize-payment";
+$aHTTP_CONN_INFO["payu"]["paths"]["refund"] = "/mpoint/aggregator/payu/refund";
+$aHTTP_CONN_INFO["payu"]["paths"]["callback"] = "/mpoint/aggregator/payu/callback";
+$aHTTP_CONN_INFO["payu"]["paths"]["get-payment-methods"] = "/mpoint/aggregator/payu/get-payment-methods";
 
 /**
  * Connection info for connecting to Cielo
