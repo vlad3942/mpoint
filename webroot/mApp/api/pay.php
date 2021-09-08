@@ -666,6 +666,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
 										if( $processorType === Constants::iPAYMENT_TYPE_OFFLINE || $processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
 										{
+                                            //Refresh TxnInfo obj In case of Wallet payment to get wallet-id
+                                            $oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
 											(
