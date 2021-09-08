@@ -218,8 +218,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
                         }
                     }
+                    $initAmount = (int) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 
-
+                    $sessionId = (int)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
+                    $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
+                    if($sessionId > 1 )
+                    {
+                        $obj_PaymentSession = PaymentSession::Get($_OBJ_DB,$sessionId);
+                        if($obj_PaymentSession->getSessionType() > 2 && $obj_PaymentSession->getAmount() === $initAmount)
+                        {
+                            $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                            $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
+                            $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_PaymentSession->getId(), 'Failed', $isManualRefund);
+                        }
+                    }
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -335,11 +347,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid'], $parentTxnId);
                             $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
 
-
-
-                            $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                             $data['sessionid'] = $sessionId;
-                            $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
                             if($sessionType > 1 )
                                 $data['sessiontype']=$sessionType;
                             //var_dump($data['attempt']);die;
@@ -374,6 +382,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="'. Constants::iSESSION_ALREADY_COMPLETED .'">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_ALREADY_COMPLETED, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
+                            }
+                            elseif($obj_TxnInfo->getPaymentSession()->getPendingAmount() < $obj_TxnInfo->getAmount())
+                            {
+                                $xml = '<status code="53">Amount is more than pending amount:'. $obj_TxnInfo->getAmount() .'</status>';
                             }
                             elseif (strtolower($is_legacy) != 'false' && $obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= $maxSessionRetryCount)
                             {

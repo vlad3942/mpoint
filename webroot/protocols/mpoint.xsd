@@ -1314,6 +1314,17 @@
 			</xs:element>
 			<!-- Validate Rule -->
 
+			<!-- Get Successful Txn From Session -->
+			<xs:element name="get-successful-txn-from-session" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="session-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Successful Txn From Session -->
+
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
