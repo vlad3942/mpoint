@@ -225,7 +225,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     if($sessionId > 1 )
                     {
                         $obj_PaymentSession = PaymentSession::Get($_OBJ_DB,$sessionId);
-                        if($obj_PaymentSession->getSessionType() > 2 && $obj_PaymentSession->getAmount() === $initAmount)
+                        if($obj_PaymentSession->getSessionType() > 1 && $obj_PaymentSession->getAmount() === $initAmount)
                         {
                             $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
                             $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
