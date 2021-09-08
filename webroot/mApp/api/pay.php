@@ -234,7 +234,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $isVoucherRedeemStatus = -1;
                     $validRequest= true;
                     $isTxnCreated = False;
-                    $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
+                    $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                     $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
@@ -268,7 +268,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         array_push($paymentTypes,$iPaymentTypes);
                     }
                     //validate the request against active split
-                    if($sessiontype > 1){
+                    if($iSessionType > 1){
                         // check if txn is retry in same split session
                         $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
                         if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
@@ -284,7 +284,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0 && $validRequest==true) // voucher payment
 				    {
                          if (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)) {
-                            $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $sessiontype, $is_legacy);
+                            $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $iSessionType, $is_legacy);
                             if(isset($processVoucher['code'])) {
                                 if ($processVoucher['code'] == 52) {
                                     $aMsgCds[52] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
@@ -334,8 +334,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
                     }
 
-                    if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'pay'}[$i]->transaction->card) && count($obj_DOM->{'pay'}[$i]->transaction->card) > 0 && $validRequest==true) {
-                        if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)))
+                    if ((($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'pay'}[$i]->transaction->card) && count($obj_DOM->{'pay'}[$i]->transaction->card) > 0 && $validRequest==true) {
+                        if ($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)))
                         {
                             $misc = [];
                             $misc["routeconfigid"] = -1;
@@ -350,9 +350,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $_OBJ_DB->query('ROLLBACK');
                             }
                         }
-                        if($isTxnCreated == false && $sessiontype > 1 && in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
+                        if($isTxnCreated == false && $iSessionType > 1 && in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                             $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                         }
+                        $additionalTxnData = [];
                         if (isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'})) {
                         $additionalDataParamsCount = count($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->children());
                         for ($index = 0; $index < $additionalDataParamsCount; $index++)
@@ -454,7 +455,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $ip);
-                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
 
                         if (strlen($obj_ClientConfig->getSalt() ) > 0 && $iSessionType != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
                         {
@@ -468,8 +468,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 						$iSaleAmount = 0;
-						
-						if($iSessionType > 1 && $obj_CardResultSet["DCCENABLED"] === false )
+
+						if($iSessionType > 1 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true )
 						{
 							if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
 							{
@@ -666,8 +666,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										//For APM and Gateway only we have to trigger authorize requested so that passbook will get updated with authorize requested and performed opt entry
 										if( $processorType === Constants::iPAYMENT_TYPE_OFFLINE || $processorType === Constants::iPROCESSOR_TYPE_APM || $processorType === Constants::iPROCESSOR_TYPE_GATEWAY)
 										{
-                                            //Refresh TxnInfo obj In case of Wallet payment to get wallet-id
-                                            $oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 											$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
 											$passbookEntry = new PassbookEntry
 											(

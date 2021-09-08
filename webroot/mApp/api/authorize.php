@@ -254,7 +254,7 @@ try
 							    $isVoucherRedeemStatus = -1;
 							    $validRequest = true;
 							    $isTxnCreated = False;
-                                $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
+                                $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
                                 $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
@@ -289,7 +289,7 @@ try
                                     array_push($paymentTypes,$iPaymentTypes);
                                 }
                                 //validate the request against active split
-                                if($sessiontype > 1){
+                                if($iSessionType > 1){
                                     // check if txn is retry in same split session
                                     $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
                                     if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
@@ -305,7 +305,7 @@ try
                                 if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher) > 0 && $validRequest==true) // Authorize voucher payment
                                 {
                                     if (!in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)) {
-                                        $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'authorize-payment'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $sessiontype, $is_legacy);
+                                        $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'authorize-payment'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $iSessionType, $is_legacy);
                                         if(isset($processVoucher['code'])) {
                                             if ($processVoucher['code'] == 52) {
                                                 $aMsgCds[52] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
@@ -352,10 +352,10 @@ try
                                     }
                                 }
 
-								if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0 && $validRequest==true)
+								if ((($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0 && $validRequest==true)
 								{
 
-                                    if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType))
+                                    if ($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType))
                                     {
                                         $misc = [];
                                         $misc["routeconfigid"] = -1;
@@ -370,7 +370,7 @@ try
                                             $_OBJ_DB->query('ROLLBACK');
                                         }
                                     }
-                                    if($isTxnCreated == false && $sessiontype > 1 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
+                                    if($isTxnCreated == false && $iSessionType > 1 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                                         $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                                     }
                                     $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
@@ -507,7 +507,6 @@ try
                                             }
                                         }
 
-                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
                                             $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
@@ -553,7 +552,6 @@ try
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                             CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
                                             $ip);
-                                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
 
                                         $obj_TransacionCountryConfig = null;
                                         if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
