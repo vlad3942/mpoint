@@ -107,73 +107,26 @@ class Configuration
     public static function ProduceConfig($_OBJ_DB, int $clientId, array $paymentTypes,string $sessionId)
     {
         if (!empty($clientId)) {
-            $configuration = new Configuration();
-            if(!empty($sessionId)){
-                $currentSplit = 1;
-                $sql = "SELECT MAX(SD.sequence_no) as sequence_no FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD 
-                        INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS on SS.id = SD.split_session_id
-                        WHERE SS.sessionid = ".$sessionId." AND SD.payment_status='Success'";
-                $res = $_OBJ_DB->getName($sql);
-                if (is_array($res) === true)
-                {
-                    $currentSplit += (int)$res['SEQUENCE_NO'];
-                }
-                $configuration->setCurrentSplitSeq($currentSplit);
-                $sql = "SELECT SD.transaction_id,SD.sequence_no,C.paymenttype FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD
-                INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS ON SS.id = SD.split_session_id
-                INNER JOIN LOG".sSCHEMA_POSTFIX.".transaction_tbl T ON T.id = SD.transaction_id 
-                INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".card_tbl C ON  C.id = T.cardid
-                WHERE SS.sessionid = ".$sessionId." AND SD.payment_status='Success'";
-                $aRS = $_OBJ_DB->getAllNames($sql);
-                $activeSplit= array();
-                if (is_array($aRS) === true && count($aRS) > 0) {
-                    foreach ($aRS as $rs) {
-                        $activeSplit[] = $rs;
-                    }
-                    $configuration->setActiveSplit($activeSplit);
-                }
-            }
-            $aRS = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes);
-            $objConfig = array();
-            if (is_array($aRS) === true && count($aRS) > 0)
-            {
-                for($i=0; $i<count($aRS); $i++) {
-                    $sqlS  = "SELECT CM.payment_type,CM.sequence_no,CF.is_one_step_auth
-                             FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl CM
-                             INNER JOIN Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF ON CF.id= CM.split_config_id
-                             WHERE CM.split_config_id = ". $aRS[$i]["SPLIT_CONFIG_ID"] ." AND CF.enabled =true ORDER BY CM.sequence_no ASC";
-                    $RS = $_OBJ_DB->getAllNames($sqlS);
-                    $K=0;
-                    if (is_array($RS) === true && count($RS) > 0) {
-                        for ($j=0; $j<count($RS); $j++){
-                            $objConfig["applicable_combinations"][$i]['payment_type'][$K]['id'] = $RS[$j]["PAYMENT_TYPE"];
-                            $objConfig["applicable_combinations"][$i]['payment_type'][$K]['sequence'] = $RS[$j]["SEQUENCE_NO"];
-                            $objConfig["applicable_combinations"][$i]['is_one_step_authorization'] = $RS[$j]["IS_ONE_STEP_AUTH"];
-                            $K++;
+            $applicableCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,$clientId,$sessionId);
+            if($applicableCombinations) {
+                $objConfig      = $applicableCombinations['objConfig'];
+                $configuration  = $applicableCombinations['configuration'];
+                if (array_key_exists('applicable_combinations', $objConfig)) {
+                    foreach ($objConfig['applicable_combinations'] as $combinations) {
+                        if (array_key_exists('payment_type', $combinations)) {
+                            $objCombination = new Combination();
+                            foreach ($combinations['payment_type'] as $paymentType) {
+                                $objPaymentTypes = new PaymentType((int)$paymentType["id"], (int)$paymentType["sequence"]);
+                                $objCombination->setPaymentType($objPaymentTypes);
+                            }
+                            $objCombination->setIsOneStepAuth($combinations["is_one_step_authorization"]);
+                            $configuration->setCombination($objCombination);
                         }
                     }
                 }
-            }else{
-                return null;
+                return $configuration;
             }
-            if (array_key_exists('applicable_combinations', $objConfig)) {
-                foreach ($objConfig['applicable_combinations'] as $combinations) {
-                    if (array_key_exists('payment_type', $combinations)) {
-                        $objCombination = new Combination();
-                        foreach ($combinations['payment_type'] as $paymentType) {
-                            $objPaymentTypes = new PaymentType((int)$paymentType["id"], (int)$paymentType["sequence"]);
-                            $objCombination->setPaymentType($objPaymentTypes);
-                        }
-                        $objCombination->setIsOneStepAuth($combinations["is_one_step_authorization"]);
-                        $configuration->setCombination($objCombination);
-                    }
-                }
-            }
-            return $configuration;
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 }

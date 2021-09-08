@@ -13,6 +13,8 @@
  * @version 1.11
  */
 
+use api\classes\splitpayment\config\Configuration;
+
 require_once sCLASS_PATH .'/Parser.php';
 /**
  * General class for functionality methods which are used by several different modules or components
@@ -2308,15 +2310,15 @@ class General
         if ($obj_RS instanceof RoutingService) {
             $objTxnRoute   = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-
         }
         if ($iPrimaryRoute > 0) {
             if($is_Associated_txn == false){
-            $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+                $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
             }
             $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
         }
             $result['pspid']         = !empty($obj_CardResultSet)?$obj_CardResultSet['PSPID']:-1;
+            $result['cardid']        = !empty($obj_CardResultSet)?$obj_CardResultSet['ID']:-1;
             $result['routeconfigid'] = $iPrimaryRoute;
             return $result;
         }
@@ -2384,7 +2386,7 @@ class General
         }
     }
 
-    public static function processVoucher($_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$aHTTP_CONN_INFO,$getNodes,$sessiontype,$is_legacy)
+    public static function processVoucher($_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$aHTTP_CONN_INFO,$isVoucherPreferred,$sessiontype,$is_legacy)
     {
         $isVoucherRedeem = FALSE;
         $cardNode = $TXN_DOM->transaction->card;
@@ -2400,14 +2402,6 @@ class General
         }
         if($vAmount > 0){
             $iAmount = $vAmount;
-        }
-        // check voucher node is appearing before card node and according to that set preference
-        foreach($getNodes as $voucherPreferred) {
-            $preference[] = $voucherPreferred->getName();
-        }
-        $isVoucherPreferred = "true";
-        if($preference[0] == 'card'){
-            $isVoucherPreferred = "false";
         }
         $isVoucherErrorFound = FALSE;
         if($sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0)
@@ -2434,6 +2428,7 @@ class General
                 $misc = [];
                 $misc['auto-capture'] = 2;
                 $iPSPID = -1;
+                $cardID = -1;
                 if (strtolower($is_legacy) === 'false')
                 {
                     $typeId   = Constants::iVOUCHER_CARD;
@@ -2445,6 +2440,7 @@ class General
                 }
                 $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
                 if ($txnObj !== NULL) {
+                    $isTxnCreated = true;
                     $_OBJ_DB->query('COMMIT');
                     $_OBJ_DB->query('START TRANSACTION');
                 } else {
@@ -2472,21 +2468,152 @@ class General
         $result['isVoucherErrorFound'] = $isVoucherErrorFound;
         $result['isVoucherPreferred']  = $isVoucherPreferred;
         $result['isVoucherRedeem']     = $isVoucherRedeem;
+        $result['isTxnCreated']         = $isTxnCreated;
         return $result;
     }
 
-    public static function getApplicableCombinations($_OBJ_DB,array $paymentTypes=NULL)
+    public static function getApplicableCombinations($_OBJ_DB,array $paymentTypes,int $clientId,string $sessionId=NULL,bool $is_req_validate=false): ?array
     {
+        $objConfig  = array();
+        $result     = array();
+        $activeSplit    = array();
+        $configuration  = new Configuration();
+        if(!empty($sessionId)){
+            $currentSplit = 1;
+            $sql = "SELECT MAX(SD.sequence_no) as sequence_no FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD 
+                        INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS on SS.id = SD.split_session_id
+                        WHERE SS.sessionid = ".$sessionId." AND SS.status ='Active' AND SD.payment_status='Success'";
+            $res = $_OBJ_DB->getName($sql);
+            if (is_array($res) === true)
+            {
+                $currentSplit += (int)$res['SEQUENCE_NO'];
+            }
+            $configuration->setCurrentSplitSeq($currentSplit);
+            $sql = "SELECT SD.transaction_id,SD.sequence_no,C.paymenttype FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD
+                        INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS ON SS.id = SD.split_session_id
+                        INNER JOIN LOG".sSCHEMA_POSTFIX.".transaction_tbl T ON T.id = SD.transaction_id 
+                        INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".card_tbl C ON  C.id = T.cardid
+                        WHERE SS.sessionid = ".$sessionId." AND SS.status ='Active' AND SD.payment_status='Success'";
+            $aRS = $_OBJ_DB->getAllNames($sql);
+            if (is_array($aRS) === true && count($aRS) > 0) {
+                foreach ($aRS as $rs) {
+                    $activeSplit[] = $rs;
+                }
+                $configuration->setActiveSplit($activeSplit);
+            }
+        }
+
+        $sql1 = ""; // for dynamic query join
+        $sql2 = ""; // for dynamic query and condition in where clause
+        $i    = 2; // for self join
+        // this is to validate the pay and auth request against the active split
+        if($is_req_validate == true){
+            $sql = "SELECT SC1.split_config_id
+                       FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl SC1
+                       INNER JOIN  Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF
+                       ON CF.id = SC1.split_config_id";
+            $currPaymentSplit = array_merge($activeSplit,$paymentTypes);
+            $keys    = array_keys($currPaymentSplit);
+            $lastKey = $keys[count($keys)-1]; // to get the last key in array
+            $count   = count($currPaymentSplit);
+            foreach ($currPaymentSplit as $key=>$SplitCombination) {
+                // if active split has only one successful txn then join is not required
+                if ($count == 1) {
+                    $sql .= "  WHERE SC1.payment_type =" . $SplitCombination['PAYMENTTYPE'] . " AND SC1.sequence_no = " . $SplitCombination['SEQUENCE_NO'] ;
+                } else {
+                    $sql2 .= " SC".($i-1).".payment_type = " . $SplitCombination['PAYMENTTYPE'] . " AND SC".($i-1).".sequence_no = " . $SplitCombination['SEQUENCE_NO'];
+                    if($key != $lastKey) {
+                        $sql1 .= " INNER JOIN Client" . sSCHEMA_POSTFIX . ".Split_Combination_Tbl SC" . $i . " 
+                         ON SC" . ($i - 1) . ".split_config_id = SC" . $i . " .split_config_id";
+                        $sql2 .= " AND ";
+                    }
+                    $i++;
+                }
+            }
+            if ($count != 1) {
+                $sql .= $sql1 . " WHERE CF.client_id = ".$clientId." AND CF.enabled=true AND " . $sql2;
+            }else{
+                $sql .= $sql1 . " AND CF.client_id = ".$clientId." AND CF.enabled=true";
+            }
+            $aRS  = $_OBJ_DB->getAllNames($sql);
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                return $aRS;
+            }
+            return null;
+        }
         $paymentTypeString = implode(", ", $paymentTypes);
-        $sql = "with q1 as (
-                     SELECT split_config_id, count(split_config_id) as allcount 
-                     FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl GROUP BY split_config_id),";
-        $sql .=  "q2 as (
-                        SELECT split_config_id, count(split_config_id) as matchcount
-                        FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl WHERE payment_type IN (".$paymentTypeString.") GROUP BY split_config_id)";
-        $sql .=  " SELECT q1.split_config_id FROM q1 INNER JOIN q2 on q1.split_config_id = q2.split_config_id and q1.allcount = q2.matchcount;";
-        $aRS = $_OBJ_DB->getAllNames($sql);
-        return $aRS;
+        $sql = "WITH splitConfig AS (
+                        SELECT id 
+                        FROM Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF
+                        WHERE CF.client_id = ".$clientId." AND CF.enabled=true),";
+        //get all split combinations available for a client as q1 and get their count group by split_config_id
+        //get all split combinations as per the payment type from crs as q2 and get their count group by split_config_id
+        $sql .= "AllSplitComb AS (
+                     SELECT ac.split_config_id, count(ac.split_config_id) as allcount 
+                     FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl ac
+                        INNER JOIN splitConfig ON splitConfig.id = ac.split_config_id
+                     GROUP BY ac.split_config_id),";
+        $sql .=  "PTSplitComb as (
+                        SELECT mc.split_config_id, count(mc.split_config_id) as matchcount
+                        FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl mc 
+                            INNER JOIN splitConfig ON splitConfig.id = mc.split_config_id
+                        WHERE mc.payment_type IN (".$paymentTypeString.") ";
+
+        // following query will only be executed if session id is present and one active split is available
+        if(!empty($sessionId) && !empty($activeSplit)){
+            $keys    = array_keys($activeSplit);
+            $lastKey = $keys[count($keys)-1]; // to get the last key in array
+            $count   = count($activeSplit);
+            $sql    .= " AND split_config_id IN (SELECT SC1.split_config_id
+                                FROM Client" . sSCHEMA_POSTFIX . ".Split_Combination_Tbl SC1 ";
+            foreach ($activeSplit as $key=>$SplitCombination) {
+                // if active split has only one successful txn then join is not required
+                if ($count == 1) {
+                    $sql .= "  WHERE (SC1.payment_type =" . $SplitCombination['PAYMENTTYPE'] . " AND SC1.sequence_no = " . $SplitCombination['SEQUENCE_NO'] . "))";
+                } else {
+                    $sql2 .= " SC".($i-1).".payment_type = " . $SplitCombination['PAYMENTTYPE'] . " AND SC".($i-1).".sequence_no = " . $SplitCombination['SEQUENCE_NO'];
+                    if($key != $lastKey) {
+                        $sql1 .= " INNER JOIN Client" . sSCHEMA_POSTFIX . ".Split_Combination_Tbl SC" . $i . " 
+                         ON SC" . ($i - 1) . ".split_config_id = SC" . $i . " .split_config_id";
+                        $sql2 .= " AND ";
+                    }else{
+                        $sql2 .= " )";
+                    }
+                    $i++;
+                }
+            }
+            if ($count!= 1) {
+                $sql .= $sql1 . " WHERE " . $sql2;
+            }
+        }
+        $sql .= " GROUP BY mc.split_config_id)";
+        $sql .=  " SELECT AllSplitComb.split_config_id FROM AllSplitComb INNER JOIN PTSplitComb on AllSplitComb.split_config_id = PTSplitComb.split_config_id and AllSplitComb.allcount = PTSplitComb.matchcount;";
+        $aRS  = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            for($i=0; $i<count($aRS); $i++) {
+                $sqlS  = "SELECT CM.payment_type,CM.sequence_no,CF.is_one_step_auth
+                             FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl CM
+                             INNER JOIN Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF ON CF.id= CM.split_config_id
+                             WHERE CM.split_config_id = ". $aRS[$i]["SPLIT_CONFIG_ID"] ." AND CF.client_id =".$clientId." AND CF.enabled =true ORDER BY CM.sequence_no ASC";
+                $RS = $_OBJ_DB->getAllNames($sqlS);
+                $K=0;
+                if (is_array($RS) === true && count($RS) > 0) {
+                    for ($j=0; $j<count($RS); $j++){
+                        $objConfig["applicable_combinations"][$i]['payment_type'][$K]['id']         = $RS[$j]["PAYMENT_TYPE"];
+                        $objConfig["applicable_combinations"][$i]['payment_type'][$K]['sequence']   = $RS[$j]["SEQUENCE_NO"];
+                        $objConfig["applicable_combinations"][$i]['is_one_step_authorization']      = $RS[$j]["IS_ONE_STEP_AUTH"];
+                        $K++;
+                    }
+                }
+            }
+        }else{
+            return null;
+        }
+        $result['objConfig']     = $objConfig;
+        $result['configuration'] = $configuration;
+        return $result;
     }
 
     public function getSuccessfulTxnFromSession(int $clientId, int $sessionId, string $excludeStateFilter = '') : array

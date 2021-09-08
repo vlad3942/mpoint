@@ -227,26 +227,64 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if (count($aMsgCds) === 0)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-				
-				
+
 				// Client successfully authenticated
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])) {
                     $isVoucherRedeem = FALSE;
                     $isVoucherRedeemStatus = -1;
+                    $validRequest= true;
+                    $isTxnCreated = False;
                     $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                     $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-                    $iPaymentTypes= array();
+
+                    // check voucher node is appearing before card node and according to that set preference
+                    $getNodes = $obj_DOM->xpath('//pay/transaction/*');
+                    foreach($getNodes as $voucherPreferred) {
+                        $preference[] = $voucherPreferred->getName();
+                    }
+                    $isVoucherPreferred = "true";
+                    if($preference[0] == 'card'){
+                        $isVoucherPreferred = "false";
+                    }
+                    $paymentTypes= array();
                     for ($j = 0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j < $jMax; $j++) {
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
-                        $iPaymentTypes[] = $obj_card->getPaymentType();
+                        $iPaymentTypes['PAYMENTTYPE'] = $obj_card->getPaymentType();
+                        //if card comes first then seq is 1 otherwise 2
+                        $iPaymentTypes['SEQUENCE_NO'] = 1;
+                        if($isVoucherPreferred == "true"){
+                            $iPaymentTypes['SEQUENCE_NO'] = 2;
+                        }
+                        $paymentTypes[] = $iPaymentTypes;
                     }
-                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0) // voucher payment
-				{
-                        array_push($iPaymentTypes,Constants::iPAYMENT_TYPE_VOUCHER);
-                        if (in_array(Constants::iPAYMENT_TYPE_APM, $iPaymentTypes)) {
-                            $getNodes = $obj_DOM->xpath('//pay/transaction/*');
-                            $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $getNodes, $sessiontype, $is_legacy);
+                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0){
+                        $iPaymentTypes['PAYMENTTYPE'] = Constants::iPAYMENT_TYPE_VOUCHER;
+                        $iPaymentTypes['SEQUENCE_NO'] = 2;
+                        //if voucher comes first then seq is 1 otherwise 2
+                        if($isVoucherPreferred == "true"){
+                            $iPaymentTypes['SEQUENCE_NO'] = 1;
+                        }
+                        array_push($paymentTypes,$iPaymentTypes);
+                    }
+                    //validate the request against active split
+                    if($sessiontype > 1){
+                        // check if txn is retry in same split session
+                        $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
+                        if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
+                            $validateCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,(integer) $obj_DOM->pay[$i]["client-id"],$obj_TxnInfo->getSessionId(),true);
+                            if(empty($validateCombinations)){
+                                $validRequest = false;
+                                header("HTTP/1.1 412 Precondition Failed");
+                                $xml .= '<status code="99">The given request Split Combination is not configured for the client</status>';
+                            }
+                        }
+                    }
+                    $checkPaymentType= array_column($paymentTypes, 'PAYMENTTYPE');
+                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0 && $validRequest==true) // voucher payment
+				    {
+                         if (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)) {
+                            $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $sessiontype, $is_legacy);
                             if(isset($processVoucher['code'])) {
                                 if ($processVoucher['code'] == 52) {
                                     $aMsgCds[52] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
@@ -264,6 +302,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
                             $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : 'true';
                             $isVoucherRedeem = !empty($processVoucher) ? $processVoucher['isVoucherRedeem'] : FALSE;
+                            $isTxnCreated = !empty($processVoucher) ? $processVoucher['isTxnCreated'] : FALSE;
 
                             $cardNode = $obj_DOM->{'pay'}[$i]->transaction->card;
                             if ($isVoucherErrorFound === FALSE && ((is_object($cardNode) === false || count($cardNode) === 0) || $isVoucherPreferred !== "false")) {
@@ -295,20 +334,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
                     }
 
-                    if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'pay'}[$i]->transaction->card) && count($obj_DOM->{'pay'}[$i]->transaction->card) > 0) {
-                        if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && (in_array(Constants::iPAYMENT_TYPE_APM, $iPaymentTypes)))
+                    if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'pay'}[$i]->transaction->card) && count($obj_DOM->{'pay'}[$i]->transaction->card) > 0 && $validRequest==true) {
+                        if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)))
                         {
                             $misc = [];
                             $misc["routeconfigid"] = -1;
 
                             $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
                             if ($txnObj !== NULL) {
+                                $isTxnCreated = true;
                                 $obj_TxnInfo = $txnObj;
                                 $_OBJ_DB->query('COMMIT');
                                 $_OBJ_DB->query('START TRANSACTION');
                             } else {
                                 $_OBJ_DB->query('ROLLBACK');
                             }
+                        }
+                        if($isTxnCreated == false && $sessiontype > 1 && in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
+                            $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                         }
                         if (isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'})) {
                         $additionalDataParamsCount = count($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->children());
@@ -852,7 +895,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 					}	// Card Loop End
-                    }else if($isVoucherRedeem === FALSE)
+                    }else if($isVoucherRedeem === FALSE && $validRequest==true)
                     {
                         $_OBJ_DB->query("ROLLBACK");
                         if($isVoucherRedeemStatus === -1) {
