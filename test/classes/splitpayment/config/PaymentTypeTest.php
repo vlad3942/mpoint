@@ -23,23 +23,18 @@ class PaymentTypeTest extends baseAPITest
         parent::setUp(FALSE);
     }
 
-    public function testGetIndex(): void
-    {
-        $paymentType = new PaymentType(1, 2);
-        $this->assertEquals(2, $paymentType->getIndex());
-    }
 
     public function test__construct(): void
     {
         $paymentType = new PaymentType(1, 2);
-        $this->assertEquals(2, $paymentType->getIndex());
+        $this->assertEquals(2, $paymentType->getSequence());
         $this->assertEquals(1, $paymentType->getId());
     }
 
     public function testToXML(): void
     {
         $paymentType = new PaymentType(1, 2);
-        $this->assertEquals('<payment_type><id>1</id><index>2</index><is_clubbable>false</is_clubbable></payment_type>', $paymentType->toXML());
+        $this->assertEquals('<payment_type><id>1</id><sequence>2</sequence></payment_type>', $paymentType->toXML());
     }
 
     public function testSetId(): void
@@ -53,28 +48,6 @@ class PaymentTypeTest extends baseAPITest
     {
         $paymentType = new PaymentType(1, 2);
         $this->assertEquals(1, $paymentType->getId());
-    }
-
-    public function testSetIndex(): void
-    {
-        $paymentType = new PaymentType(1, 2);
-        $paymentType->setIndex(1);
-        $this->assertEquals(1, $paymentType->getIndex());
-    }
-
-    public function testSetIsClubbable(): void
-    {
-        $paymentType = new PaymentType(1, 2);
-        $paymentType->setIsClubbable(TRUE);
-        $this->assertTrue( $paymentType->isClubbable());
-    }
-
-    public function testClubbable(): void
-    {
-        $paymentType = new PaymentType(1, 2, TRUE);
-        $this->assertTrue( $paymentType->isClubbable());
-        $paymentType->setIsClubbable(FALSE);
-        $this->assertFalse( $paymentType->isClubbable());
     }
 
 }

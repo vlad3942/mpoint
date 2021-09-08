@@ -969,15 +969,15 @@ class Home extends General
                                 $response = $this->constructSessionInfo($obj_TxnInfo, $aTxnData, $status, $sub_code);
                                 $xml .= xml_encode($response);
 
-                                $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-                                // add linked transaction
-                                if ($linkedTxnId !== null) {
-                                    $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
-                                    $xml .= $getLinkedTxns;
-                                }
-                                else
-                                {
-                                    $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(),$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                                if($sessionId === 0) {
+                                    $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                                    // add linked transaction
+                                    if ($linkedTxnId !== null) {
+                                        $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(), $objPaymentMethod->PaymentType);
+                                        $xml .= $getLinkedTxns;
+                                    } else {
+                                        $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(), $objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                                    }
                                 }
                         }
 
@@ -1127,24 +1127,6 @@ class Home extends General
                 }
                 else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
             }
-            /**
-             * Below block is added as workaround and applicable for AGNI release
-             * CMP-5791
-             */
-            if($sessionId > 0) {
-                // this needs to be added only for parent txn
-                $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
-                // add linked transaction
-                if ($linkedTxnId !== null) {
-                    $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
-                    $xml .= $getLinkedTxns;
-                }
-                else
-                {
-                    $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(),$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
-                }
-            }
-            // Workaround End
         }
         catch (mPointException $e) { return $xml; }
         return $xml;
@@ -1752,7 +1734,6 @@ class Home extends General
      */
     public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
     {
-
         $obj_CustomerInfo = NULL;
         $obj_PSPInfo = NULL;
         $obj_StateInfo= NULL;
@@ -1935,6 +1916,8 @@ class Home extends General
             $transactionData->setFraudStatusDesc($getFraudStatusCode['status_desc']);
         }
 
+        $transactionData->setAcceptUrl($txnInfo->getAcceptURL());
+        $transactionData->setCancelUrl($txnInfo->getCancelURL());
         return $transactionData;
     }
 
@@ -1947,7 +1930,6 @@ class Home extends General
      */
     public function constructSessionInfo(TxnInfo $txnInfo, array $aTransactionData, int $status=null, $sub_code = null)
     {
-
         $sale_amount = new Amount($txnInfo->getPaymentSession()->getAmount(), $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
 
         $status      = $status;

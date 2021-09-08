@@ -877,7 +877,7 @@ $aHTTP_CONN_INFO["chase"]["paths"]["process-settlement"] = "/mpsp/chase/process-
 
 
 /**
- * Connection info for connecting to PayU
+ * Connection info for connecting to PayU aggretor
  */
 $aHTTP_CONN_INFO["payu"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["payu"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];

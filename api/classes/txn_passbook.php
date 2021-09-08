@@ -605,7 +605,6 @@ final class TxnPassbook
                         }
                     }
                     $this->_updatePassbookEntries(array($passbookEntry));
-                    $codes[] = $code;
                 }
             }
         }

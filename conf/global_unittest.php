@@ -66,6 +66,8 @@ $aHTTP_CONN_INFO["dsb"]["host"] = "mpoint.local.cellpointmobile.com";
 $aHTTP_CONN_INFO["dsb"]["port"] = 80;
 $aHTTP_CONN_INFO["dsb"]["paths"]["redeem"] = "/_test/simulators/dsb/redeem.php";
 $aHTTP_CONN_INFO["dsb"]["paths"]["callback"] = "/callback/general.php";
+$aHTTP_CONN_INFO["dsb"]["paths"]["cancel"] = "/_test/simulators/mobilepay/cancel.php";
+
 
 /**
  * Connection info for connecting to Amex
