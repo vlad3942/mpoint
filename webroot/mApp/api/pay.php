@@ -232,8 +232,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])) {
                     $isVoucherRedeem = FALSE;
                     $isVoucherRedeemStatus = -1;
-                    $validRequest= true;
-                    $isTxnCreated = False;
+                    $validRequest= true; // for split payment request validation
+                    $isTxnCreated = False; // for split txn is already is created or not
+                    $checkPaymentType = array();
                     $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                     $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
@@ -267,6 +268,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
                         array_push($paymentTypes,$iPaymentTypes);
                     }
+
                     //validate the request against active split
                     if($iSessionType > 1){
                         // check if txn is retry in same split session
@@ -275,7 +277,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $validateCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,(integer) $obj_DOM->pay[$i]["client-id"],$obj_TxnInfo->getSessionId(),true);
                             if(empty($validateCombinations)){
                                 $validRequest = false;
-                                header("HTTP/1.1 412 Precondition Failed");
+                                header("HTTP/1.1 502 Bad Gateway");
                                 $xml .= '<status code="99">The given request Split Combination is not configured for the client</status>';
                             }
                         }

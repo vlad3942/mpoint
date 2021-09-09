@@ -24,6 +24,7 @@ class Combination
      * Combination constructor.
      *
      * @param PaymentTypes[] $paymentTypes Array of PaymentTypes used
+     * @param null $isOneStepAuth One step authorization
      */
     public function __construct(array $paymentTypes = NULL,$isOneStepAuth=NULL)
     {
@@ -47,6 +48,7 @@ class Combination
 
     /**
      * @param PaymentType $paymentTypes
+     * @return void
      */
     public function setPaymentType(PaymentType $paymentTypes): void
     {
@@ -64,6 +66,7 @@ class Combination
 
     /**
      * @param bool isOneStepAuth
+     * @return void
      */
     public function setIsOneStepAuth(bool $isOneStepAuth): void
     {

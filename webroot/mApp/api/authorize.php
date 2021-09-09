@@ -252,8 +252,9 @@ try
 
 							    $isVoucherRedeem = FALSE;
 							    $isVoucherRedeemStatus = -1;
-							    $validRequest = true;
-							    $isTxnCreated = False;
+							    $validRequest = true; // for split payment request validation
+							    $isTxnCreated = False; // for split txn is already is created or not
+                                $checkPaymentType = array();
                                 $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
                                 $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
                                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
