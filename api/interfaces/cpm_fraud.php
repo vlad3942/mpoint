@@ -257,7 +257,7 @@ abstract class CPMFRAUD
             $b .= '<auth-token>' . $authToken . '</auth-token>';
         }
         $b .= $this->getPSPConfig()->toAttributeLessXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
-
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML();
         $b .= $this->getTxnInfo()->toAttributeLessXML();
 
         $b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
