@@ -552,6 +552,7 @@ abstract class Callback extends EndUserAccount
 					$sBody .= "&expiry=" . $this->getFormattedDate($this->_obj_TxnInfo->getCardExpiry());
 				}
 				$sBody .= "&session-id=" . $this->_obj_TxnInfo->getSessionId();
+				$sBody .= "&session-type-id=" . $this->_obj_TxnInfo->getPaymentSession()->getSessionType();
 				/* Adding customer Info as part of the callback query params */
 				if (($this->_obj_TxnInfo->getAccountID() > 0) === TRUE) {
 					$obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
@@ -1097,7 +1098,8 @@ abstract class Callback extends EndUserAccount
 					/* ----- Construct Body Start ----- */
 					$sBody = "";
 					$sBody .= "session-id=" . $txnId;
-					$sBody .= "&orderid=" . urlencode($this->_obj_TxnInfo->getOrderID());
+                    $sBody .= "&session-type-id=" . $this->_obj_TxnInfo->getPaymentSession()->getSessionType();
+                    $sBody .= "&orderid=" . urlencode($this->_obj_TxnInfo->getOrderID());
 					$sBody .= "&status=" . $sessionObj->getStateId();
 					$sBody .= "&amount=" . $sessionObj->getAmount();
 					$sBody .= "&mobile=" . urlencode($this->_obj_TxnInfo->getMobile());
