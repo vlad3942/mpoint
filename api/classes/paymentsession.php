@@ -251,7 +251,7 @@ final class PaymentSession
                     {
                         global $_OBJ_TXT;
                         $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
-                        $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Success');
+                        $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Completed');
                     }
                     return 1;
                 }

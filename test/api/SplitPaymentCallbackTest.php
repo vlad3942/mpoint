@@ -590,7 +590,7 @@ class SplitPaymentCallbackTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res = $this->queryDB("SELECT id FROM Log.split_session_tbl where id= 1 and status= 'Success'");
+        $res = $this->queryDB("SELECT id FROM Log.split_session_tbl where id= 1 and status= 'Completed'");
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
