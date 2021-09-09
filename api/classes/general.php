@@ -2670,12 +2670,12 @@ class General
     {
         //Once Auto Refund cron is in place below function call will be replaced by function where
         //Successful transaction will be mark for rollback.
-        if($status !== 'Success' && $isManualRefund === false) {
+        if($status !== 'Completed' && $isManualRefund === false) {
             $this->rollbackTransaction($clientId, $sessionId);
         }
 
         $paymentSession = PaymentSession::Get($this->getDBConn(), $sessionId);
-        if($status !== 'Success' || $paymentSession->getPendingAmount() === 0) {
+        if($status !== 'Completed' || $paymentSession->getPendingAmount() === 0) {
             try {
                 $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl
 				SET	status = '" . $status . "'
