@@ -232,55 +232,57 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])) {
                     $isVoucherRedeem = FALSE;
                     $isVoucherRedeemStatus = -1;
-                    $validRequest= true;
-                    $isTxnCreated = False;
+                    $validRequest= true; // for split payment request validation
+                    $isTxnCreated = False; // for split txn is already is created or not
+                    $checkPaymentType = array();
                     $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                     $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                     $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
-                    // check voucher node is appearing before card node and according to that set preference
-                    $getNodes = $obj_DOM->xpath('//pay/transaction/*');
-                    foreach($getNodes as $voucherPreferred) {
-                        $preference[] = $voucherPreferred->getName();
-                    }
-                    $isVoucherPreferred = "true";
-                    if($preference[0] == 'card'){
-                        $isVoucherPreferred = "false";
-                    }
-                    $paymentTypes= array();
-                    for ($j = 0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j < $jMax; $j++) {
-                        $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
-                        $iPaymentTypes['PAYMENTTYPE'] = $obj_card->getPaymentType();
-                        //if card comes first then seq is 1 otherwise 2
-                        $iPaymentTypes['SEQUENCE_NO'] = 1;
-                        if($isVoucherPreferred == "true"){
-                            $iPaymentTypes['SEQUENCE_NO'] = 2;
-                        }
-                        $paymentTypes[] = $iPaymentTypes;
-                    }
-                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0){
-                        $iPaymentTypes['PAYMENTTYPE'] = Constants::iPAYMENT_TYPE_VOUCHER;
-                        $iPaymentTypes['SEQUENCE_NO'] = 2;
-                        //if voucher comes first then seq is 1 otherwise 2
-                        if($isVoucherPreferred == "true"){
-                            $iPaymentTypes['SEQUENCE_NO'] = 1;
-                        }
-                        array_push($paymentTypes,$iPaymentTypes);
-                    }
                     //validate the request against active split
                     if($iSessionType > 1){
+                        // check voucher node is appearing before card node and according to that set preference
+                        $getNodes = $obj_DOM->xpath('//pay/transaction/*');
+                        foreach($getNodes as $voucherPreferred) {
+                            $preference[] = $voucherPreferred->getName();
+                        }
+                        $isVoucherPreferred = "true";
+                        if($preference[0] == 'card'){
+                            $isVoucherPreferred = "false";
+                        }
+                        $paymentTypes= array();
+                        for ($j = 0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j < $jMax; $j++) {
+                            $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
+                            $iPaymentTypes['PAYMENTTYPE'] = $obj_card->getPaymentType();
+                            //if card comes first then seq is 1 otherwise 2
+                            $iPaymentTypes['SEQUENCE_NO'] = 1;
+                            if($isVoucherPreferred == "true"){
+                                $iPaymentTypes['SEQUENCE_NO'] = 2;
+                            }
+                            $paymentTypes[] = $iPaymentTypes;
+                        }
+                        if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0){
+                            $iPaymentTypes['PAYMENTTYPE'] = Constants::iPAYMENT_TYPE_VOUCHER;
+                            $iPaymentTypes['SEQUENCE_NO'] = 2;
+                            //if voucher comes first then seq is 1 otherwise 2
+                            if($isVoucherPreferred == "true"){
+                                $iPaymentTypes['SEQUENCE_NO'] = 1;
+                            }
+                            array_push($paymentTypes,$iPaymentTypes);
+                        }
                         // check if txn is retry in same split session
                         $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
                         if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
                             $validateCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,(integer) $obj_DOM->pay[$i]["client-id"],$obj_TxnInfo->getSessionId(),true);
                             if(empty($validateCombinations)){
                                 $validRequest = false;
-                                header("HTTP/1.1 412 Precondition Failed");
+                                header("HTTP/1.1 502 Bad Gateway");
                                 $xml .= '<status code="99">The given request Split Combination is not configured for the client</status>';
                             }
                         }
+                        $checkPaymentType= array_column($paymentTypes, 'PAYMENTTYPE');
                     }
-                    $checkPaymentType= array_column($paymentTypes, 'PAYMENTTYPE');
+
                     if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0 && $validRequest==true) // voucher payment
 				    {
                          if (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)) {

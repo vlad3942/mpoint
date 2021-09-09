@@ -2685,8 +2685,8 @@ class TxnInfo
 	 *
 	 * @param RDB $obj_DB
 	 * @param int $sessionID
-	 * @param int $txnID
-	 * @return void
+	 * @param array $txnIDs
+	 * @return bool
 	 * @throws SQLQueryException
 	 * @throws mPointException
 	 */
@@ -2756,8 +2756,13 @@ class TxnInfo
 		$this->_expiry = $exp;
 	}
 
-	/*This function is to get the active split session id in a given session */
-	public function getActiveSplitSession($_OBJ_DB,int $sessionID): ?int
+	/**
+	 * This function is to get the active split session id in a given session
+	 * @param RDB $_OBJ_DB
+	 * @param int $sessionID
+	 * @return int|null
+	 */
+	public function getActiveSplitSession(RDB $_OBJ_DB,int $sessionID): ?int
 	{
 		$sql = "SELECT id,sessionid FROM LOG".sSCHEMA_POSTFIX.".split_session_tbl 
                         WHERE sessionid = ".$sessionID." AND status='Active'";
