@@ -2692,7 +2692,9 @@ class TxnInfo
 	 */
 	public function setSplitSessionDetails(RDB $obj_DB, int $sessionID, array $txnIDs) : bool
 	{
-		if($sessionID > 0) {
+		$obj_PaymentSession = PaymentSession::Get($obj_DB,$sessionID);
+		if($obj_PaymentSession->getSessionType() > 1)
+		{
 			$isRetry = false;
 			// check if txn is retry in same split session
 			$checkTxnSplit = $this->getActiveSplitSession($obj_DB,$sessionID);

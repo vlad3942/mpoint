@@ -2425,6 +2425,7 @@ class General
         $isVoucherErrorFound = FALSE;
         if($sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0)
         {
+            $obj_TxnInfo->updateSessionType($_OBJ_DB, $iAmount);
             foreach ($TXN_DOM->transaction->voucher as $voucher)
             {
                 $additionalTxnData = [];
@@ -2472,7 +2473,9 @@ class General
                 $isVoucherErrorFound = TRUE;
                 $result['code']     = 53;
                 $result['iAmount']  = $iAmount;
-            } else {
+            }
+            else {
+                $obj_TxnInfo->updateSessionType($_OBJ_DB, $iAmount);
                 $obj_TxnInfo->updateTransactionAmount($_OBJ_DB, $iAmount);
             }
             $isVoucherRedeem = TRUE;
