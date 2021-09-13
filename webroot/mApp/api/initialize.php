@@ -558,7 +558,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 try {
                                     $splitPaymentConfig = Configuration::ProduceConfig($_OBJ_DB,$clientId,array_unique($paymentTypes),$sessionId);
-                                    if($splitPaymentConfig instanceof Configuration) {
+                                    if ($splitPaymentConfig instanceof Configuration) {
                                         $xml .= "<split_payment>";
                                         $xml .= $splitPaymentConfig->toXML();
                                         $xml .= "</split_payment>";
