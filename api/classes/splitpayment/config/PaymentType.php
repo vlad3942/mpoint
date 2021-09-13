@@ -15,14 +15,12 @@ namespace api\classes\splitpayment\config;
 class PaymentType
 {
     private int $id;
-    private int $index;
-    private bool $isClubbable;
+    private int $sequence;
 
-    public function __construct(int $id, int $index, bool $isClubbable = FALSE)
+    public function __construct(int $id, int $sequence)
     {
         $this->id = $id;
-        $this->index = $index;
-        $this->isClubbable = $isClubbable;
+        $this->sequence = $sequence;
     }
 
     /**
@@ -44,17 +42,17 @@ class PaymentType
     /**
      * @return int
      */
-    public function getIndex(): int
+    public function getSequence(): int
     {
-        return $this->index;
+        return $this->sequence;
     }
 
     /**
-     * @param int $index
+     * @param int $sequence
      */
-    public function setIndex(int $index): void
+    public function setSequence(int $sequence): void
     {
-        $this->index = $index;
+        $this->sequence = $sequence;
     }
 
     /**
@@ -62,22 +60,6 @@ class PaymentType
      */
     public function toXML(): string
     {
-        return "<payment_type><id>$this->id</id><index>$this->index</index><is_clubbable>". ($this->isClubbable ? 'true' : 'false') ."</is_clubbable></payment_type>";
-    }
-
-    /**
-     * @return bool
-     */
-    public function isClubbable(): bool
-    {
-        return $this->isClubbable;
-    }
-
-    /**
-     * @param bool $isClubbable
-     */
-    public function setIsClubbable(bool $isClubbable): void
-    {
-        $this->isClubbable = $isClubbable;
+        return "<payment_type><id>$this->id</id><sequence>$this->sequence</sequence></payment_type>";
     }
 }

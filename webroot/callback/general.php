@@ -710,7 +710,7 @@ try
                 $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                 if ($sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED) {
                     try {
-                        $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "'";
+                        $whereClause = 'message_tbl.stateid = ' . Constants::iTRANSACTION_CREATED . " AND transaction_tbl.created >= '" . $obj_TxnInfo->getCreatedTimestamp() . "' order by transaction_tbl.id ASC LIMIT 1 ";
                         $newTxnInfoIds = $obj_TxnInfo->getPaymentSession()->getFilteredTransaction($whereClause);
                         if (count($newTxnInfoIds) > 0) {
                             $newTxnInfo = TxnInfo::produceInfo($newTxnInfoIds[0], $_OBJ_DB);
@@ -758,13 +758,6 @@ try
                                 $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucherId, $iAmount);
 
                                 // <editor-fold defaultstate="collapsed" desc="Parse Voucher Response">
-
-                                if ($isVoucherRedeemStatus !== 100) {
-                                    $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_VOUCHER_FAIL"));
-                                    if ($bisRollBack === true) {
-                                        $isTxnRollInitiated = true;
-                                    }
-                                }
 
                                 if ($isVoucherRedeemStatus === 100) {
                                     $xml .= '<status code="100">Payment authorized using Voucher</status>';
@@ -865,6 +858,21 @@ try
                     $obj_mPoint->notifyClient($stateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 }
 
+            }
+
+            if($obj_TxnInfo->getPaymentSession()->getSessionType() > 1) {
+                $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
+                if($iStateID === Constants::iPAYMENT_REJECTED_STATE) {
+                    $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Failed');
+                    $isReoffer = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
+                    $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                    if ($isReoffer === false) {
+                        $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_TxnInfo->getPaymentSession()->getId(), 'Failed', $isManualRefund);
+                    }
+                }
+                elseif ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE){
+                    $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Success');
+                }
             }
         }
     }

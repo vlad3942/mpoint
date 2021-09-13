@@ -185,4 +185,18 @@ class TransactionDataTest extends baseAPITest
         $this->assertStringContainsString('"installment":2}', json_encode($this->transactionData));
         $this->assertStringContainsString('<installment>2', xml_encode($this->transactionData));
     }
+
+    public function testSetAcceptURL()
+    {
+        $this->transactionData->setAcceptUrl('//accept_url');
+        $this->assertStringContainsString('"accept_url":"\/\/accept_url"}', json_encode($this->transactionData));
+        $this->assertStringContainsString('<accept_url>//accept_url</accept_url>', xml_encode($this->transactionData));
+    }
+
+    public function testSetCancelUrl()
+    {
+        $this->transactionData->setCancelUrl('//cancel_url');
+        $this->assertStringContainsString('"cancel_url":"\/\/cancel_url"}', json_encode($this->transactionData));
+        $this->assertStringContainsString('<cancel_url>//cancel_url</cancel_url>', xml_encode($this->transactionData));
+    }
 }

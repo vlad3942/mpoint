@@ -11,6 +11,32 @@
 							<xs:element name="client-config"></xs:element>
 							<xs:element name="auth-token" type="auth-token" minOccurs="0" maxOccurs="1" />
 							<xs:element name="pspConfig"></xs:element>
+							<xs:element name="session">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="amount">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:unsignedInt">
+														<xs:attribute name="alpha2code" type="xs:string" use="required" />
+														<xs:attribute name="alpha3code" type="xs:string" use="required" />
+														<xs:attribute name="code" type="xs:unsignedByte" use="required" />
+														<xs:attribute name="country-id" type="xs:unsignedShort" use="required" />
+														<xs:attribute name="currency" type="xs:string" use="required" />
+														<xs:attribute name="currency-id" type="xs:unsignedByte" use="required" />
+														<xs:attribute name="format" type="xs:string" use="required" />
+														<xs:attribute name="symbol" type="xs:string" use="required" />
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="status" type="xs:unsignedShort" />
+									</xs:sequence>
+									<xs:attribute name="id" type="xs:unsignedShort" use="required" />
+									<xs:attribute name="total-amount" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="type" type="xs:unsignedByte" use="required" />
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="transaction">
 								<xs:complexType>
 									<xs:sequence>

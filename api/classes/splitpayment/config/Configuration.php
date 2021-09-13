@@ -19,44 +19,24 @@ namespace api\classes\splitpayment\config;
  */
 class Configuration
 {
-    private int $splitCount = 1;
     /**
      * @var Combinations[]
      */
     private array $combinations = [];
+    private array $activeSplit = [];
+    private ?int $currentSplitSeq;
 
     /**
      * Configuration constructor.
      *
-     * @param int   $splitCount Max allowed splits for a session
      * @param Combination[] $combinations Array of Split combinations
      */
-    public function __construct(int $splitCount, array $combinations = NULL) {
-        if($splitCount > 0)
-        {
-            $this->splitCount = $splitCount;
-        }
+    public function __construct(array $combinations = NULL) {
 
         if($combinations !== NULL)
         {
             $this->combinations= $combinations;
         }
-    }
-
-    /**
-     * @return int
-     */
-    public function getSplitCount(): int
-    {
-        return $this->splitCount;
-    }
-
-    /**
-     * @param int $splitCount
-     */
-    public function setSplitCount(int $splitCount): void
-    {
-        $this->splitCount = $splitCount;
     }
 
     /**
@@ -67,9 +47,31 @@ class Configuration
         return $this->combinations;
     }
 
+    /**
+     * @param Combination $combination
+     * @return void
+     */
     public function setCombination(Combination $combination): void
     {
         $this->combinations[] = $combination;
+    }
+
+    /**
+     * @param $activeSplit
+     * @return void
+     */
+    public function setActiveSplit($activeSplit): void
+    {
+        $this->activeSplit[] = $activeSplit;
+    }
+
+    /**
+     * @param $currentSplitSeq
+     * @return void
+     */
+    public function setCurrentSplitSeq($currentSplitSeq): void
+    {
+        $this->currentSplitSeq = $currentSplitSeq;
     }
 
     /**
@@ -78,54 +80,70 @@ class Configuration
      */
     public function toXML(): string
     {
-        $xml = "<configuration><split_count>$this->splitCount</split_count>";
+        $xml = "";
+        if(count($this->activeSplit) > 0){
+            $xml .= "<active_split>";
+            $xml .= "<current_split_sequence>".$this->currentSplitSeq."</current_split_sequence>";
+            $xml .= "<transactions>";
+            foreach ($this->activeSplit as $activeSplit) {
+                foreach ($activeSplit as $transaction) {
+                    $xml .= "<transaction>";
+                    $xml .= "<payment_type>" . $transaction['PAYMENTTYPE'] . "</payment_type>";
+                    $xml .= "<id>" . $transaction['TRANSACTION_ID'] . "</id>";
+                    $xml .= "<sequence>" . $transaction['SEQUENCE_NO'] . "</sequence>";
+                    $xml .= "</transaction>";
+                }
+            }
+            $xml .= "</transactions>";
+            $xml .= "</active_split>";
+        }
         if(count($this->combinations) > 0)
         {
-            $xml .= "<combinations>";
+            $xml .= "<configuration>";
+            $xml .= "<applicable_combinations>";
             foreach ($this->combinations as $combination) {
                 $xml .= $combination->toXML();
             }
-            $xml .= "</combinations>";
+            $xml .= "</applicable_combinations>";
+            $xml .= "</configuration>";
         }
-        $xml .= "</configuration>";
         return $xml;
     }
 
     /**
+     * This method is to produce application combinations
+     * and active split if session id is present
      *
-     * This Methode is to produce the Payment Configuration object
-     * From phase this method will not required and constructor will fetch configuration from DB directly
+     * @param $_OBJ_DB
+     * @param int $clientId
+     * @param array $paymentTypes
+     * @param string $sessionId
      *
-     * @param string $config This param is string for phase 1 of split payment
-     *                       From phase two this configuration will come from dedicated config tables
-     *
-     * @return Configuration|null
+     * @return null|Configuration
      */
-    public static function ProduceConfig(string $config): ?Configuration
+    public static function ProduceConfig($_OBJ_DB, int $clientId, array $paymentTypes,string $sessionId) : ?Configuration
     {
-        if (!empty($config)) {
-            $objConfig = json_decode($config, TRUE, 512, JSON_THROW_ON_ERROR);
-
-            $configuration = new Configuration((int)$objConfig['split_count']);
-
-            foreach ($objConfig['combinations'] as $combination)
-            {
-                if(array_key_exists('combination',$combination)) {
-                    $objCombination = new Combination();
-                    foreach ($combination['combination'] as $paymentType) {
-                        $objPaymentTypes = new PaymentType((int)$paymentType["index"], (int)$paymentType["id"], (bool)$paymentType["is_clubbable"]);
-                        $objCombination->setPaymentType($objPaymentTypes);
+        if (!empty($clientId)) {
+            $applicableCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,$clientId,$sessionId);
+            if($applicableCombinations) {
+                $objConfig      = $applicableCombinations['objConfig'];
+                $configuration  = $applicableCombinations['configuration'];
+                if (array_key_exists('applicable_combinations', $objConfig)) {
+                    foreach ($objConfig['applicable_combinations'] as $combinations) {
+                        if (array_key_exists('payment_type', $combinations)) {
+                            $objCombination = new Combination();
+                            foreach ($combinations['payment_type'] as $paymentType) {
+                                $objPaymentTypes = new PaymentType((int)$paymentType["id"], (int)$paymentType["sequence"]);
+                                $objCombination->setPaymentType($objPaymentTypes);
+                            }
+                            $objCombination->setIsOneStepAuth($combinations["is_one_step_authorization"]);
+                            $configuration->setCombination($objCombination);
+                        }
                     }
-                    $configuration->setCombination($objCombination);
                 }
+                return $configuration;
             }
-            return $configuration;
-
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
-
 }
