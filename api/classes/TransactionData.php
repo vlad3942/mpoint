@@ -105,7 +105,7 @@ class TransactionData implements JsonSerializable, XMLSerializable
 
     private int $route_config_id;
 
-    private FraudStatus $fraud;
+    private FraudStatusTxnData $fraud;
 
     private int $installment;
 
@@ -376,17 +376,17 @@ class TransactionData implements JsonSerializable, XMLSerializable
     }
 
     /**
-     * @param FraudStatus
+     * @param FraudStatusTxnData
      */
-    public function setFraudStatus(FraudStatus $fraud): void
+    public function setFraudStatus(FraudStatusTxnData $fraud): void
     {
         $this->fraud = $fraud;
     }
 
     /**
-     * @return FraudStatus
+     * @return FraudStatusTxnData
      */
-    public function getFraudStatus(): FraudStatus
+    public function getFraudStatus(): FraudStatusTxnData
     {
         return $this->fraud;
     }
