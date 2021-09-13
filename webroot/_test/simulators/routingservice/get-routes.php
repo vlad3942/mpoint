@@ -25,6 +25,8 @@ if(empty($obj_DOM->client_info->client_id) === false && empty($obj_DOM->transact
     $xml .= '</routes>';
     if($obj_DOM->transaction->id == '1001002') {
         $xml .= '<kpi_used>true</kpi_used>';
+    } else {
+        $xml .= '<kpi_used>false</kpi_used>';
     }
     $xml .= '</payment_route_search_response>';
 
