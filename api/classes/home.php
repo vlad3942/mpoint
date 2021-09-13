@@ -16,7 +16,7 @@
 require_once(sCLASS_PATH ."/core/card.php");
 use api\classes\AdditionalData;
 use api\classes\Amount;
-use api\classes\FraudStatus;
+use api\classes\FraudStatusTxnData;
 use api\classes\CallbackMessageRequest;
 use api\classes\PSPData;
 use api\classes\StateInfo;
@@ -1812,7 +1812,7 @@ class Home extends General
 
             $status_code = $getFraudStatusCode['status_code'];
             $status_desc = $getFraudStatusCode['status_desc'];
-            $obj_FraudStatus = new FraudStatus($status_code, $status_desc, $pre_auth_ext_id, $pre_auth_ext_status_code, $post_auth_ext_id, $post_auth_ext_status_code);
+            $obj_FraudStatus = new FraudStatusTxnData($status_code, $status_desc, $pre_auth_ext_id, $pre_auth_ext_status_code, $post_auth_ext_id, $post_auth_ext_status_code);
             $transactionData->setFraudStatus($obj_FraudStatus);
         }
 

@@ -60,12 +60,7 @@ class RoutingServiceResponse
                 $aObjRoute->routes->route[$i]->id = (int)$aObj_XML->routes->route[$i]->id;
                 $aObjRoute->routes->route[$i]->preference = (int)$aObj_XML->routes->route[$i]->preference;
             }
-            $isKPIUsed = false;
-            if(empty($aObj_XML->kpi_used) === false && $aObj_XML->kpi_used == "true")
-            {
-                $isKPIUsed = true;
-            }
-            $aObjRoute->kpi_used = $isKPIUsed;
+            $aObjRoute->kpi_used = General::xml2bool($aObj_XML->kpi_used);
             return new RoutingServiceResponse($aObjRoute);
         }
         return null;
