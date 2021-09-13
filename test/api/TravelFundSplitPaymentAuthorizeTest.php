@@ -31,15 +31,19 @@ class TravelFundSplitPaymentAuthorizeTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO));
     }
 
-    protected function getAuthDoc($client, $account, $txn = 1, $amount = 100,$aDccParams=null,$currecyid = null,$hmac = null, $voucherId = "")
+    protected function getAuthDoc($client, $account, $txn = 1, $amount = 100,$aDccParams=null,$currecyid = null,$hmac = null, $voucherId = "",$voucherFirst=true)
     {
+        $voucher  = '<voucher id="'. $voucherId .'">';
+        $voucher .= '<amount country-id="100">'.($amount-95).'</amount>';
+        $voucher .= '</voucher>';
+
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<authorize-payment client-id="' . $client . '" account="' . $account . '">';
         $xml .= '<transaction id="' . $txn . '">';
-        $xml .= '<voucher id="'. $voucherId .'">';
-        $xml .= '<amount country-id="100">'.($amount-95).'</amount>';
-        $xml .= '</voucher>';
+        if($voucherFirst==true){
+            $xml .= $voucher;
+        }
         $xml .= '<card id="61775" type-id="1">';
         $xml .= '<amount country-id="100"';
         if(isset($currecyid) === true) $xml .= ' currency-id="'.$currecyid.'"';
@@ -50,6 +54,9 @@ class TravelFundSplitPaymentAuthorizeTest extends baseAPITest
         }
         else  $xml .=  ($amount-5) . '</amount>';
         $xml .= '</card>';
+        if($voucherFirst==False){
+            $xml .= $voucher;
+        }
         if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
         if(isset($aDccParams))
         {
@@ -178,7 +185,7 @@ class TravelFundSplitPaymentAuthorizeTest extends baseAPITest
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('isVoucherPreferred', 'false', true, 10099, 'client', 0);");
 
 
-        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100, null, null, null, "UIISTD");
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100, null, null, null, "UIISTD",False);
 
         $this->_httpClient->connect();
 
@@ -306,7 +313,7 @@ class TravelFundSplitPaymentAuthorizeTest extends baseAPITest
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('isVoucherPreferred', 'false', true, 10099, 'client', 0);");
 
 
-        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100);
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,NULL,NULL,NULL,"",False);
 
         $this->_httpClient->connect();
 

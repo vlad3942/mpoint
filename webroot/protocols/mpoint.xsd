@@ -93,7 +93,7 @@
 					<xs:all>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
+								<xs:choice maxOccurs="unbounded">
 									<xs:element name="card" minOccurs="1" maxOccurs="1">
 										<xs:complexType>
 											<xs:all>
@@ -114,6 +114,7 @@
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="voucher" type="voucher" minOccurs="0" maxOccurs="unbounded"/>
 									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
@@ -157,7 +158,7 @@
 										</xs:complexType>
 									</xs:element>
 									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
-								</xs:sequence>
+								</xs:choice>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
 							</xs:complexType>
@@ -203,8 +204,7 @@
 					<xs:sequence>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:all>
-									<xs:element name="voucher" type="voucher" minOccurs="0" maxOccurs="1"/>
+								<xs:choice maxOccurs="unbounded">
 									<xs:element name="card" minOccurs="0" maxOccurs="1">
 										<xs:complexType>
 											<xs:all>
@@ -293,6 +293,7 @@
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="voucher" type="voucher" minOccurs="0" maxOccurs="unbounded"/>
 									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
@@ -321,7 +322,7 @@
 										</xs:complexType>
 									</xs:element>
 									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
-								</xs:all>
+								</xs:choice>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
@@ -1312,6 +1313,17 @@
 				</xs:complexType>
 			</xs:element>
 			<!-- Validate Rule -->
+
+			<!-- Get Successful Txn From Session -->
+			<xs:element name="get-successful-txn-from-session" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="session-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Successful Txn From Session -->
 
 		</xs:choice>
 	</xs:complexType>

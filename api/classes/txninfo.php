@@ -2680,6 +2680,70 @@ class TxnInfo
 		$this->_sExternalID = $sExternalID;
 	}
 
+	/**
+	 * Function to add split session details
+	 *
+	 * @param RDB $obj_DB
+	 * @param int $sessionID
+	 * @param array $txnIDs
+	 * @return bool
+	 * @throws SQLQueryException
+	 * @throws mPointException
+	 */
+	public function setSplitSessionDetails(RDB $obj_DB, int $sessionID, array $txnIDs) : bool
+	{
+		$obj_PaymentSession = PaymentSession::Get($obj_DB,$sessionID);
+		if($obj_PaymentSession->getSessionType() > 1)
+		{
+			$isRetry = false;
+			// check if txn is retry in same split session
+			$checkTxnSplit = $this->getActiveSplitSession($obj_DB,$sessionID);
+			 if($checkTxnSplit > 0 && $checkTxnSplit == $sessionID){
+				$isRetry = true;
+			 }
+			 if($isRetry == false) {
+				 //insert details into split session tbl
+				 $sql = "SELECT Nextvalue('Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl_id_seq') AS id FROM DUAL";
+				 $RS = $obj_DB->getName($sql);
+				 if (is_array($RS) === false) {
+					 throw new mPointException("Unable to generate new Split Session ID", 1001);
+				 }
+				 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl(id,sessionid,status)
+							VALUES(" . $RS["ID"] . "," . $sessionID . ", 'Active')";
+				 if (is_resource($obj_DB->query($sql)) === false) {
+					 if (is_array($RS) === false) {
+						 throw new mPointException("Unable to insert new record for Split Session : " . $RS["ID"], 1002);
+					 }
+				 }
+				 $split_session_id= $RS["ID"];
+			 }
+			$sequenceNo  = 1;
+			if($isRetry == true) {
+				$sql = "SELECT SD.sequence_no,SS.id FROM LOG" . sSCHEMA_POSTFIX . ".split_details_tbl SD
+								INNER JOIN LOG" . sSCHEMA_POSTFIX . ".split_session_tbl SS on SS.id = SD.split_session_id
+								WHERE SS.sessionid = " . $sessionID . " AND SS.status = 'Active' ORDER BY sequence_no DESC limit 1";
+				$res = $obj_DB->getName($sql);
+				if ($res['SEQUENCE_NO'] != "") {
+					$sequenceNo += (int)$res['SEQUENCE_NO'];
+					$split_session_id = $res['ID'];
+				}
+			}
+			foreach($txnIDs as $insetTxnID){
+				// insert record into split details table
+				$sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".Split_Details_Tbl
+						(split_session_id,transaction_id,sequence_no,payment_status)
+					VALUES
+						(" . $split_session_id. ", ".$insetTxnID.",".$sequenceNo.",'Pending')";
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					throw new mPointException("Unable to insert new record of Split Details ", 1002);
+				}
+				$sequenceNo++;
+			}
+		}
+		return true;
+	}
+
 	public function setCardMask($cardNo)
 	{
 		$this->_mask = $cardNo;
@@ -2692,6 +2756,23 @@ class TxnInfo
 			$exp = $date->format('m/y');
 		}
 		$this->_expiry = $exp;
+	}
+
+	/**
+	 * This function is to get the active split session id in a given session
+	 * @param RDB $_OBJ_DB
+	 * @param int $sessionID
+	 * @return int|null
+	 */
+	public function getActiveSplitSession(RDB $_OBJ_DB,int $sessionID): ?int
+	{
+		$sql = "SELECT id,sessionid FROM LOG".sSCHEMA_POSTFIX.".split_session_tbl 
+                        WHERE sessionid = ".$sessionID." AND status='Active'";
+		$res = $_OBJ_DB->getName($sql);
+		if (is_array($res) === true) {
+			return (int)$res['SESSIONID'];
+		}
+		return null;
 	}
 }
 ?>

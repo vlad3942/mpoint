@@ -252,141 +252,85 @@ try
 
 							    $isVoucherRedeem = FALSE;
 							    $isVoucherRedeemStatus = -1;
-                                $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
-							    if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher) > 0) // Authorize voucher payment
-								{
-								    $isVoucherPreferred = $obj_ClientConfig->getAdditionalProperties(0,'isVoucherPreferred');
+							    $validRequest = true; // for split payment request validation
+							    $isTxnCreated = False; // for split txn is already is created or not
+                                $checkPaymentType = array();
+                                $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
+                                $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                                $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
-                                    $cardNode = $obj_DOM->{'authorize-payment'}[$i]->transaction->card;
-
-                                    $iAmount = (int)$obj_TxnInfo->getAmount();
-                                    if(isset($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher->amount) === TRUE)
-                                    {
-                                        $iAmount = (int) $obj_DOM->{'authorize-payment'}[$i]->transaction->voucher->amount;
+                                // check voucher node is appearing before card node and according to that set preference
+                                $getNodes = $obj_DOM->xpath('//authorize-payment/transaction/*');
+                                foreach($getNodes as $voucherPreferred) {
+                                    $preference[] = $voucherPreferred->getName();
+                                }
+                                $isVoucherPreferred = "true";
+                                if($preference[0] == 'card'){
+                                    $isVoucherPreferred = "false";
+                                }
+                                $paymentTypes = array();
+                                for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
+                                {
+                                    $obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
+                                    $iPaymentTypes['PAYMENTTYPE'] = $obj_card->getPaymentType();
+                                    //if card comes first then seq is 1 otherwise 2
+                                    $iPaymentTypes['SEQUENCE_NO'] = 1;
+                                    if($isVoucherPreferred == "true"){
+                                        $iPaymentTypes['SEQUENCE_NO'] = 2;
                                     }
-
-                                    $iPSPID = -1;
-                                    $aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
-                                    foreach ($aPaymentMethods as $m) {
-                                        if ($m->getPaymentMethodID() === Constants::iVOUCHER_CARD) {
-                                            $iPSPID = $m->getPSPID();
+                                    $paymentTypes[] = $iPaymentTypes;
+                                }
+                                if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher) > 0) {
+                                    $iPaymentTypes['PAYMENTTYPE'] = Constants::iPAYMENT_TYPE_VOUCHER;
+                                    $iPaymentTypes['SEQUENCE_NO'] = 2;
+                                    //if voucher comes first then seq is 1 otherwise 2
+                                    if($isVoucherPreferred == "true"){
+                                        $iPaymentTypes['SEQUENCE_NO'] = 1;
+                                    }
+                                    array_push($paymentTypes,$iPaymentTypes);
+                                }
+                                //validate the request against active split
+                                if($iSessionType > 1){
+                                    // check if txn is retry in same split session
+                                    $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
+                                    if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
+                                        $validateCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,(integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"],$obj_TxnInfo->getSessionId(),true);
+                                        if(empty($validateCombinations)){
+                                            $validRequest = false;
+                                            header("HTTP/1.1 502 Bad Gateway");
+                                            $xml .= '<status code="99">The given request combination is not configured for the client</status>';
                                         }
                                     }
-                                    $isVoucherErrorFound = FALSE;
-                                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                                }
+                                $checkPaymentType= array_column($paymentTypes, 'PAYMENTTYPE');
+                                if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher) > 0 && $validRequest==true) // Authorize voucher payment
+                                {
+                                    if (!in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)) {
+                                        $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'authorize-payment'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $iSessionType, $is_legacy);
+                                        if(isset($processVoucher['code'])) {
+                                            if ($processVoucher['code'] == 52) {
+                                                $aMsgCds[52] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
+                                                $isVoucherErrorFound = TRUE;
+                                                $xml .= '<status code="52">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
 
-                                    if($iPSPID > 1 && $sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0 )
-                                    {
-                                        foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher)
-                                        {
-                                            $additionalTxnData = [];
-                                            if(empty($voucher['id']) === false){
-                                                $additionalTxnData[0]['name'] = 'voucherid';
-                                                $additionalTxnData[0]['value'] = (string)$voucher['id'];
-                                                $additionalTxnData[0]['type'] = 'Transaction';
+                                            } else if ($processVoucher['code'] == 53) {
+                                                $aMsgCds[53] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
+                                                $xml .= '<status code="53">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
                                             }
-
-                                            if($obj_TxnInfo->getAdditionalData() !== null)
-                                            {
-
-                                                foreach ($obj_TxnInfo->getAdditionalData() as $key=>$value)
-                                                {
-                                                    $index = count($additionalTxnData);
-                                                    $additionalTxnData[$index]['name'] = $key;
-                                                    $additionalTxnData[$index]['value'] = $value;
-                                                    $additionalTxnData[$index]['type'] = 'Transaction';
-                                                }
-                                            }
-                                            $misc = [];
-                                            $misc['auto-capture'] = 2;
-                                            if (strtolower($is_legacy) === 'false')
-                                            {
-                                                $typeId = Constants::iVOUCHER_CARD;
-                                                $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
-                                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-
-                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL);
-                                                if ($obj_RS instanceof RoutingService)
-                                                {
-                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-                                                    $misc["routeconfigid"] = $iPrimaryRoute;
-
-                                                }
-                                            }
-
-                                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$iAmount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
-                                            if ($txnObj !== NULL) {
-                                                $_OBJ_DB->query('COMMIT');
-                                                $_OBJ_DB->query('START TRANSACTION');
-                                            } else {
-                                                $_OBJ_DB->query('ROLLBACK');
-                                            }
-                                             $isVoucherErrorFound = TRUE; //TO Bypass error flow
                                         }
-                                    }
-                                    elseif ($sessiontype > 1 && $iPSPID > 0)
-                                    {
-                                        $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
-                                        if ($iAmount > $pendingAmount) {
-                                            $aMsgCds[53] = "Amount is more than pending amount: " . $iAmount;
-                                            $xml .= '<status code="53">Amount is more than pending amount:  '. $iAmount . '</status>';
-                                            $isVoucherErrorFound = TRUE;
-                                        } else {
-                                            $obj_TxnInfo->updateTransactionAmount($_OBJ_DB, $iAmount);
-                                        }
-                                        $isVoucherRedeem = TRUE;
-                                    }
-                                    else if((int)$obj_TxnInfo->getAmount() !== $iAmount)
-                                    {
-                                        $aMsgCds[52] = "Amount is more than pending amount: " . $iAmount;
-                                        $isVoucherErrorFound = TRUE;
-                                        $xml .= '<status code="52">Amount is more than pending amount:  '. $iAmount . '</status>';
-                                        $isVoucherRedeem = TRUE;
-                                    }
+                                        $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
+                                        $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : 'true';
+                                        $isVoucherRedeem = !empty($processVoucher) ? $processVoucher['isVoucherRedeem'] : FALSE;
+                                        $isTxnCreated = !empty($processVoucher) ? $processVoucher['isTxnCreated'] : FALSE;
 
-                                    if($iPSPID > 0 && $isVoucherErrorFound === FALSE && ( (is_object($cardNode) === false || count($cardNode) === 0 ) || $isVoucherPreferred !== "false")) {
-                                        foreach ($obj_DOM->{'authorize-payment'}[$i]->transaction->voucher as $voucher) {
-                                            $isVoucherRedeem = TRUE;
-                                            $misc = [];
-                                            $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
-                                            if (strtolower($is_legacy) === 'false') {
-                                                $typeId = Constants::iVOUCHER_CARD;
-                                                $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
-                                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-
-                                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL);
-                                                if($obj_RS instanceof RoutingService)
-                                                {
-                                                    $objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-                                                    $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-                                                    # Update routeconfig ID in log.transaction table
-                                                    $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-                                                }
-                                            }
-                                            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $iPSPID);
-
-                                            $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
-                                            $obj_mPoint->logTransaction($obj_TxnInfo);
-
-                                            $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-                                            $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-
-                                            $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
-
-                                            $passbookEntry = new PassbookEntry
-                                            (
-                                                NULL,
-                                                $iAmount,
-                                                $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                                Constants::iAuthorizeRequested
-                                            );
-                                            if ($txnPassbookObj instanceof TxnPassbook) {
-                                                $txnPassbookObj->addEntry($passbookEntry);
-                                                $txnPassbookObj->performPendingOperations();
-                                            }
-                                            $isVoucherRedeemStatus = $obj_Authorize->redeemVoucher((string)$voucher["id"], $iAmount);
-                                            if ($isVoucherRedeemStatus === 100) {
+                                        $cardNode = $obj_DOM->{'authorize-payment'}[$i]->transaction->card;
+                                        if ($isVoucherErrorFound === FALSE && ((is_object($cardNode) === false || count($cardNode) === 0) || $isVoucherPreferred !== "false")) {
+                                            $redeemVoucher = General::redeemVoucherAuth($_OBJ_DB, $aHTTP_CONN_INFO, $obj_DOM->{'authorize-payment'}[$i], $obj_TxnInfo, $obj_mPoint, $_OBJ_TXT, $obj_mCard, $is_legacy);
+                                            $isVoucherRedeemStatus = $redeemVoucher['code'];
+                                            $isVoucherRedeem        = $redeemVoucher['isVoucherRedeem'];
+                                            if($isVoucherRedeemStatus === 24){
+                                                $xml .= '<status code="24">The selected payment card is not available</status>';
+                                            }else if ($isVoucherRedeemStatus === 100) {
                                                 $xml .= '<status code="100">Payment authorized using Voucher</status>';
                                             } elseif ($isVoucherRedeemStatus === 43) {
                                                 header("HTTP/1.1 402 Payment Required");
@@ -401,29 +345,25 @@ try
                                                 header("HTTP/1.1 502 Bad Gateway");
                                                 $xml .= '<status code="92">Payment rejected by voucher issuer</status>';
                                             }
+                                        } else if ($isVoucherErrorFound === FALSE) {
+                                            header("HTTP/1.1 412 Precondition Failed");
+                                            $isVoucherRedeemStatus = 99;
+                                            $xml .= '<status code="99">Voucher payment not configured for client</status>';
                                         }
                                     }
-								    else if( $isVoucherErrorFound === FALSE){
-                                        header("HTTP/1.1 412 Precondition Failed");
+                                }
 
-                                        $isVoucherRedeemStatus = 99;
-                                        $xml .= '<status code="99">Voucher payment not configured for client</status>';
-
-                                    }
-								}
-
-
-								if ((($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
+								if ((($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'authorize-payment'}[$i]->transaction->card) && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0 && $validRequest==true)
 								{
 
-                                    if ($sessiontype > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100)
+                                    if ($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType))
                                     {
                                         $misc = [];
                                         $misc["routeconfigid"] = -1;
 
                                         $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
                                         if ($txnObj !== NULL) {
-
+                                            $isTxnCreated = true;
                                             $obj_TxnInfo = $txnObj;
                                             $_OBJ_DB->query('COMMIT');
                                             $_OBJ_DB->query('START TRANSACTION');
@@ -431,12 +371,13 @@ try
                                             $_OBJ_DB->query('ROLLBACK');
                                         }
                                     }
-
+                                    if($isTxnCreated == false && $iSessionType > 1 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
+                                        $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
+                                    }
                                     $isStoredCardPayment = ((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card["id"] > 0)?true:false;
                                     $isCardTokenExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->token) === false)?true:false;
                                     $isCardNetworkExist = (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card["network"]) === false)?true:false;
                                     $additionalTxnData = [];
-                                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
 
 									if ($isStoredCardPayment === true)
 									{
@@ -471,7 +412,7 @@ try
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 										$obj_card = new Card($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j], $_OBJ_DB);
 										$obj_CardValidator = new CardValidator($obj_card);
-										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
+										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 &&
 										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && $isStoredCardPayment === true))
 										{
 											if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
@@ -483,9 +424,8 @@ try
 											(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE) &&
 											$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 											{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
-										
-										
-										$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+
+
 
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
@@ -568,7 +508,6 @@ try
                                             }
                                         }
 
-                                        $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
                                         if (strtolower($is_legacy) == 'false') {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
                                             $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
@@ -614,7 +553,6 @@ try
                                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                             CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
                                             $ip);
-                                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
 
                                         $obj_TransacionCountryConfig = null;
                                         if(empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) === false)
@@ -1451,7 +1389,7 @@ try
 										}
 									}	// End card loop
                                 } 
-                                else if($isVoucherRedeem === FALSE) 
+                                else if($isVoucherRedeem === FALSE && $validRequest==true)
                                 {
 									$_OBJ_DB->query("ROLLBACK");
 									if($isVoucherRedeemStatus === -1) {

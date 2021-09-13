@@ -13,6 +13,8 @@
  * @version 1.11
  */
 
+use api\classes\splitpayment\config\Configuration;
+
 require_once sCLASS_PATH .'/Parser.php';
 /**
  * General class for functionality methods which are used by several different modules or components
@@ -570,6 +572,7 @@ class General
              $obj_AssociatedTxnInfo = TxnInfo::produceInfo($iAssociatedTxnId, $this->getDBConn(), $txnInfo, $data);
 
              //link parent transaction to new created txn
+             /* to be removed after split payment changes */
              $index = count($additionalTxnData);
              $additionalTxnData[$index]['name'] = 'linked_txn_id';
              $additionalTxnData[$index]['value'] = (string)$txnInfo->getID();
@@ -577,10 +580,13 @@ class General
              $obj_AssociatedTxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $iAssociatedTxnId);
 
              //link new transaction to parent txn
+             /* to be removed after split payment changes */
              $additionalData[0]['name'] = 'linked_txn_id';
              $additionalData[0]['value'] = (string)$iAssociatedTxnId;
              $additionalData[0]['type'] = 'Transaction';
              $txnInfo->setAdditionalDetails($this->getDBConn(), $additionalData, $txnInfo->getID());
+             $txnIDs = [$txnInfo->getID(),$iAssociatedTxnId];
+             $txnInfo->setSplitSessionDetails($this->getDBConn(),$txnInfo->getSessionId(),$txnIDs);
 
              $this->newMessage($iAssociatedTxnId, Constants::iTRANSACTION_CREATED, '');
              $this->logTransaction($obj_AssociatedTxnInfo);
@@ -2267,7 +2273,7 @@ class General
      * @param TxnInfo $obj_TxnInfo Data object with the Transaction Information
      * @param ClientInfo $obj_ClientInfo Reference to the Data object with the client information
      * @param $obj_ConnInfo Reference to the HTTP connection information
-     * @param int $clientid Associated client ID
+     * @param int $clientid client ID
      * @param int $countryId Hold ID of the country
      * @param int|null $currencyId The currency id that is used to display currency id for amount
      * @param null $amount The amount that has been captured for the customer Transaction. Default value 0
@@ -2276,6 +2282,7 @@ class General
      * @param string|null $cardName
      * @param null $obj_FailedPaymentMethod
      * @param int|null $walletId
+     * @return bool|array
      */
     public static function getRouteConfiguration(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
 
@@ -2294,8 +2301,359 @@ class General
         }
         return $obj_CardResultSet;
     }
+    /**
+     * This function is used in auth and pay and due to split transactions added some conditions
+     */
+    public static function getRouteConfigurationAuth(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo,$clientid, $countryId,$currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL,$is_Associated_txn=TRUE)
+    {
+        $iPrimaryRoute = 0;
+        $obj_CardResultSet = FALSE;
+        $result = array();
+        $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $obj_ConnInfo, $clientid, $countryId, $currencyId, $amount, $cardTypeId,$issuerIdentificationNumber,$cardName,$obj_FailedPaymentMethod,$walletId);
+        if ($obj_RS instanceof RoutingService) {
+            $objTxnRoute   = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+        }
+        if ($iPrimaryRoute > 0) {
+            if($is_Associated_txn == false){
+                $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
+            }
+            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+        }
+            $result['pspid']         = !empty($obj_CardResultSet)?$obj_CardResultSet['PSPID']:-1;
+            $result['cardid']        = !empty($obj_CardResultSet)?$obj_CardResultSet['ID']:-1;
+            $result['routeconfigid'] = $iPrimaryRoute;
+            return $result;
+        }
 
-    public function getSuccessfulTxnFromSession(int $sessionId, int $clientId) : array
+    /**
+     * Function used for voucher redeem in auth and pay
+     * @return array
+     */
+    public static function redeemVoucherAuth($_OBJ_DB,$aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$_OBJ_TXT,$obj_mCard,$is_legacy):array
+    {
+        $isVoucherRedeemStatus = array();
+        foreach ($TXN_DOM->transaction->voucher as $voucher) {
+            $isVoucherRedeem = TRUE;
+            $misc = [];
+            if(isset($voucher->amount)){
+            $iAmount = (float)$voucher->amount;
+            }else{
+                $iAmount = $obj_TxnInfo->getAmount();
+            }
+            $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
+            $iPSPID = -1;
+            if (strtolower($is_legacy) === 'false') {
+                $typeId = Constants::iVOUCHER_CARD;
+                $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
+                $obj_ClientInfo = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $obj_CardResultSet = General::getRouteConfigurationAuth($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL, FALSE);
+                $iPSPID = $obj_CardResultSet['pspid'];
+            }else{
+                $aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
+                foreach ($aPaymentMethods as $m) {
+                    if ($m->getPaymentMethodID() === Constants::iVOUCHER_CARD) {
+                        $iPSPID = $m->getPSPID();
+                    }
+                }
+            }
+            if($iPSPID > 0){
+                $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $iPSPID);
+
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB, $obj_TxnInfo, $misc);
+                $obj_mPoint->logTransaction($obj_TxnInfo);
+
+                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+
+                $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
+
+                $passbookEntry = new PassbookEntry
+                (
+                    NULL,
+                    $iAmount,
+                    $obj_TxnInfo->getCurrencyConfig()->getID(),
+                    Constants::iAuthorizeRequested
+                );
+                if ($txnPassbookObj instanceof TxnPassbook) {
+                    $txnPassbookObj->addEntry($passbookEntry);
+                    $txnPassbookObj->performPendingOperations();
+                }
+                $redeemVoucher = $obj_Authorize->redeemVoucher((string)$voucher["id"], $iAmount);
+                $isVoucherRedeemStatus['code'] = $redeemVoucher;
+                $isVoucherRedeemStatus['isVoucherRedeem'] = $isVoucherRedeem;
+            }else{
+                $isVoucherRedeemStatus['code'] = 24;
+                $isVoucherRedeemStatus['isVoucherRedeem'] = $isVoucherRedeem;
+            }
+        }
+        return $isVoucherRedeemStatus;
+    }
+
+    /**
+     * This function is used for processing a voucher
+     * @param $_OBJ_DB
+     * @param $TXN_DOM
+     * @param $obj_TxnInfo
+     * @param $obj_mPoint
+     * @param $obj_mCard
+     * @param $aHTTP_CONN_INFO
+     * @param string $isVoucherPreferred
+     * @param int $sessiontype
+     * @param string $is_legacy
+     * @return array
+     * @throws SQLQueryException
+     */
+    public static function processVoucher($_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$aHTTP_CONN_INFO,string $isVoucherPreferred,int $sessiontype,string $is_legacy): array
+    {
+        $isVoucherRedeem = FALSE;
+        $isTxnCreated    = False;
+        $cardNode = $TXN_DOM->transaction->card;
+        $iAmount = (int)$obj_TxnInfo->getAmount();
+        $vAmount = 0;
+        $result  = [];
+        foreach($TXN_DOM->transaction->voucher as $voucher)
+        {
+            if(isset($voucher->amount) === TRUE)
+            {
+                $vAmount += (int) $voucher->amount;
+            }
+        }
+        if($vAmount > 0){
+            $iAmount = $vAmount;
+        }
+        $isVoucherErrorFound = FALSE;
+        if($sessiontype >= 1 && $isVoucherPreferred === "false" && is_object($cardNode) && count($cardNode) > 0)
+        {
+            $obj_TxnInfo->updateSessionType($_OBJ_DB, $iAmount);
+            foreach ($TXN_DOM->transaction->voucher as $voucher)
+            {
+                $additionalTxnData = [];
+                if(empty($voucher['id']) === false){
+                    $additionalTxnData[0]['name'] = 'voucherid';
+                    $additionalTxnData[0]['value'] = (string)$voucher['id'];
+                    $additionalTxnData[0]['type'] = 'Transaction';
+                }
+
+                if($obj_TxnInfo->getAdditionalData() !== null)
+                {
+                    foreach ($obj_TxnInfo->getAdditionalData() as $key=>$value)
+                    {
+                        $index = count($additionalTxnData);
+                        $additionalTxnData[$index]['name'] = $key;
+                        $additionalTxnData[$index]['value'] = $value;
+                        $additionalTxnData[$index]['type'] = 'Transaction';
+                    }
+                }
+                $misc = [];
+                $misc['auto-capture'] = 2;
+                $iPSPID = -1;
+                if (strtolower($is_legacy) === 'false')
+                {
+                    $typeId   = Constants::iVOUCHER_CARD;
+                    $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
+                    $obj_ClientInfo     = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                    $obj_CardResultSet  = General::getRouteConfigurationAuth($_OBJ_DB,$obj_mCard,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $voucher->amount,$typeId, NULL,$cardName);
+                    $misc["routeconfigid"] = $obj_CardResultSet['routeconfigid'];
+                    $iPSPID                = $obj_CardResultSet['pspid'];
+                }
+                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
+                if ($txnObj !== NULL) {
+                    $isTxnCreated = true;
+                    $_OBJ_DB->query('COMMIT');
+                    $_OBJ_DB->query('START TRANSACTION');
+                } else {
+                    $_OBJ_DB->query('ROLLBACK');
+                }
+            }
+            $isVoucherErrorFound = TRUE; //TO Bypass error flow
+        }else if($sessiontype > 1){
+            $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+            if ($iAmount > $pendingAmount) {
+                $isVoucherErrorFound = TRUE;
+                $result['code']     = 53;
+                $result['iAmount']  = $iAmount;
+            }
+            else {
+                $obj_TxnInfo->updateSessionType($_OBJ_DB, $iAmount);
+                $obj_TxnInfo->updateTransactionAmount($_OBJ_DB, $iAmount);
+            }
+            $isVoucherRedeem = TRUE;
+        }else if((int)$obj_TxnInfo->getAmount() !== $iAmount)
+        {
+            $isVoucherErrorFound = TRUE;
+            $isVoucherRedeem = TRUE;
+            $result['code']     = 52;
+            $result['iAmount']  = $iAmount;
+        }
+        $result['isVoucherErrorFound'] = $isVoucherErrorFound;
+        $result['isVoucherPreferred']  = $isVoucherPreferred;
+        $result['isVoucherRedeem']     = $isVoucherRedeem;
+        $result['isTxnCreated']        = $isTxnCreated;
+        return $result;
+    }
+
+    /**
+     * This method is to get applicable combination based on certain conditions
+     * If payment type is available from CRS then filter the combinations according to available payment types
+     * and show only applicable combination
+     * Active split node will be shown only when session is present in init request
+     * and if successful transactions are available in split session
+     * @param RDB $_OBJ_DB
+     * @param array $paymentTypes
+     * @param int $clientId
+     * @param string|null $sessionId
+     * @param bool $is_req_validate
+     * @return null|array
+     */
+    public static function getApplicableCombinations(RDB $_OBJ_DB, array $paymentTypes, int $clientId, string $sessionId=NULL, bool $is_req_validate=false): ?array
+    {
+        $objConfig  = array();
+        $result     = array();
+        $activeSplit    = array();
+        $configuration  = new Configuration();
+        if(!empty($sessionId)){
+            //get current split sequence in active split session
+            $currentSplit = 1;
+            $sql = "SELECT MAX(SD.sequence_no) as sequence_no FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD 
+                        INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS on SS.id = SD.split_session_id
+                        WHERE SS.sessionid = ".$sessionId." AND SS.status ='Active' AND SD.payment_status='Success'";
+            $res = $_OBJ_DB->getName($sql);
+            if (is_array($res) === true)
+            {
+                $currentSplit += (int)$res['SEQUENCE_NO'];
+            }
+            $configuration->setCurrentSplitSeq($currentSplit);
+            //get successful transactions in an active split session
+            $sql = "SELECT SD.transaction_id,SD.sequence_no,C.paymenttype FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD
+                        INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS ON SS.id = SD.split_session_id
+                        INNER JOIN LOG".sSCHEMA_POSTFIX.".transaction_tbl T ON T.id = SD.transaction_id 
+                        INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".card_tbl C ON  C.id = T.cardid
+                        WHERE SS.sessionid = ".$sessionId." AND SS.status ='Active' AND SD.payment_status='Success'";
+            $aRS = $_OBJ_DB->getAllNames($sql);
+            if (is_array($aRS) === true && count($aRS) > 0) {
+                foreach ($aRS as $rs) {
+                    $activeSplit[] = $rs;
+                }
+                $configuration->setActiveSplit($activeSplit);
+            }
+        }
+
+        $sql1 = ""; // for dynamic query join
+        $sql2 = ""; // for dynamic query and condition in where clause
+        $i    = 2; // for self join
+        // this is to validate the pay and auth request against the active split
+        if($is_req_validate == true){
+            $sql = "SELECT SC1.split_config_id
+                       FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl SC1
+                       INNER JOIN  Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF
+                       ON CF.id = SC1.split_config_id";
+            $currPaymentSplit = array_merge($activeSplit,$paymentTypes);
+            $keys             = array_keys($currPaymentSplit);
+            $lastKey = $keys[count($keys)-1]; // get the last key in array in order to construct query
+            $count   = count($currPaymentSplit);
+            foreach ($currPaymentSplit as $key=>$SplitCombination) {
+                // if active split has only one successful txn then join is not required
+                if ($count == 1) {
+                    $sql .= "  WHERE SC1.payment_type =" . $SplitCombination['PAYMENTTYPE'] . " AND SC1.sequence_no = " . $SplitCombination['SEQUENCE_NO'] ;
+                } else {
+                    $sql2 .= " SC".($i-1).".payment_type = " . $SplitCombination['PAYMENTTYPE'] . " AND SC".($i-1).".sequence_no = " . $SplitCombination['SEQUENCE_NO'];
+                    if($key != $lastKey) {
+                        $sql1 .= " INNER JOIN Client" . sSCHEMA_POSTFIX . ".Split_Combination_Tbl SC" . $i . " 
+                         ON SC" . ($i - 1) . ".split_config_id = SC" . $i . " .split_config_id";
+                        $sql2 .= " AND ";
+                    }
+                    $i++;
+                }
+            }
+            if ($count != 1) {
+                $sql .= $sql1 . " WHERE CF.client_id = ".$clientId." AND CF.enabled=true AND " . $sql2;
+            }else{
+                $sql .= $sql1 . " AND CF.client_id = ".$clientId." AND CF.enabled=true";
+            }
+            $aRS  = $_OBJ_DB->getAllNames($sql);
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                return $aRS;
+            }
+            return null;
+        }
+        $paymentTypeString = implode(", ", $paymentTypes);
+        $sql = "WITH splitConfig AS (
+                        SELECT id 
+                        FROM Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF
+                        WHERE CF.client_id = ".$clientId." AND CF.enabled=true),";
+        //AllSplitComb : get all split combinations available for a client as q1 and get their count group by split_config_id
+        //PTSplitComb : get all split combinations as per the payment type from crs as q2 and get their count group by split_config_id
+        $sql .= "AllSplitComb AS (
+                     SELECT ac.split_config_id, count(ac.split_config_id) as allcount 
+                     FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl ac
+                        INNER JOIN splitConfig ON splitConfig.id = ac.split_config_id
+                     GROUP BY ac.split_config_id),";
+        $sql .=  "PTSplitComb as (
+                        SELECT mc.split_config_id, count(mc.split_config_id) as matchcount
+                        FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl mc 
+                            INNER JOIN splitConfig ON splitConfig.id = mc.split_config_id
+                        WHERE mc.payment_type IN (".$paymentTypeString.") ";
+
+        // following query will only be executed if session id is present and atleast one successful transaction is available in active split session
+        if(!empty($sessionId) && !empty($activeSplit)){
+            $keys    = array_keys($activeSplit);
+            $lastKey = $keys[count($keys)-1]; //get the last key in array in order to construct query
+            $count   = count($activeSplit);
+            $sql    .= " AND split_config_id IN (SELECT SC1.split_config_id
+                                FROM Client" . sSCHEMA_POSTFIX . ".Split_Combination_Tbl SC1 ";
+            foreach ($activeSplit as $key=>$SplitCombination) {
+                // if active split has only one successful txn then join is not required
+                if ($count == 1) {
+                    $sql .= "  WHERE (SC1.payment_type =" . $SplitCombination['PAYMENTTYPE'] . " AND SC1.sequence_no = " . $SplitCombination['SEQUENCE_NO'] . "))";
+                } else {
+                    $sql2 .= " SC".($i-1).".payment_type = " . $SplitCombination['PAYMENTTYPE'] . " AND SC".($i-1).".sequence_no = " . $SplitCombination['SEQUENCE_NO'];
+                    if($key != $lastKey) {
+                        $sql1 .= " INNER JOIN Client" . sSCHEMA_POSTFIX . ".Split_Combination_Tbl SC" . $i . " 
+                         ON SC" . ($i - 1) . ".split_config_id = SC" . $i . " .split_config_id";
+                        $sql2 .= " AND ";
+                    }else{
+                        $sql2 .= " )";
+                    }
+                    $i++;
+                }
+            }
+            if ($count!= 1) {
+                $sql .= $sql1 . " WHERE " . $sql2;
+            }
+        }
+        $sql .= " GROUP BY mc.split_config_id)";
+        $sql .=  " SELECT AllSplitComb.split_config_id FROM AllSplitComb INNER JOIN PTSplitComb on AllSplitComb.split_config_id = PTSplitComb.split_config_id and AllSplitComb.allcount = PTSplitComb.matchcount;";
+        $aRS  = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            for($i=0; $i<count($aRS); $i++) {
+                // get the combinations from split config id we get from above query filters and construct an array for applicable combinations
+                $sqlS  = "SELECT CM.payment_type,CM.sequence_no,CF.is_one_step_auth
+                             FROM Client". sSCHEMA_POSTFIX .".Split_Combination_Tbl CM
+                             INNER JOIN Client". sSCHEMA_POSTFIX .".Split_Configuration_Tbl CF ON CF.id= CM.split_config_id
+                             WHERE CM.split_config_id = ". $aRS[$i]["SPLIT_CONFIG_ID"] ." AND CF.client_id =".$clientId." AND CF.enabled =true ORDER BY CM.sequence_no ASC";
+                $RS = $_OBJ_DB->getAllNames($sqlS);
+                $K=0;
+                if (is_array($RS) === true && count($RS) > 0) {
+                    for ($j=0; $j<count($RS); $j++){
+                        $objConfig["applicable_combinations"][$i]['payment_type'][$K]['id']         = $RS[$j]["PAYMENT_TYPE"];
+                        $objConfig["applicable_combinations"][$i]['payment_type'][$K]['sequence']   = $RS[$j]["SEQUENCE_NO"];
+                        $objConfig["applicable_combinations"][$i]['is_one_step_authorization']      = $RS[$j]["IS_ONE_STEP_AUTH"];
+                        $K++;
+                    }
+                }
+            }
+        }else{
+            return null;
+        }
+        $result['objConfig']     = $objConfig;
+        $result['configuration'] = $configuration;
+        return $result;
+    }
+
+    public function getSuccessfulTxnFromSession(int $clientId, int $sessionId, string $excludeStateFilter = '') : array
     {
         $result = [];
 
@@ -2306,9 +2664,9 @@ class General
                                           ON txn.id = msg.txnid
                       WHERE sessionid = '.$sessionId.'
                       AND clientid = '.$clientId.'
-                      AND msg.stateid in ('.Constants::iPAYMENT_PENDING_STATE.', '.Constants::iPAYMENT_ACCEPTED_STATE.', '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.')) s
+                      AND msg.stateid in ('.Constants::iPAYMENT_PENDING_STATE.', '.Constants::iPAYMENT_ACCEPTED_STATE.', '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE. $excludeStateFilter.')) s
                 where s.rn = 1
-                  and s.stateid <>  '.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE;
+                  and s.stateid not in  ('.Constants::iPOST_FRAUD_CHECK_REJECTED_STATE . $excludeStateFilter . ')';
 
         $RSMsg = $this->getDBConn()->query($sql);
 
@@ -2318,5 +2676,78 @@ class General
         }
         return $result;
     }
+
+    /**
+     * @param int $clientId
+     * @param int $sessionId
+     * @return array
+     */
+    public function rollbackTransaction(int $clientId, int $sessionId ) : array
+    {
+        global $aHTTP_CONN_INFO;
+        $responses = [];
+        $additionalFilter = ', '.Constants::iPAYMENT_CANCELLED_STATE.', ' . Constants::iPAYMENT_REFUNDED_STATE;
+        $aTransactionId = $this->getSuccessfulTxnFromSession($clientId, $sessionId, $additionalFilter);
+        foreach ($aTransactionId as $transactionId) {
+            $objTxnInfo = TxnInfo::produceInfo($transactionId, $this->getDBConn());
+            $objGeneralPSP = new GeneralPSP($this->getDBConn(), $this->getText(), $objTxnInfo, $aHTTP_CONN_INFO, NULL, NULL);
+            $response = $objGeneralPSP->voidTransaction($objGeneralPSP->getTxnInfo()->getAmount(), 'Void triggered from Auto Rollback module');
+            $responses[$transactionId] = array_key_first($response);
+        }
+        return $responses;
+    }
+
+    /**
+     * @param int $clientId Client Id
+     * @param int $sessionId Session Id
+     * @param string $status Split Session status
+     * @return bool
+     */
+    public function changeSplitSessionStatus(int $clientId, int $sessionId, string $status, bool $isManualRefund = false): bool
+    {
+        //Once Auto Refund cron is in place below function call will be replaced by function where
+        //Successful transaction will be mark for rollback.
+        if($status !== 'Completed' && $isManualRefund === false) {
+            $this->rollbackTransaction($clientId, $sessionId);
+        }
+
+        $paymentSession = PaymentSession::Get($this->getDBConn(), $sessionId);
+        if($status !== 'Completed' || $paymentSession->getPendingAmount() === 0) {
+            try {
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl
+				SET	status = '" . $status . "'
+				WHERE sessionid = " . $sessionId . " and status = 'Active'";
+                $res = $this->getDBConn()->query($sql);
+
+                return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
+            } catch (SQLQueryException $SQLQueryException) {
+                trigger_error('Unable to update Split Session status. Payment Session id: ' . $sessionId, E_USER_ERROR);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param int $txnId
+     * @param string $status Split Session status
+     * @return bool
+     */
+    public function changeSplitDetailStatus(int $txnId, string $status): bool
+    {
+        try {
+            $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Split_Details_Tbl
+				SET	payment_status = '". $status ."'
+				WHERE transaction_id = ". $txnId ;
+            $res = $this->getDBConn()->query($sql);
+
+            return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
+        }
+        catch (SQLQueryException $SQLQueryException)
+        {
+            trigger_error('Unable to update Split Details Status. Transaction id: '. $txnId, E_USER_ERROR);
+        }
+        return false;
+    }
+
 }
 ?>

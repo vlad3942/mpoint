@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Priya Alamwar" id="2020-08-12-setup-v2.30.log-1">
+
+        <createTable  catalogName="log"
+                      schemaName="log"
+                      tableName="split_session_tbl"
+                      remarks="Hold list of all available split session">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="sessionid"
+                    type="int"
+                    remarks="Holds session id of transaction">
+                <constraints nullable="false"
+                             foreignKeyName="sessionid_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="log"
+                             referencedTableName="session_tbl"
+                             referencedTableSchemaName="log"/>
+            </column>
+
+            <column name="status"
+                    type="varchar(10)"
+                    remarks="Status of split session">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE log.split_session_tbl OWNER TO mpoint;
+            CREATE TRIGGER Update_Split_Session_Tbl BEFORE INSERT OR UPDATE ON log.split_session_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="log" schemaName="log" tableName="split_session_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Priya Alamwar" id="2020-08-12-setup-v2.30.log-2">
+
+        <createTable  catalogName="log"
+                      schemaName="log"
+                      tableName="split_details_tbl"
+                      remarks="Hold split session details">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="split_session_id"
+                    type="int"
+                    remarks="Holds split session id of transaction">
+                <constraints nullable="false"
+                             foreignKeyName="split_session_id_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="log"
+                             referencedTableName="split_session_tbl"
+                             referencedTableSchemaName="log"/>
+            </column>
+
+            <column name="transaction_id"
+                    type="int"
+                    remarks="Holds id of transaction">
+                <constraints nullable="false"
+                             foreignKeyName="transaction_id_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="log"
+                             referencedTableName="transaction_tbl"
+                             referencedTableSchemaName="log"/>
+            </column>
+
+            <column name="sequence_no"
+                    type="int"
+                    remarks="Hold sequence no within combination">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="payment_status"
+                    type="varchar(10)"
+                    remarks="Status of transaction">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE log.split_details_tbl OWNER TO mpoint;
+            CREATE TRIGGER Update_Split_Details_Tbl BEFORE INSERT OR UPDATE ON log.split_details_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="log" schemaName="log" tableName="split_details_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
