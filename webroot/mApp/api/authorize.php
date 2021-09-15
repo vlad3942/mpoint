@@ -371,6 +371,7 @@ try
                                             $_OBJ_DB->query('ROLLBACK');
                                         }
                                     }
+                                    $obj_TxnInfo->updateSessionType((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                     if($isTxnCreated == false && $iSessionType > 1 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                                         $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                                     }
@@ -584,7 +585,7 @@ try
                                             }
                                             else{
                                                 $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
-                                                $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                                $obj_TxnInfo->updateSessionType((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }
                                         }
                                        else
@@ -602,7 +603,7 @@ try
 
                                                    if($iSessionType > 1 && $iSaleAmount < (int)$obj_TxnInfo->getAmount()) {
                                                        $data["amount"] = $iSaleAmount;
-                                                       $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
+                                                       $obj_TxnInfo->updateSessionType($iSaleAmount);
                                                    }
 
                                                    $data['converted-currency-config'] = $obj_CurrencyConfig;
@@ -621,7 +622,7 @@ try
                                              }
                                              elseif($iSessionType > 1 && $iSaleAmount <= 0)
                                             {
-                                                $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                                $obj_TxnInfo->updateSessionType((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
                                             }
                                         }
 

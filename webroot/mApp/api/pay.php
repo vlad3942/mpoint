@@ -352,6 +352,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $_OBJ_DB->query('ROLLBACK');
                             }
                         }
+                        $obj_TxnInfo->updateSessionType((integer)$obj_DOM->pay[$i]->transaction->card->amount);
                         if($isTxnCreated == false && $iSessionType > 1 && in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                             $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                         }
@@ -479,7 +480,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else{
 								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
-								$obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+								$obj_TxnInfo->updateSessionType((integer)$obj_DOM->pay[$i]->transaction->card->amount);
 							}
 						}
 						else
@@ -499,7 +500,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                                 else
                                 {
-                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
+                                    $obj_TxnInfo->updateSessionType($iSaleAmount);
                                 }
                             }
 						    else
@@ -510,7 +511,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                                 elseif($iSessionType > 1)
                                 {
-                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                                    $obj_TxnInfo->updateSessionType((integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 }
                             }
 
