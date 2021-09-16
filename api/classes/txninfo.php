@@ -2341,13 +2341,9 @@ class TxnInfo
         $obj_DB->query($sql);
     }
 
-    function updateSessionType(RDB $obj_DB,$amount)
+    function updateSessionType($amount)
 	{
-		if ($amount < $this->getPaymentSession()->getAmount())
-        {
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->getSessionId() . " and sessiontypeid = 1";
-            $obj_DB->query($sql);
-    	}
+		$this->getPaymentSession()->updateSessionTypeId($amount,$this->getPaymentSession()->getAmount(),$this->getSessionId());
 	}
 
     /**
