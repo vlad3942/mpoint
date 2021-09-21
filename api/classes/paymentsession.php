@@ -295,7 +295,7 @@ final class PaymentSession
                                              INNER JOIN Log.Split_Session_Tbl Sst ON Sst.Id = Sdt.Split_Session_Id
                                     WHERE Sessionid = " . $this->_id . "
                                       AND Sst.Status = 'failed')
-                AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")
+                AND msg.stateid in (".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")
                 ";
 
                 $res = $this->_obj_Db->query($sql);
