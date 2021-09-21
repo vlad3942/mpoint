@@ -6,7 +6,7 @@
  * Link: http://www.cellpointmobile.com
  * Project: server
  * Package: api\.classes
- * File Name:FraudStatus.php
+ * File Name:FraudStatusTxnData.php
  */
 
 namespace api\classes;
@@ -15,12 +15,12 @@ use JsonSerializable;
 use api\interfaces\XMLSerializable;
 
 /**
- * Class FraudStatus
+ * Class FraudStatusTxnData
  *
  * @package api\classes
  * @xmlName fraud
  */
-class FraudStatus implements JsonSerializable, XMLSerializable
+class FraudStatusTxnData implements JsonSerializable, XMLSerializable
 {
     private $status_code;
 

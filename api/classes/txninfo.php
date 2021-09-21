@@ -2341,13 +2341,9 @@ class TxnInfo
         $obj_DB->query($sql);
     }
 
-    function updateSessionType(RDB $obj_DB,$amount)
+    function updateSessionType($amount)
 	{
-		if ($amount < $this->getPaymentSession()->getAmount())
-        {
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->getSessionId() . " and sessiontypeid = 1";
-            $obj_DB->query($sql);
-    	}
+		$this->getPaymentSession()->updateSessionTypeId($amount,$this->getPaymentSession()->getAmount(),$this->getSessionId());
 	}
 
     /**
@@ -2685,14 +2681,16 @@ class TxnInfo
 	 *
 	 * @param RDB $obj_DB
 	 * @param int $sessionID
-	 * @param int $txnID
-	 * @return void
+	 * @param array $txnIDs
+	 * @return bool
 	 * @throws SQLQueryException
 	 * @throws mPointException
 	 */
 	public function setSplitSessionDetails(RDB $obj_DB, int $sessionID, array $txnIDs) : bool
 	{
-		if($sessionID > 0) {
+		$obj_PaymentSession = PaymentSession::Get($obj_DB,$sessionID);
+		if($obj_PaymentSession->getSessionType() > 1)
+		{
 			$isRetry = false;
 			// check if txn is retry in same split session
 			$checkTxnSplit = $this->getActiveSplitSession($obj_DB,$sessionID);
@@ -2756,8 +2754,13 @@ class TxnInfo
 		$this->_expiry = $exp;
 	}
 
-	/*This function is to get the active split session id in a given session */
-	public function getActiveSplitSession($_OBJ_DB,int $sessionID): ?int
+	/**
+	 * This function is to get the active split session id in a given session
+	 * @param RDB $_OBJ_DB
+	 * @param int $sessionID
+	 * @return int|null
+	 */
+	public function getActiveSplitSession(RDB $_OBJ_DB,int $sessionID): ?int
 	{
 		$sql = "SELECT id,sessionid FROM LOG".sSCHEMA_POSTFIX.".split_session_tbl 
                         WHERE sessionid = ".$sessionID." AND status='Active'";

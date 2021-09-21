@@ -47,16 +47,28 @@ class Configuration
         return $this->combinations;
     }
 
+    /**
+     * @param Combination $combination
+     * @return void
+     */
     public function setCombination(Combination $combination): void
     {
         $this->combinations[] = $combination;
     }
 
+    /**
+     * @param $activeSplit
+     * @return void
+     */
     public function setActiveSplit($activeSplit): void
     {
         $this->activeSplit[] = $activeSplit;
     }
 
+    /**
+     * @param $currentSplitSeq
+     * @return void
+     */
     public function setCurrentSplitSeq($currentSplitSeq): void
     {
         $this->currentSplitSeq = $currentSplitSeq;
@@ -99,12 +111,17 @@ class Configuration
     }
 
     /**
+     * This method is to produce application combinations
+     * and active split if session id is present
      *
-     * This Methode is to produce the Payment Configuration object
-     * From phase this method will not required and constructor will fetch configuration from DB directly
+     * @param $_OBJ_DB
+     * @param int $clientId
+     * @param array $paymentTypes
+     * @param string $sessionId
      *
+     * @return null|Configuration
      */
-    public static function ProduceConfig($_OBJ_DB, int $clientId, array $paymentTypes,string $sessionId)
+    public static function ProduceConfig($_OBJ_DB, int $clientId, array $paymentTypes,string $sessionId) : ?Configuration
     {
         if (!empty($clientId)) {
             $applicableCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,$clientId,$sessionId);

@@ -140,8 +140,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 
+                    $isSplitAbandoned = false;
+                    $initAmount = (int) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+
+                    $sessionId = (int)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
+                    $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
+                    if($sessionId > 1 )
+                    {
+                        $obj_PaymentSession = PaymentSession::Get($_OBJ_DB,$sessionId);
+                        if($obj_PaymentSession->getSessionType() > 1 && (int)$obj_PaymentSession->getAmount() === $initAmount)
+                        {
+                            $isSplitAbandoned = true;
+                            $obj_PaymentSession->updateSessionTypeId($initAmount);
+                        }
+                    }
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-					if (strlen($obj_ClientConfig->getSalt() ) > 0)
+					if (strlen($obj_ClientConfig->getSalt() ) > 0 && ($isSplitAbandoned === true || $sessionId == 0))
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
 																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
@@ -218,20 +232,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
                         }
                     }
-                    $initAmount = (int) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 
-                    $sessionId = (int)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                    $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
-                    if($sessionId > 1 )
-                    {
-                        $obj_PaymentSession = PaymentSession::Get($_OBJ_DB,$sessionId);
-                        if($obj_PaymentSession->getSessionType() > 1 && $obj_PaymentSession->getAmount() === $initAmount)
-                        {
-                            $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
-                            $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
-                            $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_PaymentSession->getId(), 'Failed', $isManualRefund);
-                        }
+                    if($isSplitAbandoned === true){
+                        $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                        $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
+                        $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_PaymentSession->getId(), 'Failed', $isManualRefund);
                     }
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -558,7 +565,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 try {
                                     $splitPaymentConfig = Configuration::ProduceConfig($_OBJ_DB,$clientId,array_unique($paymentTypes),$sessionId);
-                                    if($splitPaymentConfig instanceof Configuration) {
+                                    if ($splitPaymentConfig instanceof Configuration) {
                                         $xml .= "<split_payment>";
                                         $xml .= $splitPaymentConfig->toXML();
                                         $xml .= "</split_payment>";

@@ -251,7 +251,7 @@ final class PaymentSession
                     {
                         global $_OBJ_TXT;
                         $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
-                        $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Success');
+                        $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Completed');
                     }
                     return 1;
                 }
@@ -590,6 +590,18 @@ final class PaymentSession
             }
         }
         return $additionalData;
+    }
+
+    function updateSessionTypeId($amount,$sessionAmt,$sessionID)
+    {
+        if ($amount < $sessionAmt)
+        {
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$sessionID . " and sessiontypeid = 1";
+            $this->_obj_Db->query($sql);
+        }else if($amount == $sessionAmt){
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$sessionID . " and sessiontypeid = 2";
+            $this->_obj_Db->query($sql);
+        }
     }
 
 }
