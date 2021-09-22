@@ -188,7 +188,7 @@ function sendCallback(string $url, string $body)
         $obj_HTTP->disConnect();
 
         if (200 < $iCode && $iCode > 300)
-            trigger_error("CEBU callback response code: ". $iCode, E_USER_ERROR);
+            trigger_error("CEBU callback response code: ". $iCode, E_USER_WARNING);
 
 
         http_response_code($iCode);
