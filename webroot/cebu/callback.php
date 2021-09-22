@@ -187,11 +187,15 @@ function sendCallback(string $url, string $body)
         $iCode = $obj_HTTP->send(constHTTPHeaders(), $body);
         $obj_HTTP->disConnect();
 
+        if (200 < $iCode && $iCode > 300)
+            trigger_error("CEBU callback response code: ". $iCode, E_USER_ERROR);
+
+
         http_response_code($iCode);
         echo $obj_HTTP->getReplyBody();
     }
     // Error: Unable to establish Connection to Client
-    catch (HTTPConnectionException | HTTPSendException $e)
+    catch (HTTPConnectionException | HTTPSendException | HTTPInternalException $e)
     {
         trigger_error("mPoint Callback request failed Body: ". $body. ", Message: " . $e->getMessage(), E_USER_ERROR);
         http_response_code(500);
