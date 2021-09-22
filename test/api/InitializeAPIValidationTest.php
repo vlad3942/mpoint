@@ -22,12 +22,16 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-    protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0,$countryid=100, $orderXml='')
+    protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200, $hmac=null, $email=null, $customerref=null, $mobile=null, $profileid=null, $sso_preference=null, $version="2.0",$fxservicetypeid=0,$countryid=100, $orderXml='',$sessionid=0)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<initialize-payment client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction order-no="1234abc">';
+		$xml .= '<transaction order-no="1234abc"';
+		if($sessionid > 0){
+            $xml .= ' session-id="'.$sessionid.'"';
+        }
+        $xml .= '>';
 		$xml .= '<amount country-id="'.$countryid.'"';
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
@@ -662,7 +666,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->assertEquals(11, $fxservicetypeid);
     }
 
-    public function testSplitPaymentCombinatios()
+    public function testSplitPaymentCombinations()
 	{
 		$pspID = 2;
         $this->queryDB("DELETE FROM CLIENT.STATICROUTELEVELCONFIGURATION");
@@ -1057,5 +1061,44 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->assertEquals('2', $arrivalTerminal);
         $this->assertEquals('1', $deptTerminal);
 
+    }
+
+    public function testActiveSplitNode()
+    {
+        $pspID = 2;
+        $this->queryDB("DELETE FROM CLIENT.STATICROUTELEVELCONFIGURATION");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, psp_type) VALUES (10099, 2, $pspID, true, 1, 1)");
+
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('isnewcardconfig', 'true', 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
+
+        //split payment combinations
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id,client_id, name, is_one_step_auth, enabled) VALUES (1,10099, 'Card+Card', false, true);");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES (1, 1, 1, 1);");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES (2, 1, 1, 2);");
+
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, cardid,pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid) VALUES (1001001, 100, 10099, 1100, 1, 2, $pspID, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE,10)");
+
+        $this->queryDB("INSERT INTO log.split_session_tbl(id,sessionid,status) VALUES (1, 10,'Active');");
+        $this->queryDB("INSERT INTO log.split_details_tbl(id,split_session_id, transaction_id, sequence_no,payment_status) VALUES (1, 1, 1001001, 1,'Success');");
+
+        $xml = $this->getInitDoc(10099, 1100, null, 'success', 200,null,'jona@oismail.com',null,'288828610','member','STRICT','2.0',0,100,'',10);
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertStringContainsString('<split_payment><active_split><current_split_sequence>2</current_split_sequence><transactions><transaction><payment_type>1</payment_type><id>1001001</id><sequence>1</sequence></transaction></transactions></active_split><configuration><applicable_combinations><combination><payment_type><id>1</id><sequence>1</sequence></payment_type><payment_type><id>1</id><sequence>2</sequence></payment_type><is_one_step_authorization>false</is_one_step_authorization></combination></applicable_combinations></configuration></split_payment>', $sReplyBody);
     }
 }

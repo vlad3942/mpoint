@@ -111,17 +111,18 @@ class SplitPaymentAuthorizeTest extends baseAPITest
     }
 
 
-    protected function getAuthDoc($client, $account, $txn = 1, $amount = 100,$aDccParams=null,$currecyid = null,$hmac = null,$voucherFirst=true)
+    protected function getAuthDoc($client, $account, $txn = 1, $amount = 100,$aDccParams=null,$currecyid = null,$hmac = null,$voucherFirst=true,$cardOnly=false)
     {
-        $voucher = '<voucher id="61775" order-no="800-123456">';
-        $voucher .= '<amount country-id="100">'.($amount-95).'</amount>';
-        $voucher .= '</voucher>';
-
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<authorize-payment client-id="' . $client . '" account="' . $account . '">';
         $xml .= '<transaction id="' . $txn . '">';
-        if($voucherFirst==true){
+
+        $voucher = '<voucher id="61775" order-no="800-123456">';
+        $voucher .= '<amount country-id="100">'.($amount-95).'</amount>';
+        $voucher .= '</voucher>';
+
+        if($voucherFirst==true && $cardOnly==false){
             $xml .= $voucher;
         }
         $xml .= '<card id="61775" type-id="1">';
@@ -134,7 +135,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         }
         else  $xml .=  ($amount-5) . '</amount>';
         $xml .= '</card>';
-        if($voucherFirst==False){
+        if($voucherFirst==False && $cardOnly==false){
             $xml .= $voucher;
         }
         if(isset($hmac)=== true) $xml .= '<hmac>'.$hmac.'</hmac>';
@@ -273,6 +274,18 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->assertTrue(is_resource($res) );
         $linkedTxnId = pg_fetch_all($res);
         $this->assertEquals(1, $linkedTxnId[0]['value'] );
+
+        $res =  $this->queryDB("SELECT id FROM Log.split_session_tbl where sessionid=1" );
+        $this->assertTrue(is_resource($res) );
+        $split_session_id = pg_fetch_all($res);
+        $res =  $this->queryDB("SELECT transaction_id FROM Log.split_details_tbl where split_session_id=".$split_session_id[0]['id'] );
+        $this->assertTrue(is_resource($res) );
+        $splitTxns = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $splitTxns[] = $row["transaction_id"];
+        }
+        $this->assertEquals(2, count($splitTxns));
     }
 
     public function testSuccessfulDCCAuthorizationVoucherFirst()
@@ -370,6 +383,18 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
         $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT id FROM Log.split_session_tbl where sessionid=1" );
+        $this->assertTrue(is_resource($res) );
+        $split_session_id = pg_fetch_all($res);
+        $res =  $this->queryDB("SELECT transaction_id FROM Log.split_details_tbl where split_session_id=".$split_session_id[0]['id'] );
+        $this->assertTrue(is_resource($res) );
+        $splitTxns = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $splitTxns[] = $row["transaction_id"];
+        }
+        $this->assertEquals(2, count($splitTxns));
     }
 
 
@@ -404,7 +429,6 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 1, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 1, $pspID, true, 1)");
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
-        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('isVoucherPreferred', 'false', true, 10099, 'client', 0);");
 
 
         $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,null,null,null,false);
@@ -451,6 +475,18 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->assertTrue(is_resource($res) );
         $linkedTxnId = pg_fetch_all($res);
         $this->assertEquals(1, $linkedTxnId[0]['value'] );
+
+        $res =  $this->queryDB("SELECT id FROM Log.split_session_tbl where sessionid=1" );
+        $this->assertTrue(is_resource($res) );
+        $split_session_id = pg_fetch_all($res);
+        $res =  $this->queryDB("SELECT transaction_id FROM Log.split_details_tbl where split_session_id=".$split_session_id[0]['id'] );
+        $this->assertTrue(is_resource($res) );
+        $splitTxns = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $splitTxns[] = $row["transaction_id"];
+        }
+        $this->assertEquals(2, count($splitTxns));
     }
 
     public function testSuccessfulDCCAuthorizationCardFirst()
@@ -485,7 +521,6 @@ class SplitPaymentAuthorizeTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 1, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid,dccenabled) VALUES (10099, 1, $pspID, true, 1,true)");
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
-        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('isVoucherPreferred', 'false', true, 10099, 'client', 0);");
 
 
         $aDccParams = array(
@@ -533,6 +568,18 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
         $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
         $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT id FROM Log.split_session_tbl where sessionid=1" );
+        $this->assertTrue(is_resource($res) );
+        $split_session_id = pg_fetch_all($res);
+        $res =  $this->queryDB("SELECT transaction_id FROM Log.split_details_tbl where split_session_id=".$split_session_id[0]['id'] );
+        $this->assertTrue(is_resource($res) );
+        $splitTxns = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $splitTxns[] = $row["transaction_id"];
+        }
+        $this->assertEquals(2, count($splitTxns));
     }
 
     public function testVoucherRedemptionDeniedByIssuer()
@@ -602,5 +649,133 @@ class SplitPaymentAuthorizeTest extends baseAPITest
 
     }
 
+    public function testSplitPaymentInvalidCombinations()
+    {
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] . "://" . $this->_aMPOINT_CONN_INFO["host"] . "/_test/simulators/mticket/callback.php";
+        $pspID = Constants::iAMEX_ACQUIRER;
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+
+        //split payment combinations
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id,client_id, name, is_one_step_auth, enabled) VALUES (1,10099, 'Card+APM', true, true);");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES (1, 1, 1, 1);");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES (2, 1, 4, 2);");
+
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10099, 'client',0)");
+
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 1, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 1, $pspID, true, 1)");
+
+        //first card txn
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4001, '900-55150298', 10000, 9876543210, '', '127.0.0.1', -1, 2,(NOW() + interval '1 hour'));");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, cardid,pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, 1,$pspID, '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO log.split_session_tbl(id,sessionid,status) VALUES (1, 1,'Active');");
+        $this->queryDB("INSERT INTO log.split_details_tbl(id,split_session_id, transaction_id, sequence_no,payment_status) VALUES (2, 1, 1001001, 1,'Success');");
+        // second card txn
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001002, '900-55150298', 100, 10099, 1100, 100, '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+
+        $xml = $this->getAuthDoc(10099, 1100, 1001002, 5000,null,null,null,false,true);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(502, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="99">The given request combination is not configured for the client</status></root>', $sReplyBody);
+    }
+
+    public function testSuccessfulAuthorizationCardCardSplit()
+    {
+        $pspID = Constants::iAMEX_ACQUIRER;
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', 2, true, 10099, 'client', 0);");
+        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10099, 'client',0)");
+
+        //split payment combinations
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id,client_id, name, is_one_step_auth, enabled) VALUES (1,10099, 'Card+Card', false, true);");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES (1, 1, 1, 1);");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES (2, 1, 1, 2);");
+
+        //As per talk with Jona and Simon 2016-07-19 it should not be possible to authorize a disabled card, since the client can ignore flags sent from initialize
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 1, $pspID, true, 1)");
+
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 1, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 10000, 9876543210, '', '127.0.0.1', -1, 2);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, cardid,pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 1, $pspID, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iCB_ACCEPTED_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iCB_CONSTRUCTED_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iCB_CONNECTED_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+        $this->queryDB("INSERT INTO log.split_session_tbl(id,sessionid,status) VALUES (1, 1,'Active');");
+        $this->queryDB("INSERT INTO log.split_details_tbl(id,split_session_id, transaction_id, sequence_no,payment_status) VALUES (2, 1, 1001001, 1,'Success');");
+
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10099, 1100, 1,  $pspID, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 208, 1,5000,208)");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iINPUT_VALID_STATE. ")");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001002, 5000,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001002, 5000,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
+
+        $xml = $this->getAuthDoc(10099, 1100, 1001002, 5005,null,null,null,false,true);
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
+
+        $res =  $this->queryDB("SELECT id FROM Log.txnpassbook_tbl where transactionid= 1001002 and status= 'inprogress' and performedopt=2000 " );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001002 ORDER BY ID ASC");
+        $this->assertTrue(is_resource($res) );
+        $aStates = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $aStates[] = $row["stateid"];
+        }
+        $this->assertEquals(2, count($aStates) );
+
+        $s = 0;
+        $this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[$s++]);
+        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+
+        $res =  $this->queryDB("SELECT id FROM Log.Session_Tbl where id=1 and sessiontypeid=2");
+        $this->assertTrue(is_resource($res) );
+
+        $res =  $this->queryDB("SELECT id FROM Log.split_session_tbl where sessionid=1" );
+        $this->assertTrue(is_resource($res) );
+        $split_session_id = pg_fetch_all($res);
+        $res =  $this->queryDB("SELECT transaction_id FROM Log.split_details_tbl where split_session_id=".$split_session_id[0]['id'] );
+        $this->assertTrue(is_resource($res) );
+        $splitTxns = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $splitTxns[] = $row["transaction_id"];
+        }
+        $this->assertEquals(2, count($splitTxns));
+    }
 
 }

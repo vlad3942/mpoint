@@ -2350,7 +2350,9 @@ class General
                 $obj_CardResultSet = General::getRouteConfigurationAuth($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL, FALSE);
                 $iPSPID = $obj_CardResultSet['pspid'];
             }else{
-                $aPaymentMethods = $obj_mPoint->getClientConfig()->getPaymentMethods($_OBJ_DB);
+                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $TXN_DOM["client-id"], (integer) $TXN_DOM["account"]);
+                $obj_EUA = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
+                $aPaymentMethods = $obj_EUA->getClientConfig()->getPaymentMethods($_OBJ_DB);
                 foreach ($aPaymentMethods as $m) {
                     if ($m->getPaymentMethodID() === Constants::iVOUCHER_CARD) {
                         $iPSPID = $m->getPSPID();
@@ -2497,7 +2499,7 @@ class General
      * This method is to get applicable combination based on certain conditions
      * If payment type is available from CRS then filter the combinations according to available payment types
      * and show only applicable combination
-     * Active split node will be shown only when session is present in init request
+     * Active split node will be shown only when session id is present in init request
      * and if successful transactions are available in split session
      * @param RDB $_OBJ_DB
      * @param array $paymentTypes

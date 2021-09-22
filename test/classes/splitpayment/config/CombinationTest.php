@@ -41,6 +41,20 @@ class CombinationTest extends baseAPITest
         $this->assertCount(1, $combinations->getPaymentTypes());
     }
 
+    public function testSetIsOneStepAuth(): void
+    {
+        $paymentType = new PaymentType(1, 1);
+        $combinations = new Combination(array($paymentType));
+        $combinations->setIsOneStepAuth(true);
+        $this->assertEquals(true, $combinations->getIsOneStepAuth());
+    }
+
+    public function testGetIsOneStepAuth(): void
+    {
+        $paymentType = new PaymentType(1, 1);
+        $combinations = new Combination(array($paymentType),false);
+        $this->assertEquals(false, $combinations->getIsOneStepAuth());
+    }
     public function testToXML(): void
     {
         $paymentType = new PaymentType(1, 1);
