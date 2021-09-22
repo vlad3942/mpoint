@@ -2347,10 +2347,10 @@ class General
                 $typeId = Constants::iVOUCHER_CARD;
                 $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
                 $obj_ClientInfo = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-                $obj_CardResultSet = General::getRouteConfigurationAuth($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL, FALSE);
+                $obj_CardResultSet = General::getRouteConfigurationAuth($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM->{'client-info'}, $voucher->amount["country-id"], $voucher->amount["currency-id"], $iAmount, $typeId, NULL, $cardName, NULL, NULL, FALSE);
                 $iPSPID = $obj_CardResultSet['pspid'];
             }else{
-                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $TXN_DOM["client-id"], (integer) $TXN_DOM["account"]);
+                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $TXN_DOM->{'client-info'},$TXN_DOM->{'account'});
                 $obj_EUA = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
                 $aPaymentMethods = $obj_EUA->getClientConfig()->getPaymentMethods($_OBJ_DB);
                 foreach ($aPaymentMethods as $m) {

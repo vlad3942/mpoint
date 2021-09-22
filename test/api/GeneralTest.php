@@ -608,16 +608,16 @@ class GeneralTest extends baseAPITest
         $obj_TxnInfo       = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_mPoint        = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         $obj_mCard         = new CreditCard($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo);
+
         // process voucher
         $processVoucher     = General::processVoucher($this->_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$this->_aHTTP_CONN_INFO,true,2,true);
-
-        //redeemVoucher
-        $redeemVoucher     = General::redeemVoucherAuth($this->_OBJ_DB,$this->_aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$this->_OBJ_TXT,$obj_mCard,true);
-
         $this->assertEquals('', $processVoucher['isVoucherErrorFound']);
         $this->assertEquals(1, $processVoucher['isVoucherPreferred']);
         $this->assertEquals(1, $processVoucher['isVoucherRedeem']);
         $this->assertEquals('', $processVoucher['isTxnCreated']);
+
+        //redeemVoucher
+        $redeemVoucher     = General::redeemVoucherAuth($this->_OBJ_DB,$this->_aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$this->_OBJ_TXT,$obj_mCard,true);
         $this->assertEquals(100, $redeemVoucher['code']);
         $this->assertEquals(1, $redeemVoucher['isVoucherRedeem']);
     }
