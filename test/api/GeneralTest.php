@@ -617,8 +617,9 @@ class GeneralTest extends baseAPITest
         $this->assertEquals('', $processVoucher['isTxnCreated']);
 
         //redeemVoucher
-        $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-        $redeemVoucher     = General::redeemVoucherAuth($this->_OBJ_DB,$this->_aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$_OBJ_TXT,$obj_mCard,true);
+        $obj_ClientConfig = ClientConfig::produceConfig($this->_OBJ_DB, 10099, 1100);
+        $obj_mPoint = new EndUserAccount($this->_OBJ_DB, $this->_OBJ_TXT, $obj_ClientConfig);
+        $redeemVoucher     = General::redeemVoucherAuth($this->_OBJ_DB,$this->_aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$this->_OBJ_TXT,$obj_mCard,true);
         $this->assertEquals(100, $redeemVoucher['code']);
         $this->assertEquals(1, $redeemVoucher['isVoucherRedeem']);
     }
