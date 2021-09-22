@@ -575,7 +575,7 @@ class GeneralTest extends baseAPITest
 
     }
 
-    public function testRedeemVoucherAuth()
+    public function testProcessRedeemVoucher()
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iTRAVELFUND_VOUCHER;
@@ -608,51 +608,18 @@ class GeneralTest extends baseAPITest
         $obj_TxnInfo       = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_mPoint        = new General($this->_OBJ_DB, $this->_OBJ_TXT);
         $obj_mCard         = new CreditCard($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo);
-        $redeemVoucher     = General::redeemVoucherAuth($this->_OBJ_DB,$this->_aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$this->_OBJ_TXT,$obj_mCard,true);
-
-        $this->assertEquals(100, $redeemVoucher['code']);
-        $this->assertEquals(1, $redeemVoucher['isVoucherRedeem']);
-    }
-
-    public function testProcessVoucher()
-    {
-        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-        $pspID = Constants::iTRAVELFUND_VOUCHER;
-
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
-        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
-        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
-        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
-        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
-        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, ". Constants::iVOUCHER_CARD .", $pspID, false)"); //Authorize must be possible even with disabled cardac
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10099, 'client',0)");
-        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
-        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 2, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 2, '127.0.0.1', TRUE, 208,1,2,208)");
-
-        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 2,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
-        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 2,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
-
-        $xml        = '<?xml version="1.0" encoding="UTF-8"?><root><authorize-payment client-id="10099" account="1100"><transaction id="1001001"><voucher id=""><amount currency-id="208" country-id="100">2</amount></voucher><additional-data><param name="session_token">UABxckvo1ecYZQJCjeSDIvseZ7vn</param></additional-data></transaction><client-info language="en" sdk-version="2.0.0" version="2.0.0" platform="HTML5"><mobile operator-id="64000" country-id="640">9898989898</mobile><email>demo@demo.com</email></client-info></authorize-payment></root>';
-        $obj_DOM    = simpledom_load_string($xml);
-        for ($i=0; $i<count($obj_DOM->{'authorize-payment'}); $i++)
-        {
-            $TXN_DOM = $obj_DOM->{'authorize-payment'}[$i];
-        }
-        $iTxnID = 1001001;
-        $obj_TxnInfo       = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
-        $obj_mPoint        = new General($this->_OBJ_DB, $this->_OBJ_TXT);
-        $obj_mCard         = new CreditCard($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo);
+        // process voucher
         $processVoucher     = General::processVoucher($this->_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$this->_aHTTP_CONN_INFO,true,2,true);
+
+        //redeemVoucher
+        $redeemVoucher     = General::redeemVoucherAuth($this->_OBJ_DB,$this->_aHTTP_CONN_INFO,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$this->_OBJ_TXT,$obj_mCard,true);
 
         $this->assertEquals('', $processVoucher['isVoucherErrorFound']);
         $this->assertEquals(1, $processVoucher['isVoucherPreferred']);
         $this->assertEquals(1, $processVoucher['isVoucherRedeem']);
         $this->assertEquals('', $processVoucher['isTxnCreated']);
+        $this->assertEquals(100, $redeemVoucher['code']);
+        $this->assertEquals(1, $redeemVoucher['isVoucherRedeem']);
     }
 
     public function tearDown() : void
