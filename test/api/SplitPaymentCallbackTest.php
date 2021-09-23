@@ -94,7 +94,7 @@ class SplitPaymentCallbackTest extends baseAPITest
             if (count($aStates) >= 5) { break; }
             usleep(1000000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-
+        var_dump($aStates);
         $this->assertCount( 6, $aStates);
         self::assertEquals("1000" , $aStates[0]);
         self::assertEquals("2007" , $aStates[1]);
