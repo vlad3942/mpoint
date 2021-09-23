@@ -379,10 +379,18 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
             usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 //trigger_error(count($aStates));
-        $this->assertCount(16, $aStates);
+        //$this->assertCount(16, $aStates);
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
         $this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
+
+        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 and stateid=1991 and data like '%Refunded%' ORDER BY ID ASC");
+        $this->assertTrue(is_resource($res));
+        while ($row = pg_fetch_assoc($res)) {
+            $aStates1[] = (int)$row["stateid"];
+            //trigger_error($row["stateid"]);
+        }
+        $this->assertCount(1, $aStates1);
 
     }
 
