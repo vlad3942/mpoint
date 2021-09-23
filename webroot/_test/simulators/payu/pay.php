@@ -18,7 +18,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/../xsd/pay.xsd') )
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 
     echo '<?xml version="1.0" encoding="utf-8"?>
-        <root>
+        <root> 
             <url content-type="application/x-www-form-urlencoded" method="POST">https://sandbox.api.payulatam.com/payments-api/pse-caller</url>
             <hidden-fields>
             </hidden-fields>
