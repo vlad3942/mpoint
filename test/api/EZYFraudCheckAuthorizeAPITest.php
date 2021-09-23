@@ -378,7 +378,6 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
             if (count($aStates) >= 16) { break; }
             usleep(200000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-        var_dump($aStates);
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,$aStates );
         $this->assertContains(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE, $aStates);
         $this->assertContains(Constants::iPAYMENT_CANCELLED_STATE, $aStates);
