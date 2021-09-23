@@ -151,7 +151,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         if($obj_PaymentSession->getSessionType() > 1 && (int)$obj_PaymentSession->getAmount() === $initAmount)
                         {
                             $isSplitAbandoned = true;
-                            $obj_PaymentSession->updateSessionTypeId($initAmount);
+                            $obj_PaymentSession->updateSessionTypeId($initAmount,$obj_PaymentSession->getAmount(),$sessionId);
                         }
                     }
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
