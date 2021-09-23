@@ -320,7 +320,7 @@ abstract class Callback extends EndUserAccount
 		try
 		{
 			$obj_HTTP->connect();
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() );
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() .", body: ". $body );
 			// Send Callback data
 			$iCode = $obj_HTTP->send($this->constHTTPHeaders(), $body);
 			$obj_HTTP->disConnect();
@@ -335,7 +335,7 @@ abstract class Callback extends EndUserAccount
 			}
 			else
 			{
-				trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+				trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID() . " With HTTP Code: " . $iCode, E_USER_WARNING);
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, $obj_HTTP->getReplyHeader() );
 			}
 		}
