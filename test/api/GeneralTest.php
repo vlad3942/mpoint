@@ -575,7 +575,7 @@ class GeneralTest extends baseAPITest
 
     }
 
-    public function testProcessRedeemVoucher()
+    public function testAProcessRedeemVoucher()
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $pspID = Constants::iTRAVELFUND_VOUCHER;
