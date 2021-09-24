@@ -173,7 +173,7 @@ final class PaymentSession
             if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
                 $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
             }
-            $this->_aSessionAdditionalData = self::_produceSessionAdditionalData($this->_obj_Db, $this->_id);
+            $this->_aSessionAdditionalData = self::_produceSessionAdditionalData($this->_obj_Db, $this->_id, $this->_created);
             /* $RS["MOBILE"];
              $RS["DEVICEID"];
              $RS["IPADDRESS"];*/
@@ -577,10 +577,13 @@ final class PaymentSession
         }
     }
 
-    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId)
+    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp=null)
     {
         $additionalData = [];
         $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
+        if (!is_null($sessionCreatedTimestamp)) {
+            $sqlA .= " and created >= '" . $sessionCreatedTimestamp . "'";
+        }
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {

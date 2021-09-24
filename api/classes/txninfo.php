@@ -1878,7 +1878,10 @@ class TxnInfo
 	public static function  _produceAdditionalData($_OBJ_DB, $txnId, $createdTimeStamp=null)
     {
         $additionalData = [];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= '" . $createdTimeStamp  . "' and externalid=" . $txnId;
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
+        if (!is_null($createdTimeStamp)) {
+        	$sqlA .= " and created >= '" . $createdTimeStamp  . "'";
+		}
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
