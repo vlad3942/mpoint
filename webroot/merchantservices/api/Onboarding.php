@@ -4,7 +4,7 @@ require_once("../../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
-require_once(sCLASS_PATH . "merchantservices/MerchantConfigRepositry.php");
+use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 $isRequestValid = true;
 $xml = '';
@@ -92,15 +92,15 @@ try {
         $contollerName = $routes[$serviceName]['class'];
         $methodName = $routes[$serviceName][$requestType];
 
-        $merchantConfigRepositry = new MerchantConfigRepositry($_OBJ_DB);
+        $merchantConfigRepository = new MerchantConfigRepository($_OBJ_DB);
 
-        if(file_exists(sCLASS_PATH . "merchantservices/{$contollerName}.php")) {
-            include_once(sCLASS_PATH . "merchantservices/{$contollerName}.php");
-        } else {
+        if(!file_exists(sCLASS_PATH . "merchantservices/Controllers/{$contollerName}.php")) {
             throw new Exception("Internal error");
         }
 
-        $objController = new $contollerName($merchantConfigRepositry);
+        $contollerName = 'api\\classes\\merchantservices\\Controllers\\' . $contollerName;
+
+        $objController = new $contollerName($merchantConfigRepository);
         $result = $objController->$methodName($obj_DOM, $arrParams);
 
         print_r($result);

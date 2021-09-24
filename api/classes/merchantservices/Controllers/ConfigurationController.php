@@ -1,16 +1,35 @@
 <?php
+namespace api\classes\merchantservices\Controllers;
+
+// include services
+use api\classes\merchantservices\Repositories\IRepository;
+use api\classes\merchantservices\Services\ConfigurationService;
 
 
-class ConfigurationService
+class ConfigurationController 
 {
 
-    private $merchantConfigRepositry;
+    // Define Repository object
+    private $merchantConfigRepository;
+
+    // Define Service class objects
+    private $objConfigurationService;
     
-    public function __construct($merchantConfigRepositry)
+
+    public function __construct(IRepository $merchantConfigRepository)
     {
-        $this->merchantConfigRepositry = $merchantConfigRepositry;
+        $this->merchantConfigRepository = $merchantConfigRepository;
+        $this->objConfigurationService = new ConfigurationService($merchantConfigRepository);
     }
 
+/*  Sample function for accesing Repositry */
+    public function getClientConfig($request, $additionalParams = []) {
+        print_r($additionalParams);
+        echo $request->asXML();
+        return $this->merchantConfigRepository->find(array());
+    }
+/*  Sample function for accesing Repositry */    
+    
     public function getAddonConfig($request, $additionalParams = []) {
 
                 
@@ -69,5 +88,7 @@ class ConfigurationService
     public function deleteRouteConfig($request, $additionalParams = []) {
         
 
-    }    
+    }
+
+
 }

@@ -1,7 +1,9 @@
 <?php
-include_once('IRepositry.php');
+namespace api\classes\merchantservices\Repositories;
 
-class MerchantConfigRepositry implements IRepository
+use api\classes\merchantservices\Repositories\IRepository;
+
+class MerchantConfigRepository implements IRepository
 {
     private $conn;
 

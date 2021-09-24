@@ -1,6 +1,6 @@
 <?php
 
-class ReadOnlyConfigRepositry
+class ReadOnlyConfigRepository
 {
     public function __construct()
     {
