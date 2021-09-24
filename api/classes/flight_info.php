@@ -404,7 +404,7 @@ class FlightInfo {
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
 		if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Flight' and externalid=" . $RS ["ID"];
+			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Flight' and created >= '" . $RS['created'] . "' and externalid=" . $RS ["ID"];
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
