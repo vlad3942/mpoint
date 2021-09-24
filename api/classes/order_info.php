@@ -329,7 +329,7 @@ class OrderInfo
 
 		if (is_array($RS) === true && count($RS) > 0)
 		{
-            $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Order' and created >='" . $RS['created'] . "' and externalid=" . $RS ["ID"];
+            $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Order' and created >='" . $RS["created"] . "' and externalid=" . $RS ["ID"];
             // echo $sqlA;
             $RSA = $oDB->getAllNames ( $sqlA );
 
