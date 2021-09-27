@@ -206,7 +206,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         // Commit Deleted Card
                                         $_OBJ_DB->query("COMMIT");
 
-                                        $xml = '<status code="100">Card successfully deleted</status>';
+                                        $xml = '<status code="100">Card and account successfully deleted</status>';
                                         $xml .= '<card-tokens eua-id="'. intval($iAccountID) .'">';
                                         foreach ($obj->tokens as $token)
                                             $xml .= '<token>' . $token . '</token>';

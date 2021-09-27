@@ -304,6 +304,19 @@ $aHTTP_CONN_INFO["safetypay"]["paths"]["initialize"] = "/_test/simulators/safety
 $aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/_test/simulators/safetypay/get-payment-methods.php";
 $aHTTP_CONN_INFO["safetypay"]["path"] = $aHTTP_CONN_INFO["safetypay"]["paths"]["pay"];
 
+/**
+ * Connection info for connecting to PayU
+ */
+$aHTTP_CONN_INFO["payu"]["protocol"] = "http";
+$aHTTP_CONN_INFO["payu"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["payu"]["port"] = 80;
+$aHTTP_CONN_INFO["payu"]["timeout"] = 120;
+$aHTTP_CONN_INFO["payu"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["payu"]["paths"]["pay"] = "/_test/simulators/payu/pay.php";
+$aHTTP_CONN_INFO["payu"]["paths"]["initialize"] = "/_test/simulators/payu/pay.php";
+$aHTTP_CONN_INFO["payu"]["paths"]["get-payment-methods"] = "/_test/simulators/payu/get-payment-methods.php";
+$aHTTP_CONN_INFO["payu"]["path"] = $aHTTP_CONN_INFO["payu"]["paths"]["pay"];
+
 
 /**
  * Connection info for connecting to MPGS

@@ -303,7 +303,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 								catch (mPointException $e)
 								{
 									header("HTTP/1.0 500 Internal Error");
-									$xml .= '<status code="'.$e->getMessage().'" ></status>';
+									$xml .= '<status code="'.$e->getCode().'" ></status>';
 									$aMsgCds[$e->getCode()] = $e->getMessage();
 									trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
 								}
