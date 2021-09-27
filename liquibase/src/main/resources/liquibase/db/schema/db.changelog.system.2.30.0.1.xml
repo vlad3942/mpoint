@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-merchant-onboard-0">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="system" tableName="services_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="services_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="name"
+                    type="varchar(50)"
+                    remarks="Service level name">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.services_tbl OWNER TO mpoint;
+            CREATE TRIGGER system_services_tbl BEFORE INSERT OR UPDATE ON system.services_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER system_services_tbl IF EXISTS ON system.services_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="services_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-merchant-onboard-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="system" tableName="service_type_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="service_type_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="serviceId"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_service2serviceType" referencedTableSchemaName="system" referencedTableName="services_tbl" referencedColumnNames="id"/>
+            </column>
+
+            <column name="name"
+                    type="varchar(50)"
+                    remarks="Service level name">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.service_type_tbl OWNER TO mpoint;
+            CREATE TRIGGER system_service_type_tbl BEFORE INSERT OR UPDATE ON system.service_type_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER system_service_type_tbl IF EXISTS ON system.service_type_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="service_type_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-merchant-onboard-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="system" tableName="psp_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="psp_property_tbl">
+            <!-- PK -->
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="pspId"
+                    type="int"
+                    remarks="Holds System PSP ID">
+                <constraints nullable="false" foreignKeyName="fk_pspproperty2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="name"
+                    type="varchar(50)"
+                    remarks="PSP Property name">
+                <constraints nullable="false"/>
+            </column>
+            <column name="datatype"
+                    type="int"
+                    remarks="datatype of property - 1) Boolean, 2) Int, 3) String">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isMandatory"
+                    type="boolean"
+                    remarks="property is mandatory or not"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.psp_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER system_psp_property_tbl BEFORE INSERT OR UPDATE ON system.psp_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_sypspprop_name_pspid" catalogName="system" schemaName="system" tableName="psp_property_tbl" unique="true">
+            <column name="name"/>
+            <column name="pspId"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER system_psp_property_tbl IF EXISTS ON system.psp_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="psp_property_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-merchant-onboard-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="system" tableName="route_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="route_property_tbl">
+            <!-- PK -->
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="pspId"
+                    type="int"
+                    remarks="Holds System PSP ID">
+                <constraints nullable="false" foreignKeyName="fk_routeproperty2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="name"
+                    type="varchar(50)"
+                    remarks="Route Property name">
+                <constraints nullable="false"/>
+            </column>
+            <column name="datatype"
+                    type="int"
+                    remarks="datatype of property - 1) Boolean, 2) Int, 3) String">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isMandatory"
+                    type="boolean"
+                    remarks="property is mandatory or not"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_uq_syrprop_name_pspid" catalogName="system" schemaName="system" tableName="route_property_tbl" unique="true">
+            <column name="name"/>
+            <column name="pspId"/>
+        </createIndex>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.route_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER system_route_property_tbl BEFORE INSERT OR UPDATE ON system.route_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER system_route_property_tbl IF EXISTS ON system.route_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="route_property_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-merchant-onboard-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="system" tableName="client_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="client_property_tbl">
+            <!-- PK -->
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- Column -->
+            <column name="name"
+                    type="varchar(50)"
+                    remarks="Client Property name">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="datatype"
+                    type="int"
+                    remarks="datatype of property - 1) Boolean, 2) Int, 3) String">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isMandatory"
+                    type="boolean"
+                    remarks="property is mandatory or not"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category"
+                    type="int"
+                    remarks="Category - 1) Basic, 2) HPP, 3) SDK">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.client_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER system_client_property_tbl BEFORE INSERT OR UPDATE ON system.client_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER system_client_property_tbl IF EXISTS ON system.client_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="client_property_tbl"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

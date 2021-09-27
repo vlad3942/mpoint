@@ -1678,7 +1678,7 @@ class General
 
 			// Added Distinct clause as one card-id may have multiple pspid hence to avoid occurence of duplicate settlement-currency-id
 			$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
-					FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
+					FROM Client" . sSCHEMA_POSTFIX . ".pcc_config_tbl CCMT
 					WHERE CCMT.client_id = " . $clientid . "
 					AND CCMT.enabled = '1'
 					AND CCMT.is_presentment = '1'
