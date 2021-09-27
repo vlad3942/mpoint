@@ -204,7 +204,7 @@ class PassengerInfo {
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
 		if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Passenger' and created >= '" . $RS["created"] . "' and externalid=" . $RS ["ID"];
+			$sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Passenger' and created >= to_timestamp('" . $RS["created"]  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $RS ["ID"];
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			
