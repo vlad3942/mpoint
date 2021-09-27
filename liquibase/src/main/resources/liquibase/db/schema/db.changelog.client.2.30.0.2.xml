@@ -563,6 +563,12 @@
                       newTableName="pcc_config_tbl"
                       oldTableName="card_currency_mapping_tbl"
                       schemaName="client"/>
+
+        <renameSequence catalogName="client"
+                        newSequenceName="card_currency_mapping_tbl_id_seq"
+                        oldSequenceName="pcc_config_tbl_id_seq"
+                      schemaName="client"/>
+
     </changeSet>
     <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-10">
         <preConditions onFail="MARK_RAN">
