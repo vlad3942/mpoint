@@ -565,8 +565,8 @@
                       schemaName="client"/>
 
         <renameSequence catalogName="client"
-                        newSequenceName="card_currency_mapping_tbl_id_seq"
-                        oldSequenceName="pcc_config_tbl_id_seq"
+                        newSequenceName="pcc_config_tbl_id_seq"
+                        oldSequenceName="card_currency_mapping_tbl_id_seq"
                       schemaName="client"/>
 
     </changeSet>
