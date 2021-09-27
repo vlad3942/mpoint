@@ -582,7 +582,7 @@ final class PaymentSession
         $additionalData = [];
         $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
         if (!is_null($sessionCreatedTimestamp)) {
-            $sqlA .= " and created >= '" . $sessionCreatedTimestamp . "'";
+            $sqlA .= " and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
         }
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
