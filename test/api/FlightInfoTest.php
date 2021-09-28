@@ -57,7 +57,7 @@ class FlightInfoTest extends baseAPITest
             }
         }
         $this->assertEquals(1, count($objFlightData));
-        $this->assertStringContainsString('<flight-detail tag="2" trip-count="2" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail>', $xml);
+        $this->assertStringContainsString('<trip tag="2" seq="2"><origin external-id="CEB" country-id="640" time-zone="" terminal=""></origin><destination external-id="MNL" country-id="640" time-zone="" terminal=""></destination><departure-time>2020-05-23T12:40:00Z</departure-time><arrival-time>2020-05-23T13:55:00Z</arrival-time><departure-time-without-timezone>2020-05-23 12:40:00</departure-time-without-timezone><arrival-time-without-timezone>2020-05-23 13:55:00</arrival-time-without-timezone><booking-class>X</booking-class><service-level id="3">Economy</service-level><transportation code="" number=""><carriers><carrier code="PR" type-id=""><number></number></carrier></carriers></transportation></trip>', $xml);
     }
 
     public function testEmptyGetFlightInfo()
@@ -122,8 +122,8 @@ class FlightInfoTest extends baseAPITest
             }
         }
         $this->assertCount(2, $objFlightData);
-        $this->assertStringContainsString('<flight-detail tag="1" trip-count="1" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>MNL</departure-airport><arrival-airport>CEB</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-16 18:55:00</departure-date><arrival-date>2020-05-16 19:45:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail>', $xml);
-        $this->assertStringContainsString('<flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number></flight-number><departure-airport>CEB</departure-airport><arrival-airport>BCD</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-16 10:45:00</departure-date><arrival-date>2020-05-16 12:00:00</arrival-date><departure-country>640</departure-country><arrival-country>640</arrival-country><time-zone></time-zone></flight-detail>', $xml);
+        $this->assertStringContainsString('<trip tag="1" seq="1"><origin external-id="MNL" country-id="640" time-zone="" terminal=""></origin><destination external-id="CEB" country-id="640" time-zone="" terminal=""></destination><departure-time>2020-05-16T18:55:00Z</departure-time><arrival-time>2020-05-16T19:45:00Z</arrival-time><departure-time-without-timezone>2020-05-16 18:55:00</departure-time-without-timezone><arrival-time-without-timezone>2020-05-16 19:45:00</arrival-time-without-timezone><booking-class>X</booking-class><service-level id="3">Economy</service-level><transportation code="" number=""><carriers><carrier code="PR" type-id=""><number></number></carrier></carriers></transportation></trip>', $xml);
+        $this->assertStringContainsString('<trip tag="1" seq="2"><origin external-id="CEB" country-id="640" time-zone="" terminal=""></origin><destination external-id="BCD" country-id="640" time-zone="" terminal=""></destination><departure-time>2020-05-16T10:45:00Z</departure-time><arrival-time>2020-05-16T12:00:00Z</arrival-time><departure-time-without-timezone>2020-05-16 10:45:00</departure-time-without-timezone><arrival-time-without-timezone>2020-05-16 12:00:00</arrival-time-without-timezone><booking-class>X</booking-class><service-level id="3">Economy</service-level><transportation code="" number=""><carriers><carrier code="PR" type-id=""><number></number></carrier></carriers></transportation></trip>', $xml);
     }
 
     public function testSuccessSetFlightDetails()
@@ -226,7 +226,7 @@ class FlightInfoTest extends baseAPITest
             }
             $xml .= '</airline-data>';
         }
-        $this->assertStringContainsString('<airline-data><flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number>1850</flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>200</departure-country><arrival-country>200</arrival-country><time-zone>+08:30</time-zone></flight-detail></airline-data>', $xml);
+        $this->assertStringContainsString('<airline-data><trip tag="1" seq="2"><origin external-id="CEB" country-id="200" time-zone="+08:30" terminal=""></origin><destination external-id="MNL" country-id="200" time-zone="" terminal=""></destination><departure-time>2020-05-23T12:40:00Z</departure-time><arrival-time>2020-05-23T13:55:00Z</arrival-time><departure-time-without-timezone>2020-05-23 12:40:00</departure-time-without-timezone><arrival-time-without-timezone>2020-05-23 13:55:00</arrival-time-without-timezone><booking-class>X</booking-class><service-level id="3">Economy</service-level><transportation code="" number=""><carriers><carrier code="PR" type-id=""><number>1850</number></carrier></carriers></transportation></trip></airline-data>', $xml);
     }
 
     public function testGetFlightDetailsNegetiveScenario()
@@ -284,7 +284,7 @@ class FlightInfoTest extends baseAPITest
             }
             $xml .= '</airline-data>';
         }
-        $this->assertStringContainsString('<airline-data><flight-detail tag="1" trip-count="2" service-level="3"><service-class>X</service-class><flight-number>1850</flight-number><departure-airport>CEB</departure-airport><arrival-airport>MNL</arrival-airport><airline-code>PR</airline-code><departure-date>2020-05-23 12:40:00</departure-date><arrival-date>2020-05-23 13:55:00</arrival-date><departure-country>200</departure-country><arrival-country>200</arrival-country><time-zone>+08:30</time-zone><additional-data><param name="FCTxnID">243001</param></additional-data></flight-detail></airline-data>', $xml);
+        $this->assertStringContainsString('<airline-data><trip tag="1" seq="2"><origin external-id="CEB" country-id="200" time-zone="+08:30" terminal=""></origin><destination external-id="MNL" country-id="200" time-zone="" terminal=""></destination><departure-time>2020-05-23T12:40:00Z</departure-time><arrival-time>2020-05-23T13:55:00Z</arrival-time><departure-time-without-timezone>2020-05-23 12:40:00</departure-time-without-timezone><arrival-time-without-timezone>2020-05-23 13:55:00</arrival-time-without-timezone><booking-class>X</booking-class><service-level id="3">Economy</service-level><transportation code="" number=""><carriers><carrier code="PR" type-id=""><number>1850</number></carrier></carriers></transportation><additional-data><param name="FCTxnID">243001</param></additional-data></trip></airline-data>', $xml);
 
     }
 
