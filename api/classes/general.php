@@ -2173,6 +2173,8 @@ class General
                                                          '.Constants::iPAYMENT_ACCEPTED_STATE.',
                                                          '.Constants::iPAYMENT_CAPTURED_STATE.',
                                                          '.Constants::iPAYMENT_REJECTED_STATE.',
+                                                         '.Constants::iPAYMENT_REFUNDED_STATE.',
+                                                         '.Constants::iPAYMENT_CANCELLED_STATE.',
                                                          '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
                                                          '.Constants::iPAYMENT_PENDING_STATE.')) s
                                  where s.rank = 1
