@@ -13,15 +13,15 @@ interface IConfig
 }
 */
 
-abstract class IConfig
+interface IConfig
 {
 
-    public $type;    
+    public function getConfiguration();
 
-    abstract public function getConfiguration();
+    public function getServiceType();
 
-    abstract public function getServiceType();
+    public function getProperties();
 
-    abstract public function getProperties();
-    
+
+
 }

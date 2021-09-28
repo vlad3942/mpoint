@@ -2038,4 +2038,14 @@ abstract class UserType
    */
 	const iRegisterUser = 2;
 }
+
+abstract class AddonServiceType
+{
+
+	const eDCC = 1;
+	const ePCC = 2;
+	const eMCP = 3;
+	const eSplitPayment = 4;
+}
+
 ?>

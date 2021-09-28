@@ -1,20 +1,22 @@
 <?php
 namespace api\classes\merchantservices\Services;
 
-use api\classes\merchantservices\Repositories\IRepository;
+
+use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class ConfigurationService
 {
 
-    private $merchantConfigRepository;
+    private MerchantConfigRepository $merchantConfigRepository;
     
-    public function __construct(IRepository $merchantConfigRepository)
+    public function __construct(MerchantConfigRepository $merchantConfigRepository)
     {
         $this->merchantConfigRepository = $merchantConfigRepository;
     }
 
-    public function getAddonConfig($request, $additionalParams = []) {
-
+    public function getAddonConfig($request, $additionalParams = []) : array
+    {
+        $this->merchantConfigRepository->getAllAddonConfig();
                 
     }
 

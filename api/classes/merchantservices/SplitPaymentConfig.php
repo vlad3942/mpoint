@@ -9,5 +9,19 @@ class SplitPaymentConfig implements IConfig
         
     }
 
+    public function getConfiguration()
+    {
+        // TODO: Implement getConfiguration() method.
+    }
+
+    public function getServiceType()
+    {
+        // TODO: Implement getServiceType() method.
+    }
+
+    public function getProperties()
+    {
+        // TODO: Implement getProperties() method.
+    }
 }
 

@@ -2,7 +2,7 @@
 namespace api\classes\merchantservices\Controllers;
 
 // include services
-use api\classes\merchantservices\Repositories\IRepository;
+use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -10,13 +10,13 @@ class ConfigurationController
 {
 
     // Define Repository object
-    private $merchantConfigRepository;
+    private MerchantConfigRepository $merchantConfigRepository;
 
     // Define Service class objects
-    private $objConfigurationService;
+    private ConfigurationService $objConfigurationService;
     
 
-    public function __construct(IRepository $merchantConfigRepository)
+    public function __construct(MerchantConfigRepository $merchantConfigRepository)
     {
         $this->merchantConfigRepository = $merchantConfigRepository;
         $this->objConfigurationService = new ConfigurationService($merchantConfigRepository);

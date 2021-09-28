@@ -4,9 +4,26 @@ include_once('IConfig.php');
 class DCCConfig implements IConfig
 {
 
-    public function __construct()
+    private array $_aConfig;
+    public function __construct(array $config)
     {
-        
+        $this->_aConfig = $config;
     }
+
+    public function getConfiguration() : array
+    {
+       return $this->_aConfig;
+    }
+
+    public function getServiceType()
+    {
+        // TODO: Implement getServiceType() method.
+    }
+
+    public function getProperties()
+    {
+        // TODO: Implement getProperties() method.
+    }
+
 }
 

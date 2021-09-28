@@ -1,7 +1,7 @@
 <?php
 include_once('IConfig.php');
 
-class PCCConfig implements IConfig
+class MCPConfig implements IConfig
 {
 
     private array $_aConfig;
@@ -12,7 +12,7 @@ class PCCConfig implements IConfig
 
     public function getConfiguration() : array
     {
-        return $this->_aConfig;
+       return $this->_aConfig;
     }
 
     public function getServiceType()
