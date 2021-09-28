@@ -2,22 +2,31 @@
 namespace api\classes\merchantservices\Services;
 
 
+use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class ConfigurationService
 {
 
     private MerchantConfigRepository $merchantConfigRepository;
+    private MerchantConfigInfo $merchantAggregateRoot;
     
-    public function __construct(MerchantConfigRepository $merchantConfigRepository)
+    public function __construct(\RDB &$conn,int $iClientId)
     {
-        $this->merchantConfigRepository = $merchantConfigRepository;
+        $this->merchantConfigRepository = new MerchantConfigRepository($conn,$iClientId);
+        $this->merchantAggregateRoot = new MerchantConfigInfo();
     }
 
-    public function getAddonConfig($request, $additionalParams = []) : array
+    public function getAddonConfig( $additionalParams = []) : string
     {
-        $this->merchantConfigRepository->getAllAddonConfig();
-                
+        $aAddonConf = $this->merchantAggregateRoot->getAllAddonConfig($this->merchantConfigRepository);
+        $responseXml = "";
+        foreach ($aAddonConf as $addonconfig)
+        {
+
+            $responseXml .= $addonconfig->toXML();
+        }
+        return $responseXml;
     }
 
     public function saveAddonConfig($request, $additionalParams = []) {

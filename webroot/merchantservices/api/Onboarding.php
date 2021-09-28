@@ -4,7 +4,8 @@ require_once("../../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
-use api\classes\merchantservices\Repositories\MerchantConfigRepository;
+use api\classes\merchantservices\Repositories\ConfigurationController;
+use api\classes\merchantservices\Repositories\MetaDataController;
 
 $isRequestValid = true;
 $xml = '';
@@ -37,7 +38,6 @@ if(isset($_REQUEST['params']) && !empty($_REQUEST['params']))
     }
 }
 
-$obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 
 // Define Routes
 $routes = [
@@ -92,20 +92,25 @@ try {
         $contollerName = $routes[$serviceName]['class'];
         $methodName = $routes[$serviceName][$requestType];
 
-        $merchantConfigRepository = new MerchantConfigRepository($_OBJ_DB);
-
         if(!file_exists(sCLASS_PATH . "merchantservices/Controllers/{$contollerName}.php")) {
             throw new Exception("Internal error");
         }
 
         $contollerName = 'api\\classes\\merchantservices\\Controllers\\' . $contollerName;
 
-        $objController = new $contollerName($merchantConfigRepository);
-        $result = $objController->$methodName($obj_DOM, $arrParams);
+        $objController = new $contollerName($_OBJ_DB,$arrParams['client_id']);
+        if($requestType == 'get')
+        {
+            $xml = $objController->$methodName($arrParams);
 
-        print_r($result);
-        // Format Response
-        // $xml .= formatResponse($result);
+        }
+        else
+        {
+            $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
+            $xml = $objController->$methodName($obj_DOM, $arrParams);
+        }
+
+
     }
 
 } catch (Exception $e)
@@ -147,6 +152,4 @@ function generateParams($strParams)
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
 echo $xml;
-echo '</root>';

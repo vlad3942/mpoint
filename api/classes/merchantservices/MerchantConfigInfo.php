@@ -1,26 +1,23 @@
 <?php
-
+namespace api\classes\merchantservices;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class MerchantConfigInfo
 {
-    private MerchantConfigRepository $_configRepository;
-    private ClientConfig $_clientConfig;
-    public function __construct(MerchantConfigRepository $configRepository,ClientConfig $clientConfig)
+
+    public function __construct()
     {
-        $this->_configRepository = $configRepository;
-        $this->_clientConfig = $clientConfig;
+
     }
 
-    private function getMerchantConfigRepo():MerchantConfigRepository { return $this->_configRepository; }
 
-    public function getAllAddonConfig() : array
+    public function getAllAddonConfig(MerchantConfigRepository $configRepository) : array
     {
-        return $this->getMerchantConfigRepo()->getAllAddonConfig();
+        return $configRepository->getAllAddonConfig();
     }
 
-    public function saveAddonConfig(array $aAddonConfig) : array
+    public function saveAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig) : array
     {
-        return $this->getMerchantConfigRepo()->saveAddonConfig($aAddonConfig);
+        return $configRepository->saveAddonConfig($aAddonConfig);
     }
 }

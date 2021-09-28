@@ -3,16 +3,19 @@ namespace api\classes\merchantservices;
 
 
 use AddonServiceTypeIndex;
+use function PHPUnit\Framework\isEmpty;
 
-class PCCConfig implements IConfig
+class FraudConfig implements IConfig
 {
 
     private array $_aConfig;
     private AddonServiceType $_iServiceType;
-    public function __construct(array $config)
+    private array $_aProperty;
+    public function __construct(array $config,array $property)
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud);
+        $this->_aProperty = $property;
     }
 
     public function getConfiguration() : array
@@ -27,7 +30,7 @@ class PCCConfig implements IConfig
 
     public function getProperties()
     {
-        // TODO: Implement getProperties() method.
+        return $this->_aProperty;
     }
 
     public function toXML():string
@@ -39,6 +42,21 @@ class PCCConfig implements IConfig
         {
             $xml .= $config->toXML();
         }
+        if(empty($this->_aProperty) === false)
+        {
+            $xml .= "<properties>";
+            foreach ($this->_aProperty AS $key => $value)
+            {
+                $xml .= "<property>";
+                $xml .= "<name>".$key."</name>";
+                $xml .= "<value>".$value."</value>";
+                $xml .= "</property>";
+
+            }
+        }
+
+        $xml .= "</properties>";
+
         $xml .= "</addon_configurations>";
 
 

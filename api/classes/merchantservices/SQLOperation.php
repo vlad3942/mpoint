@@ -12,6 +12,7 @@ interface IConfig
 
 }
 */
+namespace api\classes\merchantservices;
 
 class SQLOperation
 {

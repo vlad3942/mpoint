@@ -4,7 +4,7 @@ namespace api\classes\merchantservices;
 
 use AddonServiceTypeIndex;
 
-class PCCConfig implements IConfig
+class MPIConfig implements IConfig
 {
 
     private array $_aConfig;
@@ -12,7 +12,7 @@ class PCCConfig implements IConfig
     public function __construct(array $config)
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI);
     }
 
     public function getConfiguration() : array

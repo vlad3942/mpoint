@@ -2,25 +2,24 @@
 namespace api\classes\merchantservices\Controllers;
 
 // include services
-use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
 class ConfigurationController 
 {
 
-    // Define Repository object
-    private MerchantConfigRepository $merchantConfigRepository;
+
 
     // Define Service class objects
     private ConfigurationService $objConfigurationService;
     
 
-    public function __construct(MerchantConfigRepository $merchantConfigRepository)
+    public function __construct(\RDB &$conn,int $iClientId)
     {
-        $this->merchantConfigRepository = $merchantConfigRepository;
-        $this->objConfigurationService = new ConfigurationService($merchantConfigRepository);
+        $this->objConfigurationService = new ConfigurationService($conn,$iClientId);
     }
+
+    private function getConfigService():ConfigurationService { return $this->objConfigurationService;}
 
 /*  Sample function for accesing Repositry */
     public function getClientConfig($request, $additionalParams = []) {
@@ -30,8 +29,9 @@ class ConfigurationController
     }
 /*  Sample function for accesing Repositry */    
     
-    public function getAddonConfig($request, $additionalParams = []) {
-
+    public function getAddonConfig( $additionalParams = []) :string
+    {
+       return $this->getConfigService()->getAddonConfig($additionalParams);
                 
     }
 

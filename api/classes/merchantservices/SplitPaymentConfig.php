@@ -1,27 +1,38 @@
 <?php
-include_once('IConfig.php');
+namespace api\classes\merchantservices;
+
+
+use AddonServiceTypeIndex;
 
 class SplitPaymentConfig implements IConfig
 {
 
-    public function __construct()
+    private array $_aConfig;
+    private AddonServiceType $_iServiceType;
+    public function __construct(array $config)
     {
-        
+        $this->_aConfig = $config;
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC);
     }
 
-    public function getConfiguration()
+    public function getConfiguration() : array
     {
-        // TODO: Implement getConfiguration() method.
+        return $this->_aConfig;
     }
 
-    public function getServiceType()
+    public function getServiceType() : AddonServiceType
     {
-        // TODO: Implement getServiceType() method.
+        return $this->_iServiceType;
     }
 
     public function getProperties()
     {
         // TODO: Implement getProperties() method.
+    }
+
+    public function toXML(): string
+    {
+       return "";
     }
 }
 

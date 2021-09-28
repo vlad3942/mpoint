@@ -12,6 +12,8 @@
  * @version 1.02
  */
 
+use api\classes\merchantservices\AddonServiceType;
+
 /**
  * Data class for holding all defined Constants
  *
@@ -2039,13 +2041,15 @@ abstract class UserType
 	const iRegisterUser = 2;
 }
 
-abstract class AddonServiceType
+abstract class AddonServiceTypeIndex
 {
 
-	const eDCC = 1;
-	const ePCC = 2;
-	const eMCP = 3;
-	const eSplitPayment = 4;
+       const eDCC = 1;
+       const ePCC = 2;
+       const eMCP = 3;
+       const eFraud = 4;
+       const eMPI = 5;
 }
+
 
 ?>

@@ -7,23 +7,19 @@ use api\classes\merchantservices\Services\MetaDataService;
 class MetaDataController
 {
 
-    // Define Repository object
-    private $merchantConfigRepository;
 
     // Define Service class objects
     private $objMetaDataService;
 
-    public function __construct(IRepository $merchantConfigRepository)
+    public function __construct(\RDB &$conn,int $iClientId)
     {
-        $this->merchantConfigRepository = $merchantConfigRepository;
-        $this->objConfigurationService = new MetaDataService($merchantConfigRepository);
+        $this->objConfigurationService = new MetaDataService($conn,$iClientId);
     }
-
-    public function getSystemMetaData($request, $additionalParams = []) {
+    public function getSystemMetaData( $additionalParams = []) {
 
     }    
 
-    public function getPaymentMetaData($request, $additionalParams = []) {
+    public function getPaymentMetaData($additionalParams = []) {
 
     }
 

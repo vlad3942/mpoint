@@ -2,87 +2,68 @@
 namespace api\classes\merchantservices\Repositories;
 
 
-use AddonServiceType;
-use ServiceConfig;
+use AddonServiceTypeIndex;
+use api\classes\merchantservices\AddonServiceType;
+use api\classes\merchantservices\DCCConfig;
+use api\classes\merchantservices\FraudConfig;
+use api\classes\merchantservices\MCPConfig;
+use api\classes\merchantservices\MPIConfig;
+use api\classes\merchantservices\PCCConfig;
+use api\classes\merchantservices\ServiceConfig;
 
 class MerchantConfigRepository
 {
     private \RDB $_conn;
     private \ClientConfig $_clientConfig;
 
-    public function __construct(\RDB  $conn,\ClientConfig $clientConfig)
+    public function __construct(\RDB  $conn,int $iClientId)
     {
         $this->_conn = $conn;
-        $this->_clientConfig = $clientConfig;
+        $this->_clientConfig = \ClientConfig::produceConfig($conn,$iClientId);
     }
 
     private function getDBConn():\RDB { return $this->_conn;}
 
 
-    private function getAddonConfig(int $addonServiceType)
+    private function getAddonConfig(AddonServiceType $addonServiceType)
     {
-        $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX ." %s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
-        switch ($addonServiceType)
-        {
-            case AddonServiceType::eMCP || AddonServiceType::eDCC:
-                $sTableName = "DCC_config_tbl";
-                if($addonServiceType == AddonServiceType::eMCP) { $sTableName = "MCP_config_tbl";}
+        $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
 
-                $aRS = $this->getDBConn()->getAllNames ( stringf($SQL,"id,pmid,countryid,currencyid,created,modified,enabled",$sTableName) );
-                $aServiceConfig = array();
-                if (empty($aRS) === false)
+           $sTableName = $addonServiceType->getTableName();
+            $sColumns = "id,pmid,countryid,currencyid,created,modified,enabled";
+            if($addonServiceType->getID() ===AddonServiceTypeIndex::eFraud) $sColumns .= ',providerid,"typeOfFraud" ';
+            if($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
+            if($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
+            $aRS = $this->getDBConn()->getAllNames ( sprintf($SQL,$sColumns,$sTableName) );
+            $aServiceConfig = array();
+            if (empty($aRS) === false)
+            {
+                foreach ($aRS as $rs)
                 {
-                    foreach ($aRS as $rs)
-                    {
-                        $serviceCon = new ServiceConfig();
-                        $serviceCon->setId($rs["ID"])
-                            ->setCountryId($rs["COUNTRYID"])
-                            ->setCurrencyId($rs["CURRENCYID"])
-                            ->setPaymentMethodId($rs["PMID"])
-                            ->setCreated($rs['CREATED'])
-                            ->setModified($rs['MODIFIED'])
-                            ->setEnabled($rs['ENABLED']);
-                        array_push($aServiceConfig, $serviceCon);
-
-                    }
+                    array_push($aServiceConfig, ServiceConfig::produceFromResultSet($rs));
                 }
-                if($addonServiceType == AddonServiceType::eMCP) { return new \DCCConfig($aServiceConfig);}
-                else
-                return new \MCPConfig($aServiceConfig);
+            }
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eDCC) { return new DCCConfig($aServiceConfig);}
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
+            {
+                $SQL = 'SELECT "isRollback" FROM client.fraud_property_tbl where enabled=true and clientid='.$this->_clientConfig->getID();
+                $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
 
-            case AddonServiceType::ePCC:
-                $aRS = $this->getDBConn()->getAllNames ( stringf($SQL,"id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled","PCC_config_tbl") );
-                $aServiceConfig = array();
-                if (empty($aRS) === false)
-                {
-                    foreach ($aRS as $rs)
-                    {
-                        $serviceCon = new \ServiceConfig();
-                        $serviceCon->setId($rs["ID"])
-                            ->setCurrencyId($rs["SALE_CURRENCY_ID"])
-                            ->setPaymentMethodId($rs["PMID"])
-                            ->setPresentment($rs["IS_PRESENTMENT"])
-                            ->setSettlementCurrencyId($rs["SETTLEMENT_CURRENCY_ID"])
-                            ->setCreated($rs['CREATED'])
-                            ->setModified($rs['MODIFIED'])
-                            ->setEnabled($rs['ENABLED']);
-                        array_push($aServiceConfig, $serviceCon);
+                return new FraudConfig($aServiceConfig,$aRS);
+            }
+            if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC) { return new PCCConfig($aServiceConfig);}
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI) { return new MPIConfig($aServiceConfig);}
+            else   return new MCPConfig($aServiceConfig);
 
-                    }
-                }
-                return new \PCCConfig($aServiceConfig);
-            case AddonServiceType::eSplitPayment:
-                return null;
-            default:
-                return "";
-        }
     }
     public function getAllAddonConfig() : array
     {
        $aAddonConfig = array();
-       array_push($aAddonConfig,$this->getAddonConfig(\AddonServiceType::eDCC));
-       array_push($aAddonConfig,$this->getAddonConfig(\AddonServiceType::eMCP));
-       array_push($aAddonConfig,$this->getAddonConfig(\AddonServiceType::ePCC));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eDCC)));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP)));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC)));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud)));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI)));
        return  $aAddonConfig;
     }
 
@@ -92,7 +73,7 @@ class MerchantConfigRepository
         {
             if(empty($addonConfig->getConfiguration()) === false)
             {
-                $sql = ServiceConfig::getInsertSQL(AddonServiceType::eDCC);
+                $sql = ServiceConfig::getInsertSQL($addonConfig->getServiceType());
                 $aServiceConf = $addonConfig->getConfiguration();
                 foreach ($aServiceConf as $serviceConf)
                 {
