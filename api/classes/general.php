@@ -2173,6 +2173,8 @@ class General
                                                          '.Constants::iPAYMENT_ACCEPTED_STATE.',
                                                          '.Constants::iPAYMENT_CAPTURED_STATE.',
                                                          '.Constants::iPAYMENT_REJECTED_STATE.',
+                                                         '.Constants::iPAYMENT_REFUNDED_STATE.',
+                                                         '.Constants::iPAYMENT_CANCELLED_STATE.',
                                                          '.Constants::iPAYMENT_CAPTURE_FAILED_STATE.',
                                                          '.Constants::iPAYMENT_PENDING_STATE.')) s
                                  where s.rank = 1
@@ -2497,7 +2499,7 @@ class General
      * This method is to get applicable combination based on certain conditions
      * If payment type is available from CRS then filter the combinations according to available payment types
      * and show only applicable combination
-     * Active split node will be shown only when session is present in init request
+     * Active split node will be shown only when session id is present in init request
      * and if successful transactions are available in split session
      * @param RDB $_OBJ_DB
      * @param array $paymentTypes

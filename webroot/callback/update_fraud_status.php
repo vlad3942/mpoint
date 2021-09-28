@@ -169,7 +169,7 @@ $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
     $sComment = (string) $obj_DOM->comment;
     $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
-    $sql = "SELECT id from log".sSCHEMA_POSTFIX.".Transaction_tbl where";
+    $sql = "SELECT id, created from log".sSCHEMA_POSTFIX.".Transaction_tbl where";
     if(empty($obj_DOM->{'transaction_id'}) === false)
     { $sql .= " id =".$obj_DOM->{'transaction_id'}.""; }
     else
@@ -182,7 +182,7 @@ $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
     while ($RS = $_OBJ_DB->fetchName($res))
     {
         $txnId = (int)$RS['ID'];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId." and value = '".$externalId."'";
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= to_timestamp('" . $RS["CREATED"]  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId." and value = '".$externalId."'";
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {

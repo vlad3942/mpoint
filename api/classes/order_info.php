@@ -321,7 +321,7 @@ class OrderInfo
 		
 	public static function produceConfig(RDB $oDB, $id, $amount)
 	{
-		$sql = "SELECT id, orderref, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity,fees, type
+		$sql = "SELECT id, orderref, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity,fees, type, created
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl				
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";	
@@ -329,7 +329,7 @@ class OrderInfo
 
 		if (is_array($RS) === true && count($RS) > 0)
 		{
-            $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Order' and externalid=" . $RS ["ID"];
+            $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Order' and created >=to_timestamp('" . $RS["CREATED"]  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $RS ["ID"];
             // echo $sqlA;
             $RSA = $oDB->getAllNames ( $sqlA );
 
