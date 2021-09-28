@@ -595,14 +595,14 @@ final class PaymentSession
         return $additionalData;
     }
 
-    function updateSessionTypeId($amount,$sessionAmt,$sessionID)
+    function updateSessionTypeId($amount)
     {
-        if ($amount < $sessionAmt)
+        if ($amount < $this->_amount)
         {
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$sessionID . " and sessiontypeid = 1";
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->_id . " and sessiontypeid = 1";
             $this->_obj_Db->query($sql);
-        }else if($amount == $sessionAmt){
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$sessionID . " and sessiontypeid = 2";
+        }else if($amount == $this->_amount){
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$this->_id . " and sessiontypeid = 2";
             $this->_obj_Db->query($sql);
         }
     }

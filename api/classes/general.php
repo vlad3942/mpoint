@@ -2497,7 +2497,7 @@ class General
      * This method is to get applicable combination based on certain conditions
      * If payment type is available from CRS then filter the combinations according to available payment types
      * and show only applicable combination
-     * Active split node will be shown only when session is present in init request
+     * Active split node will be shown only when session id is present in init request
      * and if successful transactions are available in split session
      * @param RDB $_OBJ_DB
      * @param array $paymentTypes
