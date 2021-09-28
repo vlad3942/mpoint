@@ -74,7 +74,7 @@
                     autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="serviceId"
+            <column name="serviceid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_service2serviceType" referencedTableSchemaName="system" referencedTableName="services_tbl" referencedColumnNames="id"/>
             </column>
@@ -132,7 +132,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="pspId"
+            <column name="pspid"
                     type="int"
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_pspproperty2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
@@ -148,7 +148,7 @@
                     remarks="datatype of property - 1) Boolean, 2) Int, 3) String">
                 <constraints nullable="false"/>
             </column>
-            <column name="isMandatory"
+            <column name="ismandatory"
                     type="boolean"
                     remarks="property is mandatory or not"
                     defaultValueBoolean="true">
@@ -180,7 +180,7 @@
         </sql>
         <createIndex indexName="idx_uq_sypspprop_name_pspid" catalogName="system" schemaName="system" tableName="psp_property_tbl" unique="true">
             <column name="name"/>
-            <column name="pspId"/>
+            <column name="pspid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER system_psp_property_tbl IF EXISTS ON system.psp_property_tbl CASCADE TRUE;</sql>
@@ -203,7 +203,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="pspId"
+            <column name="pspid"
                     type="int"
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_routeproperty2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
@@ -219,7 +219,7 @@
                     remarks="datatype of property - 1) Boolean, 2) Int, 3) String">
                 <constraints nullable="false"/>
             </column>
-            <column name="isMandatory"
+            <column name="ismandatory"
                     type="boolean"
                     remarks="property is mandatory or not"
                     defaultValueBoolean="true">
@@ -247,7 +247,7 @@
         </createTable>
         <createIndex indexName="idx_uq_syrprop_name_pspid" catalogName="system" schemaName="system" tableName="route_property_tbl" unique="true">
             <column name="name"/>
-            <column name="pspId"/>
+            <column name="pspid"/>
         </createIndex>
         <sql dbms="postgresql" endDelimiter=";">
             ALTER TABLE system.route_property_tbl OWNER TO mpoint;
@@ -284,7 +284,7 @@
                     remarks="datatype of property - 1) Boolean, 2) Int, 3) String">
                 <constraints nullable="false"/>
             </column>
-            <column name="isMandatory"
+            <column name="ismandatory"
                     type="boolean"
                     remarks="property is mandatory or not"
                     defaultValueBoolean="true">

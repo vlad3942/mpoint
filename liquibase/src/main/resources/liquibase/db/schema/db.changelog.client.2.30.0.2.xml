@@ -20,11 +20,11 @@
                     autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_pm2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)  ">
                 <constraints nullable="false" foreignKeyName="fk_pm2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
@@ -57,8 +57,8 @@
             CREATE TRIGGER client_pm_tbl BEFORE INSERT OR UPDATE ON client.pm_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_pm_pmid_clid" catalogName="client" schemaName="client" tableName="pm_tbl" unique="true">
-            <column name="pmId"/>
-            <column name="clientId"/>
+            <column name="pmid"/>
+            <column name="clientid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_pm_tbl IF EXISTS ON client.pm_tbl CASCADE TRUE;</sql>
@@ -85,7 +85,7 @@
                     remarks="Hold route config ID from client.routeconfig_tbl ">
                 <constraints nullable="false" foreignKeyName="fk_routepm2routeConfig" referencedTableSchemaName="client" referencedTableName="routeconfig_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_routepm2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
@@ -117,7 +117,7 @@
             CREATE TRIGGER client_routepm_tbl BEFORE INSERT OR UPDATE ON client.routepm_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_routepm_pmid_routeconfigid" catalogName="client" schemaName="client" tableName="routepm_tbl" unique="true">
-            <column name="pmId"/>
+            <column name="pmid"/>
             <column name="routeconfigId"/>
         </createIndex>
         <rollback>
@@ -141,20 +141,20 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_dccconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_dccconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="countryId"
+            <column name="countryid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_dccconfig2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="currencyId"
+            <column name="currencyid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_dccconfig2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
             </column>
@@ -185,10 +185,10 @@
             CREATE TRIGGER client_dcc_config_tbl BEFORE INSERT OR UPDATE ON client.dcc_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_dcc_pmid_clid_coid_cuid" catalogName="client" schemaName="client" tableName="dcc_config_tbl" unique="true">
-            <column name="pmId"/>
-            <column name="clientId"/>
-            <column name="countryId"/>
-            <column name="currencyId"/>
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_dcc_config_tbl IF EXISTS ON client.dcc_config_tbl CASCADE TRUE;</sql>
@@ -211,20 +211,20 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_mcpconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_mcpconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="countryId"
+            <column name="countryid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_mcpconfig2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="currencyId"
+            <column name="currencyid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_mcpconfig2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
             </column>
@@ -255,10 +255,10 @@
             CREATE TRIGGER client_mcp_config_tbl BEFORE INSERT OR UPDATE ON client.mcp_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_mcp_pmid_clid_coid_cuid" catalogName="client" schemaName="client" tableName="mcp_config_tbl" unique="true">
-            <column name="pmId"/>
-            <column name="clientId"/>
-            <column name="countryId"/>
-            <column name="currencyId"/>
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_mcp_config_tbl IF EXISTS ON client.mcp_config_tbl CASCADE TRUE;</sql>
@@ -281,7 +281,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_clientservice2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
@@ -380,7 +380,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_fraudproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
@@ -439,7 +439,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_fraudpspexclude2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
@@ -496,25 +496,25 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_tokenization2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_tokenization2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="providerId"
+            <column name="providerid"
                     type="int"
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_tokenization2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="countryId"
+            <column name="countryid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_tokenization2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="currencyId"
+            <column name="currencyid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_tokenization2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
             </column>
@@ -545,10 +545,10 @@
             CREATE TRIGGER client_tokenization_config_tbl BEFORE INSERT OR UPDATE ON client.tokenization_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_tokenization_pmid_clid_coid_cuid" catalogName="client" schemaName="client" tableName="tokenization_config_tbl" unique="true">
-            <column name="pmId"/>
-            <column name="clientId"/>
-            <column name="countryId"/>
-            <column name="currencyId"/>
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_tokenization_config_tbl IF EXISTS ON client.tokenization_config_tbl CASCADE TRUE;</sql>
@@ -569,12 +569,12 @@
                         oldSequenceName="card_currency_mapping_tbl_id_seq"
                       schemaName="client"/>
         <renameColumn  catalogName="client"
-                       newColumnName="clientId"
+                       newColumnName="clientid"
                        oldColumnName="client_id"
                        schemaName="client"
                        tableName="pcc_config_tbl"/>
         <renameColumn  catalogName="client"
-                       newColumnName="pmId"
+                       newColumnName="pmid"
                        oldColumnName="card_id"
                        schemaName="client"
                        tableName="pcc_config_tbl"/>
@@ -596,25 +596,25 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_fraudconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_fraudconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="providerId"
+            <column name="providerid"
                     type="int"
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_fraudconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="countryId"
+            <column name="countryid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_fraudconfig2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="currencyId"
+            <column name="currencyid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_fraudconfig2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
             </column>
@@ -650,10 +650,10 @@
             CREATE TRIGGER client_fraud_config_tbl BEFORE INSERT OR UPDATE ON client.fraud_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_fraud_pmid_clid_coid_cuid_type" catalogName="client" schemaName="client" tableName="fraud_config_tbl" unique="true">
-            <column name="pmId"/>
-            <column name="clientId"/>
-            <column name="countryId"/>
-            <column name="currencyId"/>
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
             <column name="typeOfFraud"/>
         </createIndex>
         <rollback>
@@ -676,16 +676,16 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_mpiconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_mpiconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="providerId"
+            <column name="providerid"
                     type="int"
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_mpiconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
@@ -721,9 +721,9 @@
             CREATE TRIGGER client_mpi_config_tbl BEFORE INSERT OR UPDATE ON client.mpi_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_mpi_pmid_providerid_clientid" catalogName="client" schemaName="client" tableName="mpi_config_tbl" unique="true">
-            <column name="pmId"/>
-            <column name="providerId"/>
-            <column name="clientId"/>
+            <column name="pmid"/>
+            <column name="providerid"/>
+            <column name="clientid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_mpi_config_tbl IF EXISTS ON client.mpi_config_tbl CASCADE TRUE;</sql>
@@ -744,11 +744,11 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_clientproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="propertyId" type="int">
+            <column name="propertyid" type="int">
                 <constraints nullable="false" foreignKeyName="fk_clientproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Column -->
@@ -782,8 +782,8 @@
             CREATE TRIGGER client_client_property_tbl BEFORE INSERT OR UPDATE ON client.client_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_clclprop_propid_clid" catalogName="client" schemaName="client" tableName="client_property_tbl" unique="true">
-            <column name="propertyId"/>
-            <column name="clientId"/>
+            <column name="propertyid"/>
+            <column name="clientid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_client_property_tbl IF EXISTS ON client.client_property_tbl CASCADE TRUE;</sql>
@@ -806,11 +806,11 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK Key -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_pmconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pmId"
+            <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_pmconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
@@ -864,7 +864,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="propertyId" type="int">
+            <column name="propertyid" type="int">
                 <constraints nullable="false" foreignKeyName="fk_routeproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
             </column>
             <column name="routeconfigId"
@@ -903,7 +903,7 @@
             CREATE TRIGGER client_route_property_tbl BEFORE INSERT OR UPDATE ON client.route_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_clrprop_propid_rid" catalogName="client" schemaName="client" tableName="route_property_tbl" unique="true">
-            <column name="propertyId"/>
+            <column name="propertyid"/>
             <column name="routeconfigId"/>
         </createIndex>
         <rollback>
@@ -925,11 +925,11 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- FK -->
-            <column name="clientId"
+            <column name="clientid"
                     type="int">
                 <constraints nullable="false" foreignKeyName="fk_pspproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="propertyId" type="int">
+            <column name="propertyid" type="int">
                 <constraints nullable="false" foreignKeyName="fk_pspproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Column -->
@@ -963,8 +963,8 @@
             CREATE TRIGGER client_psp_property_tbl BEFORE INSERT OR UPDATE ON client.psp_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <createIndex indexName="idx_uq_clpspprop_propid_clid" catalogName="client" schemaName="client" tableName="psp_property_tbl" unique="true">
-            <column name="propertyId"/>
-            <column name="clientId"/>
+            <column name="propertyid"/>
+            <column name="clientid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_psp_property_tbl IF EXISTS ON client.psp_property_tbl CASCADE TRUE;</sql>
