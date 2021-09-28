@@ -416,12 +416,9 @@ class OrderInfo
         }
         if(count($this->getFlightConfigs()) > 0 ) {
             $xml .= '<airline-data>';
-            if ($GLOBALS['oldOrderXml'] === true) {
-                foreach ($this->getFlightConfigs() as $flight_Obj) {
-                    if (($flight_Obj instanceof FlightInfo) === TRUE) {
-                        $xml .= $flight_Obj->toXML();
-                    }
-                }
+
+            if (count($this->getPassengerConfigs()) > 0) {
+                $xml .= '<profiles>';
                 foreach ($this->getPassengerConfigs() as $passenger_Obj) {
                     if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
 
@@ -429,53 +426,42 @@ class OrderInfo
 
                     }
                 }
-            } else {
-                if (count($this->getPassengerConfigs()) > 0) {
-                    $xml .= '<profiles>';
-                    foreach ($this->getPassengerConfigs() as $passenger_Obj) {
-                        if (($passenger_Obj instanceof PassengerInfo) === TRUE) {
+                $xml .= '</profiles>';
+            }
 
-                            $xml .= $passenger_Obj->toXML();
-
+            if (count($this->getBillingSummaryFareConfigs()) > 0 || count($this->getBillingSummaryAddonConfigs()) > 0) {
+                $xml .= '<billing-summary>';
+                if (count($this->getBillingSummaryFareConfigs()) > 0) {
+                    $xml .= '<fare-detail>';
+                    foreach ($this->getBillingSummaryFareConfigs() as $billSummaryFare_Obj) {
+                        if (($billSummaryFare_Obj instanceof BillingSummaryFareInfo) === TRUE) {
+                            $xml .= $billSummaryFare_Obj->toXML();
                         }
                     }
-                    $xml .= '</profiles>';
+                    $xml .= '</fare-detail>';
                 }
 
-                if (count($this->getBillingSummaryFareConfigs()) > 0 || count($this->getBillingSummaryAddonConfigs()) > 0) {
-                    $xml .= '<billing-summary>';
-                    if (count($this->getBillingSummaryFareConfigs()) > 0) {
-                        $xml .= '<fare-detail>';
-                        foreach ($this->getBillingSummaryFareConfigs() as $billSummaryFare_Obj) {
-                            if (($billSummaryFare_Obj instanceof BillingSummaryFareInfo) === TRUE) {
-                                $xml .= $billSummaryFare_Obj->toXML();
-                            }
+                if (count($this->getBillingSummaryAddonConfigs()) > 0) {
+                    $xml .= '<add-ons>';
+                    foreach ($this->getBillingSummaryAddonConfigs() as $billSummaryAddon_Obj) {
+                        if (($billSummaryAddon_Obj instanceof BillingSummaryAddonInfo) === TRUE) {
+                            $xml .= $billSummaryAddon_Obj->toXML();
                         }
-                        $xml .= '</fare-detail>';
                     }
-
-                    if (count($this->getBillingSummaryAddonConfigs()) > 0) {
-                        $xml .= '<add-ons>';
-                        foreach ($this->getBillingSummaryAddonConfigs() as $billSummaryAddon_Obj) {
-                            if (($billSummaryAddon_Obj instanceof BillingSummaryAddonInfo) === TRUE) {
-                                $xml .= $billSummaryAddon_Obj->toXML();
-                            }
-                        }
-                        $xml .= '</add-ons>';
-                    }
-
-                    $xml .= '</billing-summary>';
+                    $xml .= '</add-ons>';
                 }
 
-                if (count($this->getFlightConfigs()) > 0) {
-                    $xml .= '<trips>';
-                    foreach ($this->getFlightConfigs() as $flight_Obj) {
-                        if (($flight_Obj instanceof FlightInfo) === TRUE) {
-                            $xml .= $flight_Obj->toXML();
-                        }
+                $xml .= '</billing-summary>';
+            }
+
+            if (count($this->getFlightConfigs()) > 0) {
+                $xml .= '<trips>';
+                foreach ($this->getFlightConfigs() as $flight_Obj) {
+                    if (($flight_Obj instanceof FlightInfo) === TRUE) {
+                        $xml .= $flight_Obj->toXML();
                     }
-                    $xml .= '</trips>';
                 }
+                $xml .= '</trips>';
             }
 
             $xml .= '</airline-data>';

@@ -444,35 +444,32 @@ class FlightInfo {
     public function toXML() : string
     {
         $xml = '';
-        if ($GLOBALS['oldOrderXml'] === true) {
-            $xml .= $this->_toOldXML();
-        } else {
-            $xml .= '<trip tag="'. $this->getATag() .'" seq="' . $this->getATripCount() . '">';
-            $xml .= '<origin external-id="'. $this->getDepartureAirport() .'" country-id="' . $this->getDepartureCountry() . '" time-zone="' . $this->getDeparturetTimeZone() . '" terminal="' . $this->getDepartureTerminal() . '">'. $this->getDepartureCity() .'</origin>';
-            $xml .= '<destination external-id="'. $this->getArrivalAirport() .'" country-id="' . $this->getArrivalCountry() . '" time-zone="' . $this->getArrivalTimeZone() . '" terminal="' . $this->getArrivalTerminal() . '">'. $this->getArrivalCity() .'</destination>';
-            $xml .= '<departure-time>' . $this->_getDateTimeWithZone($this->getDepartureDate ()) . '</departure-time>';
-            $xml .= '<arrival-time>' . $this->_getDateTimeWithZone($this->getArrivalDate()) . '</arrival-time>';
-            $xml .= '<departure-time-without-timezone>' . $this->getDepartureDate() . '</departure-time-without-timezone>';
-            $xml .= '<arrival-time-without-timezone>' . $this->getArrivalDate() . '</arrival-time-without-timezone>';
-            $xml .= '<booking-class>' . $this->getServiceClass () . '</booking-class>';
-            $xml .= '<service-level id="' .$this->getAServiceLevel(). '">' . $this->_getServiceLevelName($this->getAServiceLevel()) . '</service-level>';
-            $xml .= '<transportation code="'. $this->getMarketingAirline() .'" number="' . $this->getOpFlightNumber() . '">';
-            $xml .= '<carriers>';
-            $xml .= '<carrier code="'. $this->getOperatingAirline() .'" type-id="'. $this->getAircraftType() .'">';
-            $xml .= '<number>'. $this->getMktFlightNumber() .'</number>';
-            $xml .= '</carrier>';
-            $xml .= '</carriers>';
-            $xml .= '</transportation>';
-            if ($this->getAdditionalData ()) {
-                $xml .= '<additional-data>';
-                foreach ($this->getAdditionalData () as $fAdditionalData) {
-                    $xml .= $this->getAdditionalDataArr ($fAdditionalData);
-                }
-                $xml .= '</additional-data>';
-            } else {
+
+        $xml .= '<trip tag="'. $this->getATag() .'" seq="' . $this->getATripCount() . '">';
+        $xml .= '<origin external-id="'. $this->getDepartureAirport() .'" country-id="' . $this->getDepartureCountry() . '" time-zone="' . $this->getDeparturetTimeZone() . '" terminal="' . $this->getDepartureTerminal() . '">'. $this->getDepartureCity() .'</origin>';
+        $xml .= '<destination external-id="'. $this->getArrivalAirport() .'" country-id="' . $this->getArrivalCountry() . '" time-zone="' . $this->getArrivalTimeZone() . '" terminal="' . $this->getArrivalTerminal() . '">'. $this->getArrivalCity() .'</destination>';
+        $xml .= '<departure-time>' . $this->_getDateTimeWithZone($this->getDepartureDate ()) . '</departure-time>';
+        $xml .= '<arrival-time>' . $this->_getDateTimeWithZone($this->getArrivalDate()) . '</arrival-time>';
+        $xml .= '<departure-time-without-timezone>' . $this->getDepartureDate() . '</departure-time-without-timezone>';
+        $xml .= '<arrival-time-without-timezone>' . $this->getArrivalDate() . '</arrival-time-without-timezone>';
+        $xml .= '<booking-class>' . $this->getServiceClass () . '</booking-class>';
+        $xml .= '<service-level id="' .$this->getAServiceLevel(). '">' . $this->_getServiceLevelName($this->getAServiceLevel()) . '</service-level>';
+        $xml .= '<transportation code="'. $this->getMarketingAirline() .'" number="' . $this->getOpFlightNumber() . '">';
+        $xml .= '<carriers>';
+        $xml .= '<carrier code="'. $this->getOperatingAirline() .'" type-id="'. $this->getAircraftType() .'">';
+        $xml .= '<number>'. $this->getMktFlightNumber() .'</number>';
+        $xml .= '</carrier>';
+        $xml .= '</carriers>';
+        $xml .= '</transportation>';
+        if ($this->getAdditionalData ()) {
+            $xml .= '<additional-data>';
+            foreach ($this->getAdditionalData () as $fAdditionalData) {
+                $xml .= $this->getAdditionalDataArr ($fAdditionalData);
             }
-            $xml .= '</trip>';
+            $xml .= '</additional-data>';
+        } else {
         }
+        $xml .= '</trip>';
 
         return $xml;
     }
