@@ -1293,8 +1293,10 @@ abstract class Callback extends EndUserAccount
 		// Publish message if not already
 		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
 		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
+		    $jsonBody = json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR);
+            $this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $jsonBody);
             $filter = ['status_code' => (string) $sid];
-			$this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
+			$this->publishMessage($jsonBody, $filter, $obj_SurePay);
 		}
     }
 
