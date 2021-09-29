@@ -3,13 +3,16 @@ namespace api\classes\merchantservices\Repositories;
 
 
 use AddonServiceTypeIndex;
-use api\classes\merchantservices\AddonServiceType;
-use api\classes\merchantservices\DCCConfig;
-use api\classes\merchantservices\FraudConfig;
-use api\classes\merchantservices\MCPConfig;
-use api\classes\merchantservices\MPIConfig;
-use api\classes\merchantservices\PCCConfig;
-use api\classes\merchantservices\ServiceConfig;
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\configuration\DCCConfig;
+use api\classes\merchantservices\configuration\FraudConfig;
+use api\classes\merchantservices\configuration\MCPConfig;
+use api\classes\merchantservices\configuration\MPIConfig;
+use api\classes\merchantservices\configuration\PCCConfig;
+use api\classes\merchantservices\configuration\ServiceConfig;
+use api\classes\merchantservices\OperationStatus;
+use api\classes\merchantservices\ResponseTemplate;
+use HTTP;
 
 class MerchantConfigRepository
 {
@@ -43,7 +46,7 @@ class MerchantConfigRepository
                     array_push($aServiceConfig, ServiceConfig::produceFromResultSet($rs));
                 }
             }
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eDCC) { return new DCCConfig($aServiceConfig);}
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eDCC) { return new DCCConfig($aServiceConfig,array());}
             if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
             {
                 $SQL = 'SELECT "isRollback" FROM client.fraud_property_tbl where enabled=true and clientid='.$this->_clientConfig->getID();
@@ -51,9 +54,9 @@ class MerchantConfigRepository
 
                 return new FraudConfig($aServiceConfig,$aRS);
             }
-            if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC) { return new PCCConfig($aServiceConfig);}
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI) { return new MPIConfig($aServiceConfig);}
-            else   return new MCPConfig($aServiceConfig);
+            if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC) { return new PCCConfig($aServiceConfig,array());}
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI) { return new MPIConfig($aServiceConfig,array());}
+            else   return new MCPConfig($aServiceConfig,array());
 
     }
     public function getAllAddonConfig() : array
@@ -67,8 +70,11 @@ class MerchantConfigRepository
        return  $aAddonConfig;
     }
 
-    public function saveAddonConfig(array $aAddonConfig) :array
+    public function saveAddonConfig(array $aAddonConfig)
     {
+        $response = new ResponseTemplate();
+        $response->setHttpStatusCode(ResponseTemplate::CREATED);
+
         foreach ($aAddonConfig as $addonConfig)
         {
             if(empty($addonConfig->getConfiguration()) === false)
@@ -82,13 +88,46 @@ class MerchantConfigRepository
 
                     if ($result == FALSE)
                     {
-                        $serviceConf->setOperation(\OperationStatus::eFailed);
+                        if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false) $serviceConf->setOperationStatus(OperationStatus::eDuplicate);
+                       else $serviceConf->setOperationStatus(OperationStatus::eFailed);
+                        $response->setHttpStatusCode(ResponseTemplate::MULTI_STATUS);
                     }
-                    else $serviceConf->setOperation(\OperationStatus::eSuccessful);
+                    else $serviceConf->setOperationStatus(OperationStatus::eSuccessful);
                 }
             }
         }
-     return $aAddonConfig;
+        $response->setResponse($aAddonConfig);
+     return $response;
+    }
+
+    public function updateAddonConfig(array $aAddonConfig)
+    {
+        $response = new ResponseTemplate();
+
+        $response->setHttpStatusCode(ResponseTemplate::CREATED);
+
+        foreach ($aAddonConfig as $addonConfig)
+        {
+            if(empty($addonConfig->getConfiguration()) === false)
+            {
+                $aServiceConf = $addonConfig->getConfiguration();
+                foreach ($aServiceConf as $serviceConf)
+                {
+                    $sql = $serviceConf->getUpdateSQL($addonConfig->getServiceType());
+
+                    $result = $this->getDBConn()->executeQuery($sql);
+
+                    if ($result == FALSE)
+                    {    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false) $serviceConf->setOperationStatus(OperationStatus::eDuplicate);
+                         else $serviceConf->setOperationStatus(OperationStatus::eFailed);
+                        $response->setHttpStatusCode(ResponseTemplate::MULTI_STATUS);
+                    }
+                    else $serviceConf->setOperationStatus(OperationStatus::eSuccessful);
+                }
+            }
+        }
+        $response->setResponse($aAddonConfig);
+        return $response;
     }
 
 

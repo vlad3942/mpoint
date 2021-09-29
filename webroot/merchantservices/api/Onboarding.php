@@ -6,6 +6,7 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 
 use api\classes\merchantservices\Repositories\ConfigurationController;
 use api\classes\merchantservices\Repositories\MetaDataController;
+use api\classes\merchantservices\ResponseTemplate;
 
 $isRequestValid = true;
 $xml = '';
@@ -101,15 +102,16 @@ try {
         $objController = new $contollerName($_OBJ_DB,$arrParams['client_id']);
         if($requestType == 'get')
         {
-            $xml = $objController->$methodName($arrParams);
+            $reponseTemplate = $objController->$methodName($arrParams);
 
         }
         else
         {
             $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
-            $xml = $objController->$methodName($obj_DOM, $arrParams);
+            $reponseTemplate = $objController->$methodName($obj_DOM, $arrParams);
         }
-
+        $xml= $reponseTemplate->getResponse();
+        header(ResponseTemplate::getHTTPHeader($reponseTemplate->getHttpStatusCode()));
 
     }
 

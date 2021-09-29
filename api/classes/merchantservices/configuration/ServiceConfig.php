@@ -1,7 +1,9 @@
 <?php
-namespace api\classes\merchantservices;
+namespace api\classes\merchantservices\configuration;
 
 use AddonServiceTypeIndex;
+use api\classes\merchantservices\OperationStatus;
+use api\classes\merchantservices\SQLOperation;
 use General;
 
 class ServiceConfig extends SQLOperation
@@ -14,7 +16,7 @@ class ServiceConfig extends SQLOperation
     private bool $_bPresentment;
     private string $_dCreated;
     private string $_dModified;
-    private bool $_bEnabled;
+    private bool $_bEnabled = false;
     private int $_iProviderId = -1;
     private int $_iType = -1;
     private string $_sVersion = '' ;
@@ -242,6 +244,37 @@ class ServiceConfig extends SQLOperation
         return $this;
     }
 
+    public  function getUpdateSQL(AddonServiceType $addonServiceType):string
+    {
+        $sql = "UPDATE CLIENT". sSCHEMA_POSTFIX .".%s Set %s where id=".$this->getId();
+
+        $parms = " enabled=".General::bool2xml($this->getEnabled());
+
+        if($this->getPaymentMethodId()>-1) $parms .= ",pmid=".$this->getPaymentMethodId();
+        if($this->getCurrencyId()>-1)
+        {
+            if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC)  $parms .= ",sale_currency_id=".$this->getCurrencyId();
+            else  $parms .= ",currencyid=".$this->getCurrencyId();
+
+        }
+        if($this->getCountryId()>-1)  $parms .= ",countryid=".$this->getCountryId();
+        if($this->getSettlementCurrencyId()>-1)
+        {
+            $parms .= ",settlement_currency_id=".$this->getSettlementCurrencyId();
+            $parms .= ",is_presentment=".General::bool2xml($this->isPresentment());
+        }
+
+        if($this->getProviderId()>-1) $parms .= ",providerid=".$this->getProviderId();
+        if($this->getType()>-1)
+        {
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
+            {
+                $parms .= ',"typeOfFraud"='.$this->getType();
+            }
+        }
+        if(empty($this->getVersion()) === false) $parms .= ',"version"=\''.$this->getVersion().'\'';
+      return  sprintf($sql,$addonServiceType->getTableName(),$parms);
+    }
     public static function getInsertSQL(AddonServiceType $addonServiceType):string
     {
         $sql = "INSERT INTO CLIENT". sSCHEMA_POSTFIX .".%s (%s) values (%s)";
@@ -252,8 +285,18 @@ class ServiceConfig extends SQLOperation
         }
         else if ($addonServiceType->getID() === AddonServiceTypeIndex::ePCC)
         {
-            return sprintf($sql,"MCP_config_tbl","clientid,pmid,sale_currency_id,is_presentment,settlement_currency_id","$1,$2,$3,$4,$5");
+            return sprintf($sql,$addonServiceType->getTableName(),"clientid,pmid,sale_currency_id,is_presentment,settlement_currency_id","$1,$2,$3,$4,$5");
         }
+        else if ($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
+        {
+            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, countryid, currencyid,"typeOfFraud" ',"$1,$2,$3,$4,$5,$6");
+        }
+        else if ($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
+        {
+            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, "version" ',"$1,$2,$3,$4");
+        }
+        else
+        return "";
     }
 
     public function getParam(AddonServiceType $addonServiceType,int $iClientId):array
@@ -266,6 +309,14 @@ class ServiceConfig extends SQLOperation
         {
             return array($iClientId,$this->getPaymentMethodId(),$this->getCurrencyId(),$this->isPresentment(),$this->getSettlementCurrencyId());
 
+        }
+        else  if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
+        {
+            return array($iClientId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getVersion());
+        }
+        else  if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
+        {
+            return array($iClientId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getCountryId(),$this->getCurrencyId(),$this->getType());
         }
         else return array();
 
@@ -288,16 +339,17 @@ class ServiceConfig extends SQLOperation
         if($this->getProviderId()>-1) $xml .= sprintf("<provider_id>%s</provider_id>",$this->getProviderId());
         if($this->getType()>-1) $xml .= sprintf("<type>%s</type>",$this->getType());
         if(empty($this->getVersion()) === false) $xml .= sprintf("<version>%s</version>",$this->getVersion());
+        if($this->getOperationStatus()>0) $xml .= sprintf("<status>%s</status>",OperationStatus::toString($this->getOperationStatus()));
         $xml .= "</addon_configuration>";
 
         return $xml;
     }
 
-    public static function produceFromXML(SimpleXMLElement &$oXML):ServiceConfig
+    public static function produceFromXML( &$oXML):ServiceConfig
     {
         $serviceConf = new ServiceConfig();
         if(count($oXML->id)>0) $serviceConf->setId((int)$oXML->id);
-        if(count($oXML->enabled)>0) $serviceConf->setId(General::xml2bool($oXML->enabled));
+        if(count($oXML->enabled)>0) $serviceConf->setEnabled(General::xml2bool($oXML->enabled));
         if(count($oXML->pm_id)>0) $serviceConf->setPaymentMethodId((int)$oXML->pm_id);
         if(count($oXML->currency_id)>0) $serviceConf->setCurrencyId((int)$oXML->currency_id);
         if(count($oXML->country_id)>0) $serviceConf->setCountryId((int)$oXML->country_id);

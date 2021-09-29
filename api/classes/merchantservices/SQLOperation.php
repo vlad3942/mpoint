@@ -1,7 +1,7 @@
 <?php
 
 /*
-interface IConfig
+interface BaseConfig
 {
 
     public function getConfiguration();
@@ -16,7 +16,7 @@ namespace api\classes\merchantservices;
 
 class SQLOperation
 {
-   private int $_iOperationStatus;
+   private int $_iOperationStatus = 0;
    private string $_sErrorMsg;
 
     /**
@@ -58,5 +58,18 @@ class SQLOperation
 abstract class OperationStatus
 {
     const eSuccessful = 1;
-    const eFailed = 1;
+    const eFailed = 2;
+    const eDuplicate = 3;
+    public static function toString(int $status)
+    {
+        switch ($status)
+        {
+            case self::eSuccessful:
+                return "Successful";
+            case self::eFailed:
+                return "Failed";
+            case self::eDuplicate:
+                return "Duplicated";
+        }
+    }
 }

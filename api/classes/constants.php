@@ -2049,6 +2049,25 @@ abstract class AddonServiceTypeIndex
        const eMCP = 3;
        const eFraud = 4;
        const eMPI = 5;
+
+	   public static function valueOf(string $type):int
+	   {
+		   switch (strtolower($type))
+		   {
+			   case "dcc":
+				   return 1;
+			   case "pcc":
+				   return 2;
+			   case "mcp":
+				   return 3;
+			   case "fraud":
+				   return 4;
+			   case "mpi":
+				   return 5;
+			   default:
+				   return 0;
+		   }
+	   }
 }
 
 

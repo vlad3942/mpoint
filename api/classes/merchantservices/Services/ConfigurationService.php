@@ -4,6 +4,7 @@ namespace api\classes\merchantservices\Services;
 
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
+use api\classes\merchantservices\ResponseTemplate;
 
 class ConfigurationService
 {
@@ -17,26 +18,60 @@ class ConfigurationService
         $this->merchantAggregateRoot = new MerchantConfigInfo();
     }
 
-    public function getAddonConfig( $additionalParams = []) : string
+    private function getRepository():MerchantConfigRepository
     {
-        $aAddonConf = $this->merchantAggregateRoot->getAllAddonConfig($this->merchantConfigRepository);
-        $responseXml = "";
+        return $this->merchantConfigRepository;
+    }
+
+    private function getAggregateRoot() : MerchantConfigInfo
+    {
+        return $this->merchantAggregateRoot;
+    }
+
+    public function getAddonConfig( $additionalParams = [])
+    {
+        $aAddonConf = $this->getAggregateRoot()->getAllAddonConfig($this->getRepository());
+        $responseXml = "<addon_config_details>";
         foreach ($aAddonConf as $addonconfig)
         {
 
             $responseXml .= $addonconfig->toXML();
         }
-        return $responseXml;
+        $responseXml .= "</addon_config_details>";
+        $responseTemplate = new ResponseTemplate();
+        $responseTemplate->setResponse($responseXml);
+        $responseTemplate->setHttpStatusCode(ResponseTemplate::OK);
+        return $responseTemplate;
     }
 
-    public function saveAddonConfig($request, $additionalParams = []) {
-        
+    public function saveAddonConfig($addonConfig, $additionalParams = [])
+    {
+        $responseTemplate = $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig);
+        $aAddonConf = $responseTemplate->getResponse();
+        $responseXml = "<addon_config_details>";
+        foreach ($aAddonConf as $addonconfig)
+        {
 
+            $responseXml .= $addonconfig->toXML();
+        }
+        $responseXml .= "</addon_config_details>";
+        $responseTemplate->setResponse($responseXml);
+       return $responseTemplate;
     }
 
-    public function updateAddonConfig($request, $additionalParams = []) {
-        
+    public function updateAddonConfig($addonConfig, $additionalParams = [])
+    {
+        $responseTemplate = $this->getAggregateRoot()->updateAddonConfig($this->getRepository(),$addonConfig);
+        $aAddonConf = $responseTemplate->getResponse();
+        $responseXml = "<addon_config_details>";
+        foreach ($aAddonConf as $addonconfig)
+        {
 
+            $responseXml .= $addonconfig->toXML();
+        }
+        $responseXml .= "</addon_config_details>";
+        $responseTemplate->setResponse($responseXml);
+        return $responseTemplate;
     }
 
     public function deleteAddonConfig($request, $additionalParams = []) {

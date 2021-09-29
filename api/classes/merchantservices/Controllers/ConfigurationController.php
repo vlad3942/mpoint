@@ -2,6 +2,7 @@
 namespace api\classes\merchantservices\Controllers;
 
 // include services
+use api\classes\merchantservices\configuration\BaseConfig;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -29,19 +30,25 @@ class ConfigurationController
     }
 /*  Sample function for accesing Repositry */    
     
-    public function getAddonConfig( $additionalParams = []) :string
+    public function getAddonConfig( $additionalParams = [])
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);
                 
     }
 
-    public function saveAddonConfig($request, $additionalParams = []) {
-        
+    public function saveAddonConfig($request, $additionalParams = [])
+    {
+
+       $addOnConfig = BaseConfig::produceFromXML($request);
+       return $this->getConfigService()->saveAddonConfig($addOnConfig,$additionalParams);
 
     }
 
-    public function updateAddonConfig($request, $additionalParams = []) {
-        
+    public function updateAddonConfig($request, $additionalParams = [])
+    {
+        $addOnConfig = BaseConfig::produceFromXML($request);
+
+        return $this->getConfigService()->updateAddonConfig($addOnConfig,$additionalParams);
 
     }
 

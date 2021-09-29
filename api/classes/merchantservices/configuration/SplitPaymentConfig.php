@@ -1,18 +1,20 @@
 <?php
-namespace api\classes\merchantservices;
+namespace api\classes\merchantservices\configuration;
 
 
 use AddonServiceTypeIndex;
 
-class SplitPaymentConfig implements IConfig
+class SplitPaymentConfig extends BaseConfig
 {
 
     private array $_aConfig;
     private AddonServiceType $_iServiceType;
-    public function __construct(array $config)
+    private array $_aProperty;
+    public function __construct(array $config,array $property)
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud);
+        $this->_aProperty = $property;
     }
 
     public function getConfiguration() : array
@@ -27,12 +29,9 @@ class SplitPaymentConfig implements IConfig
 
     public function getProperties()
     {
-        // TODO: Implement getProperties() method.
+        return $this->_aProperty;
     }
 
-    public function toXML(): string
-    {
-       return "";
-    }
+
 }
 
