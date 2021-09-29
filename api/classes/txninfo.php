@@ -1669,7 +1669,7 @@ class TxnInfo
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
 			$obj_ConvertedCurrencyConfig = null;
 			if(intval($RS["CONVERTEDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVERTEDCURRENCYID"]);
-            $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
+            $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"], $RS["created"]);
             $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
             $aBillingAddr = self::_produceBillingAddr($obj, $RS["ID"]);
 			$paymentSession = null;
@@ -1875,10 +1875,13 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	public static function  _produceAdditionalData($_OBJ_DB, $txnId)
+	public static function  _produceAdditionalData($_OBJ_DB, $txnId, $createdTimeStamp=null)
     {
         $additionalData = [];
         $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
+        if (!is_null($createdTimeStamp)) {
+        	$sqlA .= " and created >= to_timestamp('" . $createdTimeStamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
+		}
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
@@ -2699,19 +2702,14 @@ class TxnInfo
 			 }
 			 if($isRetry == false) {
 				 //insert details into split session tbl
-				 $sql = "SELECT Nextvalue('Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl_id_seq') AS id FROM DUAL";
-				 $RS = $obj_DB->getName($sql);
-				 if (is_array($RS) === false) {
-					 throw new mPointException("Unable to generate new Split Session ID", 1001);
+				 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl(sessionid,status)
+							VALUES(" . $sessionID . ", 'Active') RETURNING id";
+				 $res = $obj_DB->executeQuery($sql);
+				 if ($res === false) {
+					 throw new mPointException("Unable to insert new record for Split Session", 1002);
 				 }
-				 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".Split_Session_Tbl(id,sessionid,status)
-							VALUES(" . $RS["ID"] . "," . $sessionID . ", 'Active')";
-				 if (is_resource($obj_DB->query($sql)) === false) {
-					 if (is_array($RS) === false) {
-						 throw new mPointException("Unable to insert new record for Split Session : " . $RS["ID"], 1002);
-					 }
-				 }
-				 $split_session_id= $RS["ID"];
+				 $result = $obj_DB->fetchName($res);
+				 $split_session_id= $result["ID"];
 			 }
 			$sequenceNo  = 1;
 			if($isRetry == true) {
