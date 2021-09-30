@@ -185,6 +185,7 @@ $obj_DOM = simpledom_load_string(file_get_contents("php://input"));
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true) {
 
     if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'bulk-capture'}) > 0) {
+        $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
         $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'bulk-capture'}["client-id"]);
         $isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'),FILTER_VALIDATE_BOOLEAN);
         $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
@@ -239,188 +240,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
 
                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) === 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
+                                $obj_DOMOrder = $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders;
+                                $obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
+                                $bulkSettlement = true;
                                 $aResponse = array();
-                                for ($j = 0, $jMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j < $jMax; $j++) {
-                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
-
-                                        if($obj_TxnInfo->getCurrencyConfig()->getID() !== (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id'])
-                                        {
-                                            throw new mPointException("Currency mismatch for token : ".$sToken." expected ".$obj_TxnInfo->getCurrencyConfig()->getID(), 999 );
-                                        }
-                                        $data['orders'] = array();
-                                        $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
-                                        $orderref = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->xpath("./param[@name='TDNR']");
-                                        $data['orders'][0]['orderref'] = $orderref;
-                                        $data['orders'][0]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
-                                        $data['orders'][0]['product-description'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->description;
-                                        $data['orders'][0]['product-image-url'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'image-url'};
-                                        $data['orders'][0]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
-                                        $collectiveFees = 0;
-										if(isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->fees->fee) > 0)
-										{
-											for ($k=0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->fees->fee); $k< $kMax; $k++ )
-											{
-												$collectiveFees += $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->fees->fee[$k];
-											}
-										}
-                                        $data['orders'][0]['fees'] = (float) $collectiveFees;
-                                        $data['orders'][0]['country-id'] = $obj_TxnInfo->getCountryConfig()->getID();
-                                        $data['orders'][0]['points'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->points;
-                                        $data['orders'][0]['reward'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->reward;
-                                        $data['orders'][0]['quantity'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->quantity;
-
-                                         if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'})) {
-                                            for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k < $kMax; $k++) {
-                                                $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
-                                                $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
-                                                $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
-                                            }
-                                         }
-
-                                         $isTicketNumberIsAlreadyLogged = $obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB,$orderref);
-
-                                         if($isTicketNumberIsAlreadyLogged === FALSE) {
-                                             $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
-                                         }
-
-                                        $captureAmount = 0;
-                                        $voidAmount = 0;
-                                        $operationType = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'];
-                                        if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
-											$captureAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
-                                            $iDBAmount += $captureAmount;
-                                            $iAmount += $captureAmount;
-                                        } elseif ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'CR') {
-											$voidAmount = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
-                                            $iCRAmount += $voidAmount;
-                                            $iAmount += $voidAmount;
-                                        }
-                                        $ticketNumber = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->xpath("./param[@name='TDNR']");
-                                        try {
-                                            if ($txnPassbookObj instanceof TxnPassbook) {
-
-                                                if ($captureAmount > 0) {
-                                                    $passbookEntry = new PassbookEntry
-                                                    (
-                                                        NULL,
-                                                        $captureAmount,
-                                                        $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                                        Constants::iCaptureRequested,
-                                                        $ticketNumber,
-                                                        'log.additional_data_tbl  - TicketNumber'
-                                                    );
-                                                    $aResponse[$ticketNumber]['DB'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
-                                                }
-                                                if ($voidAmount > 0) {
-                                                    $passbookEntry = new PassbookEntry
-                                                    (
-                                                        NULL,
-                                                        $voidAmount,
-                                                        $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                                        Constants::iVoidRequested,
-                                                        $ticketNumber,
-                                                        'log.additional_data_tbl - TicketNumber'
-                                                    );
-                                                    $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
-                                                }
-                                                if($captureAmount <= 0 && $voidAmount <= 0)
-                                                {
-                                                	$aResponse[$ticketNumber][$operationType]['Status'] = '999';
-                                                	$aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
-                                                }
-                                            }
-                                        } catch (Exception $e) {
-                                            trigger_error($e, E_USER_WARNING);
-                                        }
-                                    }
-
-                                    if ($isTicketNumberIsAlreadyLogged === FALSE && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
-                                        for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k < $kMax; $k++) {
-                                            $data['flights'] = array();
-                                            $data['additional'] = array();
-                                            $data['flights']['service_class'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};
-                                            $data['flights']['departure_airport'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-airport'};
-                                            $data['flights']['arrival_airport'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
-                                            $data['flights']['op_airline_code'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
-                                            $data['flights']['arrival_date'] = (string)date('Y-m-d H:i:s', strtotime($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'}));
-                                            $data['flights']['departure_date'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
-                                            $data['flights']['order_id'] = $order_id;
-                                            $data['flights']['tag'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['tag'];
-                                            $data['flights']['trip_count'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['trip-count'];
-                                            $data['flights']['service_level'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['service-level'];
-
-                                            if(count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'flight-number'}) > 0)
-                                            {
-                                                $data['flights']['mkt_flight_number'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'flight-number'};
-                                            }
-                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-country'}) > 0)
-                                            {
-                                                $data['flights']['departure_country'] = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-country'};
-                                            }
-                                            else
-                                            {
-                                                $data['flights']['departure_country'] = 0;
-                                            }
-                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-country'}) > 0)
-                                            {
-                                                $data['flights']['arrival_country'] = (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-country'};
-                                            }
-                                            else
-                                            {
-                                                $data['flights']['arrival_country'] = 0;
-                                            }
-                                            $data['flights']['departure_timezone'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'time-zone'};
-                                            $data['flights']['arrival_timezone'] = '';
-                                            $data['flights']['mkt_airline_code'] = '';
-                                            $data['flights']['aircraft_type'] = '';
-                                            $data['flights']['op_flight_number'] = '';
-                                            $data['flights']['departure_city'] = '';
-                                            $data['flights']['arrival_city'] = '';
-                                            $data['flights']['arrival_terminal'] = '';
-                                            $data['flights']['departure_terminal'] = '';
-
-                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) > 0) {
-                                                for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()); $l++) {
-                                                    $data['additional'][$l]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l]['name'];
-                                                    $data['additional'][$l]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l];
-                                                    $data['additional'][$l]['type'] = (string)"Flight";
-                                                }
-                                            } else {
-                                                $data['additional'] = array();
-                                            }
-
-                                            $flight = $obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
-                                        }
-                                    }
-
-                                    if ($isTicketNumberIsAlreadyLogged === FALSE && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0) {
-                                        for ($k = 0, $kMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k < $kMax; $k++) {
-                                            $data['passenger'] = array();
-                                            $data['additionalp'] = array();
-                                            $data['passenger']['first_name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'first-name'};
-                                            $data['passenger']['last_name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'last-name'};
-                                            $data['passenger']['type'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'type'};
-                                            $data['passenger']['order_id'] = $order_id;
-                                            $data['passenger']['title'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'title'};
-                                            $data['passenger']['email'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->email;
-                                            $data['passenger']['mobile'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile;
-                                            $data['passenger']['country_id'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile["country-id"];
-                                            $data['passenger']['amount'] = 0;
-                                            $data['passenger']['seq'] = 0;
-
-                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}) > 0) {
-                                                for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->children()); $l++) {
-                                                    $data['additionalp'][$l]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param[$l]['name'];
-                                                    $data['additionalp'][$l]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param[$l];
-                                                    $data['additionalp'][$l]['type'] = (string)"Passenger";
-                                                }
-                                            } else {
-                                                $data['additionalp'] = array();
-                                            }
-                                            $passenger = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
-                                        }
-                                    }
-
+                                if (!empty($obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, $txnPassbookObj, $bulkSettlement, $sToken))) {
+                                    $aResponse = array_merge($aResponse, $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, $txnPassbookObj, $bulkSettlement, $sToken));
                                 }
                             }
                             $sMessage = '';
