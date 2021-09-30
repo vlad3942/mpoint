@@ -931,7 +931,7 @@ class Home extends General
 
             $objPaymentMethod = null;
             $obj_TxnInfo = null;
-            if($sessionId !== 0 && $mode === 1) {
+            if($sessionId !== 0 && $mode === 1 && empty($aTxnId) === false) {
                 $getLastTxn = end($aTxnId);
                 $sql = "SELECT sessiontypeid  FROM Log" . sSCHEMA_POSTFIX . ".Session_Tbl Where id = " . $sessionId ;
                 $getSessionTypeId = $this->getDBConn()->query($sql);
