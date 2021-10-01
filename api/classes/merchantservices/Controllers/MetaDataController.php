@@ -1,26 +1,84 @@
 <?php
 namespace api\classes\merchantservices\Controllers;
 
-use api\classes\merchantservices\Repositories\IRepository;
 use api\classes\merchantservices\Services\MetaDataService;
 
+  /**
+   * MetaData Configuration
+   * 
+   * 
+   * @package    Mechantservices
+   * @subpackage Controller
+   * @author     Ijaj Inamdar <ijaj.inamdar@cellpointmobile.com>
+   */
 class MetaDataController
 {
 
+    /**
+     * Database Connection Object 
+     *
+     * @var RDB
+     */
+    private $_conn;
 
-    // Define Service class objects
-    private $objMetaDataService;
+    /**
+     * Merchant Repository Object
+     *
+     * @var MerchantConfigRepository
+     */
+    private $_merchantConfigRepository;
 
-    public function __construct(\RDB &$conn,int $iClientId)
+    /**
+     * Meta Service Data Object
+     *
+     * @var MetaDataService
+     */
+    private $_objMetaDataService;
+
+
+    /**
+     * Client Configuration object
+     *
+     * @var ClientConfig
+     */
+//    private $_objClientConfig;
+
+    /**
+     * Constructor function
+     *
+     * @param MerchantConfigRepository $merchantConfigRepository
+     */
+    public function __construct(\RDB $conn, int $iClientId)
     {
-        $this->objConfigurationService = new MetaDataService($conn,$iClientId);
+        $this->_objMetaDataService = new MetaDataService($conn, $iClientId);
     }
-    public function getSystemMetaData( $additionalParams = []) {
+
+    /**
+     * Get Service Object
+     *
+     * @return MetaDataService
+     */
+    private function getMetaDataService():MetaDataService 
+    { 
+        return $this->_objMetaDataService;
+    }
+
+    /**
+     * Handle getSystemMetaData request
+     *
+     * @param array $request
+     * @param array $additionalParams
+     * @return string
+     */
+    public function getSystemMetaData($request) {
+
+        return $this->getMetaDataService()->generateSystemMetaData($request);
 
     }    
 
-    public function getPaymentMetaData($additionalParams = []) {
+    public function getPaymentMetaData($request, $additionalParams = []) {
 
     }
 
+    
 }
