@@ -931,6 +931,22 @@ class Home extends General
 
             $objPaymentMethod = null;
             $obj_TxnInfo = null;
+            /**
+             * CMP-6016
+             * This is made for split payment retry cases where session type id will be 1 after init with full amount
+             * In such cases if session tpe id is 1 then send only latest txn
+             */
+            if($sessionId !== 0 && $mode === 1 && empty($aTxnId) === false) {
+                $getLastTxn = end($aTxnId);
+                $sql = "SELECT sessiontypeid  FROM Log" . sSCHEMA_POSTFIX . ".Session_Tbl Where id = " . $sessionId ;
+                $getSessionTypeId = $this->getDBConn()->query($sql);
+                while ($RSES = $this->getDBConn()->fetchName($getSessionTypeId)) {
+                    if($RSES["SESSIONTYPEID"] == 1) {
+                        $aTxnId  = array();
+                        $aTxnId[] = $getLastTxn;
+                    }
+                }
+            }
             foreach ($aTxnId as $index => $txnid)
             {
 
