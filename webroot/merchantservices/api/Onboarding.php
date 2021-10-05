@@ -5,9 +5,6 @@ require_once("../../inc/include.php");
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
 use api\classes\merchantservices\MerchantOnboardingException;
-use api\classes\merchantservices\Repositories\ConfigurationController;
-use api\classes\merchantservices\Repositories\MetaDataController;
-use api\classes\merchantservices\ResponseTemplate;
 
 $isRequestValid = true;
 $xml = '';
@@ -67,12 +64,12 @@ $routes = [
         'delete'  => 'deleteRouteConfig'  
     ],
 
-    'system_metadeta' => [
+    'system_metadata' => [
         'class'   => 'MetaDataController',
         'get'     => 'getSystemMetaData'       
     ],
 
-    'payment_metadeta' => [
+    'payment_metadata' => [
         'class'   => 'MetaDataController',
         'get'     => 'getPaymentMetaData' 
     ]
@@ -101,10 +98,9 @@ try {
         $contollerName = 'api\\classes\\merchantservices\\Controllers\\' . $contollerName;
 
         $objController = new $contollerName($_OBJ_DB,$arrParams['client_id']);
-        if($requestType == 'get')
+        if($requestType === 'get')
         {
             $xml = $objController->$methodName($arrParams);
-
         }
         else
         {
