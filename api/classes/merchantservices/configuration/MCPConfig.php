@@ -10,10 +10,10 @@ class MCPConfig extends BaseConfig
     private array $_aConfig;
     private AddonServiceType $_iServiceType;
     private array $_aProperty;
-    public function __construct(array $config,array $property)
+    public function __construct(array $config,array $property,string $subType='MCP')
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP,$subType);
         $this->_aProperty = $property;
     }
 

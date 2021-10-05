@@ -4,16 +4,16 @@ namespace api\classes\merchantservices\configuration;
 
 use AddonServiceTypeIndex;
 
-class SplitPaymentConfig extends BaseConfig
+class Split_PaymentConfig extends BaseConfig
 {
 
     private array $_aConfig;
     private AddonServiceType $_iServiceType;
     private array $_aProperty;
-    public function __construct(array $config,array $property)
+    public function __construct(array $config,array $property,string $subType='Split_payment')
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,$subType);
         $this->_aProperty = $property;
     }
 

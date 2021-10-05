@@ -61,7 +61,7 @@ class AddonServiceType
         return $this->_sClassName;
     }
 
-    public static function produceAddonServiceTypebyId(int $iType) : ?AddonServiceType
+    public static function produceAddonServiceTypebyId(int $iType,string $subType) : ?AddonServiceType
     {
         switch ($iType)
         {
@@ -72,9 +72,11 @@ class AddonServiceType
             case AddonServiceTypeIndex::eMCP:
                 return new AddonServiceType(AddonServiceTypeIndex::eMCP, "FX", "MCP","MCP_config_tbl","MCPConfig");
             case AddonServiceTypeIndex::eFraud:
-                return new AddonServiceType(AddonServiceTypeIndex::eFraud, "FRAUD", "FRAUD","Fraud_config_tbl","FraudConfig");
+                return new AddonServiceType(AddonServiceTypeIndex::eFraud, "FRAUD", $subType,"Fraud_config_tbl","FraudConfig");
             case AddonServiceTypeIndex::eMPI:
                 return new AddonServiceType(AddonServiceTypeIndex::eMPI, "FRAUD", "MPI","MPI_config_tbl","MPIConfig");
+            case AddonServiceTypeIndex::eSPLIT_PAYMENT:
+                return new AddonServiceType(AddonServiceTypeIndex::eSPLIT_PAYMENT, "split_payment", $subType,"split_combination_tbl","Split_PaymentConfig");
             default:
                 return null;
         }

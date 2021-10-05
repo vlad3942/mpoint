@@ -4,6 +4,7 @@ require_once("../../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
+use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\Repositories\ConfigurationController;
 use api\classes\merchantservices\Repositories\MetaDataController;
 use api\classes\merchantservices\ResponseTemplate;
@@ -102,20 +103,24 @@ try {
         $objController = new $contollerName($_OBJ_DB,$arrParams['client_id']);
         if($requestType == 'get')
         {
-            $reponseTemplate = $objController->$methodName($arrParams);
+            $xml = $objController->$methodName($arrParams);
 
         }
         else
         {
             $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
-            $reponseTemplate = $objController->$methodName($obj_DOM, $arrParams);
+            $xml = $objController->$methodName($obj_DOM, $arrParams);
         }
-        $xml= $reponseTemplate->getResponse();
-        header(ResponseTemplate::getHTTPHeader($reponseTemplate->getHttpStatusCode()));
-
     }
 
-} catch (Exception $e)
+}
+catch (MerchantOnboardingException $e)
+{
+    header("HTTP/1.1 500 Internal Server Error");
+    $xml = $e->statusNode();
+    trigger_error($e->getMessage(), E_USER_ERROR);
+}
+catch (Exception $e)
 {
 	header("HTTP/1.1 500 Internal Server Error");
 	$xml = '<status code="500">'. $e->getMessage() .'</status>';

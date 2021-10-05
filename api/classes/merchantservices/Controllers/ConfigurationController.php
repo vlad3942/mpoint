@@ -40,7 +40,7 @@ class ConfigurationController
     {
 
        $addOnConfig = BaseConfig::produceFromXML($request);
-       return $this->getConfigService()->saveAddonConfig($addOnConfig,$additionalParams);
+       $this->getConfigService()->saveAddonConfig($addOnConfig,$additionalParams);
 
     }
 
@@ -48,7 +48,7 @@ class ConfigurationController
     {
         $addOnConfig = BaseConfig::produceFromXML($request);
 
-        return $this->getConfigService()->updateAddonConfig($addOnConfig,$additionalParams);
+        $this->getConfigService()->updateAddonConfig($addOnConfig,$additionalParams);
 
     }
 

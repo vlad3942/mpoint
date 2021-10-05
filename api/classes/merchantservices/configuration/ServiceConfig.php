@@ -6,7 +6,7 @@ use api\classes\merchantservices\OperationStatus;
 use api\classes\merchantservices\SQLOperation;
 use General;
 
-class ServiceConfig extends SQLOperation
+class ServiceConfig
 {
     private int $_id = -1;
     private int $_iPMId = -1;
@@ -18,8 +18,9 @@ class ServiceConfig extends SQLOperation
     private string $_dModified;
     private bool $_bEnabled = false;
     private int $_iProviderId = -1;
-    private int $_iType = -1;
     private string $_sVersion = '' ;
+    private int $_iPaymentType = -1 ;
+    private int $_iSequenceNo = -1 ;
 
 
     /**
@@ -108,13 +109,7 @@ class ServiceConfig extends SQLOperation
         return $this->_iProviderId;
     }
 
-    /**
-     * @return int
-     */
-    public function getType(): int
-    {
-        return $this->_iType;
-    }
+
 
     /**
      * @return string
@@ -122,6 +117,22 @@ class ServiceConfig extends SQLOperation
     public function getVersion(): string
     {
         return $this->_sVersion;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentType(): int
+    {
+        return $this->_iPaymentType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSequenceNo(): int
+    {
+        return $this->_iSequenceNo;
     }
 
     /**
@@ -224,15 +235,7 @@ class ServiceConfig extends SQLOperation
         return $this;
     }
 
-    /**
-     * @param int $iType
-     * @return ServiceConfig
-     */
-    public function setType(int $iType): ServiceConfig
-    {
-        $this->_iType = $iType;
-        return $this;
-    }
+
 
     /**
      * @param string $sVersion
@@ -241,6 +244,26 @@ class ServiceConfig extends SQLOperation
     public function setVersion(string $sVersion): ServiceConfig
     {
         $this->_sVersion = $sVersion;
+        return $this;
+    }
+
+    /**
+     * @param int $sVersion
+     * @return ServiceConfig
+     */
+    public function setPaymentType(int $iPaymentType): ServiceConfig
+    {
+        $this->_iPaymentType = $iPaymentType;
+        return $this;
+    }
+
+    /**
+     * @param int $sVersion
+     * @return ServiceConfig
+     */
+    public function setSequenceNo(int $iSequenceNo): ServiceConfig
+    {
+        $this->_iSequenceNo = $iSequenceNo;
         return $this;
     }
 
@@ -258,6 +281,8 @@ class ServiceConfig extends SQLOperation
 
         }
         if($this->getCountryId()>-1)  $parms .= ",countryid=".$this->getCountryId();
+        if($this->getPaymentType()>-1)  $parms .= ",payment_type=".$this->getPaymentType();
+        if($this->getSequenceNo()>-1)  $parms .= ",sequence_no=".$this->getSequenceNo();
         if($this->getSettlementCurrencyId()>-1)
         {
             $parms .= ",settlement_currency_id=".$this->getSettlementCurrencyId();
@@ -265,13 +290,14 @@ class ServiceConfig extends SQLOperation
         }
 
         if($this->getProviderId()>-1) $parms .= ",providerid=".$this->getProviderId();
-        if($this->getType()>-1)
+        if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
         {
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
-            {
-                $parms .= ',"typeOfFraud"='.$this->getType();
-            }
+            $type = 1;
+            if($addonServiceType->getSubType() === 'post_auth') $type = 2;
+
+            $parms .= ',typeoffraud='.$type;
         }
+
         if(empty($this->getVersion()) === false) $parms .= ',"version"=\''.$this->getVersion().'\'';
       return  sprintf($sql,$addonServiceType->getTableName(),$parms);
     }
@@ -289,34 +315,45 @@ class ServiceConfig extends SQLOperation
         }
         else if ($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
         {
-            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, countryid, currencyid,"typeOfFraud" ',"$1,$2,$3,$4,$5,$6");
+            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, countryid, currencyid,typeoffraud ',"$1,$2,$3,$4,$5,$6");
         }
         else if ($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
         {
             return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, "version" ',"$1,$2,$3,$4");
         }
+        else if ($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        {
+            return sprintf($sql,$addonServiceType->getTableName(),'split_config_id, payment_type, sequence_no',"$1,$2,$3");
+        }
         else
         return "";
     }
 
-    public function getParam(AddonServiceType $addonServiceType,int $iClientId):array
+    public function getParam(AddonServiceType $addonServiceType,int $iId):array
     {
         if($addonServiceType->getID() === AddonServiceTypeIndex::eMCP || $addonServiceType->getID() === AddonServiceTypeIndex::eDCC)
         {
-            return array($iClientId,$this->getPaymentMethodId(),$this->getCountryId(),$this->getCurrencyId());
+            return array($iId,$this->getPaymentMethodId(),$this->getCountryId(),$this->getCurrencyId());
 
         }else  if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC)
         {
-            return array($iClientId,$this->getPaymentMethodId(),$this->getCurrencyId(),$this->isPresentment(),$this->getSettlementCurrencyId());
+            return array($iId,$this->getPaymentMethodId(),$this->getCurrencyId(),$this->isPresentment(),$this->getSettlementCurrencyId());
 
         }
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
         {
-            return array($iClientId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getVersion());
+            return array($iId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getVersion());
         }
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
         {
-            return array($iClientId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getCountryId(),$this->getCurrencyId(),$this->getType());
+            $type = 1;
+            if($addonServiceType->getSubType() === 'post_auth') $type = 2;
+
+            return array($iId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getCountryId(),$this->getCurrencyId(),$type);
+        }
+        else  if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        {
+           return array($iId,$this->getPaymentType(),$this->getSequenceNo());
         }
         else return array();
 
@@ -324,11 +361,13 @@ class ServiceConfig extends SQLOperation
 
     public function toXML():string
     {
-        $xml = "<addon_configuration>";
+        $xml = "<addon_confguration>";
         $xml .= sprintf("<id>%s</id>",$this->getId());
         $xml .= sprintf("<enabled>%s</enabled>",General::bool2xml($this->getEnabled()));
         if($this->getPaymentMethodId()>-1) $xml .= sprintf("<pm_id>%s</pm_id>",$this->getPaymentMethodId());
         if($this->getCurrencyId()>-1) $xml .= sprintf("<currency_id>%s</currency_id>",$this->getCurrencyId());
+        if($this->getSequenceNo()>-1) $xml .= sprintf("<sequence_no>%s</sequence_no>",$this->getSequenceNo());
+        if($this->getPaymentType()>-1) $xml .= sprintf("<payment_type_id>%s</payment_type_id>",$this->getPaymentType());
         if($this->getCountryId()>-1) $xml .= sprintf("<country_id>%s</country_id>",$this->getCountryId());
         if($this->getSettlementCurrencyId()>-1)
         {
@@ -337,10 +376,8 @@ class ServiceConfig extends SQLOperation
 
         }
         if($this->getProviderId()>-1) $xml .= sprintf("<provider_id>%s</provider_id>",$this->getProviderId());
-        if($this->getType()>-1) $xml .= sprintf("<type>%s</type>",$this->getType());
         if(empty($this->getVersion()) === false) $xml .= sprintf("<version>%s</version>",$this->getVersion());
-        if($this->getOperationStatus()>0) $xml .= sprintf("<status>%s</status>",OperationStatus::toString($this->getOperationStatus()));
-        $xml .= "</addon_configuration>";
+        $xml .= "</addon_confguration>";
 
         return $xml;
     }
@@ -356,8 +393,9 @@ class ServiceConfig extends SQLOperation
         if(count($oXML->settlement_currency_id)>0) $serviceConf->setSettlementCurrencyId((int)$oXML->settlement_currency_id);
         if(count($oXML->is_presentment)>0) $serviceConf->setPresentment(General::xml2bool($oXML->is_presentment));
         if(count($oXML->provider_id)>0) $serviceConf->setProviderId((int)$oXML->provider_id);
-        if(count($oXML->type)>0) $serviceConf->setType((int)$oXML->type);
         if(count($oXML->version)>0) $serviceConf->setVersion($oXML->version);
+        if(count($oXML->payment_type_id)>0) $serviceConf->setPaymentType((int)$oXML->payment_type_id);
+        if(count($oXML->sequence_no)>0) $serviceConf->setSequenceNo((int)$oXML->sequence_no);
 
         return $serviceConf;
     }
@@ -376,10 +414,31 @@ class ServiceConfig extends SQLOperation
         if(isset($rs["SETTLEMENT_CURRENCY_ID"])) $serviceConf->setSettlementCurrencyId($rs["SETTLEMENT_CURRENCY_ID"]);
         if(isset($rs['IS_PRESENTMENT'])) $serviceConf->setPresentment($rs['IS_PRESENTMENT']);
         if(isset($rs["PROVIDERID"])) $serviceConf->setProviderId($rs["PROVIDERID"]);
-        if(isset($rs["TYPEOFFRAUD"])) $serviceConf->setType($rs["TYPEOFFRAUD"]);
         if(isset($rs["VERSION"])) $serviceConf->setVersion($rs["VERSION"]);
+        if(isset($rs["PAYMENT_TYPE"])) $serviceConf->setPaymentType($rs["PAYMENT_TYPE"]);
+        if(isset($rs["SEQUENCE_NO"])) $serviceConf->setSequenceNo($rs["SEQUENCE_NO"]);
 
         return $serviceConf;
+    }
+
+    public function toString():string
+    {
+        $aString = array();
+        if ($this->getId()>-1) array_push($aString,"id=".$this->getId());
+        array_push($aString,"enabled=".General::bool2xml($this->getEnabled()));
+        if($this->getPaymentMethodId()>-1) array_push($aString,"pm_id=".$this->getPaymentMethodId());
+        if($this->getCurrencyId()>-1) array_push($aString,"currency_id=".$this->getCurrencyId());
+        if($this->getCountryId()>-1) array_push($aString,"country_id=".$this->getCountryId());
+        if($this->getSettlementCurrencyId()>-1)
+        {
+            array_push($aString,"settlement_currency_id=".$this->getSettlementCurrencyId());
+            array_push($aString,"is_presentment=".General::bool2xml($this->isPresentment()));
+        }
+        if($this->getProviderId()>-1) array_push($aString,"provider_id=".$this->getProviderId());
+        if($this->getPaymentType()>-1) array_push($aString,"payment_type_id=".$this->getPaymentType());
+        if($this->getSequenceNo()>-1) array_push($aString,"sequence_no=".$this->getSequenceNo());
+        if(empty($this->getVersion()) === false) array_push($aString,"version=".$this->getVersion());
+        return '{'.implode(', ', $aString).'}';
     }
 
 }

@@ -10,6 +10,7 @@ use api\classes\merchantservices\configuration\MCPConfig;
 use api\classes\merchantservices\configuration\MPIConfig;
 use api\classes\merchantservices\configuration\PCCConfig;
 use api\classes\merchantservices\configuration\ServiceConfig;
+use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\OperationStatus;
 use api\classes\merchantservices\ResponseTemplate;
 use HTTP;
@@ -30,84 +31,170 @@ class MerchantConfigRepository
 
     private function getAddonConfig(AddonServiceType $addonServiceType)
     {
-        $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
-
-           $sTableName = $addonServiceType->getTableName();
-            $sColumns = "id,pmid,countryid,currencyid,created,modified,enabled";
-            if($addonServiceType->getID() ===AddonServiceTypeIndex::eFraud) $sColumns .= ',providerid,"typeOfFraud" ';
-            if($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
-            if($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
-            $aRS = $this->getDBConn()->getAllNames ( sprintf($SQL,$sColumns,$sTableName) );
-            $aServiceConfig = array();
+        $SQL ="";
+        if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        {
+            $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and name='".$addonServiceType->getSubType()."'";
+            $aRS = $this->getDBConn()->getName ( $SQL );
             if (empty($aRS) === false)
             {
-                foreach ($aRS as $rs)
-                {
-                    array_push($aServiceConfig, ServiceConfig::produceFromResultSet($rs));
-                }
+                $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and split_config_id=".$aRS['ID'];
             }
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eDCC) { return new DCCConfig($aServiceConfig,array());}
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
-            {
-                $SQL = 'SELECT "isRollback" FROM client.fraud_property_tbl where enabled=true and clientid='.$this->_clientConfig->getID();
-                $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
+        }
+        else
+        $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
 
-                return new FraudConfig($aServiceConfig,$aRS);
+        $sTableName = $addonServiceType->getTableName();
+        $sColumns = "id,pmid,countryid,currencyid,created,modified,enabled";
+        $sWhereCls ='';
+        if($addonServiceType->getID() ===AddonServiceTypeIndex::eFraud )
+        {
+            $sColumns .= ',providerid,typeoffraud ';
+            if($addonServiceType->getSubType() === 'pre_auth') $sWhereCls .= 'typeoffraud=1';
+            else $sWhereCls .= 'typeoffraud=2';
+        }
+        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        {
+            $sColumns = 'id,payment_type, sequence_no ';
+        }
+        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
+        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
+        $sSQL = sprintf($SQL,$sColumns,$sTableName) ;
+        if(empty($sWhereCls) === false)
+        {
+            $sSQL.=' and '.$sWhereCls;
+        }
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+        $aServiceConfig = array();
+        if (empty($aRS) === false)
+        {
+            foreach ($aRS as $rs)
+            {
+                array_push($aServiceConfig, ServiceConfig::produceFromResultSet($rs));
             }
-            if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC) { return new PCCConfig($aServiceConfig,array());}
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI) { return new MPIConfig($aServiceConfig,array());}
-            else   return new MCPConfig($aServiceConfig,array());
+        }
+        $className =   'api\\classes\\merchantservices\\configuration\\'.$addonServiceType->getClassName();
+        $aProperty = array();
+        if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
+        {
+            $SQL = 'SELECT is_rollback FROM client.fraud_property_tbl where enabled=true and clientid='.$this->_clientConfig->getID();
+            $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
+            if(empty($aRS) === false) $aProperty = array_change_key_case($aRS,CASE_LOWER);
+        }
+        return new $className($aServiceConfig,$aProperty,$addonServiceType->getSubType());
 
     }
     public function getAllAddonConfig() : array
     {
        $aAddonConfig = array();
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eDCC)));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP)));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC)));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud)));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI)));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eDCC,'')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP,'')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC,'')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'pre_auth')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'post_auth')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI,'')));
+
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'hybrid')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'cashless')));
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'conventional')));
+
        return  $aAddonConfig;
     }
 
+    /**
+     * @throws MerchantOnboardingException
+     */
     public function saveAddonConfig(array $aAddonConfig)
     {
-        $response = new ResponseTemplate();
-        $response->setHttpStatusCode(ResponseTemplate::CREATED);
 
         foreach ($aAddonConfig as $addonConfig)
         {
+
+            if(empty($addonConfig->getProperties()) === false)
+            {
+                $SQL ="INSERT INTO client.". sSCHEMA_POSTFIX ;
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
+                {
+                    $SQL .="fraud_property_tbl (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
+                }
+                $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
+                $result = $this->getDBConn()->executeQuery($SQL);
+                if ($result == FALSE)
+                {
+                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION);
+                }
+            }
             if(empty($addonConfig->getConfiguration()) === false)
             {
                 $sql = ServiceConfig::getInsertSQL($addonConfig->getServiceType());
                 $aServiceConf = $addonConfig->getConfiguration();
+
+                if($addonConfig->getServiceType()->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+                {
+                    $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and name='".$addonConfig->getServiceType()->getSubType()."'";
+                    $aRS = $this->getDBConn()->getName ( $SQL );
+                    if (empty($aRS) === false)
+                    {
+                        $id = $aRS['ID'];
+                    }
+                    else
+                    {
+                        $SQL ="INSERT INTO CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl (client_id, name, is_one_step_auth) values ($1,$2,$3) RETURNING id";
+                        $isOneStepAuth = 'false';
+                        if($addonConfig->getServiceType()->getSubType() === 'hybrid')
+                        {
+                            $isOneStepAuth = 'true';
+                        }
+                        $aParam = array($this->_clientConfig->getID(),$addonConfig->getServiceType()->getSubType(),$isOneStepAuth);
+                        $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+                        if($rs == false) return array();
+                        else $id = $this->getDBConn()->fetchName($rs)['ID'];
+
+                    }
+                }
+                else $id = $this->_clientConfig->getID();
+
                 foreach ($aServiceConf as $serviceConf)
                 {
-                    $aParams = $serviceConf->getParam($addonConfig->getServiceType(),$this->_clientConfig->getID());
+                    $aParams = $serviceConf->getParam($addonConfig->getServiceType(),$id);
                     $result = $this->getDBConn()->executeQuery($sql, $aParams);
 
                     if ($result == FALSE)
                     {
-                        if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false) $serviceConf->setOperationStatus(OperationStatus::eDuplicate);
-                       else $serviceConf->setOperationStatus(OperationStatus::eFailed);
-                        $response->setHttpStatusCode(ResponseTemplate::MULTI_STATUS);
-                    }
-                    else $serviceConf->setOperationStatus(OperationStatus::eSuccessful);
+                        $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                        if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                        {
+                            $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                        }
+                        throw new MerchantOnboardingException($statusCode,'Failed to Insert SubType '.$addonConfig->getServiceType()->getSubType().' For Config '.$serviceConf->toString());                    }
                 }
             }
         }
-        $response->setResponse($aAddonConfig);
-     return $response;
     }
 
+    /**
+     * @throws MerchantOnboardingException
+     */
     public function updateAddonConfig(array $aAddonConfig)
     {
-        $response = new ResponseTemplate();
-
-        $response->setHttpStatusCode(ResponseTemplate::CREATED);
 
         foreach ($aAddonConfig as $addonConfig)
         {
+            if(empty($addonConfig->getProperties()) === false)
+            {
+                $SQL ="INSERT INTO client.". sSCHEMA_POSTFIX ;
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
+                {
+                    $SQL .="fraud_property_tbl (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
+                }
+                $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
+                $result = $this->getDBConn()->executeQuery($SQL);
+                if ($result == FALSE)
+                {
+
+                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update Fraud is_rollback property');
+                }
+            }
             if(empty($addonConfig->getConfiguration()) === false)
             {
                 $aServiceConf = $addonConfig->getConfiguration();
@@ -118,16 +205,17 @@ class MerchantConfigRepository
                     $result = $this->getDBConn()->executeQuery($sql);
 
                     if ($result == FALSE)
-                    {    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false) $serviceConf->setOperationStatus(OperationStatus::eDuplicate);
-                         else $serviceConf->setOperationStatus(OperationStatus::eFailed);
-                        $response->setHttpStatusCode(ResponseTemplate::MULTI_STATUS);
+                    {
+                        $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                        if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                        {
+                            $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                        }
+                        throw new MerchantOnboardingException($statusCode,'Failed to Update SubType '.$addonConfig->getServiceType()->getSubType().' For Config Id='.$serviceConf->getId().' '.$serviceConf->toString());
                     }
-                    else $serviceConf->setOperationStatus(OperationStatus::eSuccessful);
                 }
             }
         }
-        $response->setResponse($aAddonConfig);
-        return $response;
     }
 
 

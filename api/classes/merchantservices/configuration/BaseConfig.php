@@ -24,33 +24,34 @@ Abstract class BaseConfig
     public Abstract function getConfiguration() : array;
     public Abstract function getServiceType() : AddonServiceType;
     public Abstract function getProperties();
+    protected function setPropertiesFromXML(SimpleXMLElement &$oXML){}
     public function toXML():string
     {
-        $xml = "<addon_config_detail>";
-        $xml .= $this->getServiceType()->toXML();
+        $xml = sprintf("<%s>",strtolower(str_replace('config','_config',strtolower($this->getServiceType()->getClassName()))));
+
+        if($this->getServiceType()->getID() == AddonServiceTypeIndex::eSPLIT_PAYMENT || $this->getServiceType()->getID() == AddonServiceTypeIndex::eFraud)
+        {
+            $xml .= sprintf('<sub_type>%s</sub_type>',$this->getServiceType()->getSubType());
+        }
         $xml .= "<addon_configurations>";
         foreach ($this->getConfiguration() as $config)
         {
             $xml .= $config->toXML();
         }
         $xml .= "</addon_configurations>";
-
         if(empty($this->getProperties()) === false)
         {
-            $xml .= "<properties>";
             foreach ($this->getProperties() AS $key => $value)
             {
-                $xml .= "<property>";
-                $xml .= "<name>".$key."</name>";
-                $xml .= "<value>".$value."</value>";
-                $xml .= "</property>";
 
+                if(gettype($value) === 'boolean')
+                {
+                    $value = \General::bool2xml($value);
+                }
+                $xml .= sprintf('<%s>%s</%s>',strtolower($key),$value,strtolower($key));
             }
-            $xml .= "</properties>";
         }
-
-
-        $xml .= "</addon_config_detail>";
+        $xml .= sprintf("</%s>",strtolower(str_replace('config','_config',strtolower($this->getServiceType()->getClassName()))));
 
 
         return $xml;
@@ -60,18 +61,28 @@ Abstract class BaseConfig
     {
         $aBaseconfig = array();
 
-        foreach ($oXML->addon_config_detail as $addon_config_detail)
+        foreach ($oXML as $key=>$addon_config_detail)
         {
-            $addonSubType = (string)$addon_config_detail->addon_subtype;
-            $addonServiceTYpe = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf($addonSubType));
-            $aServiceCon = array();
-            foreach ($addon_config_detail->addon_configurations->addon_configuration as $addon_configuration)
+            $addonSubType = (string)$addon_config_detail->sub_type;
+            if(strpos($key, '_configs') !== false)
             {
+                $aConfigs = BaseConfig::produceFromXML($addon_config_detail);
+                $aBaseconfig = array_merge($aBaseconfig,$aConfigs);
+                continue;
+            }
+            $addonServiceTYpe = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf(str_replace('_config','',$key)),'');
+
+            $aServiceCon = array();
+            foreach ($addon_config_detail->addon_configurations->addon_confguration as $addon_configuration)
+            {
+
                 $serviceConfig = ServiceConfig::produceFromXML($addon_configuration);
                 array_push($aServiceCon,$serviceConfig);
             }
+
             $className = __NAMESPACE__ . '\\' . $addonServiceTYpe->getClassName();
-            $config = new $className($aServiceCon,array());
+            $config = new $className($aServiceCon,array(),$addonSubType);
+            $config->setPropertiesFromXML($addon_config_detail);
             array_push($aBaseconfig,$config);
 
         }

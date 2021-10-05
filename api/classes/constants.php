@@ -2049,24 +2049,19 @@ abstract class AddonServiceTypeIndex
        const eMCP = 3;
        const eFraud = 4;
        const eMPI = 5;
+       const eSPLIT_PAYMENT = 6;
+
 
 	   public static function valueOf(string $type):int
 	   {
-		   switch (strtolower($type))
-		   {
-			   case "dcc":
-				   return 1;
-			   case "pcc":
-				   return 2;
-			   case "mcp":
-				   return 3;
-			   case "fraud":
-				   return 4;
-			   case "mpi":
-				   return 5;
-			   default:
-				   return 0;
-		   }
+		    $type =strtolower($type);
+		   if($type === 'dcc') return self::eDCC;
+		   if($type === 'pcc') return self::ePCC;
+		   if($type === 'mcp') return self::eMCP;
+		   if($type === 'mpi') return self::eMPI;
+		   if($type === 'pre_auth' || $type === 'post_auth' || $type === 'fraud' ) return self::eFraud;
+		   if($type === 'cashless' || $type === 'conventional' || $type === 'hybrid' || $type === 'split_payment') return self::eSPLIT_PAYMENT;
+		   else return 0;
 	   }
 }
 

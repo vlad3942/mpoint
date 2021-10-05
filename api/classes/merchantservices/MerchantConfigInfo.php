@@ -18,11 +18,11 @@ class MerchantConfigInfo
 
     public function saveAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig)
     {
-        return $configRepository->saveAddonConfig($aAddonConfig);
+         $configRepository->saveAddonConfig($aAddonConfig);
     }
 
     public function updateAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig)
     {
-        return $configRepository->updateAddonConfig($aAddonConfig);
+         $configRepository->updateAddonConfig($aAddonConfig);
     }
 }

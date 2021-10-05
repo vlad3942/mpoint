@@ -2,6 +2,8 @@
 namespace api\classes\merchantservices\Services;
 
 
+use AddonServiceTypeIndex;
+use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 use api\classes\merchantservices\ResponseTemplate;
@@ -31,47 +33,53 @@ class ConfigurationService
     public function getAddonConfig( $additionalParams = [])
     {
         $aAddonConf = $this->getAggregateRoot()->getAllAddonConfig($this->getRepository());
-        $responseXml = "<addon_config_details>";
+        $responseXml = "<addon_configuration_response>";
+        $sFraudXML ='';
+        $sSplitPaymentXML ='';
+
         foreach ($aAddonConf as $addonconfig)
         {
-
-            $responseXml .= $addonconfig->toXML();
+            if($addonconfig->getServiceType()->getID() === AddonServiceTypeIndex::eFraud)
+            {
+                $sFraudXML .= $addonconfig->toXML();
+                continue;
+            }
+            else if($addonconfig->getServiceType()->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+            {
+                $sSplitPaymentXML .= $addonconfig->toXML();
+                continue;
+            }
+              $responseXml .= $addonconfig->toXML();
         }
-        $responseXml .= "</addon_config_details>";
-        $responseTemplate = new ResponseTemplate();
-        $responseTemplate->setResponse($responseXml);
-        $responseTemplate->setHttpStatusCode(ResponseTemplate::OK);
-        return $responseTemplate;
+        if(empty($sFraudXML) === false)
+        {
+            $addonType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'');
+            $responseXml .= sprintf("<%ss>",strtolower(str_replace('config','_config',strtolower($addonType->getClassName()))));
+            $responseXml .=$sFraudXML;
+            $responseXml .= sprintf("</%ss>",strtolower(str_replace('config','_config',strtolower($addonType->getClassName()))));
+        }
+
+        if(empty($sSplitPaymentXML) === false)
+        {
+            $addonType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'');
+            $responseXml .= sprintf("<%ss>",strtolower(str_replace('config','_config',strtolower($addonType->getClassName()))));
+            $responseXml .=$sSplitPaymentXML;
+            $responseXml .= sprintf("</%ss>",strtolower(str_replace('config','_config',strtolower($addonType->getClassName()))));
+        }
+
+        $responseXml .= "</addon_configuration_response>";
+        return $responseXml;
     }
 
     public function saveAddonConfig($addonConfig, $additionalParams = [])
     {
-        $responseTemplate = $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig);
-        $aAddonConf = $responseTemplate->getResponse();
-        $responseXml = "<addon_config_details>";
-        foreach ($aAddonConf as $addonconfig)
-        {
-
-            $responseXml .= $addonconfig->toXML();
-        }
-        $responseXml .= "</addon_config_details>";
-        $responseTemplate->setResponse($responseXml);
-       return $responseTemplate;
+      $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig);
+       return "";
     }
 
     public function updateAddonConfig($addonConfig, $additionalParams = [])
     {
-        $responseTemplate = $this->getAggregateRoot()->updateAddonConfig($this->getRepository(),$addonConfig);
-        $aAddonConf = $responseTemplate->getResponse();
-        $responseXml = "<addon_config_details>";
-        foreach ($aAddonConf as $addonconfig)
-        {
-
-            $responseXml .= $addonconfig->toXML();
-        }
-        $responseXml .= "</addon_config_details>";
-        $responseTemplate->setResponse($responseXml);
-        return $responseTemplate;
+         $this->getAggregateRoot()->updateAddonConfig($this->getRepository(),$addonConfig);
     }
 
     public function deleteAddonConfig($request, $additionalParams = []) {

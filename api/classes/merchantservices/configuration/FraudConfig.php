@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\configuration;
 
 
 use AddonServiceTypeIndex;
+use SimpleXMLElement;
 use function PHPUnit\Framework\isEmpty;
 
 class FraudConfig extends BaseConfig
@@ -11,10 +12,10 @@ class FraudConfig extends BaseConfig
     private array $_aConfig;
     private AddonServiceType $_iServiceType;
     private array $_aProperty;
-    public function __construct(array $config,array $property)
+    public function __construct(array $config,array $property,string $subType='Fraud')
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType);
         $this->_aProperty = $property;
     }
 
@@ -32,7 +33,13 @@ class FraudConfig extends BaseConfig
     {
         return $this->_aProperty;
     }
-
+    protected function setPropertiesFromXML(SimpleXMLElement &$oXML)
+    {
+        if(count($oXML->is_rollback)>0)
+        {
+            $this->_aProperty = array("is_rollback"=>\General::xml2bool((string)$oXML->is_rollback));
+        }
+    }
 
 }
 

@@ -10,10 +10,10 @@ class PCCConfig extends BaseConfig
     private array $_aConfig;
     private AddonServiceType $_iServiceType;
     private array $_aProperty;
-    public function __construct(array $config,array $property)
+    public function __construct(array $config,array $property,string $subType='PCC')
     {
         $this->_aConfig = $config;
-        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC);
+        $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC,$subType);
         $this->_aProperty = $property;
     }
 
