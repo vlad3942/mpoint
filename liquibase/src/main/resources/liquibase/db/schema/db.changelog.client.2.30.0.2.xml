@@ -1004,4 +1004,71 @@
                     defaultValueBoolean="true"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-05-setup-v2.30.0-client-merchant-onboard-17">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="split_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="split_property_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_splitproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="is_rollback"
+                    type="boolean"
+                    remarks="Flag indicating Active/In Active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint  catalogName="client"
+                              columnNames="clientid"
+                              constraintName="idx_uq_splitpprop_clientid"
+                              schemaName="client"
+                              tableName="split_property_tbl"/>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.split_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_split_property_tbl BEFORE INSERT OR UPDATE ON client.split_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_split_property_tbl IF EXISTS ON client.split_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="split_property_tbl"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

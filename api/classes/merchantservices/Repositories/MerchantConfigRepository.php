@@ -85,9 +85,11 @@ class MerchantConfigRepository
         }
         $className =   'api\\classes\\merchantservices\\configuration\\'.$addonServiceType->getClassName();
         $aProperty = array();
-        if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
+        if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud || $addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
-            $SQL = 'SELECT is_rollback FROM client.fraud_property_tbl where enabled=true and clientid='.$this->_clientConfig->getID();
+            $sTableName = ".fraud_property_tbl";
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT ) $sTableName = ".split_property_tbl";
+            $SQL = 'SELECT is_rollback FROM client'. sSCHEMA_POSTFIX.$sTableName.' where enabled=true and clientid='.$this->_clientConfig->getID();
             $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
             if(empty($aRS) === false) $aProperty = array_change_key_case($aRS,CASE_LOWER);
         }
@@ -122,16 +124,16 @@ class MerchantConfigRepository
 
             if(empty($addonConfig->getProperties()) === false)
             {
-                $SQL ="INSERT INTO client.". sSCHEMA_POSTFIX ;
-                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
-                {
-                    $SQL .="fraud_property_tbl (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
-                }
+                $SQL ="INSERT INTO client". sSCHEMA_POSTFIX ;
+                $sPropTableName = '';
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
+                $SQL .=$sPropTableName." (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
                 $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
                 $result = $this->getDBConn()->executeQuery($SQL);
                 if ($result == FALSE)
                 {
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION);
+                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
                 }
             }
             if(empty($addonConfig->getConfiguration()) === false)
@@ -192,17 +194,16 @@ class MerchantConfigRepository
         {
             if(empty($addonConfig->getProperties()) === false)
             {
-                $SQL ="INSERT INTO client.". sSCHEMA_POSTFIX ;
-                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
-                {
-                    $SQL .="fraud_property_tbl (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
-                }
+                $SQL ="INSERT INTO client". sSCHEMA_POSTFIX ;
+                $sPropTableName = '';
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
+                $SQL .=$sPropTableName." (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
                 $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
                 $result = $this->getDBConn()->executeQuery($SQL);
                 if ($result == FALSE)
                 {
-
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update Fraud is_rollback property');
+                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
                 }
             }
             if(empty($addonConfig->getConfiguration()) === false)

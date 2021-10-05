@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\configuration;
 
 
 use AddonServiceTypeIndex;
+use SimpleXMLElement;
 
 class Split_PaymentConfig extends BaseConfig
 {
@@ -32,6 +33,12 @@ class Split_PaymentConfig extends BaseConfig
         return $this->_aProperty;
     }
 
-
+    protected function setPropertiesFromXML(SimpleXMLElement &$oXML)
+    {
+        if(count($oXML->is_rollback)>0)
+        {
+            $this->_aProperty = array("is_rollback"=>\General::xml2bool((string)$oXML->is_rollback));
+        }
+    }
 }
 
