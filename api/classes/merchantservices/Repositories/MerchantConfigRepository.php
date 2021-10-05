@@ -12,10 +12,6 @@ use api\classes\merchantservices\configuration\MPIConfig;
 use api\classes\merchantservices\configuration\PCCConfig;
 use api\classes\merchantservices\configuration\ServiceConfig;
 use api\classes\merchantservices\MerchantOnboardingException;
-use api\classes\merchantservices\OperationStatus;
-use api\classes\merchantservices\ResponseTemplate;
-use HTTP;
-
 use api\classes\merchantservices\MetaData\PSPInfo;
 use api\classes\merchantservices\MetaData\PaymentType;
 use api\classes\merchantservices\MetaData\Country;

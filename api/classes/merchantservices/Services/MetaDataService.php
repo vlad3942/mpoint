@@ -5,7 +5,6 @@ namespace api\classes\merchantservices\Services;
 
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
-use api\classes\merchantservices\ResponseTemplate;
 
 /**
  * MetaData Service
@@ -43,7 +42,7 @@ class MetaDataService
      * @param SimpleDOMElement $request     
      * @return string
      */
-    public function generateSystemMetaData($request): ResponseTemplate
+    public function generateSystemMetaData($request)
     {
 
         $xml = '';
@@ -63,10 +62,7 @@ class MetaDataService
         $xml .= $this->generateSystemMetaXML($aSystemMetaData);
         $xml .= '</system_metadata>';
 
-        $responseTemplate = new ResponseTemplate();
-        $responseTemplate->setResponse($xml);
-        $responseTemplate->setHttpStatusCode(ResponseTemplate::OK);
-        return $responseTemplate;
+        return $xml;
     }
 
     public function generateSystemMetaXML($aData): string

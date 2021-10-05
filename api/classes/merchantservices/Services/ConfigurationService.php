@@ -6,7 +6,6 @@ use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
-use api\classes\merchantservices\ResponseTemplate;
 
 class ConfigurationService
 {
