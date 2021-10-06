@@ -25,5 +25,5 @@ INSERT INTO client.split_combination_tbl (id, split_config_id, payment_type, seq
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('IS_REOFFER', 'true', true, 10101, 'client', 0);
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('IS_MANUAL_REFUND', 'true', true, 10101, 'client', 0);
-INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', '2', true, 10101, 'client', 0);
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('sessiontype', '1', true, 10101, 'client', 0);
 
