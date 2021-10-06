@@ -1,8 +1,8 @@
 -- CEBU
 
 INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (1, 10077, 'Card+Voucher', true, true);
-INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (2, 10077, 'Wallet+Voucher', true, true);
-INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (3, 10077, 'APM+Voucher', true, true);
+INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (2, 10077, 'Wallet+Voucher', true, false);
+INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (3, 10077, 'APM+Voucher', true, false);
 
 
 INSERT INTO client.split_combination_tbl (id, split_config_id, payment_type, sequence_no) VALUES (1, 1, 1, 1);
@@ -18,7 +18,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 --AV
 
-INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (4, 10101, 'Card+Card', false, true);
+INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth, enabled) VALUES (4, 10101, 'Card+Card', false, false);
 
 INSERT INTO client.split_combination_tbl (id, split_config_id, payment_type, sequence_no) VALUES (7, 4, 1, 1);
 INSERT INTO client.split_combination_tbl (id, split_config_id, payment_type, sequence_no) VALUES (8, 4, 1, 2);
