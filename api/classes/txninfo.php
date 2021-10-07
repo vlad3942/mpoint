@@ -2346,7 +2346,7 @@ class TxnInfo
 
     function updateSessionType($amount)
 	{
-		$this->getPaymentSession()->updateSessionTypeId($amount,$this->getPaymentSession()->getAmount(),$this->getSessionId());
+		$this->getPaymentSession()->updateSessionTypeId($amount);
 	}
 
     /**
