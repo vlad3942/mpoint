@@ -116,6 +116,41 @@
             <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="service_type_tbl"/>
         </rollback>
     </changeSet>
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30.0-merchant-onboard-1.1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="system" tableName="property_category_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="system"
+                      schemaName="system"
+                      tableName="property_category_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="name"
+                    type="varchar(30)"
+                    remarks="Category level name">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="scope"
+                    type="int"
+                    remarks="Scope of property 0=internal,1=private,2=public">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE system.property_category_tbl OWNER TO mpoint;
+        </sql>
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="system" schemaName="system" tableName="property_category_tbl"/>
+        </rollback>
+    </changeSet>
     <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-merchant-onboard-3">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -153,6 +188,11 @@
                     remarks="property is mandatory or not"
                     defaultValueBoolean="true">
                 <constraints nullable="false"/>
+            </column>
+            <column name="category"
+                    type="int"
+                    remarks="Category of property">
+                <constraints nullable="false" foreignKeyName="fk_pspproperty2systemprop_category" referencedTableSchemaName="system" referencedTableName="property_category_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Common -->
             <column name="enabled"
@@ -225,6 +265,11 @@
                     defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
+            <column name="category"
+                    type="int"
+                    remarks="Category of property">
+                <constraints nullable="false" foreignKeyName="fk_routeproperty2systemprop_category" referencedTableSchemaName="system" referencedTableName="property_category_tbl" referencedColumnNames="id"/>
+            </column>
             <!-- Common -->
             <column name="enabled"
                     type="boolean"
@@ -292,8 +337,8 @@
             </column>
             <column name="category"
                     type="int"
-                    remarks="Category - 1) Basic, 2) HPP, 3) SDK">
-                <constraints nullable="false"/>
+                    remarks="Category of property">
+                <constraints nullable="false" foreignKeyName="fk_clientproperty2systemprop_category" referencedTableSchemaName="system" referencedTableName="property_category_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Common -->
             <column name="enabled"

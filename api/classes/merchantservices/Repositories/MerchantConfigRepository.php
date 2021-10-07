@@ -10,6 +10,7 @@ use api\classes\merchantservices\configuration\FraudConfig;
 use api\classes\merchantservices\configuration\MCPConfig;
 use api\classes\merchantservices\configuration\MPIConfig;
 use api\classes\merchantservices\configuration\PCCConfig;
+use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\configuration\ServiceConfig;
 use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\MetaData\PSPInfo;
@@ -229,6 +230,78 @@ class MerchantConfigRepository
         }
     }
 
+    public function getRoutePM(int $id) : array
+    {
+        $aPM = array();
+        $sSQL = "SELECT pmid FROM CLIENT". sSCHEMA_POSTFIX .".routepm_tbl WHERE enabled=false and routeconfigid = ".$id;
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+        if (empty($aRS) === false)
+        {
+            foreach ($aRS as $rs) array_push($aPM,$rs['PMID']);
+        }
+        return $aPM;
+    }
+    public function getPropertyConfig(string $type,string $source,int $id=-1) : array
+    {
+        $sTableName = '';
+        $sWhereArgs = '';
+        if($type === 'CLIENT')
+        {
+            $sTableName = 'client_property_tbl';
+            $sWhereArgs = "AND clientid =".$this->_clientConfig->getID();
+        }
+        else if($type === 'PSP')
+        {
+            $sTableName = 'psp_property_tbl';
+            $sWhereArgs = "AND clientid =".$this->_clientConfig->getID();
+        }
+        else if($type === 'ROUTE')
+        {
+            $sTableName = 'route_property_tbl';
+            $sWhereArgs = " AND cp.routeconfigid =".$id;
+
+        }
+        $sJoin = "";
+        $sColumn = ",cp.value";
+        $sMetaDataJoin = "";
+        if($source === 'METADATA')
+        {
+            $sColumn = "";
+            if($id>-1 && $type !== 'CLIENT') $sMetaDataJoin = " and sp.pspid=".$id;
+        }
+        elseif($source === 'ALL')
+        {
+            $sJoin ="LEFT JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
+            if($type === 'ROUTE') $sMetaDataJoin = " and sp.pspid=(SELECT r.providerid FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rt INNER JOIN CLIENT". sSCHEMA_POSTFIX .".route_tbl r ON R.id = rt.routeid WHERE rt.id=".$id.")";
+            if($type === 'PSP') $sMetaDataJoin = " and sp.pspid=".$id;
+        }
+        else if($source === 'CLIENT') $sJoin ="INNER JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
+
+        $sSQL = "SELECT sp.id,sp.name,sp.datatype ,sp.ismandatory".$sColumn.",pc.name as category,pc.scope from SYSTEM". sSCHEMA_POSTFIX . ".".$sTableName." sp 
+         ".$sJoin." INNER JOIN SYSTEM". sSCHEMA_POSTFIX . ".property_category_tbl pc on sp.category = pc.id ".$sMetaDataJoin."
+         ORDER BY sp.name ";
+
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+        $aPropertyInfo = array();
+        if (empty($aRS) === false)
+        {
+            foreach ($aRS as $rs)
+            {
+                $propertyInfo = PropertyInfo::produceFromResultSet($rs);
+                if(isset($aPropertyInfo[$propertyInfo->getCategory()]) === true)
+                {
+                    array_push($aPropertyInfo[$propertyInfo->getCategory()], $propertyInfo);
+                }
+                else
+                {
+                    $aPropInfo = array();
+                    array_push($aPropInfo, $propertyInfo);
+                    $aPropertyInfo[$propertyInfo->getCategory()] =$aPropInfo;
+                }
+            }
+        }
+     return $aPropertyInfo;
+    }
     /**
      * Generate PSPConfig Data
      *

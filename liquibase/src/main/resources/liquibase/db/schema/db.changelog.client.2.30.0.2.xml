@@ -80,7 +80,7 @@
                     autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="routeconfigId"
+            <column name="routeconfigid"
                     type="int"
                     remarks="Hold route config ID from client.routeconfig_tbl ">
                 <constraints nullable="false" foreignKeyName="fk_routepm2routeConfig" referencedTableSchemaName="client" referencedTableName="routeconfig_tbl" referencedColumnNames="id"/>
@@ -118,7 +118,7 @@
         </sql>
         <createIndex indexName="idx_uq_routepm_pmid_routeconfigid" catalogName="client" schemaName="client" tableName="routepm_tbl" unique="true">
             <column name="pmid"/>
-            <column name="routeconfigId"/>
+            <column name="routeconfigid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_routepm_tbl IF EXISTS ON client.routepm_tbl CASCADE TRUE;</sql>
@@ -889,7 +889,7 @@
             <column name="propertyid" type="int">
                 <constraints nullable="false" foreignKeyName="fk_routeproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="routeconfigId"
+            <column name="routeconfigid"
                     type="int"
                     remarks="Hold route config ID from client.routeconfig_tbl ">
                 <constraints nullable="false" foreignKeyName="fk_routeproperty2routeConfig" referencedTableSchemaName="client" referencedTableName="routeconfig_tbl" referencedColumnNames="id"/>
@@ -926,7 +926,7 @@
         </sql>
         <createIndex indexName="idx_uq_clrprop_propid_rid" catalogName="client" schemaName="client" tableName="route_property_tbl" unique="true">
             <column name="propertyid"/>
-            <column name="routeconfigId"/>
+            <column name="routeconfigid"/>
         </createIndex>
         <rollback>
             <sql>DROP TRIGGER client_route_property_tbl IF EXISTS ON client.route_property_tbl CASCADE TRUE;</sql>

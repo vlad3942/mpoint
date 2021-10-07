@@ -1,17 +1,6 @@
 <?php
 
-/*
-interface BaseConfig
-{
 
-    public function getConfiguration();
-
-    public function getServiceType();
-
-    public function getProperties();
-
-}
-*/
 namespace api\classes\merchantservices\configuration;
 
 

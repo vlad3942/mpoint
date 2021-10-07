@@ -25,4 +25,14 @@ class MerchantConfigInfo
     {
          $configRepository->updateAddonConfig($aAddonConfig);
     }
+
+    public function getPropertyConfig(MerchantConfigRepository $configRepository, string $type, string $source,int $id=-1) : array
+    {
+       return $configRepository->getPropertyConfig($type,$source,$id);
+    }
+
+    public function getRoutePM(MerchantConfigRepository $configRepository, int $id=-1) : array
+    {
+        return $configRepository->getRoutePM($id);
+    }
 }

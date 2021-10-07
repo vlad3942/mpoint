@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30-system-category">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="1"/>
+            <column name="name" value="Basic"/>
+            <column name="scope" value="0"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="2"/>
+            <column name="name" value="Basic"/>
+            <column name="scope" value="1"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="3"/>
+            <column name="name" value="Basic"/>
+            <column name="scope" value="2"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="4"/>
+            <column name="name" value="HPP"/>
+            <column name="scope" value="0"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="5"/>
+            <column name="name" value="HPP"/>
+            <column name="scope" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="6"/>
+            <column name="name" value="SDK"/>
+            <column name="scope" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="7"/>
+            <column name="name" value="Technical"/>
+            <column name="scope" value="0"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="8"/>
+            <column name="name" value="Technical"/>
+            <column name="scope" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30-system-client-prop">
+
+        <!-- Client Basic Property Start-->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="AIRLINE_CODE"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="AIRLINE_NUMRIC_CODE"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="APPLEPAY_JS_URL"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_ADDRESS"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_BUSINESS_CODE"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_CITY"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_COUNTRY"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_IDENTIFICATION_CODE"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_NAME"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_REGION"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARD_ACCEPTOR_ZIP"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CARRIER_NAME"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="ENABLE_PROFILE_ANONYMIZATION"/>
+            <column name="category" value="1"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOOGLE_PAY_JS_URL"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="HPP_HOST_URL"/>
+            <column name="category" value="3"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="InstitutionIdentificationCode"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="invoiceidrules"/>
+            <column name="category" value="1"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="PROFILE_EXPIRY"/>
+            <column name="category" value="1"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="PROFILE_TOKEN"/>
+            <column name="category" value="1"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="TICKET_ISSUE_CITY"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="TIMEZONE"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- Client Basic Property End-->
+        <!-- Client Technical Property Start  -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="PROXY_CALLBACK"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="sessiontype"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="isnewcardconfig"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="SSO_PREFERENCE"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="debug"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="DR_SERVICE"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="IS_LEGACY"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="IS_LEGACY_CALLBACK_FLOW"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="max_session_retry_count"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="mvault"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="IS_STORE_BILLING_ADDRS"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="autoFetchBalance"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="cumulativesettlement"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="fetchBalancePaymentMethods"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="fetchBalanceUserType"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_EMAIL_SENDER"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_PUSH_CHANNEL"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_PUSH_KEYWORD"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_SMS_CHANNEL"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_SMS_KEYWORD"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_SMS_PASSWORD"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_SMS_PRICE"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="GOMOBILE_SMS_USERNAME"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="ismutualexclusive"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="preferredvoidoperation"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="UATP_SETTLEMENT_FILE_NAME"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <!-- Client Technical Property End  -->
+
+        <!-- Client HPP Property Start  -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="ADOBE_TARGET_SCRIPT"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="ADOBE_TARGET_SCRIPT_PATH"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CYBS_DM_MID"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="CYBS_DM_ORGID"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="DFP_GEN"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="enableHppAuthentication"/>
+            <column name="category" value="4"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="getTxnStatusPollingTimeOut"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="googleAnalyticsId"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="HPP_SHOW_CONTACT_DETAILS"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="isAutoRedirect"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="mandateBillingDetails"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="maxPollingInterval"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="minPollingInterval"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="showBillingDetails"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="SWISH_HPP_ECOMMERCE_QRCODE_ENABLE"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="webSessionTimeout"/>
+            <column name="category" value="5"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+        <!-- Client HPP Property End  -->
+    </changeSet>
+</databaseChangeLog>

@@ -47,7 +47,6 @@ class ConfigurationController
     public function updateAddonConfig($request, $additionalParams = [])
     {
         $addOnConfig = BaseConfig::produceFromXML($request);
-
         $this->getConfigService()->updateAddonConfig($addOnConfig,$additionalParams);
 
     }
@@ -57,9 +56,11 @@ class ConfigurationController
 
     }
 
-    public function getPSPConfig($request, $additionalParams = []) {
-        
-                
+    public function getPSPConfig($additionalParams = [])
+    {
+        return $this->getConfigService()->getClientPSPConfig($additionalParams);
+
+
     }
 
     public function savePSPConfig($request, $additionalParams = []) {
@@ -77,9 +78,10 @@ class ConfigurationController
 
     }
 
-    public function getRouteConfig($request, $additionalParams = []) {
-        
-                
+    public function getRouteConfig($additionalParams = []) {
+        return $this->getConfigService()->getRouteConfig($additionalParams);
+
+
     }
 
     public function saveRouteConfig($request, $additionalParams = []) {

@@ -73,7 +73,6 @@ class ConfigurationService
     public function saveAddonConfig($addonConfig, $additionalParams = [])
     {
       $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig);
-       return "";
     }
 
     public function updateAddonConfig($addonConfig, $additionalParams = [])
@@ -86,9 +85,13 @@ class ConfigurationService
 
     }
 
-    public function getPSPConfig($request, $additionalParams = []) {
-        
-                
+    public function getClientPSPConfig($additionalParams = []) : string
+    {
+
+        $xml = "<client_psp_configuration>";
+        $xml .=  $this->getProperties("PSP","ALL",$additionalParams['psp_id']);
+        $xml .= "</client_psp_configuration>";
+        return $xml;
     }
 
     public function savePSPConfig($request, $additionalParams = []) {
@@ -106,9 +109,34 @@ class ConfigurationService
 
     }
 
-    public function getRouteConfig($request, $additionalParams = []) {
-        
-                
+    private function getProperties(string $type,string $source,int $id=-1):string
+    {
+        $aCatPropertyInfo =  $this->getAggregateRoot()->getPropertyConfig($this->getRepository(),$type,$source,$id);
+        $xml = "<property_details>";
+        foreach ($aCatPropertyInfo as $category => $aPropertyInfo)
+        {
+            $xml .= "<property_detail>";
+            $xml .= "<property_sub_category>".$category."</property_sub_category>";
+            $xml .= "<properties>";
+
+            foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
+            $xml .= "</property_detail>";
+        }
+        $xml .= "</properties>";
+        $xml .= "</property_details>";
+        return $xml;
+    }
+    public function getRouteConfig( $additionalParams = []) : string
+    {
+        $xml = "<client_route_configuration>";
+        $xml .=  $this->getProperties("ROUTE","ALL",$additionalParams['route_conf_id']);
+        $aPM = $this->getAggregateRoot()->getRoutePM($this->getRepository(),$additionalParams['route_conf_id']);
+        foreach ($aPM as $pm)
+        {
+            
+        }
+        $xml .=  "</client_route_configuration>";
+        return $xml;
     }
 
     public function saveRouteConfig($request, $additionalParams = []) {
