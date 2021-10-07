@@ -179,7 +179,7 @@ final class GeneralPSP extends CPMACQUIRER
                     if ($this->getTxnInfo()->getCallbackURL() != '') {
                         $args = ["transact" => $this->getTxnInfo()->getExternalID(),
                                 "cardid" =>  $this->getTxnInfo()->getCardID(),
-                                 "amount"   => $_REQUEST['amount']];
+                                 "amount" => $amount];
                         parent::notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
                     }
                 }
