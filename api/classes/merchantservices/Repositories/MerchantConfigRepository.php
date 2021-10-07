@@ -233,7 +233,7 @@ class MerchantConfigRepository
     public function getRoutePM(int $id) : array
     {
         $aPM = array();
-        $sSQL = "SELECT pmid FROM CLIENT". sSCHEMA_POSTFIX .".routepm_tbl WHERE enabled=false and routeconfigid = ".$id;
+        $sSQL = "SELECT pmid FROM CLIENT". sSCHEMA_POSTFIX .".routepm_tbl WHERE enabled=true and routeconfigid = ".$id;
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
         if (empty($aRS) === false)
         {

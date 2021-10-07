@@ -131,10 +131,10 @@ class ConfigurationService
         $xml = "<client_route_configuration>";
         $xml .=  $this->getProperties("ROUTE","ALL",$additionalParams['route_conf_id']);
         $aPM = $this->getAggregateRoot()->getRoutePM($this->getRepository(),$additionalParams['route_conf_id']);
-        foreach ($aPM as $pm)
-        {
-            
-        }
+        $xml .="<pm_ids>";
+        foreach ($aPM as $pm)  $xml .="<pm_id>".$pm."</pm_id>";
+        $xml .="</pm_ids>";
+
         $xml .=  "</client_route_configuration>";
         return $xml;
     }
