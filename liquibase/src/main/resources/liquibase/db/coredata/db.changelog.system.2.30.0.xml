@@ -648,4 +648,92 @@
         </insert>
         <!-- Client HPP Property End  -->
     </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30-system-service_type">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="services_tbl">
+            <column name="id" value="1"/>
+            <column name="name" value="FX"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="1"/>
+            <column name="serviceid" value="1"/>
+            <column name="name" value="DCC"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="2"/>
+            <column name="serviceid" value="1"/>
+            <column name="name" value="MCP"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="3"/>
+            <column name="serviceid" value="1"/>
+            <column name="name" value="PCC"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="services_tbl">
+            <column name="id" value="2"/>
+            <column name="name" value="Fraud Management"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="4"/>
+            <column name="serviceid" value="2"/>
+            <column name="name" value="Pre Auth"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="5"/>
+            <column name="serviceid" value="2"/>
+            <column name="name" value="Post Auth"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="6"/>
+            <column name="serviceid" value="2"/>
+            <column name="name" value="3DS"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="services_tbl">
+            <column name="id" value="3"/>
+            <column name="name" value="Split Payment"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="7"/>
+            <column name="serviceid" value="3"/>
+            <column name="name" value="Cashless"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="8"/>
+            <column name="serviceid" value="3"/>
+            <column name="name" value="Conventional"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="service_type_tbl">
+            <column name="id" value="9"/>
+            <column name="serviceid" value="3"/>
+            <column name="name" value="Hybrid"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

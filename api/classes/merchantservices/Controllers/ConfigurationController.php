@@ -84,9 +84,9 @@ class ConfigurationController
 
     }
 
-    public function saveRouteConfig($request, $additionalParams = []) {
-        
-
+    public function saveRouteConfig($request, $additionalParams = [])
+    {
+        $this->getConfigService()->saveRouteConfig($request);
     }
 
     public function updateRouteConfig($request, $additionalParams = []) {

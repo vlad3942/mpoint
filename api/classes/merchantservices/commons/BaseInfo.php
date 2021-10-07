@@ -7,9 +7,7 @@ class BaseInfo
     private int $Id;
     private string $sName;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * @return int
