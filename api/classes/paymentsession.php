@@ -238,13 +238,10 @@ final class PaymentSession
                     if($stateId === Constants::iSESSION_EXPIRED || $stateId === Constants::iSESSION_FAILED || $stateId === Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS)
                     {
                         if($this->getSessionType() > 1) {
-                            $isReoffer = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
                             $isManualRefund = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
-                            if ($isReoffer === true) {
-                                global $_OBJ_TXT;
-                                $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
-                                $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);
-                            }
+                            global $_OBJ_TXT;
+                            $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
+                            $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);
                         }
                     }
                     elseif($stateId === Constants::iSESSION_COMPLETED)

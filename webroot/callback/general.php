@@ -819,9 +819,9 @@ try
                 }
             }
 
-            if (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
+            if ($obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_REFUNDED_STATE) === false && (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
                 && ($iStateID == Constants::iPAYMENT_CAPTURED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE) === true))
-                    || ($obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE))
+                    || ($obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)))
             {
                 try {
                     $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
