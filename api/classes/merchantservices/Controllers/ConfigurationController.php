@@ -22,13 +22,20 @@ class ConfigurationController
 
     private function getConfigService():ConfigurationService { return $this->objConfigurationService;}
 
-/*  Sample function for accesing Repositry */
-    public function getClientConfig($request, $additionalParams = []) {
-        print_r($additionalParams);
-        echo $request->asXML();
-        return $this->merchantConfigRepository->find(array());
+
+    /**
+     * Function is used to get Client Config Details.
+     * Based on client ID will get all details related to merchant client
+     *
+     * @param array $additionalParams
+     *
+     * @return string ClientConfiguration XML String
+     */
+    public function getClientConfig(array $additionalParams): string
+    {
+        return $this->getConfigService()->getClientConfiguration($additionalParams);
     }
-/*  Sample function for accesing Repositry */    
+
     
     public function getAddonConfig( $additionalParams = [])
     {

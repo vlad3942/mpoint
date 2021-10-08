@@ -116,13 +116,12 @@ class ConfigurationService
         foreach ($aCatPropertyInfo as $category => $aPropertyInfo)
         {
             $xml .= "<property_detail>";
-            $xml .= "<property_sub_category>".$category."</property_sub_category>";
-            $xml .= "<properties>";
-
-            foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
+                $xml .= "<property_sub_category>".$category."</property_sub_category>";
+                $xml .= "<properties>";
+                foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
+                $xml .= "</properties>";
             $xml .= "</property_detail>";
         }
-        $xml .= "</properties>";
         $xml .= "</property_details>";
         return $xml;
     }
@@ -152,5 +151,49 @@ class ConfigurationService
     public function deleteRouteConfig($request, $additionalParams = []) {
         
 
-    }    
+    }
+
+    /***
+     * Get Client related configuration from AggregateRoute.
+     *
+     * @param array $additionalParams
+     *
+     * @return String
+     */
+    public function getClientConfiguration( array $additionalParams = []): string
+    {
+        $aClientConfigData = $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
+        // Prepare XML
+        $responseXml = '<client_configuration>';
+        $responseXml .= $this->getClientConfigurationXML($aClientConfigData);
+        $responseXml .=  $this->getProperties("CLIENT","CLIENT"); // Property Details
+        $responseXml .= "</client_configuration>";
+        return $responseXml;
+    }
+
+    /**
+     * Process array and prepare XML for client configuration
+     *
+     * @param array $aClientConfigData
+     *
+     * @return string
+     */
+    private function getClientConfigurationXML(array $aClientConfigData): string{
+        $responseXml = '';
+        foreach ($aClientConfigData as $key => $metadata) {
+            if($key == 'info') {
+                $responseXml .= (is_object($metadata)) ? $metadata->toXML() : '';
+            }
+            else {
+                if(empty($metadata) === true) continue;
+                $responseXml .= "<{$key}>";
+                foreach ($metadata as $data) {
+                    $responseXml .= (is_object($data)) ? $data->toXML() : '';
+                }
+                $responseXml .= "</{$key}>";
+            }
+        }
+        return $responseXml;
+    }
+
 }
