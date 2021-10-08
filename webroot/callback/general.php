@@ -403,6 +403,22 @@ try
                     $obj_mPoint->generate_receipt();
                 }
 
+                // change split details status
+                if($obj_TxnInfo->getPaymentSession()->getSessionType() > 1) {
+                    $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
+                    if($iStateID === Constants::iPAYMENT_REJECTED_STATE) {
+                        $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Failed');
+                        $isReoffer = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
+                        $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                        if ($isReoffer === false) {
+                            $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_TxnInfo->getPaymentSession()->getId(), 'Failed', $isManualRefund);
+                        }
+                    }
+                    elseif ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE){
+                        $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Success');
+                    }
+                }
+
                 //Post-Auth-Fraud Check call
                 $isPostAuthFraudGatewayEnabled = false;
                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
@@ -803,9 +819,9 @@ try
                 }
             }
 
-            if (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
+            if ($obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_REFUNDED_STATE) === false && (($obj_TxnInfo->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
                 && ($iStateID == Constants::iPAYMENT_CAPTURED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_CAPTURED_STATE) === true))
-                    || ($obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE))
+                    || ($obj_TxnInfo->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)))
             {
                 try {
                     $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());
@@ -862,20 +878,7 @@ try
 
             }
 
-            if($obj_TxnInfo->getPaymentSession()->getSessionType() > 1) {
-                $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
-                if($iStateID === Constants::iPAYMENT_REJECTED_STATE) {
-                    $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Failed');
-                    $isReoffer = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
-                    $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
-                    if ($isReoffer === false) {
-                        $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_TxnInfo->getPaymentSession()->getId(), 'Failed', $isManualRefund);
-                    }
-                }
-                elseif ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE){
-                    $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Success');
-                }
-            }
+
         }
     }
 }
