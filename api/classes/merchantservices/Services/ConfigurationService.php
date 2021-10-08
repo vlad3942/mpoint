@@ -171,42 +171,11 @@ class ConfigurationService
      *
      * @param array $additionalParams
      *
-     * @return String
+     * @return array
      */
-    public function getClientConfiguration( array $additionalParams = []): string
+    public function getClientConfiguration( array $additionalParams = []): array
     {
-        $aClientConfigData = $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
-        // Prepare XML
-        $responseXml = '<client_configuration>';
-        $responseXml .= $this->getClientConfigurationXML($aClientConfigData);
-        $responseXml .=  $this->getProperties("CLIENT","CLIENT"); // Property Details
-        $responseXml .= "</client_configuration>";
-        return $responseXml;
-    }
-
-    /**
-     * Process array and prepare XML for client configuration
-     *
-     * @param array $aClientConfigData
-     *
-     * @return string
-     */
-    private function getClientConfigurationXML(array $aClientConfigData): string{
-        $responseXml = '';
-        foreach ($aClientConfigData as $key => $metadata) {
-            if($key == 'info') {
-                $responseXml .= (is_object($metadata)) ? $metadata->toXML() : '';
-            }
-            else {
-                if(empty($metadata) === true) continue;
-                $responseXml .= "<{$key}>";
-                foreach ($metadata as $data) {
-                    $responseXml .= (is_object($data)) ? $data->toXML() : '';
-                }
-                $responseXml .= "</{$key}>";
-            }
-        }
-        return $responseXml;
+        return $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
     }
 
 }

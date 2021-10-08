@@ -25,6 +25,11 @@ use api\classes\merchantservices\MetaData\ServiceInfo;
 use api\classes\merchantservices\MetaData\ServiceSubType;
 use api\classes\merchantservices\MetaData\UrlInfo;
 
+use api\classes\merchantservices\MetaData\Client;
+use api\classes\merchantservices\MetaData\ClientUrl;
+use api\classes\merchantservices\MetaData\ClientPaymentMethodId;
+use api\classes\merchantservices\MetaData\StoreFront;
+
 
 class MerchantConfigRepository
 {
@@ -639,39 +644,33 @@ class MerchantConfigRepository
     /**
      * Function used to get the client detail By client ID
      *
-     * @return array
+     * @return Client Object Of Client
      */
-    public function getClientDetailById(): array
+    public function getClientDetailById(): Client
     {
         $sColumns = 'id, name, salt, maxamount, countryid, emailrcpt, username, smsrcpt, created, modified, enabled';
         $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".client_tbl WHERE enabled = true and id = " . $this->_clientConfig->getID();
-        return $this->getDBConn()->getName(sprintf($SQL, $sColumns));
+        return Client::produceFromResultSet($this->getDBConn()->getName(sprintf($SQL, $sColumns)));
     }
 
     /**
      * Function used to get the client URL Details by Client ID
      *
-     * @return array
+     * @return ?array
      */
-    public function getClientURLByClientId(): array
+    public function getClientURLByClientId(): ?array
     {
         $sColumns = 'CLIURL.ID, CLIURL.urltypeid as type_id, SYSURL.name, CLIURL.url as value, CLIURL.enabled, CLIURL.created, CLIURL.modified';
         $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".url_tbl CLIURL INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".urltype_tbl SYSURL ON CLIURL.urltypeid = SYSURL.id WHERE CLIURL.enabled = true and CLIURL.clientid = " . $this->_clientConfig->getID();
-        return $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
-    }
+        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
 
-    /**
-     * Get Client Properties by ID
-     *
-     * @return array
-     */
-    public function getClientPropertiesByClientId(): array
-    {
-        $sColumns = "CLIPROP.ID, CLIPROP.PROPERTYID, SYSPROP.CATEGORY, CASE SYSPROP.CATEGORY WHEN 1 THEN 'Client Basic' WHEN 2 THEN 'Client HPP' WHEN 3 THEN 'Client SDK' END PROPERTY_CATEGORY, SYSPROP.NAME AS PROPERTY_NAME, CLIPROP.VALUE, CLIPROP.ENABLED, CLIPROP.CREATED, CLIPROP.MODIFIED";
-        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".client_property_tbl CLIPROP 
-                    INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".client_property_tbl SYSPROP ON SYSPROP.id = CLIPROP.propertyid 
-                    WHERE CLIPROP.enabled = true and CLIPROP.clientid = " . $this->_clientConfig->getID();
-        return $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+        if (empty($aRS) === true) { return NULL; }
+
+        $aClientURLs = array();
+        foreach ($aRS as $rs){
+            array_push($aClientURLs, ClientUrl::produceFromResultSet($rs));
+        }
+        return $aClientURLs;
     }
 
     /**
@@ -679,25 +678,41 @@ class MerchantConfigRepository
      *
      * @return array
      */
-    public function getStoreFrontByClientId(): array
+    public function getStoreFrontByClientId(): ?array
     {
         $sColumns = "ACC.id, ACC.markup as NAME, ACC.businesstype as DOMAIN";
         $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".account_tbl ACC                     
                     WHERE ACC.enabled = true and ACC.clientid = " . $this->_clientConfig->getID();
-        return $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+
+        if (empty($aRS) === true) { return NULL; }
+
+        $aStoreFront = [];
+        foreach ($aRS as $rs) {
+            array_push($aStoreFront, StoreFront::produceFromResultSet($rs));
+        }
+        return $aStoreFront;
     }
 
     /**
      * Get Client Payment Method by ClientID
      *
-     * @return array
+     * @return ?array
      */
-    public function getPMIdsByClientId(): array
+    public function getPMIdsByClientId(): ?array
     {
         $sColumns = "PM.id payment_method_id, C.name";
         $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".pm_tbl PM
                     INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".card_tbl C ON PM.pmid = C.id
                     WHERE PM.enabled = true AND PM.clientid = " . $this->_clientConfig->getID();
-        return $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+
+        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+
+        if (empty($aRS) === true) { return NULL; }
+        $aPMIds = [];
+        foreach ($aRS as $rs) {
+            array_push($aPMIds, ClientPaymentMethodId::produceFromResultSet($rs));
+        }
+        return $aPMIds;
     }
 }

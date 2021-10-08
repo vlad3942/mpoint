@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\Controllers;
 
 // include services
 use api\classes\merchantservices\configuration\BaseConfig;
+use api\classes\merchantservices\Helpers\Helpers;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -33,10 +34,33 @@ class ConfigurationController
      */
     public function getClientConfig(array $additionalParams): string
     {
-        return $this->getConfigService()->getClientConfiguration($additionalParams);
+        $lClientConfigs = $this->getConfigService()->getClientConfiguration($additionalParams);
+        return $this->getClientConfigurationXML($lClientConfigs);
     }
 
-    
+    /**
+     * Process array and prepare XML for client configuration
+     *
+     * @param array $aClientConfigData
+     *
+     * @return string Prepare final string for array
+     */
+    private function getClientConfigurationXML(array $aClientConfigData): string {
+
+        $XML = '<client_configuration>';
+        $XML .=  Helpers::generateXML(
+            [
+                'info'                  =>  $aClientConfigData['info'],
+                'client_urls'           =>  $aClientConfigData['client_urls'],
+                'payment_method_ids'    =>  $aClientConfigData['payment_method_ids'],
+                'storefronts'           =>  $aClientConfigData['storefronts'],
+            ]
+        );
+        $XML .=  Helpers::getPropertiesXML($aClientConfigData['property_details']);
+        $XML .= '</client_configuration>';
+        return $XML;
+    }
+
     public function getAddonConfig( $additionalParams = [])
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);

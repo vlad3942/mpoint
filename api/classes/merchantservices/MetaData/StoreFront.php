@@ -1,6 +1,8 @@
 <?php
 namespace api\classes\merchantservices\MetaData;
 
+use api\classes\merchantservices\commons\BaseInfo;
+
 /**
    * Store Front
    * 
@@ -10,7 +12,7 @@ namespace api\classes\merchantservices\MetaData;
    * @author     Vikas.gupta <vikas.gupta@cellpointmobile.com>
  */
 
-class StoreFront
+class StoreFront extends BaseInfo
 {
     /**
      * Id
@@ -74,10 +76,22 @@ class StoreFront
     public function toXML(): string
     {
         $xml = '<storefront>';
-        $xml .= sprintf("<id>%s</id>",$this->getId());
-        $xml .= sprintf("<name>%s</name>",$this->getName());        
+        $xml .= parent::toXML();
         $xml .= '</storefront>';
         return $xml;
+    }
+
+    /**
+     * @param array $rs
+     *
+     * @return \api\classes\merchantservices\MetaData\StoreFront
+     */
+    public static function produceFromResultSet(array $rs): StoreFront
+    {
+        $StoreFront = new StoreFront();
+        if(isset($rs["ID"])) $StoreFront->setId($rs["ID"]);
+        if(isset($rs['NAME'])) $StoreFront->setName($rs['NAME']);
+        return $StoreFront;
     }
 
 }

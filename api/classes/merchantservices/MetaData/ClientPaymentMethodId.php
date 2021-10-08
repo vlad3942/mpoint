@@ -1,6 +1,8 @@
 <?php
 namespace api\classes\merchantservices\MetaData;
 
+use api\classes\merchantservices\commons\BaseInfo;
+
 /**
    * Client Payment Method Id
    * 
@@ -10,64 +12,12 @@ namespace api\classes\merchantservices\MetaData;
    * @author     Vikas.gupta <vikas.gupta@cellpointmobile.com>
  */
 
-class ClientPaymentMethodId
+class ClientPaymentMethodId extends BaseInfo
 {
-    /**
-     * Id
-     *
-     * @var int
-     */
-    private int $_id;
-
-    /**
-     * Name
-     *
-     * @var string
-     */
-    private string $_name;
-
     /**
      * Constructor function
      */
     public function __construct(){ }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->_id;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return ClientPaymentMethodId
-     */
-    public function setId(int $id): ClientPaymentMethodId
-    {
-        $this->_id = $id;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->_name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return ClientPaymentMethodId
-     */
-    public function setName(string $name): ClientPaymentMethodId
-    {
-        $this->_name = $name;
-        return $this;
-    }
 
     /**
      * Generate XML
@@ -79,4 +29,16 @@ class ClientPaymentMethodId
         return sprintf("<payment_method_id>%s</payment_method_id>",$this->getId());;
     }
 
+    /**
+     * @param array $rs
+     *
+     * @return \api\classes\merchantservices\MetaData\ClientPaymentMethodId
+     */
+    public static function produceFromResultSet(array $rs): ClientPaymentMethodId
+    {
+        $objPMId = new ClientPaymentMethodId();
+        if(isset($rs["PAYMENT_METHOD_ID"])) $objPMId->setId($rs["PAYMENT_METHOD_ID"]);
+        if(isset($rs["NAME"])) $objPMId->setName($rs["NAME"]);
+        return $objPMId;
+    }
 }

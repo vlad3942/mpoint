@@ -1,6 +1,8 @@
 <?php
 namespace api\classes\merchantservices\MetaData;
 
+use api\classes\merchantservices\commons\BaseInfo;
+
 /**
    * ClientUrl
    * 
@@ -9,7 +11,7 @@ namespace api\classes\merchantservices\MetaData;
    * @subpackage ClientUrl Class
    * @author     Vikas Gupta <vikas.gupta@cellpointmobile.com>
  */
-class ClientUrl
+class ClientUrl extends BaseInfo
 {
 
     /**
@@ -18,13 +20,6 @@ class ClientUrl
      * @var integer
      */
     private int $_typeId;
-
-    /**
-     * Url name
-     *
-     * @var string
-     */
-    private string $_name;
 
     /**
      * Url value
@@ -55,25 +50,6 @@ class ClientUrl
     /**
      * @return string
      */
-    public function getName(): string
-    {
-        return $this->_name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return ClientUrl
-     */
-    public function setName(string $name): ClientUrl
-    {
-        $this->_name = $name;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->_value;
@@ -94,11 +70,25 @@ class ClientUrl
     public function toXML() : string
     {
         $xml = '<client_url>';
+        $xml .= parent::toXML();
         $xml .= sprintf("<type_id>%s</type_id>",$this->getTypeId());
-        $xml .= sprintf("<name>%s</name>",$this->getName());
         $xml .= sprintf("<value>%s</value>",$this->getValue());
         $xml .= '</client_url>';
         return $xml;
     }
-}
 
+    /**
+     * @param array $rs
+     *
+     * @return \api\classes\merchantservices\MetaData\ClientUrl
+     */
+    public static function produceFromResultSet(array $rs): ClientUrl
+    {
+        $objURL = new ClientUrl();
+        if(isset($rs["ID"])) $objURL->setId($rs["ID"]);
+        if(isset($rs["TYPE_ID"])) $objURL->setTypeId($rs["TYPE_ID"]);
+        if(isset($rs["NAME"])) $objURL->setName($rs["NAME"]);
+        if(isset($rs["VALUE"])) $objURL->setValue($rs["VALUE"]);
+        return $objURL;
+    }
+}

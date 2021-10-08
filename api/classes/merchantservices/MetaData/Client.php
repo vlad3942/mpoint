@@ -1,6 +1,8 @@
 <?php
 namespace api\classes\merchantservices\MetaData;
 
+use api\classes\merchantservices\commons\BaseInfo;
+
 /**
    * Client
    * 
@@ -9,22 +11,8 @@ namespace api\classes\merchantservices\MetaData;
    * @subpackage Client Class
    * @author     Vikas Gupta <vikas.gupta@cellpointmobile.com>
  */
-class Client
+class Client extends BaseInfo
 {
-
-    /**
-     * Id
-     *
-     * @var integer
-     */
-    private int $_Id;
-
-    /**
-     * Name
-     *
-     * @var string
-     */
-    private string $_name;
 
     /**
      * Username
@@ -64,44 +52,6 @@ class Client
      * @var bool
      */
     private bool $_smsNotification;
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->_Id;
-    }
-
-    /**
-     * @param int $Id
-     *
-     * @return Client
-     */
-    public function setId(int $Id): Client
-    {
-        $this->_Id = $Id;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->_name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return Client
-     */
-    public function setName(string $name): Client
-    {
-        $this->_name = $name;
-        return $this;
-    }
 
     /**
      * @return string
@@ -220,8 +170,7 @@ class Client
     // Return in String::XML
     public function toXML() : string
     {
-        $xml  = sprintf("<id>%s</id>",$this->getId());
-        $xml .= sprintf("<name>%s</name>",$this->getName());
+        $xml = parent::toXML();
         $xml .= sprintf("<salt>%s</salt>",$this->getSalt());
         $xml .= sprintf("<max_amount>%s</max_amount>",$this->getMaxAmount());
         $xml .= sprintf("<country_id>%s</country_id>",$this->getCountryId());
@@ -232,5 +181,26 @@ class Client
         $xml .= sprintf("<client_domain>%s</client_domain>",'1');
         return $xml;
     }
-}
 
+    /**
+     * Static Method to assign property to Class member variable.
+     *
+     * @param array $client
+     *
+     * @return \api\classes\merchantservices\MetaData\Client
+     */
+    public static function produceFromResultSet(array $client): Client
+    {
+        $ClientInfo = new Client();
+        if(isset($client["ID"])) $ClientInfo->setId($client["ID"]);
+        if(isset($client['NAME'])) $ClientInfo->setName($client['NAME']);
+        if(isset($client['USERNAME'])) $ClientInfo->setUsername($client['USERNAME']);
+        if(isset($client['SALT'])) $ClientInfo->setSalt($client['SALT']);
+        if(isset($client['MAXAMOUNT'])) $ClientInfo->setMaxAmount($client['MAXAMOUNT']);
+        if(isset($client['COUNTRYID'])) $ClientInfo->setCountryId($client['COUNTRYID']);
+        if(isset($client['EMAILRCPT'])) $ClientInfo->setEmailNotification($client['EMAILRCPT']);
+        if(isset($client['SMSRCPT'])) $ClientInfo->setSmsNotification($client['SMSRCPT']);
+        return $ClientInfo;
+    }
+
+}
