@@ -4,6 +4,7 @@ namespace api\classes\merchantservices\Services;
 
 use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
@@ -118,10 +119,12 @@ class ConfigurationService
             $xml .= "<property_detail>";
             $xml .= "<property_sub_category>".$category."</property_sub_category>";
             $xml .= "<properties>";
+
             foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
             $xml .= "</properties>";
             $xml .= "</property_detail>";
         }
+
         $xml .= "</property_details>";
         return $xml;
     }
@@ -133,14 +136,24 @@ class ConfigurationService
         $xml .="<pm_ids>";
         foreach ($aPM as $pm)  $xml .="<pm_id>".$pm."</pm_id>";
         $xml .="</pm_ids>";
-
         $xml .=  "</client_route_configuration>";
         return $xml;
     }
 
-    public function saveRouteConfig($request, $additionalParams = []) {
-        
-
+    public function saveRouteConfig($request)
+    {
+        $routeConfId =(int) $request->route_config_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)
+        {
+            array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        }
+        $aPMIds = array();
+        foreach ($request->pm_ids->pm_id as $pmid)
+        {
+            array_push($aPMIds,$pmid);
+        }
+        $this->getAggregateRoot()->saveRouteConfig($this->getRepository(),$routeConfId,$aPMIds,$aPropertyInfo);
     }
 
     public function updateRouteConfig($request, $additionalParams = []) {

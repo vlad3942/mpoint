@@ -230,6 +230,58 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function saveRouteConfig(int $routeConfId, array $aPMIds, array $aPropertyInfo)
+    {
+        $this->getDBConn()->query("START TRANSACTION");
+
+        if(empty($aPMIds) === false)
+      {
+          $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".routepm_tbl (routeconfigid, pmid) VALUES ($1,$2)";
+          foreach ($aPMIds as $PMId)
+          {
+              $aParam = array($routeConfId,$PMId);
+              $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+              if($rs == false)
+              {
+                  $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                  if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                  {
+                      $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                  }
+                  $this->getDBConn()->query("ROLLBACK");
+
+                  throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
+              }
+          }
+      }
+
+      if(empty($aPropertyInfo) === false)
+      {
+          $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".route_property_tbl (routeconfigid, propertyid, value) VALUES ($1,$2,$3)";
+          foreach ($aPropertyInfo as $propertyInfo)
+          {
+              $aParam = array($routeConfId,$propertyInfo->getId(),$propertyInfo->getValue());
+              $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+              if($rs == false)
+              {
+                  $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                  if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                  {
+                      $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                  }
+                  $this->getDBConn()->query("ROLLBACK");
+
+                  throw new MerchantOnboardingException($statusCode,"Failed to Route Config Property RouteConfigId:".$routeConfId.' PropertyId:'.$propertyInfo->getId().' Property Value:'.$propertyInfo->getValue());
+              }
+          }
+      }
+        $this->getDBConn()->query("COMMIT");
+
+    }
     public function getRoutePM(int $id) : array
     {
         $aPM = array();
@@ -237,7 +289,7 @@ class MerchantConfigRepository
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
         if (empty($aRS) === false)
         {
-            foreach ($aRS as $rs) array_push($aPM,$rs['PMID']);
+            foreach ($aRS as $rs) array_push($aPM,$rs["PMID"]);
         }
         return $aPM;
     }

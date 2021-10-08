@@ -113,7 +113,6 @@ class PropertyInfo extends BaseInfo
         $xml .= "<data_type>".$this->getDataType()."</data_type>";
         $xml .= "<mandatory>".\General::bool2xml($this->isMandatory())."</mandatory>";
         $xml .= "</property>";
-
         return $xml;
     }
 
