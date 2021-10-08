@@ -1,16 +1,17 @@
 <?php
+
 namespace api\classes\merchantservices\Controllers;
 
 use api\classes\merchantservices\Services\MetaDataService;
 
-  /**
-   * MetaData Configuration
-   * 
-   * 
-   * @package    Mechantservices
-   * @subpackage Controller
-   * @author     Ijaj Inamdar <ijaj.inamdar@cellpointmobile.com>
-   */
+/**
+ * MetaData Configuration
+ * 
+ * 
+ * @package    Mechantservices
+ * @subpackage Controller
+ * @author     Ijaj Inamdar <ijaj.inamdar@cellpointmobile.com>
+ */
 class MetaDataController
 {
 
@@ -41,7 +42,7 @@ class MetaDataController
      *
      * @var ClientConfig
      */
-//    private $_objClientConfig;
+    //    private $_objClientConfig;
 
     /**
      * Constructor function
@@ -58,8 +59,8 @@ class MetaDataController
      *
      * @return MetaDataService
      */
-    private function getMetaDataService():MetaDataService 
-    { 
+    private function getMetaDataService(): MetaDataService
+    {
         return $this->_objMetaDataService;
     }
 
@@ -67,18 +68,22 @@ class MetaDataController
      * Handle getSystemMetaData request
      *
      * @param array $request
-     * @param array $additionalParams
      * @return string
      */
-    public function getSystemMetaData($request) {
+    public function getSystemMetaData($request)
+    {
 
         return $this->getMetaDataService()->generateSystemMetaData($request);
-
-    }    
-
-    public function getPaymentMetaData($request, $additionalParams = []) {
-
     }
 
-    
+    /**
+     * Handle getPaymentMetaData request
+     *
+     * @param array $request
+     * @return string
+     */
+
+    public function getPaymentMetaData($request, $additionalParams = [])
+    {
+    }
 }

@@ -37,7 +37,7 @@ class MetaDataService
     }
 
     /**
-     * Generate System Meta Data
+     * Generate System MetaData
      *
      * @param SimpleDOMElement $request     
      * @return string
@@ -48,15 +48,7 @@ class MetaDataService
         $xml = '';
         $aSystemMetaData = [];
 
-        $aSystemMetaData['psps'] = $this->merchantConfigRepository->getPSPInfo();
-        $aSystemMetaData['payment_methods'] = $this->merchantConfigRepository->getPaymentMethods();
-        $aSystemMetaData['countries'] = $this->merchantConfigRepository->getCountries();
-        $aSystemMetaData['currencies'] = $this->merchantConfigRepository->getCurrencies();
-        $aSystemMetaData['provider_details'] = $this->merchantConfigRepository->getProviderDetails();
-        $aSystemMetaData['capture_types'] = $this->merchantConfigRepository->getCaptureTypes();
-        $aSystemMetaData['services'] = $this->merchantConfigRepository->getServices();
-        $aSystemMetaData['urls'] = $this->merchantConfigRepository->getUrlInfo();
-        $aSystemMetaData['property_details'] = $this->merchantConfigRepository->getProperties();
+        $aSystemMetaData = $this->merchantConfigRepository->getAllSystemMetaDataInfo();
 
         $xml = '<system_metadata>';
         $xml .= $this->generateSystemMetaXML($aSystemMetaData);
@@ -65,22 +57,44 @@ class MetaDataService
         return $xml;
     }
 
+    /**
+     * Function to consolidate sub modules for Metadata
+     *
+     * @param array $aData
+     * @return string
+     */
     public function generateSystemMetaXML($aData): string
     {
         $xml = '';
 
         foreach ($aData as $key => $metadata) {
             $xml .= "<{$key}>";
-            foreach ($metadata as $data) {
-                $xml .= $data->toXML();
+            if (!empty($metadata) && is_array($metadata)) {
+                foreach ($metadata as $data) {
+                    if (!empty($data->getRootNode())) {
+                        $sRootNode = $data->getRootNode();
+                        $xml .= "<{$sRootNode}>";
+                        $xml .= $data->toXML();
+                        if (isset($data->additionalProp)) {
+                            $xml .= $this->generateSystemMetaXML($data->additionalProp);
+                        }
+                        $xml .= "</{$sRootNode}>";
+                    } else {
+                        $xml .= $data->toXML();
+                    }
+                }
             }
             $xml .= "</{$key}>";
         }
-
         return $xml;
     }
 
-    public function getPaymentMetaData()
+    /**
+     * Generate Payment MetaData
+     *
+     * @return void
+     */
+    public function generatePaymentMetaData()
     {
     }
 }
