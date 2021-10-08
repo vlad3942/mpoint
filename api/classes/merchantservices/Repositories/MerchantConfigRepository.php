@@ -234,7 +234,83 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function saveRouteConfig(int $routeConfId, array $aPMIds, array $aPropertyInfo)
+    public function updatePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array())
+    {
+        $this->getDBConn()->query("START TRANSACTION");
+
+        if(empty($aPMIds) === false)
+        {
+            $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".routepm_tbl (routeconfigid, pmid) VALUES ($1,$2)";
+            foreach ($aPMIds as $PMId)
+            {
+                $aParam = array($id,$PMId);
+                $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+                if($rs == false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                    {
+                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                    }
+                    $this->getDBConn()->query("ROLLBACK");
+
+                    throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
+                }
+            }
+        }
+
+        if(empty($aPropertyInfo) === false)
+        {
+            $sTableName = '';
+            $sWhereClase = '';
+            if($type === 'CLIENT')
+            {
+                $sTableName = 'client_property_tbl';
+                $sWhereClase = ' WHERE propertyid=$2 and clientid='.$this->_clientConfig->getID();
+            }
+            else if($type === 'PSP')
+            {
+                $sTableName = 'psp_property_tbl';
+                $sWhereClase = ' FROM SYSTEM'. sSCHEMA_POSTFIX .'.psp_property_tbl SP  WHERE cp.propertyid =sp.id and propertyid=$2 and pspid='.$id;
+            }
+            else if($type === 'ROUTE')
+            {
+                $sTableName = 'route_property_tbl';
+                $SQL = "SELECT r.providerid as id FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rt INNER JOIN CLIENT". sSCHEMA_POSTFIX .".route_tbl r ON R.id = rt.routeid WHERE rt.id=".$id;
+                $aRS = $this->getDBConn()->getName ( $SQL );
+                if(empty($aRS) === false)
+                {
+                    $sWhereClase = ' FROM SYSTEM'. sSCHEMA_POSTFIX .'.route_property_tbl SP WHERE cp.propertyid =sp.id and propertyid=$2 and pspid='.$aRS['ID'];
+                }
+                else throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to retrieve PSPID for routeconfigid:".$id);
+            }
+            $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." CP SET value=$1 ".$sWhereClase;
+            foreach ($aPropertyInfo as $propertyInfo)
+            {
+                $aParam = array($propertyInfo->getValue(),$propertyInfo->getId());
+                $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+                if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                    {
+                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                    }
+                    $this->getDBConn()->query("ROLLBACK");
+
+                    throw new MerchantOnboardingException($statusCode,"Failed to update ".strtolower($type)." Config Property  {id:".$propertyInfo->getId()." value:".$propertyInfo->getValue()."}");
+                }
+            }
+        }
+        $this->getDBConn()->query("COMMIT");
+
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function savePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
         $this->getDBConn()->query("START TRANSACTION");
 
@@ -243,7 +319,7 @@ class MerchantConfigRepository
           $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".routepm_tbl (routeconfigid, pmid) VALUES ($1,$2)";
           foreach ($aPMIds as $PMId)
           {
-              $aParam = array($routeConfId,$PMId);
+              $aParam = array($id,$PMId);
               $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
               if($rs == false)
               {
@@ -261,12 +337,38 @@ class MerchantConfigRepository
 
       if(empty($aPropertyInfo) === false)
       {
-          $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".route_property_tbl (routeconfigid, propertyid, value) VALUES ($1,$2,$3)";
+          $sTableName = '';
+          $sColumnName = 'clientid,propertyid, value';
+          $sValues = 'VALUES ($1,$2,$3)';
+          if($type === 'CLIENT')
+          {
+              $sTableName = 'client_property_tbl';
+          }
+          else if($type === 'PSP')
+          {
+              $sTableName = 'psp_property_tbl';
+              $sValues = ' SELECT $1,$2,$3 FROM SYSTEM'. sSCHEMA_POSTFIX.'.psp_property_tbl WHERE id=$2 and PSPID='.$id;
+              $id = $this->_clientConfig->getID();
+          }
+          else if($type === 'ROUTE')
+          {
+              $sTableName = 'route_property_tbl';
+              $SQL = "SELECT r.providerid as id FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rt INNER JOIN CLIENT". sSCHEMA_POSTFIX .".route_tbl r ON R.id = rt.routeid WHERE rt.id=".$id;
+              $aRS = $this->getDBConn()->getName ( $SQL );
+              if(empty($aRS) === false)
+              {
+                  $sValues = ' SELECT $1,$2,$3 FROM SYSTEM'. sSCHEMA_POSTFIX.'.route_property_tbl WHERE id=$2 and PSPID='.$aRS['ID'];
+              }
+              else throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to retrieve PSPID for routeconfigid:".$id);
+
+              $sColumnName = 'routeconfigid, propertyid, value';
+          }
+          $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumnName.") ".$sValues;
           foreach ($aPropertyInfo as $propertyInfo)
           {
-              $aParam = array($routeConfId,$propertyInfo->getId(),$propertyInfo->getValue());
+              $aParam = array($id,$propertyInfo->getId(),$propertyInfo->getValue());
               $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
-              if($rs == false)
+              if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
               {
                   $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
                   if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
@@ -275,7 +377,7 @@ class MerchantConfigRepository
                   }
                   $this->getDBConn()->query("ROLLBACK");
 
-                  throw new MerchantOnboardingException($statusCode,"Failed to Route Config Property RouteConfigId:".$routeConfId.' PropertyId:'.$propertyInfo->getId().' Property Value:'.$propertyInfo->getValue());
+                  throw new MerchantOnboardingException($statusCode,"Failed to save ".strtolower($type)." Config Property  {id:".$propertyInfo->getId()." value:".$propertyInfo->getValue()."}");
               }
           }
       }
@@ -300,17 +402,17 @@ class MerchantConfigRepository
         if($type === 'CLIENT')
         {
             $sTableName = 'client_property_tbl';
-            $sWhereArgs = "AND clientid =".$this->_clientConfig->getID();
+            $sWhereArgs = " AND cp.enabled=true AND sp.enabled AND clientid =".$this->_clientConfig->getID();
         }
         else if($type === 'PSP')
         {
             $sTableName = 'psp_property_tbl';
-            $sWhereArgs = "AND clientid =".$this->_clientConfig->getID();
+            $sWhereArgs = " AND cp.enabled=true AND sp.enabled AND clientid =".$this->_clientConfig->getID();
         }
         else if($type === 'ROUTE')
         {
             $sTableName = 'route_property_tbl';
-            $sWhereArgs = " AND cp.routeconfigid =".$id;
+            $sWhereArgs = " AND cp.enabled=true AND sp.enabled AND cp.routeconfigid =".$id;
 
         }
         $sJoin = "";
@@ -319,17 +421,17 @@ class MerchantConfigRepository
         if($source === 'METADATA')
         {
             $sColumn = "";
-            if($id>-1 && $type !== 'CLIENT') $sMetaDataJoin = " and sp.pspid=".$id;
+            if($id>-1 && $type !== 'CLIENT') $sMetaDataJoin = " AND sp.enabled AND sp.pspid=".$id." ";
         }
         elseif($source === 'ALL')
         {
             $sJoin ="LEFT JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
-            if($type === 'ROUTE') $sMetaDataJoin = " and sp.pspid=(SELECT r.providerid FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rt INNER JOIN CLIENT". sSCHEMA_POSTFIX .".route_tbl r ON R.id = rt.routeid WHERE rt.id=".$id.")";
-            if($type === 'PSP') $sMetaDataJoin = " and sp.pspid=".$id;
+            if($type === 'ROUTE') $sMetaDataJoin = " AND sp.pspid=(SELECT r.providerid FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rt INNER JOIN CLIENT". sSCHEMA_POSTFIX .".route_tbl r ON R.id = rt.routeid WHERE rt.id=".$id.")";
+            if($type === 'PSP') $sMetaDataJoin = " AND sp.pspid=".$id;
         }
         else if($source === 'CLIENT') $sJoin ="INNER JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
 
-        $sSQL = "SELECT sp.id,sp.name,sp.datatype ,sp.ismandatory".$sColumn.",pc.name as category,pc.scope from SYSTEM". sSCHEMA_POSTFIX . ".".$sTableName." sp 
+        $sSQL = "SELECT sp.id,sp.name,sp.datatype ,sp.ismandatory".$sColumn.",pc.name as category,pc.scope, true as enabled from SYSTEM". sSCHEMA_POSTFIX . ".".$sTableName." sp 
          ".$sJoin." INNER JOIN SYSTEM". sSCHEMA_POSTFIX . ".property_category_tbl pc on sp.category = pc.id ".$sMetaDataJoin."
          ORDER BY sp.name ";
 

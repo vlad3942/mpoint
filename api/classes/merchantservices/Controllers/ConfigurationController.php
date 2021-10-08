@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\Controllers;
 
 // include services
 use api\classes\merchantservices\configuration\BaseConfig;
+use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -63,14 +64,21 @@ class ConfigurationController
 
     }
 
-    public function savePSPConfig($request, $additionalParams = []) {
-        
+    public function savePSPConfig($request, $additionalParams = [])
+    {
+        $psp_id =(int) $request->psp_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)  array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        $this->getConfigService()->savePropertyConfig('PSP',$aPropertyInfo,$psp_id);
 
     }
 
-    public function updatePSPConfig($request, $additionalParams = []) {
-        
-
+    public function updatePSPConfig($request, $additionalParams = [])
+    {
+        $psp_id =(int) $request->psp_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)  array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        $this->getConfigService()->updatePropertyConfig('PSP',$aPropertyInfo,$psp_id);
     }
 
     public function deletePSPConfig($request, $additionalParams = []) {
@@ -86,11 +94,33 @@ class ConfigurationController
 
     public function saveRouteConfig($request, $additionalParams = [])
     {
-        $this->getConfigService()->saveRouteConfig($request);
+        $routeConfId =(int) $request->route_config_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)
+        {
+            array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        }
+        $aPMIds = array();
+        foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+        {
+            array_push($aPMIds,(int)$pm_configuration->pm_id);
+        }
+        $this->getConfigService()->savePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
     }
 
     public function updateRouteConfig($request, $additionalParams = []) {
-        
+        $routeConfId =(int) $request->route_config_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)
+        {
+            array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        }
+        $aPMIds = array();
+        foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+        {
+            array_push($aPMIds,(int)$pm_configuration->pm_id);
+        }
+        $this->getConfigService()->updatePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
 
     }
 

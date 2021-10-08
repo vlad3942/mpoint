@@ -12,8 +12,27 @@ class PropertyInfo extends BaseInfo
     private int $_iDataType;
     private int $_iScope;
     private bool $_bMandatory;
+    private bool $_bEnabled ;
 
     public function __construct() {  }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->_bEnabled;
+    }
+
+    /**
+     * @param bool $bEnabled
+     * @return PropertyInfo
+     */
+    public function setEnabled(bool $bEnabled): PropertyInfo
+    {
+        $this->_bEnabled = $bEnabled;
+        return $this;
+    }
 
     /**
      * @return int
@@ -111,6 +130,7 @@ class PropertyInfo extends BaseInfo
         $xml .= parent::toXML();
         if(empty($this->getValue()) === false) $xml .= "<value>".$this->getValue()."</value>";
         $xml .= "<data_type>".$this->getDataType()."</data_type>";
+        $xml .= sprintf("<enabled>%s</enabled>",\General::bool2xml($this->isEnabled()));
         $xml .= "<mandatory>".\General::bool2xml($this->isMandatory())."</mandatory>";
         $xml .= "</property>";
         return $xml;
@@ -120,7 +140,9 @@ class PropertyInfo extends BaseInfo
     {
         $propertyInfo = new PropertyInfo();
         if(count($oXML->id)>0) $propertyInfo->setId((int)$oXML->id);
+        if(count($oXML->enabled)>0) $propertyInfo->setEnabled(\General::xml2bool($oXML->enabled));
         if(count($oXML->name)>0) $propertyInfo->setName((string)$oXML->name);
+        if(count($oXML->value)>0) $propertyInfo->setValue((string)$oXML->value);
         if(count($oXML->value)>0) $propertyInfo->setValue((string)$oXML->value);
         return $propertyInfo;
     }
@@ -135,6 +157,7 @@ class PropertyInfo extends BaseInfo
         if(isset($rs["ISMANDATORY"])) $propertyInfo->setMandatory($rs["ISMANDATORY"]);
         if(isset($rs["VALUE"])) $propertyInfo->setValue($rs["VALUE"]);
         if(isset($rs['SCOPE'])) $propertyInfo->setScope($rs['SCOPE']);
+        if(isset($rs['ENABLED'])) $propertyInfo->setEnabled($rs['ENABLED']);
 
 
         return $propertyInfo;

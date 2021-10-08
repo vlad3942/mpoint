@@ -36,9 +36,15 @@ class MerchantConfigInfo
         return $configRepository->getRoutePM($id);
     }
 
-    public function saveRouteConfig(MerchantConfigRepository $configRepository,int $routeConfId, array $aPMIds, array $aPropertyInfo)
+    public function savePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
-         $configRepository->saveRouteConfig($routeConfId,$aPMIds,$aPropertyInfo);
+         $configRepository->savePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);
+
+    }
+
+    public function updatePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array())
+    {
+        $configRepository->updatePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);
 
     }
 }
