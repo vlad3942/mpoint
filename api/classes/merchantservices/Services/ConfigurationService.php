@@ -95,20 +95,8 @@ class ConfigurationService
         return $xml;
     }
 
-    public function savePSPConfig($request, $additionalParams = []) {
-        
 
-    }
 
-    public function updatePSPConfig($request, $additionalParams = []) {
-        
-
-    }
-
-    public function deletePSPConfig($request, $additionalParams = []) {
-        
-
-    }
 
     private function getProperties(string $type,string $source,int $id=-1):string
     {
@@ -133,37 +121,27 @@ class ConfigurationService
         $xml = "<client_route_configuration>";
         $xml .=  $this->getProperties("ROUTE","ALL",$additionalParams['route_conf_id']);
         $aPM = $this->getAggregateRoot()->getRoutePM($this->getRepository(),$additionalParams['route_conf_id']);
-        $xml .="<pm_ids>";
-        foreach ($aPM as $pm)  $xml .="<pm_id>".$pm."</pm_id>";
-        $xml .="</pm_ids>";
+        $xml .="<pm_configurations>";
+        foreach ($aPM as $pm)
+        {
+            $xml .="<pm_configuration>";
+            $xml .="<pm_id>".$pm."</pm_id>";
+            $xml .="<enabled>true</enabled>";
+            $xml .="</pm_configuration>";
+        }
+        $xml .="</pm_configurations>";
         $xml .=  "</client_route_configuration>";
         return $xml;
     }
 
-    public function saveRouteConfig($request)
+    public function savePropertyConfig(string $type,array $aPropertyInfo,int $id=-1, array $aPMIds=array() )
     {
-        $routeConfId =(int) $request->route_config_id;
-        $aPropertyInfo = array();
-        foreach ($request->properties->property as $property)
-        {
-            array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
-        }
-        $aPMIds = array();
-        foreach ($request->pm_ids->pm_id as $pmid)
-        {
-            array_push($aPMIds,$pmid);
-        }
-        $this->getAggregateRoot()->saveRouteConfig($this->getRepository(),$routeConfId,$aPMIds,$aPropertyInfo);
+       $this->getAggregateRoot()->savePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
     }
 
-    public function updateRouteConfig($request, $additionalParams = []) {
-        
-
-    }
-
-    public function deleteRouteConfig($request, $additionalParams = []) {
-        
-
+    public function updatePropertyConfig(string $type,array $aPropertyInfo,int $id=-1, array $aPMIds=array() )
+    {
+        $this->getAggregateRoot()->updatePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
     }
 
     /***
@@ -177,5 +155,4 @@ class ConfigurationService
     {
         return $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
     }
-
 }

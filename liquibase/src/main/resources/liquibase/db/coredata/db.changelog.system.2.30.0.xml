@@ -736,4 +736,1084 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30-system-psp-prop">
+        <!-- AMEX Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_ADDRESS"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_BUSINESS_CODE"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_CITY"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_COUNTRY"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_IDENTIFICATION_CODE"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_NAME"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_REGION"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_TERMINAL_ID"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_CARD_ACCEPTOR_ZIP"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_COUNTRY_CODE"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_MESSAGE_REASON_CODE"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_MESSAGE_TYPE"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_ORIGIN"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_REGION"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_ROUTING_INDICATOR"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_SFTP_FILENAME"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_SFTP_HOST"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_SFTP_PASSWORD"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="AMEX_SFTP_USERNAME"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+         <!-- AMEX Property End -->
+
+        <!-- 2C2p Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SUPRESS_3DS_FLOW"/>
+            <column name="pspid" value="26"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- 2C2p Property END -->
+
+        <!-- Chase Payment Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="FILE_EXPIRY"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="IS_TICKET_LEVEL_SETTLEMENT"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="MVAULT_BATCH_SIZE"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="MERCHANT.CITY"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="CHASE_FILE_PREFIX"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="CHASE_SFTP_PASSWORD"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="CHASE_SFTP_USERNAME"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="debug"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SETTLEMENT_BATCH_LIMIT"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="MAX_DOWNLOAD_FILE_LIMIT"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+        <!-- Chase Payment Property END -->
+
+        <!-- Citcon Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="ALLOW_DUPLICATES"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="WECHAT_CALLBACK_URL"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- Citcon Property END -->
+
+        <!-- CYBS Fraud Property END -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="DEFAULT_EMAIL_ID"/>
+            <column name="pspid" value="64"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- CYBS Fraud Property END -->
+
+        <!-- GPay Property END -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="ALLOWEDPAYMENTMETHODS"/>
+            <column name="pspid" value="44"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- GPay Property END -->
+
+        <!-- MPGS Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="post_fraud_rule"/>
+            <column name="pspid" value="72"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- MPGS Property END -->
+
+        <!-- PayPal Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PAYPAL_BILLING_AGREEMENT"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- PayPal Property END -->
+
+        <!-- UATP CARD Property END -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SFTP_HOST"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="FILE_EXPIRY"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="TICKET-END-RANGE"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="TICKET-START-RANGE"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UATP_SFTP_FILENAME"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UATP_SFTP_FILE_PATH"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UATP_SFTP_PKEY"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UATP_SFTP_PKEY_PASSPHRASE"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UATP_SFTP_USERNAME"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="IS_TICKET_LEVEL_SETTLEMENT"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="BATCH-CUT-OFF-TIME"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <!-- UATP CARD Property END -->
+
+        <!-- WorldPay Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="TravelAgencyName"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="IssuerCity"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="RestrictedTicket"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="mpi_rule"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="IssuerCountryCode"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="IssuerPostalCode"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="IssuerAddress1"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="FareBasisCode"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="TravelAgencyCode"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- WorldPay Property END -->
+
+
+
+
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30-system-route-prop">
+        <!-- AMEX Property start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="AMEX_MERCHANT_NUMBER"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="AMEX_SUBMITTER_ID"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- AMEX Property End -->
+
+        <!-- AliPay - Chinese Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="key.html"/>
+            <column name="pspid" value="43"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="signtype.app"/>
+            <column name="pspid" value="43"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="signtype.html"/>
+            <column name="pspid" value="43"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="key.app"/>
+            <column name="pspid" value="43"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="pid.app"/>
+            <column name="pspid" value="43"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="pid.html"/>
+            <column name="pspid" value="43"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+        <!-- AliPay - Chinese Property END -->
+
+        <!-- CCAvenue Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="ccavenue.working.key"/>
+            <column name="pspid" value="25"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="ccavenue.access.key"/>
+            <column name="pspid" value="25"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- CCAvenue Property END -->
+
+        <!-- CELLULANT Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="serviceCode"/>
+            <column name="pspid" value="58"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="accountNumber"/>
+            <column name="pspid" value="58"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- CELLULANT Property END -->
+
+        <!-- Chase Payment Property START -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="USERNAME.PID"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PASSWORD.PID"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="USERNAME.SID"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PASSWORD.SID"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- Chase Payment Property END -->
+
+        <!-- GlobalPayment Property END -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.USERNAME.14"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.USERNAME.44"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.USERNAME.44.PHP"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.PASSWORD.14"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.PASSWORD.14.PHP"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.PASSWORD.44"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.PASSWORD.44.PHP"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="GlobalPayment.Wallet.USERNAME.14.PHP"/>
+            <column name="pspid" value="56"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- GlobalPayment Property END -->
+
+        <!-- Citcon Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="VIRTUAL_PAYMENT_TIMER"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="MERCHANT_VENDOR"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="MERCHANT_API_TOKEN"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="MERCHANT_API_TOKEN_ANDROID"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="QR_CODE_TIMEOUT"/>
+            <column name="pspid" value="41"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+        <!-- Citcon Property END -->
+
+        <!-- GrabPay Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="CLIENT_ID"/>
+            <column name="pspid" value="67"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="CLIENT_SECRET"/>
+            <column name="pspid" value="67"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- GrabPay Property END -->
+
+        <!-- MPGS Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="Notification-Secret"/>
+            <column name="pspid" value="72"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- MPGS Property END -->
+
+        <!-- PayPal Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PAYPAL_REST_CLIENT_ID"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PAYPAL_REST_SECRET"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PAYPAL_STC"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+        <!-- PayPal Property END -->
+
+        <!-- Paytabs Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="SADAD_V2_Secret_Key"/>
+            <column name="pspid" value="38"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="KNET_Secret_Key"/>
+            <column name="pspid" value="38"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="OMANNET_Secret_Key"/>
+            <column name="pspid" value="38"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="MADA_Secret_Key"/>
+            <column name="pspid" value="38"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="BENEFIT_Secret_Key"/>
+            <column name="pspid" value="38"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- Paytabs Property End -->
+
+        <!-- PPRO Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="ppro-notification-secret"/>
+            <column name="pspid" value="46"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="ppro-shared-secret"/>
+            <column name="pspid" value="46"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- PPRO Property End -->
+
+        <!-- UATP Property Start -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="CardAcceptorIdentificationCode"/>
+            <column name="pspid" value="49"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- UATP Property End -->
+
+        <!-- UATP Card Property Start -->
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="CeptorAccessId"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="CeptorAccessKey"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <!-- UATP Card Property End -->
+
+    </changeSet>
 </databaseChangeLog>
