@@ -116,10 +116,10 @@ class ConfigurationService
         foreach ($aCatPropertyInfo as $category => $aPropertyInfo)
         {
             $xml .= "<property_detail>";
-                $xml .= "<property_sub_category>".$category."</property_sub_category>";
-                $xml .= "<properties>";
-                foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
-                $xml .= "</properties>";
+            $xml .= "<property_sub_category>".$category."</property_sub_category>";
+            $xml .= "<properties>";
+            foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
+            $xml .= "</properties>";
             $xml .= "</property_detail>";
         }
         $xml .= "</property_details>";
