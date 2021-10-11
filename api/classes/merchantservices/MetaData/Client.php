@@ -192,14 +192,14 @@ class Client extends BaseInfo
     public static function produceFromResultSet(array $client): Client
     {
         $ClientInfo = new Client();
-        if(isset($client["ID"])) $ClientInfo->setId($client["ID"]);
-        if(isset($client['NAME'])) $ClientInfo->setName($client['NAME']);
-        if(isset($client['USERNAME'])) $ClientInfo->setUsername($client['USERNAME']);
-        if(isset($client['SALT'])) $ClientInfo->setSalt($client['SALT']);
-        if(isset($client['MAXAMOUNT'])) $ClientInfo->setMaxAmount($client['MAXAMOUNT']);
-        if(isset($client['COUNTRYID'])) $ClientInfo->setCountryId($client['COUNTRYID']);
-        if(isset($client['EMAILRCPT'])) $ClientInfo->setEmailNotification($client['EMAILRCPT']);
-        if(isset($client['SMSRCPT'])) $ClientInfo->setSmsNotification($client['SMSRCPT']);
+        $ClientInfo->setId($client["ID"]);
+        $ClientInfo->setName($client['NAME']);
+        $ClientInfo->setUsername($client['USERNAME']);
+        $ClientInfo->setSalt($client['SALT']);
+        $ClientInfo->setMaxAmount($client['MAXAMOUNT']);
+        $ClientInfo->setCountryId($client['COUNTRYID']);
+        $ClientInfo->setEmailNotification($client['EMAILRCPT']);
+        $ClientInfo->setSmsNotification($client['SMSRCPT']);
         return $ClientInfo;
     }
 

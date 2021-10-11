@@ -750,9 +750,16 @@ class MerchantConfigRepository
      */
     public function getClientDetailById(): Client
     {
-        $sColumns = 'id, name, salt, maxamount, countryid, emailrcpt, username, smsrcpt, created, modified, enabled';
-        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".client_tbl WHERE enabled = true and id = " . $this->_clientConfig->getID();
-        return Client::produceFromResultSet($this->getDBConn()->getName(sprintf($SQL, $sColumns)));
+        return Client::produceFromResultSet([
+            'ID' => $this->_clientConfig->getID(),
+            'NAME' => $this->_clientConfig->getName(),
+            'SALT' => $this->_clientConfig->getSalt(),
+            'MAXAMOUNT' => $this->_clientConfig->getMaxAmount(),
+            'COUNTRYID' => $this->_clientConfig->getCountryConfig()->getID(),
+            'EMAILRCPT' => \General::bool2xml($this->_clientConfig->emailReceiptEnabled()),
+            'SMSRCPT' => \General::bool2xml($this->_clientConfig->smsReceiptEnabled()),
+            'USERNAME' => $this->_clientConfig->getUsername()
+        ]);
     }
 
     /**
