@@ -1935,7 +1935,7 @@ class General
                     $data['orders'][0]['product-description'] = (string)$obj_orderDom->{'line-item'}[$j]->product->description;
                     $data['orders'][0]['product-image-url'] = (string)$obj_orderDom->{'line-item'}[$j]->product->{'image-url'};
                     $data['orders'][0]['amount'] = (float)$obj_orderDom->{'line-item'}[$j]->amount;
-                    $collective = 0;
+                    $collectiveFees = 0;
                     if ($obj_orderDom->{'line-item'}[$j]->fees->fee) {
                         $feeCnt = count($obj_orderDom->{'line-item'}[$j]->fees->fee);
                         for ($k = 0; $k < $feeCnt; $k++) {
