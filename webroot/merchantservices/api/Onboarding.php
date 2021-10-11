@@ -40,6 +40,10 @@ if(isset($_REQUEST['params']) && !empty($_REQUEST['params']))
 
 // Define Routes
 $routes = [
+    'clientconfig' => [
+        'class'   => 'ConfigurationController',
+        'get'     => 'getClientConfig',
+    ],
     'addonconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getAddonConfig',

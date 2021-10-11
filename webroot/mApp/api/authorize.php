@@ -616,7 +616,7 @@ try
                                              else if( $iSessionType > 1 && $iSaleAmount > $pendingAmount) {
                                                  $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                              }
-                                             else if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount))
+                                             else if((int)$obj_TxnInfo->getAmount() != (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount && $iSessionType <= 1)
                                              {
                                                  $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                              }

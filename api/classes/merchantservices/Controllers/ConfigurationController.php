@@ -3,6 +3,8 @@ namespace api\classes\merchantservices\Controllers;
 
 // include services
 use api\classes\merchantservices\configuration\BaseConfig;
+use api\classes\merchantservices\Helpers\Helpers;
+use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -22,14 +24,44 @@ class ConfigurationController
 
     private function getConfigService():ConfigurationService { return $this->objConfigurationService;}
 
-/*  Sample function for accesing Repositry */
-    public function getClientConfig($request, $additionalParams = []) {
-        print_r($additionalParams);
-        echo $request->asXML();
-        return $this->merchantConfigRepository->find(array());
+
+    /**
+     * Function is used to get Client Config Details.
+     * Based on client ID will get all details related to merchant client
+     *
+     * @param array $additionalParams
+     *
+     * @return string ClientConfiguration XML String
+     */
+    public function getClientConfig(array $additionalParams): string
+    {
+        $lClientConfigs = $this->getConfigService()->getClientConfiguration($additionalParams);
+        return $this->getClientConfigurationXML($lClientConfigs);
     }
-/*  Sample function for accesing Repositry */    
-    
+
+    /**
+     * Process array and prepare XML for client configuration
+     *
+     * @param array $aClientConfigData
+     *
+     * @return string Prepare final string for array
+     */
+    private function getClientConfigurationXML(array $aClientConfigData): string {
+
+        $XML = '<client_configuration>';
+        $XML .=  Helpers::generateXML(
+            [
+                'info'                  =>  $aClientConfigData['info'],
+                'client_urls'           =>  $aClientConfigData['client_urls'],
+                'payment_method_ids'    =>  $aClientConfigData['payment_method_ids'],
+                'storefronts'           =>  $aClientConfigData['storefronts'],
+            ]
+        );
+        $XML .=  Helpers::getPropertiesXML($aClientConfigData['property_details']);
+        $XML .= '</client_configuration>';
+        return $XML;
+    }
+
     public function getAddonConfig( $additionalParams = [])
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);
@@ -63,14 +95,21 @@ class ConfigurationController
 
     }
 
-    public function savePSPConfig($request, $additionalParams = []) {
-        
+    public function savePSPConfig($request, $additionalParams = [])
+    {
+        $psp_id =(int) $request->psp_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)  array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        $this->getConfigService()->savePropertyConfig('PSP',$aPropertyInfo,$psp_id);
 
     }
 
-    public function updatePSPConfig($request, $additionalParams = []) {
-        
-
+    public function updatePSPConfig($request, $additionalParams = [])
+    {
+        $psp_id =(int) $request->psp_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)  array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        $this->getConfigService()->updatePropertyConfig('PSP',$aPropertyInfo,$psp_id);
     }
 
     public function deletePSPConfig($request, $additionalParams = []) {
@@ -86,11 +125,36 @@ class ConfigurationController
 
     public function saveRouteConfig($request, $additionalParams = [])
     {
-        $this->getConfigService()->saveRouteConfig($request);
+        $routeConfId =(int) $request->route_config_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)
+        {
+            array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        }
+        $aPMIds = array();
+        if(count($request->pm_configurations)>0)
+        {
+            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+            {
+                array_push($aPMIds,(int)$pm_configuration->pm_id);
+            }
+        }
+        $this->getConfigService()->savePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
     }
 
     public function updateRouteConfig($request, $additionalParams = []) {
-        
+        $routeConfId =(int) $request->route_config_id;
+        $aPropertyInfo = array();
+        foreach ($request->properties->property as $property)
+        {
+            array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
+        }
+        $aPMIds = array();
+        foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+        {
+            array_push($aPMIds,(int)$pm_configuration->pm_id);
+        }
+        $this->getConfigService()->updatePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
 
     }
 
