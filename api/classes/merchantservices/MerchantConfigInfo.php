@@ -62,7 +62,8 @@ class MerchantConfigInfo
             'client_urls'           => $configRepository->getClientURLByClientId(),
             'payment_method_ids'    => $configRepository->getPMIdsByClientId(),
             'storefronts'           => $configRepository->getStoreFrontByClientId(),
-            'property_details'      => $configRepository->getPropertyConfig('CLIENT', 'ALL')
+            'property_details'      => $configRepository->getPropertyConfig('CLIENT', 'ALL'),
+            'services'               => $configRepository->getServiceStatusByClientId()
         ];
     }
 }

@@ -54,6 +54,7 @@ class ConfigurationController
                 'info'                  =>  $aClientConfigData['info'],
                 'client_urls'           =>  $aClientConfigData['client_urls'],
                 'payment_method_ids'    =>  $aClientConfigData['payment_method_ids'],
+                'services'              =>  $aClientConfigData['services'],
                 'storefronts'           =>  $aClientConfigData['storefronts'],
             ]
         );

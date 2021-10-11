@@ -174,8 +174,8 @@ class Client extends BaseInfo
         $xml .= sprintf("<salt>%s</salt>",$this->getSalt());
         $xml .= sprintf("<max_amount>%s</max_amount>",$this->getMaxAmount());
         $xml .= sprintf("<country_id>%s</country_id>",$this->getCountryId());
-        $xml .= sprintf("<email_notification>%s</email_notification>",$this->isEmailNotification());
-        $xml .= sprintf("<sms_notification>%s</sms_notification>",$this->isSmsNotification);
+        $xml .= sprintf("<email_notification>%s</email_notification>",\General::bool2xml($this->isEmailNotification()));
+        $xml .= sprintf("<sms_notification>%s</sms_notification>", \General::bool2xml($this->isSmsNotification()));
         // TBD
         $xml .= sprintf("<timezone>%s</timezone>", '+05:30');
         $xml .= sprintf("<client_domain>%s</client_domain>",'1');
