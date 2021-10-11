@@ -25,6 +25,11 @@ use api\classes\merchantservices\MetaData\ServiceInfo;
 use api\classes\merchantservices\MetaData\ServiceSubType;
 use api\classes\merchantservices\MetaData\UrlInfo;
 
+use api\classes\merchantservices\MetaData\Client;
+use api\classes\merchantservices\MetaData\ClientUrl;
+use api\classes\merchantservices\MetaData\ClientPaymentMethodId;
+use api\classes\merchantservices\MetaData\StoreFront;
+
 
 class MerchantConfigRepository
 {
@@ -701,6 +706,8 @@ class MerchantConfigRepository
 
         $iPropertyId = 0;
 
+
+
         $aPropertyAttributes = [];
 
         foreach ($aRS as $rs) {
@@ -733,5 +740,88 @@ class MerchantConfigRepository
 
 
         return $aProperties;
+    }
+
+    ////////// For Client Configuration //////////
+    /**
+     * Function used to get the client detail By client ID
+     *
+     * @return Client Object Of Client
+     */
+    public function getClientDetailById(): Client
+    {
+        return Client::produceFromResultSet([
+            'ID' => $this->_clientConfig->getID(),
+            'NAME' => $this->_clientConfig->getName(),
+            'SALT' => $this->_clientConfig->getSalt(),
+            'MAXAMOUNT' => $this->_clientConfig->getMaxAmount(),
+            'COUNTRYID' => $this->_clientConfig->getCountryConfig()->getID(),
+            'EMAILRCPT' => \General::bool2xml($this->_clientConfig->emailReceiptEnabled()),
+            'SMSRCPT' => \General::bool2xml($this->_clientConfig->smsReceiptEnabled()),
+            'USERNAME' => $this->_clientConfig->getUsername()
+        ]);
+    }
+
+    /**
+     * Function used to get the client URL Details by Client ID
+     *
+     * @return ?array
+     */
+    public function getClientURLByClientId(): ?array
+    {
+        $sColumns = 'CLIURL.ID, CLIURL.urltypeid as type_id, SYSURL.name, CLIURL.url as value, CLIURL.enabled, CLIURL.created, CLIURL.modified';
+        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".url_tbl CLIURL INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".urltype_tbl SYSURL ON CLIURL.urltypeid = SYSURL.id WHERE CLIURL.enabled = true and CLIURL.clientid = " . $this->_clientConfig->getID();
+        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+
+        if (empty($aRS) === true) { return NULL; }
+
+        $aClientURLs = array();
+        foreach ($aRS as $rs){
+            array_push($aClientURLs, ClientUrl::produceFromResultSet($rs));
+        }
+        return $aClientURLs;
+    }
+
+    /**
+     * Get Client StoreFront ID
+     *
+     * @return array
+     */
+    public function getStoreFrontByClientId(): ?array
+    {
+        $sColumns = "ACC.id, ACC.markup as NAME, ACC.businesstype as DOMAIN";
+        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".account_tbl ACC                     
+                    WHERE ACC.enabled = true and ACC.clientid = " . $this->_clientConfig->getID();
+        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+
+        if (empty($aRS) === true) { return NULL; }
+
+        $aStoreFront = [];
+        foreach ($aRS as $rs) {
+            array_push($aStoreFront, StoreFront::produceFromResultSet($rs));
+        }
+        return $aStoreFront;
+    }
+
+    /**
+     * Get Client Payment Method by ClientID
+     *
+     * @return ?array
+     */
+    public function getPMIdsByClientId(): ?array
+    {
+        $sColumns = "PM.id payment_method_id, C.name";
+        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".pm_tbl PM
+                    INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".card_tbl C ON PM.pmid = C.id
+                    WHERE PM.enabled = true AND PM.clientid = " . $this->_clientConfig->getID();
+
+        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
+
+        if (empty($aRS) === true) { return NULL; }
+        $aPMIds = [];
+        foreach ($aRS as $rs) {
+            array_push($aPMIds, ClientPaymentMethodId::produceFromResultSet($rs));
+        }
+        return $aPMIds;
     }
 }

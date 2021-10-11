@@ -1,5 +1,6 @@
 <?php
 namespace api\classes\merchantservices;
+
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class MerchantConfigInfo
@@ -46,5 +47,22 @@ class MerchantConfigInfo
     {
         $configRepository->updatePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);
 
+    }
+
+    /**
+     * Get Client Configuration details
+     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
+     *
+     * @return array
+     */
+    public function getClientConfigurations(MerchantConfigRepository $configRepository): array
+    {
+        return [
+            'info'                  => $configRepository->getClientDetailById(),
+            'client_urls'           => $configRepository->getClientURLByClientId(),
+            'payment_method_ids'    => $configRepository->getPMIdsByClientId(),
+            'storefronts'           => $configRepository->getStoreFrontByClientId(),
+            'property_details'      => $configRepository->getPropertyConfig('CLIENT', 'ALL')
+        ];
     }
 }

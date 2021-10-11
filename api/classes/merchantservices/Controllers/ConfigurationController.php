@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\Controllers;
 
 // include services
 use api\classes\merchantservices\configuration\BaseConfig;
+use api\classes\merchantservices\Helpers\Helpers;
 use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\Services\ConfigurationService;
 
@@ -23,14 +24,44 @@ class ConfigurationController
 
     private function getConfigService():ConfigurationService { return $this->objConfigurationService;}
 
-/*  Sample function for accesing Repositry */
-    public function getClientConfig($request, $additionalParams = []) {
-        print_r($additionalParams);
-        echo $request->asXML();
-        return $this->merchantConfigRepository->find(array());
+
+    /**
+     * Function is used to get Client Config Details.
+     * Based on client ID will get all details related to merchant client
+     *
+     * @param array $additionalParams
+     *
+     * @return string ClientConfiguration XML String
+     */
+    public function getClientConfig(array $additionalParams): string
+    {
+        $lClientConfigs = $this->getConfigService()->getClientConfiguration($additionalParams);
+        return $this->getClientConfigurationXML($lClientConfigs);
     }
-/*  Sample function for accesing Repositry */    
-    
+
+    /**
+     * Process array and prepare XML for client configuration
+     *
+     * @param array $aClientConfigData
+     *
+     * @return string Prepare final string for array
+     */
+    private function getClientConfigurationXML(array $aClientConfigData): string {
+
+        $XML = '<client_configuration>';
+        $XML .=  Helpers::generateXML(
+            [
+                'info'                  =>  $aClientConfigData['info'],
+                'client_urls'           =>  $aClientConfigData['client_urls'],
+                'payment_method_ids'    =>  $aClientConfigData['payment_method_ids'],
+                'storefronts'           =>  $aClientConfigData['storefronts'],
+            ]
+        );
+        $XML .=  Helpers::getPropertiesXML($aClientConfigData['property_details']);
+        $XML .= '</client_configuration>';
+        return $XML;
+    }
+
     public function getAddonConfig( $additionalParams = [])
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);
