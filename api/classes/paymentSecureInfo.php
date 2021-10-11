@@ -125,12 +125,12 @@ class PaymentSecureInfo
             $aPaymentSecureData['cavv'] = (string)$obj_XML->{'cryptogram'};
             $aPaymentSecureData['cavvAlgorithm'] =(integer) $obj_XML->{'cryptogram'}["algorithm-id"];
         }
-
-        for ($j=0; $j<count($obj_XML->{'additional-data'}->param); $j++ )
-        {
-            $sKey = (string) $obj_XML->{'additional-data'}->param[$j]['name'];
-            $sValue = (string) $obj_XML->{'additional-data'}->param[$j];
-            $aPaymentSecureData[$sKey] = $sValue;
+        if(!is_null($obj_XML->{'additional-data'}->param)) {
+            for ($j = 0; $j < count($obj_XML->{'additional-data'}->param); $j++) {
+                $sKey = (string)$obj_XML->{'additional-data'}->param[$j]['name'];
+                $sValue = (string)$obj_XML->{'additional-data'}->param[$j];
+                $aPaymentSecureData[$sKey] = $sValue;
+            }
         }
         if(empty($aPaymentSecureData) === false)
         {

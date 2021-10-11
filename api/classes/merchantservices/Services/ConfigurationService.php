@@ -143,4 +143,16 @@ class ConfigurationService
     {
         $this->getAggregateRoot()->updatePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
     }
+
+    /***
+     * Get Client related configuration from AggregateRoute.
+     *
+     * @param array $additionalParams
+     *
+     * @return array
+     */
+    public function getClientConfiguration( array $additionalParams = []): array
+    {
+        return $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
+    }
 }
