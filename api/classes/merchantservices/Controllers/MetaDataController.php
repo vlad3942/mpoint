@@ -83,7 +83,9 @@ class MetaDataController
      * @return string
      */
 
-    public function getPaymentMetaData($request, $additionalParams = [])
+    public function getPaymentMetaData($request)
     {
+        return $this->getMetaDataService()->generatePaymentMetaData($request);
+
     }
 }

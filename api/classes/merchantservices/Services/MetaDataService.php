@@ -55,7 +55,7 @@ class MetaDataService
         $xml .= '</system_metadata>';
 
         return $xml;
-    }
+    }    
 
     /**
      * Function to consolidate sub modules for Metadata
@@ -96,5 +96,16 @@ class MetaDataService
      */
     public function generatePaymentMetaData()
     {
+
+        $xml = '';
+        $aPaymentMetaData = [];
+
+        $aPaymentMetaData = $this->merchantConfigRepository->getAllPaymentMetaDataInfo();
+
+        $xml = '<payment_metadata>';
+        $xml .= $this->generateSystemMetaXML($aPaymentMetaData);
+        $xml .= '</payment_metadata>';
+
+        return $xml;
     }
 }

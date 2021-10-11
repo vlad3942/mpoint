@@ -33,6 +33,13 @@ class BaseInfo
     private array $aNodeAlias;
 
     /**
+     * Additional Dynamic attributes
+     *
+     * @var array
+     */
+    private array $aAddtionalAttr = [];
+
+    /**
      * Constructor function
      */
     public function __construct()
@@ -90,6 +97,11 @@ class BaseInfo
         $xml = sprintf("<{$sIdNode}>%s</{$sIdNode}>", $this->getId());
         $xml .= sprintf("<{$sNameNode}>%s</{$sNameNode}>", $this->getName());
 
+        foreach($this->getAAddtionalAttr() as $key => $value)
+        {
+            $xml .= sprintf("<{$key}>%s</{$key}>", $value);
+        }
+
         return $xml;
     }
 
@@ -124,11 +136,20 @@ class BaseInfo
     public static function produceFromDataSet($aRS, $sRootNode = '', $aNodeAlias = []): array
     {
         $aBaseInfoDetails = [];
+        $aBasicAttributes = array('ID' => 1, 'NAME' => 1);
+        $aAddtionalAttr = [];
 
-        foreach ($aRS as $rs) {
+        foreach ($aRS as $rs) {            
             $BaseInfo = new BaseInfo();
             $BaseInfo->setId($rs["ID"])
                 ->setName($rs["NAME"]);
+
+            $aAddtionalAttr = array_diff_key($rs, $aBasicAttributes);
+
+            if(!empty($aAddtionalAttr))
+            {
+                $BaseInfo->setAAddtionalAttr(array_change_key_case($aAddtionalAttr, CASE_LOWER));
+            }
 
             if (!empty(trim($sRootNode))) {
                 $BaseInfo->setRootNode($sRootNode);
@@ -164,6 +185,30 @@ class BaseInfo
         foreach ($aNodeAlias as $key => $value) {
             $this->aNodeAlias[$key] = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Get additional Dynamic attributes
+     *
+     * @return  array
+     */ 
+    public function getAAddtionalAttr()
+    {
+        return $this->aAddtionalAttr;
+    }
+
+    /**
+     * Set additional Dynamic attributes
+     *
+     * @param  array  $aAddtionalAttr  Additional Dynamic attributes
+     *
+     * @return  self
+     */ 
+    public function setAAddtionalAttr(array $aAddtionalAttr)
+    {
+        $this->aAddtionalAttr = $aAddtionalAttr;
 
         return $this;
     }
