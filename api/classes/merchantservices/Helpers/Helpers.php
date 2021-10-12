@@ -2,6 +2,8 @@
 
 namespace api\classes\merchantservices\Helpers;
 
+use api\classes\merchantservices\commons\BaseInfo;
+
 class Helpers {
 
     /**
@@ -46,7 +48,7 @@ class Helpers {
                     if (isset($data->additionalProp)) {
                         $sXmlSection .= self::generateXML($data->additionalProp);
                     }
-                    if (!empty($data->getRootNode())) 
+                    if ($data instanceof BaseInfo && !empty($data->getRootNode()))
                     {
                         $sRootNode = $data->getRootNode();
                         $sXmlSection = sprintf("<{$sRootNode}>%s</{$sRootNode}>",$sXmlSection);
