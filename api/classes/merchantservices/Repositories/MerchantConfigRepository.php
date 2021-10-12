@@ -594,7 +594,7 @@ class MerchantConfigRepository
      * @param boolean $bCheckEnabled
      * @return array
      */
-    private function getMetaDataInfo($rootNode, $sTableName, $bCheckEnabled = false, $aAddtionalFields = []): array
+    private function getMetaDataInfo(string $rootNode, string $sTableName, bool $bCheckEnabled = false, array $aAddtionalFields = []): array
     {
         $aMetaServiceConfig = [];
         $sAddtionalFields = '';

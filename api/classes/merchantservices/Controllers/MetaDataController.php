@@ -3,6 +3,7 @@
 namespace api\classes\merchantservices\Controllers;
 
 use api\classes\merchantservices\Services\MetaDataService;
+use api\classes\merchantservices\Helpers\Helpers;
 
 /**
  * MetaData Configuration
@@ -70,10 +71,19 @@ class MetaDataController
      * @param array $request
      * @return string
      */
-    public function getSystemMetaData($request)
+    public function getSystemMetaData(array $request): string
     {
+        $aSystemMetaData = [];
+        $xml = '';
 
-        return $this->getMetaDataService()->generateSystemMetaData($request);
+        $aSystemMetaData = $this->getMetaDataService()->generateSystemMetaData($request);
+
+        $xml = '<system_metadata>';
+        $xml .= Helpers::generateXML($aSystemMetaData);        
+        $xml .= '</system_metadata>';
+
+        return $xml;
+
     }
 
     /**
@@ -83,9 +93,18 @@ class MetaDataController
      * @return string
      */
 
-    public function getPaymentMetaData($request)
+    public function getPaymentMetaData(array $request): string 
     {
-        return $this->getMetaDataService()->generatePaymentMetaData($request);
+        $aPaymentMetaData = [];
+        $xml = '';
+
+        $aPaymentMetaData = $this->getMetaDataService()->generatePaymentMetaData($request);
+
+        $xml = '<payment_metadata>';
+        $xml .= Helpers::generateXML($aPaymentMetaData);        
+        $xml .= '</payment_metadata>';
+
+        return $xml;
 
     }
 }

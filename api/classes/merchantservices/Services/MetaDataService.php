@@ -42,70 +42,18 @@ class MetaDataService
      * @param SimpleDOMElement $request     
      * @return string
      */
-    public function generateSystemMetaData($request)
+    public function generateSystemMetaData(array $request): array 
     {
-
-        $xml = '';
-        $aSystemMetaData = [];
-
-        $aSystemMetaData = $this->merchantConfigRepository->getAllSystemMetaDataInfo();
-
-        $xml = '<system_metadata>';
-        $xml .= $this->generateSystemMetaXML($aSystemMetaData);
-        $xml .= '</system_metadata>';
-
-        return $xml;
+        return $this->merchantConfigRepository->getAllSystemMetaDataInfo();
     }    
-
-    /**
-     * Function to consolidate sub modules for Metadata
-     *
-     * @param array $aData
-     * @return string
-     */
-    public function generateSystemMetaXML($aData): string
-    {
-        $xml = '';
-
-        foreach ($aData as $key => $metadata) {
-            $xml .= "<{$key}>";
-            if (!empty($metadata) && is_array($metadata)) {
-                foreach ($metadata as $data) {
-                    if (!empty($data->getRootNode())) {
-                        $sRootNode = $data->getRootNode();
-                        $xml .= "<{$sRootNode}>";
-                        $xml .= $data->toXML();
-                        if (isset($data->additionalProp)) {
-                            $xml .= $this->generateSystemMetaXML($data->additionalProp);
-                        }
-                        $xml .= "</{$sRootNode}>";
-                    } else {
-                        $xml .= $data->toXML();
-                    }
-                }
-            }
-            $xml .= "</{$key}>";
-        }
-        return $xml;
-    }
 
     /**
      * Generate Payment MetaData
      *
      * @return void
      */
-    public function generatePaymentMetaData()
+    public function generatePaymentMetaData(array $request): array 
     {
-
-        $xml = '';
-        $aPaymentMetaData = [];
-
-        $aPaymentMetaData = $this->merchantConfigRepository->getAllPaymentMetaDataInfo();
-
-        $xml = '<payment_metadata>';
-        $xml .= $this->generateSystemMetaXML($aPaymentMetaData);
-        $xml .= '</payment_metadata>';
-
-        return $xml;
+        return $this->merchantConfigRepository->getAllPaymentMetaDataInfo();
     }
 }
