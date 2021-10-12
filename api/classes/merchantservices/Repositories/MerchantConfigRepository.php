@@ -348,6 +348,7 @@ class MerchantConfigRepository
           $sValues = 'VALUES ($1,$2,$3)';
           if($type === 'CLIENT')
           {
+              $id = $this->_clientConfig->getID(); // Get Client ID
               $sTableName = 'client_property_tbl';
           }
           else if($type === 'PSP')

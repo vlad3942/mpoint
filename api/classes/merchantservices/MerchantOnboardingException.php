@@ -10,6 +10,7 @@ class MerchantOnboardingException extends mPointControllerException
     private $_statusCode;
     const SQL_EXCEPTION = 100;
     const SQL_DUPLICATE_EXCEPTION = 101;
+    const API_EXCEPTION = 301;
 
     public function __construct( $statusCode,$message='')
     {

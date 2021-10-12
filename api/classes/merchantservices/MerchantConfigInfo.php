@@ -66,4 +66,17 @@ class MerchantConfigInfo
             'services'               => $configRepository->getServiceStatusByClientId()
         ];
     }
+
+    /***
+     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
+     * @param array                                                               $aData
+     *
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function addClientConfigurationsData(MerchantConfigRepository $configRepository, array $aProperty): void
+    {
+        // Add Properties
+        $configRepository->savePropertyConfig('CLIENT', $aProperty);
+    }
 }
