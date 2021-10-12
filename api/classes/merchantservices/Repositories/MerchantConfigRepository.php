@@ -573,13 +573,13 @@ class MerchantConfigRepository
             3. check nabled flag
         */
         $aSystemMetaData['psps'] = $this->getMetaDataInfo('psp', 'psp_tbl', true, array('system_type as type_id'));
-        $aSystemMetaData['pms'] = $this->getMetaDataInfo('pm', 'paymenttype_tbl');
+        $aSystemMetaData['pm_types'] = $this->getMetaDataInfo('pm_type', 'paymenttype_tbl');
         $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
         $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
         $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
         $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
         $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true);
-        $aSystemMetaData['provider_details'] = $this->getMetaDataInfo('provider_detail', 'processortype_tbl');
+        $aSystemMetaData['payment_processors'] = $this->getMetaDataInfo('payment_processor', 'processortype_tbl');
 
         $aSystemMetaData['addon_types'] = $this->getServicesInfo();
 
