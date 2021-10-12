@@ -94,4 +94,23 @@ class StoreFront extends BaseInfo
         return $StoreFront;
     }
 
+    /**
+     * Construct object from XML
+     *
+     * @param \SimpleDOMElement $oXML
+     *
+     * @return \api\classes\merchantservices\MetaData\StoreFront
+     */
+    public static function produceFromXML(\SimpleDOMElement $oXML) :StoreFront
+    {
+        $objStoreFront = new StoreFront();
+        if (count($oXML->id) > 0) {
+            $objStoreFront->setId((int)$oXML->id);
+        }
+        if (count($oXML->name) > 0) {
+            $objStoreFront->setName((string)$oXML->name);
+        }
+        return $objStoreFront;
+    }
+
 }

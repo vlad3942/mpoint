@@ -91,4 +91,30 @@ class ClientUrl extends BaseInfo
         if(isset($rs["VALUE"])) $objURL->setValue($rs["VALUE"]);
         return $objURL;
     }
+
+    /**
+     * Create object from XML
+     *
+     * @param \SimpleDOMElement $oXML
+     *
+     * @return \api\classes\merchantservices\MetaData\ClientUrl
+     */
+    public static function produceFromXML(\SimpleDOMElement $oXML): ClientUrl
+    {
+        $objURL = new ClientUrl();
+        if (count($oXML->id) > 0) {
+            $objURL->setId((int)$oXML->id);
+        }
+        if (count($oXML->type_id) > 0) {
+            $objURL->setTypeId((int)$oXML->type_id);
+        }
+        if (count($oXML->name) > 0) {
+            $objURL->setName((string)$oXML->name);
+        }
+        if (count($oXML->value) > 0) {
+            $objURL->setValue((string)$oXML->value);
+        }
+        return $objURL;
+    }
+
 }

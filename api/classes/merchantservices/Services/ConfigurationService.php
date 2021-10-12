@@ -6,6 +6,9 @@ use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\MerchantConfigInfo;
+use api\classes\merchantservices\MerchantOnboardingException;
+use api\classes\merchantservices\MetaData\ClientUrl;
+use api\classes\merchantservices\MetaData\StoreFront;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class ConfigurationService
@@ -176,5 +179,56 @@ class ConfigurationService
             return $aProperty;
         };
         $this->getAggregateRoot()->addClientConfigurationsData($this->getRepository(), $aProperty());
+    }
+
+    // Modify Client Configurations
+
+    /***
+     * Modify collection data for client related Entities
+     *
+     * @param \SimpleDOMElement $request
+     *
+     * @return Void
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function modifyClientConfigurations(\SimpleDOMElement $request)
+    {
+        $aModifyData = [];
+        $getProperties = function (&$aModifyData) use($request) {
+            $aProperty = [];
+            foreach ($request->properties->property as $property) {
+                array_push($aProperty, PropertyInfo::produceFromXML($property));
+            }
+            $aModifyData['properties'] = $aProperty;
+        };
+
+        // For Store Front
+        $getStoreFront = function (&$aModifyData) use($request) {
+            $aStorefront = [];
+            foreach ($request->storefronts->storefront as $storefront) {
+                array_push($aStorefront, StoreFront::produceFromXML($storefront));
+            }
+            $aModifyData['storefronts'] =  $aStorefront;
+        };
+
+        // For Client URL
+        $getUrls = function (&$aModifyData) use($request) {
+            $aURLs = [];
+            foreach ($request->client_urls->client_url as $valUrl) {
+                array_push($aURLs, ClientUrl::produceFromXML($valUrl));
+            }
+            $aModifyData['client_urls'] =  $aURLs;
+        };
+
+        if(count($request->properties)) $getProperties($aModifyData);
+        if(count($request->storefronts)) $getStoreFront($aModifyData);
+        if(count($request->client_urls)) $getUrls($aModifyData);
+
+        // Nothing for Update
+        if(empty($aModifyData) === true) {
+            throw new MerchantOnboardingException( MerchantOnboardingException::API_EXCEPTION,'SEEMS INVALID REQUEST OR NOT YET SUPPORTED');
+        }
+        $this->getAggregateRoot()->modifyClientConfigurationsData($this->getRepository(), $aModifyData);
     }
 }
