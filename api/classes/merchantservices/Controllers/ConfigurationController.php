@@ -151,9 +151,12 @@ class ConfigurationController
             array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
         }
         $aPMIds = array();
-        foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+        if(count($request->pm_configurations)>0)
         {
-            array_push($aPMIds,(int)$pm_configuration->pm_id);
+            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+            {
+                array_push($aPMIds,(int)$pm_configuration->pm_id);
+            }
         }
         $this->getConfigService()->savePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
     }

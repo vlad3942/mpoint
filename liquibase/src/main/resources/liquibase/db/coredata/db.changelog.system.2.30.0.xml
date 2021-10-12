@@ -324,7 +324,7 @@
                 tableName="client_property_tbl">
             <column name="name" value="IS_LEGACY"/>
             <column name="category" value="7"/>
-            <column name="ismandatory" value="false"/>
+            <column name="ismandatory" value="true"/>
             <column name="datatype" value="1"/>
         </insert>
 
@@ -333,7 +333,7 @@
                 tableName="client_property_tbl">
             <column name="name" value="IS_LEGACY_CALLBACK_FLOW"/>
             <column name="category" value="7"/>
-            <column name="ismandatory" value="false"/>
+            <column name="ismandatory" value="true"/>
             <column name="datatype" value="1"/>
         </insert>
 
@@ -1114,6 +1114,17 @@
             <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PAYPAL_SUBJECT"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
         <!-- PayPal Property END -->
 
         <!-- UATP CARD Property END -->
@@ -1358,7 +1369,7 @@
             <column name="name" value="key.html"/>
             <column name="pspid" value="43"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1368,7 +1379,7 @@
             <column name="name" value="signtype.app"/>
             <column name="pspid" value="43"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1378,7 +1389,7 @@
             <column name="name" value="signtype.html"/>
             <column name="pspid" value="43"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1388,7 +1399,7 @@
             <column name="name" value="key.app"/>
             <column name="pspid" value="43"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1398,7 +1409,7 @@
             <column name="name" value="pid.app"/>
             <column name="pspid" value="43"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="2"/>
         </insert>
 
@@ -1408,7 +1419,7 @@
             <column name="name" value="pid.html"/>
             <column name="pspid" value="43"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="2"/>
         </insert>
         <!-- AliPay - Chinese Property END -->
@@ -1509,7 +1520,7 @@
             <column name="name" value="GlobalPayment.Wallet.USERNAME.14"/>
             <column name="pspid" value="56"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1519,17 +1530,7 @@
             <column name="name" value="GlobalPayment.Wallet.USERNAME.44"/>
             <column name="pspid" value="56"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
-            <column name="datatype" value="3"/>
-        </insert>
-
-        <insert catalogName="System"
-                schemaName="System"
-                tableName="route_property_tbl">
-            <column name="name" value="GlobalPayment.Wallet.USERNAME.44.PHP"/>
-            <column name="pspid" value="56"/>
-            <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1537,16 +1538,6 @@
                 schemaName="System"
                 tableName="route_property_tbl">
             <column name="name" value="GlobalPayment.Wallet.PASSWORD.14"/>
-            <column name="pspid" value="56"/>
-            <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
-            <column name="datatype" value="3"/>
-        </insert>
-
-        <insert catalogName="System"
-                schemaName="System"
-                tableName="route_property_tbl">
-            <column name="name" value="GlobalPayment.Wallet.PASSWORD.14.PHP"/>
             <column name="pspid" value="56"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="false"/>
@@ -1563,25 +1554,7 @@
             <column name="datatype" value="3"/>
         </insert>
 
-        <insert catalogName="System"
-                schemaName="System"
-                tableName="route_property_tbl">
-            <column name="name" value="GlobalPayment.Wallet.PASSWORD.44.PHP"/>
-            <column name="pspid" value="56"/>
-            <column name="category" value="2"/>
-            <column name="ismandatory" value="false"/>
-            <column name="datatype" value="3"/>
-        </insert>
 
-        <insert catalogName="System"
-                schemaName="System"
-                tableName="route_property_tbl">
-            <column name="name" value="GlobalPayment.Wallet.USERNAME.14.PHP"/>
-            <column name="pspid" value="56"/>
-            <column name="category" value="2"/>
-            <column name="ismandatory" value="false"/>
-            <column name="datatype" value="3"/>
-        </insert>
         <!-- GlobalPayment Property END -->
 
         <!-- Citcon Property Start -->
@@ -1591,7 +1564,7 @@
             <column name="name" value="VIRTUAL_PAYMENT_TIMER"/>
             <column name="pspid" value="41"/>
             <column name="category" value="2"/>
-            <column name="ismandatory" value="true"/>
+            <column name="ismandatory" value="false"/>
             <column name="datatype" value="3"/>
         </insert>
 
@@ -1681,6 +1654,15 @@
             <column name="datatype" value="3"/>
         </insert>
 
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PAYPAL_REST_ACC_ID"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
 
         <insert catalogName="System"
                 schemaName="System"
@@ -1814,6 +1796,19 @@
         </insert>
 
         <!-- UATP Card Property End -->
+
+        <!-- WorldPay Card Property End -->
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="check.enrollment.mid"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <!-- WorldPay Card Property End -->
 
     </changeSet>
 </databaseChangeLog>
