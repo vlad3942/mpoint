@@ -13,20 +13,10 @@ use api\classes\merchantservices\configuration\PCCConfig;
 use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\configuration\ServiceConfig;
 use api\classes\merchantservices\MerchantOnboardingException;
-use api\classes\merchantservices\MetaData\ClientServiceStatus;
-use api\classes\merchantservices\MetaData\PSPInfo;
-use api\classes\merchantservices\MetaData\PaymentType;
-use api\classes\merchantservices\MetaData\Country;
-use api\classes\merchantservices\MetaData\Currency;
-use api\classes\merchantservices\MetaData\CaptureType;
-use api\classes\merchantservices\MetaData\PropertyAttribute;
-use api\classes\merchantservices\MetaData\PropertyDetail;
-use api\classes\merchantservices\MetaData\ProviderDetail;
-use api\classes\merchantservices\MetaData\ServiceInfo;
-use api\classes\merchantservices\MetaData\ServiceSubType;
-use api\classes\merchantservices\MetaData\UrlInfo;
 
+use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\MetaData\Client;
+use api\classes\merchantservices\commons\BaseInfo;
 use api\classes\merchantservices\MetaData\ClientUrl;
 use api\classes\merchantservices\MetaData\ClientPaymentMethodId;
 use api\classes\merchantservices\MetaData\StoreFront;
@@ -463,286 +453,236 @@ class MerchantConfigRepository
         }
      return $aPropertyInfo;
     }
+
     /**
-     * Generate PSPConfig Data
+     * Generate Payment Metadata
+     *
+     * @return array
+     */
+    public function getAllPaymentMetaDataInfo(): array
+    {
+        $aPaymentMetaData = [];
+
+        $aPaymentMetaData['pms'] = $this->getMetaDataInfo('pm', 'card_tbl', true, array('paymenttype as type_id'));
+        $aPaymentMetaData['payment_providers'] = $this->getpaymentProviders();
+        $aPaymentMetaData['route_features'] = $this->routeFeaturesInfo();
+        $aPaymentMetaData['transaction_types'] = $this->getMetaDataInfo('transaction_type', 'type_tbl', true);
+        $aPaymentMetaData['card_states'] = $this->getMetaDataInfo('card_state', 'cardstate_tbl', true);
+        $aPaymentMetaData['fx_service_types'] = $this->getMetaDataInfo('fx_service_type', 'fxservicetype_tbl', true);
+
+        return $aPaymentMetaData;
+    }
+
+    /**
+     * Generate Payment provider data
      *
      * @return void
      */
-    public function getPSPInfo(): array
+    private function paymentProvidersData() : array
     {
-        $aPSPConfig = [];
+        $iClientId = $this->_clientConfig->getID();
 
-        $SQL = "SELECT id, name FROM SYSTEM" . sSCHEMA_POSTFIX . ".psp_tbl  WHERE enabled = true";
-        $aRS = $this->getDBConn()->getAllNames($SQL);
+        $SQL = "SELECT rt.id, psp.name, rc.id as rcid, rc.name as rcname
+        FROM CLIENT" . sSCHEMA_POSTFIX . ".route_tbl rt 
+        inner join SYSTEM" . sSCHEMA_POSTFIX . ".psp_tbl psp on rt.providerid  = psp.id
+        inner join CLIENT" . sSCHEMA_POSTFIX . ".routeconfig_tbl rc on rc.routeid = rt.id
+        WHERE clientid = $iClientId
+        order by rt.id";
 
-        foreach ($aRS as $rs) {
-            $PSPConfig = new PSPInfo();
-            $PSPConfig->setId($rs["ID"])
-                ->setName($rs["NAME"]);
-            array_push($aPSPConfig, $PSPConfig);
-        }
-        return $aPSPConfig;
+        return $this->getDBConn()->getAllNames($SQL);
     }
 
     /**
-     * Get All Payment Methods
+     * Generate payment provider Info
      *
      * @return array
      */
-    public function getPaymentMethods(): array
+    private function getpaymentProviders() : array
     {
-        $aPaymentMethods = [];
+        $aPaymentProviders = [];
+        $iPaymentProviderId = -1;
+        $aRouteConfigs = [];
+        $aPaymentProvider = [];
+        $aRouteConfigData = [];
 
-        $SQL = "SELECT id, name FROM SYSTEM" . sSCHEMA_POSTFIX . ".paymenttype_tbl";
-        $aRS = $this->getDBConn()->getAllNames($SQL);
+        $aRS = $this->paymentProvidersData();
 
         foreach ($aRS as $rs) {
-            $PaymentType = new PaymentType();
-            $PaymentType->setId($rs["ID"])
-                ->setName($rs["NAME"]);
-            array_push($aPaymentMethods, $PaymentType);
+
+            if ($iPaymentProviderId === $rs["ID"]) {
+                array_push($aRouteConfigData, array('ID' => $rs["RCID"], 'NAME' => $rs['RCNAME']));
+            } else {
+
+                if (count($aRouteConfigData)) {
+                    $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration', array('name' => 'route_name'));
+                    $PaymentProvider->additionalProp['route_configurations'] = $aRouteConfigs;
+                }
+
+                $aRouteConfigs = [];
+                $aPaymentProvider = [];
+
+                $iPaymentProviderId = $rs["ID"];
+
+                $aPaymentProvider[] =  array('ID' => $rs["ID"], 'NAME' => $rs['NAME']);
+                $PaymentProvider = BaseInfo::produceFromDataSet(
+                    $aPaymentProvider,
+                    'payment_provider'
+                )[0];
+
+                array_push($aRouteConfigData, array('ID' => $rs["RCID"], 'NAME' => $rs['RCNAME']));
+
+                array_push($aPaymentProviders, $PaymentProvider);
+            }
         }
-        return $aPaymentMethods;
+        if (count($aRouteConfigData)) {
+            $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration', array('name' => 'route_name'));
+            $PaymentProvider->additionalProp['route_configurations'] = $aRouteConfigs;
+        }
+        return $aPaymentProviders;
+    }
+
+
+    /**
+     * Generate route Feature Info
+     *
+     * @return array
+     */
+    private function routeFeaturesInfo(): array
+    {
+        $aRouteFeatureInfo = [];
+
+        $SQL = "SELECT id, featurename as name FROM SYSTEM" . sSCHEMA_POSTFIX . ".routefeature_tbl  WHERE enabled = true ";
+        $aRS = $this->getDBConn()->getAllNames($SQL);
+
+        $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');
+
+        return $aRouteFeatureInfo;
     }
 
     /**
-     * Get All Countries
+     * Generate System MetaData
      *
      * @return array
      */
-    public function getCountries(): array
+    public function getAllSystemMetaDataInfo(): array
     {
-        $aCountries = [];
+        $aSystemMetaData = [];
 
-        $SQL = "SELECT id, name FROM SYSTEM" . sSCHEMA_POSTFIX . ".country_tbl WHERE enabled = true";
-        $aRS = $this->getDBConn()->getAllNames($SQL);
+        /*
+        *   getMetaDataInfo parameters
+            1. rootnode of the section
+            2. table name
+            3. check nabled flag
+        */
+        $aSystemMetaData['psps'] = $this->getMetaDataInfo('psp', 'psp_tbl', true, array('system_type as type_id'));
+        $aSystemMetaData['pm_types'] = $this->getMetaDataInfo('pm_type', 'paymenttype_tbl');
+        $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
+        $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
+        $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
+        $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
+        $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true);
+        $aSystemMetaData['payment_processors'] = $this->getMetaDataInfo('payment_processor', 'processortype_tbl');
 
-        foreach ($aRS as $rs) {
-            $Country = new Country();
-            $Country->setId($rs["ID"])
-                ->setName($rs["NAME"]);
-            array_push($aCountries, $Country);
-        }
-        return $aCountries;
+        $aSystemMetaData['addon_types'] = $this->getServicesInfo();
+
+        return $aSystemMetaData;
     }
 
     /**
-     * Get All Currencies
+     * Generic function to generate Metadata response structure
      *
+     * @param string $rootNode
+     * @param string $sTableName
+     * @param boolean $bCheckEnabled
      * @return array
      */
-    public function getCurrencies(): array
+    private function getMetaDataInfo(string $rootNode, string $sTableName, bool $bCheckEnabled = false, array $aAddtionalFields = []): array
     {
-        $aCurrencies = [];
+        $aMetaServiceConfig = [];
+        $sAddtionalFields = '';
 
-        $SQL = "SELECT id, name FROM SYSTEM" . sSCHEMA_POSTFIX . ".currency_tbl WHERE enabled = true";
+        if ($bCheckEnabled) {
+            $sEnableCheck = ' AND enabled = true';
+        }
+
+        if(!empty($aAddtionalFields))
+        {
+            $sAddtionalFields = ', '.implode(',',$aAddtionalFields);
+        }
+
+        $SQL = "SELECT id, name $sAddtionalFields FROM SYSTEM" . sSCHEMA_POSTFIX . "." . $sTableName . "  WHERE true " . $sEnableCheck;
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        foreach ($aRS as $rs) {
-            $Currency = new Currency();
-            $Currency->setId($rs["ID"])
-                ->setName($rs["NAME"]);
-            array_push($aCurrencies, $Currency);
-        }
-        return $aCurrencies;
+        $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
+
+        return $aMetaServiceConfig;
     }
 
     /**
-     * Get All Capture Types
+     *  Fetch Services master data
      *
      * @return array
      */
-    public function getCaptureTypes(): array
+    public function getSerivesData(): array
     {
-        $aCaptureTypes = [];
+        $SQL = "SELECT st.id as id, st.name ,sst.id stid, sst.name as stname
+        FROM SYSTEM" . sSCHEMA_POSTFIX . ".services_tbl st
+        inner join SYSTEM" . sSCHEMA_POSTFIX . ".service_type_tbl sst on st.id = sst.serviceid
+        order by st.id";
 
-        $SQL = "SELECT id, name FROM SYSTEM" . sSCHEMA_POSTFIX . ".capturetype_tbl WHERE enabled = true";
-        $aRS = $this->getDBConn()->getAllNames($SQL);
-
-        foreach ($aRS as $rs) {
-            $CaptureType = new CaptureType();
-            $CaptureType->setId($rs["ID"])
-                ->setName($rs["NAME"]);
-            array_push($aCaptureTypes, $CaptureType);
-        }
-        return $aCaptureTypes;
+        return $this->getDBConn()->getAllNames($SQL);
     }
 
-    public function getProviderDetails(): array
-    {
-        $aProviderDetails = [];
-
-        $SQL = "SELECT 1 as id,1 as type_id,'test_provider_detail' as name";
-        $aRS = $this->getDBConn()->getAllNames($SQL);
-
-        foreach ($aRS as $rs) {
-            $ProviderDetail = new ProviderDetail();
-            $ProviderDetail->setId($rs["ID"])
-                ->setTypeId($rs['TYPE_ID'])
-                ->setName($rs["NAME"]);
-            array_push($aProviderDetails, $ProviderDetail);
-        }
-
-        return $aProviderDetails;
-    }
-
-    public function getUrlInfo(): array
-    {
-        $aUrlInfo = [];
-
-        $SQL = "SELECT 1 as type_id,'url_category' as category,'url_name' as name, 'url_value' as value";
-        $aRS = $this->getDBConn()->getAllNames($SQL);
-
-        foreach ($aRS as $rs) {
-            $UrlInfo = new UrlInfo();
-            $UrlInfo->setTypeId($rs["TYPE_ID"])
-                ->setCategory($rs['CATEGORY'])
-                ->setName($rs["NAME"])
-                ->setValue($rs["VALUE"]);
-            array_push($aUrlInfo, $UrlInfo);
-        }
-
-        return $aUrlInfo;
-    }
-
-    public function getServices(): array
+    /**
+     * Generate Services response structure
+     *
+     * @return array
+     */
+    public function getServicesInfo(): array
     {
         $aServices = [];
-
-        $SQL = "select id, name, stid, stname
-        from (
-        select
-            1 as id,
-            'service_name' as name,
-            1 as stid ,
-            'subtype_name' as stname
-        union
-        select
-            1 as id,
-            'service_name' as name,
-            2 as stid ,
-            'subtype_name2' as stname
-        union
-        select
-            2 as id,
-            'service_name2' as name,
-            21 as stid ,
-            'subtype_name21' as stname
-        ) as a 
-        order by 1"; // order by id
-        $aRS = $this->getDBConn()->getAllNames($SQL);
-
         $iServiceId = 0;
-
         $aSubtypes = [];
+        $aTypes = [];
+
+        $aRS = $this->getSerivesData();
 
         foreach ($aRS as $rs) {
 
             if ($iServiceId === $rs["ID"]) {
-                array_push($aSubtypes, new ServiceSubType($rs["STID"], $rs['STNAME']));
+                array_push($aSubtypes, array('ID' => $rs["STID"], 'NAME' => $rs['STNAME']));
             } else {
 
                 if (count($aSubtypes)) {
-                    $Service->setSubTypes($aSubtypes);
+                    $aServiceSubTypes = BaseInfo::produceFromDataSet($aSubtypes, 'addon_subtype', array('name' => 'addon_subtype'));
+                    $Service->additionalProp['addon_subtypes'] = $aServiceSubTypes;
                 }
 
                 $aSubtypes = [];
+                $aTypes = [];
 
                 $iServiceId = $rs["ID"];
 
-                $Service = new ServiceInfo();
-                $Service->setId($rs["ID"])
-                    ->setName($rs['NAME']);
+                $aTypes[] =  array('ID' => $rs["ID"], 'NAME' => $rs['NAME']);
+                $Service = BaseInfo::produceFromDataSet(
+                    $aTypes,
+                    'addon_type',
+                    array('name' => 'addon_type')
+                )[0];
 
-                array_push($aSubtypes, new ServiceSubType($rs["STID"], $rs['STNAME']));
+                array_push($aSubtypes, array('ID' => $rs["STID"], 'NAME' => $rs['STNAME']));
 
                 array_push($aServices, $Service);
             }
         }
         if (count($aSubtypes)) {
-            $Service->setSubTypes($aSubtypes);
+            $aServiceSubTypes = BaseInfo::produceFromDataSet($aSubtypes, 'addon_subtype', array('name' => 'addon_subtype'));
+            $Service->additionalProp['addon_subtypes'] = $aServiceSubTypes;
         }
 
         return $aServices;
     }
 
-    public function getProperties(): array
-    {
-
-        $aProperties = [];
-
-        $SQL = "select property_id, category, sub_category, reference_id, pa_id, pa_key, pa_datatype, pa_mandatory
-        from (
-        select
-            1 as property_id,
-            'category1' as category,
-            'sub_category1' as sub_category,
-            'reference_id1' as reference_id ,
-            '1' as pa_id,
-            'pakey1' as pa_key,
-            'padatatype1' as pa_datatype,
-            'pamandatory1' as pa_mandatory
-        union
-        select
-            1 as property_id,
-            'category1' as category,
-            'sub_category1' as sub_category,
-            'reference_id1' as reference_id ,
-            '2' as pa_id,
-            'pakey2' as pa_key,
-            'padatatype2' as pa_datatype,
-            'pamandatory2' as pa_mandatory
-        union
-        select
-            2 as property_id,
-            'category2' as category,
-            'sub_category2' as sub_category,
-            'reference_id2' as reference_id ,
-            '3' as pa_id,
-            'pakey3' as pa_key,
-            'padatatype3' as pa_datatype,
-            'pamandatory3' as pa_mandatory
-        ) as a 
-        order by 1"; // order by id
-        $aRS = $this->getDBConn()->getAllNames($SQL);
-
-        $iPropertyId = 0;
-
-
-
-        $aPropertyAttributes = [];
-
-        foreach ($aRS as $rs) {
-
-            if ($iPropertyId === $rs["PROPERTY_ID"]) {
-                array_push($aPropertyAttributes, new PropertyAttribute($rs["PA_ID"], $rs['PA_KEY'], $rs['PA_DATATYPE'], $rs['PA_MANDATORY']));
-            } else {
-
-                if (count($aPropertyAttributes)) {
-                    $PropertyDetail->setProperties($aPropertyAttributes);
-                }
-
-                $aPropertyAttributes = [];
-
-                $iPropertyId = $rs["PROPERTY_ID"];
-
-                $PropertyDetail = new PropertyDetail();
-                $PropertyDetail->setCategory($rs["CATEGORY"])
-                    ->setSubCategory($rs['SUB_CATEGORY'])
-                    ->setRefernceId($rs['REFERENCE_ID']);
-
-                array_push($aPropertyAttributes, new PropertyAttribute($rs["PA_ID"], $rs['PA_KEY'], $rs['PA_DATATYPE'], $rs['PA_MANDATORY']));
-
-                array_push($aProperties, $PropertyDetail);
-            }
-        }
-        if (count($aPropertyAttributes)) {
-            $PropertyDetail->setProperties($aPropertyAttributes);
-        }
-
-
-        return $aProperties;
-    }
 
     ////////// For Client Configuration //////////
     /**
