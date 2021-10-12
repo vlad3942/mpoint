@@ -91,8 +91,8 @@ class BaseInfo
      */
     public function toXML()
     {
-        $sIdNode = $this->aNodeAlias['id'];
-        $sNameNode = $this->aNodeAlias['name'];
+        $sIdNode = isset($this->aNodeAlias['id'])?$this->aNodeAlias['id']:'id';
+        $sNameNode = isset($this->aNodeAlias['name'])?$this->aNodeAlias['name']:'name';        
 
         $xml = sprintf("<{$sIdNode}>%s</{$sIdNode}>", $this->getId());
         $xml .= sprintf("<{$sNameNode}>%s</{$sNameNode}>", $this->getName());
