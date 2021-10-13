@@ -5,6 +5,7 @@ namespace api\classes\merchantservices\Controllers;
 use api\classes\merchantservices\configuration\BaseConfig;
 use api\classes\merchantservices\Helpers\Helpers;
 use api\classes\merchantservices\configuration\PropertyInfo;
+use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -54,12 +55,30 @@ class ConfigurationController
                 'info'                  =>  $aClientConfigData['info'],
                 'client_urls'           =>  $aClientConfigData['client_urls'],
                 'payment_method_ids'    =>  $aClientConfigData['payment_method_ids'],
+                'services'              =>  $aClientConfigData['services'],
                 'storefronts'           =>  $aClientConfigData['storefronts'],
             ]
         );
         $XML .=  Helpers::getPropertiesXML($aClientConfigData['property_details']);
         $XML .= '</client_configuration>';
         return $XML;
+    }
+
+    /***
+     * Function used to process data for POST RQ for adding details against Client ID
+     *
+     * @param \SimpleDOMElement $request
+     *
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function postClientConfig(\SimpleDOMElement $request): void
+    {
+        // Validation : Only Properties Accepted
+        if(!$request->xpath('properties')) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::API_EXCEPTION,'REQUEST NOT VALIDATE');
+        }
+        $this->getConfigService()->addClientConfigurations($request);
     }
 
     public function getAddonConfig( $additionalParams = [])

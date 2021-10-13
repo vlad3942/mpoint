@@ -14,6 +14,7 @@ use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\configuration\ServiceConfig;
 use api\classes\merchantservices\MerchantOnboardingException;
 
+use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\MetaData\Client;
 use api\classes\merchantservices\commons\BaseInfo;
 use api\classes\merchantservices\MetaData\ClientUrl;
@@ -337,6 +338,7 @@ class MerchantConfigRepository
           $sValues = 'VALUES ($1,$2,$3)';
           if($type === 'CLIENT')
           {
+              $id = $this->_clientConfig->getID(); // Get Client ID
               $sTableName = 'client_property_tbl';
           }
           else if($type === 'PSP')
@@ -467,7 +469,7 @@ class MerchantConfigRepository
         $aPaymentMetaData['transaction_types'] = $this->getMetaDataInfo('transaction_type', 'type_tbl', true);
         $aPaymentMetaData['card_states'] = $this->getMetaDataInfo('card_state', 'cardstate_tbl', true);
         $aPaymentMetaData['fx_service_types'] = $this->getMetaDataInfo('fx_service_type', 'fxservicetype_tbl', true);
-        
+
         return $aPaymentMetaData;
     }
 
@@ -478,7 +480,7 @@ class MerchantConfigRepository
      */
     private function paymentProvidersData() : array
     {
-        $iClientId = $this->_clientConfig->getID();        
+        $iClientId = $this->_clientConfig->getID();
 
         $SQL = "SELECT rt.id, psp.name, rc.id as rcid, rc.name as rcname
         FROM CLIENT" . sSCHEMA_POSTFIX . ".route_tbl rt 
@@ -535,7 +537,7 @@ class MerchantConfigRepository
         if (count($aRouteConfigData)) {
             $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration', array('name' => 'route_name'));
             $PaymentProvider->additionalProp['route_configurations'] = $aRouteConfigs;
-        }        
+        }
         return $aPaymentProviders;
     }
 
@@ -552,7 +554,7 @@ class MerchantConfigRepository
         $SQL = "SELECT id, featurename as name FROM SYSTEM" . sSCHEMA_POSTFIX . ".routefeature_tbl  WHERE enabled = true ";
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');        
+        $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');
 
         return $aRouteFeatureInfo;
     }
@@ -566,10 +568,10 @@ class MerchantConfigRepository
     {
         $aSystemMetaData = [];
 
-        /* 
+        /*
         *   getMetaDataInfo parameters
             1. rootnode of the section
-            2. table name 
+            2. table name
             3. check nabled flag
         */
         $aSystemMetaData['psps'] = $this->getMetaDataInfo('psp', 'psp_tbl', true, array('system_type as type_id'));
@@ -610,7 +612,7 @@ class MerchantConfigRepository
         $SQL = "SELECT id, name $sAddtionalFields FROM SYSTEM" . sSCHEMA_POSTFIX . "." . $sTableName . "  WHERE true " . $sEnableCheck;
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);        
+        $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
 
         return $aMetaServiceConfig;
     }
@@ -740,6 +742,16 @@ class MerchantConfigRepository
             array_push($aStoreFront, StoreFront::produceFromResultSet($rs));
         }
         return $aStoreFront;
+    }
+
+    /**
+     * Get Client's Service status
+     *
+     * @return ?ClientServiceStatus
+     */
+    public function getServiceStatusByClientId(): ?ClientServiceStatus
+    {
+        return ClientServiceStatus::produceConfig($this->getDBConn(), $this->_clientConfig->getID());
     }
 
     /**

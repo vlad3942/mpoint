@@ -155,4 +155,26 @@ class ConfigurationService
     {
         return $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
     }
+
+    /***
+     * Add data against the client ID
+     *
+     * @param \SimpleDOMElement $request
+     *
+     * @return array
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function addClientConfigurations(\SimpleDOMElement $request): array
+    {
+        $aProperty = function() use($request) {
+            $aProperty = [];
+            foreach ($request->properties->property as $property)
+            {
+                array_push($aProperty, PropertyInfo::produceFromXML($property));
+            }
+            return $aProperty;
+        };
+        $this->getAggregateRoot()->addClientConfigurationsData($this->getRepository(), $aProperty());
+    }
 }
