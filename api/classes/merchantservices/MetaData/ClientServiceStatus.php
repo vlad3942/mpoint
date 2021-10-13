@@ -245,6 +245,8 @@ class ClientServiceStatus
     public static function produceFromResultSet(array $rs): ClientServiceStatus
     {
         $objURL = new ClientServiceStatus();
+        if(empty($rs) === TRUE) return $objURL;
+
         $objURL->setCallback($rs["CALLBACK"]);
         $objURL->setDcc($rs["DCC"]);
         $objURL->setMcp($rs["MCP"]);
