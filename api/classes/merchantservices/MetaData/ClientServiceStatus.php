@@ -15,42 +15,42 @@ class ClientServiceStatus
     /**
      * @var bool
      */
-    private bool $dcc;
+    private bool $dcc = FALSE;
 
     /**
      * @var bool
      */
-    private bool $mcp;
+    private bool $mcp = FALSE;
 
     /**
      * @var bool
      */
-    private bool $pcc;
+    private bool $pcc = FALSE;
 
     /**
      * @var bool
      */
-    private bool $fraud;
+    private bool $fraud = FALSE;
 
     /**
      * @var bool
      */
-    private bool $tokenization;
+    private bool $tokenization = FALSE;
 
     /**
      * @var bool
      */
-    private bool $splitPayment;
+    private bool $splitPayment = FALSE;
 
     /**
      * @var bool
      */
-    private bool $callback;
+    private bool $callback = FALSE;
 
     /**
      * @var bool
      */
-    private bool $void;
+    private bool $void = FALSE;
 
     /**
      * @return bool
@@ -224,7 +224,7 @@ class ClientServiceStatus
 
     public static function produceConfig(\RDB $oDB, int $clientID) {
         $sql = "SELECT CS.id, CS.dcc_enabled AS dcc, CS.mcp_enabled AS mcp, CS.pcc_enabled AS pcc, CS.fraud_enabled AS fraud,
-                CS.tokenization_enabled AS tokenization, CS.splitPayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void, CS.enabled			
+                CS.tokenization_enabled AS tokenization, CS.splitpayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void, CS.enabled			
 				FROM Client". sSCHEMA_POSTFIX .".services_tbl CS 				
 				WHERE clientid = ". $clientID ." AND enabled = true";
 
