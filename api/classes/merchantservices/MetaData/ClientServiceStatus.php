@@ -229,7 +229,10 @@ class ClientServiceStatus
 				WHERE clientid = ". $clientID ." AND enabled = true";
 
         $aRS = $oDB->getName($sql);
-        return self::produceFromResultSet($aRS);
+        $aClientService = [];
+        if(empty($aRS) === FALSE)
+            $aClientService = array_merge($aClientService, $aRS);
+        return self::produceFromResultSet($aClientService);
     }
 
     /**
