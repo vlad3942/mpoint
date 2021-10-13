@@ -307,4 +307,60 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(2, pg_num_rows($res));
     }
 
+    public function testSuccessfulGetSystemMetadata()
+    {
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=system_metadata&params=client_id/10099");
+
+        $this->_httpClient->connect();        
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(200, $iStatus);
+
+        $this->assertStringContainsString('<psp><id>1</id><name>Cellpoint Mobile</name><type_id>1</type_id></psp>',$sReplyBody);
+        $this->assertStringContainsString('<pm_type><id>1</id><name>Card</name></pm_type>',$sReplyBody);
+        $this->assertStringContainsString('<country_detail><id>310</id><name>Central African Republic</name></country_detail>',$sReplyBody);
+        $this->assertStringContainsString('<currency_detail><id>12</id><name>Algerian Dinar</name>',$sReplyBody);
+        $this->assertStringContainsString('<capture_type><id>1</id><name>Manual Capture</name></capture_type>',$sReplyBody);
+        $this->assertStringContainsString('<id>1</id><name>Import Customer Data</name></client_url>',$sReplyBody);
+        $this->assertStringContainsString('<payment_processor><id>1</id><name>PSP</name></payment_processor>',$sReplyBody);
+        $this->assertStringContainsString('<addon_type><id>1</id><addon_type>FX</addon_type><addon_subtypes><addon_subtype><id>1</id><addon_subtype>DCC</addon_subtype></addon_subtype><addon_subtype><id>2</id><addon_subtype>MCP</addon_subtype></addon_subtype><addon_subtype><id>3</id><addon_subtype>PCC</addon_subtype></addon_subtype></addon_subtypes></addon_type>',$sReplyBody);
+
+    }
+
+    public function testSuccessfulGetPaymentMetadata()
+    {
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=payment_metadata&params=client_id/10099");
+
+        $this->_httpClient->connect();        
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(200, $iStatus);
+
+        $this->assertStringContainsString('<pm><id>10</id><name>SMS</name><type_id>1</type_id></pm>',$sReplyBody);
+        $this->assertStringContainsString('<payment_provider><id>1</id><name>UATP CardAccount</name><route_configurations><route_configuration><id>1</id><route_name>TEST</route_name></route_configuration></route_configurations></payment_provider>',$sReplyBody);
+        $this->assertStringContainsString('<route_feature><id>1</id><name>Pre-Auth</name></route_feature>',$sReplyBody);
+        $this->assertStringContainsString('<transaction_type><id>10</id><name>Call Centre Purchase</name></transaction_type>',$sReplyBody);
+        $this->assertStringContainsString('<card_state><id>1</id><name>Enabled</name></card_state>',$sReplyBody);
+        $this->assertStringContainsString('<fx_service_type><id>11</id><name>DCC Opt</name></fx_service_type>',$sReplyBody);
+                  
+    }
+
 }
