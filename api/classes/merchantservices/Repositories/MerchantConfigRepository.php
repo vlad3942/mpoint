@@ -775,4 +775,96 @@ class MerchantConfigRepository
         }
         return $aPMIds;
     }
+
+    /**
+     * Modify operation for Client Configuration
+     *
+     * @param array $aModifyData
+     *
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function modifyClientConfigurationsData(Array $aModifyData): void
+    {
+        // Initiate Transaction
+        $this->getDBConn()->query("START TRANSACTION");
+
+        // Run Below Operations as per availability
+        if(empty($aModifyData['client_urls']) === false)
+            $this->updateClientUrls($aModifyData['client_urls']);
+
+        if(empty($aModifyData['properties']) === false)
+            $this->updatePropertyConfig('CLIENT', $aModifyData['properties']);
+
+        if(empty($aModifyData['storefronts']) === false)
+            $this->updateClientStoreFronts($aModifyData['storefronts']);
+
+        // COMMIT Transaction
+        $this->getDBConn()->query("COMMIT");
+    }
+
+    /***
+     * Modify Client URL's
+     *
+     * @param array $urls
+     *
+     * @return bool|null
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function updateClientUrls(Array $urls): ?bool {
+
+        if(empty($urls) === true) return NULL; // Is Empty Check
+
+        foreach ($urls as $url)
+        {
+            try {
+                $SQL = "UPDATE client.url_tbl SET url = '%s' WHERE id = %s and clientid = %s";
+                $SQL = sprintf($SQL, $url->getValue(), $url->getId(), $this->_clientConfig->getID());
+
+                $result = $this->getDBConn()->executeQuery($SQL);
+                if(is_resource($result) === FALSE) {
+                    $this->getDBConn()->query("ROLLBACK");
+                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION, 'UPDATE REQUEST FAILED');
+                }
+            } catch (\SQLQueryException $exp) {
+                $this->getDBConn()->query("ROLLBACK");
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION, 'UPDATE REQUEST FAILED');
+            }
+        }
+        return TRUE;
+    }
+
+    /**
+     * Modify Store front as per the Client
+     *
+     * @param array $aStoreFront
+     *
+     * @return bool|null
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function updateClientStoreFronts(Array $aStoreFront): ?bool {
+
+        if(empty($aStoreFront) === true) return NULL; // Is Empty Check
+
+        foreach ($aStoreFront as $storeFront)
+        {
+            try {
+                $SQL = "UPDATE client.account_tbl SET markup = '%s' WHERE id = %s and clientid = %s";
+                $SQL = sprintf($SQL, $storeFront->getName(), $storeFront->getId(), $this->_clientConfig->getID());
+                $result = $this->getDBConn()->executeQuery($SQL);
+                if(is_resource($result) === FALSE) {
+                    $this->getDBConn()->query("ROLLBACK");
+                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,
+                        'REQUEST FAILED, StoreFront ID|Value::' . $storeFront->getId(). ':' . $storeFront->getName());
+                }
+            } catch (\SQLQueryException|\Exception $exp) {
+                $this->getDBConn()->query("ROLLBACK");
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,
+                    'REQUEST FAILED, StoreFront (' . $storeFront->getId(). ' :: ' . $storeFront->getName() . ')');
+            }
+        }
+        return TRUE;
+    }
 }

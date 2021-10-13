@@ -79,4 +79,23 @@ class MerchantConfigInfo
         // Add Properties
         $configRepository->savePropertyConfig('CLIENT', $aProperty);
     }
+
+    /***
+     * Modify Collection against Client
+     *
+     * 1. Properties
+     * 2. Urls
+     * 3. StoreFront
+     *
+     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
+     * @param array                                                               $aModifyData
+     *
+     * @return void
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function modifyClientConfigurationsData(MerchantConfigRepository $configRepository, array $aModifyData): void
+    {
+        $configRepository->modifyClientConfigurationsData($aModifyData);
+    }
 }

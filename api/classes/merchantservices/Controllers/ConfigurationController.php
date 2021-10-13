@@ -81,6 +81,22 @@ class ConfigurationController
         $this->getConfigService()->addClientConfigurations($request);
     }
 
+    /***
+     * Update Collections as per the client ID
+     * @package MerchantOnboarding
+     * @api [PUT] merchantservices/api/clientconfig/client_id/{:id}
+     *
+     *
+     * @param \SimpleDOMElement $request
+     *
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function putClientConfig(\SimpleDOMElement $request): void
+    {
+        $this->getConfigService()->modifyClientConfigurations($request);
+    }
+
     public function getAddonConfig( $additionalParams = [])
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);
