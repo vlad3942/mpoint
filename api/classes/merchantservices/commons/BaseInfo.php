@@ -126,6 +126,16 @@ class BaseInfo
     }
 
     /**
+     * If rootnode is set for the document
+     *
+     * @return boolean
+     */
+    public function hasRootNode() : bool
+    {
+        return isset($this->sRootNode);
+    }
+
+    /**
      * Load data from Data (array)
      *
      * @param array $aRS
