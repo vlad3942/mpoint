@@ -751,15 +751,7 @@ class MerchantConfigRepository
      */
     public function getServiceStatusByClientId(): ?ClientServiceStatus
     {
-        $sColumns = 'CS.id, CS.dcc_enabled AS dcc, CS.mcp_enabled AS mcp, CS.pcc_enabled AS pcc, CS.fraud_enabled AS fraud,
-            CS.tokenization_enabled AS tokenization, CS.splitPayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void, CS.enabled';
-
-        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".services_tbl CS                     
-                WHERE CS.enabled = true and CS.clientid = " . $this->_clientConfig->getID();
-        $aRS = $this->getDBConn()->getName(sprintf($SQL, $sColumns));
-
-        if (empty($aRS) === true) { return NULL; }
-        return ClientServiceStatus::produceFromResultSet($aRS);
+        return ClientServiceStatus::produceConfig($this->getDBConn(), $this->_clientConfig->getID());
     }
 
     /**

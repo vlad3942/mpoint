@@ -1,8 +1,6 @@
 <?php
 namespace api\classes\merchantservices\MetaData;
 
-use api\classes\merchantservices\commons\BaseInfo;
-
 /**
    * ClientServiceStatus
    * 
@@ -11,7 +9,7 @@ use api\classes\merchantservices\commons\BaseInfo;
    * @subpackage ClientServiceStatus Class
    * @author     Vikas Gupta <vikas.gupta@cellpointmobile.com>
  */
-class ClientServiceStatus extends BaseInfo
+class ClientServiceStatus
 {
 
     /**
@@ -53,25 +51,6 @@ class ClientServiceStatus extends BaseInfo
      * @var bool
      */
     private bool $void;
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->Id;
-    }
-
-    /**
-     * @param int $Id
-     *
-     * @return ClientServiceStatus
-     */
-    public function setId(int $Id): ClientServiceStatus
-    {
-        $this->Id = $Id;
-        return $this;
-    }
 
     /**
      * @return bool
@@ -243,6 +222,16 @@ class ClientServiceStatus extends BaseInfo
         return $xml;
     }
 
+    public static function produceConfig(\RDB $oDB, int $clientID) {
+        $sql = "SELECT CS.id, CS.dcc_enabled AS dcc, CS.mcp_enabled AS mcp, CS.pcc_enabled AS pcc, CS.fraud_enabled AS fraud,
+                CS.tokenization_enabled AS tokenization, CS.splitPayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void, CS.enabled			
+				FROM Client". sSCHEMA_POSTFIX .".services_tbl CS 				
+				WHERE clientid = ". $clientID ." AND enabled = true";
+
+        $aRS = $oDB->getName($sql);
+        return self::produceFromResultSet($aRS);
+    }
+
     /**
      * Create Object of Class and set data in member variable
      *
@@ -253,7 +242,6 @@ class ClientServiceStatus extends BaseInfo
     public static function produceFromResultSet(array $rs): ClientServiceStatus
     {
         $objURL = new ClientServiceStatus();
-        $objURL->setId($rs["ID"]);
         $objURL->setCallback($rs["CALLBACK"]);
         $objURL->setDcc($rs["DCC"]);
         $objURL->setMcp($rs["MCP"]);
