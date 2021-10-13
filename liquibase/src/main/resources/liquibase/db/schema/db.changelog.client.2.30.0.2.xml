@@ -316,7 +316,7 @@
                     defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
-            <column name="splitPayment_enabled"
+            <column name="splitpayment_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
                     defaultValueBoolean="true">

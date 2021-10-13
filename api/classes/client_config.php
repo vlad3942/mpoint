@@ -12,6 +12,8 @@
  * @version 1.10
  */
 
+use api\classes\merchantservices\MetaData\ClientServiceStatus;
+
 /**
  * Data class holding the Client Configuration as well as the client's default data fields including:
  * 	- logo-url
@@ -62,6 +64,13 @@ class ClientConfig extends BasicConfig
 	 * @var Array
 	 */
 	private $_aObj_AccountsConfigurations;
+    /**
+     * Services status Configuration for the Clients
+     *
+     * @var Array
+     */
+    private $_aObj_ClientServicesStatus;
+
 	/**
 	 * Configuration for Multiple Merchant Accounts the Transaction will be associated with
 	 *
@@ -446,7 +455,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, $obj_TransactionTypeConfig=NULL)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=NULL, ClientURLConfig $oCSSURL=NULL, ClientURLConfig $oAccURL=NULL, ClientURLConfig $oCURL=NULL, ClientURLConfig $oDURL=NULL, ClientURLConfig $oCBURL=NULL, ClientURLConfig $oIURL=NULL, ClientURLConfig $oParse3DSecureChallengeURL=NULL, $ma, $l, $sms, $email, $mtd, $terms, $m, $ecvv, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=NULL, ClientURLConfig $oAURL=NULL, ClientURLConfig $oNURL=NULL, ClientURLConfig $oMESBURL=NULL, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig=NULL, ClientURLConfig $oAppURL=NULL,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=NULL,ClientURLConfig $oThreedRedirectURL=NULL,$secretkey=NULL, $installment=0, $maxInstallments=0, $installmentFrequency=0, $oBaseAssetURL=NULL, $obj_TransactionTypeConfig=NULL, ?ClientServiceStatus $clientServicesStatus)
 	{
 		parent::__construct($id, $name);
 
@@ -509,6 +518,7 @@ class ClientConfig extends BasicConfig
 		$this->_iMaxInstallments = (integer) $maxInstallments;
 		$this->_iInstallmentFrequency = (integer) $installmentFrequency;
         $this->_aObj_TransactionTypeConfigurations = $obj_TransactionTypeConfig;
+        $this->_aObj_ClientServicesStatus = $clientServicesStatus;
 		
 	}
 
@@ -537,6 +547,27 @@ class ClientConfig extends BasicConfig
             $this->_aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $this->getID());
         }
         return $this->_aObj_AccountsConfigurations;
+    }
+
+
+    /**
+     * Returns Object of Client Services
+     *
+     * @param \RDB|null $oDB
+     *
+     * @return    Object
+     */
+    public function getClientServices(RDB &$oDB = NULL): ClientServiceStatus {
+
+        if ($this->_aObj_ClientServicesStatus === NULL && $oDB !== NULL) {
+            $this->_aObj_ClientServicesStatus = ClientServiceStatus::produceConfig($oDB, $this->getID());
+        }
+        return $this->_aObj_ClientServicesStatus;
+    }
+
+    private function _getClientServicesAsXML(RDB &$oDB)
+    {
+        return $this->getClientServices($oDB)->toXML();
     }
 
     /**
@@ -1180,10 +1211,11 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_BaseImageURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_BaseImageURL->toXML(); }
         if ( ($this->_obj_ThreedRedirectURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_ThreedRedirectURL->toXML(); }
 		$xml .= '</urls>';
-		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
-		$xml .= $this->_getPaymentMethodsAsXML($oDB);
-		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
-		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
+        $xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
+        $xml .= $this->_getClientServicesAsXML($oDB);
+        $xml .= $this->_getPaymentMethodsAsXML($oDB);
+        $xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
+        $xml .= $this->_getAccountsConfigurationsAsXML($oDB);
 		$xml .= $this->_getGoMobileConfigAsXML($oDB);
         $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
@@ -1429,8 +1461,10 @@ class ClientConfig extends BasicConfig
                 	$aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
                 }
             }
+            // Get Client Services
+            $clientServicesStatus = ClientServiceStatus::produceConfig($oDB, $RS["CLIENTID"]);
 
-            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig);
+            return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig, $clientServicesStatus);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }

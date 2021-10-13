@@ -43,6 +43,8 @@ $routes = [
     'clientconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getClientConfig',
+        'post'    => 'postClientConfig',
+        'put'     => 'putClientConfig',
     ],
     'addonconfig' => [
         'class'   => 'ConfigurationController',

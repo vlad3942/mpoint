@@ -121,7 +121,40 @@ class MerchantConfigInfo
             'client_urls'           => $configRepository->getClientURLByClientId(),
             'payment_method_ids'    => $configRepository->getPMIdsByClientId(),
             'storefronts'           => $configRepository->getStoreFrontByClientId(),
-            'property_details'      => $configRepository->getPropertyConfig('CLIENT', 'ALL')
+            'property_details'      => $configRepository->getPropertyConfig('CLIENT', 'ALL'),
+            'services'               => $configRepository->getServiceStatusByClientId()
         ];
+    }
+
+    /***
+     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
+     * @param array                                                               $aData
+     *
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function addClientConfigurationsData(MerchantConfigRepository $configRepository, array $aProperty): void
+    {
+        // Add Properties
+        $configRepository->savePropertyConfig('CLIENT', $aProperty);
+    }
+
+    /***
+     * Modify Collection against Client
+     *
+     * 1. Properties
+     * 2. Urls
+     * 3. StoreFront
+     *
+     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
+     * @param array                                                               $aModifyData
+     *
+     * @return void
+     * @throws \SQLQueryException
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     */
+    public function modifyClientConfigurationsData(MerchantConfigRepository $configRepository, array $aModifyData): void
+    {
+        $configRepository->modifyClientConfigurationsData($aModifyData);
     }
 }

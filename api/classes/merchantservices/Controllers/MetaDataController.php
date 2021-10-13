@@ -1,16 +1,18 @@
 <?php
+
 namespace api\classes\merchantservices\Controllers;
 
 use api\classes\merchantservices\Services\MetaDataService;
+use api\classes\merchantservices\Helpers\Helpers;
 
-  /**
-   * MetaData Configuration
-   * 
-   * 
-   * @package    Mechantservices
-   * @subpackage Controller
-   * @author     Ijaj Inamdar <ijaj.inamdar@cellpointmobile.com>
-   */
+/**
+ * MetaData Configuration
+ * 
+ * 
+ * @package    Mechantservices
+ * @subpackage Controller
+ * @author     Ijaj Inamdar <ijaj.inamdar@cellpointmobile.com>
+ */
 class MetaDataController
 {
 
@@ -41,7 +43,7 @@ class MetaDataController
      *
      * @var ClientConfig
      */
-//    private $_objClientConfig;
+    //    private $_objClientConfig;
 
     /**
      * Constructor function
@@ -58,8 +60,8 @@ class MetaDataController
      *
      * @return MetaDataService
      */
-    private function getMetaDataService():MetaDataService 
-    { 
+    private function getMetaDataService(): MetaDataService
+    {
         return $this->_objMetaDataService;
     }
 
@@ -67,18 +69,42 @@ class MetaDataController
      * Handle getSystemMetaData request
      *
      * @param array $request
-     * @param array $additionalParams
      * @return string
      */
-    public function getSystemMetaData($request) {
+    public function getSystemMetaData(array $request): string
+    {
+        $aSystemMetaData = [];
+        $xml = '';
 
-        return $this->getMetaDataService()->generateSystemMetaData($request);
+        $aSystemMetaData = $this->getMetaDataService()->generateSystemMetaData($request);
 
-    }    
+        $xml = '<system_metadata>';
+        $xml .= Helpers::generateXML($aSystemMetaData);        
+        $xml .= '</system_metadata>';
 
-    public function getPaymentMetaData($request, $additionalParams = []) {
+        return $xml;
 
     }
 
-    
+    /**
+     * Handle getPaymentMetaData request
+     *
+     * @param array $request
+     * @return string
+     */
+
+    public function getPaymentMetaData(array $request): string 
+    {
+        $aPaymentMetaData = [];
+        $xml = '';
+
+        $aPaymentMetaData = $this->getMetaDataService()->generatePaymentMetaData($request);
+
+        $xml = '<payment_metadata>';
+        $xml .= Helpers::generateXML($aPaymentMetaData);        
+        $xml .= '</payment_metadata>';
+
+        return $xml;
+
+    }
 }
