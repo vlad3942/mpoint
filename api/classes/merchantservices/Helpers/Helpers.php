@@ -47,8 +47,8 @@ class Helpers {
                     $sXmlSection = (is_object($data)) ? $data->toXML() : '';
                     if (isset($data->additionalProp)) {
                         $sXmlSection .= self::generateXML($data->additionalProp);
-                    }
-                    if ($data instanceof BaseInfo && !empty($data->getRootNode()))
+                    }                    
+                    if ($data instanceof BaseInfo && $data->hasRootNode())
                     {
                         $sRootNode = $data->getRootNode();
                         $sXmlSection = sprintf("<{$sRootNode}>%s</{$sRootNode}>",$sXmlSection);
