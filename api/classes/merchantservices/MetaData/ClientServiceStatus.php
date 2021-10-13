@@ -1,8 +1,6 @@
 <?php
 namespace api\classes\merchantservices\MetaData;
 
-use api\classes\merchantservices\commons\BaseInfo;
-
 /**
    * ClientServiceStatus
    * 
@@ -11,67 +9,48 @@ use api\classes\merchantservices\commons\BaseInfo;
    * @subpackage ClientServiceStatus Class
    * @author     Vikas Gupta <vikas.gupta@cellpointmobile.com>
  */
-class ClientServiceStatus extends BaseInfo
+class ClientServiceStatus
 {
 
     /**
      * @var bool
      */
-    private bool $dcc;
+    private bool $dcc = FALSE;
 
     /**
      * @var bool
      */
-    private bool $mcp;
+    private bool $mcp = FALSE;
 
     /**
      * @var bool
      */
-    private bool $pcc;
+    private bool $pcc = FALSE;
 
     /**
      * @var bool
      */
-    private bool $fraud;
+    private bool $fraud = FALSE;
 
     /**
      * @var bool
      */
-    private bool $tokenization;
+    private bool $tokenization = FALSE;
 
     /**
      * @var bool
      */
-    private bool $splitPayment;
+    private bool $splitPayment = FALSE;
 
     /**
      * @var bool
      */
-    private bool $callback;
+    private bool $callback = FALSE;
 
     /**
      * @var bool
      */
-    private bool $void;
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->Id;
-    }
-
-    /**
-     * @param int $Id
-     *
-     * @return ClientServiceStatus
-     */
-    public function setId(int $Id): ClientServiceStatus
-    {
-        $this->Id = $Id;
-        return $this;
-    }
+    private bool $void = FALSE;
 
     /**
      * @return bool
@@ -243,6 +222,19 @@ class ClientServiceStatus extends BaseInfo
         return $xml;
     }
 
+    public static function produceConfig(\RDB $oDB, int $clientID) {
+        $sql = "SELECT CS.id, CS.dcc_enabled AS dcc, CS.mcp_enabled AS mcp, CS.pcc_enabled AS pcc, CS.fraud_enabled AS fraud,
+                CS.tokenization_enabled AS tokenization, CS.splitpayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void, CS.enabled			
+				FROM Client". sSCHEMA_POSTFIX .".services_tbl CS 				
+				WHERE clientid = ". $clientID ." AND enabled = true";
+
+        $aRS = $oDB->getName($sql);
+        $aClientService = [];
+        if(empty($aRS) === FALSE)
+            $aClientService = array_merge($aClientService, $aRS);
+        return self::produceFromResultSet($aClientService);
+    }
+
     /**
      * Create Object of Class and set data in member variable
      *
@@ -253,7 +245,8 @@ class ClientServiceStatus extends BaseInfo
     public static function produceFromResultSet(array $rs): ClientServiceStatus
     {
         $objURL = new ClientServiceStatus();
-        $objURL->setId($rs["ID"]);
+        if(empty($rs) === TRUE) return $objURL;
+
         $objURL->setCallback($rs["CALLBACK"]);
         $objURL->setDcc($rs["DCC"]);
         $objURL->setMcp($rs["MCP"]);
