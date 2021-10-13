@@ -2050,6 +2050,7 @@ abstract class AddonServiceTypeIndex
        const eFraud = 4;
        const eMPI = 5;
        const eSPLIT_PAYMENT = 6;
+       const eTOKENIZATION = 7;
 
 
 	   public static function valueOf(string $type):int
@@ -2061,6 +2062,7 @@ abstract class AddonServiceTypeIndex
 		   if($type === 'mpi') return self::eMPI;
 		   if($type === 'pre_auth' || $type === 'post_auth' || $type === 'fraud' ) return self::eFraud;
 		   if($type === 'cashless' || $type === 'conventional' || $type === 'hybrid' || $type === 'split_payment') return self::eSPLIT_PAYMENT;
+		   if($type === 'tokenization') return self::eTOKENIZATION;
 		   else return 0;
 	   }
 }

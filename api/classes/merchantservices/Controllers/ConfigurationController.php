@@ -84,7 +84,8 @@ class ConfigurationController
     }
 
     public function deleteAddonConfig($request, $additionalParams = []) {
-        
+
+        $this->getConfigService()->deleteAddonConfig($additionalParams);
 
     }
 
@@ -112,9 +113,9 @@ class ConfigurationController
         $this->getConfigService()->updatePropertyConfig('PSP',$aPropertyInfo,$psp_id);
     }
 
-    public function deletePSPConfig($request, $additionalParams = []) {
-        
-
+    public function deletePSPConfig($request, $additionalParams = [])
+    {
+        $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams);
     }
 
     public function getRouteConfig($additionalParams = []) {
@@ -158,9 +159,9 @@ class ConfigurationController
 
     }
 
-    public function deleteRouteConfig($request, $additionalParams = []) {
-        
-
+    public function deleteRouteConfig($request, $additionalParams = [])
+    {
+        $this->getConfigService()->deletePropertyConfig('ROUTE',$additionalParams,(int)$additionalParams['route_conf_id']);
     }
 
 

@@ -81,9 +81,13 @@ class ConfigurationService
          $this->getAggregateRoot()->updateAddonConfig($this->getRepository(),$addonConfig);
     }
 
-    public function deleteAddonConfig($request, $additionalParams = []) {
-        
-
+    /**
+     * @throws \api\classes\merchantservices\MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function deleteAddonConfig($additionalParams = [])
+    {
+        $this->getAggregateRoot()->deleteAddonConfig($this->getRepository(),$additionalParams);
     }
 
     public function getClientPSPConfig($additionalParams = []) : string
@@ -154,5 +158,10 @@ class ConfigurationService
     public function getClientConfiguration( array $additionalParams = []): array
     {
         return $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
+    }
+
+    public function deletePropertyConfig(string $type,array $additionalParams,int $id=-1)
+    {
+         $this->getAggregateRoot()->deletePropertyConfig($this->getRepository(),$type,$additionalParams,$id);
     }
 }

@@ -69,6 +69,10 @@ class MerchantConfigRepository
             if($addonServiceType->getSubType() === 'pre_auth') $sWhereCls .= 'typeoffraud=1';
             else $sWhereCls .= 'typeoffraud=2';
         }
+        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eTOKENIZATION )
+        {
+            $sColumns .= ',providerid ';
+        }
         elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
             $sColumns = 'id,payment_type, sequence_no ';
@@ -116,6 +120,8 @@ class MerchantConfigRepository
        array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'cashless')));
        array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'conventional')));
 
+       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eTOKENIZATION,'Tokenization')));
+
        return  $aAddonConfig;
     }
 
@@ -124,7 +130,7 @@ class MerchantConfigRepository
      */
     public function saveAddonConfig(array $aAddonConfig)
     {
-
+        $this->getDBConn()->query("START TRANSACTION");
         foreach ($aAddonConfig as $addonConfig)
         {
 
@@ -139,6 +145,7 @@ class MerchantConfigRepository
                 $result = $this->getDBConn()->executeQuery($SQL);
                 if ($result == FALSE)
                 {
+                    $this->getDBConn()->query("ROLLBACK");
                     throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
                 }
             }
@@ -179,6 +186,7 @@ class MerchantConfigRepository
 
                     if ($result == FALSE)
                     {
+                        $this->getDBConn()->query("ROLLBACK");
                         $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
                         if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
                         {
@@ -188,6 +196,31 @@ class MerchantConfigRepository
                 }
             }
         }
+        $this->getDBConn()->query("COMMIT");
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function deleteAddonConfig(array $additionalParams)
+    {
+        $this->getDBConn()->query("START TRANSACTION");
+
+        foreach ($additionalParams as $params )
+       {
+           $addonServiceType = $params[1];
+           $Ids = $params[2];
+           $SQL = 'DELETE FROM CLIENT'.sSCHEMA_POSTFIX.'.'. $addonServiceType->getTableName() .' WHERE ID in ('.$Ids.')';
+           $rs = $this->getDBConn()->executeQuery($SQL);
+           if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+           {
+               $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+               $this->getDBConn()->query("ROLLBACK");
+               throw new MerchantOnboardingException($statusCode,"Failed to Delete ".$addonServiceType->getType()." Config  {value:".$Ids."}");
+           }
+       }
+        $this->getDBConn()->query("COMMIT");
     }
 
     /**
@@ -195,7 +228,7 @@ class MerchantConfigRepository
      */
     public function updateAddonConfig(array $aAddonConfig)
     {
-
+        $this->getDBConn()->query("START TRANSACTION");
         foreach ($aAddonConfig as $addonConfig)
         {
             if(empty($addonConfig->getProperties()) === false)
@@ -209,6 +242,7 @@ class MerchantConfigRepository
                 $result = $this->getDBConn()->executeQuery($SQL);
                 if ($result == FALSE)
                 {
+                    $this->getDBConn()->query("ROLLBACK");
                     throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
                 }
             }
@@ -223,6 +257,7 @@ class MerchantConfigRepository
 
                     if ($result == FALSE)
                     {
+                        $this->getDBConn()->query("ROLLBACK");
                         $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
                         if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
                         {
@@ -233,8 +268,53 @@ class MerchantConfigRepository
                 }
             }
         }
+        $this->getDBConn()->query("COMMIT");
     }
 
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function deletePropertyConfig(string $type, ?string $ids,int $id=-1,?string $pms='')
+    {
+        $this->getDBConn()->query("START TRANSACTION");
+        $sWhreCls = "clientid = ".$this->_clientConfig->getID();
+        if(empty($pms) === false)
+        {
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routepm_tbl WHERE pmid in (".$pms.") AND routeconfigid = ".$id;
+            $rs = $this->getDBConn()->executeQuery($SQL);
+
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                $this->getDBConn()->query("ROLLBACK");
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." PM for IDs {".$pms."}");
+            }
+        }
+        if(empty($ids) === false)
+        {
+            $sTableName = '';
+            if($type === "CLIENT")  $sTableName = 'client_property_tbl';
+            else if($type === 'PSP') $sTableName = 'psp_property_tbl';
+            else if($type === 'ROUTE')
+            {
+                $sTableName = 'route_property_tbl';
+                $sWhreCls = "routeconfigid = ".$id;
+            }
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE propertyid IN(".$ids.") and ".$sWhreCls;
+            $rs = $this->getDBConn()->executeQuery($SQL);
+
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                $this->getDBConn()->query("ROLLBACK");
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Config Property  for IDs {".$ids."}");
+            }
+
+        }
+
+            $this->getDBConn()->query("COMMIT");
+
+    }
     /**
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException

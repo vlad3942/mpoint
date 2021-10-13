@@ -77,6 +77,8 @@ class AddonServiceType
                 return new AddonServiceType(AddonServiceTypeIndex::eMPI, "FRAUD", "MPI","MPI_config_tbl","MPIConfig");
             case AddonServiceTypeIndex::eSPLIT_PAYMENT:
                 return new AddonServiceType(AddonServiceTypeIndex::eSPLIT_PAYMENT, "split_payment", $subType,"split_combination_tbl","Split_PaymentConfig");
+            case AddonServiceTypeIndex::eTOKENIZATION:
+                return new AddonServiceType(AddonServiceTypeIndex::eTOKENIZATION, "", $subType,"tokenization_config_tbl","TokenizationConfig");
             default:
                 return null;
         }

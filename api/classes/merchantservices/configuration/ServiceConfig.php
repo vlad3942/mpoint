@@ -325,6 +325,10 @@ class ServiceConfig
         {
             return sprintf($sql,$addonServiceType->getTableName(),'split_config_id, payment_type, sequence_no',"$1,$2,$3");
         }
+        else if ($addonServiceType->getID() === AddonServiceTypeIndex::eTOKENIZATION)
+        {
+            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, countryid, currencyid ',"$1,$2,$3,$4,$5");
+        }
         else
         return "";
     }
@@ -354,6 +358,10 @@ class ServiceConfig
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
            return array($iId,$this->getPaymentType(),$this->getSequenceNo());
+        }
+        else  if($addonServiceType->getID() === AddonServiceTypeIndex::eTOKENIZATION)
+        {
+           return array($iId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getCountryId(),$this->getCurrencyId());
         }
         else return array();
 
