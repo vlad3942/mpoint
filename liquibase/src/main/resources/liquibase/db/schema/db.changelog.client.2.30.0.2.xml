@@ -283,7 +283,7 @@
             <!-- FK Key -->
             <column name="clientid"
                     type="int">
-                <constraints nullable="false" foreignKeyName="fk_clientservice2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+                <constraints nullable="false" unique="true" foreignKeyName="fk_clientservice2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Column -->
             <column name="dcc_enabled"

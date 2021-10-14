@@ -6,6 +6,7 @@ use api\classes\merchantservices\configuration\BaseConfig;
 use api\classes\merchantservices\Helpers\Helpers;
 use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\MerchantOnboardingException;
+use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\Services\ConfigurationService;
 
 
@@ -201,6 +202,23 @@ class ConfigurationController
             }
         }
         if(empty($urls) === false) $this->getConfigService()->updateClientUrls($urls);
+
+        if(count($request->services)>0)
+        {
+            $clService = ClientServiceStatus::produceFromXML($request->services);
+            $this->getConfigService()->updateAddonServiceStatus($clService);
+        }
+        if(count($request->account_configurations->account_config)>0)
+        {
+            $aClAccountConfig = array();
+            foreach ($request->account_configurations->account_config as $account_config)
+            {
+                $clAccountConfig = \AccountConfig::produceFromXML($account_config);
+                array_push($aClAccountConfig,$clAccountConfig);
+            }
+            $this->getConfigService()->updateAccountConfig($aClAccountConfig);
+        }
+
     }
     function deleteClientConfig($request, $additionalParams = [])
     {

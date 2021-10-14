@@ -16,8 +16,8 @@ use api\classes\merchantservices\MerchantOnboardingException;
 
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\commons\BaseInfo;
-use api\classes\merchantservices\MetaData\ClientUrl;
-use api\classes\merchantservices\MetaData\StoreFront;
+
+use General;
 
 
 class MerchantConfigRepository
@@ -902,6 +902,34 @@ class MerchantConfigRepository
         }
 
     }
+    public function updateAddonServiceStatus(ClientServiceStatus  $clService)
+    {
+        $SQL = "INSERT INTO CLIENT".sSCHEMA_POSTFIX.".services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled)
+         values(".$this->_clientConfig->getID().",".General::bool2xml($clService->isDcc()).",".General::bool2xml($clService->isMcp()).",".General::bool2xml($clService->isPcc()).",".General::bool2xml($clService->isFraud()).",".General::bool2xml($clService->isTokenization()).",".General::bool2xml($clService->isSplitPayment())."
+         ,".General::bool2xml($clService->isCallback()).",".General::bool2xml($clService->isVoid()).") ON CONFLICT(clientid) DO UPDATE SET dcc_enabled=EXCLUDED.dcc_enabled,mcp_enabled=EXCLUDED.mcp_enabled,pcc_enabled=EXCLUDED.pcc_enabled,fraud_enabled=EXCLUDED.fraud_enabled,tokenization_enabled=EXCLUDED.tokenization_enabled
+         ,splitpayment_enabled=EXCLUDED.splitpayment_enabled,callback_enabled=EXCLUDED.callback_enabled,void_enabled=EXCLUDED.void_enabled";
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed To update Addon Service status");
+        }
+    }
+
+    public function updateAccountConfig(array $aClAccountConfig)
+    {
+        $SQL = "UPDATE CLIENT".sSCHEMA_POSTFIX.".Account_tbl set name=$1,mobile=$2,markup=$3 WHERE id=$4";
+        foreach ($aClAccountConfig as $clAccountConfig)
+        {
+            $param = array($clAccountConfig->getName(),$clAccountConfig->getMobile(),$clAccountConfig->getMarkupLanguage(),$clAccountConfig->getID());
+
+            $rs = $this->getDBConn()->executeQuery($SQL,$param);
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+               throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to save account {ID=".$clAccountConfig->getID().",Name=".$clAccountConfig->getName().",Mobile=".$clAccountConfig->getMobile().",MarkUp=".$clAccountConfig->getMarkupLanguage()."}");
+            }
+        }
+    }
+
     public function saveVelocityURL(array $urls)
     {
         $this->getDBConn()->query("START TRANSACTION");

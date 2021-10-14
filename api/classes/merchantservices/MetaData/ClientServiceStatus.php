@@ -235,6 +235,19 @@ class ClientServiceStatus
         return self::produceFromResultSet($aClientService);
     }
 
+    public static function produceFromXML( &$oXML):ClientServiceStatus
+    {
+        $clService = new ClientServiceStatus();
+        $clService->setCallback(\General::xml2bool($oXML->callback));
+        $clService->setDcc(\General::xml2bool($oXML->dcc));
+        $clService->setMcp(\General::xml2bool($oXML->mcp));
+        $clService->setPcc(\General::xml2bool($oXML->pcc));
+        $clService->setFraud(\General::xml2bool($oXML->fraud));
+        $clService->setTokenization(\General::xml2bool($oXML->tokenization));
+        $clService->setSplitPayment(\General::xml2bool($oXML->split_payment));
+        $clService->setVoid(\General::xml2bool($oXML->void));
+        return $clService;
+    }
     /**
      * Create Object of Class and set data in member variable
      *
@@ -244,17 +257,16 @@ class ClientServiceStatus
      */
     public static function produceFromResultSet(array $rs): ClientServiceStatus
     {
-        $objURL = new ClientServiceStatus();
-        if(empty($rs) === TRUE) return $objURL;
-
-        $objURL->setCallback($rs["CALLBACK"]);
-        $objURL->setDcc($rs["DCC"]);
-        $objURL->setMcp($rs["MCP"]);
-        $objURL->setPcc($rs["PCC"]);
-        $objURL->setFraud($rs["FRAUD"]);
-        $objURL->setTokenization($rs["TOKENIZATION"]);
-        $objURL->setSplitPayment($rs["SPLITPAYMENT"]);
-        $objURL->setVoid($rs["VOID"]);
-        return $objURL;
+       $clService = new ClientServiceStatus();
+       if(empty($rs) === TRUE) return $clService;
+       $clService->setCallback($rs["CALLBACK"]);
+       $clService->setDcc($rs["DCC"]);
+       $clService->setMcp($rs["MCP"]);
+       $clService->setPcc($rs["PCC"]);
+       $clService->setFraud($rs["FRAUD"]);
+       $clService->setTokenization($rs["TOKENIZATION"]);
+       $clService->setSplitPayment($rs["SPLITPAYMENT"]);
+       $clService->setVoid($rs["VOID"]);
+        return $clService;
     }
 }

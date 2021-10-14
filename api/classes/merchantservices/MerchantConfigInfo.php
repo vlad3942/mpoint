@@ -3,6 +3,7 @@ namespace api\classes\merchantservices;
 
 use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class MerchantConfigInfo
@@ -194,6 +195,24 @@ class MerchantConfigInfo
     public function updateClientUrls(MerchantConfigRepository $configRepository, array $urls)
     {
         $configRepository->saveClientUrls($urls,'UPDATE');
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function updateAddonServiceStatus(MerchantConfigRepository $configRepository, ClientServiceStatus  $clService)
+    {
+        $configRepository->updateAddonServiceStatus($clService);
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function updateAccountConfig(MerchantConfigRepository $configRepository, array $aClAccountConfig)
+    {
+        $configRepository->updateAccountConfig($aClAccountConfig);
     }
 
 

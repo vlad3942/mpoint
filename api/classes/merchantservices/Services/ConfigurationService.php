@@ -7,6 +7,7 @@ use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\MerchantOnboardingException;
+use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class ConfigurationService
@@ -184,5 +185,15 @@ class ConfigurationService
         $this->getAggregateRoot()->updateClientUrls($this->getRepository(),$urls);
     }
 
+    public function updateAddonServiceStatus(ClientServiceStatus $clService)
+    {
+        $this->getAggregateRoot()->updateAddonServiceStatus($this->getRepository(),$clService);
+
+    }
+    public function updateAccountConfig(array $aClAccountConfig)
+    {
+        $this->getAggregateRoot()->updateAccountConfig($this->getRepository(),$aClAccountConfig);
+
+    }
 
 }
