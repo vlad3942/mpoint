@@ -94,6 +94,7 @@ try {
     if($isRequestValid) {
 
         // Authentication ... to be added
+        $_OBJ_DB->query("START TRANSACTION");
 
         $contollerName = $routes[$serviceName]['class'];
         $methodName = $routes[$serviceName][$requestType];
@@ -114,6 +115,8 @@ try {
             $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
             $xml = $objController->$methodName($obj_DOM, $arrParams);
         }
+
+        $_OBJ_DB->query("COMMIT");
     }
 
 }
@@ -122,12 +125,15 @@ catch (MerchantOnboardingException $e)
     header("HTTP/1.1 500 Internal Server Error");
     $xml = $e->statusNode();
     trigger_error($e->getMessage(), E_USER_ERROR);
+    $_OBJ_DB->query("ROLLBACK");
+
 }
 catch (Exception $e)
 {
 	header("HTTP/1.1 500 Internal Server Error");
 	$xml = '<status code="500">'. $e->getMessage() .'</status>';
-	trigger_error("Exception thrown in mApp/api/merchantservices/Onboarding: ". $e->getMessage() ."\n". $e->getTraceAsString(), E_USER_ERROR);
+    $_OBJ_DB->query("ROLLBACK");
+    trigger_error("Exception thrown in mApp/api/merchantservices/Onboarding: ". $e->getMessage() ."\n". $e->getTraceAsString(), E_USER_ERROR);
 }
 
 function generateParams($strParams) 
