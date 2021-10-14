@@ -6,12 +6,10 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 
 use api\classes\merchantservices\MerchantOnboardingException;
 
-$isRequestValid = true;
 $xml = '';
 $serviceName = '';
 $requestType = '';
-$strParam = '';
-$arrParams = [];
+$arrParams = array();
 
 
 
@@ -23,18 +21,6 @@ if(isset($_REQUEST['service']))
 if(isset($_SERVER['REQUEST_METHOD']) && !empty($_SERVER['REQUEST_METHOD'])) 
 {
     $requestType = strtolower($_SERVER['REQUEST_METHOD']);
-}
-
-if(isset($_REQUEST['params']) && !empty($_REQUEST['params']))
-{
-    $strParams = $_REQUEST['params'];
-    $arrParams = generateParams($strParams);
-
-    if(!is_array($arrParams)) {
-        header("HTTP/1.1 400 Bad Request");
-        $xml = '<status code="400">Bad Request</status>';  
-        $isRequestValid = false;
-    }
 }
 
 
@@ -82,47 +68,61 @@ $routes = [
     ]
 ];
 
-if(empty($serviceName) || !isset($routes[$serviceName]['class']) || empty($requestType) || !isset($routes[$serviceName][$requestType])){
 
-    header("HTTP/1.1 400 Bad Request");
-    $xml = '<status code="400">Bad Request</status>';  
-    $isRequestValid = false;
-}
 
-try {
+try
+{
+    if(isset($routes[$serviceName]) === false || isset($routes[$serviceName][$requestType]) === false)
+    {
+        throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUESTED_OPERATION,'In Valid Requested operation');
+    }
 
-    if($isRequestValid) {
+    if(isset($_REQUEST['params']) && !empty($_REQUEST['params']) && ($requestType === 'get' || $requestType === 'delete'))
+    {
+        $strParams = $_REQUEST['params'];
+        $arrParams = generateParams($strParams);
+        if(!is_array($arrParams))
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'No Get Parameter Found');
+        }
 
-        // Authentication ... to be added
+    }
+    $clientid = -1;
+    if($requestType !== 'get' && $requestType !== 'delete')
+    {
+        $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
+        if(count($obj_DOM->client_id) > 0)
+        {
+            $clientid = (int)$obj_DOM->client_id;
+            unset($obj_DOM->client_id);
+        }
+    }
+    else if(isset($arrParams['client_id']) === true)
+    {
+        $clientid = (int)$arrParams['client_id'];
+    }
+
+
+    if($clientid > 0 && Validate::valClient($_OBJ_DB, $clientid) === 100)
+    {
         $_OBJ_DB->query("START TRANSACTION");
 
         $contollerName = $routes[$serviceName]['class'];
         $methodName = $routes[$serviceName][$requestType];
 
-        if(!file_exists(sCLASS_PATH . "merchantservices/Controllers/{$contollerName}.php")) {
-            throw new Exception("Internal error");
-        }
-
         $contollerName = 'api\\classes\\merchantservices\\Controllers\\' . $contollerName;
 
-        $objController = new $contollerName($_OBJ_DB,$arrParams['client_id']);
-        if($requestType === 'get')
-        {
-            $xml = $objController->$methodName($arrParams);
-        }
-        else
-        {
-            $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
-            $xml = $objController->$methodName($obj_DOM, $arrParams);
-        }
+        $objController = new $contollerName($_OBJ_DB,$clientid);
+        if($requestType === 'get') $xml = $objController->$methodName($arrParams);
+        else $xml = $objController->$methodName($obj_DOM, $arrParams);
 
         $_OBJ_DB->query("COMMIT");
     }
-
+    else throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Client ID Param Not Found');
 }
 catch (MerchantOnboardingException $e)
 {
-    header("HTTP/1.1 500 Internal Server Error");
+    header($e->getHTTPHeader());
     $xml = $e->statusNode();
     trigger_error($e->getMessage(), E_USER_ERROR);
     $_OBJ_DB->query("ROLLBACK");

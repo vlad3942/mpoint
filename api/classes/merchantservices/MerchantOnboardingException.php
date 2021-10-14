@@ -13,15 +13,20 @@ class MerchantOnboardingException extends mPointControllerException
     const INVALID_PARAMETER = 200;
     const INVALID_PARAMETER_VALUE = 201;
 
+    const INVALID_REQUESTED_OPERATION = 01;
+    const INVALID_REQUEST_PARAM = 02;
+
     const API_EXCEPTION = 301;
 
-    public function __construct( $statusCode,$message='')
+    public function __construct( $statusCode,$message='',$httpCode=500)
     {
         parent::__construct(0, $message);
         $this->_statusCode = $statusCode;
+        $this->_httpCode = $httpCode;
     }
 
     public function getHTTPCode() { return $this->_httpCode; }
+    public function getHTTPHeader() { return \HTTP::getHTTPHeader($this->getHTTPCode()); }
     public function getStatusCode() { return $this->_statusCode; }
     public function statusNode()
     {
