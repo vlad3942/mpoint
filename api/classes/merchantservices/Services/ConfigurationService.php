@@ -7,8 +7,6 @@ use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\configuration\PropertyInfo;
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\MerchantOnboardingException;
-use api\classes\merchantservices\MetaData\ClientUrl;
-use api\classes\merchantservices\MetaData\StoreFront;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
 class ConfigurationService
@@ -31,6 +29,10 @@ class ConfigurationService
     private function getAggregateRoot() : MerchantConfigInfo
     {
         return $this->merchantAggregateRoot;
+    }
+    public function getClientInfo() : \ClientConfig
+    {
+        return $this->merchantConfigRepository->getClientInfo();
     }
 
     public function getAddonConfig( $additionalParams = [])
@@ -93,52 +95,41 @@ class ConfigurationService
         $this->getAggregateRoot()->deleteAddonConfig($this->getRepository(),$additionalParams);
     }
 
-    public function getClientPSPConfig($additionalParams = []) : string
+    public function getPropertyConfig(string $type,string $source,int $id=-1) : array
     {
-
-        $xml = "<client_psp_configuration>";
-        $xml .=  $this->getProperties("PSP","ALL",$additionalParams['psp_id']);
-        $xml .= "</client_psp_configuration>";
-        return $xml;
+        return $this->getAggregateRoot()->getPropertyConfig($this->getRepository(),$type,$source,$id);
     }
 
 
-
-
-    private function getProperties(string $type,string $source,int $id=-1):string
+    public function getRoutePM(int $routeConfigId) : array
     {
-        $aCatPropertyInfo =  $this->getAggregateRoot()->getPropertyConfig($this->getRepository(),$type,$source,$id);
-        $xml = "<property_details>";
-        foreach ($aCatPropertyInfo as $category => $aPropertyInfo)
-        {
-            $xml .= "<property_detail>";
-            $xml .= "<property_sub_category>".$category."</property_sub_category>";
-            $xml .= "<properties>";
+        return $this->getAggregateRoot()->getRoutePM($this->getRepository(),$routeConfigId);
 
-            foreach ($aPropertyInfo as $propertyInfo) $xml .=$propertyInfo->toXML();
-            $xml .= "</properties>";
-            $xml .= "</property_detail>";
-        }
-
-        $xml .= "</property_details>";
-        return $xml;
     }
-    public function getRouteConfig( $additionalParams = []) : string
+    public function getClientPM() : array
     {
-        $xml = "<client_route_configuration>";
-        $xml .=  $this->getProperties("ROUTE","ALL",$additionalParams['route_conf_id']);
-        $aPM = $this->getAggregateRoot()->getRoutePM($this->getRepository(),$additionalParams['route_conf_id']);
-        $xml .="<pm_configurations>";
-        foreach ($aPM as $pm)
-        {
-            $xml .="<pm_configuration>";
-            $xml .="<pm_id>".$pm."</pm_id>";
-            $xml .="<enabled>true</enabled>";
-            $xml .="</pm_configuration>";
-        }
-        $xml .="</pm_configurations>";
-        $xml .=  "</client_route_configuration>";
-        return $xml;
+        return $this->getAggregateRoot()->getClientPM($this->getRepository());
+
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     */
+    public function saveClientPM(array $aPMIDs)
+    {
+        $this->getAggregateRoot()->saveClientPM($this->getRepository(),$aPMIDs);
+    }
+    /**
+     * @throws MerchantOnboardingException
+     */
+    public function updateClientPM(array $aPMIDs)
+    {
+        $this->getAggregateRoot()->updateClientPM($this->getRepository(),$aPMIDs);
+    }
+
+    public function updateClientdetails(array $aClientParam)
+    {
+        $this->getAggregateRoot()->updateClientdetails($this->getRepository(),$aClientParam);
     }
 
     public function savePropertyConfig(string $type,array $aPropertyInfo,int $id=-1, array $aPMIds=array() )
@@ -167,76 +158,31 @@ class ConfigurationService
     {
          $this->getAggregateRoot()->deletePropertyConfig($this->getRepository(),$type,$additionalParams,$id);
     }
-    /***
-     * Add data against the client ID
-     *
-     * @param \SimpleDOMElement $request
-     *
-     * @return array
-     * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
-     */
-    public function addClientConfigurations(\SimpleDOMElement $request): array
+
+    public function saveVelocityURL(array $urls)
     {
-        $aProperty = function() use($request) {
-            $aProperty = [];
-            foreach ($request->properties->property as $property)
-            {
-                array_push($aProperty, PropertyInfo::produceFromXML($property));
-            }
-            return $aProperty;
-        };
-        $this->getAggregateRoot()->addClientConfigurationsData($this->getRepository(), $aProperty());
+      $this->getAggregateRoot()->saveVelocityURL($this->getRepository(),$urls);
+    }
+    public function saveClientUrls(array $urls)
+    {
+        $this->getAggregateRoot()->saveClientUrls($this->getRepository(),$urls);
+
+    }
+    /**
+     * @throws MerchantOnboardingException
+     */
+    public function updateVelocityURL( array $urls)
+    {
+        $this->getAggregateRoot()->updateVelocityURL($this->getRepository(),$urls);
+    }
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function updateClientUrls(array $urls)
+    {
+        $this->getAggregateRoot()->updateClientUrls($this->getRepository(),$urls);
     }
 
-    // Modify Client Configurations
 
-    /***
-     * Modify collection data for client related Entities
-     *
-     * @param \SimpleDOMElement $request
-     *
-     * @return Void
-     * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
-     */
-    public function modifyClientConfigurations(\SimpleDOMElement $request)
-    {
-        $aModifyData = [];
-        $getProperties = function (&$aModifyData) use($request) {
-            $aProperty = [];
-            foreach ($request->properties->property as $property) {
-                array_push($aProperty, PropertyInfo::produceFromXML($property));
-            }
-            $aModifyData['properties'] = $aProperty;
-        };
-
-        // For Store Front
-        $getStoreFront = function (&$aModifyData) use($request) {
-            $aStorefront = [];
-            foreach ($request->storefronts->storefront as $storefront) {
-                array_push($aStorefront, StoreFront::produceFromXML($storefront));
-            }
-            $aModifyData['storefronts'] =  $aStorefront;
-        };
-
-        // For Client URL
-        $getUrls = function (&$aModifyData) use($request) {
-            $aURLs = [];
-            foreach ($request->client_urls->client_url as $valUrl) {
-                array_push($aURLs, ClientUrl::produceFromXML($valUrl));
-            }
-            $aModifyData['client_urls'] =  $aURLs;
-        };
-
-        if(count($request->properties)) $getProperties($aModifyData);
-        if(count($request->storefronts)) $getStoreFront($aModifyData);
-        if(count($request->client_urls)) $getUrls($aModifyData);
-
-        // Nothing for Update
-        if(empty($aModifyData) === true) {
-            throw new MerchantOnboardingException( MerchantOnboardingException::API_EXCEPTION,'SEEMS INVALID REQUEST OR NOT YET SUPPORTED');
-        }
-        $this->getAggregateRoot()->modifyClientConfigurationsData($this->getRepository(), $aModifyData);
-    }
 }

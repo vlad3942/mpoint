@@ -36,33 +36,39 @@ class ConfigurationController
      */
     public function getClientConfig(array $additionalParams): string
     {
-        $lClientConfigs = $this->getConfigService()->getClientConfiguration($additionalParams);
-        return $this->getClientConfigurationXML($lClientConfigs);
+        $xml = $this->getConfigService()->getClientInfo()->toAttributeLessXML();
+        $aPM = $this->getConfigService()->getClientPM();
+        $aClientProperty = $this->getConfigService()->getPropertyConfig("CLIENT","ALL");
+        $additionalXml = '';
+        $aAllClientProperty = array_merge($aClientProperty['Basic'],$aClientProperty['Technical']);
+
+        foreach ($aAllClientProperty as $clientProperty)
+        {
+            if($clientProperty->getName() === 'TIMEZONE' && empty($clientProperty->getValue()) === false)
+            {
+                $additionalXml .= "<timezone>".$clientProperty->getValue()."</timezone>";
+            }
+
+            if($clientProperty->getName() === 'SSO_PREFERENCE' && empty($clientProperty->getValue()) === false)
+            {
+                $additionalXml .= "<authentication_mode>".$clientProperty->getValue()."</authentication_mode>";
+            }
+        }
+
+        $additionalXml .="<pm_configurations>";
+        foreach ($aPM as $pm)
+        {
+           $additionalXml .="<pm_configuration>";
+           $additionalXml .="<pm_id>".$pm."</pm_id>";
+           $additionalXml .="<enabled>true</enabled>";
+           $additionalXml .="</pm_configuration>";
+        }
+        $additionalXml .="</pm_configurations>";
+
+        $xml = str_replace('</client_configuration>', $additionalXml.Helpers::getPropertiesXML($aClientProperty).'</client_configuration>',$xml);
+        return $xml;
     }
 
-    /**
-     * Process array and prepare XML for client configuration
-     *
-     * @param array $aClientConfigData
-     *
-     * @return string Prepare final string for array
-     */
-    private function getClientConfigurationXML(array $aClientConfigData): string {
-
-        $XML = '<client_configuration>';
-        $XML .=  Helpers::generateXML(
-            [
-                'info'                  =>  $aClientConfigData['info'],
-                'client_urls'           =>  $aClientConfigData['client_urls'],
-                'payment_method_ids'    =>  $aClientConfigData['payment_method_ids'],
-                'services'              =>  $aClientConfigData['services'],
-                'storefronts'           =>  $aClientConfigData['storefronts'],
-            ]
-        );
-        $XML .=  Helpers::getPropertiesXML($aClientConfigData['property_details']);
-        $XML .= '</client_configuration>';
-        return $XML;
-    }
 
     /***
      * Function used to process data for POST RQ for adding details against Client ID
@@ -74,11 +80,52 @@ class ConfigurationController
      */
     public function postClientConfig(\SimpleDOMElement $request): void
     {
-        // Validation : Only Properties Accepted
-        if(!$request->xpath('properties')) {
-            throw new MerchantOnboardingException(MerchantOnboardingException::API_EXCEPTION,'REQUEST NOT VALIDATE');
+        if(count($request->pm_configurations->pm_configuration)>0)
+        {
+            $aPMIDs = array();
+            foreach ($request->pm_configurations->pm_configuration as $pm)
+            {
+                array_push($aPMIDs, (int)$pm->pm_id);
+            }
+            $this->getConfigService()->saveClientPM($aPMIDs);
         }
-        $this->getConfigService()->addClientConfigurations($request);
+        if(count($request->properties->property)>0)
+        {
+            $aProperty = array();
+            foreach ($request->properties->property as $property)
+            {
+                array_push($aProperty, PropertyInfo::produceFromXML($property));
+            }
+            $this->getConfigService()->savePropertyConfig("CLIENT",$aProperty);
+        }
+
+        if(count($request->client_urls)>0)
+        {
+            $urls = array();
+            foreach ($request->client_urls->client_url as $url)
+            {
+                array_push($urls, \ClientURLConfig::produceFromXML($url));
+            }
+            $this->getConfigService()->saveVelocityURL($urls);
+        }
+        $urls = array();
+
+        if(count($request->merchant_urls)>0)
+        {
+            foreach ($request->merchant_urls->client_url as $url)
+            {
+                array_push($urls, \ClientURLConfig::produceFromXML($url));
+            }
+        }
+
+        if(count($request->hpp_urls)>0)
+        {
+            foreach ($request->hpp_urls->client_url as $url)
+            {
+                array_push($urls, \ClientURLConfig::produceFromXML($url));
+            }
+        }
+        if(empty($urls) === false) $this->getConfigService()->saveClientUrls($urls);
     }
 
     /***
@@ -94,9 +141,72 @@ class ConfigurationController
      */
     public function putClientConfig(\SimpleDOMElement $request): void
     {
-        $this->getConfigService()->modifyClientConfigurations($request);
-    }
+        if(count($request->pm_configurations->pm_configuration)>0)
+        {
+            $aPMIDs = array();
+            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+            {
+                array_push($aPMIDs,array((int)$pm_configuration->pm_id,(string)$pm_configuration->enabled));
+            }
+            $this->getConfigService()->updateClientPM($aPMIDs);
+        }
+        $aClientParam = array();
+        if(count($request->name)>0) $aClientParam["name"] =(string)$request->name;
+        if(count($request->salt)>0) $aClientParam["salt"] =(string)$request->salt;
+        if(count($request->max_amount)>0) $aClientParam["maxamount"] =(int)$request->max_amount;
+        if(count($request->country_id)>0) $aClientParam["countryid"] =(int)$request->country_id;
+        if(count($request->email_notification)>0) $aClientParam["emailrcpt"] =(string)$request->email_notification;
+        if(count($request->sms_notification)>0) $aClientParam["smsrcpt"] =(string)$request->sms_notification;
+        if(count($request->timezone)>0) $aClientParam["TIMEZONE"] =(string)$request->timezone;
+        if(count($request->authentication_mode)>0) $aClientParam["SSO_PREFERENCE"] =(string)$request->authentication_mode;
+        if(empty($aClientParam) === false)
+        {
+            $this->getConfigService()->updateClientdetails($aClientParam);
+        }
 
+        if(count($request->properties->property)>0)
+        {
+            $aProperty = array();
+            foreach ($request->properties->property as $property)
+            {
+                array_push($aProperty, PropertyInfo::produceFromXML($property));
+            }
+            $this->getConfigService()->updatePropertyConfig("CLIENT",$aProperty);
+        }
+
+        if(count($request->client_urls)>0)
+        {
+            $urls = array();
+            foreach ($request->client_urls->client_url as $url)
+            {
+                array_push($urls, \ClientURLConfig::produceFromXML($url));
+            }
+            $this->getConfigService()->updateVelocityURL($urls);
+        }
+        $urls = array();
+
+        if(count($request->merchant_urls)>0)
+        {
+            foreach ($request->merchant_urls->client_url as $url)
+            {
+                array_push($urls, \ClientURLConfig::produceFromXML($url));
+            }
+        }
+
+        if(count($request->hpp_urls)>0)
+        {
+            foreach ($request->hpp_urls->client_url as $url)
+            {
+                array_push($urls, \ClientURLConfig::produceFromXML($url));
+            }
+        }
+        if(empty($urls) === false) $this->getConfigService()->updateClientUrls($urls);
+    }
+    function deleteClientConfig($request, $additionalParams = [])
+    {
+        $this->getConfigService()->deletePropertyConfig('CLIENT',$additionalParams);
+
+    }
     public function getAddonConfig( $additionalParams = [])
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);
@@ -126,7 +236,11 @@ class ConfigurationController
 
     public function getPSPConfig($additionalParams = [])
     {
-        return $this->getConfigService()->getClientPSPConfig($additionalParams);
+
+        $xml = "<client_psp_configuration>";
+        $xml .=  Helpers::getPropertiesXML($this->getConfigService()->getPropertyConfig("PSP","ALL",$additionalParams['psp_id']));
+        $xml .= "</client_psp_configuration>";
+        return $xml;
 
 
     }
@@ -153,9 +267,22 @@ class ConfigurationController
         $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams);
     }
 
-    public function getRouteConfig($additionalParams = []) {
-        return $this->getConfigService()->getRouteConfig($additionalParams);
-
+    public function getRouteConfig($additionalParams = [])
+    {
+        $xml = "<client_route_configuration>";
+        $xml .=  Helpers::getPropertiesXML($this->getConfigService()->getPropertyConfig("ROUTE","ALL",$additionalParams['route_conf_id']));
+        $aPM = $this->getConfigService()->getRoutePM($additionalParams['route_conf_id']);
+        $xml .="<pm_configurations>";
+        foreach ($aPM as $pm)
+        {
+            $xml .="<pm_configuration>";
+            $xml .="<pm_id>".$pm."</pm_id>";
+            $xml .="<enabled>true</enabled>";
+            $xml .="</pm_configuration>";
+        }
+        $xml .="</pm_configurations>";
+        $xml .=  "</client_route_configuration>";
+        return $xml;
 
     }
 
@@ -172,13 +299,14 @@ class ConfigurationController
         {
             foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
             {
-                array_push($aPMIds,(int)$pm_configuration->pm_id);
+                array_push($aPMIds, (int)$pm_configuration->pm_id);
             }
         }
         $this->getConfigService()->savePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
     }
 
-    public function updateRouteConfig($request, $additionalParams = []) {
+    public function updateRouteConfig($request, $additionalParams = [])
+    {
         $routeConfId =(int) $request->route_config_id;
         $aPropertyInfo = array();
         foreach ($request->properties->property as $property)
@@ -188,7 +316,7 @@ class ConfigurationController
         $aPMIds = array();
         foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
         {
-            array_push($aPMIds,(int)$pm_configuration->pm_id);
+            array_push($aPMIds,array((int)$pm_configuration->pm_id,(string)$pm_configuration->enabled));
         }
         $this->getConfigService()->updatePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
 

@@ -1811,4 +1811,37 @@
         <!-- WorldPay Card Property End -->
 
     </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-06-setup-v2.30-system-url_type">
+         <insert catalogName="System"
+                 schemaName="System"
+                 tableName="urltype_tbl">
+             <column name="id" value="5"/>
+             <column name="name" value="Logo URL"/>
+         </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="urltype_tbl">
+            <column name="id" value="6"/>
+            <column name="name" value="CSS URL"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="urltype_tbl">
+            <column name="id" value="7"/>
+            <column name="name" value="Callback URL"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="urltype_tbl">
+            <column name="id" value="8"/>
+            <column name="name" value="Accept URL"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="urltype_tbl">
+            <column name="id" value="9"/>
+            <column name="name" value="Cancel URL"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

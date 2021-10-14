@@ -15,10 +15,8 @@ use api\classes\merchantservices\configuration\ServiceConfig;
 use api\classes\merchantservices\MerchantOnboardingException;
 
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
-use api\classes\merchantservices\MetaData\Client;
 use api\classes\merchantservices\commons\BaseInfo;
 use api\classes\merchantservices\MetaData\ClientUrl;
-use api\classes\merchantservices\MetaData\ClientPaymentMethodId;
 use api\classes\merchantservices\MetaData\StoreFront;
 
 
@@ -32,7 +30,11 @@ class MerchantConfigRepository
         $this->_conn = $conn;
         $this->_clientConfig = \ClientConfig::produceConfig($conn, $iClientId);
     }
-
+    public function getClientInfo() : \ClientConfig
+    {
+        $this->_clientConfig->getAccountsConfigurations($this->_conn);
+        return $this->_clientConfig;
+    }
     private function getDBConn():\RDB { return $this->_conn;}
 
 
@@ -246,7 +248,7 @@ class MerchantConfigRepository
 
                     $result = $this->getDBConn()->executeQuery($sql);
 
-                    if ($result == FALSE)
+                    if ($result == FALSE || $this->getDBConn()->countAffectedRows($result) < 1)
                     {
                         $this->getDBConn()->query("ROLLBACK");
                         $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
@@ -272,7 +274,15 @@ class MerchantConfigRepository
         $sWhreCls = "clientid = ".$this->_clientConfig->getID();
         if(empty($pms) === false)
         {
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routepm_tbl WHERE pmid in (".$pms.") AND routeconfigid = ".$id;
+            $sWhereCls = " AND routeconfigid = ".$id;
+            $sTableName = ".routepm_tbl";
+            if($type === 'CLIENT')
+            {
+                $sTableName = ".pm_tbl";
+                $sWhereCls = " AND clientid = ".$this->_clientConfig->getID();
+
+            }
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.$sTableName." WHERE pmid in (".$pms.") ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -302,8 +312,60 @@ class MerchantConfigRepository
             }
 
         }
+       $this->getDBConn()->query("COMMIT");
 
-            $this->getDBConn()->query("COMMIT");
+    }
+
+    public function updatePM(string $type,array $aPMIds,int $id=-1)
+    {
+        $this->getDBConn()->query("START TRANSACTION");
+
+        $sTableName = "routepm_tbl";
+        $sWhereCls = "routeconfigid=$2";
+        if($type === 'CLIENT')
+        {
+            $id = $this->_clientConfig->getID();
+            $sWhereCls = "clientid=$2";
+            $sTableName ='pm_tbl';
+        }
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." SET enabled={replace} where pmid=$1 and ".$sWhereCls;
+
+        foreach ($aPMIds as $PMId)
+        {
+            $aParam = array($PMId[0],$id);
+
+            $rs = $this->getDBConn()->executeQuery(str_replace("{replace}",$PMId[1],$SQL), $aParam);
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                }
+                $this->getDBConn()->query("ROLLBACK");
+
+                throw new MerchantOnboardingException($statusCode,"Failed to Update Payment Method Id:".$PMId[0]);
+            }
+        }
+        $this->getDBConn()->query("COMMIT");
+    }
+
+    public function updateClientdetails(array $aClientParam)
+    {
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".CLIENT_tbl SET ";
+        $index = 1;
+        foreach ($aClientParam as $key => $value)
+        {
+            $SQL .= $key."='".$value."',";
+            $index++;
+        }
+        $SQL = substr($SQL,0,-1) ." WHERE id=".$this->_clientConfig->getID();
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to update Client Details");
+        }
+
 
     }
     /**
@@ -312,31 +374,16 @@ class MerchantConfigRepository
      */
     public function updatePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
-        $this->getDBConn()->query("START TRANSACTION");
+
 
         if(empty($aPMIds) === false)
         {
-            $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".routepm_tbl (routeconfigid, pmid) VALUES ($1,$2)";
-            foreach ($aPMIds as $PMId)
-            {
-                $aParam = array($id,$PMId);
-                $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
-                if($rs == false)
-                {
-                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
-                    {
-                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
-                    }
-                    $this->getDBConn()->query("ROLLBACK");
-
-                    throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
-                }
-            }
+           $this->updatePM("ROUTE",$aPMIds,$id);
         }
 
         if(empty($aPropertyInfo) === false)
         {
+            $this->getDBConn()->query("START TRANSACTION");
             $sTableName = '';
             $sWhereClase = '';
             if($type === 'CLIENT')
@@ -377,10 +424,44 @@ class MerchantConfigRepository
                     throw new MerchantOnboardingException($statusCode,"Failed to update ".strtolower($type)." Config Property  {id:".$propertyInfo->getId()." value:".$propertyInfo->getValue()."}");
                 }
             }
+            $this->getDBConn()->query("COMMIT");
+        }
+
+    }
+    public function savePM(string $type,array $aPMIds=array(),int $id=-1)
+    {
+        $this->getDBConn()->query("START TRANSACTION");
+
+        $sColumns = "routeconfigid, pmid";
+        $sTableName = "routepm_tbl";
+        if($type === 'CLIENT')
+        {
+            $sColumns = "clientid, pmid";
+            $sTableName = "pm_tbl";
+            $id = $this->_clientConfig->getID();
+
+        }
+        $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") VALUES ($1,$2)";
+        foreach ($aPMIds as $PMId)
+        {
+            $aParam = array($id,$PMId);
+            $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+            if($rs == false)
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                }
+                $this->getDBConn()->query("ROLLBACK");
+
+                throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
+            }
         }
         $this->getDBConn()->query("COMMIT");
 
     }
+
 
     /**
      * @throws MerchantOnboardingException
@@ -388,31 +469,16 @@ class MerchantConfigRepository
      */
     public function savePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
-        $this->getDBConn()->query("START TRANSACTION");
 
         if(empty($aPMIds) === false)
-      {
-          $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".routepm_tbl (routeconfigid, pmid) VALUES ($1,$2)";
-          foreach ($aPMIds as $PMId)
-          {
-              $aParam = array($id,$PMId);
-              $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
-              if($rs == false)
-              {
-                  $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                  if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
-                  {
-                      $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
-                  }
-                  $this->getDBConn()->query("ROLLBACK");
-
-                  throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
-              }
-          }
-      }
+       {
+          $this->savePM("ROUTE",$aPMIds,$id);
+       }
 
       if(empty($aPropertyInfo) === false)
       {
+          $this->getDBConn()->query("START TRANSACTION");
+
           $sTableName = '';
           $sColumnName = 'clientid,propertyid, value';
           $sValues = 'VALUES ($1,$2,$3)';
@@ -457,14 +523,23 @@ class MerchantConfigRepository
                   throw new MerchantOnboardingException($statusCode,"Failed to save ".strtolower($type)." Config Property  {id:".$propertyInfo->getId()." value:".$propertyInfo->getValue()."}");
               }
           }
+          $this->getDBConn()->query("COMMIT");
+
       }
-        $this->getDBConn()->query("COMMIT");
 
     }
-    public function getRoutePM(int $id) : array
+    public function getPM(string $type,int $id=-1) : array
     {
         $aPM = array();
-        $sSQL = "SELECT pmid FROM CLIENT". sSCHEMA_POSTFIX .".routepm_tbl WHERE enabled=true and routeconfigid = ".$id;
+        $sTableName = 'routepm_tbl';
+        $sWhereCls = "and routeconfigid = ".$id;
+        if($type === 'CLIENT')
+        {
+            $sTableName = 'pm_tbl';
+            $sWhereCls = "and clientid = ".$this->_clientConfig->getID();
+
+        }
+        $sSQL = "SELECT pmid FROM CLIENT". sSCHEMA_POSTFIX .".".$sTableName." WHERE enabled=true ".$sWhereCls;
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
         if (empty($aRS) === false)
         {
@@ -472,10 +547,12 @@ class MerchantConfigRepository
         }
         return $aPM;
     }
-    public function getPropertyConfig(string $type,string $source,int $id=-1) : array
+
+    public function getPropertyConfig(string $type,string $source,int $id=-1,array $aNames= array(),bool $byCategory = true) : array
     {
-        $sTableName = '';
-        $sWhereArgs = '';
+        $sTableName = "";
+        $sWhereArgs = "";
+        $sOuterWhereArgs = "";
         if($type === 'CLIENT')
         {
             $sTableName = 'client_property_tbl';
@@ -491,6 +568,10 @@ class MerchantConfigRepository
             $sTableName = 'route_property_tbl';
             $sWhereArgs = " AND cp.enabled=true AND sp.enabled AND cp.routeconfigid =".$id;
 
+        }
+        if(empty($aNames) === false)
+        {
+            $sOuterWhereArgs .= " WHERE sp.name in(".implode(',',$aNames).')';
         }
         $sJoin = "";
         $sColumn = ",cp.value";
@@ -509,7 +590,7 @@ class MerchantConfigRepository
         else if($source === 'CLIENT') $sJoin ="INNER JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
 
         $sSQL = "SELECT sp.id,sp.name,sp.datatype ,sp.ismandatory".$sColumn.",pc.name as category,pc.scope, true as enabled from SYSTEM". sSCHEMA_POSTFIX . ".".$sTableName." sp 
-         ".$sJoin." INNER JOIN SYSTEM". sSCHEMA_POSTFIX . ".property_category_tbl pc on sp.category = pc.id ".$sMetaDataJoin."
+         ".$sJoin." INNER JOIN SYSTEM". sSCHEMA_POSTFIX . ".property_category_tbl pc on sp.category = pc.id ".$sMetaDataJoin.$sOuterWhereArgs."
          ORDER BY sp.name ";
 
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
@@ -519,16 +600,20 @@ class MerchantConfigRepository
             foreach ($aRS as $rs)
             {
                 $propertyInfo = PropertyInfo::produceFromResultSet($rs);
-                if(isset($aPropertyInfo[$propertyInfo->getCategory()]) === true)
+                if($byCategory === true)
                 {
-                    array_push($aPropertyInfo[$propertyInfo->getCategory()], $propertyInfo);
+                    if(isset($aPropertyInfo[$propertyInfo->getCategory()]) === true)
+                    {
+                        array_push($aPropertyInfo[$propertyInfo->getCategory()], $propertyInfo);
+                    }
+                    else
+                    {
+                        $aPropInfo = array();
+                        array_push($aPropInfo, $propertyInfo);
+                        $aPropertyInfo[$propertyInfo->getCategory()] =$aPropInfo;
+                    }
                 }
-                else
-                {
-                    $aPropInfo = array();
-                    array_push($aPropInfo, $propertyInfo);
-                    $aPropertyInfo[$propertyInfo->getCategory()] =$aPropInfo;
-                }
+                else { array_push($aPropertyInfo, $propertyInfo); }
             }
         }
      return $aPropertyInfo;
@@ -762,189 +847,103 @@ class MerchantConfigRepository
         return $aServices;
     }
 
-
-    ////////// For Client Configuration //////////
     /**
-     * Function used to get the client detail By client ID
-     *
-     * @return Client Object Of Client
-     */
-    public function getClientDetailById(): Client
-    {
-        return Client::produceFromResultSet([
-            'ID' => $this->_clientConfig->getID(),
-            'NAME' => $this->_clientConfig->getName(),
-            'SALT' => $this->_clientConfig->getSalt(),
-            'MAXAMOUNT' => $this->_clientConfig->getMaxAmount(),
-            'COUNTRYID' => $this->_clientConfig->getCountryConfig()->getID(),
-            'EMAILRCPT' => \General::bool2xml($this->_clientConfig->emailReceiptEnabled()),
-            'SMSRCPT' => \General::bool2xml($this->_clientConfig->smsReceiptEnabled()),
-            'USERNAME' => $this->_clientConfig->getUsername()
-        ]);
-    }
-
-    /**
-     * Function used to get the client URL Details by Client ID
-     *
-     * @return ?array
-     */
-    public function getClientURLByClientId(): ?array
-    {
-        $sColumns = 'CLIURL.ID, CLIURL.urltypeid as type_id, SYSURL.name, CLIURL.url as value, CLIURL.enabled, CLIURL.created, CLIURL.modified';
-        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".url_tbl CLIURL INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".urltype_tbl SYSURL ON CLIURL.urltypeid = SYSURL.id WHERE CLIURL.enabled = true and CLIURL.clientid = " . $this->_clientConfig->getID();
-        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
-
-        if (empty($aRS) === true) { return NULL; }
-
-        $aClientURLs = array();
-        foreach ($aRS as $rs){
-            array_push($aClientURLs, ClientUrl::produceFromResultSet($rs));
-        }
-        return $aClientURLs;
-    }
-
-    /**
-     * Get Client StoreFront ID
-     *
-     * @return array
-     */
-    public function getStoreFrontByClientId(): ?array
-    {
-        $sColumns = "ACC.id, ACC.markup as NAME, ACC.businesstype as DOMAIN";
-        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".account_tbl ACC                     
-                    WHERE ACC.enabled = true and ACC.clientid = " . $this->_clientConfig->getID();
-        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
-
-        if (empty($aRS) === true) { return NULL; }
-
-        $aStoreFront = [];
-        foreach ($aRS as $rs) {
-            array_push($aStoreFront, StoreFront::produceFromResultSet($rs));
-        }
-        return $aStoreFront;
-    }
-
-    /**
-     * Get Client's Service status
-     *
-     * @return ?ClientServiceStatus
-     */
-    public function getServiceStatusByClientId(): ?ClientServiceStatus
-    {
-        return ClientServiceStatus::produceConfig($this->getDBConn(), $this->_clientConfig->getID());
-    }
-
-    /**
-     * Get Client Payment Method by ClientID
-     *
-     * @return ?array
-     */
-    public function getPMIdsByClientId(): ?array
-    {
-        $sColumns = "PM.id payment_method_id, C.name";
-        $SQL = "SELECT %s FROM CLIENT" . sSCHEMA_POSTFIX . ".pm_tbl PM
-                    INNER JOIN SYSTEM" . sSCHEMA_POSTFIX . ".card_tbl C ON PM.pmid = C.id
-                    WHERE PM.enabled = true AND PM.clientid = " . $this->_clientConfig->getID();
-
-        $aRS = $this->getDBConn()->getAllNames(sprintf($SQL, $sColumns));
-
-        if (empty($aRS) === true) { return NULL; }
-        $aPMIds = [];
-        foreach ($aRS as $rs) {
-            array_push($aPMIds, ClientPaymentMethodId::produceFromResultSet($rs));
-        }
-        return $aPMIds;
-    }
-
-    /**
-     * Modify operation for Client Configuration
-     *
-     * @param array $aModifyData
-     *
+     * @throws MerchantOnboardingException
      * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
      */
-    public function modifyClientConfigurationsData(Array $aModifyData): void
+    public function saveClientUrls(array $urls,$operation='INSERT')
     {
-        // Initiate Transaction
+
+        $aWhereCls = array();
+        foreach ($urls as $url)
+        {
+            $sColumn = '';
+            switch ($url->getTypeID())
+            {
+                case 5:
+                    $sColumn = "logourl=";
+                    break;
+                case 6:
+                    $sColumn = "cssurl=";
+                    break;
+                case 8:
+                    $sColumn = "accepturl=";
+                    break;
+                case 9:
+                    $sColumn = "cancelurl=";
+                    break;
+                case 7:
+                    $sColumn = "callbackurl=";
+                    break;
+                case 10:
+                    $sColumn = "iconurl=";
+                    break;
+                case 14:
+                    if($operation==='INSERT') $this->saveVelocityURL(array($url));
+                    else $this->updateVelocityURL(array($url));
+                    break;
+            }
+            if(empty($sColumn)===false)
+            {
+                array_push($aWhereCls,$sColumn."'".$url->getURL()."'");
+            }
+        }
+        if(empty($aWhereCls) === false)
+        {
+            $this->getDBConn()->query("START TRANSACTION");
+            $SQL = "UPDATE CLIENT".sSCHEMA_POSTFIX.".client_tbl SET ".implode(', ', $aWhereCls)." WHERE id=".$this->_clientConfig->getID();
+            $rs = $this->getDBConn()->executeQuery($SQL);
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+               $this->getDBConn()->query("ROLLBACK");
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to HPP/Merchant URL}");
+            }
+            $this->getDBConn()->query("COMMIT");
+        }
+
+    }
+    public function saveVelocityURL(array $urls)
+    {
         $this->getDBConn()->query("START TRANSACTION");
-
-        // Run Below Operations as per availability
-        if(empty($aModifyData['client_urls']) === false)
-            $this->updateClientUrls($aModifyData['client_urls']);
-
-        if(empty($aModifyData['properties']) === false)
-            $this->updatePropertyConfig('CLIENT', $aModifyData['properties']);
-
-        if(empty($aModifyData['storefronts']) === false)
-            $this->updateClientStoreFronts($aModifyData['storefronts']);
-
-        // COMMIT Transaction
-        $this->getDBConn()->query("COMMIT");
-    }
-
-    /***
-     * Modify Client URL's
-     *
-     * @param array $urls
-     *
-     * @return bool|null
-     * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
-     */
-    public function updateClientUrls(Array $urls): ?bool {
-
-        if(empty($urls) === true) return NULL; // Is Empty Check
 
         foreach ($urls as $url)
         {
-            try {
-                $SQL = "UPDATE client.url_tbl SET url = '%s' WHERE id = %s and clientid = %s";
-                $SQL = sprintf($SQL, $url->getValue(), $url->getId(), $this->_clientConfig->getID());
+            $SQL = "INSERT INTO client".sSCHEMA_POSTFIX.".url_tbl (urltypeid,clientid,url) values ($1,$2,$3)";
+            $param = array($url->getTypeID(),$this->_clientConfig->getID(),$url->getURL());
 
-                $result = $this->getDBConn()->executeQuery($SQL);
-                if(is_resource($result) === FALSE) {
-                    $this->getDBConn()->query("ROLLBACK");
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION, 'UPDATE REQUEST FAILED');
+            $rs = $this->getDBConn()->executeQuery($SQL,$param);
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
                 }
-            } catch (\SQLQueryException $exp) {
                 $this->getDBConn()->query("ROLLBACK");
-                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION, 'UPDATE REQUEST FAILED');
+
+                throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
             }
+
         }
-        return TRUE;
+        $this->getDBConn()->query("COMMIT");
     }
+    public function updateVelocityURL(array $urls)
+    {
+        $this->getDBConn()->query("START TRANSACTION");
 
-    /**
-     * Modify Store front as per the Client
-     *
-     * @param array $aStoreFront
-     *
-     * @return bool|null
-     * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
-     */
-    public function updateClientStoreFronts(Array $aStoreFront): ?bool {
-
-        if(empty($aStoreFront) === true) return NULL; // Is Empty Check
-
-        foreach ($aStoreFront as $storeFront)
+        foreach ($urls as $url)
         {
-            try {
-                $SQL = "UPDATE client.account_tbl SET markup = '%s' WHERE id = %s and clientid = %s";
-                $SQL = sprintf($SQL, $storeFront->getName(), $storeFront->getId(), $this->_clientConfig->getID());
-                $result = $this->getDBConn()->executeQuery($SQL);
-                if(is_resource($result) === FALSE) {
-                    $this->getDBConn()->query("ROLLBACK");
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,
-                        'REQUEST FAILED, StoreFront ID|Value::' . $storeFront->getId(). ':' . $storeFront->getName());
-                }
-            } catch (\SQLQueryException|\Exception $exp) {
+            $SQL = "UPDATE client".sSCHEMA_POSTFIX.".url_tbl set URL = $1 WHERE clientid=$2 and urltypeid=$3";
+            $param = array($url->getURL(),$this->_clientConfig->getID(),$url->getTypeID());
+
+            $rs = $this->getDBConn()->executeQuery($SQL,$param);
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
                 $this->getDBConn()->query("ROLLBACK");
-                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,
-                    'REQUEST FAILED, StoreFront (' . $storeFront->getId(). ' :: ' . $storeFront->getName() . ')');
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to save url {typeid:".$url->getTypeID()."}");
             }
         }
-        return TRUE;
+        $this->getDBConn()->query("COMMIT");
+
     }
 }

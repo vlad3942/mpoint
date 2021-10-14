@@ -64,9 +64,64 @@ class MerchantConfigInfo
 
     public function getRoutePM(MerchantConfigRepository $configRepository, int $id=-1) : array
     {
-        return $configRepository->getRoutePM($id);
+        return $configRepository->getPM("ROUTE",$id);
     }
 
+    public function getClientPM(MerchantConfigRepository $configRepository) : array
+    {
+        return $configRepository->getPM("CLIENT");
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     */
+    public function saveClientPM(MerchantConfigRepository $configRepository, array $aPMIDs)
+    {
+         $configRepository->savePM("CLIENT",$aPMIDs);
+    }
+    /**
+     * @throws MerchantOnboardingException
+     */
+    public function updateClientPM(MerchantConfigRepository $configRepository, array $aPMIDs)
+    {
+        $configRepository->updatePM("CLIENT",$aPMIDs);
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function updateClientdetails(MerchantConfigRepository $configRepository, array $aClientParam)
+    {
+        if($aClientParam['SSO_PREFERENCE'] || $aClientParam['TIMEZONE'])
+        {
+            $aClientProperty = $configRepository->getPropertyConfig("CLIENT","ALL",-1,array("'SSO_PREFERENCE'","'TIMEZONE'"),false);
+            $aAddProperty = array();
+            $aUpdateProperty = array();
+            foreach ($aClientProperty as $ClientProperty)
+            {
+                if($aClientParam['SSO_PREFERENCE'] && $ClientProperty->getName() === 'SSO_PREFERENCE' )
+                {
+                    if(empty($ClientProperty->getValue()) === false) array_push($aUpdateProperty,$ClientProperty);
+                    if(empty($ClientProperty->getValue()) === true) array_push($aAddProperty,$ClientProperty);
+                    $ClientProperty->setValue($aClientParam['SSO_PREFERENCE']);
+                    unset($aClientParam['SSO_PREFERENCE']);
+                }
+                if($aClientParam['TIMEZONE'] && $ClientProperty->getName() === 'TIMEZONE')
+                {
+                    if(empty($ClientProperty->getValue()) === false) array_push($aUpdateProperty,$ClientProperty);
+                    if(empty($ClientProperty->getValue()) === true) array_push($aAddProperty,$ClientProperty);
+                    $ClientProperty->setValue($aClientParam['TIMEZONE']);
+                    unset($aClientParam['TIMEZONE']);
+                }
+            }
+
+            $configRepository->updatePropertyConfig("CLIENT",$aUpdateProperty);
+            $configRepository->savePropertyConfig("CLIENT",$aAddProperty);
+        }
+
+        $configRepository->updateClientdetails($aClientParam);
+    }
     public function savePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
          $configRepository->savePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);
@@ -109,52 +164,37 @@ class MerchantConfigInfo
     }
 
     /**
-     * Get Client Configuration details
-     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
-     *
-     * @return array
+     * @throws MerchantOnboardingException
      */
-    public function getClientConfigurations(MerchantConfigRepository $configRepository): array
+    public function saveVelocityURL(MerchantConfigRepository $configRepository, array $urls)
     {
-        return [
-            'info'                  => $configRepository->getClientDetailById(),
-            'client_urls'           => $configRepository->getClientURLByClientId(),
-            'payment_method_ids'    => $configRepository->getPMIdsByClientId(),
-            'storefronts'           => $configRepository->getStoreFrontByClientId(),
-            'property_details'      => $configRepository->getPropertyConfig('CLIENT', 'ALL'),
-            'services'               => $configRepository->getServiceStatusByClientId()
-        ];
+        $configRepository->saveVelocityURL($urls);
     }
 
-    /***
-     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
-     * @param array                                                               $aData
-     *
+    /**
+     * @throws MerchantOnboardingException
      * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
      */
-    public function addClientConfigurationsData(MerchantConfigRepository $configRepository, array $aProperty): void
+    public function saveClientUrls(MerchantConfigRepository $configRepository, array $urls)
     {
-        // Add Properties
-        $configRepository->savePropertyConfig('CLIENT', $aProperty);
+        $configRepository->saveClientUrls($urls);
     }
 
-    /***
-     * Modify Collection against Client
-     *
-     * 1. Properties
-     * 2. Urls
-     * 3. StoreFront
-     *
-     * @param \api\classes\merchantservices\Repositories\MerchantConfigRepository $configRepository
-     * @param array                                                               $aModifyData
-     *
-     * @return void
-     * @throws \SQLQueryException
-     * @throws \api\classes\merchantservices\MerchantOnboardingException
+    /**
+     * @throws MerchantOnboardingException
      */
-    public function modifyClientConfigurationsData(MerchantConfigRepository $configRepository, array $aModifyData): void
+    public function updateVelocityURL(MerchantConfigRepository $configRepository, array $urls)
     {
-        $configRepository->modifyClientConfigurationsData($aModifyData);
+        $configRepository->updateVelocityURL($urls);
     }
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function updateClientUrls(MerchantConfigRepository $configRepository, array $urls)
+    {
+        $configRepository->saveClientUrls($urls,'UPDATE');
+    }
+
+
 }
