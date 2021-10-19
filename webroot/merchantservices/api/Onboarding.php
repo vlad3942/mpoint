@@ -11,7 +11,10 @@ $serviceName = '';
 $requestType = '';
 $arrParams = array();
 
-
+$aXSDSource = array(
+    'post' => sPROTOCOL_XSD_PATH ."mpoint-merchantservices.xsd",
+    'put'  => sPROTOCOL_XSD_PATH ."mpoint-merchantservices-put.xsd"
+);
 
 if(isset($_REQUEST['service'])) 
 {
@@ -23,6 +26,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && !empty($_SERVER['REQUEST_METHOD']))
     $requestType = strtolower($_SERVER['REQUEST_METHOD']);
 }
 
+$sSourceXSDFile = isset($aXSDSource[$requestType]) ?  $aXSDSource[$requestType] : sPROTOCOL_XSD_PATH . 'mpoint-merchantservices.xsd';
 
 // Define Routes
 $routes = [
@@ -68,8 +72,6 @@ $routes = [
     ]
 ];
 
-
-
 try
 {
     if(isset($routes[$serviceName]) === false || isset($routes[$serviceName][$requestType]) === false)
@@ -91,6 +93,24 @@ try
     if($requestType !== 'get' && $requestType !== 'delete')
     {
         $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
+
+        if(($obj_DOM instanceof SimpleDOMElement) === false)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::UNSUPPORTED_MEDIA_TYPE, 'Invalid XML Document', );
+        }
+
+        if($obj_DOM->validate($sSourceXSDFile) === false)
+        {
+            $aObj_Errs = libxml_get_errors();
+
+            $sErrorResponse = '';
+            for ($i=0; $i<count($aObj_Errs); $i++)
+            {
+                $sErrorResponse .= '<error">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</error>';
+            }
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_XML, $sErrorResponse);
+        }
+
         if(count($obj_DOM->client_id) > 0)
         {
             $clientid = (int)$obj_DOM->client_id;
@@ -101,7 +121,6 @@ try
     {
         $clientid = (int)$arrParams['client_id'];
     }
-
 
     if($clientid > 0 && Validate::valClient($_OBJ_DB, $clientid) === 100)
     {
@@ -120,6 +139,7 @@ try
     }
     else throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Client ID Param Not Found');
 }
+
 catch (MerchantOnboardingException $e)
 {
     header($e->getHTTPHeader());
