@@ -1875,14 +1875,11 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	public static function  _produceAdditionalData($_OBJ_DB, $txnId, $createdTimeStamp=null)
+	public static function  _produceAdditionalData($_OBJ_DB, $txnId, $createdTimeStamp)
     {
         $additionalData = [];
-		$sqlTimeStamp = "";
-		if (!is_null($createdTimeStamp)) {
-			$sqlTimeStamp .= " and created >= to_timestamp('" . $createdTimeStamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
-		}
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction'" . $sqlTimeStamp . " and externalid=" . $txnId;
+
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= to_timestamp('" . $createdTimeStamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
 
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
