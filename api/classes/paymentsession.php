@@ -577,10 +577,12 @@ final class PaymentSession
     public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp=null)
     {
         $additionalData = [];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
+        $sqlTimeStamp = "";
         if (!is_null($sessionCreatedTimestamp)) {
-            $sqlA .= " and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
+            $sqlTimeStamp .= " and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
         }
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session'" . $sqlTimeStamp . " and externalid=" . $txnId;
+
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
