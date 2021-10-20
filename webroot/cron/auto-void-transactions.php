@@ -14,7 +14,7 @@ if (PHP_SAPI == "cli") {
         $pspid = NULL;
     }
     $_SERVER['HTTP_HOST'] = getenv('MPOINT_HOST');
-    $_SERVER['DOCUMENT_ROOT'] = getenv('DOCUMENT_ROOT','/opt/cpm/mPoint/webroot');
+    $_SERVER['DOCUMENT_ROOT'] = '/opt/cpm/mPoint/webroot';
 } else {
     $clientid = $_REQUEST['clientid'];
     $pspid = $_REQUEST['pspid'];
@@ -140,13 +140,11 @@ if ($obj_ClientConfig !== NULL)
         }
     }else{
         header("HTTP/1.1 400 Bad Request");
-        $xml = '';
         $xml .= '<status code="400">Invalid Configuration</status>';
     }
 }
 else {
     header("HTTP/1.1 400 Bad Request");
-        $xml = '';
         $xml .= '<status code="400">Invalid Client id : '.$clientid.'</status>';
 }
 
