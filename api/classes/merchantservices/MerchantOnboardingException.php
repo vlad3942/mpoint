@@ -18,6 +18,11 @@ class MerchantOnboardingException extends mPointControllerException
 
     const API_EXCEPTION = 301;
 
+    const UNSUPPORTED_MEDIA_TYPE = 415;
+    const INVALID_XML = 400;
+
+    const BAD_REQUEST_HTTP_STATUS_CODE = 400;
+
     public function __construct( $statusCode,$message='',$httpCode=500)
     {
         parent::__construct(0, $message);

@@ -141,7 +141,7 @@ class MerchantConfigInfo
      */
     public function deletePropertyConfig(MerchantConfigRepository $configRepository, string $type, array $additionalParams,int $rid=-1)
     {
-        $value =  $additionalParams['id'];
+        $value =  $additionalParams['p_id'];
         $pms = $additionalParams['pm'];
 
         if(empty($value) === true && empty($pms) === true) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ID");

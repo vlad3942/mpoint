@@ -17,7 +17,9 @@ use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\commons\BaseInfo;
 
+use ClientConfig;
 use General;
+use RDB;
 
 
 class MerchantConfigRepository
@@ -25,12 +27,13 @@ class MerchantConfigRepository
     private \RDB $_conn;
     private \ClientConfig $_clientConfig;
 
-    public function __construct(\RDB  $conn, int $iClientId)
+    public function __construct(RDB  &$conn, int $iClientId,?ClientConfig  &$clientConfig = null )
     {
         $this->_conn = $conn;
-        $this->_clientConfig = \ClientConfig::produceConfig($conn, $iClientId);
+        if($clientConfig !== null) $this->_clientConfig = $clientConfig;
+        else $this->_clientConfig = ClientConfig::produceConfig($conn, $iClientId);
     }
-    public function getClientInfo() : \ClientConfig
+    public function getClientInfo() : ClientConfig
     {
         $this->_clientConfig->getAccountsConfigurations($this->_conn);
         return $this->_clientConfig;
@@ -38,7 +41,7 @@ class MerchantConfigRepository
     private function getDBConn():\RDB { return $this->_conn;}
 
 
-    private function getAddonConfig(AddonServiceType $addonServiceType)
+    private function getAddonConfig(AddonServiceType &$addonServiceType)
     {
         $SQL ="";
         if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
@@ -68,7 +71,7 @@ class MerchantConfigRepository
         }
         elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
-            $sColumns = 'id,payment_type, sequence_no ';
+            $sColumns = 'id,payment_type, sequence_no,enabled ';
         }
         elseif($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
         elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
@@ -121,7 +124,7 @@ class MerchantConfigRepository
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveAddonConfig(array $aAddonConfig)
+    public function saveAddonConfig(array &$aAddonConfig)
     {
         foreach ($aAddonConfig as $addonConfig)
         {
@@ -212,7 +215,7 @@ class MerchantConfigRepository
     /**
      * @throws MerchantOnboardingException
      */
-    public function updateAddonConfig(array $aAddonConfig)
+    public function updateAddonConfig(array &$aAddonConfig)
     {
         foreach ($aAddonConfig as $addonConfig)
         {
@@ -233,7 +236,7 @@ class MerchantConfigRepository
             if(empty($addonConfig->getConfiguration()) === false)
             {
                 $aServiceConf = $addonConfig->getConfiguration();
-                foreach ($aServiceConf as $serviceConf)
+                foreach ($aServiceConf as &$serviceConf)
                 {
                     $sql = $serviceConf->getUpdateSQL($addonConfig->getServiceType());
 
@@ -386,9 +389,10 @@ class MerchantConfigRepository
                 }
                 else throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to retrieve PSPID for routeconfigid:".$id);
             }
-            $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." CP SET value=$1 ".$sWhereClase;
+            $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." CP SET value=$1,ENABLED= {replace} ".$sWhereClase;
             foreach ($aPropertyInfo as $propertyInfo)
             {
+                $SQL = str_replace("{replace}",General::bool2xml($propertyInfo->isEnabled()),$SQL);
                 $aParam = array($propertyInfo->getValue(),$propertyInfo->getId());
                 $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
                 if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -646,7 +650,7 @@ class MerchantConfigRepository
             } else {
 
                 if (count($aRouteConfigData)) {
-                    $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration', array('name' => 'route_name'));
+                    $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration');
                     $PaymentProvider->additionalProp['route_configurations'] = $aRouteConfigs;
                 }
 
@@ -667,7 +671,7 @@ class MerchantConfigRepository
             }
         }
         if (count($aRouteConfigData)) {
-            $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration', array('name' => 'route_name'));
+            $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration');
             $PaymentProvider->additionalProp['route_configurations'] = $aRouteConfigs;
         }
         return $aPaymentProviders;
@@ -686,7 +690,10 @@ class MerchantConfigRepository
         $SQL = "SELECT id, featurename as name FROM SYSTEM" . sSCHEMA_POSTFIX . ".routefeature_tbl  WHERE enabled = true ";
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');
+        if (is_array($aRS) && count($aRS) > 0)
+        {
+            $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');
+        }
 
         return $aRouteFeatureInfo;
     }
@@ -744,7 +751,10 @@ class MerchantConfigRepository
         $SQL = "SELECT id, name $sAddtionalFields FROM SYSTEM" . sSCHEMA_POSTFIX . "." . $sTableName . "  WHERE true " . $sEnableCheck;
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
+        if (is_array($aRS) && count($aRS) > 0)
+        {
+            $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
+        }
 
         return $aMetaServiceConfig;
     }
@@ -785,7 +795,9 @@ class MerchantConfigRepository
             } else {
 
                 if (count($aSubtypes)) {
-                    $aServiceSubTypes = BaseInfo::produceFromDataSet($aSubtypes, 'addon_subtype', array('name' => 'addon_subtype'));
+                    // To rename the nodes in response pass additional parameter(3rd) for the node as key and value as exeptected string in response
+                    // $aRouteConfigs = BaseInfo::produceFromDataSet($aRouteConfigData, 'route_configuration', array('name' => 'route_name'));
+                    $aServiceSubTypes = BaseInfo::produceFromDataSet($aSubtypes, 'addon_subtype');
                     $Service->additionalProp['addon_subtypes'] = $aServiceSubTypes;
                 }
 
@@ -797,8 +809,7 @@ class MerchantConfigRepository
                 $aTypes[] =  array('ID' => $rs["ID"], 'NAME' => $rs['NAME']);
                 $Service = BaseInfo::produceFromDataSet(
                     $aTypes,
-                    'addon_type',
-                    array('name' => 'addon_type')
+                    'addon_type'
                 )[0];
 
                 array_push($aSubtypes, array('ID' => $rs["STID"], 'NAME' => $rs['STNAME']));
@@ -807,7 +818,7 @@ class MerchantConfigRepository
             }
         }
         if (count($aSubtypes)) {
-            $aServiceSubTypes = BaseInfo::produceFromDataSet($aSubtypes, 'addon_subtype', array('name' => 'addon_subtype'));
+            $aServiceSubTypes = BaseInfo::produceFromDataSet($aSubtypes, 'addon_subtype');
             $Service->additionalProp['addon_subtypes'] = $aServiceSubTypes;
         }
 
