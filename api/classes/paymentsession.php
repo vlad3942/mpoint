@@ -553,7 +553,7 @@ final class PaymentSession
                 {
                     return $additional_id;
                 }
-                $sql = "INSERT INTO log1".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
+                $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
 								VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
                 // Error: Unable to insert a new Additional Data record in the Additional Data Table
                 if (is_resource($res = $obj_DB->query($sql) ) === false)
