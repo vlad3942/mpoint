@@ -94,7 +94,6 @@ abstract class Callback extends EndUserAccount
         {
             throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
         }
-        $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         if ($oPSPConfig == null) {
 
 			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, $pspID);

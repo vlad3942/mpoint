@@ -289,49 +289,55 @@
             <column name="dcc_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="mcp_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="pcc_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="fraud_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="tokenization_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="splitpayment_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="callback_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="void_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="legacy_flow_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -775,7 +781,7 @@
             </column>
             <!-- Column -->
             <column name="value"
-                    type="varchar(50)">
+                    type="varchar(2000)">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -896,7 +902,7 @@
             </column>
             <!-- Column -->
             <column name="value"
-                    type="varchar(50)">
+                    type="varchar(2000)">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -956,7 +962,7 @@
             </column>
             <!-- Column -->
             <column name="value"
-                    type="varchar(50)">
+                    type="varchar(2000)">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->

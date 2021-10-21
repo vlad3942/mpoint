@@ -61,7 +61,7 @@ class AddonServiceType
         return $this->_sClassName;
     }
 
-    public static function produceAddonServiceTypebyId(int $iType,string $subType) : ?AddonServiceType
+    public static function produceAddonServiceTypebyId(int $iType,string $subType='') : ?AddonServiceType
     {
         switch ($iType)
         {

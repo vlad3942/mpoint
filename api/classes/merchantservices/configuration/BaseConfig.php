@@ -24,6 +24,17 @@ Abstract class BaseConfig
     public Abstract function getConfiguration() : array;
     public Abstract function getServiceType() : AddonServiceType;
     public Abstract function getProperties();
+    public function  toKeyValueConfigArray(string $keyfun) :array
+    {
+        $aConfig = $this->getConfiguration();
+        $aKeyValueConfig = array();
+        foreach ($aConfig as $config)
+        {
+            if(isset($aKeyValueConfig[$config->$keyfun()]) === true) array_push($aKeyValueConfig[$config->$keyfun()], $config);
+            else $aKeyValueConfig[$config->$keyfun()] =array($config);
+        }
+      return $aKeyValueConfig;
+    }
     protected function setPropertiesFromXML(SimpleXMLElement &$oXML){}
     public function toXML():string
     {

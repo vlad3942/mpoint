@@ -256,7 +256,7 @@ try
 							    $isTxnCreated = False; // for split txn is already is created or not
                                 $checkPaymentType = array();
                                 $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
-                                $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                                $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
                                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
                                 // check voucher node is appearing before card node and according to that set preference
@@ -509,7 +509,7 @@ try
                                             }
                                         }
 
-                                        if (strtolower($is_legacy) == 'false') {
+                                        if ($is_legacy === false) {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
                                             $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
 
@@ -532,7 +532,7 @@ try
 
                                         //Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
-                                        if(strtolower($is_legacy) == 'false') {
+                                        if($is_legacy === false) {
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . "]");
                                         }else{
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . " and @state-id=1 and @walletid = '']");
@@ -871,7 +871,7 @@ try
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
 
-                                                                if(strtolower($is_legacy) == 'false') {
+                                                                if($is_legacy === false) {
                                                                     $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = " . (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] . "]");
                                                                 }else{
                                                                     $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$wallet_Processor->getPSPConfig()->getID()."]");

@@ -158,6 +158,8 @@ class PaymentMethod extends Card
      */
     public static function produceConfigurations(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $aObj_PaymentMethods)
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aPaymentMethodsConfig = array();
         for ($i = 0, $iMax = count($paymentMethods); $i < $iMax; $i++) {

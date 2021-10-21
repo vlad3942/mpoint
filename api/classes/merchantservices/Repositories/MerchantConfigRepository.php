@@ -41,7 +41,7 @@ class MerchantConfigRepository
     private function getDBConn():\RDB { return $this->_conn;}
 
 
-    private function getAddonConfig(AddonServiceType &$addonServiceType)
+    public function getAddonConfig(AddonServiceType $addonServiceType,string $sWhereCls = '')
     {
         $SQL ="";
         if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
@@ -58,7 +58,6 @@ class MerchantConfigRepository
 
         $sTableName = $addonServiceType->getTableName();
         $sColumns = "id,pmid,countryid,currencyid,created,modified,enabled";
-        $sWhereCls ='';
         if($addonServiceType->getID() ===AddonServiceTypeIndex::eFraud )
         {
             $sColumns .= ',providerid,typeoffraud ';

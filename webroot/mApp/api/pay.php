@@ -236,7 +236,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $isTxnCreated = False; // for split txn is already is created or not
                     $checkPaymentType = array();
                     $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
-                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
+                    $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
                     $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
                     // check voucher node is appearing before card node and according to that set preference
@@ -440,7 +440,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 
 
-                        if (strtolower($is_legacy) == 'false') {
+                        if ($is_legacy === false) {
                                 $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
                         } else {
                                 $obj_CardResultSet = $obj_mCard->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);

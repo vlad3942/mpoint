@@ -143,7 +143,6 @@ class PropertyInfo extends BaseInfo
         if(count($oXML->enabled)>0) $propertyInfo->setEnabled(\General::xml2bool($oXML->enabled));
         if(count($oXML->name)>0) $propertyInfo->setName((string)$oXML->name);
         if(count($oXML->value)>0) $propertyInfo->setValue((string)$oXML->value);
-        if(count($oXML->value)>0) $propertyInfo->setValue((string)$oXML->value);
         return $propertyInfo;
     }
 
