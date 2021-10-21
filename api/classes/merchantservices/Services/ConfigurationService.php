@@ -43,7 +43,7 @@ class ConfigurationService
         $sFraudXML ='';
         $sSplitPaymentXML ='';
 
-        foreach ($aAddonConf as $addonconfig)
+        foreach ($aAddonConf as &$addonconfig)
         {
             if($addonconfig->getServiceType()->getID() === AddonServiceTypeIndex::eFraud)
             {
@@ -77,12 +77,12 @@ class ConfigurationService
         return $responseXml;
     }
 
-    public function saveAddonConfig($addonConfig, $additionalParams = [])
+    public function saveAddonConfig(&$addonConfig, $additionalParams = [])
     {
       $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig);
     }
 
-    public function updateAddonConfig($addonConfig, $additionalParams = [])
+    public function updateAddonConfig(&$addonConfig, $additionalParams = [])
     {
          $this->getAggregateRoot()->updateAddonConfig($this->getRepository(),$addonConfig);
     }
@@ -116,29 +116,29 @@ class ConfigurationService
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveClientPM(array $aPMIDs)
+    public function saveClientPM(array &$aPMIDs)
     {
         $this->getAggregateRoot()->saveClientPM($this->getRepository(),$aPMIDs);
     }
     /**
      * @throws MerchantOnboardingException
      */
-    public function updateClientPM(array $aPMIDs)
+    public function updateClientPM(array &$aPMIDs)
     {
         $this->getAggregateRoot()->updateClientPM($this->getRepository(),$aPMIDs);
     }
 
-    public function updateClientdetails(array $aClientParam)
+    public function updateClientdetails(array &$aClientParam)
     {
         $this->getAggregateRoot()->updateClientdetails($this->getRepository(),$aClientParam);
     }
 
-    public function savePropertyConfig(string $type,array $aPropertyInfo,int $id=-1, array $aPMIds=array() )
+    public function savePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array() )
     {
        $this->getAggregateRoot()->savePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
     }
 
-    public function updatePropertyConfig(string $type,array $aPropertyInfo,int $id=-1, array $aPMIds=array() )
+    public function updatePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array() )
     {
         $this->getAggregateRoot()->updatePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
     }
@@ -160,11 +160,11 @@ class ConfigurationService
          $this->getAggregateRoot()->deletePropertyConfig($this->getRepository(),$type,$additionalParams,$id);
     }
 
-    public function saveVelocityURL(array $urls)
+    public function saveVelocityURL(array &$urls)
     {
       $this->getAggregateRoot()->saveVelocityURL($this->getRepository(),$urls);
     }
-    public function saveClientUrls(array $urls)
+    public function saveClientUrls(array &$urls)
     {
         $this->getAggregateRoot()->saveClientUrls($this->getRepository(),$urls);
 
@@ -172,7 +172,7 @@ class ConfigurationService
     /**
      * @throws MerchantOnboardingException
      */
-    public function updateVelocityURL( array $urls)
+    public function updateVelocityURL( array &$urls)
     {
         $this->getAggregateRoot()->updateVelocityURL($this->getRepository(),$urls);
     }
@@ -180,17 +180,17 @@ class ConfigurationService
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function updateClientUrls(array $urls)
+    public function updateClientUrls(array &$urls)
     {
         $this->getAggregateRoot()->updateClientUrls($this->getRepository(),$urls);
     }
 
-    public function updateAddonServiceStatus(ClientServiceStatus $clService)
+    public function updateAddonServiceStatus(ClientServiceStatus &$clService)
     {
         $this->getAggregateRoot()->updateAddonServiceStatus($this->getRepository(),$clService);
 
     }
-    public function updateAccountConfig(array $aClAccountConfig)
+    public function updateAccountConfig(array &$aClAccountConfig)
     {
         $this->getAggregateRoot()->updateAccountConfig($this->getRepository(),$aClAccountConfig);
 
