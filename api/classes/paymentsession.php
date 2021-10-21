@@ -238,13 +238,10 @@ final class PaymentSession
                     if($stateId === Constants::iSESSION_EXPIRED || $stateId === Constants::iSESSION_FAILED || $stateId === Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS)
                     {
                         if($this->getSessionType() > 1) {
-                            $isReoffer = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
                             $isManualRefund = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
-                            if ($isReoffer === true) {
-                                global $_OBJ_TXT;
-                                $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
-                                $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);
-                            }
+                            global $_OBJ_TXT;
+                            $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
+                            $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);
                         }
                     }
                     elseif($stateId === Constants::iSESSION_COMPLETED)
@@ -577,13 +574,12 @@ final class PaymentSession
         }
     }
 
-    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp=null)
+    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp)
     {
         $additionalData = [];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
-        if (!is_null($sessionCreatedTimestamp)) {
-            $sqlA .= " and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
-        }
+
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
+
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {

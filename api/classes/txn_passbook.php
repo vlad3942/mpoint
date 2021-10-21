@@ -863,7 +863,7 @@ final class TxnPassbook
     {
         $aParams = array($this->getTransactionId());
         $queryResult = FALSE;
-        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $2 WHERE clientid = $5 and transactionid = $1 and id = $3 and status <> $4;';
+        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $2 WHERE clientid = $4 and transactionid = $1 and id = $3 and status not in ($5, $6, $7);';
 
         if(count($passbookEntry) == 0) {
             return $queryResult;
@@ -875,8 +875,10 @@ final class TxnPassbook
                     $this->getTransactionId(),
                     $entry->getStatus(),
                     $entry->getId(),
+                    $this->getClientId(),
                     Constants::sPassbookStatusDone,
-                    $this->getClientId()
+                    Constants::sPassbookStatusInvalid,
+                    Constants::sPassbookStatusError
                 );
                 $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
                 $queryResult = (bool) $result;

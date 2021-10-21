@@ -1669,7 +1669,7 @@ class TxnInfo
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
 			$obj_ConvertedCurrencyConfig = null;
 			if(intval($RS["CONVERTEDCURRENCYID"]  )>0) $obj_ConvertedCurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CONVERTEDCURRENCYID"]);
-            $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"], $RS["created"]);
+            $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"], $RS["CREATED"]);
             $obj_ExternalRefData = self::_produceExternalReference($obj, $RS["ID"]);
             $aBillingAddr = self::_produceBillingAddr($obj, $RS["ID"]);
 			$paymentSession = null;
@@ -1875,13 +1875,12 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	public static function  _produceAdditionalData($_OBJ_DB, $txnId, $createdTimeStamp=null)
+	public static function  _produceAdditionalData($_OBJ_DB, $txnId, $createdTimeStamp)
     {
         $additionalData = [];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
-        if (!is_null($createdTimeStamp)) {
-        	$sqlA .= " and created >= to_timestamp('" . $createdTimeStamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
-		}
+
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= to_timestamp('" . $createdTimeStamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
+
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
@@ -2346,7 +2345,7 @@ class TxnInfo
 
     function updateSessionType($amount)
 	{
-		$this->getPaymentSession()->updateSessionTypeId($amount,$this->getPaymentSession()->getAmount(),$this->getSessionId());
+		$this->getPaymentSession()->updateSessionTypeId($amount);
 	}
 
     /**
