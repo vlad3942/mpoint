@@ -686,7 +686,10 @@ class MerchantConfigRepository
         $SQL = "SELECT id, featurename as name FROM SYSTEM" . sSCHEMA_POSTFIX . ".routefeature_tbl  WHERE enabled = true ";
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');
+        if (is_array($aRS) && count($aRS) > 0)
+        {
+            $aRouteFeatureInfo = BaseInfo::produceFromDataSet($aRS, 'route_feature');
+        }
 
         return $aRouteFeatureInfo;
     }
@@ -744,7 +747,10 @@ class MerchantConfigRepository
         $SQL = "SELECT id, name $sAddtionalFields FROM SYSTEM" . sSCHEMA_POSTFIX . "." . $sTableName . "  WHERE true " . $sEnableCheck;
         $aRS = $this->getDBConn()->getAllNames($SQL);
 
-        $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
+        if (is_array($aRS) && count($aRS) > 0)
+        {
+            $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
+        }
 
         return $aMetaServiceConfig;
     }

@@ -96,7 +96,7 @@ try
 
         if(($obj_DOM instanceof SimpleDOMElement) === false)
         {
-            throw new MerchantOnboardingException(MerchantOnboardingException::UNSUPPORTED_MEDIA_TYPE, 'Invalid XML Document', );
+            throw new MerchantOnboardingException(MerchantOnboardingException::UNSUPPORTED_MEDIA_TYPE, 'Invalid XML Document', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         }
 
         if($obj_DOM->validate($sSourceXSDFile) === false)
@@ -108,7 +108,7 @@ try
             {
                 $sErrorResponse .= '<error">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</error>';
             }
-            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_XML, $sErrorResponse);
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_XML, $sErrorResponse, MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         }
 
         if(count($obj_DOM->client_id) > 0)

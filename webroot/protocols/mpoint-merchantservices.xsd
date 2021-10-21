@@ -7,7 +7,7 @@
   <xs:element name="addon_configuration_request">
     <xs:complexType>
       <xs:all>
-        <xs:element name="client_id" minOccurs="0" maxOccurs="1" />
+        <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
         <xs:element name="dcc_config" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
@@ -124,7 +124,7 @@
   <xs:element name="client_psp_configuration">
     <xs:complexType>
       <xs:all>
-        <xs:element name="client_id" minOccurs="0" maxOccurs="1" />
+        <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
         <xs:element name="psp_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
         <xs:element name="properties" minOccurs="1" maxOccurs="1">
           <xs:complexType>
@@ -142,7 +142,7 @@
   <xs:element name="client_route_configuration">
     <xs:complexType>
       <xs:all>
-        <xs:element name="client_id" minOccurs="0" maxOccurs="1" />
+        <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
         <xs:element name="route_config_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
         <xs:element name="properties" minOccurs="1" maxOccurs="1">
           <xs:complexType>
@@ -157,8 +157,7 @@
               <xs:element name="pm_configuration" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-                    <xs:element name="enabled" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />                    
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -173,7 +172,7 @@
   <xs:element name="client_configuration">
     <xs:complexType>
       <xs:all>
-        <xs:element type="xs:string" name="client_id" minOccurs="0" maxOccurs="1" />
+        <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
         <xs:element name="client_urls">
           <xs:complexType>
             <xs:sequence>
@@ -201,8 +200,7 @@
               <xs:element name="pm_configuration" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-                    <xs:element name="enabled" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />                    
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>

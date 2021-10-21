@@ -72,8 +72,8 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="addon_info_pcc">    
-      <xs:group ref="addon_info_pcc" />    
+  <xs:complexType name="addon_info_pcc">
+    <xs:group ref="addon_info_pcc" />
   </xs:complexType>
 
   <xs:complexType name="addon_info_pcc_id_enabled">
@@ -110,8 +110,17 @@
     <xs:sequence>
       <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
       <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
-      <xs:element name="enabled" type="xs:string" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property_info_enabled">
+    <xs:complexContent>
+      <xs:extension base="property_info">
+        <xs:sequence>
+          <xs:element name="enabled" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="url_info">
