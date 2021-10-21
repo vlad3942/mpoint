@@ -459,12 +459,43 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
 
         # RQ Body
-        $xml= '<?xml version="1.0" encoding="UTF-8"?> <client_configuration> <client_id>10099</client_id> <id>10077</id> <name>CEBU Pacific Air</name> <salt>az1sx2dc3fv</salt> <max_amount>14748600</max_amount> <country_id>100</country_id> <email_notification>false</email_notification> <sms_notification>false</sms_notification> <authentication_mode>STRICT</authentication_mode> <timezone>+5:30</timezone> <client_urls> <client_url> <id>4</id> <name>Single Sign-On Authentication</name> <type_id>2</type_id> <value>//mpoint.dev-01.cellpoint.dev/_test/simulators/login.php</value> </client_url> </client_urls> <merchant_urls> <client_url> <id>10077</id> <name>Callback URL</name> <type_id>7</type_id> <value>http://hpp2.sit-01.cellpoint.dev/views/redirect_response.php</value> </client_url> </merchant_urls> <hpp_urls> <client_url> <id>10077</id> <name>CSS URL</name> <type_id>6</type_id> <value>://devcpmassets.s3-ap-southeast-1.amazonaws.com</value> </client_url> </hpp_urls> <account_configurations> <account_config> <id>100770</id> <client_id>10077</client_id> <name>CEBU Pacific Air Web 2</name> <markup>spa</markup> <mobile>9730156666</mobile> </account_config> </account_configurations> <properties> <property> <id>60</id> <value>false</value> </property> <property> <id>61</id> <value>false</value> </property> </properties> </client_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?> <client_configuration> <client_id>10099</client_id> <id>10077</id> <name>CEBU Pacific Air</name> </client_configuration>';
 
         # External Call
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099",'POST');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099",'PUT');
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $this->assertEquals(200, $iStatus);
+    }
+
+    /***
+     *
+     * @api PUT : ClientConfiguration
+     *
+     * @throws \ErrorException
+     * @throws \HTTPConnectionException
+     * @throws \HTTPSendException
+     */
+    public function testSuccessfulDeleteClientConfiguration()
+    {
+        $this->bIgnoreErrors = true;
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled, enabled, created, modified) VALUES (10099::integer, DEFAULT, true::boolean, true::boolean, true::boolean, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 1::integer, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 4::integer, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 12::integer, DEFAULT, DEFAULT, DEFAULT);");
+
+        # External Call
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/pm/1,4",'DELETE');
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $this->assertEquals(200, $iStatus);
     }
 
