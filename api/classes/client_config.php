@@ -1491,7 +1491,7 @@ class ClientConfig extends BasicConfig
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
 					 WHERE externalid = ". intval($id) ." and type='client' and enabled=true";
 
-            if($clientServicesStatus->isLegacyFlow() === true)
+            if($clientServicesStatus->isLegacyFlow() === false)
             {
                 $sql  = "SELECT sp.name as key,cp.value,pc.scope from SYSTEM.client_property_tbl sp 
                   INNER JOIN CLIENT.client_property_tbl cp on cp.propertyid = sp.id  AND cp.enabled=true AND sp.enabled AND clientid =".$id." INNER JOIN SYSTEM.property_category_tbl pc on sp.category = pc.id ";
