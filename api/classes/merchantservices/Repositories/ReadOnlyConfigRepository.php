@@ -58,7 +58,7 @@ class ReadOnlyConfigRepository
 				and dcc.clientid = ".$this->_merchantConfRepo->getClientInfo()->getID()." AND dcc.countryid = ".$oTI->getCountryConfig()->getID()." AND dcc.currencyid=".$oTI->getCurrencyConfig()->getID()."
 				WHERE C.id IN (" . implode(',', $aPmId) . ") AND C.enabled = '1'";
         $result = $this->getDBConn()->getAllNames($sql);
-
+        $aObj_Configurations = array();
         if (is_array($result) === true && count($result) > 0)
         {
             foreach ($result as $aRS)
