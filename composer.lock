@@ -4,22 +4,22 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9200c8b59eed3d9f31279b57ee602e7f",
+    "content-hash": "ec7bda2dbec7798dae1c2b77d693cd08",
     "packages": [
         {
             "name": "cellpointmobile/php5api",
-            "version": "v2.02.01",
+            "version": "v2.02.02",
             "source": {
                 "type": "git",
                 "url": "ssh://git@git.t.cpm.dev/cbs/php5.git",
-                "reference": "34c8c1ec61e34cba8e9df5421021aaf54e2d4d30"
+                "reference": "f6dad86240421bde5db7d20528d44ff79a9bc8d1"
             },
             "type": "project",
             "license": [
                 "proprietary"
             ],
             "description": "PHP5 compatible framework for older CellPoint Mobile PHP projects",
-            "time": "2021-04-28T05:10:31+00:00"
+            "time": "2021-10-21T05:53:21+00:00"
         },
         {
             "name": "firebase/php-jwt",
