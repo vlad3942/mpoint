@@ -1650,7 +1650,7 @@
 		<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
 		<xs:element ref="profiles" minOccurs="1" maxOccurs="1" />
 		<xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
-		<xs:element ref="trips"  minOccurs="1" maxOccurs="1" />
+		<xs:element ref="trips"  minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="order-type" use="optional" type="xs:string"/>
 	<xs:attribute name="order-no" use="optional" type="xs:string"/>
@@ -1739,7 +1739,7 @@
 			<xs:element name="origin" type="place" minOccurs="1" maxOccurs="1" />
 			<xs:element name="destination" type="place" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="departure-time" minOccurs="1" maxOccurs="1" />
-			<xs:element type="xs:string" name="arrival-time" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="arrival-time" minOccurs="0" maxOccurs="1" />
 			<xs:element type="xs:string" name="booking-class" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="service-level" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="transportation" minOccurs="1" maxOccurs="1" />
