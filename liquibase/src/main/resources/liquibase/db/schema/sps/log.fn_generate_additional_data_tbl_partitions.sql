@@ -1,5 +1,5 @@
 Drop function if exists log.fn_generate_additional_data_tbl_partitions
-    (p_ods_table character varying,p_context integer,p_nested character varying,p_period_from bigint,p_period_to bigint);
+    (p_ods_table character varying,p_context character varying,p_nested character varying,p_period_from character varying,p_period_to character varying);
 CREATE OR REPLACE FUNCTION log.fn_generate_additional_data_tbl_partitions
 (
 p_ods_table character varying,
