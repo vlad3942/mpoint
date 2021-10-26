@@ -25,7 +25,7 @@ v_rows_processed int8;
 	v_start  bigint :=p_externalid_from;
 	v_end   bigint :=p_externalid_end;
 
-	v_context varchar(100) := p_context;
+	v_context log.additional_data_ref := p_context;
 
 	v_batch_size bigint := p_batch_size;
 
@@ -53,7 +53,7 @@ select distinct on (type, externalid, name) type,
     externalid, name,value, created, modified, id
 from log.additional_data_tbl
 where
-    type=v_context::log.additional_data_ref
+    type=v_context
   and externalid between v_start and v_end;
 
 
@@ -75,9 +75,10 @@ SET LOCAL TEMP_BUFFERS=default;
 SET LOCAL WORK_MEM=default;
 
 /*
+
 EXCEPTION
 
-		   -- Catch All Other Errors
+		   --Catch All Other Errors
 		   WHEN OTHERS THEN
 
 
@@ -87,13 +88,14 @@ EXCEPTION
 										RAISE NOTICE 'v_error_info1: %', v_error_info1;
 
 
-				v_error_info := '['||SQLSTATE ||']'||SQLERRM; --'Run Time Exception';
+				v_error_info := '['||SQLSTATE ||']'||SQLERRM;--'Run Time Exception';
 
 				RAISE WARNING '[job.fn_migrate_message_partition] - UDP ERROR [OTHER] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
 
   ROLLBACK;
 
 */
+
 
 END;
 $procedure$
