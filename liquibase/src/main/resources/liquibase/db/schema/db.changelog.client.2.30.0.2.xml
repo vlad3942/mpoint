@@ -444,63 +444,7 @@
                               tableName="fraud_property_tbl"/>
 
     </changeSet>
-    <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-07">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists schemaName="client" tableName="fraud_psp_exclude_tbl"/>
-            </not>
-        </preConditions>
-        <createTable  catalogName="client"
-                      schemaName="client"
-                      tableName="fraud_psp_exclude_tbl">
 
-            <column name="id"
-                    type="int"
-                    autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <!-- FK -->
-            <column name="clientid"
-                    type="int">
-                <constraints nullable="false" foreignKeyName="fk_fraudpspexclude2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
-            </column>
-            <column name="pspId"
-                    type="int"
-                    remarks="Holds System PSP ID">
-                <constraints nullable="false" foreignKeyName="fk_fraudpspexclude2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
-            </column>
-
-            <!-- Common Columns -->
-            <column name="enabled"
-                    type="boolean"
-                    remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying originally created"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying last modified"
-                    defaultValueComputed="now()">
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.fraud_psp_exclude_tbl OWNER TO mpoint;
-            CREATE TRIGGER client_fraud_psp_exclude_tbl BEFORE INSERT OR UPDATE ON client.fraud_psp_exclude_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
-        </sql>
-        <rollback>
-            <sql>DROP TRIGGER client_fraud_psp_exclude_tbl IF EXISTS ON client.client_fraud_psp_exclude_tbl CASCADE TRUE;</sql>
-            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="fraud_psp_exclude_tbl"/>
-        </rollback>
-    </changeSet>
     <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-08">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -843,7 +787,7 @@
                     remarks="System payment method ID, (former card_tbl)">
                 <constraints nullable="false" foreignKeyName="fk_pmconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pspId"
+            <column name="pspid"
                     type="int"
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_pmconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
