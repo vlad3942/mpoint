@@ -624,7 +624,6 @@ class MerchantOnboardingAPITest extends baseAPITest
      */
     public function testSuccessfulPostClientConfiguration()
     {
-        $this->bIgnoreErrors = true;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
 
@@ -668,7 +667,6 @@ class MerchantOnboardingAPITest extends baseAPITest
      */
     public function testSuccessfulPutClientConfiguration()
     {
-        $this->bIgnoreErrors = true;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
         $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
 
@@ -689,7 +687,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
     /***
      *
-     * @api PUT : ClientConfiguration
+     * @api DELETE : ClientConfiguration
      *
      * @throws \ErrorException
      * @throws \HTTPConnectionException
@@ -697,7 +695,6 @@ class MerchantOnboardingAPITest extends baseAPITest
      */
     public function testSuccessfulDeleteClientConfiguration()
     {
-        $this->bIgnoreErrors = true;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
         $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
 
@@ -716,6 +713,40 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $this->assertEquals(200, $iStatus);
-    }
 
+        $res =  $this->queryDB("select * from client.pm_tbl where pmid in (1, 4)");
+        # Test 1 : Client PM Table
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+    }
+    /***
+     *
+     * @api DELETE : ClientConfiguration | FAILED
+     *
+     * @throws \ErrorException
+     * @throws \HTTPConnectionException
+     * @throws \HTTPSendException
+     */
+    public function testDeleteClientConfigurationFail()
+    {
+        $this->bIgnoreErrors = true; //User Error, If Expected entries not found.
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled, enabled, created, modified) VALUES (10099::integer, DEFAULT, true::boolean, true::boolean, true::boolean, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 1::integer, DEFAULT, DEFAULT, DEFAULT);");
+
+        # External Call
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/pm/4",'DELETE');
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        $this->assertEquals(500, $iStatus);
+
+        # Test 1 : Client PM Table
+        $res =  $this->queryDB("select * from client.pm_tbl where pmid in (4)");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Failure Delete Operation Failed for Payment method against client');
+    }
 }

@@ -81,7 +81,7 @@ class ConfigurationController
      */
     public function postClientConfig(\SimpleDOMElement $request): void
     {
-        if(count($request->pm_configurations->pm_configuration)>0)
+        if(empty($request->pm_configurations->pm_configuration) === false && count($request->pm_configurations->pm_configuration)>0)
         {
             $aPMIDs = array();
             foreach ($request->pm_configurations->pm_configuration as $pm)
@@ -90,7 +90,7 @@ class ConfigurationController
             }
             $this->getConfigService()->saveClientPM($aPMIDs);
         }
-        if(count($request->properties->property)>0)
+        if(empty($request->properties->property) === false && count($request->properties->property)>0)
         {
             $aProperty = array();
             foreach ($request->properties->property as $property)
@@ -100,7 +100,7 @@ class ConfigurationController
             $this->getConfigService()->savePropertyConfig("CLIENT",$aProperty);
         }
 
-        if(count($request->client_urls)>0)
+        if(empty($request->client_urls) === false && count($request->client_urls)>0)
         {
             $urls = array();
             foreach ($request->client_urls->client_url as $url)
@@ -111,7 +111,7 @@ class ConfigurationController
         }
         $urls = array();
 
-        if(count($request->merchant_urls)>0)
+        if(empty($request->merchant_urls) === false && count($request->merchant_urls)>0)
         {
             foreach ($request->merchant_urls->client_url as $url)
             {
@@ -119,7 +119,7 @@ class ConfigurationController
             }
         }
 
-        if(count($request->hpp_urls)>0)
+        if(empty($request->hpp_urls) === false && count($request->hpp_urls)>0)
         {
             foreach ($request->hpp_urls->client_url as $url)
             {
@@ -142,7 +142,7 @@ class ConfigurationController
      */
     public function putClientConfig(\SimpleDOMElement $request): void
     {
-        if(count($request->pm_configurations->pm_configuration)>0)
+        if(is_object($request->pm_configurations->pm_configuration))
         {
             $aPMIDs = array();
             foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
@@ -165,7 +165,7 @@ class ConfigurationController
             $this->getConfigService()->updateClientdetails($aClientParam);
         }
 
-        if(count($request->properties->property)>0)
+        if(empty($request->properties->property) === false && count($request->properties->property) > 0)
         {
             $aProperty = array();
             foreach ($request->properties->property as $property)
@@ -175,7 +175,7 @@ class ConfigurationController
             $this->getConfigService()->updatePropertyConfig("CLIENT",$aProperty);
         }
 
-        if(count($request->client_urls)>0)
+        if(empty($request->client_urls) === false && count($request->client_urls) > 0)
         {
             $urls = array();
             foreach ($request->client_urls->client_url as $url)
@@ -186,7 +186,7 @@ class ConfigurationController
         }
         $urls = array();
 
-        if(count($request->merchant_urls)>0)
+        if(empty($request->merchant_urls) === false && count($request->merchant_urls) > 0)
         {
             foreach ($request->merchant_urls->client_url as $url)
             {
@@ -194,7 +194,7 @@ class ConfigurationController
             }
         }
 
-        if(count($request->hpp_urls)>0)
+        if(empty($request->hpp_urls) === false && count($request->hpp_urls) > 0)
         {
             foreach ($request->hpp_urls->client_url as $url)
             {
@@ -203,12 +203,12 @@ class ConfigurationController
         }
         if(empty($urls) === false) $this->getConfigService()->updateClientUrls($urls);
 
-        if(count($request->services)>0)
+        if(empty($request->services) === false && count($request->services) > 0)
         {
             $clService = ClientServiceStatus::produceFromXML($request->services);
             $this->getConfigService()->updateAddonServiceStatus($clService);
         }
-        if(count($request->account_configurations->account_config)>0)
+        if(empty($request->account_configurations->account_config) === false && count($request->account_configurations->account_config) > 0)
         {
             $aClAccountConfig = array();
             foreach ($request->account_configurations->account_config as $account_config)

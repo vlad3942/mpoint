@@ -156,7 +156,8 @@ class MerchantConfigInfo
 
         if(empty($pms) === false)
         {
-            foreach ($pms as $pm)
+            $a_pms = explode(',', $pms); // Explode String
+            foreach ($a_pms as $pm)
             {
                 if(is_numeric($pm) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for PM {param:".$pm."}"); }
             }
