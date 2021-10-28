@@ -371,7 +371,12 @@ try
                                             $_OBJ_DB->query('ROLLBACK');
                                         }
                                     }
-                                    $obj_TxnInfo->updateSessionType((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                    $amount      = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                    $iSaleAmount = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'};
+                                    if($iSaleAmount > 0 ) {
+                                        $amount =  $iSaleAmount;
+                                    }
+                                    $obj_TxnInfo->updateSessionType($amount);
                                     if($isTxnCreated == false && $iSessionType > 1 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                                         $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                                     }
@@ -616,7 +621,7 @@ try
                                              else if( $iSessionType > 1 && $iSaleAmount > $pendingAmount) {
                                                  $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                              }
-                                             else if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount))
+                                             else if((int)$obj_TxnInfo->getAmount() != (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount && $iSessionType <= 1)
                                              {
                                                  $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                              }

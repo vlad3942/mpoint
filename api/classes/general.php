@@ -1609,7 +1609,7 @@ class General
     {
         $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".paymentsecureinfo_tbl
 					(txnid, pspid, status, msg, veresEnrolledStatus, paresTxStatus,eci,cavv,cavvAlgorithm, protocol)
-				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10)";
+				VALUES ($1,$2, $3, $4, $5, $6,$7,$8,$9,$10) ON CONFLICT (txnid) DO NOTHING;";
 
 		$aParams = array(
 			$paymentSecureInfo->getTransactionID(),
