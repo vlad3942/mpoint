@@ -70,7 +70,7 @@ class HTTPConnInfo
 	 *
 	 * @var array
 	 */
-	private $_aMethods = array("POST", "GET");
+	private $_aMethods = array("POST", "GET", "PUT", "DELETE");
 
 	/**
 	 * Supported Content Types for the HTTP connection, currently the following content types are available:
@@ -761,7 +761,7 @@ class HTTPClient
 	{
 		/* ---------- Error Handling Start ---------- */
 		if (empty($h) === true) { throw new HTTPSendException("Undefined Header document", 1001); }
-		if (empty($b) === true && strlen($this->getConnInfo()->getMethod() ) > 0 && $this->getConnInfo()->getMethod() != "GET") { throw new HTTPSendException("Undefined Body document", 1002); }
+		if (empty($b) === true && strlen($this->getConnInfo()->getMethod() ) > 0 && ($this->getConnInfo()->getMethod() != "GET" && $this->getConnInfo()->getMethod() != "DELETE")) { throw new HTTPSendException("Undefined Body document", 1002); }
 		/* ---------- Error Handling End ---------- */
 		$code = -1;
 

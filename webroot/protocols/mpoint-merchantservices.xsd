@@ -173,31 +173,31 @@
     <xs:complexType>
       <xs:all>
         <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-        <xs:element name="client_urls">
+        <xs:element name="client_urls" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="0"></xs:element>
+              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="merchant_urls">
+        <xs:element name="merchant_urls" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="0"></xs:element>
+              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="hpp_urls">
+        <xs:element name="hpp_urls" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="0"></xs:element>
+              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="pm_configurations">
+        <xs:element name="pm_configurations" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="pm_configuration" maxOccurs="unbounded" minOccurs="0">
+              <xs:element name="pm_configuration" maxOccurs="unbounded" minOccurs="1">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />                    
@@ -207,7 +207,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="properties" minOccurs="1" maxOccurs="1">
+        <xs:element name="properties" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
               <xs:element name="property" type="property_info" minOccurs="1" maxOccurs="unbounded"></xs:element>
