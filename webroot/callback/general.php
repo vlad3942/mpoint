@@ -619,7 +619,7 @@ try
                         }
                     }
                     if (empty($aFraudRule) === false) {
-                        $bIsSkipFraud = $obj_mPoint->applyRule($obj_XML, $aFraudRule);
+                        $bIsSkipFraud = $obj_mPoint->applyRule([$obj_XML,$obj_TxnInfo->toXML()], $aFraudRule);
                     }
                     if ($bIsSkipFraud === true) {
                         $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE, 'Fraud Check Skipped due to rule matched');
