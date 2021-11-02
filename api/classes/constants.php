@@ -2041,6 +2041,18 @@ abstract class UserType
 	const iRegisterUser = 2;
 }
 
+abstract class RouteFeatureType
+{
+	const ePartialCapture = 4;
+	const eRefund = 5;
+	const ePartialRefund=6;
+	const e3DS=9;
+	const eInstallment=10;
+	const eCancel=18;
+	const ePartialCancel=19;
+	const eMPI=20;
+}
+
 abstract class AddonServiceTypeIndex
 {
 

@@ -128,7 +128,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
-                $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_ClientConfig);
 				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -236,11 +235,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         }
                     }
 
-                    if($isSplitAbandoned === true){
-                        $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
-                        $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
-                        $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_PaymentSession->getId(), 'Failed', $isManualRefund);
-                    }
+
 
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
@@ -370,6 +365,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
 
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
+                            $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+                            if($isSplitAbandoned === true)
+                            {
+                                $splitPaymentAddOn = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT),array(),true);
+                                $isManualRefund = !$splitPaymentAddOn->getProperties()["is_rollback"];
+                                $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
+                                $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_PaymentSession->getId(), 'Failed', $isManualRefund);
+                            }
 
                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());
                             $passbookEntry = new PassbookEntry
@@ -389,7 +392,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $maxSessionRetryCount = 3;
                             }
-                            if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
+                            if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0)
+                            {
                                 $xml = '<status code="'. Constants::iSESSION_ALREADY_COMPLETED .'">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_ALREADY_COMPLETED, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
@@ -545,7 +549,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     if ($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
                                     {
                                         $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                                        $obj_PM = $repository->getCardConfigurationsByCardIds($obj_TxnInfo,$_OBJ_TXT,$obj_PaymentMethods);
+                                        $obj_PM = $repository->getCardConfigurationsByCardIds($_OBJ_TXT,$obj_PaymentMethods);
                                         ksort($obj_PM, 1);
                                         $cOj_XML = '<cards>';
                                         foreach ($obj_PM as $key => $value)
@@ -570,7 +574,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
 
                             $presentmentCurrencies = null;
-                            if(empty($aDCCPmid) === false)  $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$obj_TxnInfo,$aDCCPmid);
+                            if(empty($aDCCPmid) === false && $obj_ClientConfig->getClientServices()->isPcc() === true)  $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$aDCCPmid);
 
                             if($sessionType > 1)
                             {
@@ -711,7 +715,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         try {
                                             $pspId  = (int)$obj_XML->item[$j]['pspid'];
                                             if ($is_legacy === false) {
-                                                $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), (int)$obj_XML->item[$j]["type-id"], NULL,(string)$obj_XML->item[$j]->name,(int)$obj_XML->item[$j]["walletid"]);
+                                                $obj_CardResultSet = General::getRouteConfiguration($repository,$_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), (int)$obj_XML->item[$j]["type-id"], NULL,(string)$obj_XML->item[$j]->name,(int)$obj_XML->item[$j]["walletid"]);
                                                 $pspId = (int)$obj_CardResultSet['PSPID'];
                                             }
                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);

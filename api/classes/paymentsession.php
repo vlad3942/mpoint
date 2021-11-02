@@ -1,4 +1,8 @@
 <?php
+
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Sagar Narayane
@@ -195,7 +199,7 @@ final class PaymentSession
         return $this->_id;
     }
 
-    public function updateState(int $stateId = null)
+    public function updateState(ReadOnlyConfigRepository $repository,int $stateId = null)
     {
         if ($stateId == null)
         {
@@ -237,8 +241,11 @@ final class PaymentSession
                 {
                     if($stateId === Constants::iSESSION_EXPIRED || $stateId === Constants::iSESSION_FAILED || $stateId === Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS)
                     {
-                        if($this->getSessionType() > 1) {
-                            $isManualRefund = General::xml2bool($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                        if($this->getSessionType() > 1)
+                        {
+                           $splitPaymentAddOn =  $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT),array(),true);
+
+                            $isManualRefund = !$splitPaymentAddOn->getProperties()["is_rollback"];
                             global $_OBJ_TXT;
                             $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
                             $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);

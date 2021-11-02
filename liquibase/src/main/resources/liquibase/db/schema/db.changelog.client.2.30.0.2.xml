@@ -394,7 +394,7 @@
             <column name="isRollback"
                     type="boolean"
                     remarks="Flag indicating Active/In Active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
 
@@ -975,7 +975,13 @@
             <column name="is_rollback"
                     type="boolean"
                     remarks="Flag indicating Active/In Active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_reoffer"
+                    type="boolean"
+                    remarks="Flag indicating Active/In Active"
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
 

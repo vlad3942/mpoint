@@ -74,7 +74,7 @@
                         </xs:choice>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="0" maxOccurs="1" />
                   </xs:all>
                 </xs:complexType>
               </xs:element>
@@ -95,7 +95,8 @@
                         </xs:choice>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="is_reoffer" type="xs:boolean" minOccurs="0" maxOccurs="1" />
                   </xs:all>
                 </xs:complexType>
               </xs:element>

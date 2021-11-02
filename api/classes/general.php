@@ -13,6 +13,7 @@
  * @version 1.11
  */
 
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 use api\classes\splitpayment\config\Configuration;
 
 require_once sCLASS_PATH .'/Parser.php';
@@ -654,7 +655,7 @@ class General
 	{
         global $_OBJ_TXT;
 
-        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo, -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
         // Update Associated Transaction ID
@@ -1739,7 +1740,7 @@ class General
         $routeConfigID      = (int)$oTI->getRouteConfigID();
 
         if($isLegacy === false && ($iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0  && $bForceLegacy === false ){
-            $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $routeConfigID);
+            $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI, $pspID, $routeConfigID);
         }else{
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
         }
@@ -2286,7 +2287,7 @@ class General
      * @param int|null $walletId
      * @return bool|array
      */
-    public static function getRouteConfiguration(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
+    public static function getRouteConfiguration(ReadOnlyConfigRepository $repository,RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
 
     {
         $iPrimaryRoute = 0;
@@ -2299,7 +2300,7 @@ class General
         }
         if ($iPrimaryRoute > 0) {
             $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+            $obj_CardResultSet = $repository->getResultSetCardConfigurationsByCardIds(array($cardTypeId), $iPrimaryRoute);
         }
         return $obj_CardResultSet;
     }
