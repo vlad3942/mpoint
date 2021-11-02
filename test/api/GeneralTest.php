@@ -9,6 +9,8 @@
  * File Name:GeneralTest.php
  */
 
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
@@ -522,8 +524,9 @@ class GeneralTest extends baseAPITest
         $obj_TxnInfo     = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_mPoint      = new CreditCard($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo);
         $obj_ClientInfo  = ClientInfo::produceInfo($obj_DOM->pay->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->pay->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $repository = new ReadOnlyConfigRepository($this->_OBJ_DB,$obj_TxnInfo);
 
-        $obj_CardResultSet = General::getRouteConfiguration($this->_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay["client-id"],(int)$obj_DOM->pay->transaction->card->amount["country-id"], (int)$obj_DOM->pay->transaction->card->amount["currency-id"], (int)$obj_DOM->pay->transaction->card->amount, (int)$obj_DOM->pay->transaction->card["type-id"], $obj_DOM->pay->transaction->card["issuer-identification-number"],$obj_DOM->pay->transaction->card->name,(int)$obj_DOM->pay->transaction->card["walletid"]);
+        $obj_CardResultSet = General::getRouteConfiguration($repository,$this->_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay["client-id"],(int)$obj_DOM->pay->transaction->card->amount["country-id"], (int)$obj_DOM->pay->transaction->card->amount["currency-id"], (int)$obj_DOM->pay->transaction->card->amount, (int)$obj_DOM->pay->transaction->card["type-id"], $obj_DOM->pay->transaction->card["issuer-identification-number"],$obj_DOM->pay->transaction->card->name,(int)$obj_DOM->pay->transaction->card["walletid"]);
         $this->assertIsArray($obj_CardResultSet);
         $this->assertEquals(62, $obj_CardResultSet['PSPID']);
 
