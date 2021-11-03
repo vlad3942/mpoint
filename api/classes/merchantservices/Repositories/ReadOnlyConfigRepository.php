@@ -88,7 +88,7 @@ class ReadOnlyConfigRepository
                     if ($aRS['ID'] == 11)
                     {
                         if (($this->_oTI->getClientConfig()->getStoreCard() & 1) == 1) $aRS['NAME'] = $oTxt->_("Stored Cards");
-                        else $aRS['NAME'] = str_replace("{CLIENT}", $this->_oTI->getClientConfig()->getName(), $this->_oTI->_("My Account"));
+                        else $aRS['NAME'] = str_replace("{CLIENT}", $this->_oTI->getClientConfig()->getName(), $oTxt->_("My Account"));
                     }
 
 
