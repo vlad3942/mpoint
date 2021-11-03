@@ -531,7 +531,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
-				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
+                if ($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_PENDING_STATE) === false) {
+                    $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
+                }
 
 				if(count($this->_obj_ResponseXML->{'payment-pending'}) > 0 && $this->_obj_ResponseXML->{'payment-pending'} != 'false')
                 {

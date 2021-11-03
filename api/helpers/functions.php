@@ -63,7 +63,7 @@ if (function_exists('xml_encode') === false) {
                         }
                         else
                         {
-                            $mixedElement = (string)$mixedElement;
+                            $mixedElement = (string)htmlspecialchars($mixedElement);
                             $element = $DOMDocument->createElement($index, $mixedElement);
                             $DOMEelement->appendChild($element);
                         }

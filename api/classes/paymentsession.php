@@ -560,20 +560,17 @@ final class PaymentSession
                 {
                     return $additional_id;
                 }
-                $sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".additional_data_Tbl_id_seq') AS id FROM DUAL";
-                $RS = $obj_DB->getName($sql);
-                // Error: Unable to generate a new Additional Data ID
-                if (is_array($RS) === false) { throw new mPointException("Unable to generate new Additional Data ID", 1001); }
-                $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(id, name, value, type, externalid)
-								VALUES(". $RS["ID"] .", '". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."')";
+                $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
+								VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
                 // Error: Unable to insert a new Additional Data record in the Additional Data Table
-                if (is_resource($obj_DB->query($sql) ) === false)
+                if (is_resource($res = $obj_DB->query($sql) ) === false)
                 {
-                    if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002); }
+                    throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
                 }
                 else
                 {
-                    $additional_id = $RS["ID"];
+                    $RS = pg_fetch_assoc($res);
+                    $additional_id = $RS["id"];
                     $this->_aSessionAdditionalData[$name] = $value;
                 }
             }
@@ -581,13 +578,12 @@ final class PaymentSession
         }
     }
 
-    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp=null)
+    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp)
     {
         $additionalData = [];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and externalid=" . $txnId;
-        if (!is_null($sessionCreatedTimestamp)) {
-            $sqlA .= " and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US')";
-        }
+
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
+
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
