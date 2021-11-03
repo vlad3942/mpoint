@@ -289,49 +289,55 @@
             <column name="dcc_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="mcp_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="pcc_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="fraud_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="tokenization_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="splitpayment_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="callback_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="void_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="legacy_flow_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -388,7 +394,7 @@
             <column name="isRollback"
                     type="boolean"
                     remarks="Flag indicating Active/In Active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
 
@@ -438,63 +444,7 @@
                               tableName="fraud_property_tbl"/>
 
     </changeSet>
-    <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-07">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists schemaName="client" tableName="fraud_psp_exclude_tbl"/>
-            </not>
-        </preConditions>
-        <createTable  catalogName="client"
-                      schemaName="client"
-                      tableName="fraud_psp_exclude_tbl">
 
-            <column name="id"
-                    type="int"
-                    autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <!-- FK -->
-            <column name="clientid"
-                    type="int">
-                <constraints nullable="false" foreignKeyName="fk_fraudpspexclude2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
-            </column>
-            <column name="pspId"
-                    type="int"
-                    remarks="Holds System PSP ID">
-                <constraints nullable="false" foreignKeyName="fk_fraudpspexclude2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
-            </column>
-
-            <!-- Common Columns -->
-            <column name="enabled"
-                    type="boolean"
-                    remarks="Flag indicating state active"
-                    defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying originally created"
-                    defaultValueComputed="now()">
-
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified"
-                    type="timestamp with time zone"
-                    remarks="Timestamp identifying last modified"
-                    defaultValueComputed="now()">
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-        <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.fraud_psp_exclude_tbl OWNER TO mpoint;
-            CREATE TRIGGER client_fraud_psp_exclude_tbl BEFORE INSERT OR UPDATE ON client.fraud_psp_exclude_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
-        </sql>
-        <rollback>
-            <sql>DROP TRIGGER client_fraud_psp_exclude_tbl IF EXISTS ON client.client_fraud_psp_exclude_tbl CASCADE TRUE;</sql>
-            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="fraud_psp_exclude_tbl"/>
-        </rollback>
-    </changeSet>
     <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-08">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -775,7 +725,7 @@
             </column>
             <!-- Column -->
             <column name="value"
-                    type="varchar(50)">
+                    type="varchar(2000)">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -815,32 +765,28 @@
     <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-13">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="client" tableName="pm_config_tbl"/>
+                <tableExists schemaName="client" tableName="providerpm_tbl"/>
             </not>
         </preConditions>
         <createTable  catalogName="client"
                       schemaName="client"
-                      tableName="pm_config_tbl">
+                      tableName="providerpm_tbl">
 
             <column name="id"
                     type="int"
                     autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <!-- FK Key -->
-            <column name="clientid"
-                    type="int">
-                <constraints nullable="false" foreignKeyName="fk_pmconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
-            </column>
+
             <column name="pmid"
                     type="int"
                     remarks="System payment method ID, (former card_tbl)">
-                <constraints nullable="false" foreignKeyName="fk_pmconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+                <constraints nullable="false" foreignKeyName="fk_providerpm2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
             </column>
-            <column name="pspId"
+            <column name="routeid"
                     type="int"
-                    remarks="Holds System PSP ID">
-                <constraints nullable="false" foreignKeyName="fk_pmconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
+                    remarks="Holds System Route ID">
+                <constraints nullable="false" foreignKeyName="fk_providerpm2route" referencedTableSchemaName="client" referencedTableName="route_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Common Columns -->
             <column name="enabled"
@@ -864,12 +810,12 @@
             </column>
         </createTable>
         <sql dbms="postgresql" endDelimiter=";">
-            ALTER TABLE client.pm_config_tbl OWNER TO mpoint;
-            CREATE TRIGGER client_pm_config_tbl BEFORE INSERT OR UPDATE ON client.pm_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+            ALTER TABLE client.providerpm_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_providerpm_tbl BEFORE INSERT OR UPDATE ON client.providerpm_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
         </sql>
         <rollback>
-            <sql>DROP TRIGGER client_pm_config_tbl IF EXISTS ON client.pm_config_tbl CASCADE TRUE;</sql>
-            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="pm_config_tbl"/>
+            <sql>DROP TRIGGER client_providerpm_tbl IF EXISTS ON client.providerpm_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="providerpm_tbl"/>
         </rollback>
     </changeSet>
     <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-14">
@@ -896,7 +842,7 @@
             </column>
             <!-- Column -->
             <column name="value"
-                    type="varchar(50)">
+                    type="varchar(2000)">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -956,7 +902,7 @@
             </column>
             <!-- Column -->
             <column name="value"
-                    type="varchar(50)">
+                    type="varchar(2000)">
                 <constraints nullable="false"/>
             </column>
             <!-- Common Columns -->
@@ -1029,7 +975,13 @@
             <column name="is_rollback"
                     type="boolean"
                     remarks="Flag indicating Active/In Active"
-                    defaultValueBoolean="true">
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_reoffer"
+                    type="boolean"
+                    remarks="Flag indicating Active/In Active"
+                    defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
 

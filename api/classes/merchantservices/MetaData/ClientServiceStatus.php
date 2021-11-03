@@ -51,6 +51,29 @@ class ClientServiceStatus
      * @var bool
      */
     private bool $void = FALSE;
+    /**
+     * @var bool
+     */
+    private bool $isLegacyFlowEnabled = TRUE;
+
+    /**
+     * @return bool
+     */
+    public function isLegacyFlow(): bool
+    {
+        return $this->isLegacyFlowEnabled;
+    }
+
+    /**
+     * @param bool $dcc
+     *
+     * @return ClientServiceStatus
+     */
+    public function setLegacyFlow(bool $isLegacyFlowEnabled): ClientServiceStatus
+    {
+        $this->isLegacyFlowEnabled = $isLegacyFlowEnabled;
+        return $this;
+    }
 
     /**
      * @return bool
@@ -224,7 +247,7 @@ class ClientServiceStatus
 
     public static function produceConfig(\RDB $oDB, int $clientID) {
         $sql = "SELECT CS.id, CS.dcc_enabled AS dcc, CS.mcp_enabled AS mcp, CS.pcc_enabled AS pcc, CS.fraud_enabled AS fraud,
-                CS.tokenization_enabled AS tokenization, CS.splitpayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void, CS.enabled			
+                CS.tokenization_enabled AS tokenization, CS.splitpayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void,CS.legacy_flow_enabled as legacyflow, CS.enabled			
 				FROM Client". sSCHEMA_POSTFIX .".services_tbl CS 				
 				WHERE clientid = ". $clientID ." AND enabled = true";
 
@@ -267,6 +290,7 @@ class ClientServiceStatus
        $clService->setTokenization($rs["TOKENIZATION"]);
        $clService->setSplitPayment($rs["SPLITPAYMENT"]);
        $clService->setVoid($rs["VOID"]);
+       $clService->setLegacyFlow($rs["LEGACYFLOW"]);
         return $clService;
     }
 }

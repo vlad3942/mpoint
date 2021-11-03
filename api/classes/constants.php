@@ -1868,6 +1868,7 @@ abstract class Constants
     const iTRANSACTION_TYPE_SHOPPING_OFFLINE = 2;
     const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
     const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
+	const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP = 5;
 
     /*
      * Defines unique ID of the State that indicates payment soft declined
@@ -2039,6 +2040,18 @@ abstract class UserType
    * iRegisterUser to definde register user
    */
 	const iRegisterUser = 2;
+}
+
+abstract class RouteFeatureType
+{
+	const ePartialCapture = 4;
+	const eRefund = 5;
+	const ePartialRefund=6;
+	const e3DS=9;
+	const eInstallment=10;
+	const eCancel=18;
+	const ePartialCancel=19;
+	const eMPI=20;
 }
 
 abstract class AddonServiceTypeIndex

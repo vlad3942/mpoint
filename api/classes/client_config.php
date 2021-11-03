@@ -575,8 +575,8 @@ class ClientConfig extends BasicConfig
     public function getMerchantAccounts(RDB &$oDB = NULL)
     {
         if ($this->_aObj_MerchantAccounts === NULL && $oDB !== NULL) {
-            $is_legacy = $this->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-            if(strtolower($is_legacy) == 'false') {
+
+            if($this->getClientServices()->isLegacyFlow() === false) {
                 $this->_aObj_MerchantAccounts = ClientMerchantAccountConfig::getConfigurations($oDB, $this->getID());
             }else{
                 $this->_aObj_MerchantAccounts = ClientMerchantAccountConfig::produceConfigurations($oDB, $this->getID());
@@ -594,9 +594,9 @@ class ClientConfig extends BasicConfig
      */
     public function getPaymentMethods(RDB &$oDB = NULL)
     {
-        if ($this->_aObj_PaymentMethodConfigurations === NULL && $oDB !== NULL ) {
-            $is_legacy = $this->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-            if(strtolower($is_legacy) == 'false') {
+        if ($this->_aObj_PaymentMethodConfigurations === NULL && $oDB !== NULL )
+        {
+            if($this->getClientServices()->isLegacyFlow() === false) {
                 $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::getConfigurations($oDB, $this->getID());
             }else{
                 $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $this->getID());
@@ -1485,10 +1485,18 @@ class ClientConfig extends BasicConfig
 					$aIPs[] = $aRS[$i]["IPADDRESS"];
 				}
 			}
-
+            // Get Client Services
+            $clientServicesStatus = ClientServiceStatus::produceConfig($oDB, $RS["CLIENTID"]);
             $sql  = "SELECT key, value, scope 
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
 					 WHERE externalid = ". intval($id) ." and type='client' and enabled=true";
+
+            if($clientServicesStatus->isLegacyFlow() === false)
+            {
+                $sql  = "SELECT sp.name as key,cp.value,pc.scope from SYSTEM.client_property_tbl sp 
+                  INNER JOIN CLIENT.client_property_tbl cp on cp.propertyid = sp.id  AND cp.enabled=true AND sp.enabled AND clientid =".$id." INNER JOIN SYSTEM.property_category_tbl pc on sp.category = pc.id ";
+            }
+
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
@@ -1502,8 +1510,6 @@ class ClientConfig extends BasicConfig
                 	$aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
                 }
             }
-            // Get Client Services
-            $clientServicesStatus = ClientServiceStatus::produceConfig($oDB, $RS["CLIENTID"]);
 
             return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig, $clientServicesStatus);
 		}

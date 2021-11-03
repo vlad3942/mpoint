@@ -41,61 +41,69 @@ class MerchantConfigRepository
     private function getDBConn():\RDB { return $this->_conn;}
 
 
-    private function getAddonConfig(AddonServiceType &$addonServiceType)
+    public function getAddonConfig(AddonServiceType $addonServiceType,array $aWhereCls = array(),bool $isPropertyOnly = false)
     {
         $SQL ="";
-        if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        $aServiceConfig = array();
+        if($isPropertyOnly === false)
         {
-            $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and name='".$addonServiceType->getSubType()."'";
-            $aRS = $this->getDBConn()->getName ( $SQL );
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+            {
+                $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and name='".$addonServiceType->getSubType()."'";
+                $aRS = $this->getDBConn()->getName ( $SQL );
+                if (empty($aRS) === false)
+                {
+                    $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and split_config_id=".$aRS['ID'];
+                }
+            }
+            else
+                $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
+
+            $sTableName = $addonServiceType->getTableName();
+            $sColumns = "id,pmid,countryid,currencyid,created,modified,enabled";
+            if($addonServiceType->getID() ===AddonServiceTypeIndex::eFraud )
+            {
+                $sColumns .= ',providerid,typeoffraud ';
+                if($addonServiceType->getSubType() === 'pre_auth') array_push($aWhereCls ,'typeoffraud=1');
+                else array_push($aWhereCls ,'typeoffraud=2');
+            }
+            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eTOKENIZATION )
+            {
+                $sColumns .= ',providerid ';
+            }
+            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eSPLIT_PAYMENT)
+            {
+                $sColumns = 'id,payment_type, sequence_no,enabled ';
+            }
+            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
+            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
+            $sSQL = sprintf($SQL,$sColumns,$sTableName) ;
+            if(empty($aWhereCls) === false)
+            {
+                $sSQL.= " AND ".implode(" AND ",$aWhereCls);
+            }
+            $aRS = $this->getDBConn()->getAllNames ( $sSQL );
             if (empty($aRS) === false)
             {
-                $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and split_config_id=".$aRS['ID'];
+                foreach ($aRS as $rs)
+                {
+                    array_push($aServiceConfig, ServiceConfig::produceFromResultSet($rs));
+                }
             }
         }
-        else
-        $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
 
-        $sTableName = $addonServiceType->getTableName();
-        $sColumns = "id,pmid,countryid,currencyid,created,modified,enabled";
-        $sWhereCls ='';
-        if($addonServiceType->getID() ===AddonServiceTypeIndex::eFraud )
-        {
-            $sColumns .= ',providerid,typeoffraud ';
-            if($addonServiceType->getSubType() === 'pre_auth') $sWhereCls .= 'typeoffraud=1';
-            else $sWhereCls .= 'typeoffraud=2';
-        }
-        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eTOKENIZATION )
-        {
-            $sColumns .= ',providerid ';
-        }
-        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eSPLIT_PAYMENT)
-        {
-            $sColumns = 'id,payment_type, sequence_no,enabled ';
-        }
-        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
-        elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
-        $sSQL = sprintf($SQL,$sColumns,$sTableName) ;
-        if(empty($sWhereCls) === false)
-        {
-            $sSQL.=' and '.$sWhereCls;
-        }
-        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
-        $aServiceConfig = array();
-        if (empty($aRS) === false)
-        {
-            foreach ($aRS as $rs)
-            {
-                array_push($aServiceConfig, ServiceConfig::produceFromResultSet($rs));
-            }
-        }
         $className =   'api\\classes\\merchantservices\\configuration\\'.$addonServiceType->getClassName();
         $aProperty = array();
         if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud || $addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
+            $sColumns = "is_rollback";
             $sTableName = ".fraud_property_tbl";
-            if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT ) $sTableName = ".split_property_tbl";
-            $SQL = 'SELECT is_rollback FROM client'. sSCHEMA_POSTFIX.$sTableName.' where enabled=true and clientid='.$this->_clientConfig->getID();
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT )
+            {
+                $sTableName = ".split_property_tbl";
+                $sColumns .= ",is_reoffer";
+            }
+            $SQL = 'SELECT '.$sColumns.' FROM client'. sSCHEMA_POSTFIX.$sTableName.' where enabled=true and clientid='.$this->_clientConfig->getID();
             $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
             if(empty($aRS) === false) $aProperty = array_change_key_case($aRS,CASE_LOWER);
         }
@@ -135,12 +143,15 @@ class MerchantConfigRepository
                 $sPropTableName = '';
                 if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
                 else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
-                $SQL .=$sPropTableName." (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
-                $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
-                $result = $this->getDBConn()->executeQuery($SQL);
-                if ($result == FALSE)
+                foreach ($addonConfig->getProperties() as $key => $value)
                 {
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
+                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values (".\General::bool2xml($value).",".$this->_clientConfig->getID().")";
+                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." =".\General::bool2xml($value);
+                    $result = $this->getDBConn()->executeQuery($SQL);
+                    if ($result == FALSE)
+                    {
+                        throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' property');
+                    }
                 }
             }
             if(empty($addonConfig->getConfiguration()) === false)

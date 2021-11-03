@@ -16,6 +16,9 @@
  */
 
 // Require Global Include File
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 require_once("../../inc/include.php");
 
 // Require the PHP API for handling the connection to GoMobile
@@ -241,6 +244,7 @@ try
 
 						if ( ($obj_TxnInfo instanceof TxnInfo) === true)
 						{
+                            $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
 							// Re-Intialise Text Translation Object based on transaction
 							$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 							$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
@@ -256,7 +260,7 @@ try
 							    $isTxnCreated = False; // for split txn is already is created or not
                                 $checkPaymentType = array();
                                 $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0,'sessiontype');
-                                $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                                $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
                                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
                                 // check voucher node is appearing before card node and according to that set preference
@@ -371,7 +375,12 @@ try
                                             $_OBJ_DB->query('ROLLBACK');
                                         }
                                     }
-                                    $obj_TxnInfo->updateSessionType((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                    $amount      = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                    $iSaleAmount = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'};
+                                    if($iSaleAmount > 0 ) {
+                                        $amount =  $iSaleAmount;
+                                    }
+                                    $obj_TxnInfo->updateSessionType($amount);
                                     if($isTxnCreated == false && $iSessionType > 1 && !in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                                         $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                                     }
@@ -509,7 +518,7 @@ try
                                             }
                                         }
 
-                                        if (strtolower($is_legacy) == 'false') {
+                                        if ($is_legacy === false) {
                                             $iPSPId = $obj_TxnInfo->getPSPID();
                                             $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
 
@@ -525,14 +534,14 @@ try
                                                     $obj_mPoint->logTransaction($obj_TxnInfo);
                                                 }
                                             }
-                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"], $iPrimaryRoute) );
+                                            $obj_CardXML = simpledom_load_string($obj_mCard->getCardConfigurationXML( $repository->getResultSetCardConfigurationsByCardIds(array((int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), $iPrimaryRoute) ));
                                         }else{
                                             $obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
                                         }
 
                                         //Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
-                                        if(strtolower($is_legacy) == 'false') {
+                                        if($is_legacy === false) {
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . "]");
                                         }else{
                                             $obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = " . intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) . " and @state-id=1 and @walletid = '']");
@@ -871,7 +880,7 @@ try
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
 
-                                                                if(strtolower($is_legacy) == 'false') {
+                                                                if($is_legacy === false) {
                                                                     $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = " . (int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] . "]");
                                                                 }else{
                                                                     $obj_XML = $obj_CardXML->xpath("/cards/item[@type-id = ". $obj_Elem["type-id"] ." and @state-id=1 and @walletid=".$wallet_Processor->getPSPConfig()->getID()."]");
@@ -1006,7 +1015,9 @@ try
                                                                 $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken);
                                                                 if ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)
                                                                 {
-                                                                    if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0)
+                                                                    $postFraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'post_fraud'));
+
+                                                                    if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && count($postFraudAddon->getConfiguration()) > 0)
                                                                     {
                                                                         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
 
@@ -1222,15 +1233,9 @@ try
                                                                             try {
 
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-                                                                                
-                                                                                if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
-                                                                                    $request = str_replace("authorize-payment", "authenticate", $HTTP_RAW_POST_DATA);
-                                                                                    $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
-                                                                                    $code = $response->code;
-                                                                                } else {
-                                                                                    $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
-                                                                                    $code = $response->code;
-                                                                                }
+
+                                                                                $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
+                                                                                $code = $response->code;
                                                                                 
                                                                                 // Authorization succeeded
                                                                                 //2001 is not expected response code for any request
@@ -1262,7 +1267,8 @@ try
                                                                             try {
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 $response = NULL;
-                                                                                if ($obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') {
+                                                                                if (($is_legacy === true && $obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') || $obj_Processor->getPSPConfig()->isRouteFeatureEnabled(RouteFeatureType::eMPI) === true)
+                                                                                {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
                                                                                     $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
                                                                                 } else {

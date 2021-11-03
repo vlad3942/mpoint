@@ -1844,4 +1844,32 @@
             <column name="name" value="Cancel URL"/>
         </insert>
     </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-11-01-setup-v2.30-system-route_feature">
+        <update catalogName="System"
+                schemaName="System"
+                tableName="routefeature_tbl">
+            <column name="enabled" value="false" />
+            <where>id in (1,2,3,7,8,11,12,13,14,15,16,17)</where>
+        </update>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="routefeature_tbl">
+            <column name="id" value="18"/>
+            <column name="featurename" value="Cancel"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="routefeature_tbl">
+            <column name="id" value="19"/>
+            <column name="featurename" value="Partial Cancel"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="routefeature_tbl">
+            <column name="id" value="20"/>
+            <column name="featurename" value="MPI"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

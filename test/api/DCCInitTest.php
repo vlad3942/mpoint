@@ -118,6 +118,7 @@ class DCCInitTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid,dccenabled) VALUES (10018, 8, $pspID,100,true)");
 		$this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10018,100,840, true)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, pcc_enabled,legacy_flow_enabled) VALUES(10018, true,true);");
 
 		$this->queryDB("INSERT INTO client.pcc_config_tbl (pmId,clientId,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (8,10018,840,156,'true','true')");
 		$this->queryDB("INSERT INTO client.pcc_config_tbl (pmId,clientId,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (8,10018,840,360,'true','true')");

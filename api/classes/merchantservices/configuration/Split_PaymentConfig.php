@@ -35,9 +35,14 @@ class Split_PaymentConfig extends BaseConfig
 
     protected function setPropertiesFromXML(SimpleXMLElement &$oXML)
     {
+        $this->_aProperty = array();
         if(count($oXML->is_rollback)>0)
         {
-            $this->_aProperty = array("is_rollback"=>\General::xml2bool((string)$oXML->is_rollback));
+            $this->_aProperty["is_rollback"] = \General::xml2bool((string)$oXML->is_rollback);
+        }
+        if(count($oXML->is_reoffer)>0)
+        {
+            $this->_aProperty["is_reoffer"] = \General::xml2bool((string)$oXML->is_reoffer);
         }
     }
 }
