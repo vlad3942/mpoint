@@ -267,13 +267,60 @@ class MerchantConfigRepository
         }
     }
 
+    public function deleteAllRouteConfig(string $type,  int $id)
+    {
+        $sWhereCls = " AND routeconfigid = " . $id;
+
+        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routepm_tbl WHERE true ".$sWhereCls;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." PM for IDs {".$id."}");
+        }
+
+        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".route_property_tbl WHERE true ".$sWhereCls;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Properties for IDs {".$id."}");
+        }
+
+        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routefeature_tbl WHERE true ".$sWhereCls;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Features for IDs {".$id."}");
+        }
+
+        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routecountry_tbl WHERE true ".$sWhereCls;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Countries for IDs {".$id."}");
+        }
+
+        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routecurrency_tbl WHERE true ".$sWhereCls;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currencies for IDs {".$id."}");
+        }
+
+        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routeconfig_tbl WHERE id = ".$id;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$id."}");
+        }
+    }
+
     /**
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function deletePropertyConfig(string $type, ?string $ids,int $id=-1,?string $pms='')
+    public function deletePropertyConfig(string $type, ?string $ids,int $id=-1,?string $pms='', string $features = '', string $countries = '', string $currencies = '' )
     {
-        $sWhreCls = "clientid = ".$this->_clientConfig->getID();
+        $sWhereCls = "clientid = ".$this->_clientConfig->getID();
         if(empty($pms) === false)
         {
             $sWhereCls = " AND routeconfigid = ".$id;
@@ -283,7 +330,12 @@ class MerchantConfigRepository
                 $sTableName = ".pm_tbl";
                 $sWhereCls = " AND clientid = ".$this->_clientConfig->getID();
 
+            } else if($type === 'PSP'){
+                $sTableName = ".providerpm_tbl";
+                $iRouteId = $this->getRouteIDByProvider($type, $this->_clientConfig->getID(), $id);
+                $sWhereCls = " AND routeid = " . $iRouteId;
             }
+
             $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.$sTableName." WHERE pmid in (".$pms.") ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
@@ -296,14 +348,17 @@ class MerchantConfigRepository
         {
             $sTableName = '';
             if($type === "CLIENT")  $sTableName = 'client_property_tbl';
-            else if($type === 'PSP') $sTableName = 'psp_property_tbl';
+            else if($type === 'PSP') {
+                $sTableName = 'psp_property_tbl';
+                $sWhereCls = "AND clientid = ".$this->_clientConfig->getID();
+            }
             else if($type === 'ROUTE')
             {
                 $sTableName = 'route_property_tbl';
-                $sWhreCls = "routeconfigid = ".$id;
+                $sWhereCls = " AND routeconfigid = ".$id;
             }
 
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE propertyid IN(".$ids.") and ".$sWhreCls;
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE propertyid IN(".$ids.") ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -311,6 +366,45 @@ class MerchantConfigRepository
                 throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Config Property  for IDs {".$ids."}");
             }
 
+        }
+        if(empty($features) === false)
+        {
+            $sTableName = 'routefeature_tbl';
+            $sWhereCls = " AND routeconfigid = ".$id;
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE featureid IN(".$features.") ".$sWhereCls;
+            $rs = $this->getDBConn()->executeQuery($SQL);
+
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Feature  for IDs {".$features."}");
+            }
+        }
+        if(empty($countries) === false)
+        {
+            $sTableName = 'routecountry_tbl';
+            $sWhereCls = " AND routeconfigid = ".$id;
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE countryid IN(".$countries.") ".$sWhereCls;
+            $rs = $this->getDBConn()->executeQuery($SQL);
+
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Country  for IDs {".$countries."}");
+            }
+        }
+        if(empty($currencies) === false)
+        {
+            $sTableName = 'routecurrency_tbl';
+            $sWhereCls = " AND routeconfigid = ".$id;
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE currencyid IN(".$currencies.") ".$sWhereCls;
+            $rs = $this->getDBConn()->executeQuery($SQL);
+
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currency  for IDs {".$currencies."}");
+            }
         }
     }
 
@@ -424,18 +518,83 @@ class MerchantConfigRepository
     {
         $sColumns = "routeconfigid, pmid";
         $sTableName = "routepm_tbl";
+        $sValues  = 'VALUES ($1,$2)';
+        $aParam = array($id);
         if($type === 'CLIENT')
         {
             $sColumns = "clientid, pmid";
             $sTableName = "pm_tbl";
             $id = $this->_clientConfig->getID();
-
+            $aParam = array($id);
         }
-        $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") VALUES ($1,$2)";
+        if($type === "PSP")
+        {
+            $sColumns = "routeid, pmid";
+            $sTableName = "providerpm_tbl";
+            $sValues  = 'VALUES ($1,$2)';
+            $iClientId = $this->_clientConfig->getID();
+            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
+            $aParam = array($iRouteId);
+        }
+        $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") $sValues";
         foreach ($aPMIds as $PMId)
         {
-            $aParam = array($id,$PMId);
+            array_push($aParam,$PMId);
             $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+            array_pop($aParam);
+            if($rs == false)
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                }
+                throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
+            }
+        }
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+
+    public function saveConfigDetails(string $type,array $aConfigDetails=array(),int $id=-1, $entity = '')
+    {
+        $iClientId = $this->_clientConfig->getID();
+        switch(strtolower($entity)){
+            case 'feature':
+                $sColumns = "clientid, routeconfigid, featureid";
+                $sTableName = "routefeature_tbl";
+                $sValues = 'VALUES ($1,$2, $3)';
+                $aParam = array($iClientId, $id);
+                break;
+
+            case 'country':
+                $sTableName = 'routecountry_tbl';
+                $sColumns = 'routeconfigid, countryid';
+                $sValues = 'VALUES ($1,$2)';
+                $aParam = array($id);
+                break;
+
+            case 'currency':
+                $sTableName = 'routecurrency_tbl';
+                $sColumns = 'routeconfigid, currencyid';
+                $sValues = 'VALUES ($1,$2)';
+                $aParam = array($id);
+                break;
+
+            default:
+                // Throw Exception
+        }
+
+
+        $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") $sValues";
+        foreach ($aConfigDetails as $configDetail)
+        {
+            array_push($aParam, $configDetail);
+            $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+            array_pop($aParam);
             if($rs == false)
             {
                 $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
@@ -444,11 +603,92 @@ class MerchantConfigRepository
                     $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
                 }
 
-                throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
+                throw new MerchantOnboardingException($statusCode,"Failed to Insert $entity Method Id:".$configDetail);
             }
         }
     }
 
+    private function getRouteIDByProvider(string $type, int $iClientId, int $iProviderId)
+    {
+
+        $sSQL = "SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl WHERE enabled=true AND providerid = $iProviderId AND  clientid = $iClientId";
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+
+        if($aRS === false)
+        {
+            $aParam = array($iClientId, $iProviderId);
+            $SQL = "INSERT INTO CLIENT". sSCHEMA_POSTFIX.".route_tbl (clientid, providerid) values ($1, $2)  RETURNING id ";
+            $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+
+            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                }
+                throw new MerchantOnboardingException($statusCode,"Failed to generate route for  ".strtolower($type));
+            }
+            $RS = $this->getDBConn()->fetchName($rs);
+            $iRouteId = $RS["ID"];
+        }else {
+            $iRouteId = $aRS[0]['ID'];
+        }
+        return $iRouteId;
+    }
+
+    /**
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
+    public function saveCredential(string $type, int $id, string $name, array $aCredentials)
+    {
+        $iRouteId = 0;
+        $iClientId = $this->_clientConfig->getID();
+        $iProviderId = $id;
+
+        if($type === 'ROUTE')
+        {
+            $sTableName = 'routeconfig_tbl';
+            $sColumnName = 'routeid, name, mid, username, password, capturetype';
+            $sValues = 'VALUES ($1,$2,$3,$4,$5,$6)';
+
+            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $iProviderId);
+
+            $aParam = array($iRouteId, $name);
+
+        } else if($type === 'PSP')
+        {
+            $iClientId = $this->_clientConfig->getID();
+            $sTableName = 'merchantaccount_tbl';
+            $sColumnName = 'clientid, pspid, name, username, passwd';
+            $sValues = 'VALUES ($1,$2,$3,$4,$5)';
+            $aParam = array($iClientId, $id, $name);
+
+        } else {
+            // Throw exception
+        }
+
+        foreach($aCredentials as $credential){
+            $aParam[] = (string) $credential;
+        }
+
+        $SQL = "INSERT INTO CLIENT". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumnName.") ".$sValues ." RETURNING id ";
+        $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+
+        if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+            $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+            if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+            {
+                $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+            }
+            throw new MerchantOnboardingException($statusCode,"Failed to save ".strtolower($type)." Credentials  {name:". $name . "}");
+        }
+
+        $RS = $this->getDBConn()->fetchName($rs);
+        return $RS["ID"];
+    }
 
     /**
      * @throws MerchantOnboardingException
@@ -458,10 +698,9 @@ class MerchantConfigRepository
     {
 
         if(empty($aPMIds) === false)
-       {
-          $this->savePM("ROUTE",$aPMIds,$id);
-       }
-
+        {
+          $this->savePM($type,$aPMIds,$id);
+        }
       if(empty($aPropertyInfo) === false)
       {
           $sTableName = '';
@@ -503,7 +742,6 @@ class MerchantConfigRepository
                   {
                       $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
                   }
-
                   throw new MerchantOnboardingException($statusCode,"Failed to save ".strtolower($type)." Config Property  {id:".$propertyInfo->getId()." value:".$propertyInfo->getValue()."}");
               }
           }
@@ -519,8 +757,13 @@ class MerchantConfigRepository
         {
             $sTableName = 'pm_tbl';
             $sWhereCls = "and clientid = ".$this->_clientConfig->getID();
-
+        } else if($type === 'PSP')
+        {
+            $sTableName = 'providerpm_tbl';
+            $iRouteId = $this->getRouteIDByProvider($type, $this->_clientConfig->getID(), $id);
+            $sWhereCls = "and routeid = ".$iRouteId;
         }
+
         $sSQL = "SELECT pmid FROM CLIENT". sSCHEMA_POSTFIX .".".$sTableName." WHERE enabled=true ".$sWhereCls;
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
         if (empty($aRS) === false)
@@ -528,6 +771,82 @@ class MerchantConfigRepository
             foreach ($aRS as $rs) array_push($aPM,$rs["PMID"]);
         }
         return $aPM;
+    }
+
+    public function getConfigDetails(string $type, int $id = -1, $entity = '')
+    {
+        $aConfigDetails = [];
+
+        switch (strtolower($entity)){
+            case 'feature':
+                $sTableName = "routefeature_tbl";
+                $sWhereCls = " and routeconfigid = ". $id;
+                $sSelectId = "FEATUREID";
+                $sSELECTFields = $sSelectId;
+                break;
+
+            case 'country':
+                $sTableName = "routecountry_tbl";
+                $sWhereCls = " and routeconfigid = ". $id;
+                $sSelectId = "COUNTRYID";
+                $sSELECTFields = $sSelectId;
+                break;
+
+            case 'currency':
+                $sTableName = "routecurrency_tbl";
+                $sWhereCls = " and routeconfigid = ". $id;
+                $sSelectId = "CURRENCYID";
+                $sSELECTFields = $sSelectId;
+                break;
+
+            default:
+                // Throw Exception
+        }
+
+        $sSQL = "SELECT $sSELECTFields FROM CLIENT". sSCHEMA_POSTFIX .".".$sTableName." WHERE enabled=true ".$sWhereCls;
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+        if (empty($aRS) === false)
+        {
+            foreach ($aRS as $rs) array_push($aConfigDetails,$rs[$sSelectId]);
+        }
+        return $aConfigDetails;
+    }
+
+    public function getAllPSPCredentials(): array
+    {
+        $sSQL = "select pspid, name, username, passwd, r.id as routeid
+                    from CLIENT". sSCHEMA_POSTFIX .".merchantaccount_tbl m
+                    inner join CLIENT". sSCHEMA_POSTFIX .".route_tbl r on m.clientid  = r.clientid and m.pspid  = r.providerid ";
+        $aPSPDetails = [];
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+        if (empty($aRS) === false)
+        {
+            foreach ($aRS as $rs) array_push($aPSPDetails,$rs);
+        }
+        return $aPSPDetails;
+    }
+
+    public function getCredentials(string $type, int $id=-1)
+    {
+        switch(strtolower($type)) {
+            case 'route':
+                $sWhereCls = " AND id = ". $id;
+                $sSelectFields = "name, capturetype, mid, username, password";
+                $sTableName = 'routeconfig_tbl';
+                break;
+
+            case 'psp':
+                $sWhereCls = " AND pspid = ". $id;
+                $sSelectFields = "name, username, passwd";
+                $sTableName = 'merchantaccount_tbl';
+                break;
+
+            default:
+                // Throw Exception
+
+        }
+        $sSQL = "SELECT $sSelectFields FROM CLIENT". sSCHEMA_POSTFIX .".".$sTableName." WHERE enabled=true ".$sWhereCls;
+        return $this->getDBConn()->getAllNames ( $sSQL );
     }
 
     public function getPropertyConfig(string $type,string $source,int $id=-1,array $aNames= array(),bool $byCategory = true) : array
@@ -567,7 +886,7 @@ class MerchantConfigRepository
         {
             $sJoin ="LEFT JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
             if($type === 'ROUTE') $sMetaDataJoin = " AND sp.pspid=(SELECT r.providerid FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rt INNER JOIN CLIENT". sSCHEMA_POSTFIX .".route_tbl r ON R.id = rt.routeid WHERE rt.id=".$id.")";
-            if($type === 'PSP') $sMetaDataJoin = " AND sp.pspid=".$id;
+            if($type === 'PSP' && $id > -1 ) $sMetaDataJoin = " AND sp.pspid=".$id;
         }
         else if($source === 'CLIENT') $sJoin ="INNER JOIN CLIENT". sSCHEMA_POSTFIX . ".".$sTableName." cp on cp.propertyid = sp.id ".$sWhereArgs;
 
@@ -616,8 +935,26 @@ class MerchantConfigRepository
         $aPaymentMetaData['transaction_types'] = $this->getMetaDataInfo('transaction_type', 'type_tbl', true);
         $aPaymentMetaData['card_states'] = $this->getMetaDataInfo('card_state', 'cardstate_tbl', true);
         $aPaymentMetaData['fx_service_types'] = $this->getMetaDataInfo('fx_service_type', 'fxservicetype_tbl', true);
+        $aPaymentMetaData['versions'] = $this->get3dsVersion();
 
         return $aPaymentMetaData;
+    }
+
+    /**
+     * Get 3Ds Versions
+     *
+     * @return array
+     */
+    public function get3dsVersion() : array
+    {
+        $a3DSVersion =  array(
+                        0 => array('ID' => '1', 'NAME' => '1.0'),
+                        1 => array('ID' => '2', 'NAME' => '2.0')
+                    );
+
+        $a3DSConfigs = BaseInfo::produceFromDataSet($a3DSVersion, 'version');
+        
+        return $a3DSConfigs;
     }
 
     /**

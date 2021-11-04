@@ -22,7 +22,6 @@ class MerchantOnboardingAPITest extends baseAPITest
     }
     public function testSuccessfulGetAddOnConfig()
     {
-
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -49,7 +48,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.split_property_tbl (clientid,is_rollback) VALUES(10099,true)");
 
 
-
+        // $this->constHTTPClient("/merchantservices/api/addonconfig/client_id/10099");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=addonconfig&params=client_id/10099");
 
@@ -58,6 +57,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $sReplyBody = $this->_httpClient->getReplyBody();
 
+        
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><addon_configuration_response><dcc_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_confguration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_confguration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>608</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>true</is_presentment></addon_confguration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>1</pm_id><provider_id>17</provider_id><version>1.0</version></addon_confguration></addon_configurations></mpi_config><tokenization_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations></tokenization_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_confguration><addon_confguration><id>2</id><enabled>true</enabled><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback><is_reoffer>false</is_reoffer></split_payment_config><split_payment_config><sub_type>cashless</sub_type><addon_configurations><addon_confguration><id>3</id><enabled>true</enabled><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_confguration><addon_confguration><id>4</id><enabled>true</enabled><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback><is_reoffer>false</is_reoffer></split_payment_config><split_payment_config><sub_type>conventional</sub_type><addon_configurations><addon_confguration><id>5</id><enabled>true</enabled><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_confguration><addon_confguration><id>6</id><enabled>true</enabled><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback><is_reoffer>false</is_reoffer></split_payment_config></split_payment_configs></addon_configuration_response>', $sReplyBody);
 
@@ -83,6 +83,41 @@ class MerchantOnboardingAPITest extends baseAPITest
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $this->assertEquals(200, $iStatus);
+
+        // DCC
+        $res =  $this->queryDB("SELECT id FROM CLIENT.dcc_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 566" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // MCP
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mcp_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 566" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // Fraud        
+        $res =  $this->queryDB("SELECT id FROM CLIENT.fraud_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 640 AND currencyid = 654 AND providerid = 15 AND  typeoffraud = 1");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // Tokenization
+        $res =  $this->queryDB("SELECT id FROM CLIENT.tokenization_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 840 AND providerid = 15");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // PCC
+        $res =  $this->queryDB("SELECT id FROM CLIENT.pcc_config_tbl where pmid = 8 AND clientid = 10099 AND settlement_currency_id = 590 AND sale_currency_id = 608 AND is_presentment = true");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // MPI
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 17 AND \"version\" = '1.0'");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // Split Configuration
+        $res =  $this->queryDB("SELECT split_config_id FROM CLIENT.split_combination_tbl where (split_config_id = 1  AND payment_type = 1 AND sequence_no = 1) OR (split_config_id = 1  AND payment_type = 2 AND sequence_no = 2) OR (split_config_id = 2  AND payment_type = 1 AND sequence_no = 1) OR (split_config_id = 2  AND payment_type = 2 AND sequence_no = 2) OR (split_config_id = 3  AND payment_type = 1 AND sequence_no = 1) OR (split_config_id = 3  AND payment_type = 2 AND sequence_no = 2)");
+        $this->assertIsResource($res);
+        $this->assertEquals(6, pg_num_rows($res));
 
     }
 
@@ -131,7 +166,7 @@ class MerchantOnboardingAPITest extends baseAPITest
     }
 
 
-    /* public function testSuccessfulUpdateAddOnConfig()
+    public function testSuccessfulUpdateAddOnConfig()
     {
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -141,7 +176,8 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
         $this->queryDB("INSERT INTO client.dcc_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
-        $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1)");
+        $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1),(10099, 8, 15, 640, 654, 2)");
+        $this->queryDB("INSERT INTO client.tokenization_config_tbl (clientid, pmid, providerid, countryid, currencyid) VALUES(10099, 8, 15, 640, 654)");
         $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid, \"version\") VALUES(10099, 1, 17, '1.0')");
         $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
         $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(1, 10099, 'hybrid', true)");
@@ -159,21 +195,57 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.split_property_tbl (clientid,is_rollback) VALUES(10099,true)");
 
 
-        $req = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10077</client_id><dcc_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_confguration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_confguration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>608</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>true</is_presentment></addon_confguration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>1</pm_id><provider_id>17</provider_id><version>1.0</version></addon_confguration></addon_configurations></mpi_config><tokenization_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>840</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations></tokenization_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_confguration><id>2</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><addon_configurations><addon_confguration><id>1</id><enabled>false</enabled><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_confguration><addon_confguration><id>2</id><enabled>false</enabled><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><addon_configurations><addon_confguration><id>3</id><enabled>false</enabled><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_confguration><addon_confguration><id>4</id><enabled>false</enabled><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><addon_configurations><addon_confguration><id>5</id><enabled>false</enabled><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_confguration><addon_confguration><id>6</id><enabled>false</enabled><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs></addon_configuration_request>';
+        $req = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id></addon_confguration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id></addon_confguration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>false</is_presentment></addon_confguration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>1</pm_id><provider_id>1</provider_id><version>1.0</version></addon_confguration></addon_configurations></mpi_config><tokenization_config><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations></tokenization_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_confguration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_confguration><id>2</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><addon_configurations><addon_confguration><id>1</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_confguration><addon_confguration><id>2</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><addon_configurations><addon_confguration><id>3</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_confguration><addon_confguration><id>4</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><addon_configurations><addon_confguration><id>5</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_confguration><addon_confguration><id>6</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_confguration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs></addon_configuration_request>';
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=addonconfig&params=client_id/10099",'put');
 
         $this->_httpClient->connect();
 
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$req);
-        $sReplyBody = $this->_httpClient->getReplyBody();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$req);        
 
         $this->assertEquals(200, $iStatus);
 
-    }*/
+        // DCC
+        $res =  $this->queryDB("SELECT id FROM CLIENT.dcc_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 640 AND currencyid = 654" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
 
-   /* public function testSuccessfulDeleteAddOnConfig()
+        // MCP
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mcp_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 640 AND currencyid = 654");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // PCC
+        $res =  $this->queryDB("SELECT id FROM CLIENT.pcc_config_tbl where pmid = 8 AND clientid = 10099 AND settlement_currency_id = 590 AND sale_currency_id = 654 AND is_presentment = false");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // Fraud        
+        $res =  $this->queryDB("SELECT id FROM CLIENT.fraud_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 566 AND providerid = 15 AND  typeoffraud = 1");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        // Tokenization
+        $res =  $this->queryDB("SELECT id FROM CLIENT.tokenization_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 566 AND providerid = 15");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+
+        // MPI
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 1 AND \"version\" = '1.0'");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        
+        // Split Configuration
+        $res =  $this->queryDB("SELECT split_config_id FROM CLIENT.split_combination_tbl where (split_config_id = 1  AND payment_type = 3 AND sequence_no = 3) OR (split_config_id = 1  AND payment_type = 4 AND sequence_no = 4) OR (split_config_id = 2  AND payment_type = 3 AND sequence_no = 3) OR (split_config_id = 2  AND payment_type = 4 AND sequence_no = 4) OR (split_config_id = 3  AND payment_type = 3 AND sequence_no = 3) OR (split_config_id = 3  AND payment_type = 4 AND sequence_no = 4)");
+        $this->assertIsResource($res);
+        $this->assertEquals(6, pg_num_rows($res)); 
+
+    }
+
+    public function testSuccessfulDeleteAddOnConfig()
     {
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -184,6 +256,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.dcc_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1)");
+        $this->queryDB("INSERT INTO client.tokenization_config_tbl (clientid, pmid, providerid, countryid, currencyid) VALUES(10099, 8, 15, 640, 654)");
         $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid, \"version\") VALUES(10099, 1, 17, '1.0')");
         $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
         $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(1, 10099, 'hybrid', true)");
@@ -200,28 +273,63 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.fraud_property_tbl (clientid,is_rollback) VALUES(10099,true)");
         $this->queryDB("INSERT INTO client.split_property_tbl (clientid,is_rollback) VALUES(10099,true)");
 
-
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=addonconfig&params=client_id/10077/dcc/1/mcp/1/pcc/1/mpi/1/tokenization/1/fraud/1/split_payment/1,2,3",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=addonconfig&params=client_id/10099/dcc/1/mcp/1/pcc/1/mpi/1/tokenization/1/fraud/1/split_payment/1,2,3,4,5,6",'DELETE');
 
         $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
-        $sReplyBody = $this->_httpClient->getReplyBody();
-
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));        
         $this->assertEquals(200, $iStatus);
 
-    }*/
+        // DCC
+        $res =  $this->queryDB("SELECT id FROM CLIENT.dcc_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 566" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        // MCP
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mcp_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 566" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        // Fraud        
+        $res =  $this->queryDB("SELECT id FROM CLIENT.fraud_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 640 AND currencyid = 654 AND providerid = 15 AND  typeoffraud = 1");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        // Tokenization
+        $res =  $this->queryDB("SELECT id FROM CLIENT.tokenization_config_tbl where pmid = 8 AND clientid = 10099 AND countryid = 200 AND currencyid = 840 AND providerid = 15");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        // PCC
+        $res =  $this->queryDB("SELECT id FROM CLIENT.pcc_config_tbl where pmid = 8 AND clientid = 10099 AND settlement_currency_id = 590 AND sale_currency_id = 608 AND is_presentment = true");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        // MPI
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 17 AND \"version\" = '1.0'");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        // Split Configuration
+        $res =  $this->queryDB("SELECT split_config_id FROM CLIENT.split_combination_tbl where (split_config_id = 1  AND payment_type = 1 AND sequence_no = 1) OR (split_config_id = 1  AND payment_type = 2 AND sequence_no = 2) OR (split_config_id = 2  AND payment_type = 1 AND sequence_no = 1) OR (split_config_id = 2  AND payment_type = 2 AND sequence_no = 2) OR (split_config_id = 3  AND payment_type = 1 AND sequence_no = 1) OR (split_config_id = 3  AND payment_type = 2 AND sequence_no = 2)");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));        
+
+    }
 
     public function testSuccessfulGetPSPProperty()
     {
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='FILE_EXPIRY' AND PSPID=52),'CPD_')");
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 52)");
+        $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 1)");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/psp_id/52");
 
@@ -230,8 +338,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details></client_psp_configuration>', $sReplyBody);
-
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>true</enabled></pm_configuration></pm_configurations></client_psp_configuration>', $sReplyBody);
     }
 
     public function testSuccessfulSavePSPProperty()
@@ -245,14 +352,23 @@ class MerchantOnboardingAPITest extends baseAPITest
 
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'POST');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
+
         $res =  $this->queryDB("SELECT id FROM CLIENT.psp_property_tbl where value in ('CPD_','true')" );
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid in (1)" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'TestPSPName' AND username = 'TestPSPUser' AND passwd = 'TestPSPPass'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
 
     }
 
@@ -269,17 +385,14 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'POST');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(500, $iStatus);
         $this->assertStringContainsString('<code>101</code>',$sReplyBody);
-
-
     }
 
-    /*
     public function testSuccessfulUpdatePSPProperty()
     {
 
@@ -292,11 +405,15 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'PUT');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_123</value></property></properties></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><properties><property><id>22</id><value>true</value><enabled>true</enabled></property><property><id>21</id><value>CPD_123</value><enabled>true</enabled></property></properties></client_psp_configuration>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.psp_property_tbl where value in ('CPD_123','true')" );
+        $this->assertIsResource($res);
+        $this->assertEquals(2, pg_num_rows($res));
     }
 
     public function testSuccessfulDeletePSPProperty()
@@ -309,18 +426,30 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='FILE_EXPIRY' AND PSPID=52),'CPD_')");
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 52)");
+        $res =  $this->queryDB("SELECT * FROM CLIENT.providerpm_tbl" );
+        $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 2)");
 
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/psp_id/52",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/psp_id/52/pm/2/p_id/21",'DELETE');
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
-        $sReplyBody = $this->_httpClient->getReplyBody();
-
         $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.psp_property_tbl where value in ('CPD_')" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid in (2)" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'TestPSPName' AND username = 'TestPSPUser' AND passwd = 'TestPSPPass'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
 
     }
 
-    */
 
     public function testWrongPSPSavePSPProperty()
     {
@@ -355,6 +484,9 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
+        $this->queryDB("INSERT INTO client.routefeature_tbl (clientid,routeconfigid, featureid) VALUES (10099,1,1)");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid, countryid) VALUES (1,1)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/route_conf_id/1");
 
@@ -362,7 +494,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>true</enabled></pm_configuration><pm_configuration><pm_id>7</pm_id><enabled>true</enabled></pm_configuration></pm_configurations></client_route_configuration>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capturetype>2</capturetype></credentials><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>true</enabled></pm_configuration><pm_configuration><pm_id>7</pm_id><enabled>true</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>true</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>true</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>true</enabled></currency_detail></currency_details></client_route_configuration>', $sReplyBody);
 
     }
 
@@ -374,11 +506,11 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
-        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
-        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+        // $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
+        // $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'POST');
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capturetype>2</capturetype></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -386,9 +518,22 @@ class MerchantOnboardingAPITest extends baseAPITest
         $res =  $this->queryDB("SELECT id FROM CLIENT.route_property_tbl where value in ('1234','1233')" );
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res));
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl where routeconfigid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routefeature_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecurrency_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecountry_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
     }
 
     public function testAlreadySavedSuccessSaveRouteProperty()
@@ -409,7 +554,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
 
        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'POST');
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capturetype>2</capturetype></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
@@ -437,7 +582,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
 
        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'POST');
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>10</pm_id></pm_configuration><pm_configuration><pm_id>9</pm_id></pm_configuration></pm_configurations></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capturetype>2</capturetype></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
@@ -446,8 +591,6 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertStringContainsString('<code>101</code>',$sReplyBody);
 
     }
-
-    /*
 
     public function testSuccessfulUpdateRouteProperty()
     {
@@ -466,14 +609,21 @@ class MerchantOnboardingAPITest extends baseAPITest
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'PUT');
 
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><properties><property><id>41</id><value>12345</value></property><property><id>42</id><value>12335</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><properties><property><id>41</id><value>12345</value><enabled>true</enabled></property><property><id>42</id><value>12335</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>true</enabled></pm_configuration><pm_configuration><pm_id>7</pm_id><enabled>true</enabled></pm_configuration></pm_configurations></client_route_configuration>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
+        
+        $this->assertEquals(200, $iStatus);  
 
-        $sReplyBody = $this->_httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $res =  $this->queryDB("SELECT id FROM CLIENT.route_property_tbl where value in ('12345','12335')" );
+        $this->assertIsResource($res);
+        $this->assertEquals(2, pg_num_rows($res));
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl" );
+        $this->assertIsResource($res);
+        $this->assertEquals(2, pg_num_rows($res));        
 
-    }
+    }    
+    
 
     public function testSuccessfulDeleteRouteProperty()
     {
@@ -489,17 +639,36 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
+        $this->queryDB("INSERT INTO client.routefeature_tbl (clientid,routeconfigid, featureid) VALUES (10099,1,1)");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid, countryid) VALUES (1,1)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
 
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/route_conf_id/1", 'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/route_conf_id/1/p_id/41/pm/8/r_f/1/country/1/currency/1", 'DELETE');
 
         $this->_httpClient->connect();
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
-        $sReplyBody = $this->_httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));        
 
+        $this->assertEquals(200, $iStatus);        
+        $res =  $this->queryDB("SELECT id FROM CLIENT.route_property_tbl where value in ('1234')" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routefeature_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecurrency_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecountry_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
     }
-
-    */
 
     public function testSuccessfulGetSystemMetadata()
     {
@@ -554,7 +723,8 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertStringContainsString('<transaction_type><id>10</id><name>Call Centre Purchase</name></transaction_type>',$sReplyBody);
         $this->assertStringContainsString('<card_state><id>1</id><name>Enabled</name></card_state>',$sReplyBody);
         $this->assertStringContainsString('<fx_service_type><id>11</id><name>DCC Opt</name></fx_service_type>',$sReplyBody);
-                  
+        $this->assertStringContainsString('<version><id>1</id><name>1.0</name></version>',$sReplyBody);
+        
     }
 
     public function testInvalidXMLSaveAddOnConfig()

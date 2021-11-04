@@ -105,8 +105,44 @@ class ConfigurationService
     public function getRoutePM(int $routeConfigId) : array
     {
         return $this->getAggregateRoot()->getRoutePM($this->getRepository(),$routeConfigId);
-
     }
+
+    public function getPSPPM(int $pspConfigId): array
+    {
+        return $this->getAggregateRoot()->getPSPPM($this->getRepository(),$pspConfigId);
+    }
+
+    public function getRouteFeatures(int $routeConfigId)
+    {
+        return $this->getAggregateRoot()->getRouteFeatures($this->getRepository(), $routeConfigId);
+    }
+
+    public function getRouteCountries(int $routeConfigId)
+    {
+        return $this->getAggregateRoot()->getRouteCountries($this->getRepository(), $routeConfigId);
+    }
+
+    public function getRouteCurrencies(int $routeConfigId)
+    {
+        return $this->getAggregateRoot()->getRouteCurrencies($this->getRepository(), $routeConfigId);
+    }
+
+
+    public function getRouteCredentials(int $routeConfigId)
+    {
+        return $this->getAggregateRoot()->getRouteCredentials($this->getRepository(), $routeConfigId);
+    }
+
+    public function getPSPCredentials(int $pspConfigId)
+    {
+        return $this->getAggregateRoot()->getPSPCredentials($this->getRepository(), $pspConfigId);
+    }
+
+    public function getAllPSPCredentials()
+    {
+        return $this->getAggregateRoot()->getAllPSPCredentials($this->getRepository());
+    }
+
     public function getClientPM() : array
     {
         return $this->getAggregateRoot()->getClientPM($this->getRepository());
@@ -133,10 +169,35 @@ class ConfigurationService
         $this->getAggregateRoot()->updateClientdetails($this->getRepository(),$aClientParam);
     }
 
-    public function savePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array() )
+    public function savePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array())
     {
        $this->getAggregateRoot()->savePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
     }
+    public function saveFeature(string $type, array $aFeatures, $id)
+    {
+        return $this->getAggregateRoot()->saveCredential($this->getRepository(),$type,$id, $aFeatures);
+    }
+
+    public function saveCredential(string $type, int $id, string $name, array $aCredentials)
+    {
+        return $this->getAggregateRoot()->saveCredential($this->getRepository(),$type,$id, $name,$aCredentials);
+    }
+
+    public function saveCountry(string $type, array $aCountries, int $id)
+    {
+        $this->getAggregateRoot()->saveCountry($this->getRepository(),$type, $aCountries, $id);
+    }
+
+    public function saveFeatures(string $type, array $aFeatures, int $id)
+    {
+        $this->getAggregateRoot()->saveFeatures($this->getRepository(),$type, $aFeatures, $id);
+    }
+
+    public function saveCurrency(string $type, array $aCurrencies, int $id)
+    {
+        $this->getAggregateRoot()->saveCurrency($this->getRepository(),$type,$aCurrencies, $id);
+    }
+
 
     public function updatePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array() )
     {

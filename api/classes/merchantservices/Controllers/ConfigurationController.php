@@ -255,20 +255,90 @@ class ConfigurationController
     public function getPSPConfig($additionalParams = [])
     {
 
+        $iPSPID = $additionalParams['psp_id']??-1;
+
+        if($iPSPID < 0)
+        {
+            $xml = "<client_psp_configurations>";
+            $aPSPDetails = $this->getConfigService()->getAllPSPCredentials();
+            foreach ($aPSPDetails as $PSPDetail)
+            {
+                $xml .= "<client_psp_configuration>";
+                $xml .= "<name>" . $PSPDetail['NAME'] . "</name>";
+                $xml .= "<credentials>";
+                $xml .= "<username>" . $PSPDetail['USERNAME'] . "</username>";
+                $xml .= "<password>" . $PSPDetail['PASSWD'] . "</password>";
+                $xml .= "</credentials>";
+                $aPM = $this->getConfigService()->getPSPPM($PSPDetail['PSPID']);
+                foreach ($aPM as $pm)
+                {
+                    $xml .="<pm_configuration>";
+                    $xml .="<pm_id>".$pm."</pm_id>";
+                    $xml .="<enabled>true</enabled>";
+                    $xml .="</pm_configuration>";
+                }
+                $xml .= "</client_psp_configuration>";
+            }
+            $xml .= "</client_psp_configurations>";
+            return $xml;
+        }
+
+
         $xml = "<client_psp_configuration>";
-        $xml .=  Helpers::getPropertiesXML($this->getConfigService()->getPropertyConfig("PSP","ALL",$additionalParams['psp_id']));
+
+        $aCredentials = $this->getConfigService()->getPSPCredentials($additionalParams['psp_id'])[0];
+        if(count($aCredentials) > 0) {
+            $xml .= "<name>" . $aCredentials['NAME'] . "</name>";
+            $xml .= "<credentials>";
+            $xml .= "<username>" . $aCredentials['USERNAME'] . "</username>";
+            $xml .= "<password>" . $aCredentials['PASSWD'] . "</password>";
+            $xml .= "</credentials>";
+        }
+        $xml .=  Helpers::getPropertiesXML($this->getConfigService()->getPropertyConfig("PSP","ALL",$iPSPID));
+
+        $aPM = $this->getConfigService()->getPSPPM($additionalParams['psp_id']);
+        $xml .="<pm_configurations>";
+        foreach ($aPM as $pm)
+        {
+            $xml .="<pm_configuration>";
+            $xml .="<pm_id>".$pm."</pm_id>";
+            $xml .="<enabled>true</enabled>";
+            $xml .="</pm_configuration>";
+        }
+        $xml .="</pm_configurations>";
+
         $xml .= "</client_psp_configuration>";
         return $xml;
-
-
     }
 
     public function savePSPConfig($request, $additionalParams = [])
     {
         $psp_id =(int) $request->psp_id;
+
+        if(isset($request->credentials) === true)
+        {
+            if(isset($request->name) === true && isset($request->psp_id) === true)
+            {
+                $aCredentials = array((string) $request->credentials->username, (string) $request->credentials->password);
+                $this->getConfigService()->saveCredential('PSP', (int)$request->psp_id, (string)$request->name, $aCredentials);
+            } else {
+                throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'PSP Name Param Not Found');
+            }
+        } else if(isset($request->psp_id)  === false) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'PSP ID Param Not Found');
+        }
+
         $aPropertyInfo = array();
         foreach ($request->properties->property as $property)  array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
-        $this->getConfigService()->savePropertyConfig('PSP',$aPropertyInfo,$psp_id);
+        $aPMIds = array();
+        if(count($request->pm_configurations)>0)
+        {
+            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+            {
+                array_push($aPMIds, (int)$pm_configuration->pm_id);
+            }
+        }
+        $this->getConfigService()->savePropertyConfig('PSP',$aPropertyInfo,$psp_id,$aPMIds);
 
     }
 
@@ -282,31 +352,96 @@ class ConfigurationController
 
     public function deletePSPConfig($request, $additionalParams = [])
     {
-        $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams);
+        $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams,(int)$additionalParams['psp_id']);
     }
 
     public function getRouteConfig($additionalParams = [])
     {
         $xml = "<client_route_configuration>";
-        $xml .=  Helpers::getPropertiesXML($this->getConfigService()->getPropertyConfig("ROUTE","ALL",$additionalParams['route_conf_id']));
-        $aPM = $this->getConfigService()->getRoutePM($additionalParams['route_conf_id']);
-        $xml .="<pm_configurations>";
-        foreach ($aPM as $pm)
+        $aCredentials = $this->getConfigService()->getRouteCredentials($additionalParams['route_conf_id'])[0];
+        if(is_array($aCredentials) && count($aCredentials) > 0)
         {
-            $xml .="<pm_configuration>";
-            $xml .="<pm_id>".$pm."</pm_id>";
-            $xml .="<enabled>true</enabled>";
-            $xml .="</pm_configuration>";
+            $xml .="<name>" . $aCredentials['NAME'] . "</name>";
+            $xml .="<credentials>";
+            $xml .="<mid>". $aCredentials['MID'] ."</mid>";
+            $xml .="<username>". $aCredentials['USERNAME'] ."</username>";
+            $xml .="<password>". $aCredentials['PASSWORD'] ."</password>";
+            $xml .="<capturetype>". $aCredentials['CAPTURETYPE'] ."</capturetype>";
+            $xml .= "</credentials>";
         }
-        $xml .="</pm_configurations>";
-        $xml .=  "</client_route_configuration>";
-        return $xml;
 
+        $xml .=  Helpers::getPropertiesXML($this->getConfigService()->getPropertyConfig("ROUTE","ALL",$additionalParams['route_conf_id']));
+
+        $aPM = $this->getConfigService()->getRoutePM($additionalParams['route_conf_id']);
+        if(is_array($aPM) && count($aPM) > 0) {
+            $xml .= "<pm_configurations>";
+            foreach ($aPM as $pm) {
+                $xml .= "<pm_configuration>";
+                $xml .= "<pm_id>" . $pm . "</pm_id>";
+                $xml .= "<enabled>true</enabled>";
+                $xml .= "</pm_configuration>";
+            }
+            $xml .= "</pm_configurations>";
+        }
+
+        $aFeatures = $this->getConfigService()->getRouteFeatures($additionalParams['route_conf_id']);
+        if(is_array($aFeatures) && count($aFeatures) > 0) {
+            $xml .= "<route_features>";
+            foreach ($aFeatures as $feature) {
+                $xml .= "<route_feature>";
+                $xml .= "<id>" . $feature . "</id>";
+                $xml .= "<enabled>true</enabled>";
+                $xml .= "</route_feature>";
+            }
+            $xml .= "</route_features>";
+        }
+
+        $aCountries = $this->getConfigService()->getRouteCountries($additionalParams['route_conf_id']);
+        if(is_array($aCountries) && count($aCountries) > 0) {
+            $xml .= "<country_details>";
+            foreach ($aCountries as $country) {
+                $xml .= "<country_detail>";
+                $xml .= "<id>" . $country . "</id>";
+                $xml .= "<enabled>true</enabled>";
+                $xml .= "</country_detail>";
+            }
+            $xml .= "</country_details>";
+        }
+
+        $aCurrencies = $this->getConfigService()->getRouteCurrencies($additionalParams['route_conf_id']);
+        if(is_array($aCurrencies) && count($aCurrencies) > 0) {
+            $xml .= "<currency_details>";
+            foreach ($aCurrencies as $currency) {
+                $xml .= "<currency_detail>";
+                $xml .= "<id>" . $currency . "</id>";
+                $xml .= "<enabled>true</enabled>";
+                $xml .= "</currency_detail>";
+            }
+            $xml .= "</currency_details>";
+        }
+        $xml .=  "</client_route_configuration>";
+
+        return $xml;
     }
 
     public function saveRouteConfig($request, $additionalParams = [])
     {
-        $routeConfId =(int) $request->route_config_id;
+        $routeConfId = 0;
+        if(isset($request->credentials) === true)
+        {
+            if(isset($request->name) === true && isset($request->psp_id) === true && isset($request->route_config_id) === false )
+            {
+                $aCredentials = array($request->credentials->mid, $request->credentials->username, $request->credentials->password, $request->credentials->capturetype);
+                $routeConfId = $this->getConfigService()->saveCredential('ROUTE', (int)$request->psp_id, (string)$request->name, $aCredentials);
+            } else {
+                throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Missing required nodes');
+            }
+        } else if(isset($request->route_config_id)  === true) {
+            $routeConfId =(int) $request->route_config_id;
+        } else {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Missing required nodes');
+        }
+
         $aPropertyInfo = array();
         foreach ($request->properties->property as $property)
         {
@@ -321,6 +456,35 @@ class ConfigurationController
             }
         }
         $this->getConfigService()->savePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
+        $aFeatureIds = [];
+        if(count($request->route_features) > 0)
+        {
+            foreach ($request->route_features->route_feature as $route_feature)
+            {
+                array_push($aFeatureIds, (int)$route_feature->id);
+            }
+        }
+        $this->getConfigService()->saveFeatures('ROUTE',$aFeatureIds,$routeConfId);
+
+        $aCountries = [];
+        if(count($request->country_details) > 0)
+        {
+            foreach($request->country_details->country_detail as $country)
+            {
+                array_push($aCountries, (int)$country->id);
+            }
+        }
+        $this->getConfigService()->saveCountry('ROUTE',$aCountries,$routeConfId);
+
+        $aCurrencies = [];
+        if(count($request->currency_details) > 0)
+        {
+            foreach($request->currency_details->currency_detail as $currency)
+            {
+                array_push($aCurrencies, (int)$currency->id);
+            }
+        }
+        $this->getConfigService()->saveCurrency('ROUTE',$aCurrencies,$routeConfId);
     }
 
     public function updateRouteConfig($request, $additionalParams = [])
