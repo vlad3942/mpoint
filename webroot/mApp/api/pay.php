@@ -356,7 +356,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $_OBJ_DB->query('ROLLBACK');
                             }
                         }
-                        $obj_TxnInfo->updateSessionType((integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                        $amount      = (integer)$obj_DOM->pay[$i]->transaction->card->amount;
+                        $iSaleAmount = (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'};
+                        if($iSaleAmount > 0 ) {
+                            $amount =  $iSaleAmount;
+                        }
+                        $obj_TxnInfo->updateSessionType($amount);
                         if($isTxnCreated == false && $iSessionType > 1 && in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
                             $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
                         }
