@@ -1872,4 +1872,25 @@
             <column name="featurename" value="MPI"/>
         </insert>
     </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-11-03-setup-v2.30-system-psp-card">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="PSPCard_Tbl">
+            <column name="cardid" value="8"/>
+            <column name="pspid" value="47"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="PSPCard_Tbl">
+            <column name="cardid" value="7"/>
+            <column name="pspid" value="47"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="PSPCard_Tbl">
+            <column name="cardid" value="1"/>
+            <column name="pspid" value="47"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

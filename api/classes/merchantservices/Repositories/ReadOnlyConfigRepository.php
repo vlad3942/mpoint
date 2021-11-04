@@ -43,7 +43,7 @@ class ReadOnlyConfigRepository
             {
                 array_push($aWhereCls,"sale_currency_id = ".$this->_oTI->getCurrencyConfig()->getID());
             }
-            else
+            else if($addonServiceType->getID() !== AddonServiceTypeIndex::eMPI)
             {
                 array_push($aWhereCls,"currencyid = ".$this->_oTI->getCurrencyConfig()->getID()." AND countryid = ".$this->_oTI->getCountryConfig()->getID());
             }
@@ -191,7 +191,7 @@ class ReadOnlyConfigRepository
             }
 
             //Get route feature
-            $sql  = "SELECT CRF.id, CRF.enabled, SRF.featurename
+            $sql  = "SELECT SRF.id, CRF.enabled, SRF.featurename
 					 FROM Client". sSCHEMA_POSTFIX .".RouteFeature_Tbl CRF
 					 INNER JOIN System". sSCHEMA_POSTFIX .".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
 					 WHERE routeconfigid = ". (int)$RS["ROUTECONFIGID"];
@@ -209,7 +209,7 @@ class ReadOnlyConfigRepository
         }
         else
         {
-            trigger_error("PSP Configuration not found using Client ID: ". $this->_oTI->getClientConfig()->getID() .", Account: ". $this->_oTI->getAccountID() .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
+            trigger_error("PSP Configuration not found using Client ID: ". $this->_oTI->getClientConfig()->getID() .", Account: ". $this->_oTI->getClientConfig()->getAccountConfig()->getID() .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
             return null;
         }
     }

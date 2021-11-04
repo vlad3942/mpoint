@@ -334,6 +334,12 @@
                     defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
+            <column name="mpi_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
             <column name="legacy_flow_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
