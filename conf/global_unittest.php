@@ -201,6 +201,22 @@ $aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
 $aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
 $aHTTP_CONN_INFO["worldpay"]["paths"]["status"] = "/_test/simulators/status.php";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["authenticate"] = "/_test/simulators/modirum/authenticate.php";
+
+
+/**
+ * Connection info for connecting to Modirum MPI
+ */
+$aHTTP_CONN_INFO["modirummpi"]["protocol"] = "http";
+$aHTTP_CONN_INFO["modirummpi"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["modirummpi"]["port"] = 80;
+$aHTTP_CONN_INFO["modirummpi"]["timeout"] = 120;
+$aHTTP_CONN_INFO["modirummpi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["modirummpi"]["method"] = "POST";
+$aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/_test/simulators/modirum/modirum_authenticate.php";
+
+
 /**
  * Connection info for connecting to UATP
  */
