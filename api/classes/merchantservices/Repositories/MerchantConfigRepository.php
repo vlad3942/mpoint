@@ -417,7 +417,14 @@ class MerchantConfigRepository
             $id = $this->_clientConfig->getID();
             $sWhereCls = "clientid=$2";
             $sTableName ='pm_tbl';
+        } else if($type === 'PSP') {
+            $sTableName = "providerpm_tbl";
+            $iClientId = $this->_clientConfig->getID();
+            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
+            $id=$iRouteId;
+            $sWhereCls = "routeid=$2";
         }
+
         $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." SET enabled={replace} where pmid=$1 and ".$sWhereCls;
 
         foreach ($aPMIds as $PMId)
@@ -466,7 +473,7 @@ class MerchantConfigRepository
 
         if(empty($aPMIds) === false)
         {
-           $this->updatePM("ROUTE",$aPMIds,$id);
+           $this->updatePM($type,$aPMIds,$id);
         }
 
         if(empty($aPropertyInfo) === false)
@@ -519,29 +526,26 @@ class MerchantConfigRepository
         $sColumns = "routeconfigid, pmid";
         $sTableName = "routepm_tbl";
         $sValues  = 'VALUES ($1,$2)';
-        $aParam = array($id);
+
         if($type === 'CLIENT')
         {
             $sColumns = "clientid, pmid";
             $sTableName = "pm_tbl";
             $id = $this->_clientConfig->getID();
-            $aParam = array($id);
         }
         if($type === "PSP")
         {
             $sColumns = "routeid, pmid";
             $sTableName = "providerpm_tbl";
-            $sValues  = 'VALUES ($1,$2)';
             $iClientId = $this->_clientConfig->getID();
             $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
-            $aParam = array($iRouteId);
+            $id = $iRouteId;
         }
         $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") $sValues";
         foreach ($aPMIds as $PMId)
         {
-            array_push($aParam,$PMId);
+            $aParam = array($id,$PMId);
             $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
-            array_pop($aParam);
             if($rs == false)
             {
                 $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
@@ -550,6 +554,45 @@ class MerchantConfigRepository
                     $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
                 }
                 throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
+            }
+        }
+    }
+
+    public function updateConfigDetails(string $type,array $aConfigDetails=array(),int $id=-1, $entity = '')
+    {
+
+        $sWhereCls = " AND routeconfigid = " . $id;
+        switch (strtolower($entity)) {
+            case 'feature':
+                $sColumns = "featureid";
+                $sTableName = "routefeature_tbl";
+                break;
+
+            case 'country':
+                $sTableName = 'routecountry_tbl';
+                $sColumns = 'countryid';
+                break;
+
+            case 'currency':
+                $sTableName = 'routecurrency_tbl';
+                $sColumns = 'currencyid';
+                break;
+
+            default:
+                // Throw Exception
+        }
+
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." SET enabled={replace} where " .  $sColumns . " = $1 ".$sWhereCls;
+        foreach ($aConfigDetails as $configDetail) {
+            $aParam = array($configDetail[0]);
+            $rs = $this->getDBConn()->executeQuery(str_replace("{replace}",$configDetail[1],$SQL), $aParam);
+            if ($rs == false) {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if (strpos($this->getDBConn()->getErrMsg(), 'duplicate key value violates unique constraint') !== false) {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                }
+
+                throw new MerchantOnboardingException($statusCode, "Failed to Update $entity Method Id:" . $configDetail[0]);
             }
         }
     }
@@ -637,6 +680,35 @@ class MerchantConfigRepository
         return $iRouteId;
     }
 
+    public function updateCredential(string $type, int $id, string $name, array $aCredentials)
+    {
+        $sWhereCls = "";
+        $iClientId = $this->_clientConfig->getID();
+        if($type === 'PSP')
+        {
+            $sTableName = 'merchantaccount_tbl';
+            $sWhereCls = " AND pspid = ".$id. " AND clientid = ".$iClientId;
+            $sSetCls = " name=$1, username=$2, passwd=$3";
+            $aParam = array($name, $aCredentials[0], $aCredentials[1]);
+        } else if($type === 'ROUTE') {
+            $sTableName = 'routeconfig_tbl';
+            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
+            $sWhereCls = " AND routeid = ".$iRouteId . " AND name = '". $name . "'";
+            $sSetCls = " mid=$1, username=$2, password=$3, capturetype=$4";
+            $aParam = array($aCredentials[0], $aCredentials[1],$aCredentials[2], $aCredentials[3]);
+        }
+
+        $SQL = "UPDATE CLIENT". sSCHEMA_POSTFIX.".".$sTableName." SET " .$sSetCls . " WHERE true ". $sWhereCls . " RETURNING id";
+        $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
+
+        if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to Update " . $type . " Credentails }");
+        }
+        $RS = $this->getDBConn()->fetchName($rs);
+        return $RS["ID"];
+    }
+
     /**
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
@@ -675,7 +747,6 @@ class MerchantConfigRepository
 
         $SQL = "INSERT INTO CLIENT". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumnName.") ".$sValues ." RETURNING id ";
         $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
-
         if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
             $statusCode = MerchantOnboardingException::SQL_EXCEPTION;

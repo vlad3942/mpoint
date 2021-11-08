@@ -170,6 +170,11 @@ class MerchantConfigInfo
         return $configRepository->saveCredential($type, $id, $name, $aCredentials);
     }
 
+    public function updateCredential(MerchantConfigRepository $configRepository,string $type, int $id, string $name, array $aCredentials)
+    {
+        return $configRepository->updateCredential($type, $id, $name, $aCredentials);
+    }
+
     public function saveFeatures(MerchantConfigRepository $configRepository,string $type, array $aFeatures, int $id)
     {
         $configRepository->saveConfigDetails($type, $aFeatures, $id, 'feature');
@@ -177,12 +182,27 @@ class MerchantConfigInfo
 
     public function saveCountry(MerchantConfigRepository $configRepository,string $type, array $aCountries, int $id)
     {
-        return $configRepository->saveConfigDetails($type, $aCountries, $id,  'country');
+        $configRepository->saveConfigDetails($type, $aCountries, $id,  'country');
     }
 
     public function saveCurrency(MerchantConfigRepository $configRepository,string $type, array $aCurrencies, int $id)
     {
-        return $configRepository->saveConfigDetails($type, $aCurrencies, $id, 'currency');
+        $configRepository->saveConfigDetails($type, $aCurrencies, $id, 'currency');
+    }
+
+    public function updateFeatures(MerchantConfigRepository $configRepository,string $type, array $aFeatures, int $id)
+    {
+        $configRepository->updateConfigDetails($type, $aFeatures, $id, 'feature');
+    }
+
+    public function updateCountry(MerchantConfigRepository $configRepository,string $type, array $aCountries, int $id)
+    {
+        $configRepository->updateConfigDetails($type, $aCountries, $id,  'country');
+    }
+
+    public function updateCurrency(MerchantConfigRepository $configRepository,string $type, array $aCurrencies, int $id)
+    {
+        $configRepository->updateConfigDetails($type, $aCurrencies, $id, 'currency');
     }
 
 

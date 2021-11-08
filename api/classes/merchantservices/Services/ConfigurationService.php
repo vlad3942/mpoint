@@ -183,6 +183,11 @@ class ConfigurationService
         return $this->getAggregateRoot()->saveCredential($this->getRepository(),$type,$id, $name,$aCredentials);
     }
 
+    public function updateCredential(string $type, int $id, string $name, array $aCredentials)
+    {
+        return $this->getAggregateRoot()->updateCredential($this->getRepository(),$type,$id, $name,$aCredentials);
+    }
+
     public function saveCountry(string $type, array $aCountries, int $id)
     {
         $this->getAggregateRoot()->saveCountry($this->getRepository(),$type, $aCountries, $id);
@@ -193,9 +198,26 @@ class ConfigurationService
         $this->getAggregateRoot()->saveFeatures($this->getRepository(),$type, $aFeatures, $id);
     }
 
+
     public function saveCurrency(string $type, array $aCurrencies, int $id)
     {
         $this->getAggregateRoot()->saveCurrency($this->getRepository(),$type,$aCurrencies, $id);
+    }
+
+    public function updateCountry(string $type, array $aCountries, int $id)
+    {
+        $this->getAggregateRoot()->updateCountry($this->getRepository(),$type, $aCountries, $id);
+    }
+
+    public function updateFeatures(string $type, array $aFeatures, int $id)
+    {
+        $this->getAggregateRoot()->updateFeatures($this->getRepository(),$type, $aFeatures, $id);
+    }
+
+
+    public function updateCurrency(string $type, array $aCurrencies, int $id)
+    {
+        $this->getAggregateRoot()->updateCurrency($this->getRepository(),$type,$aCurrencies, $id);
     }
 
 

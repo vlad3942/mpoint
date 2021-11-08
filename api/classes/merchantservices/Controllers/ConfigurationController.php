@@ -345,9 +345,32 @@ class ConfigurationController
     public function updatePSPConfig($request, $additionalParams = [])
     {
         $psp_id =(int) $request->psp_id;
+
+        if(isset($request->credentials) === true)
+        {
+            if(isset($request->name) === true && isset($request->psp_id) === true)
+            {
+                $aCredentials = array((string) $request->credentials->username, (string) $request->credentials->password);
+                $this->getConfigService()->updateCredential('PSP', (int)$request->psp_id, (string)$request->name, $aCredentials);
+            } else {
+                throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'PSP Name Param Not Found');
+            }
+        } else if(isset($request->psp_id)  === false) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'PSP ID Param Not Found');
+        }
+
+        $aPMIds = array();
+        if(count($request->pm_configurations)>0)
+        {
+            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+            {
+                array_push($aPMIds, array((int)$pm_configuration->pm_id, (string) $pm_configuration->enabled));
+            }
+        }
+
         $aPropertyInfo = array();
         foreach ($request->properties->property as $property)  array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
-        $this->getConfigService()->updatePropertyConfig('PSP',$aPropertyInfo,$psp_id);
+        $this->getConfigService()->updatePropertyConfig('PSP',$aPropertyInfo,$psp_id,$aPMIds);
     }
 
     public function deletePSPConfig($request, $additionalParams = [])
@@ -434,12 +457,12 @@ class ConfigurationController
                 $aCredentials = array($request->credentials->mid, $request->credentials->username, $request->credentials->password, $request->credentials->capturetype);
                 $routeConfId = $this->getConfigService()->saveCredential('ROUTE', (int)$request->psp_id, (string)$request->name, $aCredentials);
             } else {
-                throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Missing required nodes');
+                throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Request should either have credentials or Route Config ID');
             }
         } else if(isset($request->route_config_id)  === true) {
             $routeConfId =(int) $request->route_config_id;
         } else {
-            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Missing required nodes');
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Request should either have credentials or Route Config ID');
         }
 
         $aPropertyInfo = array();
@@ -489,8 +512,25 @@ class ConfigurationController
 
     public function updateRouteConfig($request, $additionalParams = [])
     {
-        $routeConfId =(int) $request->route_config_id;
+
+        $routeConfId = 0;
         $aPropertyInfo = array();
+
+        if(isset($request->credentials) === true)
+        {
+            if(isset($request->name) === true && isset($request->psp_id) === true && isset($request->route_config_id) === false )
+            {
+                $aCredentials = array((string)$request->credentials->mid, (string)$request->credentials->username, (string)$request->credentials->password, (string)$request->credentials->capturetype);
+                $routeConfId = $this->getConfigService()->updateCredential('ROUTE', (int)$request->psp_id, (string)$request->name, $aCredentials);
+            } else {
+                throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Request should either have credentials or Route Config ID');
+            }
+        } else if(isset($request->route_config_id)  === true) {
+            $routeConfId =(int) $request->route_config_id;
+        } else {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Request should either have credentials or Route Config ID');
+        }
+
         foreach ($request->properties->property as $property)
         {
             array_push($aPropertyInfo,PropertyInfo::produceFromXML($property));
@@ -501,6 +541,36 @@ class ConfigurationController
             array_push($aPMIds,array((int)$pm_configuration->pm_id,(string)$pm_configuration->enabled));
         }
         $this->getConfigService()->updatePropertyConfig('ROUTE',$aPropertyInfo,$routeConfId,$aPMIds);
+
+        $aFeatureIds = [];
+        if(count($request->route_features) > 0)
+        {
+            foreach ($request->route_features->route_feature as $route_feature)
+            {
+                array_push($aFeatureIds, array((int)$route_feature->id, (string)$route_feature->enabled));
+            }
+        }
+        $this->getConfigService()->updateFeatures('ROUTE',$aFeatureIds,$routeConfId);
+
+        $aCountries = [];
+        if(count($request->country_details) > 0)
+        {
+            foreach($request->country_details->country_detail as $country)
+            {
+                array_push($aCountries, array((int)$country->id , (string)$country->enabled));
+            }
+        }
+        $this->getConfigService()->updateCountry('ROUTE',$aCountries,$routeConfId);
+
+        $aCurrencies = [];
+        if(count($request->currency_details) > 0)
+        {
+            foreach($request->currency_details->currency_detail as $currency)
+            {
+                array_push($aCurrencies, array((int)$currency->id, (string) $currency->enabled));
+            }
+        }
+        $this->getConfigService()->updateCurrency('ROUTE',$aCurrencies,$routeConfId);
 
     }
 
