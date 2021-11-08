@@ -2101,47 +2101,46 @@ class General
                             }
                         }
                     }
+                }
+                if ($bulkSettlement == true) {
+                    $captureAmount = 0;
+                    $voidAmount = 0;
+                    $operationType = (string)$obj_orderDom->{'line-item'}[$j]->amount['type'];
+                    if ($obj_orderDom->{'line-item'}[$j]->amount['type'] == 'DB') {
+                        $captureAmount = (int)$obj_orderDom->{'line-item'}[$j]->amount;
+                    } elseif ($obj_orderDom->{'line-item'}[$j]->amount['type'] == 'CR') {
+                        $voidAmount = (int)$obj_orderDom->{'line-item'}[$j]->amount;
+                    }
+                    if ($txnPassbookObj instanceof TxnPassbook) {
 
-                    if ($bulkSettlement == true) {
-                        $captureAmount = 0;
-                        $voidAmount = 0;
-                        $operationType = (string)$obj_orderDom->{'line-item'}[$j]->amount['type'];
-                        if ($obj_orderDom->{'line-item'}[$j]->amount['type'] == 'DB') {
-                            $captureAmount = (int)$obj_orderDom->{'line-item'}[$j]->amount;
-                        } elseif ($obj_orderDom->{'line-item'}[$j]->amount['type'] == 'CR') {
-                            $voidAmount = (int)$obj_orderDom->{'line-item'}[$j]->amount;
+                        if ($captureAmount > 0) {
+                            $passbookEntry = new PassbookEntry
+                            (
+                                NULL,
+                                $captureAmount,
+                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                Constants::iCaptureRequested,
+                                $ticketNumber,
+                                'log.additional_data_tbl  - TicketNumber'
+                            );
+                            $aResponse[$ticketNumber]['DB'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
                         }
-                        if ($txnPassbookObj instanceof TxnPassbook) {
-
-                            if ($captureAmount > 0) {
-                                $passbookEntry = new PassbookEntry
-                                (
-                                    NULL,
-                                    $captureAmount,
-                                    $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                    Constants::iCaptureRequested,
-                                    $ticketNumber,
-                                    'log.additional_data_tbl  - TicketNumber'
-                                );
-                                $aResponse[$ticketNumber]['DB'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
-                            }
-                            if ($voidAmount > 0) {
-                                $passbookEntry = new PassbookEntry
-                                (
-                                    NULL,
-                                    $voidAmount,
-                                    $obj_TxnInfo->getCurrencyConfig()->getID(),
-                                    Constants::iVoidRequested,
-                                    $ticketNumber,
-                                    'log.additional_data_tbl - TicketNumber'
-                                );
-                                $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
-                            }
-                            if($captureAmount <= 0 && $voidAmount <= 0)
-                            {
-                                $aResponse[$ticketNumber][$operationType]['Status'] = '999';
-                                $aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
-                            }
+                        if ($voidAmount > 0) {
+                            $passbookEntry = new PassbookEntry
+                            (
+                                NULL,
+                                $voidAmount,
+                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                Constants::iVoidRequested,
+                                $ticketNumber,
+                                'log.additional_data_tbl - TicketNumber'
+                            );
+                            $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                        }
+                        if($captureAmount <= 0 && $voidAmount <= 0)
+                        {
+                            $aResponse[$ticketNumber][$operationType]['Status'] = '999';
+                            $aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
                         }
                     }
                 }
