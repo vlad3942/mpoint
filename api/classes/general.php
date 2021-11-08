@@ -1908,7 +1908,7 @@ class General
 		return $isAutoFetchBalance;
     }
 
-    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom, TxnPassbook $txnPassbookObj = NULL, $bulkSettlement=false, $sToken='') : bool
+    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom, TxnPassbook $txnPassbookObj = NULL, $bulkSettlement=false, $sToken='')
     {
         try {
             $iAmount = 0;
