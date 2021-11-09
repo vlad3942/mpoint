@@ -4,8 +4,17 @@ namespace api\classes\merchantservices;
 
 use mPointControllerException;
 
+/**
+ * MerchantServices Exception
+ *
+ *
+ * @package    Mechantservices
+ * @subpackage Exception Class
+ */
+
 class MerchantOnboardingException extends mPointControllerException
 {
+
     private $_httpCode;
     private $_statusCode;
     const SQL_EXCEPTION = 100;
@@ -23,6 +32,11 @@ class MerchantOnboardingException extends mPointControllerException
 
     const BAD_REQUEST_HTTP_STATUS_CODE = 400;
 
+    /**
+     * @param $statusCode
+     * @param string $message
+     * @param int $httpCode
+     */
     public function __construct( $statusCode,$message='',$httpCode=500)
     {
         parent::__construct(0, $message);
@@ -30,6 +44,9 @@ class MerchantOnboardingException extends mPointControllerException
         $this->_httpCode = $httpCode;
     }
 
+    /**
+     * @return int
+     */
     public function getHTTPCode() { return $this->_httpCode; }
     public function getHTTPHeader() { return \HTTP::getHTTPHeader($this->getHTTPCode()); }
     public function getStatusCode() { return $this->_statusCode; }
@@ -43,6 +60,10 @@ class MerchantOnboardingException extends mPointControllerException
 
         return $sStatus;
     }
+
+    /**
+     * @return string
+     */
     public function getStatus()
     {
         switch ($this->_statusCode)

@@ -1,22 +1,16 @@
 <?php
 
-/*
-interface BaseConfig
-{
-
-    public function getConfiguration();
-
-    public function getServiceType();
-
-    public function getProperties();
-
-}
-*/
 namespace api\classes\merchantservices\configuration;
 
 
 use AddonServiceTypeIndex;
 use SimpleXMLElement;
+
+/**
+ *
+ * @package    Mechantservices
+ * @subpackage Common Base Class
+ */
 
 Abstract class BaseConfig
 {
@@ -24,6 +18,11 @@ Abstract class BaseConfig
     public Abstract function getConfiguration() : array;
     public Abstract function getServiceType() : AddonServiceType;
     public Abstract function getProperties();
+
+    /**
+     * @param string $keyfun
+     * @return array
+     */
     public function  toKeyValueConfigArray(string $keyfun) :array
     {
         $aConfig = $this->getConfiguration();
@@ -35,7 +34,12 @@ Abstract class BaseConfig
         }
       return $aKeyValueConfig;
     }
+
     protected function setPropertiesFromXML(SimpleXMLElement &$oXML){}
+
+    /**
+     * @return string
+     */
     public function toXML():string
     {
         $xml = sprintf("<%s>",strtolower(str_replace('config','_config',strtolower($this->getServiceType()->getClassName()))));
@@ -68,39 +72,35 @@ Abstract class BaseConfig
         return $xml;
     }
 
+    /**
+     * @param SimpleXMLElement $oXML
+     * @return array
+     */
     public static function produceFromXML(SimpleXMLElement &$oXML):array
     {
         $aBaseconfig = array();
 
-        foreach ($oXML as $key=>$addon_config_detail)
-        {
+        foreach ($oXML as $key => $addon_config_detail) {
             $addonSubType = (string)$addon_config_detail->sub_type;
-            if(strpos($key, '_configs') !== false)
-            {
+            if (strpos($key, '_configs') !== false) {
                 $aConfigs = BaseConfig::produceFromXML($addon_config_detail);
-                $aBaseconfig = array_merge($aBaseconfig,$aConfigs);
+                $aBaseconfig = array_merge($aBaseconfig, $aConfigs);
                 continue;
             }
-            $addonServiceTYpe = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf(str_replace('_config','',$key)),'');
+            $addonServiceTYpe = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf(str_replace('_config', '', $key)), '');
 
             $aServiceCon = array();
-            foreach ($addon_config_detail->addon_configurations->addon_confguration as $addon_configuration)
-            {
+            foreach ($addon_config_detail->addon_configurations->addon_confguration as $addon_configuration) {
 
                 $serviceConfig = ServiceConfig::produceFromXML($addon_configuration);
-                array_push($aServiceCon,$serviceConfig);
+                array_push($aServiceCon, $serviceConfig);
             }
 
             $className = __NAMESPACE__ . '\\' . $addonServiceTYpe->getClassName();
-            $config = new $className($aServiceCon,array(),$addonSubType);
+            $config = new $className($aServiceCon, array(), $addonSubType);
             $config->setPropertiesFromXML($addon_config_detail);
-            array_push($aBaseconfig,$config);
-
+            array_push($aBaseconfig, $config);
         }
-
         return $aBaseconfig;
     }
-
-
-
 }

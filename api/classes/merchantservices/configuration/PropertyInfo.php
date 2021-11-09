@@ -4,14 +4,42 @@ namespace api\classes\merchantservices\configuration;
 
 use api\classes\merchantservices\commons\BaseInfo;
 
+/**
+ *
+ * @package    Mechantservices
+ * @subpackage Property Info Base Class
+ */
 class PropertyInfo extends BaseInfo
 {
 
+    /**
+     * @var string
+     */
     private string $_sValue = "";
+
+    /**
+     * @var string
+     */
     private string $_sCategory;
+
+    /**
+     * @var int
+     */
     private int $_iDataType;
+
+    /**
+     * @var int
+     */
     private int $_iScope;
+
+    /**
+     * @var bool
+     */
     private bool $_bMandatory;
+
+    /**
+     * @var bool
+     */
     private bool $_bEnabled ;
 
     public function __construct() {  }
@@ -124,6 +152,9 @@ class PropertyInfo extends BaseInfo
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function toXML()
     {
         $xml = "<property>";
@@ -136,6 +167,10 @@ class PropertyInfo extends BaseInfo
         return $xml;
     }
 
+    /**
+     * @param $oXML
+     * @return PropertyInfo
+     */
     public static function produceFromXML( &$oXML) : PropertyInfo
     {
         $propertyInfo = new PropertyInfo();
@@ -146,6 +181,10 @@ class PropertyInfo extends BaseInfo
         return $propertyInfo;
     }
 
+    /**
+     * @param $rs
+     * @return PropertyInfo
+     */
     public static function produceFromResultSet($rs):PropertyInfo
     {
         $propertyInfo = new PropertyInfo();
@@ -158,8 +197,6 @@ class PropertyInfo extends BaseInfo
         if(isset($rs['SCOPE'])) $propertyInfo->setScope($rs['SCOPE']);
         if(isset($rs['ENABLED'])) $propertyInfo->setEnabled($rs['ENABLED']);
 
-
         return $propertyInfo;
     }
-
 }

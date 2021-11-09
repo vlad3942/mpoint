@@ -6,20 +6,76 @@ use api\classes\merchantservices\OperationStatus;
 use api\classes\merchantservices\SQLOperation;
 use General;
 
+/**
+ *
+ * @package    Mechantservices
+ * @subpackage Service Config
+ */
 class ServiceConfig
 {
+    /**
+     * @var int
+     */
     private int $_id = -1;
+
+    /**
+     * @var int
+     */
     private int $_iPMId = -1;
+
+    /**
+     * @var int
+     */
     private int $_iCountryId = -1;
+
+    /**
+     * @var int
+     */
     private int $_iCurrencyId = -1;
+
+    /**
+     * @var int
+     */
     private int $_iSettlementCurrencyId = -1;
+
+    /**
+     * @var bool
+     */
     private bool $_bPresentment;
+
+    /**
+     * @var string
+     */
     private string $_dCreated;
+
+    /**
+     * @var string
+     */
     private string $_dModified;
+
+    /**
+     * @var bool
+     */
     private bool $_bEnabled = false;
+
+    /**
+     * @var int
+     */
     private int $_iProviderId = -1;
+
+    /**
+     * @var string
+     */
     private string $_sVersion = '' ;
+
+    /**
+     * @var int
+     */
     private int $_iPaymentType = -1 ;
+
+    /**
+     * @var int
+     */
     private int $_iSequenceNo = -1 ;
 
 
@@ -267,6 +323,10 @@ class ServiceConfig
         return $this;
     }
 
+    /**
+     * @param AddonServiceType $addonServiceType
+     * @return string
+     */
     public  function getUpdateSQL(AddonServiceType $addonServiceType):string
     {
         $sql = "UPDATE CLIENT". sSCHEMA_POSTFIX .".%s Set %s where id=".$this->getId();
@@ -301,6 +361,11 @@ class ServiceConfig
         if(empty($this->getVersion()) === false) $parms .= ',"version"=\''.$this->getVersion().'\'';
       return  sprintf($sql,$addonServiceType->getTableName(),$parms);
     }
+
+    /**
+     * @param AddonServiceType $addonServiceType
+     * @return string
+     */
     public static function getInsertSQL(AddonServiceType $addonServiceType):string
     {
         $sql = "INSERT INTO CLIENT". sSCHEMA_POSTFIX .".%s (%s) values (%s)";
@@ -333,6 +398,11 @@ class ServiceConfig
         return "";
     }
 
+    /**
+     * @param AddonServiceType $addonServiceType
+     * @param int $iId
+     * @return array|int[]
+     */
     public function getParam(AddonServiceType $addonServiceType,int $iId):array
     {
         if($addonServiceType->getID() === AddonServiceTypeIndex::eMCP || $addonServiceType->getID() === AddonServiceTypeIndex::eDCC)
@@ -367,6 +437,9 @@ class ServiceConfig
 
     }
 
+    /**
+     * @return string
+     */
     public function toXML():string
     {
         $xml = "<addon_confguration>";
@@ -390,6 +463,10 @@ class ServiceConfig
         return $xml;
     }
 
+    /**
+     * @param $oXML
+     * @return ServiceConfig
+     */
     public static function produceFromXML( &$oXML):ServiceConfig
     {
         $serviceConf = new ServiceConfig();
@@ -408,6 +485,10 @@ class ServiceConfig
         return $serviceConf;
     }
 
+    /**
+     * @param $rs
+     * @return ServiceConfig
+     */
     public static function produceFromResultSet($rs):ServiceConfig
     {
         $serviceConf = new ServiceConfig();
@@ -429,6 +510,9 @@ class ServiceConfig
         return $serviceConf;
     }
 
+    /**
+     * @return string
+     */
     public function toString():string
     {
         $aString = array();

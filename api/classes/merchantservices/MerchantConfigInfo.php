@@ -6,6 +6,14 @@ use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
+/**
+ * Merchant Configuration Info
+ *
+ *
+ * @package    Mechantservices
+ * @subpackage Service Class
+ */
+
 class MerchantConfigInfo
 {
 
@@ -14,17 +22,30 @@ class MerchantConfigInfo
 
     }
 
-
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @return array
+     */
     public function getAllAddonConfig(MerchantConfigRepository $configRepository) : array
     {
         return $configRepository->getAllAddonConfig();
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param array $aAddonConfig
+     * @throws MerchantOnboardingException
+     */
     public function saveAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig)
     {
          $configRepository->saveAddonConfig($aAddonConfig);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param array $aAddonConfig
+     * @throws MerchantOnboardingException
+     */
     public function updateAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig)
     {
          $configRepository->updateAddonConfig($aAddonConfig);
@@ -58,52 +79,104 @@ class MerchantConfigInfo
         $configRepository->deleteAddonConfig($aDeleteConfig);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param string $source
+     * @param int $id
+     * @return array
+     */
     public function getPropertyConfig(MerchantConfigRepository $configRepository, string $type, string $source,int $id=-1) : array
     {
        return $configRepository->getPropertyConfig($type,$source,$id);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array
+     * @throws MerchantOnboardingException
+     */
     public function getRoutePM(MerchantConfigRepository $configRepository, int $id=-1) : array
     {
         return $configRepository->getPM("ROUTE",$id);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array
+     * @throws MerchantOnboardingException
+     */
     public function getPSPPM(MerchantConfigRepository $configRepository, int $id=-1): array
     {
         return $configRepository->getPM("PSP",$id);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array
+     */
     public function getRouteFeatures(MerchantConfigRepository $configRepository, int $id=-1): array
     {
         return $configRepository->getConfigDetails("ROUTE", $id, 'feature');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array
+     */
     public function getRouteCountries(MerchantConfigRepository $configRepository, int $id=-1) : array
     {
         return $configRepository->getConfigDetails("ROUTE", $id, 'country');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array
+     */
     public function getRouteCurrencies(MerchantConfigRepository $configRepository, int $id=-1) : array
     {
         return $configRepository->getConfigDetails("ROUTE", $id, 'currency');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array|false
+     */
     public function getRouteCredentials(MerchantConfigRepository $configRepository, int $id=-1)
     {
         return $configRepository->getCredentials("ROUTE", $id);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param int $id
+     * @return array|false
+     */
     public function getPSPCredentials(MerchantConfigRepository $configRepository, int $id=-1)
     {
         return $configRepository->getCredentials("PSP", $id);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @return array
+     */
     public function getAllPSPCredentials(MerchantConfigRepository $configRepository)
     {
         return $configRepository->getAllPSPCredentials();
     }
 
-
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @return array
+     * @throws MerchantOnboardingException
+     */
     public function getClientPM(MerchantConfigRepository $configRepository) : array
     {
         return $configRepository->getPM("CLIENT");
@@ -159,53 +232,135 @@ class MerchantConfigInfo
 
         $configRepository->updateClientdetails($aClientParam);
     }
+
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aPropertyInfo
+     * @param int $id
+     * @param array $aPMIds
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function savePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
          $configRepository->savePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);
 
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param int $id
+     * @param string $name
+     * @param array $aCredentials
+     * @return int
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function saveCredential(MerchantConfigRepository $configRepository,string $type, int $id, string $name, array $aCredentials)
     {
         return $configRepository->saveCredential($type, $id, $name, $aCredentials);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param int $id
+     * @param string $name
+     * @param array $aCredentials
+     * @return mixed
+     * @throws MerchantOnboardingException
+     */
     public function updateCredential(MerchantConfigRepository $configRepository,string $type, int $id, string $name, array $aCredentials)
     {
         return $configRepository->updateCredential($type, $id, $name, $aCredentials);
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aFeatures
+     * @param int $id
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function saveFeatures(MerchantConfigRepository $configRepository,string $type, array $aFeatures, int $id)
     {
         $configRepository->saveConfigDetails($type, $aFeatures, $id, 'feature');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aCountries
+     * @param int $id
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function saveCountry(MerchantConfigRepository $configRepository,string $type, array $aCountries, int $id)
     {
         $configRepository->saveConfigDetails($type, $aCountries, $id,  'country');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aCurrencies
+     * @param int $id
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function saveCurrency(MerchantConfigRepository $configRepository,string $type, array $aCurrencies, int $id)
     {
         $configRepository->saveConfigDetails($type, $aCurrencies, $id, 'currency');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aFeatures
+     * @param int $id
+     * @throws MerchantOnboardingException
+     */
     public function updateFeatures(MerchantConfigRepository $configRepository,string $type, array $aFeatures, int $id)
     {
         $configRepository->updateConfigDetails($type, $aFeatures, $id, 'feature');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aCountries
+     * @param int $id
+     * @throws MerchantOnboardingException
+     */
     public function updateCountry(MerchantConfigRepository $configRepository,string $type, array $aCountries, int $id)
     {
         $configRepository->updateConfigDetails($type, $aCountries, $id,  'country');
     }
 
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aCurrencies
+     * @param int $id
+     * @throws MerchantOnboardingException
+     */
     public function updateCurrency(MerchantConfigRepository $configRepository,string $type, array $aCurrencies, int $id)
     {
         $configRepository->updateConfigDetails($type, $aCurrencies, $id, 'currency');
     }
 
-
+    /**
+     * @param MerchantConfigRepository $configRepository
+     * @param string $type
+     * @param array $aPropertyInfo
+     * @param int $id
+     * @param array $aPMIds
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function updatePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
         $configRepository->updatePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);

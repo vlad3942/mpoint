@@ -9,21 +9,29 @@ use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\Services\ConfigurationService;
 
-
+/**
+ *
+ * @package    Mechantservices
+ * @subpackage Configuration Controller Class
+ */
 class ConfigurationController 
 {
 
-
-
     // Define Service class objects
     private ConfigurationService $objConfigurationService;
-    
 
+    /**
+     * @param \RDB $conn
+     * @param int $iClientId
+     */
     public function __construct(\RDB &$conn,int $iClientId)
     {
         $this->objConfigurationService = new ConfigurationService($conn,$iClientId);
     }
 
+    /**
+     * @return ConfigurationService
+     */
     private function getConfigService():ConfigurationService { return $this->objConfigurationService;}
 
 
@@ -220,17 +228,31 @@ class ConfigurationController
         }
 
     }
-    function deleteClientConfig($request, $additionalParams = [])
+
+    /**
+     * @param $request
+     * @param array $additionalParams
+     */
+    function deleteClientConfig($request, $additionalParams = []) : void
     {
         $this->getConfigService()->deletePropertyConfig('CLIENT',$additionalParams);
 
     }
-    public function getAddonConfig( $additionalParams = [])
+
+    /**
+     * @param array $additionalParams
+     * @return string
+     */
+    public function getAddonConfig( $additionalParams = []) : string
     {
        return $this->getConfigService()->getAddonConfig($additionalParams);
                 
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     */
     public function saveAddonConfig($request, $additionalParams = [])
     {
 
@@ -239,6 +261,10 @@ class ConfigurationController
 
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     */
     public function updateAddonConfig($request, $additionalParams = [])
     {
         $addOnConfig = BaseConfig::produceFromXML($request);
@@ -246,12 +272,22 @@ class ConfigurationController
 
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     * @throws MerchantOnboardingException
+     * @throws \SQLQueryException
+     */
     public function deleteAddonConfig($request, $additionalParams = []) {
 
         $this->getConfigService()->deleteAddonConfig($additionalParams);
 
     }
 
+    /**
+     * @param array $additionalParams
+     * @return string
+     */
     public function getPSPConfig($additionalParams = [])
     {
 
@@ -311,6 +347,11 @@ class ConfigurationController
         return $xml;
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     * @throws MerchantOnboardingException
+     */
     public function savePSPConfig($request, $additionalParams = [])
     {
         $psp_id =(int) $request->psp_id;
@@ -342,6 +383,11 @@ class ConfigurationController
 
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     * @throws MerchantOnboardingException
+     */
     public function updatePSPConfig($request, $additionalParams = [])
     {
         $psp_id =(int) $request->psp_id;
@@ -373,12 +419,20 @@ class ConfigurationController
         $this->getConfigService()->updatePropertyConfig('PSP',$aPropertyInfo,$psp_id,$aPMIds);
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     */
     public function deletePSPConfig($request, $additionalParams = [])
     {
         $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams,(int)$additionalParams['psp_id']);
     }
 
-    public function getRouteConfig($additionalParams = [])
+    /**
+     * @param array $additionalParams
+     * @return string
+     */
+    public function getRouteConfig($additionalParams = []) : string
     {
         $xml = "<client_route_configuration>";
         $aCredentials = $this->getConfigService()->getRouteCredentials($additionalParams['route_conf_id'])[0];
@@ -447,6 +501,11 @@ class ConfigurationController
         return $xml;
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     * @throws MerchantOnboardingException
+     */
     public function saveRouteConfig($request, $additionalParams = [])
     {
         $routeConfId = 0;
@@ -510,6 +569,11 @@ class ConfigurationController
         $this->getConfigService()->saveCurrency('ROUTE',$aCurrencies,$routeConfId);
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     * @throws MerchantOnboardingException
+     */
     public function updateRouteConfig($request, $additionalParams = [])
     {
 
@@ -574,10 +638,13 @@ class ConfigurationController
 
     }
 
+    /**
+     * @param $request
+     * @param array $additionalParams
+     */
     public function deleteRouteConfig($request, $additionalParams = [])
     {
         $this->getConfigService()->deletePropertyConfig('ROUTE',$additionalParams,(int)$additionalParams['route_conf_id']);
     }
-
 
 }

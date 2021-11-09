@@ -21,26 +21,58 @@ use ClientConfig;
 use General;
 use RDB;
 
+/**
+ * Repository Class
+ *
+ *
+ * @package    Mechantservices
+ * @subpackage DB Services
+ */
 
 class MerchantConfigRepository
 {
+    /**
+     * @var RDB
+     */
     private \RDB $_conn;
+
+    /**
+     * @var ClientConfig|null
+     */
     private \ClientConfig $_clientConfig;
 
+    /**
+     * @param RDB $conn
+     * @param int $iClientId
+     * @param ClientConfig|null $clientConfig
+     */
     public function __construct(RDB  &$conn, int $iClientId,?ClientConfig  &$clientConfig = null )
     {
         $this->_conn = $conn;
         if($clientConfig !== null) $this->_clientConfig = $clientConfig;
         else $this->_clientConfig = ClientConfig::produceConfig($conn, $iClientId);
     }
+
+    /**
+     * @return ClientConfig
+     */
     public function getClientInfo() : ClientConfig
     {
         $this->_clientConfig->getAccountsConfigurations($this->_conn);
         return $this->_clientConfig;
     }
+
+    /**
+     * @return RDB
+     */
     private function getDBConn():\RDB { return $this->_conn;}
 
-
+    /**
+     * @param AddonServiceType $addonServiceType
+     * @param array $aWhereCls
+     * @param bool $isPropertyOnly
+     * @return mixed
+     */
     public function getAddonConfig(AddonServiceType $addonServiceType,array $aWhereCls = array(),bool $isPropertyOnly = false)
     {
         $SQL ="";
@@ -110,6 +142,10 @@ class MerchantConfigRepository
         return new $className($aServiceConfig,$aProperty,$addonServiceType->getSubType());
 
     }
+
+    /**
+     * @return array
+     */
     public function getAllAddonConfig() : array
     {
        $aAddonConfig = array();
@@ -267,6 +303,11 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param string $type
+     * @param int $id
+     * @throws MerchantOnboardingException
+     */
     public function deleteAllRouteConfig(string $type,  int $id)
     {
         $sWhereCls = " AND routeconfigid = " . $id;
@@ -408,6 +449,12 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param string $type
+     * @param array $aPMIds
+     * @param int $id
+     * @throws MerchantOnboardingException
+     */
     public function updatePM(string $type,array $aPMIds,int $id=-1)
     {
         $sTableName = "routepm_tbl";
@@ -445,6 +492,10 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param array $aClientParam
+     * @throws MerchantOnboardingException
+     */
     public function updateClientdetails(array $aClientParam)
     {
         $SQL = "UPDATE client". sSCHEMA_POSTFIX.".CLIENT_tbl SET ";
@@ -460,9 +511,8 @@ class MerchantConfigRepository
         {
             throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to update Client Details");
         }
-
-
     }
+
     /**
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
@@ -519,8 +569,14 @@ class MerchantConfigRepository
                 }
             }
         }
-
     }
+
+    /**
+     * @param string $type
+     * @param array $aPMIds
+     * @param int $id
+     * @throws MerchantOnboardingException
+     */
     public function savePM(string $type,array $aPMIds=array(),int $id=-1)
     {
         $sColumns = "routeconfigid, pmid";
@@ -558,6 +614,13 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param string $type
+     * @param array $aConfigDetails
+     * @param int $id
+     * @param string $entity
+     * @throws MerchantOnboardingException
+     */
     public function updateConfigDetails(string $type,array $aConfigDetails=array(),int $id=-1, $entity = '')
     {
 
@@ -601,7 +664,6 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-
     public function saveConfigDetails(string $type,array $aConfigDetails=array(),int $id=-1, $entity = '')
     {
         $iClientId = $this->_clientConfig->getID();
@@ -651,6 +713,13 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param string $type
+     * @param int $iClientId
+     * @param int $iProviderId
+     * @return mixed
+     * @throws MerchantOnboardingException
+     */
     private function getRouteIDByProvider(string $type, int $iClientId, int $iProviderId)
     {
 
@@ -680,6 +749,14 @@ class MerchantConfigRepository
         return $iRouteId;
     }
 
+    /**
+     * @param string $type
+     * @param int $id
+     * @param string $name
+     * @param array $aCredentials
+     * @return mixed
+     * @throws MerchantOnboardingException
+     */
     public function updateCredential(string $type, int $id, string $name, array $aCredentials)
     {
         $sWhereCls = "";
@@ -713,7 +790,7 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function saveCredential(string $type, int $id, string $name, array $aCredentials)
+    public function saveCredential(string $type, int $id, string $name, array $aCredentials) : int
     {
         $iRouteId = 0;
         $iClientId = $this->_clientConfig->getID();
@@ -817,8 +894,14 @@ class MerchantConfigRepository
               }
           }
       }
-
     }
+
+    /**
+     * @param string $type
+     * @param int $id
+     * @return array
+     * @throws MerchantOnboardingException
+     */
     public function getPM(string $type,int $id=-1) : array
     {
         $aPM = array();
@@ -844,7 +927,13 @@ class MerchantConfigRepository
         return $aPM;
     }
 
-    public function getConfigDetails(string $type, int $id = -1, $entity = '')
+    /**
+     * @param string $type
+     * @param int $id
+     * @param string $entity
+     * @return array
+     */
+    public function getConfigDetails(string $type, int $id = -1, $entity = '') : array
     {
         $aConfigDetails = [];
 
@@ -883,6 +972,9 @@ class MerchantConfigRepository
         return $aConfigDetails;
     }
 
+    /**
+     * @return array
+     */
     public function getAllPSPCredentials(): array
     {
         $sSQL = "select pspid, name, username, passwd, r.id as routeid
@@ -897,6 +989,11 @@ class MerchantConfigRepository
         return $aPSPDetails;
     }
 
+    /**
+     * @param string $type
+     * @param int $id
+     * @return array|false
+     */
     public function getCredentials(string $type, int $id=-1)
     {
         switch(strtolower($type)) {
@@ -920,6 +1017,14 @@ class MerchantConfigRepository
         return $this->getDBConn()->getAllNames ( $sSQL );
     }
 
+    /**
+     * @param string $type
+     * @param string $source
+     * @param int $id
+     * @param array $aNames
+     * @param bool $byCategory
+     * @return array
+     */
     public function getPropertyConfig(string $type,string $source,int $id=-1,array $aNames= array(),bool $byCategory = true) : array
     {
         $sTableName = "";
@@ -1296,6 +1401,11 @@ class MerchantConfigRepository
         }
 
     }
+
+    /**
+     * @param ClientServiceStatus $clService
+     * @throws MerchantOnboardingException
+     */
     public function updateAddonServiceStatus(ClientServiceStatus  $clService)
     {
         $SQL = "INSERT INTO CLIENT".sSCHEMA_POSTFIX.".services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled)
@@ -1309,6 +1419,10 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param array $aClAccountConfig
+     * @throws MerchantOnboardingException
+     */
     public function updateAccountConfig(array $aClAccountConfig)
     {
         $SQL = "UPDATE CLIENT".sSCHEMA_POSTFIX.".Account_tbl set name=$1,mobile=$2,markup=$3 WHERE id=$4";
@@ -1324,6 +1438,10 @@ class MerchantConfigRepository
         }
     }
 
+    /**
+     * @param array $urls
+     * @throws MerchantOnboardingException
+     */
     public function saveVelocityURL(array $urls)
     {
         foreach ($urls as $url)
@@ -1344,6 +1462,11 @@ class MerchantConfigRepository
 
         }
     }
+
+    /**
+     * @param array $urls
+     * @throws MerchantOnboardingException
+     */
     public function updateVelocityURL(array $urls)
     {
         foreach ($urls as $url)

@@ -4,13 +4,45 @@ namespace api\classes\merchantservices\configuration;
 
 use AddonServiceTypeIndex;
 
+/**
+ *
+ *
+ * @package    Mechantservices
+ * @subpackage Configurations
+ */
 class AddonServiceType
 {
+    /**
+     * @var int
+     */
     private int $_iID;
+
+    /**
+     * @var string
+     */
     private string $_sType;
+    /**
+     * @var string
+     */
     private string $_sSubType;
+
+    /**
+     * @var string
+     */
     private string $_sTableName;
+
+    /**
+     * @var string
+     */
     private string $_sClassName;
+
+    /**
+     * @param int $id
+     * @param string $sType
+     * @param string $sSubType
+     * @param string $sTableName
+     * @param string $sClassName
+     */
     public function __construct(int $id,string $sType,string $sSubType,string $sTableName,string $sClassName)
     {
         $this->_iID = $id;
@@ -61,6 +93,11 @@ class AddonServiceType
         return $this->_sClassName;
     }
 
+    /**
+     * @param int $iType
+     * @param string $subType
+     * @return AddonServiceType|null
+     */
     public static function produceAddonServiceTypebyId(int $iType,string $subType='') : ?AddonServiceType
     {
         switch ($iType)
@@ -84,9 +121,9 @@ class AddonServiceType
         }
     }
 
-
-
-
+    /**
+     * @return string
+     */
     public function toXML():string
     {
         $xml = sprintf("<addon_type>%s</addon_type>",$this->getType());

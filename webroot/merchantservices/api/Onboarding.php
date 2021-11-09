@@ -110,7 +110,6 @@ try
             }
             throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_XML, $sErrorResponse, MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         }
-
         if(count($obj_DOM->client_id) > 0)
         {
             $clientid = (int)$obj_DOM->client_id;
@@ -156,7 +155,11 @@ catch (Exception $e)
     trigger_error("Exception thrown in mApp/api/merchantservices/Onboarding: ". $e->getMessage() ."\n". $e->getTraceAsString(), E_USER_ERROR);
 }
 
-function generateParams($strParams) 
+/**
+ * @param $strParams - URL parameter string
+ * @return array
+ */
+function generateParams(string $strParams) : array
 {
     $arrUrlComponents = [];
     $arrParams = [];

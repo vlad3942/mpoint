@@ -440,7 +440,6 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='FILE_EXPIRY' AND PSPID=52),'CPD_')");
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
         $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 52)");
-        $res =  $this->queryDB("SELECT * FROM CLIENT.providerpm_tbl" );
         $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 2)");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/psp_id/52/pm/2/p_id/21",'DELETE');
