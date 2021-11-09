@@ -1589,10 +1589,12 @@ class General
     }
 
 
-    public static function applyRule(SimpleXMLElement $obj_XML,$aRuleProperties=array())
+    public static function applyRule(array $obj_XML,$aRuleProperties=array())
     {
         $parser = new  \mPoint\Core\Parser();
-        $parser->setContext($obj_XML);
+        foreach($obj_XML as $val ){
+            $parser->setContext($val);
+        }
         foreach ($aRuleProperties as $value )
         {
             $parser->setRules($value);
