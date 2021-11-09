@@ -290,7 +290,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $bulkSettlement = true;
                                 $aResponse = array();
                                 if (!empty($obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, $txnPassbookObj, $bulkSettlement, $sToken, $isCancelPriority))) {
-                                    $aResponse = array_merge($aResponse, $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, $txnPassbookObj, $bulkSettlement, $sToken, $isCancelPriority));
+                                    $aResponse = ($aResponse + $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, $txnPassbookObj, $bulkSettlement, $sToken, $isCancelPriority));
                                 }
                             }
                             $sMessage = '';
