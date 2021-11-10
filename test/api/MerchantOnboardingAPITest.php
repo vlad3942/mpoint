@@ -889,6 +889,11 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("select id from client.Client_Tbl where name = 'CEBU Pacific Air'");
+        # Test 1 : Client PM Table
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res), 'Error | Update Operation Failed for Payment method against client');
     }
 
     /***

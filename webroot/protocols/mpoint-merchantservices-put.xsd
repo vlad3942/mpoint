@@ -217,7 +217,7 @@
         <xs:element name="country_details" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
-              <xs:element name="country_detail" minOccurs="0" maxOccurs="1">
+              <xs:element name="country_detail" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
@@ -231,7 +231,7 @@
         <xs:element name="currency_details" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
-              <xs:element name="currency_detail" minOccurs="0" maxOccurs="1">
+              <xs:element name="currency_detail" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
