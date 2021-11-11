@@ -1,0 +1,3 @@
+
+#Step 1: UPDATE Capture Amount
+update log.transaction_tbl set captured = (amount+fee) where id in (41180702,42207834,42679548,42702164,42702390) and clientid=10077;
