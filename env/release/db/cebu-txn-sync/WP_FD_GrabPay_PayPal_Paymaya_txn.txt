@@ -1,0 +1,133 @@
+# WorldPay Transactions
+#Step 1: Update txnpassbook_tbl with status done for performedopt 2000
+update log.txnpassbook_tbl set status = 'done' where transactionid in (32716689,30683630) and clientid=10077 and performedopt =2000;
+
+
+#Step 2: Delete unwanted entries from message_tbl
+delete from log.message_tbl mt where id in (112172754,112172755,112172758,112172759,112172760,112172761,112172762,112172763,103693592,103693593,103693609,103693610,103693614,103693616,103693624,103693626);
+
+#Step 3: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (32716689,30683630) and clientid=10077); 
+
+
+# FirstData Transactions
+
+#Step 1: UPDATE Capture Amount
+update log.transaction_tbl set captured = convertedamount where id in (34437615,34433305);
+
+#Step 2: Update txnpassbook_tbl with status done for performedopt 2000
+update log.txnpassbook_tbl set status = 'done' where transactionid in (34437615,34433305) and clientid=10077 and performedopt =2000;
+
+#Step 3: insert requestedopt 5011 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, 5011, null, 'done', '', 0 FROM log.txnpassbook_tbl where
+transactionid in (34437615,34433305) and clientid=10077 and performedopt =2000 
+
+#Step 4: insert performedopt 2001 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, null, 2001, 'done',id, 'log.txnpassbook_tbl'  FROM log.txnpassbook_tbl where
+transactionid in (34437615,34433305) and clientid=10077 and requestedopt =5011
+
+#Step 5: insert 2000 in message_tbl
+insert into log.message_tbl (txnid,stateid) select id,2000 from log.transaction_tbl where id in (34437615,34433305) and clientid=10077;
+
+#Step 6: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (34437615,34433305) and clientid=10077); 
+
+
+# PayPal Transactions
+
+#Step 1: UPDATE Capture Amount
+update log.transaction_tbl set captured = convertedamount where id in (32380617,32705481,32705672,33435691,34013077,35006094,39058493,39292857,39294990,39731924,39831118,40112187,40194113,40218831,40684114,40968219);
+
+#Step 2: Update txnpassbook_tbl with status done for performedopt 2000
+update log.txnpassbook_tbl set status = 'done' where transactionid in (35006094,39294990,40112187,40194113,40968219,39058493) and clientid=10077 and performedopt =2000;
+
+#Step 3: insert requestedopt 5011 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, 5011, null, 'done', '', 0 FROM log.txnpassbook_tbl where
+transactionid in (35006094,39294990,40112187,40194113,40968219) and clientid=10077 and performedopt =2000 
+
+#Step 4: insert performedopt 2001 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, null, 2001, 'done',id, 'log.txnpassbook_tbl'  FROM log.txnpassbook_tbl where
+transactionid in (35006094,39294990,40112187,40194113,40968219) and clientid=10077 and requestedopt =5011
+
+#Step 5: Update performedopt 2001 in txnpassbook_tbl
+update log.txnpassbook_tbl set status = 'done' where transactionid in (32380617,32705481,32705672,33435691,34013077,39292857,39731924,39831118,40218831,40684114) and clientid=10077 and performedopt =2001;
+
+#Step 6: Delete unwanted entries from message_tbl
+delete from log.message_tbl mt where id in (137689844,137689845,137689846,137689847,137689848,137689849);
+
+
+#Step 7: insert 2000,2001,4030 in message_tbl
+insert into log.message_tbl (txnid,stateid) select id,2000 from log.transaction_tbl where id in (35006094,39294990,40112187,40194113,40968219) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,2001 from log.transaction_tbl where id in (35006094,39294990,40112187,40194113,40968219,32380617,32705481,32705672,33435691,34013077,39292857,39731924,39831118,40218831,40684114) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,4030 from log.transaction_tbl where id in (35006094,39294990,40112187,40194113,40968219) and clientid=10077 and id not in (select txnid from log.message_tbl mt where txnid in  (35006094,39294990,40112187,40194113,40968219) and stateid in (4030));
+
+#Step 8: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (32380617,32705481,32705672,33435691,34013077,35006094,39058493,39292857,39294990,39731924,39831118,40112187,40194113,40218831,40684114,40968219) and clientid=10077); 
+
+
+
+
+# Paymaya Transactions
+
+#Step 1: UPDATE Capture Amount
+update log.transaction_tbl set captured = convertedamount where id in (39956494,40617967);
+
+#Step 2: Update txnpassbook_tbl with status done for performedopt 2000
+update log.txnpassbook_tbl set status = 'done' where transactionid in (39956494,40617967) and clientid=10077 and performedopt =2000;
+
+#Step 3: insert requestedopt 5011 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, 5011, null, 'done', '', 0 FROM log.txnpassbook_tbl where
+transactionid in (39956494,40617967) and clientid=10077 and performedopt =2000 
+
+#Step 4: insert performedopt 2001 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, null, 2001, 'done',id, 'log.txnpassbook_tbl'  FROM log.txnpassbook_tbl where
+transactionid in (39956494,40617967) and clientid=10077 and requestedopt =5011
+
+#Step 5: insert 2000,2001,4030 in message_tbl
+insert into log.message_tbl (txnid,stateid) select id,2000 from log.transaction_tbl where id in (39956494,40617967) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,2001 from log.transaction_tbl where id in (39956494,40617967) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,4030 from log.transaction_tbl where id in (39956494,40617967) and clientid=10077 and id not in (select txnid from log.message_tbl mt where txnid in  (39956494,40617967) and stateid in (4030));
+
+#Step 6: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (39956494,40617967) and clientid=10077); 
+
+
+
+# GrabPay Transactions
+
+#Step 1: UPDATE Capture Amount
+update log.transaction_tbl set captured = convertedamount where id in (31346878,31446366,32708749);
+
+#Step 2: Update txnpassbook_tbl with status done for performedopt 2000
+update log.txnpassbook_tbl set status = 'done' where transactionid in (31346878,31446366) and clientid=10077 and performedopt =2000;
+
+#Step 3: insert requestedopt 5011 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, 5011, null, 'done', '', 0 FROM log.txnpassbook_tbl where
+transactionid in (31346878,31446366) and clientid=10077 and performedopt =2000 
+
+#Step 4: insert performedopt 2001 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, null, 2001, 'done',id, 'log.txnpassbook_tbl'  FROM log.txnpassbook_tbl where
+transactionid in (31346878,31446366) and clientid=10077 and requestedopt =5011
+
+#Step 5: Update performedopt 2001 in txnpassbook_tbl
+update log.txnpassbook_tbl set status = 'done' where transactionid in (32708749) and clientid=10077 and performedopt =2001;
+
+#Step 6: Delete unwanted entries from message_tbl
+delete from log.message_tbl mt where id in (106507642,106507643,106507644,106507648,106507649,106877040,106877041,106877042,106877048,106877049);
+
+#Step 7: insert 2000,2001,4030 in message_tbl
+insert into log.message_tbl (txnid,stateid) select id,2000 from log.transaction_tbl where id in (31346878,31446366) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,2001 from log.transaction_tbl where id in (31346878,31446366,32708749) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,4030 from log.transaction_tbl where id in (31346878,31446366) and clientid=10077 and id not in (select txnid from log.message_tbl mt where txnid in  (31346878,31446366) and stateid in (4030));
+
+#Step 8: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (31346878,31446366,32708749) and clientid=10077); 
+
