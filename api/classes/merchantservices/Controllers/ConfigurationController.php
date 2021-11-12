@@ -297,33 +297,31 @@ class ConfigurationController
         {
             $xml = "<client_psp_configurations>";
             $aPSPDetails = $this->getConfigService()->getAllPSPCredentials();
-            foreach ($aPSPDetails as $PSPDetail)
-            {
-                $xml .= "<client_psp_configuration>";
-                $xml .= "<name>" . $PSPDetail['NAME'] . "</name>";
-                $xml .= "<credentials>";
-                $xml .= "<username>" . $PSPDetail['USERNAME'] . "</username>";
-                $xml .= "<password>" . $PSPDetail['PASSWD'] . "</password>";
-                $xml .= "</credentials>";
-                $aPM = $this->getConfigService()->getPSPPM($PSPDetail['PSPID']);
-                foreach ($aPM as $pm)
-                {
-                    $xml .="<pm_configuration>";
-                    $xml .="<pm_id>".$pm."</pm_id>";
-                    $xml .="<enabled>true</enabled>";
-                    $xml .="</pm_configuration>";
+            if(is_array($aPSPDetails) &&  count($aPSPDetails) > 0) {
+                foreach ($aPSPDetails as $PSPDetail) {
+                    $xml .= "<client_psp_configuration>";
+                    $xml .= "<name>" . $PSPDetail['NAME'] . "</name>";
+                    $xml .= "<credentials>";
+                    $xml .= "<username>" . $PSPDetail['USERNAME'] . "</username>";
+                    $xml .= "<password>" . $PSPDetail['PASSWD'] . "</password>";
+                    $xml .= "</credentials>";
+                    $aPM = $this->getConfigService()->getPSPPM($PSPDetail['PSPID']);
+                    foreach ($aPM as $pm) {
+                        $xml .= "<pm_configuration>";
+                        $xml .= "<pm_id>" . $pm . "</pm_id>";
+                        $xml .= "<enabled>true</enabled>";
+                        $xml .= "</pm_configuration>";
+                    }
+                    $xml .= "</client_psp_configuration>";
                 }
-                $xml .= "</client_psp_configuration>";
             }
             $xml .= "</client_psp_configurations>";
             return $xml;
         }
-
-
         $xml = "<client_psp_configuration>";
 
         $aCredentials = $this->getConfigService()->getPSPCredentials($additionalParams['psp_id'])[0];
-        if(count($aCredentials) > 0) {
+        if(is_array($aCredentials) &&  count($aCredentials) > 0) {
             $xml .= "<name>" . $aCredentials['NAME'] . "</name>";
             $xml .= "<credentials>";
             $xml .= "<username>" . $aCredentials['USERNAME'] . "</username>";
