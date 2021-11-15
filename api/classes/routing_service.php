@@ -145,6 +145,11 @@ class RoutingService extends General
         }
         $body .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $body .= '</amount>';
+        if($this->_obj_TxnInfo->getFXServiceTypeID()>0) {
+            $body .= '<foreign_exchange_info>';
+            $body .= '<service_type_id>'.$this->_obj_TxnInfo->getFXServiceTypeID() .'</service_type_id>';
+            $body .= '</foreign_exchange_info>';
+        }
         if(is_array($this->_obj_FailedPaymentMethods) && count($this->_obj_FailedPaymentMethods) > 0 )
         {
             $body .= '<retry_attempts>';
