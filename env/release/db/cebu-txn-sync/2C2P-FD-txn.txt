@@ -1,0 +1,43 @@
+# 2C2p-ALC Transactions
+
+#Step 1: UPDATE Capture Amount
+update log.transaction_tbl set captured = convertedamount where id in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539);
+
+#Step 2: Update txnpassbook_tbl with status done for performedopt 2000
+update log.txnpassbook_tbl set status = 'done' where transactionid in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077 and performedopt =2000;
+
+#Step 3: insert requestedopt 5011 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, 5011, null, 'done', '', 0 FROM log.txnpassbook_tbl where
+transactionid in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077 and performedopt =2000 
+
+#Step 4: insert performedopt 2001 in txnpassbook_tbl
+INSERT INTO log.txnpassbook_tbl (clientid, transactionid, amount, currencyid, requestedopt, performedopt, status, extref, extrefidentifier)
+SELECT clientid, transactionid, amount, currencyid, null, 2001, 'done',id, 'log.txnpassbook_tbl'  FROM log.txnpassbook_tbl where
+transactionid in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077 and requestedopt =5011
+
+
+#Step 7: insert 2000,2001,4030 in message_tbl
+insert into log.message_tbl (txnid,stateid) select id,2000 from log.transaction_tbl where id in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,2001 from log.transaction_tbl where id in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,4030 from log.transaction_tbl where id in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077 and id not in (select txnid from log.message_tbl mt where txnid in  (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and stateid in (4030));
+
+#Step 8: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (30967068,31546897,31421565,33181631,32137516,32476442,33182718,41103484,42210345,42311539) and clientid=10077); 
+
+
+# FirstData Transactions
+
+#Step 1: Delete unwanted entries from message_tbl
+delete from log.message_tbl mt where id in (119085110,119511719,119511720,119511722,119511798,119512518,119512519,119512520,119512553,119513832,119513833,119513834,119513844,119515846,119515847,119515849,119515860,119518411,119518412,119518413,119518462,119521692,119521693,119521694,119521702,119521704,171475471,119101267,119675803,119675804,119675805,119675809,119676056,119676057,119676058,119676073,119676571,119676572,119676573,119676580,119677293,119677294,119677295,119677296,119678235,119678236,119678237,119678238,119679372,119679373,119679374,119679375,119679376,171475472);
+
+#Step 2: insert 2000 in message_tbl
+insert into log.message_tbl (txnid,stateid) select id,2000 from log.transaction_tbl where id in (34437615,34433305) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,2001 from log.transaction_tbl where id in (34437615,34433305) and clientid=10077;
+insert into log.message_tbl (txnid,stateid) select id,4030 from log.transaction_tbl where id in (34437615,34433305) and clientid=10077 and id not in (select txnid from log.message_tbl mt where txnid in  (34437615,34433305) and stateid in (4030));
+
+#Step 3: Update stateid in sessionid
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (34437615,34433305) and clientid=10077); 
+
+
+
