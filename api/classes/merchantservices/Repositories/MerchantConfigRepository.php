@@ -361,7 +361,7 @@ class MerchantConfigRepository
      */
     public function deletePropertyConfig(string $type, ?string $ids,int $id=-1,?string $pms='', string $features = '', string $countries = '', string $currencies = '' )
     {
-        $sWhereCls = "clientid = ".$this->_clientConfig->getID();
+        $sWhereCls = " clientid = ".$this->_clientConfig->getID();
         if(empty($pms) === false)
         {
             $sWhereCls = " AND routeconfigid = ".$id;
@@ -388,7 +388,10 @@ class MerchantConfigRepository
         if(empty($ids) === false)
         {
             $sTableName = '';
-            if($type === "CLIENT")  $sTableName = 'client_property_tbl';
+            if($type === "CLIENT")  {
+                $sTableName = 'client_property_tbl';
+                $sWhereCls = " AND clientid = ".$this->_clientConfig->getID();
+            }
             else if($type === 'PSP') {
                 $sTableName = 'psp_property_tbl';
                 $sWhereCls = "AND clientid = ".$this->_clientConfig->getID();

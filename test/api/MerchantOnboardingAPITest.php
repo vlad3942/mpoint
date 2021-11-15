@@ -919,8 +919,11 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 4::integer, DEFAULT, DEFAULT, DEFAULT);");
         $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 12::integer, DEFAULT, DEFAULT, DEFAULT);");
 
+        $this->queryDB("INSERT INTO Client.client_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.client_property_tbl where id=60),'true')");
+        $this->queryDB("INSERT INTO Client.client_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.client_property_tbl where id=61),'true')");
+
         # External Call
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/pm/1,4",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/p_id/60,61/pm/1,4",'DELETE');
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $this->assertEquals(200, $iStatus);
