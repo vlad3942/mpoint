@@ -182,7 +182,7 @@ $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
     while ($RS = $_OBJ_DB->fetchName($res))
     {
         $txnId = (int)$RS['ID'];
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= to_timestamp('" . $RS["CREATED"]  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId." and value = '".$externalId."'";
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created '" . $RS["CREATED"]  . "'::timestamp  - interval '60 seconds' and externalid=" . $txnId." and value = '".$externalId."'";
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
         {
