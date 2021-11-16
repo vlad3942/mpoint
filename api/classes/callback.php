@@ -635,7 +635,7 @@ abstract class Callback extends EndUserAccount
 				if ($sBody !== "") {
                     // Publish message before callback
                     if ($callbackMessageRequest !== NULL) {
-                        $filter = ['status_code' => (string)$sid];
+                        $filter = ['status_code' => (string)$sid,'txn_type_id'=> $this->_obj_TxnInfo->getTypeID()];
                         if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
                             $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
                             if ($kpiUsed != false) {
@@ -653,7 +653,7 @@ abstract class Callback extends EndUserAccount
 
 		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
 		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
-            $filter = ['status_code' => (string)$sid];
+            $filter = ['status_code' => (string)$sid,'txn_type_id'=> $this->_obj_TxnInfo->getTypeID()];
             if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
                 $kpiUsed = $this->_obj_TxnInfo->getAdditionalData('kpi_used');
                 if ($kpiUsed != false) {
@@ -1278,7 +1278,7 @@ abstract class Callback extends EndUserAccount
 							if ($sessionObj->getPendingAmount() === 0 || $sessionObj->getStateId() === Constants::iSESSION_EXPIRED  || $sessionObj->getStateId() === Constants::iSESSION_FAILED) {
                                 // Publish message before callback
 							    if ($callbackMessageRequest !== NULL) {
-                                    $filter = ['status_code' => (string) $sid];
+                                    $filter = ['status_code' => (string)$sid,'txn_type_id'=> $this->_obj_TxnInfo->getTypeID()];
                                     $this->publishMessage(json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR), $filter, $obj_SurePay);
                                     $isMessagePublished = true;
                                 }
@@ -1295,7 +1295,7 @@ abstract class Callback extends EndUserAccount
 		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
 		    $jsonBody = json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR);
             $this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $jsonBody);
-            $filter = ['status_code' => (string) $sid];
+            $filter = ['status_code' => (string)$sid,'txn_type_id'=> $this->_obj_TxnInfo->getTypeID()];
 			$this->publishMessage($jsonBody, $filter, $obj_SurePay);
 		}
     }
