@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Priya Alamwar"
+        id="2021-11-15-setup-v2.32">
+
+        <insert catalogName="system"
+            schemaName="system"
+            tableName="type_tbl">
+            <column name="id" value="6"/>
+            <column name="name" value="Payment Link Transaction"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

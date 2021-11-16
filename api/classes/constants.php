@@ -1867,6 +1867,7 @@ abstract class Constants
     const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
     const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
 	const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP = 5;
+	const iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION= 6;
 
     /*
      * Defines unique ID of the State that indicates payment soft declined
