@@ -724,6 +724,7 @@ try
                 $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 trigger_error("Voucher Redeem Fraud condition pass: Txn-Id " . $obj_TxnInfo->getID() . " State updated: " .$iStateID);
 
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
                 $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                 if ($sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED) {
                     try {
