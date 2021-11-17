@@ -456,11 +456,11 @@ class ConfigurationController
     {
         $aRouteConfigId = array();
         $xml = "";
-        if(isset($additionalParams['route_conf_id']) && count($additionalParams['route_conf_id'])>0)
+        if(isset($additionalParams['route_conf_id']) === true)
         {
             array_push($aRouteConfigId,$additionalParams['route_conf_id']);
         }
-        else if(isset($additionalParams['psp_id']) && count($additionalParams['psp_id'])>0)
+        else if(isset($additionalParams['psp_id']) === true)
         {
             $aRouteConfigId = $this->getConfigService()->getRouteConfigIdByPSP((int)$additionalParams['psp_id']);
         }
