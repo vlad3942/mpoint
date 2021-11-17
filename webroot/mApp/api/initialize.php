@@ -666,9 +666,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $presentmentCurrencies = array();
                                     $isDCCEnabled = General::bool2xml($obj_XML->item [$j] ["dcc"]);
                                     if ($fxServiceTypeId == 21) {
-                                        $isDCCEnabled = false;
+                                        $isDCCEnabled = "false";
                                     }
-                                    if ($isDCCEnabled)
+                                    if ($isDCCEnabled === "true")
                                     {
 										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$obj_XML->item[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
 										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
@@ -822,9 +822,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$presentmentCurrencies = array();
                                     $isDCCEnabled = General::bool2xml($aObj_XML [$j] ["dcc"]);
                                     if ($fxServiceTypeId == 21) {
-                                        $isDCCEnabled = false;
+                                        $isDCCEnabled = "false";
                                     }
-									if ($isDCCEnabled)
+									if ($isDCCEnabled === "true")
 									{
 										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$aObj_XML[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
 										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
