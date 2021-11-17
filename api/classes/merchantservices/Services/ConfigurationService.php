@@ -161,21 +161,17 @@ class ConfigurationService
         return $this->getAggregateRoot()->getRouteCredentials($this->getRepository(), $routeConfigId);
     }
 
-    /**
-     * @param int $pspConfigId
-     * @return array
-     */
-    public function getPSPCredentials(int $pspConfigId) : array
+    public function getRoutes(int $pspType=-1)
     {
-        return $this->getAggregateRoot()->getPSPCredentials($this->getRepository(), $pspConfigId);
+        return $this->getAggregateRoot()->getRoutes($this->getRepository(),$pspType);
     }
 
     /**
      * @return array
      */
-    public function getAllPSPCredentials() : array
+    public function getAllPSPCredentials(int $pspid=-1,int $pspType=-1)
     {
-        return $this->getAggregateRoot()->getAllPSPCredentials($this->getRepository());
+        return $this->getAggregateRoot()->getAllPSPCredentials($this->getRepository(),$pspid,$pspType);
     }
 
     /**
@@ -242,9 +238,9 @@ class ConfigurationService
      * @param array $aCredentials
      * @return int
      */
-    public function updateCredential(string $type, int $id, string $name, array $aCredentials) : int
+    public function updateCredential(string $type, int $id, string $name, array $aCredentials)
     {
-        return $this->getAggregateRoot()->updateCredential($this->getRepository(),$type,$id, $name,$aCredentials);
+        $this->getAggregateRoot()->updateCredential($this->getRepository(),$type,$id, $name,$aCredentials);
     }
 
     /**
@@ -397,6 +393,11 @@ class ConfigurationService
     public function updateAccountConfig(array &$aClAccountConfig)
     {
         $this->getAggregateRoot()->updateAccountConfig($this->getRepository(),$aClAccountConfig);
+    }
+
+    public function getRouteConfigIdByPSP( int $id) :array
+    {
+        return $this->getAggregateRoot()->getRouteConfigIdByPSP($this->getRepository(),$id);
     }
 
 }

@@ -123,7 +123,10 @@ try
 
     if($clientid > 0 && Validate::valClient($_OBJ_DB, $clientid) === 100)
     {
-        $_OBJ_DB->query("START TRANSACTION");
+        if($requestType !== 'get')
+        {
+            $_OBJ_DB->query("START TRANSACTION");
+        }
 
         $contollerName = $routes[$serviceName]['class'];
         $methodName = $routes[$serviceName][$requestType];
@@ -133,8 +136,10 @@ try
         $objController = new $contollerName($_OBJ_DB,$clientid);
         if($requestType === 'get') $xml = $objController->$methodName($arrParams);
         else $xml = $objController->$methodName($obj_DOM, $arrParams);
-
-        $_OBJ_DB->query("COMMIT");
+        if($requestType !== 'get')
+        {
+            $_OBJ_DB->query("COMMIT");
+        }
     }
     else throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Client ID Param Not Found');
 }
@@ -144,8 +149,10 @@ catch (MerchantOnboardingException $e)
     header($e->getHTTPHeader());
     $xml = $e->statusNode();
     trigger_error($e->getMessage(), E_USER_ERROR);
-    $_OBJ_DB->query("ROLLBACK");
-
+    if($requestType !== 'get')
+    {
+        $_OBJ_DB->query("ROLLBACK");
+    }
 }
 catch (Exception $e)
 {

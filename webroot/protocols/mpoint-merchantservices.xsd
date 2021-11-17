@@ -136,7 +136,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="properties" minOccurs="1" maxOccurs="1">
+        <xs:element name="properties" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
               <xs:element name="property" type="property_info" minOccurs="1" maxOccurs="unbounded"></xs:element>
@@ -205,14 +205,14 @@
           </xs:complexType>
         </xs:element>
         <xs:element name="route_config_id" type="xs:integer" minOccurs="0" maxOccurs="1" />
-        <xs:element name="properties" minOccurs="1" maxOccurs="1">
+        <xs:element name="properties" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
               <xs:element name="property" type="property_info" minOccurs="1" maxOccurs="unbounded"></xs:element>
             </xs:choice>
           </xs:complexType>
         </xs:element>
-        <xs:element name="pm_configurations" minOccurs="1" maxOccurs="1">
+        <xs:element name="pm_configurations" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
               <xs:element name="pm_configuration" minOccurs="1" maxOccurs="unbounded">
@@ -225,7 +225,7 @@
             </xs:choice>
           </xs:complexType>
         </xs:element>
-        <xs:element name="route_features" minOccurs="1" maxOccurs="1">
+        <xs:element name="route_features" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:choice>
               <xs:element name="route_feature" minOccurs="1" maxOccurs="unbounded">

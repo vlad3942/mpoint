@@ -373,7 +373,7 @@ class MerchantConfigRepository
 
             } else if($type === 'PSP'){
                 $sTableName = ".providerpm_tbl";
-                $iRouteId = $this->getRouteIDByProvider($type, $this->_clientConfig->getID(), $id);
+                $iRouteId = $this->getRouteIDByProvider( $id,false);
                 $sWhereCls = " AND routeid = " . $iRouteId;
             }
 
@@ -467,14 +467,14 @@ class MerchantConfigRepository
             $id = $this->_clientConfig->getID();
             $sWhereCls = "clientid=$2";
             $sTableName ='pm_tbl';
-        } else if($type === 'PSP') {
-            $sTableName = "providerpm_tbl";
-            $iClientId = $this->_clientConfig->getID();
-            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
-            $id=$iRouteId;
-            $sWhereCls = "routeid=$2";
         }
+        else if($type === 'PSP')
+        {
 
+            $id = $this->getRouteIDByProvider($id);
+            $sWhereCls = "routeid=$2";
+            $sTableName ='providerpm_tbl';
+        }
         $SQL = "UPDATE client". sSCHEMA_POSTFIX.".".$sTableName." SET enabled={replace} where pmid=$1 and ".$sWhereCls;
 
         foreach ($aPMIds as $PMId)
@@ -550,7 +550,7 @@ class MerchantConfigRepository
                 $aRS = $this->getDBConn()->getName ( $SQL );
                 if(empty($aRS) === false)
                 {
-                    $sWhereClase = ' FROM SYSTEM'. sSCHEMA_POSTFIX .'.route_property_tbl SP WHERE cp.propertyid =sp.id and propertyid=$2 and pspid='.$aRS['ID'];
+                    $sWhereClase = ' FROM SYSTEM'. sSCHEMA_POSTFIX .'.route_property_tbl SP WHERE cp.propertyid =sp.id and propertyid=$2 and pspid='.$aRS['ID']." AND CP.routeconfigid=".$id;
                 }
                 else throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to retrieve PSPID for routeconfigid:".$id);
             }
@@ -597,7 +597,7 @@ class MerchantConfigRepository
             $sColumns = "routeid, pmid";
             $sTableName = "providerpm_tbl";
             $iClientId = $this->_clientConfig->getID();
-            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
+            $iRouteId = $this->getRouteIDByProvider($id);
             $id = $iRouteId;
         }
         $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") $sValues";
@@ -717,19 +717,22 @@ class MerchantConfigRepository
     }
 
     /**
-     * @param string $type
-     * @param int $iClientId
      * @param int $iProviderId
+     * @param bool $isCreateRoute
      * @return mixed
      * @throws MerchantOnboardingException
      */
-    private function getRouteIDByProvider(string $type, int $iClientId, int $iProviderId)
+    private function getRouteIDByProvider(int $iProviderId,bool $isCreateRoute = true)
     {
-
+        $iClientId = $this->getClientInfo()->getID();
         $sSQL = "SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl WHERE enabled=true AND providerid = $iProviderId AND  clientid = $iClientId";
-        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
-
-        if($aRS === false)
+        $RS = $this->getDBConn()->executeQuery ( $sSQL );
+        $iRouteId = -1;
+        if($this->getDBConn()->countAffectedRows($RS) > 0)
+        {
+            $iRouteId = $this->getDBConn()->fetchName($RS)["ID"];
+        }
+        else if($iRouteId === -1 && $isCreateRoute === true)
         {
             $aParam = array($iClientId, $iProviderId);
             $SQL = "INSERT INTO CLIENT". sSCHEMA_POSTFIX.".route_tbl (clientid, providerid) values ($1, $2)  RETURNING id ";
@@ -742,16 +745,30 @@ class MerchantConfigRepository
                 {
                     $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
                 }
-                throw new MerchantOnboardingException($statusCode,"Failed to generate route for  ".strtolower($type));
+                throw new MerchantOnboardingException($statusCode,"Failed to generate route for  ".$iProviderId);
             }
             $RS = $this->getDBConn()->fetchName($rs);
             $iRouteId = $RS["ID"];
-        }else {
-            $iRouteId = $aRS[0]['ID'];
         }
         return $iRouteId;
     }
 
+    public function getRouteConfigIdByProvider(int $iProviderId) : array
+    {
+        $iClientId = $this->getClientInfo()->getID();
+        $sSQL = "SELECT rc.id FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN  CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rc
+        On rc.routeid=r.id AND rc.enabled=true  WHERE r.enabled=true AND providerid = $iProviderId AND  clientid = $iClientId";
+        $aRS = $this->getDBConn()->getAllNames($sSQL);
+        $aRouteConfigId = array();
+        if(is_array($aRS) && count($aRS)>0)
+        {
+            foreach ($aRS as $rs)
+            {
+                array_push($aRouteConfigId,$rs["ID"]);
+            }
+        }
+        return $aRouteConfigId;
+    }
     /**
      * @param string $type
      * @param int $id
@@ -762,31 +779,43 @@ class MerchantConfigRepository
      */
     public function updateCredential(string $type, int $id, string $name, array $aCredentials)
     {
-        $sWhereCls = "";
-        $iClientId = $this->_clientConfig->getID();
-        if($type === 'PSP')
+
+        $sWhereCls = '';
+        if($type === 'ROUTE')
         {
-            $sTableName = 'merchantaccount_tbl';
-            $sWhereCls = " AND pspid = ".$id. " AND clientid = ".$iClientId;
-            $sSetCls = " name=$1, username=$2, passwd=$3";
-            $aParam = array($name, $aCredentials[0], $aCredentials[1]);
-        } else if($type === 'ROUTE') {
             $sTableName = 'routeconfig_tbl';
-            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $id);
-            $sWhereCls = " AND routeid = ".$iRouteId . " AND name = '". $name . "'";
-            $sSetCls = " mid=$1, username=$2, password=$3, capturetype=$4";
-            $aParam = array($aCredentials[0], $aCredentials[1],$aCredentials[2], $aCredentials[3]);
+            $sColumnName = 'name=$1, mid=$2, username=$3, password=$4, capturetype=$5';
+            $sWhereCls = " WHERE id=".$id;
+            $aParam = array( $name);
+
+        } else if($type === 'PSP')
+        {
+            $iClientId = $this->_clientConfig->getID();
+            $sTableName = 'merchantaccount_tbl';
+            $sColumnName = 'name=$1, username=$2, passwd=$3';
+            $sWhereCls = " WHERE pspid=".$id." AND clientid=".$iClientId;
+            $aParam = array($name);
+
+        } 
+
+        foreach($aCredentials as $credential){
+            $aParam[] = (string) $credential;
         }
 
-        $SQL = "UPDATE CLIENT". sSCHEMA_POSTFIX.".".$sTableName." SET " .$sSetCls . " WHERE true ". $sWhereCls . " RETURNING id";
+        $SQL = "UPDATE CLIENT". sSCHEMA_POSTFIX.".".$sTableName." SET ".$sColumnName.$sWhereCls;
         $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
 
         if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
-            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to Update " . $type . " Credentails }");
+            $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+            if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+            {
+                $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+            }
+            throw new MerchantOnboardingException($statusCode,"Failed to save ".strtolower($type)." Credentials  {name:". $name . "}");
         }
+
         $RS = $this->getDBConn()->fetchName($rs);
-        return $RS["ID"];
     }
 
     /**
@@ -804,9 +833,7 @@ class MerchantConfigRepository
             $sTableName = 'routeconfig_tbl';
             $sColumnName = 'routeid, name, mid, username, password, capturetype';
             $sValues = 'VALUES ($1,$2,$3,$4,$5,$6)';
-
-            $iRouteId = $this->getRouteIDByProvider($type, $iClientId, $iProviderId);
-
+            $iRouteId = $this->getRouteIDByProvider($iProviderId);
             $aParam = array($iRouteId, $name);
 
         } else if($type === 'PSP')
@@ -917,7 +944,7 @@ class MerchantConfigRepository
         } else if($type === 'PSP')
         {
             $sTableName = 'providerpm_tbl';
-            $iRouteId = $this->getRouteIDByProvider($type, $this->_clientConfig->getID(), $id);
+            $iRouteId = $this->getRouteIDByProvider( $id,false);
             $sWhereCls = "and routeid = ".$iRouteId;
         }
 
@@ -975,14 +1002,26 @@ class MerchantConfigRepository
         return $aConfigDetails;
     }
 
+    public function getRoutes(int $pspType=-1):array
+    {
+        $sSQL = "SELECT providerid as pspid FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN
+                SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on r.providerid = p.id   Where clientid  = ".$this->_clientConfig->getID();
+        if($pspType>0) $sSQL .= " AND p.system_type = $pspType";
+        $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+        return $aRS;
+    }
+
     /**
      * @return array
      */
-    public function getAllPSPCredentials(): array
+    public function getAllPSPCredentials(int $pspid=-1,int $pspType=-1): array
     {
-        $sSQL = "select pspid, name, username, passwd, r.id as routeid
-                    from CLIENT". sSCHEMA_POSTFIX .".merchantaccount_tbl m
-                    inner join CLIENT". sSCHEMA_POSTFIX .".route_tbl r on m.clientid  = r.clientid and m.pspid  = r.providerid ";
+        $sSQL = "SELECT pspid, m.name, username, passwd FROM CLIENT". sSCHEMA_POSTFIX .".merchantaccount_tbl m
+                    INNER JOIN SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on m.clientid  = ".$this->_clientConfig->getID()." and p.id  = m.pspid ";
+
+        if($pspType>0) $sSQL .= " WHERE p.system_type = $pspType";
+        if($pspid>0) $sSQL .= " WHERE m.pspid = $pspid";
+
         $aPSPDetails = [];
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
         if (empty($aRS) === false)
@@ -1002,7 +1041,7 @@ class MerchantConfigRepository
         switch(strtolower($type)) {
             case 'route':
                 $sWhereCls = " AND id = ". $id;
-                $sSelectFields = "name, capturetype, mid, username, password";
+                $sSelectFields = "id,name, capturetype, mid, username, password";
                 $sTableName = 'routeconfig_tbl';
                 break;
 

@@ -153,6 +153,16 @@ class MerchantConfigInfo
         return $configRepository->getCredentials("ROUTE", $id);
     }
 
+    public function getRouteConfigIdByPSP(MerchantConfigRepository $configRepository, int $id) :array
+    {
+        return $configRepository->getRouteConfigIdByProvider($id);
+    }
+
+    public function getRoutes(MerchantConfigRepository $configRepository,int $pspType=-1)
+    {
+        return $configRepository->getRoutes($pspType);
+    }
+
     /**
      * @param MerchantConfigRepository $configRepository
      * @param int $id
@@ -167,9 +177,9 @@ class MerchantConfigInfo
      * @param MerchantConfigRepository $configRepository
      * @return array
      */
-    public function getAllPSPCredentials(MerchantConfigRepository $configRepository)
+    public function getAllPSPCredentials(MerchantConfigRepository $configRepository,int $pspid=-1,int $pspType=-1)
     {
-        return $configRepository->getAllPSPCredentials();
+        return $configRepository->getAllPSPCredentials($pspid,$pspType);
     }
 
     /**
@@ -274,7 +284,7 @@ class MerchantConfigInfo
      */
     public function updateCredential(MerchantConfigRepository $configRepository,string $type, int $id, string $name, array $aCredentials)
     {
-        return $configRepository->updateCredential($type, $id, $name, $aCredentials);
+         $configRepository->updateCredential($type, $id, $name, $aCredentials);
     }
 
     /**
