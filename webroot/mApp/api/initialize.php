@@ -820,6 +820,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// Get list of presentment currencies
 									$presentmentCurrency = false;
 									$presentmentCurrencies = array();
+                                    $isDCCEnabled = General::bool2xml($aObj_XML [$j] ["dcc"]);
+                                    if ($fxServiceTypeId == 21) {
+                                        $isDCCEnabled = false;
+                                    }
 									if ($isDCCEnabled)
 									{
 										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$aObj_XML[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
