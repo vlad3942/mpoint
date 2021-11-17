@@ -792,13 +792,23 @@ try
                                 }
                                 // </editor-fold>
 
+                            }else{
+                                trigger_error("Voucher Redeem PSP condition fail : Txn-Id " . $obj_TxnInfo->getID() . " PSP-ID " . $iPSPID);
                             }
+                        }else{
+                            trigger_error("Split Txn not found: Txn-Id " . $obj_TxnInfo->getID());
+
                         }
                     } catch (Exception $e) {
                         trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
                     }
+                }else{
+                    trigger_error("Voucher Redeem state condition fail: Txn-Id " . $obj_TxnInfo->getID() . " Session Type " . $sessiontype . " State Id " . $obj_TxnInfo->getPaymentSession()->getStateId());
                 }
+            }else{
+                trigger_error("Voucher Redeem Fraud condition fail: Txn-Id " . $obj_TxnInfo->getID());
             }
+
 
             if($isTxnRollInitiated === true)
             {
