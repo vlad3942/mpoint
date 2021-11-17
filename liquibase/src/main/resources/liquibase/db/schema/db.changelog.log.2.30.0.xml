@@ -188,4 +188,40 @@
         />
     </changeSet>
 
+    <!--    stored procedure: log.fn_permissions_additional_data_tbl_partitions.sql-->
+    <changeSet author="Sarvesh Chimkode"
+               id="2021-11-11-setup-v2.30.log-5" runOnChange="true">
+        <comment>sps/log.fn_permissions_additional_data_tbl_partitions.sql</comment>
+        <sqlFile dbms="postgresql"
+                 encoding="utf8"
+                 path="sps/log.fn_permissions_additional_data_tbl_partitions.sql"
+                 splitStatements="false"
+                 relativeToChangelogFile="true"
+        />
+    </changeSet>
+
+    <!--    SQL DDL Script : script_generate_additional_data_permissions.sql-->
+    <changeSet author="Sarvesh Chimkode"
+               id="2021-11-11-setup-v2.30.log-6">
+        <comment>scripts/script_generate_additional_data_permissions.sql</comment>
+        <sqlFile dbms="postgresql"
+                 encoding="utf8"
+                 path="scripts/script_generate_additional_data_permissions.sql"
+                 splitStatements="false"
+                 relativeToChangelogFile="true"
+        />
+    </changeSet>
+
+    <!--    stored procedure: log.fn_publications_additional_data_tbl_partitions.sql-->
+    <changeSet author="Sarvesh Chimkode"
+               id="2021-11-12-setup-v2.30.log-7" runOnChange="true">
+        <comment>sps/log.fn_publications_additional_data_tbl_partitions.sql</comment>
+        <sqlFile dbms="postgresql"
+                 encoding="utf8"
+                 path="sps/log.fn_publications_additional_data_tbl_partitions.sql"
+                 splitStatements="false"
+                 relativeToChangelogFile="true"
+        />
+    </changeSet>
+
 </databaseChangeLog>
