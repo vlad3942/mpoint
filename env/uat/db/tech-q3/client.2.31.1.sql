@@ -7,7 +7,7 @@ tempRule::=(transaction.@type)=="5"OR(transaction.@type)=="3"' WHERE key = 'post
 ------------First Data-------------
 
 UPDATE client.additionalproperty_tbl SET value = 'isPostFraudAttemp::=<status>=="1"OR<status>=="2"OR<status>=="4"AND<tempRule>
-status::=(card.info-3d-secure.additional-data.param[@name='status'])
+status::=(card.info-3d-secure.additional-data.param[@name=''status''])
 tempRule::=(transaction.@type)=="5"OR(transaction.@type)=="3"' WHERE key = 'post_fraud_rule' and externalid=(SELECT id from client.merchantaccount_tbl where clientid=10077 and pspid=62 and enabled=true);
 
 
