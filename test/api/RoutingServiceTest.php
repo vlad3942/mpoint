@@ -401,7 +401,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $getMockMethod = self::getReflectionMethod('RoutingService', 'getPaymentMethodSearchCriteriaXml');
-            self::assertStringNotContainsString("<foreign_exchange_info><service_type_id>11</service_type_id></foreign_exchange_info>", $getMockMethod->invoke($obj_RS));
+            self::assertStringContainsString("<foreign_exchange_info><service_type_id>11</service_type_id></foreign_exchange_info>", $getMockMethod->invoke($obj_RS));
         } else {
             self::fail();
         }
@@ -432,7 +432,7 @@ class RoutingServiceTest extends baseAPITest
         if($obj_RS instanceof RoutingService)
         {
             $getMockMethod = self::getReflectionMethod('RoutingService', 'getPaymentMethodSearchCriteriaXml');
-            self::assertStringContainsString("<foreign_exchange_info><service_type_id>11</service_type_id></foreign_exchange_info>", $getMockMethod->invoke($obj_RS));
+            self::assertStringNotContainsString("<foreign_exchange_info><service_type_id>11</service_type_id></foreign_exchange_info>", $getMockMethod->invoke($obj_RS));
         } else {
             self::fail();
         }
