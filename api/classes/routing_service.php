@@ -113,12 +113,7 @@ class RoutingService extends General
         $this->_iWalletId = $walletId;
     }
 
-    /**
-     * Produces a list of eligible payment methods.
-     *
-     * @return 	SimpleDOMElement $obj_XML   List of payment methods/cards
-     */
-    public function getPaymentMethods()
+    private function getPaymentMethodSearchCriteriaXml()
     {
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
         $body .= '<payment_method_search_criteria>';
@@ -169,6 +164,17 @@ class RoutingService extends General
         $body .= '<client_id>'.$this->_iClientId.'</client_id>';
         $body .= '</client_info>';
         $body .= '</payment_method_search_criteria>';
+        return $body;
+    }
+
+    /**
+     * Produces a list of eligible payment methods.
+     *
+     * @return 	SimpleDOMElement $obj_XML   List of payment methods/cards
+     */
+    public function getPaymentMethods()
+    {
+        $body = $this->getPaymentMethodSearchCriteriaXml();
         $obj_XML = '';
         try
         {
