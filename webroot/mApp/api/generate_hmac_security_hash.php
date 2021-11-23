@@ -19,6 +19,7 @@ require_once(sCLASS_PATH . "/validate.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH . "/clientinfo.php");
 use api\classes\HmacSecurityHash;
+use api\classes\HmacSecurityHashResponse;
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
@@ -30,19 +31,19 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
     $xml = '<hmac-security-hashes>';
     for ($i=0; $i<count($obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}); $i++)
     {
-        $hmacType = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'hmac-type'};
-        $clientId = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-id'};
-        $uniqueReference = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'unique-reference'};
+        $hmacType = (string) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'hmac-type'};
+        $clientId = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-id'};
+        $uniqueReference = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'unique-reference'};
         $nonce = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'nonce'};
-        $orderId = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'order-no'};
-        $amount = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'amount'};
-        $countryid = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'country-id'};
-        $saleAmount = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'sale-amount'};
-        $saleCurrency = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'sale-currency'};
-        $mobile = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'mobile'};
-        $mobileCountry = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'mobile-country'};
-        $email = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'email'};
-        $device = $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'device-id'};
+        $orderId = (string) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'order-no'};
+        $amount = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'amount'};
+        $countryid = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'country-id'};
+        $saleAmount = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'sale-amount'};
+        $saleCurrency = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'sale-currency'};
+        $mobile = (string) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'mobile'};
+        $mobileCountry = (integer) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'mobile-country'};
+        $email = (string) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'email'};
+        $device = (string) $obj_DOM->{'generate-hmac-security-hash'}->{'transactions'}->{'transaction'}[$i]->{'client-info'}->{'device-id'};
         
         $code = Validate::valClient($_OBJ_DB, $clientId);
         
@@ -50,23 +51,29 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
             $obj_Config = ClientConfig::produceConfig($_OBJ_DB, $clientId);
             if ($obj_Config->getID() > 0) {
 
-                if($hmacType == "FX"){
-                    $hmacStr = $clientId.$orderId.$amount.$countryid.$mobile.$mobileCountry.$email.$device.$obj_Config->getSalt().$saleAmount.$saleCurrency.$uniqueReference;
-                }else{
-                    $hmacStr = $clientId.$orderId.$amount.$countryid.$mobile.$mobileCountry.$email.$device.$obj_Config->getSalt();
-                }
-                $hmac = hash('sha512', $hmacStr);
+                $obj_HmacSecurityHash = new HmacSecurityHash($clientId, $orderId, $amount, $countryid, $obj_Config->getSalt());
+                
+                $obj_HmacSecurityHash->setHmacType($hmacType);
+                $obj_HmacSecurityHash->setMobile($mobile);
+                $obj_HmacSecurityHash->setMobileCountry($mobileCountry);
+                $obj_HmacSecurityHash->setEMail($email);
+                $obj_HmacSecurityHash->setDeviceId($device);                
+                $obj_HmacSecurityHash->setSaleAmount($saleAmount);
+                $obj_HmacSecurityHash->setSaleCurrency($saleCurrency);
+                $obj_HmacSecurityHash->setCfxID($uniqueReference);                
+                $hmac = $obj_HmacSecurityHash->generateHmac();
+                
                 $init_token = "";
                 if($nonce != ''){
                     $init_token = hash('sha512', $clientId.htmlspecialchars($obj_Config->getUsername(), ENT_NOQUOTES).htmlspecialchars($obj_Config->getPassword(), ENT_NOQUOTES).$nonce);
                 }
-                $obj_HmacSecurityHash[] = new HmacSecurityHash($hmac, $uniqueReference, $init_token);
+                $obj_HmacSecurityHashResponse[] = new HmacSecurityHashResponse($hmac, $uniqueReference, $init_token);
             }
         }else{
             trigger_error("Configuration not found for client: " . $clientId, E_USER_WARNING);                
         }
     }
-    $xml .= xml_encode($obj_HmacSecurityHash);
+    $xml .= xml_encode($obj_HmacSecurityHashResponse);
     $xml .='</hmac-security-hashes>';
     
 } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
