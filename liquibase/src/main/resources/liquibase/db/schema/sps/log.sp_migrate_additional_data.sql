@@ -1,7 +1,9 @@
 DROP PROCEDURE if exists log.sp_migrate_additional_data 
 (IN p_context varchar, IN p_externalid_from bigint, IN p_externalid_end bigint,IN p_batch_size bigint);
-CREATE OR REPLACE PROCEDURE log.sp_migrate_additional_data
-(IN p_context varchar, IN p_externalid_from bigint, IN p_externalid_end bigint,IN p_batch_size bigint default 1000000)
+DROP PROCEDURE if exists log.sp_migrate_additional_data 
+(IN p_context varchar, IN p_batch_size bigint, IN p_load_type varchar);
+CREATE OR REPLACE PROCEDURE log.test_sp_migrate_additional_data
+(IN p_context varchar, IN p_batch_size bigint, IN p_load_type varchar)
 LANGUAGE plpgsql
 AS
 $procedure$
@@ -22,39 +24,114 @@ declare
 	v_error_info varchar(1000);
 	v_error_info1 varchar(1000);
 	
-	v_start  bigint :=p_externalid_from;
-	v_end   bigint :=p_externalid_end;
+	v_start  bigint ;
+	v_end   bigint ;
+	v_end_max bigint;
 
 	v_context log.additional_data_ref := p_context;
 	
 	v_batch_size bigint := p_batch_size;
+	
+	v_latest bigint;
+	v_last    bigint;
+	
 
 begin
 
 SET LOCAL TEMP_BUFFERS='786MB';
 SET LOCAL WORK_MEM='812MB';
 
+IF p_load_type='I'
+THEN
+
+select 
+min(id),
+max(id) 
+into 
+v_start, 
+v_end
+from log.additional_data_tbl adt 
+where type=v_context;
+
+
+v_end_max := v_end;
+
+
+	 RAISE NOTICE 'load type: %',    p_load_type;
 	 RAISE NOTICE 'v_context: %',    v_context;
 	 	 RAISE NOTICE 'v_start: %',    v_start;
 		 	 RAISE NOTICE 'v_end: %',    v_end;
+			 		 	 RAISE NOTICE 'v_end_max: %',    v_end_max;
 
-v_start := p_externalid_from ;
 v_end  := (v_start-1) +p_batch_size;
 
 LOOP
 
 RAISE NOTICE 'Interim v_start : %', v_start;
 RAISE NOTICE 'Interim v_end : %', v_end;
+RAISE NOTICE 'Interim v_end_max : %', v_end_max;
 
 
 insert into log.stg_additional_data_tbl 
-(type, externalid, name,value, created, modified, id)
-select distinct on (type, externalid, name) type, 
-externalid, name,value, created, modified, id 
-from log.additional_data_tbl 
+(id,type, externalid, name,value, created, modified)
+select distinct on (type, externalid, name) id, type, 
+externalid, name,value, created, modified 
+from log.additional_data_tbl
 where 
 type=v_context
-and externalid between v_start and v_end;
+and id between v_start and v_end
+on conflict do nothing;
+
+
+    GET DIAGNOSTICS v_rows_processed = ROW_COUNT;
+
+	 RAISE NOTICE 'v_rows_processed : %',    v_rows_processed;
+	 
+	 COMMIT;
+	 
+
+v_start := v_end+1;
+v_end := (v_start-1) +p_batch_size;
+
+exit when v_start >= v_end_max;
+
+end loop;
+
+
+ELSIF p_load_type='D'
+THEN
+
+select 
+max(id) +1
+into 
+v_start
+from log.stg_additional_data_tbl adt 
+where type=v_context::varchar;
+
+select 
+max(id)
+into 
+v_end
+from log.additional_data_tbl adt 
+where type=v_context
+and id >= v_start -1;
+
+
+	 RAISE NOTICE 'load type: %',    p_load_type;
+	 RAISE NOTICE 'v_context: %',    v_context;
+	 	 RAISE NOTICE 'v_start: %',    v_start-1;
+		 	 RAISE NOTICE 'v_end: %',    v_end;
+			 
+insert into log.stg_additional_data_tbl 
+(id,type, externalid, name,value, created, modified)
+select distinct on (type, externalid, name) id, type, 
+externalid, name,value, created, modified 
+from log.additional_data_tbl
+where 
+type=v_context
+and id between v_start and v_end
+on conflict do nothing;
+
 
 
     GET DIAGNOSTICS v_rows_processed = ROW_COUNT;
@@ -63,19 +140,57 @@ and externalid between v_start and v_end;
 	 
 	 COMMIT;
 
-v_start := v_end+1;
-v_end := (v_start-1) +p_batch_size;
+ELSIF p_load_type='H'
+THEN	 
 
-exit when v_start >= p_externalid_end;
+select 
+max(id) +1
+into 
+v_start
+from log.backup_additional_data_tbl adt 
+where type=v_context;
 
-end loop;
+select 
+max(id)
+into 
+v_end
+from log.backup_additional_data_tbl adt 
+where type=v_context
+and id >= v_start -1;
+
+
+	 RAISE NOTICE 'load type: %',    p_load_type;
+	 RAISE NOTICE 'v_context: %',    v_context;
+	 	 RAISE NOTICE 'v_start: %',    v_start-1;
+		 	 RAISE NOTICE 'v_end: %',    v_end;
+			 
+insert into log.additional_data_tbl 
+(id,type, externalid, name,value, created, modified)
+select distinct on (type, externalid, name) id, type, 
+externalid, name,value, created, modified 
+from log.backup_additional_data_tbl
+where 
+type=v_context
+and id between v_start and v_end
+on conflict do nothing;
+
+
+
+    GET DIAGNOSTICS v_rows_processed = ROW_COUNT;
+
+	 RAISE NOTICE 'v_rows_processed : %',    v_rows_processed;
+	 
+	 COMMIT;
+
+END IF;
+
 	 				v_etl_status_flag := 1.;
 
 SET LOCAL TEMP_BUFFERS=default;
 SET LOCAL WORK_MEM=default;
 
-/*	
 
+/*
 EXCEPTION
 
 		   --Catch All Other Errors 
@@ -90,11 +205,12 @@ EXCEPTION
 
 				v_error_info := '['||SQLSTATE ||']'||SQLERRM;--'Run Time Exception';
 
-				RAISE WARNING '[job.fn_migrate_message_partition] - UDP ERROR [OTHER] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+				RAISE WARNING '[log.sp_migrate_additional_data] - UDP ERROR [OTHER] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
 
   ROLLBACK;
 
 */
+
 
 	
 END;
