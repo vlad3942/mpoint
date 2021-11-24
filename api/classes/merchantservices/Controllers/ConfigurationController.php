@@ -217,10 +217,10 @@ class ConfigurationController
             $clService = ClientServiceStatus::produceFromXML($request->services);
             $this->getConfigService()->updateAddonServiceStatus($clService);
         }
-        if(empty($request->account_configurations->account_config) === false && count($request->account_configurations->account_config) > 0)
+        if(empty($request->account_configurations->account_configuration) === false && count($request->account_configurations->account_configuration) > 0)
         {
             $aClAccountConfig = array();
-            foreach ($request->account_configurations->account_config as $account_config)
+            foreach ($request->account_configurations->account_configuration as $account_config)
             {
                 $clAccountConfig = \AccountConfig::produceFromXML($account_config);
                 array_push($aClAccountConfig,$clAccountConfig);
@@ -269,8 +269,7 @@ class ConfigurationController
     public function updateAddonConfig($request, $additionalParams = [])
     {
         $addOnConfig = BaseConfig::produceFromXML($request);
-        $this->getConfigService()->updateAddonConfig($addOnConfig,$additionalParams);
-
+        $this->getConfigService()->saveAddonConfig($addOnConfig,$additionalParams,$isDeleteOldConfig = true);
     }
 
     /**
@@ -628,7 +627,7 @@ class ConfigurationController
         {
             if(isset($request->name) === true && isset($request->route_config_id) === true )
             {
-                $aCredentials = array($request->credentials->mid, $request->credentials->username, $request->credentials->password, $request->credentials->capturetype);
+                $aCredentials = array($request->credentials->mid, $request->credentials->username, $request->credentials->password, $request->credentials->capture_type);
                 $this->getConfigService()->updateCredential('ROUTE', $routeConfId, (string)$request->name, $aCredentials);
             } else {
                 throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Missing required nodes');

@@ -168,10 +168,23 @@ class MerchantConfigRepository
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveAddonConfig(array &$aAddonConfig)
+    public function saveAddonConfig(array &$aAddonConfig, $isDeleteOldConfig = false)
     {
+        $aProcessedConfigs = [];
         foreach ($aAddonConfig as $addonConfig)
         {
+            $aDeleteParams = [];
+            $sClassName = (new \ReflectionClass($addonConfig))->getShortName();
+            if($isDeleteOldConfig === true && !in_array($sClassName, $aProcessedConfigs))
+            {
+                if($addonConfig->getServiceType()->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+                {
+                    $sClassName .= "-" . $addonConfig->getServiceType()->getSubType();
+                }
+                $aDeleteParams[] =  array(1 => $addonConfig->getServiceType());
+                $this->deleteAddonConfig($aDeleteParams, true);
+                array_push($aProcessedConfigs, $sClassName);
+            }
 
             if(empty($addonConfig->getProperties()) === false)
             {
@@ -242,16 +255,31 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function deleteAddonConfig(array $additionalParams)
+    public function deleteAddonConfig(array $additionalParams, $bDeleteByClientID = false)
     {
+        $sWhereClause = "";
+        if($bDeleteByClientID === true)
+        {
+            $sWhereClause = " AND clientid = " . $this->_clientConfig->getID();
+        }
 
         foreach ($additionalParams as $params )
        {
            $addonServiceType = $params[1];
-           $Ids = $params[2];
-           $SQL = 'DELETE FROM CLIENT'.sSCHEMA_POSTFIX.'.'. $addonServiceType->getTableName() .' WHERE ID in ('.$Ids.')';
+
+           if($addonServiceType->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT)
+           {
+               $sWhereClause = " AND split_config_id in (SELECT id from CLIENT".sSCHEMA_POSTFIX.".split_configuration_tbl WHERE  client_id = " .$this->_clientConfig->getID() . " AND name = '" . $addonServiceType->getSubType() . "')";
+           }
+
+           if(isset($params[2]) && !empty($params[2]))
+           {
+               $Ids = $params[2];
+               $sWhereClause .= " AND ID in (".$Ids.")";
+           }
+           $SQL = 'DELETE FROM CLIENT'.sSCHEMA_POSTFIX.'.'. $addonServiceType->getTableName() .' WHERE true ' . $sWhereClause;
            $rs = $this->getDBConn()->executeQuery($SQL);
-           if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+           if($rs == false || ($this->getDBConn()->countAffectedRows($rs) < 1 && $bDeleteByClientID === false))
            {
                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
                throw new MerchantOnboardingException($statusCode,"Failed to Delete ".$addonServiceType->getType()." Config  {value:".$Ids."}");

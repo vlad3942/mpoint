@@ -411,7 +411,7 @@ class ServiceConfig
 
         }else  if($addonServiceType->getID() === AddonServiceTypeIndex::ePCC)
         {
-            return array($iId,$this->getPaymentMethodId(),$this->getCurrencyId(),$this->isPresentment(),$this->getSettlementCurrencyId());
+            return array($iId,$this->getPaymentMethodId(),$this->getCurrencyId(),$this->isPresentment()?'true':'false',$this->getSettlementCurrencyId());
 
         }
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)

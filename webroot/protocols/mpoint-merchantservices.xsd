@@ -174,7 +174,7 @@
               <xs:element name="mid" type="xs:string" minOccurs="1" maxOccurs="unbounded"></xs:element>
               <xs:element name="username" type="xs:string" minOccurs="1" maxOccurs="unbounded"></xs:element>
               <xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="unbounded"></xs:element>
-              <xs:element name="capturetype" type="xs:integer" minOccurs="1" maxOccurs="unbounded"></xs:element>
+              <xs:element name="capture_type" type="xs:integer" minOccurs="1" maxOccurs="unbounded"></xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

@@ -77,9 +77,9 @@ class ConfigurationService
         return $responseXml;
     }
 
-    public function saveAddonConfig(&$addonConfig, $additionalParams = [])
+    public function saveAddonConfig(&$addonConfig, $additionalParams = [], $isDeleteOldConfig = false)
     {
-      $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig);
+      $this->getAggregateRoot()->saveAddonConfig($this->getRepository(),$addonConfig, $isDeleteOldConfig);
     }
 
     public function updateAddonConfig(&$addonConfig, $additionalParams = [])
