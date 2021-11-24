@@ -175,7 +175,7 @@ class MerchantConfigRepository
         {
             if($isDeleteOldConfig === true)
             {
-                $this->deleteAllAddonConfig($addonConfig);
+                $this->deleteAllAddonConfig($addonConfig->getServiceType());
             }
 
             if(empty($addonConfig->getProperties()) === false)
@@ -246,12 +246,10 @@ class MerchantConfigRepository
     /**
      *
      */
-    public function deleteAllAddonConfig(BaseConfig $addonConfig)
+    public function deleteAllAddonConfig(AddonServiceType $addonServiceType)
     {
 
         $sWhereClause = " WHERE clientid = " . $this->_clientConfig->getID();
-
-        $addonServiceType = $addonConfig->getServiceType();
 
         if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
