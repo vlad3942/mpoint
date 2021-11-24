@@ -151,7 +151,9 @@ $res = $_OBJ_DB->query($sql);
 
 while ($RS = $_OBJ_DB->fetchName($res))
 {
-    $query = "SELECT  id,pspid FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl WHERE sessionid = " . $RS['ID'] ." and pspid>0 and pspid not in(69)  Limit 1" ;
+    $query = "SELECT  t.id,pspid FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl t 
+        JOIN system" . sSCHEMA_POSTFIX . ". card_tbl c ON t.cardid = c.id 
+        WHERE sessionid = " . $RS['ID'] ." and pspid > 0 and c.paymenttype != 8 Limit 1" ;
     $RSTxn = $_OBJ_DB->getName ( $query );
     if(is_array($RSTxn) === true)
     {
