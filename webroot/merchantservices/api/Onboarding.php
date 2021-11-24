@@ -33,32 +33,32 @@ $routes = [
     'clientconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getClientConfig',
-        'post'    => 'postClientConfig',
         'put'     => 'putClientConfig',
-        'delete'  => 'deleteClientConfig',
+/*        'post'    => 'postClientConfig',
+        'delete'  => 'deleteClientConfig',*/
     ],
     'addonconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getAddonConfig',
-        'post'    => 'saveAddonConfig',
         'put'     => 'updateAddonConfig',
-        'delete'  => 'deleteAddonConfig'
+/*        'post'    => 'saveAddonConfig',
+        'delete'  => 'deleteAddonConfig'*/
     ],
 
     'pspconfig'   => [
         'class'   => 'ConfigurationController',
         'get'     => 'getPSPConfig',
-        'post'    => 'savePSPConfig',
         'put'     => 'updatePSPConfig',
-        'delete'  => 'deletePSPConfig'        
+/*        'post'    => 'savePSPConfig',
+        'delete'  => 'deletePSPConfig'        */
     ],
 
     'routeconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getRouteConfig',
-        'post'    => 'saveRouteConfig',
         'put'     => 'updateRouteConfig',
-        'delete'  => 'deleteRouteConfig'  
+/*        'post'    => 'saveRouteConfig',
+        'delete'  => 'deleteRouteConfig'  */
     ],
 
     'system_metadata' => [
