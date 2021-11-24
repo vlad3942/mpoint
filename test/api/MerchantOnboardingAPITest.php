@@ -63,7 +63,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
     }
 
-/*    public function testSuccessfulSaveAddOnConfig()
+    public function testSuccessfulSaveAddOnConfig()
     {
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -165,7 +165,6 @@ class MerchantOnboardingAPITest extends baseAPITest
 
     }
 
-*/
     public function testSuccessfulUpdateAddOnConfig()
     {
 
@@ -242,7 +241,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(6, pg_num_rows($res)); 
 
     }
-/*
+
     public function testSuccessfulDeleteAddOnConfig()
     {
 
@@ -276,8 +275,8 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
-        echo $sReplyBody = $this->_httpClient->getReplyBody();
-        die();
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
         $this->assertEquals(200, $iStatus);
 
         // DCC
@@ -316,7 +315,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(0, pg_num_rows($res));        
 
     }
-*/
+
     public function testSuccessfulGetPSPProperty()
     {
 
@@ -340,7 +339,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>true</enabled></pm_configuration></pm_configurations></client_psp_configuration>', $sReplyBody);
     }
-/*
+
     public function testSuccessfulSavePSPProperty()
     {
 
@@ -392,7 +391,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(500, $iStatus);
         $this->assertStringContainsString('<code>101</code>',$sReplyBody);
     }
-*/
+
     public function testSuccessfulUpdatePSPProperty()
     {
 
@@ -428,7 +427,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
 
     }
-/*
+
     public function testSuccessfulDeletePSPProperty()
     {
 
@@ -481,7 +480,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(500, $iStatus);
         $this->assertStringContainsString('<code>100</code>',$sReplyBody);
     }
-*/
+
     public function testSuccessfulGetRouteProperty()
     {
 
@@ -509,7 +508,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><id>1</id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capturetype>2</capturetype></credentials><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>true</enabled></pm_configuration><pm_configuration><pm_id>7</pm_id><enabled>true</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>true</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>true</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>true</enabled></currency_detail></currency_details></client_route_configuration>', $sReplyBody);
     }
-/*
+
     public function testSuccessfulSaveRouteProperty()
     {
 
@@ -607,7 +606,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertStringContainsString('<code>101</code>',$sReplyBody);
 
     }
-*/
+
     public function testSuccessfulUpdateRouteProperty()
     {
 
@@ -662,7 +661,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(1, pg_num_rows($res));
     }    
     
-/*
+
     public function testSuccessfulDeleteRouteProperty()
     {
 
@@ -707,7 +706,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res));
     }
-*/
+
     public function testSuccessfulGetSystemMetadata()
     {
 
@@ -830,7 +829,7 @@ class MerchantOnboardingAPITest extends baseAPITest
      * @throws \HTTPConnectionException
      * @throws \HTTPSendException
      */
-    /*
+
     public function testSuccessfulPostClientConfiguration()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -864,7 +863,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res), 'Error|Client Property Break');
     }
-*/
+
 
     /***
      *
@@ -907,7 +906,7 @@ class MerchantOnboardingAPITest extends baseAPITest
      * @throws \HTTPConnectionException
      * @throws \HTTPSendException
      */
-    /*
+
     public function testSuccessfulDeleteClientConfiguration()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
@@ -937,7 +936,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
     }
-    */
+
     /***
      *
      * @api DELETE : ClientConfiguration | FAILED
@@ -946,7 +945,7 @@ class MerchantOnboardingAPITest extends baseAPITest
      * @throws \HTTPConnectionException
      * @throws \HTTPSendException
      */
-    /*
+
     public function testDeleteClientConfigurationFail()
     {
         $this->bIgnoreErrors = true; //User Error, If Expected entries not found.
@@ -969,5 +968,5 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Failure Delete Operation Failed for Payment method against client');
     }
-    */
+
 }

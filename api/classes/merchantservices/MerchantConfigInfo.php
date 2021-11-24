@@ -36,7 +36,7 @@ class MerchantConfigInfo
      * @param array $aAddonConfig
      * @throws MerchantOnboardingException
      */
-    public function saveAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig, $isDeleteOldConfig)
+    public function saveAddonConfig(MerchantConfigRepository $configRepository,array $aAddonConfig, $isDeleteOldConfig = false)
     {
          $configRepository->saveAddonConfig($aAddonConfig, $isDeleteOldConfig);
     }

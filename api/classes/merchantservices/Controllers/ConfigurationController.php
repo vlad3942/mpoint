@@ -559,7 +559,7 @@ class ConfigurationController
         {
             if(isset($request->name) === true && isset($request->psp_id) === true && isset($request->route_config_id) === false )
             {
-                $aCredentials = array($request->credentials->mid, $request->credentials->username, $request->credentials->password, $request->credentials->capturetype);
+                $aCredentials = array($request->credentials->mid, $request->credentials->username, $request->credentials->password, $request->credentials->capture_type);
                 $routeConfId = $this->getConfigService()->saveCredential('ROUTE', (int)$request->psp_id, (string)$request->name, $aCredentials);
             } else {
                 throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Request should either have credentials or Route Config ID');

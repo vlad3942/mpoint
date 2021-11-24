@@ -92,7 +92,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(0, count($aClassSet));
 
     }
-/*
+
     public function testMerchantConfigInfoSaveAddonConfig()
     {
 
@@ -205,7 +205,7 @@ class MerchantOnboardingClassTest extends baseAPITest
     
     }
 
-*/
+
     public function testSuccessfulUpdateAddOnConfig()
     {
 
@@ -285,7 +285,7 @@ class MerchantOnboardingClassTest extends baseAPITest
 
 
     }
-/*
+
     public function testSuccessfulDeleteAddOnConfig()
     {
 
@@ -366,7 +366,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(0, pg_num_rows($res));
 
     }
-    */
+
     public function testSuccessfulGetPSPProperty()
     {
 
@@ -398,7 +398,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
     }
-/*
+
     public function testSuccessfulSavePSPProperty()
     {
 
@@ -428,7 +428,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(1, pg_num_rows($res));
 
     }
-*/
+
     public function testSuccessfulUpdatePSPProperty()
     {
 
@@ -463,7 +463,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(1, pg_num_rows($res));
 
     }
-/*
+
     public function testSuccessfulDeletePSPProperty()
     {
 
@@ -500,7 +500,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res));
     }    
-*/
+
     public function testSuccessfulGetRouteProperty()
     {
 
@@ -545,7 +545,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(1, count($aCurrencies));
 
     }
-/*
+
     public function testSuccessfulSaveRouteProperty()
     {
 
@@ -587,7 +587,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
     }
-*/
+
     public function testSuccessfulUpdateRouteProperty()
     {
 
@@ -632,7 +632,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
     }      
-/*
+
     public function testSuccessfulDeleteRouteProperty()
     {
 
@@ -687,7 +687,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(0, pg_num_rows($res));
 
     }
-*/
+
     public function testSuccessfulGetSystemMetadata()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -772,7 +772,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         }
         $this->assertEquals(0, count($aClassSet));
     }
-/*
+
     public function testSuccessfulPostClientConfiguration()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -803,7 +803,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res), 'Error|Client Property Break');
     }
-*/
+
     public function testSuccessfulPutClientConfiguration()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
@@ -827,7 +827,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(1, pg_num_rows($res), 'Error | Update Operation Failed for Payment method against client');
 
     }
-/*
+
     public function testSuccessfulDeleteClientConfiguration()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
@@ -856,7 +856,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
     }
-*/
+
     public function  testSuccessfulReadOnlyAddonConfig()
     {
         $pspID = Constants::iWIRE_CARD_PSP;
