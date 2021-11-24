@@ -217,10 +217,10 @@ class ConfigurationController
             $clService = ClientServiceStatus::produceFromXML($request->services);
             $this->getConfigService()->updateAddonServiceStatus($clService);
         }
-        if(empty($request->account_configurations->account_configuration) === false && count($request->account_configurations->account_configuration) > 0)
+        if(empty($request->account_configurations->account_config) === false && count($request->account_configurations->account_config) > 0)
         {
             $aClAccountConfig = array();
-            foreach ($request->account_configurations->account_configuration as $account_config)
+            foreach ($request->account_configurations->account_config as $account_config)
             {
                 $clAccountConfig = \AccountConfig::produceFromXML($account_config);
                 array_push($aClAccountConfig,$clAccountConfig);
