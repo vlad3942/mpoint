@@ -217,7 +217,7 @@ try
     }
     if(empty($aMpiRule) === false)
     {
-        $bIsProceedAuth = $obj_mPoint->applyRule($obj_XML,$aMpiRule);
+        $bIsProceedAuth = $obj_mPoint->applyRule([$obj_XML],$aMpiRule);
     }
 
     if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth ===true))
