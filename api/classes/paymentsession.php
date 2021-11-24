@@ -579,7 +579,7 @@ final class PaymentSession
     {
         $additionalData = [];
 
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created  >= '" . $sessionCreatedTimestamp  . "'::timestamp  - interval '60 seconds' and externalid=" . $txnId;
 
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )

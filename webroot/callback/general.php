@@ -619,7 +619,7 @@ try
                         }
                     }
                     if (empty($aFraudRule) === false) {
-                        $bIsSkipFraud = $obj_mPoint->applyRule($obj_XML, $aFraudRule);
+                        $bIsSkipFraud = $obj_mPoint->applyRule([$obj_XML,$obj_TxnInfo->toXML()], $aFraudRule);
                     }
                     if ($bIsSkipFraud === true) {
                         $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE, 'Fraud Check Skipped due to rule matched');
@@ -722,7 +722,9 @@ try
             if ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE)) === false)
             {
                 $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                trigger_error("Voucher Redeem Fraud condition pass: Txn-Id " . $obj_TxnInfo->getID() . " State updated: " .$iStateID);
 
+                $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
                 $sessiontype = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
                 if ($sessiontype > 1 && $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED) {
                     try {
@@ -792,13 +794,21 @@ try
                                 }
                                 // </editor-fold>
 
+                            }else{
+                                trigger_error("Voucher Redeem PSP condition fail : Txn-Id " . $obj_TxnInfo->getID() . " PSP-ID " . $iPSPID);
                             }
+                        }else{
+                            trigger_error("Split Txn not found: Txn-Id " . $obj_TxnInfo->getID());
+
                         }
                     } catch (Exception $e) {
                         trigger_error("Voucher Redeem Fail in general.php, message - " . $e->getMessage());
                     }
+                }else{
+                    trigger_error("Voucher Redeem state condition fail: Txn-Id " . $obj_TxnInfo->getID() . " Session Type " . $sessiontype . " State Id " . $obj_TxnInfo->getPaymentSession()->getStateId());
                 }
             }
+
 
             if($isTxnRollInitiated === true)
             {

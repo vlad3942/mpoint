@@ -1879,7 +1879,7 @@ class TxnInfo
     {
         $additionalData = [];
 
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= to_timestamp('" . $createdTimeStamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and created >= '" . $createdTimeStamp  . "'::timestamp  - interval '60 seconds' and externalid=" . $txnId;
 
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )
