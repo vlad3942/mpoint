@@ -641,7 +641,7 @@ class General
                 throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
             }
         } catch (mPointException | Exception $e) {
-            trigger_error($e->getMessage());
+            trigger_error("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid);
         }
 	}
 
