@@ -634,12 +634,15 @@ class General
 					($1, $2, $3)";
 
 		$bindParam = array($txnid, $sid, $data);
-		$resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
-		
-		if (!is_resource($resultSet)) {
-			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
-		}
-			
+        try {
+            $resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
+
+            if (!is_resource($resultSet)) {
+                throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
+            }
+        } catch (mPointException | Exception $e) {
+            trigger_error($e->getMessage());
+        }
 	}
 
 	/**

@@ -80,6 +80,32 @@
 
     </changeSet>
 
+    <changeSet author="Kalpesh Parikh"
+               id="2021-11-25-setup-v2.32-log-1">
 
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2000101"/>
+            <column name="name" value="Authorisation is done"/>
+            <column name="module" value="Callback"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet author="Kalpesh Parikh"
+               id="2021-11-25-setup-v2.32-log-2">
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2001100"/>
+            <column name="name" value="Capture is done"/>
+            <column name="module" value="Callback"/>
+        </insert>
+
+    </changeSet>
 
 </databaseChangeLog>
