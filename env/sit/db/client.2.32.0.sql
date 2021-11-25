@@ -1,0 +1,1 @@
+INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (17, 10101, 'hpp2.sit-01.cellpoint.dev', true);
