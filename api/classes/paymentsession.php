@@ -548,7 +548,7 @@ final class PaymentSession
             foreach ($sessionAdditionalData as $aAdditionalDataObj)
             {
                 $name = $aAdditionalDataObj["name"];
-                $value = $aAdditionalDataObj["value"];
+                $value = htmlspecialchars($aAdditionalDataObj["value"], ENT_NOQUOTES);
                 if($name === null || empty($name) === true || $value === null || empty($value) === true)
                 {
                     return $additional_id;
