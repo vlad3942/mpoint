@@ -195,9 +195,9 @@ class MerchantConfigInfo
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveClientPM(MerchantConfigRepository $configRepository, array $aPMIDs)
+    public function saveClientPM(MerchantConfigRepository $configRepository, array $aPMIDs, $isDeleteOldConfig = false)
     {
-         $configRepository->savePM("CLIENT",$aPMIDs);
+         $configRepository->savePM("CLIENT",$aPMIDs, -1 ,$isDeleteOldConfig);
     }
     /**
      * @throws MerchantOnboardingException
@@ -252,9 +252,9 @@ class MerchantConfigInfo
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function savePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array())
+    public function savePropertyConfig(MerchantConfigRepository $configRepository,string $type,  array $aPropertyInfo,int $id=-1,array $aPMIds=array(), $isDeleteOldConfig = false)
     {
-         $configRepository->savePropertyConfig($type,$aPropertyInfo,$id,$aPMIds);
+         $configRepository->savePropertyConfig($type,$aPropertyInfo,$id,$aPMIds, $isDeleteOldConfig);
 
     }
 
@@ -450,18 +450,18 @@ class MerchantConfigInfo
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(MerchantConfigRepository $configRepository, array $urls)
+    public function saveVelocityURL(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
     {
-        $configRepository->saveVelocityURL($urls);
+        $configRepository->saveVelocityURL($urls, $isDeleteOldConfig);
     }
 
     /**
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function saveClientUrls(MerchantConfigRepository $configRepository, array $urls)
+    public function saveClientUrls(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
     {
-        $configRepository->saveClientUrls($urls);
+        $configRepository->saveClientUrls($urls,'INSERT', $isDeleteOldConfig);
     }
 
     /**

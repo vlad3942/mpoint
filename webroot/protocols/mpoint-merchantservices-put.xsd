@@ -298,7 +298,7 @@
         <xs:element name="account_configurations" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="account_configuration" minOccurs="1" maxOccurs="unbounded">
+              <xs:element name="account_config" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="1" />

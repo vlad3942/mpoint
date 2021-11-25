@@ -1999,6 +1999,10 @@ abstract class Constants
 	 */
 	const BUSINESS = 5;
 
+	/*
+	 * Velocity url ID in client configuration
+	*/
+	const iBASE_IMAGE_URL = 14;
 
 }
 

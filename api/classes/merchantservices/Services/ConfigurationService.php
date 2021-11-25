@@ -186,9 +186,9 @@ class ConfigurationService
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveClientPM(array &$aPMIDs)
+    public function saveClientPM(array &$aPMIDs, $isDeleteOldConfig = false)
     {
-        $this->getAggregateRoot()->saveClientPM($this->getRepository(),$aPMIDs);
+        $this->getAggregateRoot()->saveClientPM($this->getRepository(),$aPMIDs, $isDeleteOldConfig);
     }
     /**
      * @throws MerchantOnboardingException
@@ -214,9 +214,9 @@ class ConfigurationService
      * @param int $id
      * @param array $aPMIds
      */
-    public function savePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array())
+    public function savePropertyConfig(string $type,array &$aPropertyInfo,int $id=-1, array $aPMIds=array(), $isDeleteOldConfig = false)
     {
-       $this->getAggregateRoot()->savePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds);
+       $this->getAggregateRoot()->savePropertyConfig($this->getRepository(),$type,$aPropertyInfo,$id,$aPMIds, $isDeleteOldConfig);
     }
 
     /**
@@ -342,9 +342,9 @@ class ConfigurationService
      * @param array $urls
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(array &$urls)
+    public function saveVelocityURL(array &$urls, $isDeleteOldConfig = false)
     {
-      $this->getAggregateRoot()->saveVelocityURL($this->getRepository(),$urls);
+      $this->getAggregateRoot()->saveVelocityURL($this->getRepository(),$urls, $isDeleteOldConfig);
     }
 
     /**
@@ -352,9 +352,9 @@ class ConfigurationService
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function saveClientUrls(array &$urls)
+    public function saveClientUrls(array &$urls, $isDeleteOldConfig = false)
     {
-        $this->getAggregateRoot()->saveClientUrls($this->getRepository(),$urls);
+        $this->getAggregateRoot()->saveClientUrls($this->getRepository(),$urls, $isDeleteOldConfig);
 
     }
 

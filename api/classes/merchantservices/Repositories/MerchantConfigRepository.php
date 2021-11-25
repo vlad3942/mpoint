@@ -2,7 +2,6 @@
 
 namespace api\classes\merchantservices\Repositories;
 
-
 use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\configuration\BaseConfig;
@@ -21,6 +20,8 @@ use api\classes\merchantservices\commons\BaseInfo;
 use ClientConfig;
 use General;
 use RDB;
+
+use Constants;
 
 /**
  * Repository Class
@@ -41,6 +42,7 @@ class MerchantConfigRepository
      * @var ClientConfig|null
      */
     private \ClientConfig $_clientConfig;
+
 
     /**
      * @param RDB $conn
@@ -173,10 +175,7 @@ class MerchantConfigRepository
     {
         foreach ($aAddonConfig as $addonConfig)
         {
-            if($isDeleteOldConfig === true)
-            {
-                $this->deleteAllAddonConfig($addonConfig->getServiceType());
-            }
+            if($isDeleteOldConfig === true)  $this->deleteAllAddonConfig($addonConfig->getServiceType());
 
             if(empty($addonConfig->getProperties()) === false)
             {
@@ -244,7 +243,8 @@ class MerchantConfigRepository
     }
 
     /**
-     *
+     * @param AddonServiceType $addonServiceType
+     * @throws MerchantOnboardingException
      */
     public function deleteAllAddonConfig(AddonServiceType $addonServiceType)
     {
@@ -560,7 +560,6 @@ class MerchantConfigRepository
     public function updatePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array())
     {
 
-
         if(empty($aPMIds) === false)
         {
            $this->updatePM($type,$aPMIds,$id);
@@ -617,7 +616,7 @@ class MerchantConfigRepository
      * @param int $id
      * @throws MerchantOnboardingException
      */
-    public function savePM(string $type,array $aPMIds=array(),int $id=-1)
+    public function savePM(string $type,array $aPMIds=array(),int $id=-1 , $isDeleteOldConfig = false)
     {
         $sColumns = "routeconfigid, pmid";
         $sTableName = "routepm_tbl";
@@ -625,6 +624,8 @@ class MerchantConfigRepository
 
         if($type === 'CLIENT')
         {
+            if($isDeleteOldConfig === true)  $this->deleteAllClientConfig('pm');
+
             $sColumns = "clientid, pmid";
             $sTableName = "pm_tbl";
             $id = $this->_clientConfig->getID();
@@ -651,6 +652,42 @@ class MerchantConfigRepository
                 }
                 throw new MerchantOnboardingException($statusCode,"Failed to Insert Payment Method Id:".$PMId);
             }
+        }
+    }
+
+    /**
+     * @param string $sClientAttr
+     * @param string $urlType
+     * @throws MerchantOnboardingException
+     */
+    public function deleteAllClientConfig(string $sClientAttr, string $urlType = '') {
+
+        $sWhereClause  = " WHERE clientid = " . $this->_clientConfig->getID();
+
+        switch (strtolower($sClientAttr)) {
+            case 'pm':
+                $sTableName = 'pm_tbl';
+                break;
+            case 'property':
+                $sTableName = 'client_property_tbl';
+                break;
+            case 'urls':
+                $sTableName = 'url_tbl';
+                if($urlType === 'velocity') {
+                    $sWhereClause  .= " AND urltypeid IN ( ". Constants::iBASE_IMAGE_URL .")";
+                } else {
+                    $sWhereClause  .= " AND urltypeid NOT IN ( ". Constants::iBASE_IMAGE_URL .")";
+                }
+                break;
+        }
+
+        $SQL = 'DELETE FROM CLIENT'.sSCHEMA_POSTFIX.'.'. $sTableName . ' ' . $sWhereClause;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+
+        if($rs == false)
+        {
+            $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+            throw new MerchantOnboardingException($statusCode,"Failed to Delete Client ".$sClientAttr." Config ");
         }
     }
 
@@ -909,7 +946,7 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function savePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array())
+    public function savePropertyConfig(string $type, array $aPropertyInfo,int $id=-1,array $aPMIds=array(), $isDeleteOldConfig = false)
     {
 
         if(empty($aPMIds) === false)
@@ -923,6 +960,7 @@ class MerchantConfigRepository
           $sValues = 'VALUES ($1,$2,$3)';
           if($type === 'CLIENT')
           {
+              if($isDeleteOldConfig === true)  $this->deleteAllClientConfig('property');
               $id = $this->_clientConfig->getID(); // Get Client ID
               $sTableName = 'client_property_tbl';
           }
@@ -1432,7 +1470,7 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function saveClientUrls(array $urls,$operation='INSERT')
+    public function saveClientUrls(array $urls,$operation='INSERT', $isDeleteOldConfig = false)
     {
 
         $aWhereCls = array();
@@ -1459,8 +1497,11 @@ class MerchantConfigRepository
                 case 10:
                     $sColumn = "iconurl=";
                     break;
-                case 14:
-                    if($operation==='INSERT') $this->saveVelocityURL(array($url));
+                case Constants::iBASE_IMAGE_URL :
+                    if($operation==='INSERT') {
+                        if($isDeleteOldConfig === true) $this->deleteAllClientConfig('urls', 'velocity');
+                        $this->saveVelocityURL(array($url));
+                    }
                     else $this->updateVelocityURL(array($url));
                     break;
             }
@@ -1521,8 +1562,10 @@ class MerchantConfigRepository
      * @param array $urls
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(array $urls)
+    public function saveVelocityURL(array $urls, $isDeleteOldConfig = false)
     {
+        if($isDeleteOldConfig === true) $this->deleteAllClientConfig('urls');
+
         foreach ($urls as $url)
         {
             $SQL = "INSERT INTO client".sSCHEMA_POSTFIX.".url_tbl (urltypeid,clientid,url) values ($1,$2,$3)";

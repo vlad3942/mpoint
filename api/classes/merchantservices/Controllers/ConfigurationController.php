@@ -151,15 +151,7 @@ class ConfigurationController
      */
     public function putClientConfig(\SimpleDOMElement $request): void
     {
-        if(is_object($request->pm_configurations->pm_configuration))
-        {
-            $aPMIDs = array();
-            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
-            {
-                array_push($aPMIDs,array((int)$pm_configuration->pm_id,(string)$pm_configuration->enabled));
-            }
-            $this->getConfigService()->updateClientPM($aPMIDs);
-        }
+
         $aClientParam = array();
         if(count($request->name)>0) $aClientParam["name"] =(string)$request->name;
         if(count($request->salt)>0) $aClientParam["salt"] =(string)$request->salt;
@@ -174,6 +166,16 @@ class ConfigurationController
             $this->getConfigService()->updateClientdetails($aClientParam);
         }
 
+        if(is_object($request->pm_configurations->pm_configuration))
+        {
+            $aPMIDs = array();
+            foreach ($request->pm_configurations->pm_configuration as $pm_configuration)
+            {
+                array_push($aPMIDs,(int)$pm_configuration->pm_id);
+            }
+            $this->getConfigService()->saveClientPM($aPMIDs, true);
+        }
+
         if(empty($request->properties->property) === false && count($request->properties->property) > 0)
         {
             $aProperty = array();
@@ -181,7 +183,7 @@ class ConfigurationController
             {
                 array_push($aProperty, PropertyInfo::produceFromXML($property));
             }
-            $this->getConfigService()->updatePropertyConfig("CLIENT",$aProperty);
+            $this->getConfigService()->savePropertyConfig("CLIENT",$aProperty, -1, array(), true);
         }
 
         if(empty($request->client_urls) === false && count($request->client_urls) > 0)
@@ -191,7 +193,7 @@ class ConfigurationController
             {
                 array_push($urls, \ClientURLConfig::produceFromXML($url));
             }
-            $this->getConfigService()->updateVelocityURL($urls);
+            $this->getConfigService()->saveVelocityURL($urls , true);
         }
         $urls = array();
 
@@ -210,13 +212,14 @@ class ConfigurationController
                 array_push($urls, \ClientURLConfig::produceFromXML($url));
             }
         }
-        if(empty($urls) === false) $this->getConfigService()->updateClientUrls($urls);
+        if(empty($urls) === false) $this->getConfigService()->saveClientUrls($urls, true);
 
         if(empty($request->services) === false && count($request->services) > 0)
         {
             $clService = ClientServiceStatus::produceFromXML($request->services);
             $this->getConfigService()->updateAddonServiceStatus($clService);
         }
+
         if(empty($request->account_configurations->account_config) === false && count($request->account_configurations->account_config) > 0)
         {
             $aClAccountConfig = array();
