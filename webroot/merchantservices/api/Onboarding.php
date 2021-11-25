@@ -50,7 +50,7 @@ $routes = [
         'get'     => 'getPSPConfig',
         'post'    => 'savePSPConfig',
         'put'     => 'updatePSPConfig',
-        'delete'  => 'deletePSPConfig'        
+        'delete'  => 'deletePSPConfig'
     ],
 
     'routeconfig' => [
@@ -58,7 +58,7 @@ $routes = [
         'get'     => 'getRouteConfig',
         'post'    => 'saveRouteConfig',
         'put'     => 'updateRouteConfig',
-        'delete'  => 'deleteRouteConfig'  
+        'delete'  => 'deleteRouteConfig'
     ],
 
     'system_metadata' => [
@@ -110,7 +110,6 @@ try
             }
             throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_XML, $sErrorResponse, MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         }
-
         if(count($obj_DOM->client_id) > 0)
         {
             $clientid = (int)$obj_DOM->client_id;
@@ -124,7 +123,10 @@ try
 
     if($clientid > 0 && Validate::valClient($_OBJ_DB, $clientid) === 100)
     {
-        $_OBJ_DB->query("START TRANSACTION");
+        if($requestType !== 'get')
+        {
+            $_OBJ_DB->query("START TRANSACTION");
+        }
 
         $contollerName = $routes[$serviceName]['class'];
         $methodName = $routes[$serviceName][$requestType];
@@ -134,8 +136,10 @@ try
         $objController = new $contollerName($_OBJ_DB,$clientid);
         if($requestType === 'get') $xml = $objController->$methodName($arrParams);
         else $xml = $objController->$methodName($obj_DOM, $arrParams);
-
-        $_OBJ_DB->query("COMMIT");
+        if($requestType !== 'get')
+        {
+            $_OBJ_DB->query("COMMIT");
+        }
     }
     else throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Client ID Param Not Found');
 }
@@ -145,8 +149,10 @@ catch (MerchantOnboardingException $e)
     header($e->getHTTPHeader());
     $xml = $e->statusNode();
     trigger_error($e->getMessage(), E_USER_ERROR);
-    $_OBJ_DB->query("ROLLBACK");
-
+    if($requestType !== 'get')
+    {
+        $_OBJ_DB->query("ROLLBACK");
+    }
 }
 catch (Exception $e)
 {
@@ -156,7 +162,11 @@ catch (Exception $e)
     trigger_error("Exception thrown in mApp/api/merchantservices/Onboarding: ". $e->getMessage() ."\n". $e->getTraceAsString(), E_USER_ERROR);
 }
 
-function generateParams($strParams) 
+/**
+ * @param $strParams - URL parameter string
+ * @return array
+ */
+function generateParams(string $strParams) : array
 {
     $arrUrlComponents = [];
     $arrParams = [];

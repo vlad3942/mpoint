@@ -14,13 +14,35 @@ use PSPConfig;
 use RDB;
 use TranslateText;
 use TxnInfo;
+/**
+ * Readonly Configuration Repository
+ *
+ *
+ * @package    Mechantservices
+ * @subpackage DB Services
+ */
 
 class ReadOnlyConfigRepository
 {
+    /**
+     * @var MerchantConfigRepository
+     */
     private MerchantConfigRepository $_merchantConfRepo;
+
+    /**
+     * @var RDB
+     */
     private RDB $_conn;
+
+    /**
+     * @var TxnInfo|null
+     */
     private TxnInfo $_oTI;
 
+    /**
+     * @param RDB $conn
+     * @param TxnInfo|null $oTI
+     */
     public function __construct(RDB  &$conn,?TxnInfo  &$oTI)
     {
         $this->_conn = $conn;
@@ -28,12 +50,28 @@ class ReadOnlyConfigRepository
         $this->_oTI = $oTI;
         $this->_merchantConfRepo = new MerchantConfigRepository($conn,$oTI->getClientConfig()->getID(), $clientConfig);
     }
+
+    /**
+     * @return RDB
+     */
     private function getDBConn():RDB { return $this->_conn;}
+
+    /**
+     * @return TxnInfo
+     */
     private function getTxnInfo():TxnInfo { return $this->_oTI;}
 
-
+    /**
+     * @return MerchantConfigRepository
+     */
     private function getMerchantConfigRepo():MerchantConfigRepository { return $this->_merchantConfRepo; }
 
+    /**
+     * @param AddonServiceType $addonServiceType
+     * @param array $aPmId
+     * @param bool $isPropertyOnly
+     * @return BaseConfig
+     */
     public function getAddonConfiguration(AddonServiceType $addonServiceType,array $aPmId=array(),bool $isPropertyOnly = false) : BaseConfig
     {
         $aWhereCls = array();
@@ -43,7 +81,7 @@ class ReadOnlyConfigRepository
             {
                 array_push($aWhereCls,"sale_currency_id = ".$this->_oTI->getCurrencyConfig()->getID());
             }
-            else
+            else if($addonServiceType->getID() !== AddonServiceTypeIndex::eMPI)
             {
                 array_push($aWhereCls,"currencyid = ".$this->_oTI->getCurrencyConfig()->getID()." AND countryid = ".$this->_oTI->getCountryConfig()->getID());
             }
@@ -55,7 +93,11 @@ class ReadOnlyConfigRepository
        return $this->getMerchantConfigRepo()->getAddonConfig($addonServiceType,$aWhereCls,$isPropertyOnly);
     }
 
-
+    /**
+     * @param TranslateText $oTxt
+     * @param $aObj_PaymentMethods
+     * @return array
+     */
     public function getCardConfigurationsByCardIds(TranslateText &$oTxt,  $aObj_PaymentMethods) :array
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
@@ -102,6 +144,11 @@ class ReadOnlyConfigRepository
 
     }
 
+    /**
+     * @param array $aPmId
+     * @param int $routeId
+     * @return array|false
+     */
     public function getResultSetCardConfigurationsByCardIds(array $aPmId,int $routeId = 0)
     {
         $sJoins = "";
@@ -146,6 +193,12 @@ class ReadOnlyConfigRepository
         }
         return $this->getDBConn()->getAllNames($sql);
     }
+
+    /**
+     * @param int $pspid
+     * @param int $routeconfigid
+     * @return PSPConfig|null
+     */
     public function getPSPConfig(int $pspid, int $routeconfigid): ?PSPConfig
     {
         $sql = "SELECT PSP.id, PSP.name, PSP.system_type, RC.mid, RC.username, RC.password, R.id as MerchantId, RC.id AS routeconfigid
@@ -191,7 +244,7 @@ class ReadOnlyConfigRepository
             }
 
             //Get route feature
-            $sql  = "SELECT CRF.id, CRF.enabled, SRF.featurename
+            $sql  = "SELECT SRF.id, CRF.enabled, SRF.featurename
 					 FROM Client". sSCHEMA_POSTFIX .".RouteFeature_Tbl CRF
 					 INNER JOIN System". sSCHEMA_POSTFIX .".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
 					 WHERE routeconfigid = ". (int)$RS["ROUTECONFIGID"];
@@ -209,7 +262,7 @@ class ReadOnlyConfigRepository
         }
         else
         {
-            trigger_error("PSP Configuration not found using Client ID: ". $this->_oTI->getClientConfig()->getID() .", Account: ". $this->_oTI->getAccountID() .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
+            trigger_error("PSP Configuration not found using Client ID: ". $this->_oTI->getClientConfig()->getID() .", Account: ". $this->_oTI->getClientConfig()->getAccountConfig()->getID() .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
             return null;
         }
     }

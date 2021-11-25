@@ -54,6 +54,28 @@ class ClientServiceStatus
     /**
      * @var bool
      */
+    private bool $mpi = FALSE;
+
+    /**
+     * @return bool
+     */
+    public function isMpi(): bool
+    {
+        return $this->mpi;
+    }
+
+    /**
+     * @param bool $mpi
+     * @return ClientServiceStatus
+     */
+    public function setMpi(bool $mpi): ClientServiceStatus
+    {
+        $this->mpi = $mpi;
+        return $this;
+    }
+    /**
+     * @var bool
+     */
     private bool $isLegacyFlowEnabled = TRUE;
 
     /**
@@ -247,7 +269,7 @@ class ClientServiceStatus
 
     public static function produceConfig(\RDB $oDB, int $clientID) {
         $sql = "SELECT CS.id, CS.dcc_enabled AS dcc, CS.mcp_enabled AS mcp, CS.pcc_enabled AS pcc, CS.fraud_enabled AS fraud,
-                CS.tokenization_enabled AS tokenization, CS.splitpayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void,CS.legacy_flow_enabled as legacyflow, CS.enabled			
+                CS.tokenization_enabled AS tokenization, CS.splitpayment_enabled AS splitPayment, CS.callback_enabled AS callback, CS.void_enabled AS void,CS.legacy_flow_enabled as legacyflow,mpi_enabled as mpi, CS.enabled			
 				FROM Client". sSCHEMA_POSTFIX .".services_tbl CS 				
 				WHERE clientid = ". $clientID ." AND enabled = true";
 
@@ -291,6 +313,7 @@ class ClientServiceStatus
        $clService->setSplitPayment($rs["SPLITPAYMENT"]);
        $clService->setVoid($rs["VOID"]);
        $clService->setLegacyFlow($rs["LEGACYFLOW"]);
+       $clService->setMpi($rs["MPI"]);
         return $clService;
     }
 }

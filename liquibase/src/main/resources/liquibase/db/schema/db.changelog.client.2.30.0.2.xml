@@ -334,6 +334,12 @@
                     defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
+            <column name="mpi_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
             <column name="legacy_flow_enabled"
                     type="boolean"
                     remarks="Flag indicating state active"
@@ -833,7 +839,7 @@
             </column>
             <!-- FK -->
             <column name="propertyid" type="int">
-                <constraints nullable="false" foreignKeyName="fk_routeproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
+                <constraints nullable="false" foreignKeyName="fk_routeproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="route_property_tbl" referencedColumnNames="id"/>
             </column>
             <column name="routeconfigid"
                     type="int"
@@ -898,7 +904,7 @@
                 <constraints nullable="false" foreignKeyName="fk_pspproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
             </column>
             <column name="propertyid" type="int">
-                <constraints nullable="false" foreignKeyName="fk_pspproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
+                <constraints nullable="false" foreignKeyName="fk_pspproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="psp_property_tbl" referencedColumnNames="id"/>
             </column>
             <!-- Column -->
             <column name="value"

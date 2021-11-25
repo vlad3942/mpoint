@@ -43,7 +43,6 @@ class ClientConfig extends BasicConfig
 	const iDECLINE_URL = 11;
 	const iPARSE_3DSECURE_CHALLENGE_URL = 12;
 	const iMERCHANT_APP_RETURN_URL = 13;
-    const iBASE_IMAGE_URL = 14;
     const iTHREED_REDIRECT_URL= 15;
     const iBASE_ASSET_URL= 16;
 	/**
@@ -1450,8 +1449,8 @@ class ClientConfig extends BasicConfig
                        case self::iMERCHANT_APP_RETURN_URL:
                            $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"]);
                            break;
-                       case self::iBASE_IMAGE_URL:
-                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URL"],'Base URL for Images');
+                       case Constants::iBASE_IMAGE_URL :
+                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], Constants::iBASE_IMAGE_URL, $aRS[$i]["URL"],'Base URL for Images');
                            break;
                        case self::iTHREED_REDIRECT_URL:
                            $obj_ThreedRedirectURL= new ClientURLConfig($aRS[$i]["ID"], self::iTHREED_REDIRECT_URL, $aRS[$i]["URL"]);

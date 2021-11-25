@@ -2,6 +2,14 @@
 
 namespace api\classes\merchantservices\commons;
 
+/**
+ * Common property base class
+ *
+ *
+ * @package    Mechantservices
+ * @subpackage Commons
+ */
+
 class BaseInfo
 {
     /**
