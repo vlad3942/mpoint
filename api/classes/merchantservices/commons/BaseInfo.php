@@ -76,7 +76,7 @@ class BaseInfo
      * @param string $sName
      * @return BaseInfo
      */
-    protected function setName(string $sName): BaseInfo
+    public function setName(string $sName): BaseInfo
     {
         $this->sName = $sName;
         return $this;
@@ -86,7 +86,7 @@ class BaseInfo
      * @param int $Id
      * @return BaseInfo
      */
-    protected function setId(int $Id): BaseInfo
+    public function setId(int $Id): BaseInfo
     {
         $this->Id = $Id;
         return $this;

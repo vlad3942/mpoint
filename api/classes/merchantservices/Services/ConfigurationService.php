@@ -5,6 +5,7 @@ namespace api\classes\merchantservices\Services;
 use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
 use api\classes\merchantservices\configuration\PropertyInfo;
+use api\classes\merchantservices\configuration\ProviderConfig;
 use api\classes\merchantservices\MerchantConfigInfo;
 use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
@@ -107,14 +108,6 @@ class ConfigurationService
         return $this->getAggregateRoot()->getPropertyConfig($this->getRepository(),$type,$source,$id);
     }
 
-    /**
-     * @param int $routeConfigId
-     * @return array
-     */
-    public function getRoutePM(int $routeConfigId) : array
-    {
-        return $this->getAggregateRoot()->getRoutePM($this->getRepository(),$routeConfigId);
-    }
 
     /**
      * @param int $pspConfigId
@@ -125,45 +118,9 @@ class ConfigurationService
         return $this->getAggregateRoot()->getPSPPM($this->getRepository(),$pspConfigId);
     }
 
-    /**
-     * @param int $routeConfigId
-     * @return array
-     */
-    public function getRouteFeatures(int $routeConfigId) : array
+    public function getRoutes(int $pspType=-1,int $iPSPID=-1)
     {
-        return $this->getAggregateRoot()->getRouteFeatures($this->getRepository(), $routeConfigId);
-    }
-
-    /**
-     * @param int $routeConfigId
-     * @return array
-     */
-    public function getRouteCountries(int $routeConfigId) : array
-    {
-        return $this->getAggregateRoot()->getRouteCountries($this->getRepository(), $routeConfigId);
-    }
-
-    /**
-     * @param int $routeConfigId
-     * @return array
-     */
-    public function getRouteCurrencies(int $routeConfigId) : array
-    {
-        return $this->getAggregateRoot()->getRouteCurrencies($this->getRepository(), $routeConfigId);
-    }
-
-    /**
-     * @param int $routeConfigId
-     * @return array
-     */
-    public function getRouteCredentials(int $routeConfigId) : array
-    {
-        return $this->getAggregateRoot()->getRouteCredentials($this->getRepository(), $routeConfigId);
-    }
-
-    public function getRoutes(int $pspType=-1)
-    {
-        return $this->getAggregateRoot()->getRoutes($this->getRepository(),$pspType);
+        return $this->getAggregateRoot()->getRoutes($this->getRepository(),$pspType,$iPSPID);
     }
 
     /**
@@ -400,4 +357,24 @@ class ConfigurationService
         return $this->getAggregateRoot()->getRouteConfigIdByPSP($this->getRepository(),$id);
     }
 
+    public function saveProvider(array $aProviderConfig)
+    {
+         $this->getAggregateRoot()->saveProvider($this->getRepository(),$aProviderConfig);
+    }
+
+    public function getRouteConfiguration(int $id,bool $bAllConfig):ProviderConfig
+    {
+        return $this->getAggregateRoot()->getRouteConfiguration($this->getRepository(),$id,$bAllConfig);
+    }
+
+    public function updateRouteConfig(ProviderConfig &$providerConfig)
+    {
+         $this->getAggregateRoot()->updateRouteConfig($this->getRepository(),$providerConfig);
+    }
+
+    public function updatePSPConfig($providerConfig)
+    {
+        $this->getAggregateRoot()->updatePSPConfig($this->getRepository(),$providerConfig);
+
+    }
 }

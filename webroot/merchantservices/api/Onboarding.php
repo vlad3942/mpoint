@@ -69,7 +69,11 @@ $routes = [
     'payment_metadata' => [
         'class'   => 'MetaDataController',
         'get'     => 'getPaymentMetaData' 
-    ]
+    ],
+    'providerconfig' => [
+        'class'   => 'ConfigurationController',
+        'get'     => 'getProviderConfig',
+        'put'     => 'updateProviderConfig']
 ];
 
 try
@@ -114,6 +118,10 @@ try
         {
             $clientid = (int)$obj_DOM->client_id;
             unset($obj_DOM->client_id);
+        }
+        else if(count($obj_DOM->xpath('//client_id'))> 0)
+        {
+            $clientid = (int)$obj_DOM->xpath('//client_id')[0];
         }
     }
     else if(isset($arrParams['client_id']) === true)
