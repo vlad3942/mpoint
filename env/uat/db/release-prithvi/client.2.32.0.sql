@@ -1,4 +1,4 @@
-INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (17, 10101, 'payments.avianca.com', true);
+INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (17, 10101, 'payments.avtest.ink', true);
 
 
 -- Fraud Rules
