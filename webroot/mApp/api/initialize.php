@@ -665,7 +665,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $presentmentCurrency = false;
                                     $presentmentCurrencies = array();
                                     $isDCCEnabled = General::xml2bool($obj_XML->item [$j] ["dcc"]);
-                                    if ($fxServiceTypeId == 21) {
+                                    if ($fxServiceTypeId == Constants::iExternalMCPOpted) {
                                         $isDCCEnabled = false;
                                     }
                                     if ($isDCCEnabled)
@@ -821,7 +821,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$presentmentCurrency = false;
 									$presentmentCurrencies = array();
                                     $isDCCEnabled = General::xml2bool($aObj_XML [$j] ["dcc"]);
-                                    if ($fxServiceTypeId == 21) {
+                                    if ($fxServiceTypeId == Constants::iExternalMCPOpted) {
                                         $isDCCEnabled = false;
                                     }
 									if ($isDCCEnabled)

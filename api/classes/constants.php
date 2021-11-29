@@ -1997,6 +1997,11 @@ abstract class Constants
 	 */
 	const BUSINESS = 5;
 
+	/**
+	 * Exnternal MCP service opted
+	 */
+	const iExternalMCPOpted = 31;
+
 
 }
 
