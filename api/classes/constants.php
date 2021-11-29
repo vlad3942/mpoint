@@ -1938,6 +1938,7 @@ abstract class Constants
      */
 	const iPAYMENT_3DS_SUCCESS_FULLY_AUTHENTICATED_SUB_STATE = 2006001;
 	const iPAYMENT_3DS_SUCCESS_ATTEMPTED_SUB_STATE = 2006004;
+	const iPAYMENT_3DS_DUPLICATE_STATE = 2006018;
 	/*
      * Define substatus code of 2016 status code
      */
