@@ -217,7 +217,7 @@ class ConfigurationController
 
         if(empty($request->services) === false && count($request->services) > 0)
         {
-            $clService = ClientServiceStatus::produceFromXML($request->services);
+            $clService = ClientServiceStatus::produceFromXML($request->services, $this->getConfigService()->getClientInfo());
             $this->getConfigService()->updateAddonServiceStatus($clService);
         }
 

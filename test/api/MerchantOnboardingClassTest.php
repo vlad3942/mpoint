@@ -454,13 +454,14 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid = 1 AND enabled=false" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
-
+/*
         $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'EFS10000114912' AND username = 'Paymaya ac1q2' AND passwd = 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z'" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
+        */
 
     }
 
@@ -529,19 +530,23 @@ class MerchantOnboardingClassTest extends baseAPITest
         });
         $this->assertEquals(2, count($arrResult));
 
-        $aCredentials = $this->objConfigurationService->getRouteCredentials(1);
-        $this->assertEquals(1, count($aCredentials));
+        $aRouteInfo = $this->objConfigurationService->getRouteConfiguration(1, true);
+        $this->assertEquals('TEST', $aRouteInfo->getName());
+        $this->assertEquals('TESTMID', $aRouteInfo->getMid());
+        $this->assertEquals('username', $aRouteInfo->getUserName());
+        $this->assertEquals('password', $aRouteInfo->getPassword());
+        $this->assertEquals('2', $aRouteInfo->getCaptureType());
 
-        $aPM = $this->objConfigurationService->getRoutePM(1);
+        $aPM = $aRouteInfo->getPM("ROUTE", 1);
         $this->assertEquals(2, count($aPM));
 
-        $aFeatures = $this->objConfigurationService->getRouteFeatures(1);
+        $aFeatures = $aRouteInfo->getFeatureId();
         $this->assertEquals(1, count($aFeatures));
 
-        $aCountries = $this->objConfigurationService->getRouteCountries(1);
+        $aCountries = $aRouteInfo->getCountryIds();
         $this->assertEquals(1, count($aCountries));
 
-        $aCurrencies = $this->objConfigurationService->getRouteCurrencies(1);
+        $aCurrencies = $aRouteInfo->getCurrencyIds();
         $this->assertEquals(1, count($aCurrencies));
 
     }
@@ -597,7 +602,8 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
         $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
-        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (routeid, name, capturetype, mid, username, password) VALUES (1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+
         $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessId' AND PSPID=50),1,'1234')");
         $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
@@ -607,7 +613,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
 
 
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><name>TEST</name><credentials><mid>MID</mid><username>Tusername</username><password>testpassword</password><capture_type>1</capture_type></credentials><properties><property><id>41</id><value>12345</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>false</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>false</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>false</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>false</enabled></currency_detail></currency_details></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>12345</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>false</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>false</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>false</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>false</enabled></currency_detail></currency_details></route_configuration>';
 
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
@@ -616,19 +622,19 @@ class MerchantOnboardingClassTest extends baseAPITest
         $res =  $this->queryDB("SELECT id FROM CLIENT.route_property_tbl where value in ('12345')" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl WHERE pmid = 8" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl WHERE pmid = 8 AND routeconfigid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routefeature_tbl where routeconfigid = 1 AND enabled = false" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routefeature_tbl where routeconfigid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routecurrency_tbl where routeconfigid = 1 AND enabled = false" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecurrency_tbl where routeconfigid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routecountry_tbl where routeconfigid = 1 AND enabled = false" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecountry_tbl where routeconfigid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
     }      
@@ -920,5 +926,46 @@ class MerchantOnboardingClassTest extends baseAPITest
         $repository = new ReadOnlyConfigRepository($this->_OBJ_DB,$obj_TxnInfo);
         $splitPaymentAddOn = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT),array(),true);
         $this->assertInstanceOf('api\classes\merchantservices\configuration\Split_PaymentConfig',$splitPaymentAddOn);
+    }
+
+    public function testSuccessfulGetProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->objConfigurationService = new ConfigurationService($this->_OBJ_DB,10099);
+        $aRS = $this->objConfigurationService->getAllPSPCredentials(-1,-1);
+
+        $this->assertEquals(1, count($aRS));
+
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE name IN ('TestPSPName') ");
+        $this->assertIsResource($res);
+        $this->assertEquals(1, pg_num_rows($res));
+    }
+
+    public function testSuccessfulUpdateProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_provider_configurations><client_provider_configuration><id>65</id><client_id>10099</client_id><name>CEBU-RMFSS</name><username>By9AjPV6j14jgb3DXRIpW0mInOfMEafS</username><password>E9NBawrSH6UAtw1v</password></client_provider_configuration><client_provider_configuration><id>64</id><client_id>10099</client_id><name>EFS10000114912</name><username>TEST</username><password>sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z2</password></client_provider_configuration></client_provider_configurations>';
+
+        $obj_DOM = simpledom_load_string($xml);
+        $objController = new ConfigurationController($this->_OBJ_DB,10099);
+        $objController->updateProviderConfig($obj_DOM);
+
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE name IN ('TestPSPName','CEBU-RMFSS','EFS10000114912') ");
+
+        $this->assertIsResource($res);
+        $this->assertEquals(3, pg_num_rows($res));
+
     }
 }

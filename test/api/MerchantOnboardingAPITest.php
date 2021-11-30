@@ -337,7 +337,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>true</enabled></pm_configuration></pm_configurations></client_psp_configuration>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><psp_id>52</psp_id><pm_configuration><pm_id>1</pm_id><enabled>true</enabled></pm_configuration><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details></client_psp_configuration>', $sReplyBody);
     }
 
     public function testSuccessfulSavePSPProperty()
@@ -417,14 +417,14 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(2, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid = 1 AND enabled=false" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'EFS10000114912' AND username = 'Paymaya ac1q2' AND passwd = 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z'" );
+/*        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'EFS10000114912' AND username = 'Paymaya ac1q2' AND passwd = 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z'" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
-
+*/
 
     }
 
@@ -499,14 +499,14 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid, countryid) VALUES (1,1)");
         $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
 
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/route_conf_id/1");
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/psp_id/50");
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
 
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><id>1</id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capturetype>2</capturetype></credentials><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>true</enabled></pm_configuration><pm_configuration><pm_id>7</pm_id><enabled>true</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>true</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>true</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>true</enabled></currency_detail></currency_details></client_route_configuration>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><route_configuration><id>1</id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration>', $sReplyBody);
     }
 
     public function testSuccessfulSaveRouteProperty()
@@ -607,7 +607,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
     }
 
-    public function testSuccessfulUpdateRouteProperty()
+    public function testSuccessfulUpdateRoutetestSuccessfulUpdateRoutePropertyProperty()
     {
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -616,7 +616,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
         $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
-        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (routeid, name, capturetype, mid, username, password) VALUES (1, 'TEST', 2, 'TESTMID', 'username', 'password')");
         $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessId' AND PSPID=50),1,'1234')");
         $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
@@ -628,15 +628,15 @@ class MerchantOnboardingAPITest extends baseAPITest
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'PUT');
 
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id><route_config_id>1</route_config_id><name>TEST</name><credentials><mid>MID</mid><username>Tusername</username><password>testpassword</password><capture_type>1</capture_type></credentials><properties><property><id>41</id><value>12345</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>false</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>false</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>false</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>false</enabled></currency_detail></currency_details></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>12345</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration>';
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
-        $sReplyBody = $this->_httpClient->getReplyBody();
+        // $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routeconfig_tbl where id = 1 AND mid='MID' AND username = 'Tusername' AND password = 'testpassword'" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routeconfig_tbl where id = 1 AND mid='TESTMID' AND username = 'username' AND password = 'password'" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
@@ -644,7 +644,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $res =  $this->queryDB("SELECT id FROM CLIENT.route_property_tbl where value in ('12345')" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
-        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl where pmid=8 and enabled=false" );
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl where pmid=8 AND routeconfigid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
@@ -967,6 +967,51 @@ class MerchantOnboardingAPITest extends baseAPITest
         $res =  $this->queryDB("select * from client.pm_tbl where pmid in (4)");
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Failure Delete Operation Failed for Payment method against client');
+    }
+
+    public function testSuccessfulGetProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=providerconfig&params=client_id/10099");
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(200, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_provider_configuration><id>52</id><name>TestPSPName</name><username>TestPSPUser</username><password>TestPSPPass</password></client_provider_configuration>',$sReplyBody);
+    }
+
+    public function testSuccessfulUpdateProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_provider_configurations><client_provider_configuration><id>65</id><client_id>10099</client_id><name>CEBU-RMFSS</name><username>By9AjPV6j14jgb3DXRIpW0mInOfMEafS</username><password>E9NBawrSH6UAtw1v</password></client_provider_configuration><client_provider_configuration><id>64</id><client_id>10099</client_id><name>EFS10000114912</name><username>TEST</username><password>sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z2</password></client_provider_configuration></client_provider_configurations>';
+
+        # External Call
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=providerconfig",'PUT');
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        // $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE name IN ('TestPSPName','CEBU-RMFSS','EFS10000114912') ");
+
+        $this->assertIsResource($res);
+        $this->assertEquals(3, pg_num_rows($res));
+
     }
 
 }

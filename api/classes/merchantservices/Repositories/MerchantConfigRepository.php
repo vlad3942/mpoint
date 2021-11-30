@@ -1730,7 +1730,7 @@ class MerchantConfigRepository
            array_push($aValues,"'".$provider->getUserName()."'");
            array_push($aColumns,"username");
        }
-        if($provider->getCaptureType() === -1)
+        if($provider->getCaptureType() !== -1)
         {
             array_push($aUpdateColumns,"capturetype=".$provider->getCaptureType());
             array_push($aValues,$provider->getCaptureType());
@@ -1742,6 +1742,7 @@ class MerchantConfigRepository
            if($provider->getId() == -1)
            {
                $routeId = $this->getRouteIDByProvider($provider->getPspId(),true);
+
                array_push($aColumns,"routeid");
                array_push($aValues,$routeId);
                $updateColumns = implode(" , ",$aColumns);
@@ -1756,7 +1757,6 @@ class MerchantConfigRepository
            }
            $rs = $this->getDBConn()->executeQuery($SQL);
        }
-
 
        if($rs!= null && ($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1))
        {

@@ -70,11 +70,14 @@ $routes = [
         'class'   => 'MetaDataController',
         'get'     => 'getPaymentMetaData' 
     ],
+
     'providerconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getProviderConfig',
-        'put'     => 'updateProviderConfig']
+        'put'     => 'updateProviderConfig'
+    ]
 ];
+
 
 try
 {
@@ -119,7 +122,7 @@ try
             $clientid = (int)$obj_DOM->client_id;
             unset($obj_DOM->client_id);
         }
-        else if(count($obj_DOM->xpath('//client_id'))> 0)
+        else if(empty($obj_DOM->xpath('//client_id')) === false)
         {
             $clientid = (int)$obj_DOM->xpath('//client_id')[0];
         }

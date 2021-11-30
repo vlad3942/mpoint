@@ -213,8 +213,6 @@ class MerchantConfigInfo
      */
     public function saveCredential(MerchantConfigRepository $configRepository,string $type, int $id, string $name, array $aCredentials)
     {
-
-        $aPSPDetails = $this->getConfigService()->getAllPSPCredentials($id,$psptypeid);
         return $configRepository->saveCredential($type, $id, $name, $aCredentials);
     }
 

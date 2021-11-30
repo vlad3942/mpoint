@@ -277,12 +277,12 @@
             <xs:sequence>
               <xs:element type="xs:boolean" name="dcc" minOccurs="0" maxOccurs="1" />
               <xs:element type="xs:boolean" name="fraud" minOccurs="0" maxOccurs="1" />
-              <xs:element type="xs:boolean" name="callback" minOccurs="1" maxOccurs="1" />
-              <xs:element type="xs:boolean" name="mcp" minOccurs="1" maxOccurs="1" />
-              <xs:element type="xs:boolean" name="pcc" minOccurs="1" maxOccurs="1" />
-              <xs:element type="xs:boolean" name="split_payment" minOccurs="1" maxOccurs="1" />
-              <xs:element type="xs:boolean" name="tokenization" minOccurs="1" maxOccurs="1" />
-              <xs:element type="xs:boolean" name="void" minOccurs="1" maxOccurs="1" />
+              <xs:element type="xs:boolean" name="callback" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:boolean" name="mcp" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:boolean" name="pcc" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:boolean" name="split_payment" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:boolean" name="tokenization" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:boolean" name="void" minOccurs="0" maxOccurs="1" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
