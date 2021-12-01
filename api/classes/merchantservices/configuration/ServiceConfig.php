@@ -442,7 +442,7 @@ class ServiceConfig
      */
     public function toXML():string
     {
-        $xml = "<addon_confguration>";
+        $xml = "<addon_configuration>";
         $xml .= sprintf("<id>%s</id>",$this->getId());
         $xml .= sprintf("<enabled>%s</enabled>",General::bool2xml($this->getEnabled()));
         if($this->getPaymentMethodId()>-1) $xml .= sprintf("<pm_id>%s</pm_id>",$this->getPaymentMethodId());
@@ -458,7 +458,7 @@ class ServiceConfig
         }
         if($this->getProviderId()>-1) $xml .= sprintf("<provider_id>%s</provider_id>",$this->getProviderId());
         if(empty($this->getVersion()) === false) $xml .= sprintf("<version>%s</version>",$this->getVersion());
-        $xml .= "</addon_confguration>";
+        $xml .= "</addon_configuration>";
 
         return $xml;
     }
