@@ -90,7 +90,7 @@ Abstract class BaseConfig
             $addonServiceTYpe = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf(str_replace('_config', '', $key)), '');
 
             $aServiceCon = array();
-            foreach ($addon_config_detail->addon_configurations->addon_confguration as $addon_configuration) {
+            foreach ($addon_config_detail->addon_configurations->addon_configuration as $addon_configuration) {
 
                 $serviceConfig = ServiceConfig::produceFromXML($addon_configuration);
                 array_push($aServiceCon, $serviceConfig);

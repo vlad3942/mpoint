@@ -14,7 +14,7 @@
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
-                    <xs:element name="addon_confguration" type="addon_info_basic" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                    <xs:element name="addon_configuration" type="addon_info_basic" minOccurs="1" maxOccurs="unbounded"></xs:element>
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
@@ -27,7 +27,7 @@
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
-                    <xs:element name="addon_confguration" type="addon_info_basic" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                    <xs:element name="addon_configuration" type="addon_info_basic" minOccurs="1" maxOccurs="unbounded"></xs:element>
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
@@ -40,7 +40,7 @@
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
-                    <xs:element name="addon_confguration" type="addon_info_pcc" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                    <xs:element name="addon_configuration" type="addon_info_pcc" minOccurs="1" maxOccurs="unbounded"></xs:element>
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
@@ -53,7 +53,7 @@
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
-                    <xs:element name="addon_confguration" type="addon_info_mpi" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                    <xs:element name="addon_configuration" type="addon_info_mpi" minOccurs="1" maxOccurs="unbounded"></xs:element>
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
@@ -70,7 +70,7 @@
                     <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                       <xs:complexType>
                         <xs:choice>
-                          <xs:element name="addon_confguration" type="addon_info_basic_provider_id" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                          <xs:element name="addon_configuration" type="addon_info_basic_provider_id" minOccurs="1" maxOccurs="unbounded"></xs:element>
                         </xs:choice>
                       </xs:complexType>
                     </xs:element>
@@ -91,7 +91,7 @@
                     <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                       <xs:complexType>
                         <xs:choice>
-                          <xs:element name="addon_confguration" type="addon_info_split" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                          <xs:element name="addon_configuration" type="addon_info_split" minOccurs="1" maxOccurs="unbounded"></xs:element>
                         </xs:choice>
                       </xs:complexType>
                     </xs:element>
@@ -109,7 +109,7 @@
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
-                    <xs:element name="addon_confguration" type="addon_info_basic_provider_id" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                    <xs:element name="addon_configuration" type="addon_info_basic_provider_id" minOccurs="1" maxOccurs="unbounded"></xs:element>
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
