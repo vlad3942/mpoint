@@ -1134,8 +1134,15 @@ class MerchantConfigRepository
         $sSQL = "SELECT pspid as id, m.name, username, passwd as password FROM CLIENT". sSCHEMA_POSTFIX .".merchantaccount_tbl m
                     INNER JOIN SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on m.clientid  = ".$this->_clientConfig->getID()." and p.id  = m.pspid ";
 
-        if($pspType>0) $sSQL .= " WHERE p.system_type = $pspType";
-        if($pspid>0) $sSQL .= " WHERE m.pspid = $pspid";
+        $aWhereCls = [];
+
+        if($pspType>0) $aWhereCls[] = " p.system_type = $pspType";
+        if($pspid>0) $aWhereCls[] = " m.pspid = $pspid";
+
+        if(empty($aWhereCls) === false)
+        {
+            $sSQL .= " WHERE " . implode( " AND " , $aWhereCls);
+        }
 
         $aPSPDetails = [];
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );

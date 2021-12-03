@@ -97,7 +97,7 @@ class BaseInfo
      *
      * @return void
      */
-    public function toXML()
+    public function toXML(string $rootNode = '')
     {
         $sIdNode = isset($this->aNodeAlias['id'])?$this->aNodeAlias['id']:'id';
         $sNameNode = isset($this->aNodeAlias['name'])?$this->aNodeAlias['name']:'name';        

@@ -155,7 +155,7 @@ class PropertyInfo extends BaseInfo
     /**
      * @return string
      */
-    public function toXML()
+    public function toXML(string $rootNode = '')
     {
         $xml = "<property>";
         $xml .= parent::toXML();

@@ -209,6 +209,7 @@ class ProviderConfig extends BaseInfo
      */
     public static function produceFromXML( &$oXML) : ProviderConfig
     {
+
         $providerConfig = new ProviderConfig();
         if(count($oXML->id)>0) { $providerConfig->setId((int)$oXML->id); }
         else { $providerConfig->setId(-1); }
@@ -293,7 +294,7 @@ class ProviderConfig extends BaseInfo
     /**
      * @return string
      */
-    public function toXML(string $rootNode)
+    public function toXML(string $rootNode = '')
     {
         $xml = "<$rootNode>";
         $xml .= parent::toXML();
