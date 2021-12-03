@@ -1023,7 +1023,7 @@ class Home extends General
                             $sStatusMessagesXML .= '<status-message id = "'.$msg['STATEID'].'" position = "'.$msg['ROWNUM'] .'">' . $msg['NAME'] . '</status-message>';
                         }
 
-                         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+                         $sessionType = $obj_paymentSession->getSessionType();
                          $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
                          $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
                          $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
