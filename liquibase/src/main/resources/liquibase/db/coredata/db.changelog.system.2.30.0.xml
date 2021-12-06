@@ -1893,4 +1893,163 @@
             <column name="pspid" value="47"/>
         </insert>
     </changeSet>
+
+    <changeSet author="Ijaj Inamdar" id="2021-12-03-setup-v2.30-system-psp-prop">
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="NIT"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PaymentType"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PaymentApiVersion"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="HourToAddInBookingTime"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="DomesticHourToMinusFromDeparture"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="InterNationalHourToMinusFromDeparture"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="ExtendedTimeInMinute"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UserType"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UserDocumentNumber"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="UserDocumentType"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="DynamicDocument"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+
+    </changeSet>
+
+    <changeSet author="Ijaj Inamdar" id="2021-12-03-setup-v2.30-system-route-prop">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="PSETimeout"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="BankApiUsername"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="route_property_tbl">
+            <column name="name" value="BankApiPassword"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ijaj Inamdar" id="2021-12-03-setup-v2.30-system-metadata-disable-mcp-addontype">
+
+        <update
+                catalogName="System"
+                schemaName="System" 
+                tableName="service_type_tbl">
+            <column name="enabled" value="false" />
+            <where>name = 'MCP'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
