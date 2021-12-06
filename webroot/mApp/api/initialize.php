@@ -401,7 +401,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $xml = '<status code="53">Amount is more than pending amount:'. $obj_TxnInfo->getAmount() .'</status>';
                             }
-                            elseif ($is_legacy == false && $obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= $maxSessionRetryCount)
+                            elseif ($is_legacy === false && $obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= $maxSessionRetryCount)
                             {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
@@ -574,7 +574,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
 
                             $presentmentCurrencies = null;
-                            if(empty($aDCCPmid) === false && $obj_ClientConfig->getClientServices()->isPcc() === true)  $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$aDCCPmid);
+                            if(empty($aDCCPmid) === false && $obj_ClientConfig->getClientServices()->isPcc() === true) {
+                                $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$aDCCPmid);
+                            }
 
                             if($sessionType > 1)
                             {
@@ -664,7 +666,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //                            }
 
                            $aPresentmentConf= array();
-                           if($presentmentCurrencies !== null) $aPresentmentConf = $presentmentCurrencies->toKeyValueConfigArray("getPaymentMethodId");
+                           if($presentmentCurrencies !== null) {
+                               $aPresentmentConf = $presentmentCurrencies->toKeyValueConfigArray("getPaymentMethodId");
+                           }
 
 
                             for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
@@ -690,7 +694,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     $fetchBalance = $obj_mPoint->isAutoFetchBalance($obj_TxnInfo, $cardId);
                                     $bPresentmentCurrency = false;
-                                    if(isset($aPresentmentConf[(int)$obj_XML->item[$j]["id"]]) === true) $bPresentmentCurrency = true;
+                                    if(isset($aPresentmentConf[(int)$obj_XML->item[$j]["id"]]) === true) {
+                                        $bPresentmentCurrency = true;
+                                    }
+
                                     $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($bPresentmentCurrency).'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
                                     if($fetchBalance === true){
@@ -823,8 +830,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									// Get list of presentment currencies
 									$bPresentmentCurrency = false;
-									if(isset($aPresentmentConf[(int)$aObj_XML[$j]["id"]]) === true) $bPresentmentCurrency = true;
-
+									if(isset($aPresentmentConf[(int)$aObj_XML[$j]["id"]]) === true) {
+                                        $bPresentmentCurrency = true;
+                                    }
 
 									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . $aObj_XML[$j]["dcc"] .'" presentment-currency="'.General::bool2xml($bPresentmentCurrency).'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }

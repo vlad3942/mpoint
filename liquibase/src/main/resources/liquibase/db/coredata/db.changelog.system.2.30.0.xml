@@ -2045,7 +2045,7 @@
 
         <update
                 catalogName="System"
-                schemaName="System" 
+                schemaName="System"
                 tableName="service_type_tbl">
             <column name="enabled" value="false" />
             <where>name = 'MCP'</where>
