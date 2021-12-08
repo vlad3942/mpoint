@@ -732,7 +732,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertStringContainsString('<capture_type><id>1</id><name>Manual Capture</name></capture_type>',$sReplyBody);
         $this->assertStringContainsString('<id>1</id><name>Import Customer Data</name></client_url>',$sReplyBody);
         $this->assertStringContainsString('<payment_processor><id>1</id><name>PSP</name></payment_processor>',$sReplyBody);
-        $this->assertStringContainsString('<addon_type><id>1</id><name>FX</name><addon_subtypes><addon_subtype><id>1</id><name>DCC</name></addon_subtype><addon_subtype><id>2</id><name>MCP</name></addon_subtype><addon_subtype><id>3</id><name>PCC</name></addon_subtype></addon_subtypes></addon_type>',$sReplyBody);
+        $this->assertStringContainsString('<addon_type><id>1</id><name>FX</name><addon_subtypes><addon_subtype><id>1</id><name>DCC</name></addon_subtype><addon_subtype><id>3</id><name>PCC</name></addon_subtype></addon_subtypes></addon_type>',$sReplyBody);
 
     }
 
