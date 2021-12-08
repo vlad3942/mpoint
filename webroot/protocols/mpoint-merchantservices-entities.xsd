@@ -117,7 +117,7 @@
     <xs:complexContent>
       <xs:extension base="property_info">
         <xs:sequence>
-          <xs:element name="enabled" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          <xs:element name="enabled" type="xs:boolean" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
