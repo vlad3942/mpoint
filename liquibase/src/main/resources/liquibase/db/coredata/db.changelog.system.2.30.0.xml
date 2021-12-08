@@ -1900,7 +1900,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="NIT"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -1910,7 +1910,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="PaymentType"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -1920,7 +1920,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="PaymentApiVersion"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -1930,7 +1930,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="HourToAddInBookingTime"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="2"/>
@@ -1940,7 +1940,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="DomesticHourToMinusFromDeparture"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="2"/>
@@ -1950,7 +1950,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="InterNationalHourToMinusFromDeparture"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="2"/>
@@ -1960,7 +1960,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="ExtendedTimeInMinute"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="2"/>
@@ -1970,7 +1970,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="UserType"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -1980,7 +1980,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="UserDocumentNumber"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -1990,7 +1990,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="UserDocumentType"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -2000,7 +2000,7 @@
                 schemaName="System"
                 tableName="psp_property_tbl">
             <column name="name" value="DynamicDocument"/>
-            <column name="pspid" value="50"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="1"/>
@@ -2014,7 +2014,7 @@
                 schemaName="System"
                 tableName="route_property_tbl">
             <column name="name" value="PSETimeout"/>
-            <column name="pspid" value="45"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="2"/>
@@ -2024,7 +2024,7 @@
                 schemaName="System"
                 tableName="route_property_tbl">
             <column name="name" value="BankApiUsername"/>
-            <column name="pspid" value="45"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
@@ -2034,7 +2034,7 @@
                 schemaName="System"
                 tableName="route_property_tbl">
             <column name="name" value="BankApiPassword"/>
-            <column name="pspid" value="45"/>
+            <column name="pspid" value="53"/>
             <column name="category" value="2"/>
             <column name="ismandatory" value="true"/>
             <column name="datatype" value="3"/>
