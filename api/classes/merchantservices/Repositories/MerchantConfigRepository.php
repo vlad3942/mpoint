@@ -1461,6 +1461,7 @@ class MerchantConfigRepository
         $SQL = "SELECT st.id as id, st.name ,sst.id stid, sst.name as stname
         FROM SYSTEM" . sSCHEMA_POSTFIX . ".services_tbl st
         inner join SYSTEM" . sSCHEMA_POSTFIX . ".service_type_tbl sst on st.id = sst.serviceid
+        WHERE st.enabled=true and sst.enabled=true
         order by st.id";
 
         return $this->getDBConn()->getAllNames($SQL);
