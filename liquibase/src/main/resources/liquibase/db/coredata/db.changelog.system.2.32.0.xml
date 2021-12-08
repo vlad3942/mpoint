@@ -17,4 +17,14 @@
 
     </changeSet>
 
+    <changeSet id="2021-09-30-setup-v2.32"
+               author="Sagar Narayane">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="urltype_tbl">
+            <column name="id" value="17"/>
+            <column name="name" value="HPP Host URL"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

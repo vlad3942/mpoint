@@ -2084,9 +2084,8 @@ class TxnInfo
 			return $Address_iD;
 		}
 	}
-	
-	
-	
+
+
 	/**
 	 * Function to insert new records in the Additional Data table that are send as part of the transaction cart details
 	 *
@@ -2101,7 +2100,7 @@ class TxnInfo
 			foreach ($aAdditionalData as $aAdditionalDataObj)
 			{
 			    $name = $aAdditionalDataObj["name"];
-			    $value = $aAdditionalDataObj["value"];
+			    $value = htmlspecialchars($aAdditionalDataObj["value"], ENT_NOQUOTES);
 			    if($name === null || empty($name) === true || $value === null || empty($value) === true)
                 {
                     return $additional_id;
@@ -2112,7 +2111,7 @@ class TxnInfo
 						// Error: Unable to insert a new Additional Data record in the Additional Data Table
 						if (is_resource($res = $obj_DB->query($sql) ) === false)
 						{
-							throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
+							throw new mPointException("Unable to insert new record for Additional Data: ". $res["ID"], 1002);
 						}
 						else
 						{

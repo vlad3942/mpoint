@@ -306,8 +306,8 @@ class PSPConfig extends BasicConfig
         $xml .= '<route_id>'. $this->getID() .'</route_id>';
         $xml .= '<name>'. $this->getName() .'</name>';
         $xml .= '<mid>'. $this->getRouteMID() .'</mid>';
-        $xml .= '<username>'. $this->getRouteUsername() .'</username>';
-        $xml .= '<password>'. $this->getRoutePassword() .'</password>';
+        $xml .= '<username>'. htmlspecialchars($this->getRouteUsername(), ENT_NOQUOTES) .'</username>';
+        $xml .= '<password>'. htmlspecialchars($this->getRoutePassword(), ENT_NOQUOTES) .'</password>';
         $xml .= '<route_features>';
         if(empty($this->_aRouteFeature) === false && count($this->_aRouteFeature) > 0)
         {
