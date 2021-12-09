@@ -1,6 +1,4 @@
 
-INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (17, 10101, 'payments.avianca.com', true);
-
 -- Fraud Rules
 UPDATE client.additionalproperty_tbl SET value = 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"OR<tempRule>
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])
