@@ -145,8 +145,8 @@ try
         $contollerName = 'api\\classes\\merchantservices\\Controllers\\' . $contollerName;
 
         $objController = new $contollerName($_OBJ_DB,$clientid);
-        if($requestType === 'get') $xml = $objController->$methodName($arrParams);
-        else $xml = $objController->$methodName($obj_DOM, $arrParams);
+        if($requestType === 'get') { $xml = $objController->$methodName($arrParams); }
+        else { $xml = $objController->$methodName($obj_DOM, $arrParams); }
         if($requestType !== 'get')
         {
             $_OBJ_DB->query("COMMIT");

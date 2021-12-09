@@ -63,10 +63,9 @@ class MerchantConfigInfo
         foreach ($additionalParams as $key => $value)
         {
             $addonServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf($key),'');
-            if($addonServiceType === null) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER,"Invalid parameter {param:".$key."}");
-            else
-            {
-                if(empty($value) === true ) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ".$key);
+            if($addonServiceType === null)  { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER,"Invalid parameter {param:".$key."}");
+            } else {
+                if(empty($value) === true )  { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ".$key); }
                 $aIds = explode(',', $value);
                 foreach ($aIds as $id)
                 {
@@ -165,8 +164,8 @@ class MerchantConfigInfo
             {
                 if($aClientParam['SSO_PREFERENCE'] && $ClientProperty->getName() === 'SSO_PREFERENCE' )
                 {
-                    if(empty($ClientProperty->getValue()) === false) array_push($aUpdateProperty,$ClientProperty);
-                    if(empty($ClientProperty->getValue()) === true) array_push($aAddProperty,$ClientProperty);
+                    if(empty($ClientProperty->getValue()) === false)   { array_push($aUpdateProperty,$ClientProperty); }
+                    if(empty($ClientProperty->getValue()) === true)  { array_push($aAddProperty,$ClientProperty); }
                     $ClientProperty->setValue($aClientParam['SSO_PREFERENCE']);
                     unset($aClientParam['SSO_PREFERENCE']);
                 }
@@ -344,7 +343,9 @@ class MerchantConfigInfo
 
 
 
-        if(empty($value) === true && empty($pms) === true) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ID");
+        if(empty($value) === true && empty($pms) === true) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE, "No parameters for ID");
+        }
         if(empty($value) === false)
         {
             $aIds = explode(',', $value);

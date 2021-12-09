@@ -2073,14 +2073,14 @@ abstract class AddonServiceTypeIndex
 	   public static function valueOf(string $type):int
 	   {
 		    $type =strtolower($type);
-		   if($type === 'dcc') return self::eDCC;
-		   if($type === 'pcc') return self::ePCC;
-		   if($type === 'mcp') return self::eMCP;
-		   if($type === 'mpi') return self::eMPI;
-		   if($type === 'pre_auth' || $type === 'post_auth' || $type === 'fraud' ) return self::eFraud;
-		   if($type === 'cashless' || $type === 'conventional' || $type === 'hybrid' || $type === 'split_payment') return self::eSPLIT_PAYMENT;
-		   if($type === 'tokenization') return self::eTOKENIZATION;
-		   else return 0;
+		   if($type === 'dcc') { return self::eDCC; }
+		   if($type === 'pcc') { return self::ePCC; }
+		   if($type === 'mcp') { return self::eMCP; }
+		   if($type === 'mpi') { return self::eMPI; }
+		   if($type === 'pre_auth' || $type === 'post_auth' || $type === 'fraud' ) { return self::eFraud; }
+		   if($type === 'cashless' || $type === 'conventional' || $type === 'hybrid' || $type === 'split_payment') { return self::eSPLIT_PAYMENT; }
+		   if($type === 'tokenization') { return self::eTOKENIZATION; }
+		   else  { return 0; }
 	   }
 }
 
