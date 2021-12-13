@@ -1561,63 +1561,51 @@ class MerchantConfigRepository
         $urlTableTypeid = array(ClientConfig::iCUSTOMER_IMPORT_URL,ClientConfig::iAUTHENTICATION_URL,ClientConfig::iNOTIFICATION_URL,ClientConfig::iMESB_URL,ClientConfig::iPARSE_3DSECURE_CHALLENGE_URL,ClientConfig::iMERCHANT_APP_RETURN_URL,ClientConfig::iBASE_IMAGE_URL,ClientConfig::iTHREED_REDIRECT_URL,ClientConfig::iBASE_ASSET_URL);
         foreach ($urls as $url)
         {
-            if(in_array($url->getTypeID(),$urlTableTypeid) === true)
+            $column = "";
+            switch ($url->getTypeID())
             {
-                $SQL = "INSERT INTO client".sSCHEMA_POSTFIX.".url_tbl (urltypeid,clientid,url) values ($1,$2,$3)";
-                $param = array($url->getTypeID(),$this->_clientConfig->getID(),$url->getURL());
-
-                $rs = $this->getDBConn()->executeQuery($SQL,$param);
-                if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
+                case ClientConfig::iLOGO_URL:
+                    $column = "LOGOURL = $2";
+                    break;
+                case ClientConfig::iCSS_URL:
+                    $column = "CSSURL = $2";
+                    break;
+                case ClientConfig::iACCEPT_URL:
+                    $column = "ACCEPTURL = $2";
+                    break;
+                case ClientConfig::iCANCEL_URL:
+                    $column = "CANCELURL = $2";
+                    break;
+                case ClientConfig::iDECLINE_URL:
+                    $column = "DECLINEURL = $2";
+                    break;
+                case ClientConfig::iCALLBACK_URL:
+                    $column = "CALLBACKURL = $2";
+                    break;
+                case ClientConfig::iICON_URL:
+                    $column = "ICONURL = $2";
+                    break;
+                default:
                 {
-                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
-                    {
-                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
-                    }
-                    throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
+                    $SQL = "INSERT INTO client".sSCHEMA_POSTFIX.".url_tbl (urltypeid,clientid,url) values ($1,$2,$3)";
+                    $param = array($url->getTypeID(),$this->_clientConfig->getID(),$url->getURL());
                 }
             }
-            else
-            {   $column = "";
-                switch ($url->getTypeID())
-                {
-                    case ClientConfig::iLOGO_URL:
-                        $column = "LOGOURL = $2";
-                        break;
-                    case ClientConfig::iCSS_URL:
-                        $column = "CSSURL = $2";
-                        break;
-                    case ClientConfig::iACCEPT_URL:
-                        $column = "ACCEPTURL = $2";
-                        break;
-                    case ClientConfig::iCANCEL_URL:
-                        $column = "CANCELURL = $2";
-                        break;
-                    case ClientConfig::iDECLINE_URL:
-                        $column = "DECLINEURL = $2";
-                        break;
-                    case ClientConfig::iCALLBACK_URL:
-                        $column = "CALLBACKURL = $2";
-                        break;
-                    case ClientConfig::iICON_URL:
-                        $column = "ICONURL = $2";
-                        break;
-                }
+            if(empty($column) === false)
+            {
                 $SQL = "UPDATE client".sSCHEMA_POSTFIX.".client_tbl SET $column WHERE id=$1";
                 $param = array($this->_clientConfig->getID(),$url->getURL());
-
-                $rs = $this->getDBConn()->executeQuery($SQL,$param);
-                if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
-                {
-                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
-                    {
-                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
-                    }
-                    throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
-                }
             }
-
+            $rs = $this->getDBConn()->executeQuery($SQL,$param);
+            if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                }
+                throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
+            }
         }
     }
 
