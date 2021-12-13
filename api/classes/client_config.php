@@ -1264,6 +1264,9 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_CancelURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CancelURL->toAttributeLessXML(); }
         if ( ($this->_obj_BaseImageURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_BaseImageURL->toAttributeLessXML(); }
         if ( ($this->_obj_LogoURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_LogoURL->toAttributeLessXML(); }
+        if ( ($this->_obj_HPPURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_HPPURL->toAttributeLessXML(); }
+        if ( ($this->_obj_ThreedRedirectURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_ThreedRedirectURL->toAttributeLessXML(); }
+        if ( ($this->_obj_BaseAssetURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_BaseAssetURL->toAttributeLessXML(); }
         $xml .='</client_urls>';
         $xml .=$this->_aObj_ClientServicesStatus->toXML();
         $accountsConfigurations = $this->getAccountsConfigurations($oDB);
