@@ -76,7 +76,7 @@ class BaseInfo
      * @param string $sName
      * @return BaseInfo
      */
-    protected function setName(string $sName): BaseInfo
+    public function setName(string $sName): BaseInfo
     {
         $this->sName = $sName;
         return $this;
@@ -86,7 +86,7 @@ class BaseInfo
      * @param int $Id
      * @return BaseInfo
      */
-    protected function setId(int $Id): BaseInfo
+    public function setId(int $Id): BaseInfo
     {
         $this->Id = $Id;
         return $this;
@@ -97,7 +97,7 @@ class BaseInfo
      *
      * @return void
      */
-    public function toXML()
+    public function toXML(string $rootNode = '')
     {
         $sIdNode = isset($this->aNodeAlias['id'])?$this->aNodeAlias['id']:'id';
         $sNameNode = isset($this->aNodeAlias['name'])?$this->aNodeAlias['name']:'name';        
@@ -159,8 +159,8 @@ class BaseInfo
 
         foreach ($aRS as $rs) {            
             $BaseInfo = new BaseInfo();
-            $BaseInfo->setId($rs["ID"])
-                ->setName($rs["NAME"]);
+            $BaseInfo->setId($rs["ID"]);
+            $BaseInfo->setName($rs["NAME"]);
 
             $aAddtionalAttr = array_diff_key($rs, $aBasicAttributes);
 

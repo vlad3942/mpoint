@@ -3,6 +3,7 @@ namespace api\classes\merchantservices;
 
 use AddonServiceTypeIndex;
 use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\configuration\ProviderConfig;
 use api\classes\merchantservices\MetaData\ClientServiceStatus;
 use api\classes\merchantservices\Repositories\MerchantConfigRepository;
 
@@ -62,10 +63,9 @@ class MerchantConfigInfo
         foreach ($additionalParams as $key => $value)
         {
             $addonServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf($key),'');
-            if($addonServiceType === null) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER,"Invalid parameter {param:".$key."}");
-            else
-            {
-                if(empty($value) === true ) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ".$key);
+            if($addonServiceType === null)  { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER,"Invalid parameter {param:".$key."}");
+            } else {
+                if(empty($value) === true )  { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ".$key); }
                 $aIds = explode(',', $value);
                 foreach ($aIds as $id)
                 {
@@ -91,16 +91,6 @@ class MerchantConfigInfo
        return $configRepository->getPropertyConfig($type,$source,$id);
     }
 
-    /**
-     * @param MerchantConfigRepository $configRepository
-     * @param int $id
-     * @return array
-     * @throws MerchantOnboardingException
-     */
-    public function getRoutePM(MerchantConfigRepository $configRepository, int $id=-1) : array
-    {
-        return $configRepository->getPM("ROUTE",$id);
-    }
 
     /**
      * @param MerchantConfigRepository $configRepository
@@ -113,65 +103,17 @@ class MerchantConfigInfo
         return $configRepository->getPM("PSP",$id);
     }
 
-    /**
-     * @param MerchantConfigRepository $configRepository
-     * @param int $id
-     * @return array
-     */
-    public function getRouteFeatures(MerchantConfigRepository $configRepository, int $id=-1): array
-    {
-        return $configRepository->getConfigDetails("ROUTE", $id, 'feature');
-    }
-
-    /**
-     * @param MerchantConfigRepository $configRepository
-     * @param int $id
-     * @return array
-     */
-    public function getRouteCountries(MerchantConfigRepository $configRepository, int $id=-1) : array
-    {
-        return $configRepository->getConfigDetails("ROUTE", $id, 'country');
-    }
-
-    /**
-     * @param MerchantConfigRepository $configRepository
-     * @param int $id
-     * @return array
-     */
-    public function getRouteCurrencies(MerchantConfigRepository $configRepository, int $id=-1) : array
-    {
-        return $configRepository->getConfigDetails("ROUTE", $id, 'currency');
-    }
-
-    /**
-     * @param MerchantConfigRepository $configRepository
-     * @param int $id
-     * @return array|false
-     */
-    public function getRouteCredentials(MerchantConfigRepository $configRepository, int $id=-1)
-    {
-        return $configRepository->getCredentials("ROUTE", $id);
-    }
-
     public function getRouteConfigIdByPSP(MerchantConfigRepository $configRepository, int $id) :array
     {
         return $configRepository->getRouteConfigIdByProvider($id);
     }
 
-    public function getRoutes(MerchantConfigRepository $configRepository,int $pspType=-1)
+    public function getRoutes(MerchantConfigRepository $configRepository,int $pspType=-1,int $iPSPID=-1)
     {
-        return $configRepository->getRoutes($pspType);
+        return $configRepository->getRoutes($pspType,$iPSPID);
     }
 
-    /**
-     * @param MerchantConfigRepository $configRepository
-     * @param int $id
-     * @return array|false
-     */
-    public function getPSPCredentials(MerchantConfigRepository $configRepository, int $id=-1)
-    {
-        return $configRepository->getCredentials("PSP", $id);
-    }
+
 
     /**
      * @param MerchantConfigRepository $configRepository
@@ -222,8 +164,8 @@ class MerchantConfigInfo
             {
                 if($aClientParam['SSO_PREFERENCE'] && $ClientProperty->getName() === 'SSO_PREFERENCE' )
                 {
-                    if(empty($ClientProperty->getValue()) === false) array_push($aUpdateProperty,$ClientProperty);
-                    if(empty($ClientProperty->getValue()) === true) array_push($aAddProperty,$ClientProperty);
+                    if(empty($ClientProperty->getValue()) === false)   { array_push($aUpdateProperty,$ClientProperty); }
+                    if(empty($ClientProperty->getValue()) === true)  { array_push($aAddProperty,$ClientProperty); }
                     $ClientProperty->setValue($aClientParam['SSO_PREFERENCE']);
                     unset($aClientParam['SSO_PREFERENCE']);
                 }
@@ -401,7 +343,9 @@ class MerchantConfigInfo
 
 
 
-        if(empty($value) === true && empty($pms) === true) throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ID");
+        if(empty($value) === true && empty($pms) === true) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE, "No parameters for ID");
+        }
         if(empty($value) === false)
         {
             $aIds = explode(',', $value);
@@ -450,19 +394,12 @@ class MerchantConfigInfo
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
+    public function saveClientURL(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
     {
-        $configRepository->saveVelocityURL($urls, $isDeleteOldConfig);
+        $configRepository->saveClientURL($urls, $isDeleteOldConfig);
     }
 
-    /**
-     * @throws MerchantOnboardingException
-     * @throws \SQLQueryException
-     */
-    public function saveClientUrls(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
-    {
-        $configRepository->saveClientUrls($urls,'INSERT', $isDeleteOldConfig);
-    }
+
 
     /**
      * @throws MerchantOnboardingException
@@ -498,5 +435,24 @@ class MerchantConfigInfo
         $configRepository->updateAccountConfig($aClAccountConfig);
     }
 
+    public function saveProvider(MerchantConfigRepository $configRepository, array $aProviderConfig)
+    {
+        $configRepository->saveProviders($aProviderConfig);
+    }
+
+    public function getRouteConfiguration(MerchantConfigRepository $configRepository, int $id,bool $bAllConfig):ProviderConfig
+    {
+        return $configRepository->getRouteConfiguration($id,$bAllConfig);
+    }
+
+    public function updateRouteConfig(MerchantConfigRepository $configRepository, ProviderConfig $provider)
+    {
+        $configRepository->updateRouteConfig($provider);
+    }
+
+    public function updatePSPConfig(MerchantConfigRepository $configRepository, $providerConfig)
+    {
+        $configRepository->updatePSPConfig($providerConfig);
+    }
 
 }

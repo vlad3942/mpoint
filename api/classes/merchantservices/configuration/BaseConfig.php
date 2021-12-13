@@ -29,8 +29,12 @@ Abstract class BaseConfig
         $aKeyValueConfig = array();
         foreach ($aConfig as $config)
         {
-            if(isset($aKeyValueConfig[$config->$keyfun()]) === true) array_push($aKeyValueConfig[$config->$keyfun()], $config);
-            else $aKeyValueConfig[$config->$keyfun()] =array($config);
+            if(isset($aKeyValueConfig[$config->$keyfun()]) === true) {
+                array_push($aKeyValueConfig[$config->$keyfun()], $config);
+            }
+            else {
+                $aKeyValueConfig[$config->$keyfun()] =array($config);
+            }
         }
       return $aKeyValueConfig;
     }
@@ -90,7 +94,7 @@ Abstract class BaseConfig
             $addonServiceTYpe = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf(str_replace('_config', '', $key)), '');
 
             $aServiceCon = array();
-            foreach ($addon_config_detail->addon_configurations->addon_confguration as $addon_configuration) {
+            foreach ($addon_config_detail->addon_configurations->addon_configuration as $addon_configuration) {
 
                 $serviceConfig = ServiceConfig::produceFromXML($addon_configuration);
                 array_push($aServiceCon, $serviceConfig);

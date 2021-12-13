@@ -69,8 +69,15 @@ $routes = [
     'payment_metadata' => [
         'class'   => 'MetaDataController',
         'get'     => 'getPaymentMetaData' 
+    ],
+
+    'providerconfig' => [
+        'class'   => 'ConfigurationController',
+        'get'     => 'getProviderConfig',
+        'put'     => 'updateProviderConfig'
     ]
 ];
+
 
 try
 {
@@ -115,6 +122,10 @@ try
             $clientid = (int)$obj_DOM->client_id;
             unset($obj_DOM->client_id);
         }
+        else if(empty($obj_DOM->xpath('//client_id')) === false)
+        {
+            $clientid = (int)$obj_DOM->xpath('//client_id')[0];
+        }
     }
     else if(isset($arrParams['client_id']) === true)
     {
@@ -134,8 +145,8 @@ try
         $contollerName = 'api\\classes\\merchantservices\\Controllers\\' . $contollerName;
 
         $objController = new $contollerName($_OBJ_DB,$clientid);
-        if($requestType === 'get') $xml = $objController->$methodName($arrParams);
-        else $xml = $objController->$methodName($obj_DOM, $arrParams);
+        if($requestType === 'get') { $xml = $objController->$methodName($arrParams); }
+        else { $xml = $objController->$methodName($obj_DOM, $arrParams); }
         if($requestType !== 'get')
         {
             $_OBJ_DB->query("COMMIT");

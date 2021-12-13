@@ -155,11 +155,13 @@ class PropertyInfo extends BaseInfo
     /**
      * @return string
      */
-    public function toXML()
+    public function toXML(string $rootNode = '')
     {
         $xml = "<property>";
         $xml .= parent::toXML();
-        if(empty($this->getValue()) === false) $xml .= "<value>".$this->getValue()."</value>";
+        if(empty($this->getValue()) === false) {
+            $xml .= "<value>".$this->getValue()."</value>";
+        }
         $xml .= "<data_type>".$this->getDataType()."</data_type>";
         $xml .= sprintf("<enabled>%s</enabled>",\General::bool2xml($this->isEnabled()));
         $xml .= "<mandatory>".\General::bool2xml($this->isMandatory())."</mandatory>";
@@ -174,10 +176,18 @@ class PropertyInfo extends BaseInfo
     public static function produceFromXML( &$oXML) : PropertyInfo
     {
         $propertyInfo = new PropertyInfo();
-        if(count($oXML->id)>0) $propertyInfo->setId((int)$oXML->id);
-        if(count($oXML->enabled)>0) $propertyInfo->setEnabled(\General::xml2bool($oXML->enabled));
-        if(count($oXML->name)>0) $propertyInfo->setName((string)$oXML->name);
-        if(count($oXML->value)>0) $propertyInfo->setValue((string)$oXML->value);
+        if(count($oXML->id)>0) {
+            $propertyInfo->setId((int)$oXML->id);
+        }
+        if(count($oXML->enabled)>0) {
+            $propertyInfo->setEnabled(\General::xml2bool($oXML->enabled));
+        }
+        if(count($oXML->name)>0) {
+            $propertyInfo->setName((string)$oXML->name);
+        }
+        if(count($oXML->value)>0) {
+            $propertyInfo->setValue((string)$oXML->value);
+        }
         return $propertyInfo;
     }
 
@@ -188,14 +198,30 @@ class PropertyInfo extends BaseInfo
     public static function produceFromResultSet($rs):PropertyInfo
     {
         $propertyInfo = new PropertyInfo();
-        if(isset($rs["ID"])) $propertyInfo->setId($rs["ID"]);
-        if(isset($rs['NAME'])) $propertyInfo->setName($rs['NAME']);
-        if(isset($rs["DATATYPE"])) $propertyInfo->setDataType($rs["DATATYPE"]);
-        if(isset($rs["CATEGORY"])) $propertyInfo->setCategory($rs["CATEGORY"]);
-        if(isset($rs["ISMANDATORY"])) $propertyInfo->setMandatory($rs["ISMANDATORY"]);
-        if(isset($rs["VALUE"])) $propertyInfo->setValue($rs["VALUE"]);
-        if(isset($rs['SCOPE'])) $propertyInfo->setScope($rs['SCOPE']);
-        if(isset($rs['ENABLED'])) $propertyInfo->setEnabled($rs['ENABLED']);
+        if(isset($rs["ID"])) {
+            $propertyInfo->setId($rs["ID"]);
+        }
+        if(isset($rs['NAME'])) {
+            $propertyInfo->setName($rs['NAME']);
+        }
+        if(isset($rs["DATATYPE"])) {
+            $propertyInfo->setDataType($rs["DATATYPE"]);
+        }
+        if(isset($rs["CATEGORY"])) {
+            $propertyInfo->setCategory($rs["CATEGORY"]);
+        }
+        if(isset($rs["ISMANDATORY"])) {
+            $propertyInfo->setMandatory($rs["ISMANDATORY"]);
+        }
+        if(isset($rs["VALUE"])) {
+            $propertyInfo->setValue($rs["VALUE"]);
+        }
+        if(isset($rs['SCOPE'])) {
+            $propertyInfo->setScope($rs['SCOPE']);
+        }
+        if(isset($rs['ENABLED'])) {
+            $propertyInfo->setEnabled($rs['ENABLED']);
+        }
 
         return $propertyInfo;
     }

@@ -27,24 +27,34 @@ class ClientURLConfig
     private $_sName;
 
     /**
+     * The URL Name
+     *
+     * @var string
+     */
+    private $_sCategory;
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		The unique ID for the client's URL configuration
 	 * @param 	integer $typeid 	The unique ID for the URL type
 	 * @param 	integer $url 		The URL configured by client	 	
 	 * @param 	string $name 		The URL configured by client
+	 * @param 	string $category	The Category for URL
 	 */
-	public function __construct($id, $typeid, $url,$name='')
+	public function __construct($id, $typeid, $url,$name='',$category='')
 	{
 		$this->_iID = (integer) $id;
 		$this->_iTypeID = (integer) $typeid;		
 		$this->_sURL = (string)$url;
 		$this->_sName = (string)$name;
+		$this->_sCategory = (string)$category;
 	}
 	public function getID() { return $this->_iID; }
 	public function getTypeID() { return $this->_iTypeID; }	
 	public function getURL() { return $this->_sURL; }
 	public function getName() { return $this->_sName; }
+	public function getCategory() { return $this->_sCategory; }
 
 	/**
 	 * Convenience method for constructing a HTTPConnInfo object based on a Client URL Configuration
@@ -80,7 +90,6 @@ class ClientURLConfig
     public function toAttributeLessXML()
     {
         $xml = '<client_url>';
-        $xml .= '<id>'.$this->_iID.'</id>';
         $xml .= '<name>'.$this->_sName.'</name>';
         $xml .= '<type_id>'.$this->_iTypeID.'</type_id>';
         $xml .= '<value>'.htmlspecialchars($this->_sURL, ENT_NOQUOTES).'</value>';
@@ -90,7 +99,8 @@ class ClientURLConfig
 
     public static function produceFromXML(SimpleXMLElement &$oXML) :ClientURLConfig
     {
-        $iId =(int)$oXML->id;
+        $iId = -1;
+        if(count($oXML->id)>0 === true ) { $iId =(int)$oXML->id; }
         $iTypeId =(int)$oXML->type_id;
         $sValue =htmlspecialchars((string)$oXML->value, ENT_NOQUOTES);
         return new ClientURLConfig($iId,$iTypeId,$sValue);

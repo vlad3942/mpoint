@@ -280,17 +280,21 @@ class ClientServiceStatus
         return self::produceFromResultSet($aClientService);
     }
 
-    public static function produceFromXML( &$oXML):ClientServiceStatus
+    public static function produceFromXML( &$oXML , $oClientInfo = NULL):ClientServiceStatus
     {
+        $oClientServices = !empty($oClientInfo) ? $oClientInfo->getClientServices() : NULL;
+
         $clService = new ClientServiceStatus();
-        $clService->setCallback(\General::xml2bool($oXML->callback));
-        $clService->setDcc(\General::xml2bool($oXML->dcc));
-        $clService->setMcp(\General::xml2bool($oXML->mcp));
-        $clService->setPcc(\General::xml2bool($oXML->pcc));
-        $clService->setFraud(\General::xml2bool($oXML->fraud));
-        $clService->setTokenization(\General::xml2bool($oXML->tokenization));
-        $clService->setSplitPayment(\General::xml2bool($oXML->split_payment));
-        $clService->setVoid(\General::xml2bool($oXML->void));
+
+        $clService->setCallback(\General::xml2bool($oXML->callback ?? (!empty($oClientServices) ? $oClientServices->isCallback() : FALSE)));
+        $clService->setDcc(\General::xml2bool( $oXML->dcc ?? (!empty($oClientServices) ? $oClientServices->isDCC() : FALSE)));
+        $clService->setMcp(\General::xml2bool($oXML->mcp ?? (!empty($oClientServices) ? $oClientServices->isMCP() : FALSE )));
+        $clService->setPcc(\General::xml2bool($oXML->pcc  ?? (!empty($oClientServices) ?  $oClientServices->isPCC() : FALSE )));
+        $clService->setFraud(\General::xml2bool($oXML->fraud  ?? (!empty($oClientServices) ?  $oClientServices->isFraud() : FALSE )));
+        $clService->setTokenization(\General::xml2bool($oXML->tokenization  ?? (!empty($oClientServices) ? $oClientServices->isTokenization() : FALSE )));
+        $clService->setSplitPayment(\General::xml2bool($oXML->split_payment ?? (!empty($oClientServices) ?  $oClientServices->isSplitPayment() : FALSE )));
+        $clService->setVoid(\General::xml2bool($oXML->void  ?? (!empty($oClientServices) ? $oClientServices->isVoid() : FALSE )));
+
         return $clService;
     }
     /**
@@ -303,7 +307,7 @@ class ClientServiceStatus
     public static function produceFromResultSet(array $rs): ClientServiceStatus
     {
        $clService = new ClientServiceStatus();
-       if(empty($rs) === TRUE) return $clService;
+       if(empty($rs) === TRUE)  { return $clService; }
        $clService->setCallback($rs["CALLBACK"]);
        $clService->setDcc($rs["DCC"]);
        $clService->setMcp($rs["MCP"]);

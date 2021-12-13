@@ -139,7 +139,7 @@ abstract class CPMFRAUD
     {
         $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
         $subType ='pre_auth';
-        if($iFraudType === Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY) $subType ='post_auth';
+        if($iFraudType === Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY) { $subType ='post_auth'; }
 
         $fraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType));
 
@@ -163,7 +163,7 @@ abstract class CPMFRAUD
     {
         $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
         $subType ='pre_auth';
-        if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) $subType ='post_auth';
+        if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) { $subType ='post_auth'; }
 
         $fraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType));
 
