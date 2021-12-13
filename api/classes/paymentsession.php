@@ -299,8 +299,7 @@ final class PaymentSession
                                              INNER JOIN Log.Split_Session_Tbl Sst ON Sst.Id = Sdt.Split_Session_Id
                                     WHERE Sessionid = " . $this->_id . "
                                       AND Sst.Status = 'failed')
-                AND msg.stateid in (".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.")
-                ";
+                AND msg.stateid in (".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.", ". Constants::iPAYMENT_REJECTED_STATE .")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.", ". Constants::iPAYMENT_REJECTED_STATE .")";
 
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
@@ -555,23 +554,27 @@ final class PaymentSession
             foreach ($sessionAdditionalData as $aAdditionalDataObj)
             {
                 $name = $aAdditionalDataObj["name"];
-                $value = $aAdditionalDataObj["value"];
+                $value = htmlspecialchars($aAdditionalDataObj["value"], ENT_NOQUOTES);
                 if($name === null || empty($name) === true || $value === null || empty($value) === true)
                 {
                     return $additional_id;
                 }
-                $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
+                try {
+                    $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
 								VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
-                // Error: Unable to insert a new Additional Data record in the Additional Data Table
-                if (is_resource($res = $obj_DB->query($sql) ) === false)
-                {
-                    throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
-                }
-                else
-                {
-                    $RS = pg_fetch_assoc($res);
-                    $additional_id = $RS["id"];
-                    $this->_aSessionAdditionalData[$name] = $value;
+                    // Error: Unable to insert a new Additional Data record in the Additional Data Table
+                    if (is_resource($res = $obj_DB->query($sql) ) === false)
+                    {
+                        throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
+                    }
+                    else
+                    {
+                        $RS = pg_fetch_assoc($res);
+                        $additional_id = $RS["id"];
+                        $this->_aSessionAdditionalData[$name] = $value;
+                    }
+                } catch (mPointException | Exception $e) {
+                    trigger_error("Unable to insert new record for Additional Data " . $aAdditionalDataObj["name"] . " and value " . $aAdditionalDataObj["value"]);
                 }
             }
             return $additional_id;
@@ -582,7 +585,7 @@ final class PaymentSession
     {
         $additionalData = [];
 
-        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created >= to_timestamp('" . $sessionCreatedTimestamp  . "', 'YYYY-MM-DD HH24-MI-SS.US') and externalid=" . $txnId;
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created  >= '" . $sessionCreatedTimestamp  . "'::timestamp  - interval '60 seconds' and externalid=" . $txnId;
 
         $rsa = $_OBJ_DB->getAllNames ( $sqlA );
         if (empty($rsa) === false )

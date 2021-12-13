@@ -635,12 +635,15 @@ class General
 					($1, $2, $3)";
 
 		$bindParam = array($txnid, $sid, $data);
-		$resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
-		
-		if (!is_resource($resultSet)) {
-			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
-		}
-			
+        try {
+            $resultSet = $this->getDBConn()->executeQuery($sql, $bindParam);
+
+            if (!is_resource($resultSet)) {
+                throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
+            }
+        } catch (mPointException | Exception $e) {
+            trigger_error("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid);
+        }
 	}
 
 	/**
@@ -1590,10 +1593,12 @@ class General
     }
 
 
-    public static function applyRule(SimpleXMLElement $obj_XML,$aRuleProperties=array())
+    public static function applyRule(array $obj_XML,$aRuleProperties=array())
     {
         $parser = new  \mPoint\Core\Parser();
-        $parser->setContext($obj_XML);
+        foreach($obj_XML as $val ){
+            $parser->setContext($val);
+        }
         foreach ($aRuleProperties as $value )
         {
             $parser->setRules($value);
