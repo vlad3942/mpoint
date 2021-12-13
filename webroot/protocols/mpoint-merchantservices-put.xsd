@@ -255,25 +255,11 @@
         <xs:element name="client_urls" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
+              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="merchant_urls" maxOccurs="1" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="hpp_urls" maxOccurs="1" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="services" maxOccurs="1" minOccurs="0">
+       <xs:element name="services" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
               <xs:element type="xs:boolean" name="dcc" minOccurs="0" maxOccurs="1" />

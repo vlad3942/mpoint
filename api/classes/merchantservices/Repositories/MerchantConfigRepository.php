@@ -675,11 +675,6 @@ class MerchantConfigRepository
                 break;
             case 'urls':
                 $sTableName = 'url_tbl';
-                if($urlType === 'velocity') {
-                    $sWhereClause  .= " AND urltypeid IN ( ". Constants::iBASE_IMAGE_URL .")";
-                } else {
-                    $sWhereClause  .= " AND urltypeid NOT IN ( ". Constants::iBASE_IMAGE_URL .")";
-                }
                 break;
         }
 
@@ -1409,8 +1404,9 @@ class MerchantConfigRepository
         $aSystemMetaData['pm_types'] = $this->getMetaDataInfo('pm_type', 'paymenttype_tbl');
         $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
         $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
-        $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);        
-        $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true);
+        $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
+        $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10) THEN 'HPP' WHEN id in (7,8,9,11) THEN 'MERCHANT' WHEN id in (15) THEN 'SDK' ELSE '' END) as url_category";
+        $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true,array($urlCategory),array("id"=>"type_id"));
         $aSystemMetaData['payment_processors'] = $this->getMetaDataInfo('payment_processor', 'processortype_tbl');
 
         $aSystemMetaData['addon_types'] = $this->getServicesInfo();
@@ -1426,7 +1422,7 @@ class MerchantConfigRepository
      * @param boolean $bCheckEnabled
      * @return array
      */
-    private function getMetaDataInfo(string $rootNode, string $sTableName, bool $bCheckEnabled = false, array $aAddtionalFields = []): array
+    private function getMetaDataInfo(string $rootNode, string $sTableName, bool $bCheckEnabled = false, array $aAddtionalFields = [],$nodeAlias = []): array
     {
         $aMetaServiceConfig = [];
         $sAddtionalFields = '';
@@ -1445,7 +1441,7 @@ class MerchantConfigRepository
 
         if (is_array($aRS) && count($aRS) > 0)
         {
-            $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode);
+            $aMetaServiceConfig = BaseInfo::produceFromDataSet($aRS, $rootNode,$nodeAlias);
         }
 
         return $aMetaServiceConfig;
@@ -1518,61 +1514,6 @@ class MerchantConfigRepository
         return $aServices;
     }
 
-    /**
-     * @throws MerchantOnboardingException
-     * @throws \SQLQueryException
-     */
-    public function saveClientUrls(array $urls,$operation='INSERT', $isDeleteOldConfig = false)
-    {
-
-        $aWhereCls = array();
-        foreach ($urls as $url)
-        {
-            $sColumn = '';
-            switch ($url->getTypeID())
-            {
-                case 5:
-                    $sColumn = "logourl=";
-                    break;
-                case 6:
-                    $sColumn = "cssurl=";
-                    break;
-                case 8:
-                    $sColumn = "accepturl=";
-                    break;
-                case 9:
-                    $sColumn = "cancelurl=";
-                    break;
-                case 7:
-                    $sColumn = "callbackurl=";
-                    break;
-                case 10:
-                    $sColumn = "iconurl=";
-                    break;
-                case Constants::iBASE_IMAGE_URL :
-                    if($operation==='INSERT') {
-                        if($isDeleteOldConfig === true) $this->deleteAllClientConfig('urls', 'velocity');
-                        $this->saveVelocityURL(array($url));
-                    }
-                    else $this->updateVelocityURL(array($url));
-                    break;
-            }
-            if(empty($sColumn)===false)
-            {
-                array_push($aWhereCls,$sColumn."'".$url->getURL()."'");
-            }
-        }
-        if(empty($aWhereCls) === false)
-        {
-            $SQL = "UPDATE CLIENT".sSCHEMA_POSTFIX.".client_tbl SET ".implode(', ', $aWhereCls)." WHERE id=".$this->_clientConfig->getID();
-            $rs = $this->getDBConn()->executeQuery($SQL);
-            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
-            {
-                throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to HPP/Merchant URL}");
-            }
-        }
-
-    }
 
     /**
      * @param ClientServiceStatus $clService
@@ -1614,24 +1555,67 @@ class MerchantConfigRepository
      * @param array $urls
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(array $urls, $isDeleteOldConfig = false)
+    public function saveClientURL(array $urls, $isDeleteOldConfig = false)
     {
         if($isDeleteOldConfig === true) $this->deleteAllClientConfig('urls');
-
+        $urlTableTypeid = array(ClientConfig::iCUSTOMER_IMPORT_URL,ClientConfig::iAUTHENTICATION_URL,ClientConfig::iNOTIFICATION_URL,ClientConfig::iMESB_URL,ClientConfig::iPARSE_3DSECURE_CHALLENGE_URL,ClientConfig::iMERCHANT_APP_RETURN_URL,ClientConfig::iBASE_IMAGE_URL,ClientConfig::iTHREED_REDIRECT_URL,ClientConfig::iBASE_ASSET_URL);
         foreach ($urls as $url)
         {
-            $SQL = "INSERT INTO client".sSCHEMA_POSTFIX.".url_tbl (urltypeid,clientid,url) values ($1,$2,$3)";
-            $param = array($url->getTypeID(),$this->_clientConfig->getID(),$url->getURL());
-
-            $rs = $this->getDBConn()->executeQuery($SQL,$param);
-            if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+            if(in_array($url->getTypeID(),$urlTableTypeid) === true)
             {
-                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                $SQL = "INSERT INTO client".sSCHEMA_POSTFIX.".url_tbl (urltypeid,clientid,url) values ($1,$2,$3)";
+                $param = array($url->getTypeID(),$this->_clientConfig->getID(),$url->getURL());
+
+                $rs = $this->getDBConn()->executeQuery($SQL,$param);
+                if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
                 {
-                    $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                    {
+                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                    }
+                    throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
                 }
-                throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
+            }
+            else
+            {   $column = "";
+                switch ($url->getTypeID())
+                {
+                    case ClientConfig::iLOGO_URL:
+                        $column = "LOGOURL = $2";
+                        break;
+                    case ClientConfig::iCSS_URL:
+                        $column = "CSSURL = $2";
+                        break;
+                    case ClientConfig::iACCEPT_URL:
+                        $column = "ACCEPTURL = $2";
+                        break;
+                    case ClientConfig::iCANCEL_URL:
+                        $column = "CANCELURL = $2";
+                        break;
+                    case ClientConfig::iDECLINE_URL:
+                        $column = "DECLINEURL = $2";
+                        break;
+                    case ClientConfig::iCALLBACK_URL:
+                        $column = "CALLBACKURL = $2";
+                        break;
+                    case ClientConfig::iICON_URL:
+                        $column = "ICONURL = $2";
+                        break;
+                }
+                $SQL = "UPDATE client".sSCHEMA_POSTFIX.".client_tbl SET $column WHERE id=$1";
+                $param = array($this->_clientConfig->getID(),$url->getURL());
+
+                $rs = $this->getDBConn()->executeQuery($SQL,$param);
+                if($rs == false || $this->getDBConn()->countAffectedRows($rs) < 1)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                    {
+                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                    }
+                    throw new MerchantOnboardingException($statusCode,"Failed to save url {typeid:".$url->getTypeID()."}");
+                }
             }
 
         }

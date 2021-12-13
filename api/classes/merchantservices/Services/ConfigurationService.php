@@ -299,23 +299,12 @@ class ConfigurationService
      * @param array $urls
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(array &$urls, $isDeleteOldConfig = false)
+    public function saveClientURL(array &$urls, $isDeleteOldConfig = false)
     {
-      $this->getAggregateRoot()->saveVelocityURL($this->getRepository(),$urls, $isDeleteOldConfig);
+      $this->getAggregateRoot()->saveClientURL($this->getRepository(),$urls, $isDeleteOldConfig);
     }
 
-    /**
-     * @param array $urls
-     * @throws MerchantOnboardingException
-     * @throws \SQLQueryException
-     */
-    public function saveClientUrls(array &$urls, $isDeleteOldConfig = false)
-    {
-        $this->getAggregateRoot()->saveClientUrls($this->getRepository(),$urls, $isDeleteOldConfig);
-
-    }
-
-    /**
+   /**
      * @throws MerchantOnboardingException
      */
     public function updateVelocityURL( array &$urls)

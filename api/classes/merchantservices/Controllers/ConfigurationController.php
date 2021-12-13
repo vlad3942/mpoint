@@ -117,26 +117,8 @@ class ConfigurationController
             {
                 array_push($urls, \ClientURLConfig::produceFromXML($url));
             }
-            $this->getConfigService()->saveVelocityURL($urls);
+            $this->getConfigService()->saveClientURL($urls);
         }
-        $urls = array();
-
-        if(empty($request->merchant_urls) === false && count($request->merchant_urls)>0)
-        {
-            foreach ($request->merchant_urls->client_url as $url)
-            {
-                array_push($urls, \ClientURLConfig::produceFromXML($url));
-            }
-        }
-
-        if(empty($request->hpp_urls) === false && count($request->hpp_urls)>0)
-        {
-            foreach ($request->hpp_urls->client_url as $url)
-            {
-                array_push($urls, \ClientURLConfig::produceFromXML($url));
-            }
-        }
-        if(empty($urls) === false) $this->getConfigService()->saveClientUrls($urls);
     }
 
     /***
@@ -194,26 +176,9 @@ class ConfigurationController
             {
                 array_push($urls, \ClientURLConfig::produceFromXML($url));
             }
-            $this->getConfigService()->saveVelocityURL($urls , true);
+            $this->getConfigService()->saveClientURL($urls , true);
         }
         $urls = array();
-
-        if(empty($request->merchant_urls) === false && count($request->merchant_urls) > 0)
-        {
-            foreach ($request->merchant_urls->client_url as $url)
-            {
-                array_push($urls, \ClientURLConfig::produceFromXML($url));
-            }
-        }
-
-        if(empty($request->hpp_urls) === false && count($request->hpp_urls) > 0)
-        {
-            foreach ($request->hpp_urls->client_url as $url)
-            {
-                array_push($urls, \ClientURLConfig::produceFromXML($url));
-            }
-        }
-        if(empty($urls) === false) $this->getConfigService()->saveClientUrls($urls, true);
 
         if(empty($request->services) === false && count($request->services) > 0)
         {

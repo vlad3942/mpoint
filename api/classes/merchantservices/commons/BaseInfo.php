@@ -159,8 +159,8 @@ class BaseInfo
 
         foreach ($aRS as $rs) {            
             $BaseInfo = new BaseInfo();
-            $BaseInfo->setId($rs["ID"])
-                ->setName($rs["NAME"]);
+            $BaseInfo->setId($rs["ID"]);
+            $BaseInfo->setName($rs["NAME"]);
 
             $aAddtionalAttr = array_diff_key($rs, $aBasicAttributes);
 

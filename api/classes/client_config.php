@@ -43,6 +43,7 @@ class ClientConfig extends BasicConfig
 	const iDECLINE_URL = 11;
 	const iPARSE_3DSECURE_CHALLENGE_URL = 12;
 	const iMERCHANT_APP_RETURN_URL = 13;
+    const iBASE_IMAGE_URL = 14;
     const iTHREED_REDIRECT_URL= 15;
     const iBASE_ASSET_URL= 16;
 	/**
@@ -1246,19 +1247,13 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_AuthenticationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AuthenticationURL->toAttributeLessXML(); }
         if ( ($this->_obj_NotificationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_NotificationURL->toAttributeLessXML(); }
         if ( ($this->_obj_MESBURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_MESBURL->toAttributeLessXML(); }
-        $xml .='</client_urls>';
-
-        $xml .='<merchant_urls>';
         if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CallbackURL->toAttributeLessXML(); }
-
-        $xml .='</merchant_urls>';
-        $xml .='<hpp_urls>';
         if ( ($this->_obj_CSSURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CSSURL->toAttributeLessXML(); }
         if ( ($this->_obj_AcceptURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AcceptURL->toAttributeLessXML(); }
         if ( ($this->_obj_CancelURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CancelURL->toAttributeLessXML(); }
         if ( ($this->_obj_BaseImageURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_BaseImageURL->toAttributeLessXML(); }
         if ( ($this->_obj_LogoURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_LogoURL->toAttributeLessXML(); }
-        $xml .='</hpp_urls>';
+        $xml .='</client_urls>';
         $xml .=$this->_aObj_ClientServicesStatus->toXML();
         $accountsConfigurations = $this->getAccountsConfigurations($oDB);
         $xml .= '<account_configurations>';
@@ -1432,43 +1427,43 @@ class ClientConfig extends BasicConfig
                    switch ($aRS[$i]["URLTYPEID"])
                    {
                        case self::iCUSTOMER_IMPORT_URL:
-                           $obj_CustomerImportURL = new ClientURLConfig($aRS[$i]["ID"], self::iCUSTOMER_IMPORT_URL, $aRS[$i]["URL"]);
+                           $obj_CustomerImportURL = new ClientURLConfig($aRS[$i]["ID"], self::iCUSTOMER_IMPORT_URL, $aRS[$i]["URL"],"","CLIENT");
                            break;
                        case self::iAUTHENTICATION_URL:
-                           $obj_AuthenticationURL = new ClientURLConfig($aRS[$i]["ID"], self::iAUTHENTICATION_URL, $aRS[$i]["URL"],'Single Sign-On Authentication');
+                           $obj_AuthenticationURL = new ClientURLConfig($aRS[$i]["ID"], self::iAUTHENTICATION_URL, $aRS[$i]["URL"],'Single Sign-On Authentication',"CLIENT");
                            break;
                        case self::iNOTIFICATION_URL:
-                           $obj_NotificationURL = new ClientURLConfig($aRS[$i]["ID"], self::iNOTIFICATION_URL, $aRS[$i]["URL"]);
+                           $obj_NotificationURL = new ClientURLConfig($aRS[$i]["ID"], self::iNOTIFICATION_URL, $aRS[$i]["URL"],"","CLIENT");
                            break;
                        case self::iMESB_URL:
-                           $obj_MESBURL = new ClientURLConfig($aRS[$i]["ID"], self::iMESB_URL, $aRS[$i]["URL"],'Mobile Enterprise Servicebus');
+                           $obj_MESBURL = new ClientURLConfig($aRS[$i]["ID"], self::iMESB_URL, $aRS[$i]["URL"],'Mobile Enterprise Servicebus',"CLIENT");
                            break;
                        case self::iPARSE_3DSECURE_CHALLENGE_URL:
-                           $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"],'Parse 3D Secure Challenge URL');
+                           $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"],'Parse 3D Secure Challenge URL',"CLIENT");
                            break;
                        case self::iMERCHANT_APP_RETURN_URL:
-                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"]);
+                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"],"","SDK");
                            break;
-                       case Constants::iBASE_IMAGE_URL :
-                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], Constants::iBASE_IMAGE_URL, $aRS[$i]["URL"],'Base URL for Images');
+                       case self::iBASE_IMAGE_URL :
+                           $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URL"],'Base URL for Images',"HPP");
                            break;
                        case self::iTHREED_REDIRECT_URL:
-                           $obj_ThreedRedirectURL= new ClientURLConfig($aRS[$i]["ID"], self::iTHREED_REDIRECT_URL, $aRS[$i]["URL"]);
+                           $obj_ThreedRedirectURL= new ClientURLConfig($aRS[$i]["ID"], self::iTHREED_REDIRECT_URL, $aRS[$i]["URL"],"","CLIENT");
                            break;
                        case self::iBASE_ASSET_URL:
-                           $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URL"]);
+                           $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URL"],"","HPP");
                            break;
                    }
                 }
             }
 
-			if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"],'Logo URL'); }
-			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"],'CSS URL'); }
-			if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"],'Accept URL'); }
-			if (strlen($RS["CANCELURL"]) > 0) { $obj_CancelURL = new ClientURLConfig($RS["CLIENTID"], self::iCANCEL_URL, $RS["CANCELURL"],'Cancel URL'); }
-			if (strlen($RS["DECLINEURL"]) > 0) { $obj_DeclineURL = new ClientURLConfig($RS["CLIENTID"], self::iDECLINE_URL, $RS["DECLINEURL"]); }
-			if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"],'Callback URL'); }
-			if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"]); }
+			if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"],'Logo URL',"HPP"); }
+			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"],'CSS URL',"HPP"); }
+			if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"],'Accept URL',"MERCHANT"); }
+			if (strlen($RS["CANCELURL"]) > 0) { $obj_CancelURL = new ClientURLConfig($RS["CLIENTID"], self::iCANCEL_URL, $RS["CANCELURL"],'Cancel URL',"MERCHANT"); }
+			if (strlen($RS["DECLINEURL"]) > 0) { $obj_DeclineURL = new ClientURLConfig($RS["CLIENTID"], self::iDECLINE_URL, $RS["DECLINEURL"],"","MERCHANT"); }
+			if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"],'Callback URL',"MERCHANT"); }
+			if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"],"","HPP"); }
 
             
 			$sql  = "SELECT ipaddress

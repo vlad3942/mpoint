@@ -27,7 +27,7 @@
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
-                    <xs:element name="addon_configuration" type="addon_info_basic" minOccurs="1" maxOccurs="unbounded"></xs:element>
+                    <xs:element name="addon_configuration" type="addon_info_basic" minOccurs="1" maxOccurs="unbounded"/>
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
@@ -250,7 +250,7 @@
         <xs:element name="client_urls" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"></xs:element>
+              <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

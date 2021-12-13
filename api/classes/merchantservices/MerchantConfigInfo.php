@@ -393,19 +393,12 @@ class MerchantConfigInfo
     /**
      * @throws MerchantOnboardingException
      */
-    public function saveVelocityURL(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
+    public function saveClientURL(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
     {
-        $configRepository->saveVelocityURL($urls, $isDeleteOldConfig);
+        $configRepository->saveClientURL($urls, $isDeleteOldConfig);
     }
 
-    /**
-     * @throws MerchantOnboardingException
-     * @throws \SQLQueryException
-     */
-    public function saveClientUrls(MerchantConfigRepository $configRepository, array $urls, $isDeleteOldConfig = false)
-    {
-        $configRepository->saveClientUrls($urls,'INSERT', $isDeleteOldConfig);
-    }
+
 
     /**
      * @throws MerchantOnboardingException

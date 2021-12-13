@@ -125,8 +125,8 @@
 
   <xs:complexType name="url_info">
     <xs:sequence>
-      <xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="1" />
-      <xs:element type="xs:string" name="name" minOccurs="1" maxOccurs="1" />
+      <xs:element type="xs:integer" name="id" minOccurs="0" maxOccurs="1" />
+      <xs:element type="xs:string" name="name" minOccurs="0" maxOccurs="1" />
       <xs:element type="xs:integer" name="type_id" minOccurs="1" maxOccurs="1" />
       <xs:element type="xs:string" name="value" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
