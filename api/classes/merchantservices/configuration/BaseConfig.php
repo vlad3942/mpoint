@@ -29,8 +29,12 @@ Abstract class BaseConfig
         $aKeyValueConfig = array();
         foreach ($aConfig as $config)
         {
-            if(isset($aKeyValueConfig[$config->$keyfun()]) === true) array_push($aKeyValueConfig[$config->$keyfun()], $config);
-            else $aKeyValueConfig[$config->$keyfun()] =array($config);
+            if(isset($aKeyValueConfig[$config->$keyfun()]) === true) {
+                array_push($aKeyValueConfig[$config->$keyfun()], $config);
+            }
+            else {
+                $aKeyValueConfig[$config->$keyfun()] =array($config);
+            }
         }
       return $aKeyValueConfig;
     }

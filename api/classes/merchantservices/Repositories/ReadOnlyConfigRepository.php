@@ -127,10 +127,10 @@ class ReadOnlyConfigRepository
                 if ($this->_oTI->getGoMobileID() > -1 || $aRS['ID'] != Constants::iPREMIUM_SMS)
                 {
 
-                    if ($aRS['ID'] == 11)
+                    if ($aRS['ID'] === 11)
                     {
-                        if (($this->_oTI->getClientConfig()->getStoreCard() & 1) == 1) $aRS['NAME'] = $oTxt->_("Stored Cards");
-                        else $aRS['NAME'] = str_replace("{CLIENT}", $this->_oTI->getClientConfig()->getName(), $oTxt->_("My Account"));
+                        if (($this->_oTI->getClientConfig()->getStoreCard() & 1) === 1) {$aRS['NAME'] = $oTxt->_("Stored Cards"); }
+                        else { $aRS['NAME'] = str_replace("{CLIENT}", $this->_oTI->getClientConfig()->getName(), $oTxt->_("My Account")); }
                     }
 
 

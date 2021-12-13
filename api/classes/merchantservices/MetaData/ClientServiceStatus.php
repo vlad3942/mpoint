@@ -307,7 +307,7 @@ class ClientServiceStatus
     public static function produceFromResultSet(array $rs): ClientServiceStatus
     {
        $clService = new ClientServiceStatus();
-       if(empty($rs) === TRUE) return $clService;
+       if(empty($rs) === TRUE)  { return $clService; }
        $clService->setCallback($rs["CALLBACK"]);
        $clService->setDcc($rs["DCC"]);
        $clService->setMcp($rs["MCP"]);

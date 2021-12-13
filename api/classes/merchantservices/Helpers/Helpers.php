@@ -41,7 +41,7 @@ class Helpers {
                 $XML .= (is_object($metadata)) ? $metadata->toXML() : '';
             }
             else {
-                if(empty($metadata) === true) continue; // Skip Empty Node
+                if(empty($metadata) === true) { continue; } // Skip Empty Node
                 $XML .= "<{$key}>";
                 foreach ($metadata as $data) {
                     $sXmlSection = (is_object($data)) ? $data->toXML() : '';

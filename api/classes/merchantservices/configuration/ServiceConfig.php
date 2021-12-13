@@ -421,7 +421,9 @@ class ServiceConfig
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
         {
             $type = 1;
-            if($addonServiceType->getSubType() === 'post_auth') $type = 2;
+            if($addonServiceType->getSubType() === 'post_auth') {
+                $type = 2;
+            }
 
             return array($iId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getCountryId(),$this->getCurrencyId(),$type);
         }
@@ -445,19 +447,33 @@ class ServiceConfig
         $xml = "<addon_configuration>";
         $xml .= sprintf("<id>%s</id>",$this->getId());
         $xml .= sprintf("<enabled>%s</enabled>",General::bool2xml($this->getEnabled()));
-        if($this->getPaymentMethodId()>-1) $xml .= sprintf("<pm_id>%s</pm_id>",$this->getPaymentMethodId());
-        if($this->getCurrencyId()>-1) $xml .= sprintf("<currency_id>%s</currency_id>",$this->getCurrencyId());
-        if($this->getSequenceNo()>-1) $xml .= sprintf("<sequence_no>%s</sequence_no>",$this->getSequenceNo());
-        if($this->getPaymentType()>-1) $xml .= sprintf("<payment_type_id>%s</payment_type_id>",$this->getPaymentType());
-        if($this->getCountryId()>-1) $xml .= sprintf("<country_id>%s</country_id>",$this->getCountryId());
+        if($this->getPaymentMethodId()>-1) {
+            $xml .= sprintf("<pm_id>%s</pm_id>",$this->getPaymentMethodId());
+        }
+        if($this->getCurrencyId()>-1) {
+            $xml .=  sprintf("<currency_id>%s</currency_id>",$this->getCurrencyId());
+        }
+        if($this->getSequenceNo()>-1) {
+            $xml .= sprintf("<sequence_no>%s</sequence_no>",$this->getSequenceNo());
+        }
+        if($this->getPaymentType()>-1) {
+            $xml .= sprintf("<payment_type_id>%s</payment_type_id>",$this->getPaymentType());
+        }
+        if($this->getCountryId()>-1) {
+            $xml .= sprintf("<country_id>%s</country_id>",$this->getCountryId());
+        }
         if($this->getSettlementCurrencyId()>-1)
         {
             $xml .= sprintf("<settlement_currency_id>%s</settlement_currency_id>",$this->getSettlementCurrencyId());
             $xml .= sprintf("<is_presentment>%s</is_presentment>",General::bool2xml($this->isPresentment()));
 
         }
-        if($this->getProviderId()>-1) $xml .= sprintf("<provider_id>%s</provider_id>",$this->getProviderId());
-        if(empty($this->getVersion()) === false) $xml .= sprintf("<version>%s</version>",$this->getVersion());
+        if($this->getProviderId()>-1) {
+            $xml .= sprintf("<provider_id>%s</provider_id>",$this->getProviderId());
+        }
+        if(empty($this->getVersion()) === false) {
+            $xml .= sprintf("<version>%s</version>",$this->getVersion());
+        }
         $xml .= "</addon_configuration>";
 
         return $xml;
@@ -470,17 +486,39 @@ class ServiceConfig
     public static function produceFromXML( &$oXML):ServiceConfig
     {
         $serviceConf = new ServiceConfig();
-        if(count($oXML->id)>0) $serviceConf->setId((int)$oXML->id);
-        if(count($oXML->enabled)>0) $serviceConf->setEnabled(General::xml2bool($oXML->enabled));
-        if(count($oXML->pm_id)>0) $serviceConf->setPaymentMethodId((int)$oXML->pm_id);
-        if(count($oXML->currency_id)>0) $serviceConf->setCurrencyId((int)$oXML->currency_id);
-        if(count($oXML->country_id)>0) $serviceConf->setCountryId((int)$oXML->country_id);
-        if(count($oXML->settlement_currency_id)>0) $serviceConf->setSettlementCurrencyId((int)$oXML->settlement_currency_id);
-        if(count($oXML->is_presentment)>0) $serviceConf->setPresentment(General::xml2bool($oXML->is_presentment));
-        if(count($oXML->provider_id)>0) $serviceConf->setProviderId((int)$oXML->provider_id);
-        if(count($oXML->version)>0) $serviceConf->setVersion($oXML->version);
-        if(count($oXML->payment_type_id)>0) $serviceConf->setPaymentType((int)$oXML->payment_type_id);
-        if(count($oXML->sequence_no)>0) $serviceConf->setSequenceNo((int)$oXML->sequence_no);
+        if(count($oXML->id)>0) {
+            $serviceConf->setId((int)$oXML->id);
+        }
+        if(count($oXML->enabled)>0) {
+            $serviceConf->setEnabled(General::xml2bool($oXML->enabled));
+        }
+        if(count($oXML->pm_id)>0) {
+            $serviceConf->setPaymentMethodId((int)$oXML->pm_id);
+        }
+        if(count($oXML->currency_id)>0) {
+            $serviceConf->setCurrencyId((int)$oXML->currency_id);
+        }
+        if(count($oXML->country_id)>0) {
+            $serviceConf->setCountryId((int)$oXML->country_id);
+        }
+        if(count($oXML->settlement_currency_id)>0) {
+            $serviceConf->setSettlementCurrencyId((int)$oXML->settlement_currency_id);
+        }
+        if(count($oXML->is_presentment)>0) {
+            $serviceConf->setPresentment(General::xml2bool($oXML->is_presentment));
+        }
+        if(count($oXML->provider_id)>0) {
+            $serviceConf->setProviderId((int)$oXML->provider_id);
+        }
+        if(count($oXML->version)>0) {
+            $serviceConf->setVersion($oXML->version);
+        }
+        if(count($oXML->payment_type_id)>0) {
+            $serviceConf->setPaymentType((int)$oXML->payment_type_id);
+        }
+        if(count($oXML->sequence_no)>0) {
+            $serviceConf->setSequenceNo((int)$oXML->sequence_no);
+        }
 
         return $serviceConf;
     }
@@ -492,20 +530,48 @@ class ServiceConfig
     public static function produceFromResultSet($rs):ServiceConfig
     {
         $serviceConf = new ServiceConfig();
-        if(isset($rs["ID"])) $serviceConf->setId($rs["ID"]);
-        if(isset($rs['ENABLED'])) $serviceConf->setEnabled($rs['ENABLED']);
-        if(isset($rs["PMID"])) $serviceConf->setPaymentMethodId($rs["PMID"]);
-        if(isset($rs["CURRENCYID"])) $serviceConf->setCurrencyId($rs["CURRENCYID"]);
-        if(isset($rs["SALE_CURRENCY_ID"])) $serviceConf->setCurrencyId($rs["SALE_CURRENCY_ID"]);
-        if(isset($rs["COUNTRYID"])) $serviceConf->setCountryId($rs["COUNTRYID"]);
-        if(isset($rs['CREATED'])) $serviceConf->setCreated($rs['CREATED']);
-        if(isset($rs['MODIFIED'])) $serviceConf->setModified($rs["MODIFIED"]);
-        if(isset($rs["SETTLEMENT_CURRENCY_ID"])) $serviceConf->setSettlementCurrencyId($rs["SETTLEMENT_CURRENCY_ID"]);
-        if(isset($rs['IS_PRESENTMENT'])) $serviceConf->setPresentment($rs['IS_PRESENTMENT']);
-        if(isset($rs["PROVIDERID"])) $serviceConf->setProviderId($rs["PROVIDERID"]);
-        if(isset($rs["VERSION"])) $serviceConf->setVersion($rs["VERSION"]);
-        if(isset($rs["PAYMENT_TYPE"])) $serviceConf->setPaymentType($rs["PAYMENT_TYPE"]);
-        if(isset($rs["SEQUENCE_NO"])) $serviceConf->setSequenceNo($rs["SEQUENCE_NO"]);
+        if(isset($rs["ID"])) {
+            $serviceConf->setId($rs["ID"]);
+        }
+        if(isset($rs['ENABLED'])) {
+            $serviceConf->setEnabled($rs['ENABLED']);
+        }
+        if(isset($rs["PMID"])) {
+            $serviceConf->setPaymentMethodId($rs["PMID"]);
+        }
+        if(isset($rs["CURRENCYID"])) {
+            $serviceConf->setCurrencyId($rs["CURRENCYID"]);
+        }
+        if(isset($rs["SALE_CURRENCY_ID"])) {
+            $serviceConf->setCurrencyId($rs["SALE_CURRENCY_ID"]);
+        }
+        if(isset($rs["COUNTRYID"])) {
+            $serviceConf->setCountryId($rs["COUNTRYID"]);
+        }
+        if(isset($rs['CREATED'])) {
+            $serviceConf->setCreated($rs['CREATED']);
+        }
+        if(isset($rs['MODIFIED'])) {
+            $serviceConf->setModified($rs["MODIFIED"]);
+        }
+        if(isset($rs["SETTLEMENT_CURRENCY_ID"])) {
+            $serviceConf->setSettlementCurrencyId($rs["SETTLEMENT_CURRENCY_ID"]);
+        }
+        if(isset($rs['IS_PRESENTMENT'])) {
+            $serviceConf->setPresentment($rs['IS_PRESENTMENT']);
+        }
+        if(isset($rs["PROVIDERID"])) {
+            $serviceConf->setProviderId($rs["PROVIDERID"]);
+        }
+        if(isset($rs["VERSION"])) {
+            $serviceConf->setVersion($rs["VERSION"]);
+        }
+        if(isset($rs["PAYMENT_TYPE"])) {
+            $serviceConf->setPaymentType($rs["PAYMENT_TYPE"]);
+        }
+        if(isset($rs["SEQUENCE_NO"])) {
+            $serviceConf->setSequenceNo($rs["SEQUENCE_NO"]);
+        }
 
         return $serviceConf;
     }
@@ -516,20 +582,36 @@ class ServiceConfig
     public function toString():string
     {
         $aString = array();
-        if ($this->getId()>-1) array_push($aString,"id=".$this->getId());
+        if ($this->getId()>-1) {
+            array_push($aString,"id=".$this->getId());
+        }
         array_push($aString,"enabled=".General::bool2xml($this->getEnabled()));
-        if($this->getPaymentMethodId()>-1) array_push($aString,"pm_id=".$this->getPaymentMethodId());
-        if($this->getCurrencyId()>-1) array_push($aString,"currency_id=".$this->getCurrencyId());
-        if($this->getCountryId()>-1) array_push($aString,"country_id=".$this->getCountryId());
+        if($this->getPaymentMethodId()>-1) {
+            array_push($aString,"pm_id=".$this->getPaymentMethodId());
+        }
+        if($this->getCurrencyId()>-1) {
+            array_push($aString,"currency_id=".$this->getCurrencyId());
+        }
+        if($this->getCountryId()>-1) {
+            array_push($aString,"country_id=".$this->getCountryId());
+        }
         if($this->getSettlementCurrencyId()>-1)
         {
             array_push($aString,"settlement_currency_id=".$this->getSettlementCurrencyId());
             array_push($aString,"is_presentment=".General::bool2xml($this->isPresentment()));
         }
-        if($this->getProviderId()>-1) array_push($aString,"provider_id=".$this->getProviderId());
-        if($this->getPaymentType()>-1) array_push($aString,"payment_type_id=".$this->getPaymentType());
-        if($this->getSequenceNo()>-1) array_push($aString,"sequence_no=".$this->getSequenceNo());
-        if(empty($this->getVersion()) === false) array_push($aString,"version=".$this->getVersion());
+        if($this->getProviderId()>-1) {
+            array_push($aString,"provider_id=".$this->getProviderId());
+        }
+        if($this->getPaymentType()>-1) {
+            array_push($aString,"payment_type_id=".$this->getPaymentType());
+        }
+        if($this->getSequenceNo()>-1) {
+            array_push($aString,"sequence_no=".$this->getSequenceNo());
+        }
+        if(empty($this->getVersion()) === false) {
+            array_push($aString,"version=".$this->getVersion());
+        }
         return '{'.implode(', ', $aString).'}';
     }
 

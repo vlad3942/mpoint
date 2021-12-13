@@ -297,7 +297,7 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-                    <xs:element name="enabled" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="enabled" type="xs:boolean" minOccurs="0" maxOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>

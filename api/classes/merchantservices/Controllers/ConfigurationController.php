@@ -403,7 +403,7 @@ class ConfigurationController
         {
             $aRouteConfigId = $this->getConfigService()->getRouteConfigIdByPSP((int)$additionalParams['psp_id']);
         }
-        $bAllConfig = count($aRouteConfigId) == 1;
+        $bAllConfig = count($aRouteConfigId) === 1;
         foreach ($aRouteConfigId as $routeconfigId)
         {
             $provider = $this->getConfigService()->getRouteConfiguration($routeconfigId,$bAllConfig);
