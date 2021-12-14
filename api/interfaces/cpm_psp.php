@@ -1147,6 +1147,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 		$expiry_month = '';
 		$expiry_year = '';
+        $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
+        $cardName = $objPaymentMethod->CardName;
 
 		if($obj_Card->expiry)
 		{
@@ -1155,7 +1157,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-		
+		if (!empty($cardName)) {
+            $b .= '<card-name>'.$cardName.'</card-name>>';
+        }
 		if($obj_Card->{'card-holder-name'}) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 				
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
