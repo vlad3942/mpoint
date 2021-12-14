@@ -174,7 +174,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusPending);
 						}
 						//Update Refund amount in txn table
 						if((int)$iAmount === -1)
@@ -558,7 +558,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     $statusCode = (int) $attributes['code'];
                     $statusSubCode = (int) $attributes['sub-code'];
                     $message = $statusNode;
-                    $errorCodes = [2010];
+                    $errorCodes = [Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_UNKNOWN_ERROR_STATE];
                     if (in_array($statusCode, $errorCodes)) {
                         throw new PaymentProcessorInitializeException($message, $statusCode, null, $statusSubCode);
                     }
