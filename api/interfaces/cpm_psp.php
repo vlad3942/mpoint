@@ -568,7 +568,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
         catch (PaymentProcessorInitializeException $pe)
         {
-            trigger_error("PSP  initialization failed with code: ". $pe->getResponseCode() . " and message: ". $pe->getMessage(), E_USER_ERROR);
+            trigger_error("PSP  initialization failed with code: ". $pe->getCode() . " and message: ". $pe->getMessage(), E_USER_ERROR);
             throw $pe;
         }
 		catch (mPointException $e)

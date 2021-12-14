@@ -24,11 +24,8 @@ class PaymentProcessorInitializeException extends mPointException
         parent::__construct($message, $code, $previous);
         $this->subCode = $subCode;
     }
-    function getResponseCode()
-    {
-        return $this->code;
-    }
-    function getResponseSubcode()
+
+    function getSubcode()
     {
         return $this->subCode;
     }

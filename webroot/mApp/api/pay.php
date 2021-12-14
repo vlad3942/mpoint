@@ -865,7 +865,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
                                     catch (PaymentProcessorInitializeException $e)
                                     {
-                                        $xml = '<status code="' . $e->getResponseCode() . '" sub-code="' . $e->getResponseSubcode() . '">' . $e->getMessage() . '</status>';
+                                        $xml = '<status code="' . $e->getCode() . '" sub-code="' . $e->getSubcode() . '">' . $e->getMessage() . '</status>';
                                     }
 									catch (mPointException $e)
 									{
