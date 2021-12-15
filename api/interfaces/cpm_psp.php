@@ -174,7 +174,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusInProgress);
 						}
 						//Update Refund amount in txn table
 						if((int)$iAmount === -1)
