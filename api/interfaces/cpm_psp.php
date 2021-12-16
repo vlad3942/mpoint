@@ -472,6 +472,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         }
 
         $this->updateTxnInfoObject();
+        $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
+        $cardName = $objPaymentMethod->CardName;
 
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
@@ -494,16 +496,23 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
-		{ 
+		{
+             $cardNameXml = '';
+             if (!empty($cardName)) {
+                 $cardNameXml = '<name>' . $cardName . '</name>';
+             }
 			 if($card_token == '')
 			 {
-			 	$b .= '<card type-id="'.$card_type_id.'"></card>';
+			 	$b .= '<card type-id="'.$card_type_id.'">' .
+                            $cardNameXml .
+                      '</card>';
 			 }
 			 else
 			 {
-			 	$b .= '<card type-id="'.$card_type_id.'">
-			 			  <token>'.$card_token.'</token>
-			 		   </card>';
+			 	$b .= '<card type-id="'.$card_type_id.'">' .
+                          $cardNameXml .
+                          '<token>'.$card_token.'</token>
+			 		 </card>';
 			 }
 		}
 		if(is_null($obj_BillingAddress) == false)
