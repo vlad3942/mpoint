@@ -309,6 +309,7 @@
 										<xs:element name="card">
 											<xs:complexType>
 												<xs:sequence>
+													<xs:element name="card-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 													<xs:element name="amount">
 														<xs:complexType>
 															<xs:simpleContent>
