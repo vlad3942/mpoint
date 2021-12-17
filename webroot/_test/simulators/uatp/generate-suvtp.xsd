@@ -96,6 +96,7 @@
 							<xs:element name="card">
 								<xs:complexType>
 									<xs:all>
+										<xs:element type="xs:string" name="card-name" minOccurs="0" maxOccurs="1" />
 										<xs:element type="xs:string" name="card-holder-name" minOccurs="0" maxOccurs="1" />
 										<xs:element type="xs:string" name="masked_account_number" minOccurs="0" maxOccurs="1" />
 										<xs:element type="xs:long" name="card-number" minOccurs="0" maxOccurs="1" />
