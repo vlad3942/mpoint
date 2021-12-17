@@ -18,7 +18,7 @@
  */
 class DSB extends CPMPSP
 {
-	public function initialize(PSPConfig $obj_PSP,$euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL) { /* no operation */ }
+	public function initialize(PSPConfig $obj_PSP,$euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $aWalletCardSchemes = array()) { /* no operation */ }
 
 	public function auth($ticket=null, $apiKey=null, $cardID=null, $storecard=null)  { /* no operation */ }
 
