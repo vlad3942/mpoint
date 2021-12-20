@@ -594,6 +594,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
         $b .= '<client-config business-type="' .$this->getClientConfig()->getAccountConfig()->getBusinessType(). '">';
+        if ( ($this->getClientConfig()->getHPPURLObject() instanceof ClientURLConfig) === true) {
+            $b .= "<urls>". $this->getClientConfig()->getHPPURLObject()->toXML() . "</urls>";
+        }
         $b .= '<additional-config>';
 
         foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
@@ -1508,7 +1511,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     $bIsProceedAuth = false;
                     if(empty($aMpiRule) === false)
                     {
-                        $bIsProceedAuth = $this->applyRule($obj_XML->{'info-3d-secure'},$aMpiRule);
+                        $bIsProceedAuth = $this->applyRule([$obj_XML->{'info-3d-secure'}],$aMpiRule);
                     }
                     if($bIsProceedAuth === true) { return $this->authorize($this->getPSPConfig(),$obj_Card,$obj_ClientInfo); }
 
