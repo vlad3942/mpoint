@@ -1114,7 +1114,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, dccenabled) VALUES (10099, 2, $pspID, true, 1, true)");
 
-        $xml = $this->getInitDoc(10099, 1100, 208,null,200,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","21");
+        $xml = $this->getInitDoc(10099, 1100, 208,null,200,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","31");
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -1131,7 +1131,7 @@ class InitializeAPIValidationTest extends baseAPITest
         {
             $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(21, $fxservicetypeid);
+        $this->assertEquals(31, $fxservicetypeid);
     }
 
     public function testMCPDisabledDCCEnabled()
@@ -1178,7 +1178,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, dccenabled) VALUES (10099, 2, $pspID, true, 1, false)");
 
-        $xml = $this->getInitDoc(10099, 1100, 208,null,200,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","21");
+        $xml = $this->getInitDoc(10099, 1100, 208,null,200,null,"abhinav.shaha@cellpointmobile.com","abhinav.shaha@cellpointmobile.com","9766367227",null,null,"2.0","31");
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -1195,7 +1195,7 @@ class InitializeAPIValidationTest extends baseAPITest
         {
             $fxservicetypeid = (int)$row["fxservicetypeid"];
         }
-        $this->assertEquals(21, $fxservicetypeid);
+        $this->assertEquals(31, $fxservicetypeid);
     }
 
     public function testMCPDisabledDCCDisabled()
