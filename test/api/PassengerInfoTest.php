@@ -45,20 +45,13 @@ class PassengerInfoTest extends baseAPITest
 
         $passengerObj = PassengerInfo::produceConfigurations($this->_OBJ_DB, 24);
 
-        // new xml
-        $GLOBALS['oldOrderXml'] = false;
         $xml = $passengerObj[0]->toXML();
         $this->assertEquals('<profile><seq>1</seq><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></profile>', $xml);
 
-        //old xml
-        $GLOBALS['oldOrderXml'] = true;
-        $xml = $passengerObj[0]->toXML();
-        $this->assertEquals('<passenger-detail><title>Mr</title><first-name>dan</first-name><last-name>dan</last-name><type>ADT</type><contact-info><email>dan@dan.com</email><mobile country-id="640">9187231231</mobile></contact-info><additional-data><param name="loyality_id">345rtyu</param></additional-data></passenger-detail>', $xml);
     }
 
     public function tearDown() : void
     {
-        $GLOBALS['oldOrderXml'] = false;
         $this->_OBJ_DB->disConnect();
         parent::tearDown();
     }
