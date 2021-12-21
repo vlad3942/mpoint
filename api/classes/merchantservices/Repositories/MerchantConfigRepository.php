@@ -403,20 +403,23 @@ class MerchantConfigRepository
         $sWhereCls = " clientid = ".$this->_clientConfig->getID();
         if(empty($pms) === false)
         {
-            $sWhereCls = " AND routeconfigid = ".$id;
+            $sWhereCls = " routeconfigid = ".$id;
             $sTableName = ".routepm_tbl";
             if($type === 'CLIENT')
             {
                 $sTableName = ".pm_tbl";
-                $sWhereCls = " AND clientid = ".$this->_clientConfig->getID();
-
+                $sWhereCls = " clientid = ".$this->_clientConfig->getID();
             } else if($type === 'PSP'){
                 $sTableName = ".providerpm_tbl";
                 $iRouteId = $this->getRouteIDByProvider( $id,false);
-                $sWhereCls = " AND routeid = " . $iRouteId;
+                $sWhereCls = " routeid = " . $iRouteId;
             }
 
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.$sTableName." WHERE pmid in (".$pms.") ".$sWhereCls;
+            if($pms !== '-1') {
+                $sWhereCls .= " AND pmid in (".$pms.") ";
+            }
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.$sTableName." WHERE ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -429,19 +432,23 @@ class MerchantConfigRepository
             $sTableName = '';
             if($type === "CLIENT")  {
                 $sTableName = 'client_property_tbl';
-                $sWhereCls = " AND clientid = ".$this->_clientConfig->getID();
+                $sWhereCls = " clientid = ".$this->_clientConfig->getID();
             }
             else if($type === 'PSP') {
                 $sTableName = 'psp_property_tbl';
-                $sWhereCls = "AND clientid = ".$this->_clientConfig->getID();
+                $sWhereCls = " clientid = ".$this->_clientConfig->getID();
             }
             else if($type === 'ROUTE')
             {
                 $sTableName = 'route_property_tbl';
-                $sWhereCls = " AND routeconfigid = ".$id;
+                $sWhereCls = " routeconfigid = ".$id;
             }
 
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE propertyid IN(".$ids.") ".$sWhereCls;
+            if($ids !== '-1') {
+                $sWhereCls .= " AND propertyid IN ( ".$ids.") ";
+            }
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -453,9 +460,13 @@ class MerchantConfigRepository
         if(empty($features) === false)
         {
             $sTableName = 'routefeature_tbl';
-            $sWhereCls = " AND routeconfigid = ".$id;
+            $sWhereCls = " routeconfigid = ".$id;
 
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE featureid IN(".$features.") ".$sWhereCls;
+            if($features !== '-1') {
+                $sWhereCls .= " AND featureid IN ( ".$features.") ";
+            }
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -466,9 +477,13 @@ class MerchantConfigRepository
         if(empty($countries) === false)
         {
             $sTableName = 'routecountry_tbl';
-            $sWhereCls = " AND routeconfigid = ".$id;
+            $sWhereCls = " routeconfigid = ".$id;
 
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE countryid IN(".$countries.") ".$sWhereCls;
+            if($countries !== '-1') {
+                $sWhereCls .= " AND countryid IN ( ".$countries.") ";
+            }
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
@@ -479,9 +494,13 @@ class MerchantConfigRepository
         if(empty($currencies) === false)
         {
             $sTableName = 'routecurrency_tbl';
-            $sWhereCls = " AND routeconfigid = ".$id;
+            $sWhereCls = " routeconfigid = ".$id;
 
-            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE currencyid IN(".$currencies.") ".$sWhereCls;
+            if($currencies !== '-1') {
+                $sWhereCls .= " AND currencyid IN ( ".$currencies.") ";
+            }
+
+            $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".".$sTableName." WHERE ".$sWhereCls;
             $rs = $this->getDBConn()->executeQuery($SQL);
 
             if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
