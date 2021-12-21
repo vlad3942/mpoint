@@ -113,12 +113,7 @@ class RoutingService extends General
         $this->_iWalletId = $walletId;
     }
 
-    /**
-     * Produces a list of eligible payment methods.
-     *
-     * @return 	SimpleDOMElement $obj_XML   List of payment methods/cards
-     */
-    public function getPaymentMethods()
+    private function getPaymentMethodSearchCriteriaXml()
     {
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
         $body .= '<payment_method_search_criteria>';
@@ -145,6 +140,11 @@ class RoutingService extends General
         }
         $body .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $body .= '</amount>';
+        if($this->_obj_TxnInfo->getFXServiceTypeID()>0) {
+            $body .= '<foreign_exchange_info>';
+            $body .= '<service_type_id>'.$this->_obj_TxnInfo->getFXServiceTypeID() .'</service_type_id>';
+            $body .= '</foreign_exchange_info>';
+        }
         if(is_array($this->_obj_FailedPaymentMethods) && count($this->_obj_FailedPaymentMethods) > 0 )
         {
             $body .= '<retry_attempts>';
@@ -164,6 +164,17 @@ class RoutingService extends General
         $body .= '<client_id>'.$this->_iClientId.'</client_id>';
         $body .= '</client_info>';
         $body .= '</payment_method_search_criteria>';
+        return $body;
+    }
+
+    /**
+     * Produces a list of eligible payment methods.
+     *
+     * @return 	SimpleDOMElement $obj_XML   List of payment methods/cards
+     */
+    public function getPaymentMethods()
+    {
+        $body = $this->getPaymentMethodSearchCriteriaXml();
         $obj_XML = '';
         try
         {

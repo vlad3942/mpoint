@@ -2084,9 +2084,8 @@ class TxnInfo
 			return $Address_iD;
 		}
 	}
-	
-	
-	
+
+
 	/**
 	 * Function to insert new records in the Additional Data table that are send as part of the transaction cart details
 	 *
@@ -2101,27 +2100,32 @@ class TxnInfo
 			foreach ($aAdditionalData as $aAdditionalDataObj)
 			{
 			    $name = $aAdditionalDataObj["name"];
-			    $value = $aAdditionalDataObj["value"];
+			    $value = htmlspecialchars($aAdditionalDataObj["value"], ENT_NOQUOTES);
 			    if($name === null || empty($name) === true || $value === null || empty($value) === true)
                 {
                     return $additional_id;
                 }
-				$sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
-								VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
-				// Error: Unable to insert a new Additional Data record in the Additional Data Table
-				if (is_resource($res = $obj_DB->query($sql) ) === false)
-				{
-					throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
+				try {
+						$sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
+									VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
+						// Error: Unable to insert a new Additional Data record in the Additional Data Table
+						if (is_resource($res = $obj_DB->query($sql) ) === false)
+						{
+							throw new mPointException("Unable to insert new record for Additional Data: ". $res["ID"], 1002);
+						}
+						else
+						{
+							$RS = pg_fetch_assoc($res);
+							$additional_id = $RS["id"];
+							if($aAdditionalDataObj["type"] === 'Transaction')
+							{
+								$this->_aAdditionalData[$name] = $value;
+							}
+						}
+					} catch (mPointException | Exception $e) {
+					trigger_error("Unable to insert new record for Additional Data " . $aAdditionalDataObj["name"] . " and value " . $aAdditionalDataObj["value"]);
 				}
-				else
-				{
-					$RS = pg_fetch_assoc($res);
-					$additional_id = $RS["id"];
-					if($aAdditionalDataObj["type"] === 'Transaction')
-					{
-						$this->_aAdditionalData[$name] = $value;
-					}
-				}
+
 			}	
 			return $additional_id;	
 		}

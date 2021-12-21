@@ -1288,6 +1288,55 @@
 			</xs:element>
 			<!-- Validate Rule -->
 
+			<!-- Generate hmac Security Hash -->
+			<xs:element name="generate-hmac-security-hash">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="hmac-type" type="xs:string" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="order-no" type="xs:string" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+												<xs:element name="unique-reference" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="nonce" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="country-id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="cfx-id" type="xs:string"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale-currency" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="client-info" minOccurs="0" maxOccurs="1">
+												<xs:complexType>
+													<xs:all>
+														<xs:element name="mobile" minOccurs="0" maxOccurs="1">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="6" />
+																	<xs:maxLength value="15" />
+																	<xs:pattern value="([0-9])*"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="mobile-country" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+														<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
+														<xs:element name="device-id" type="device-id" minOccurs="0" maxOccurs="1" />
+													</xs:all>
+												</xs:complexType>
+											</xs:element>
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!-- Generate hmac Security Hash -->
+
 			<!-- Get Successful Txn From Session -->
 			<xs:element name="get-successful-txn-from-session" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
