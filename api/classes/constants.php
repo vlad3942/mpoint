@@ -1869,6 +1869,7 @@ abstract class Constants
     const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
     const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
 	const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP = 5;
+	const iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION= 6;
 
     /*
      * Defines unique ID of the State that indicates payment soft declined
@@ -1940,6 +1941,7 @@ abstract class Constants
      */
 	const iPAYMENT_3DS_SUCCESS_FULLY_AUTHENTICATED_SUB_STATE = 2006001;
 	const iPAYMENT_3DS_SUCCESS_ATTEMPTED_SUB_STATE = 2006004;
+	const iPAYMENT_3DS_DUPLICATE_STATE = 2006018;
 	/*
      * Define substatus code of 2016 status code
      */

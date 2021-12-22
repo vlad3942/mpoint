@@ -461,6 +461,39 @@ class MerchantOnboardingAPITest extends baseAPITest
 
     }
 
+    public function testSuccessfulDeleteAllPSPProperty()
+    {
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='FILE_EXPIRY' AND PSPID=52),'CPD_')");
+        $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 52)");
+        $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 2)");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/psp_id/52/pm/-1/p_id/-1",'DELETE');
+
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.psp_property_tbl where clientid = 10099" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where routeid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'TestPSPName' AND username = 'TestPSPUser' AND passwd = 'TestPSPPass'" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+    }
+
 
     public function testWrongPSPSavePSPProperty()
     {
@@ -707,6 +740,52 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(0, pg_num_rows($res));
     }
 
+    public function testSuccessfulDeleteAllRouteProperty()
+    {
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessId' AND PSPID=50),1,'1234')");
+        $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
+        $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
+        $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
+        $this->queryDB("INSERT INTO client.routefeature_tbl (clientid,routeconfigid, featureid) VALUES (10099,1,1)");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid, countryid) VALUES (1,1)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/route_conf_id/1/p_id/-1/pm/-1/r_f/-1/country/-1/currency/-1", 'DELETE');
+
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+
+        $this->assertEquals(200, $iStatus);
+        $res =  $this->queryDB("SELECT id FROM CLIENT.route_property_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routepm_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routefeature_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecurrency_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routecountry_tbl where routeconfigid = 1" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+    }
+
+
     public function testSuccessfulGetSystemMetadata()
     {
 
@@ -944,6 +1023,45 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(200, $iStatus);
 
         $res =  $this->queryDB("select * from client.pm_tbl where pmid in (1, 4)");
+        # Test 1 : Client PM Table
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+    }
+
+    /***
+     *
+     * @api DELETE : ClientConfiguration
+     *
+     * @throws \ErrorException
+     * @throws \HTTPConnectionException
+     * @throws \HTTPSendException
+     */
+
+    public function testSuccessfulDeleteAllClientConfiguration()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, cssurl, callbackurl) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass','https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/callback.php')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled, enabled, created, modified) VALUES (10099::integer, DEFAULT, true::boolean, true::boolean, true::boolean, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 1::integer, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 4::integer, DEFAULT, DEFAULT, DEFAULT);");
+        $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 12::integer, DEFAULT, DEFAULT, DEFAULT);");
+
+        $this->queryDB("INSERT INTO Client.client_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.client_property_tbl where id=60),'true')");
+        $this->queryDB("INSERT INTO Client.client_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.client_property_tbl where id=61),'true')");
+
+        # External Call
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/p_id/-1/pm/-1",'DELETE');
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("select * from client.pm_tbl where clientid = 10099");
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
