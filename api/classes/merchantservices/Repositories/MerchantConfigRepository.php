@@ -282,12 +282,33 @@ class MerchantConfigRepository
     public function deleteAddonConfig(array $additionalParams)
     {
 
-        foreach ($additionalParams as $params )
-       {
-           $addonServiceType = $params[1];
-           $Ids = $params[2];
+        foreach ($additionalParams as $params ) {
+            $addonServiceType = $params[1];
+            $Ids = $params[2];
 
-           $SQL = 'DELETE FROM CLIENT'.sSCHEMA_POSTFIX.'.'. $addonServiceType->getTableName() .' WHERE ID in ('.$Ids.')';
+            if ($Ids === "-1" && $addonServiceType->getSubType() === 'cashless' || $addonServiceType->getSubType() === 'conventional' || $addonServiceType->getSubType() === 'hybrid')
+            {
+                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE split_config_id in (SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->getClientInfo()->getID()."  AND name = '" . $addonServiceType->getSubType() . "')";
+
+            }
+            else if ($Ids === "-1" && $addonServiceType->getSubType() === 'post_auth' || $addonServiceType->getSubType() === 'pre_auth')
+            {
+                $typeoffraud =2;
+                if($addonServiceType->getSubType() === 'pre_auth')
+                {
+                    $typeoffraud = 1;
+                }
+                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE clientid=".$this->getClientInfo()->getID()." AND typeoffraud=".$typeoffraud;
+            }
+            else if ($Ids === "-1")
+            {
+                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE clientid=".$this->getClientInfo()->getID();
+            }
+            else
+            {
+                $SQL = 'DELETE FROM CLIENT'.sSCHEMA_POSTFIX.'.'. $addonServiceType->getTableName() .' WHERE ID in ('.$Ids.')';
+
+            }
            $rs = $this->getDBConn()->executeQuery($SQL);
 
            if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)

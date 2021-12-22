@@ -62,7 +62,7 @@ class MerchantConfigInfo
         $aDeleteConfig = array();
         foreach ($additionalParams as $key => $value)
         {
-            $addonServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf($key),'');
+            $addonServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::valueOf($key),$key);
             if($addonServiceType === null)  { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER,"Invalid parameter {param:".$key."}");
             } else {
                 if(empty($value) === true )  { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"No parameters for ".$key); }
