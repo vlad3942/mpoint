@@ -1167,7 +1167,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
 		if (!empty($cardName)) {
-            $b .= '<card-name>'.$cardName.'</card-name>';
+            $b .= '<name>'.$cardName.'</name>';
         }
 		if($obj_Card->{'card-holder-name'}) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 				
@@ -1233,7 +1233,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
         if (!empty($cardName)) {
-            $b .= '<card-name>'.$cardName.'</card-name>';
+            $b .= '<name>'.$cardName.'</name>';
         }
         $b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';

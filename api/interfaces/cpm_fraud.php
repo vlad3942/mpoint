@@ -393,7 +393,7 @@ abstract class CPMFRAUD
 
         $b = '<card type-id="'.intval($obj_Card['type-id']).'">';
         if (!empty($cardName)) {
-            $b .= '<card-name>' . $cardName . '</card-name>';
+            $b .= '<name>' . $cardName . '</name>';
         }
         if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 
