@@ -99,8 +99,8 @@ class RoutingServiceResponse
 
                     if(isset($aObj_XML->payment_methods->payment_method[$i]->card_schemes) && count($aObj_XML->payment_methods->payment_method[$i]->card_schemes) > 0) {
                         $iPMId = (int)$aObjPaymentMethod->payment_methods->payment_method[$i]->id ?? -1;
-                        $iPSPID = WalletProcessor::$aWalletConstants[$iPMId] ?? -1;
-                        $aObjPaymentMethod->card_schemes[$iPSPID] = self::generateCardSchemes((array) $aObj_XML->payment_methods->payment_method[$i]->card_schemes);
+                        $iProviderId = WalletProcessor::$aWalletConstants[$iPMId] ?? -1;
+                        $aObjPaymentMethod->card_schemes[$iProviderId] = self::generateCardSchemes((array) $aObj_XML->payment_methods->payment_method[$i]->card_schemes);
                     }
 
                 }
@@ -130,7 +130,7 @@ class RoutingServiceResponse
      * @param array $aCardSchemes
      * @return array
      */
-    public function generateCardSchemes(array $aCardSchemes) : array
+    private function generateCardSchemes(array $aCardSchemes) : array
     {
         $aCardSchemeInfo = [];
         foreach ($aCardSchemes['card_scheme'] as $card) {

@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="root">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="initialize">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="client-config">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string" />
+                                        <xs:element name="username" type="xs:string" />
+                                        <xs:element name="max-amount">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedByte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="urls">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="url">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute name="id" type="xs:unsignedByte" use="required" />
+                                                                    <xs:attribute name="type-id" type="xs:unsignedByte" use="required" />
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="keyword">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute name="id" type="xs:unsignedByte" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="payment-methods">
+                                            <xs:complexType>
+                                                <xs:attribute name="store-card" type="xs:unsignedByte" use="required" />
+                                                <xs:attribute name="show-all-cards" type="xs:boolean" use="required" />
+                                                <xs:attribute name="max-stored-cards" type="xs:byte" use="required" />
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="account-configurations">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="account-config">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="name" />
+                                                                <xs:element name="markup" />
+                                                                <xs:element name="businessType" type="xs:unsignedByte" />
+                                                                <xs:element name="payment-service-providers">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name="payment-service-provider">
+                                                                                <xs:complexType>
+                                                                                    <xs:sequence>
+                                                                                        <xs:element name="name" type="xs:string" />
+                                                                                        <xs:element name="modified-date" type="xs:dateTime" />
+                                                                                    </xs:sequence>
+                                                                                    <xs:attribute name="id" type="xs:unsignedByte" use="required" />
+                                                                                    <xs:attribute name="psp-id" type="xs:unsignedByte" use="required" />
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                            <xs:attribute name="id" type="xs:unsignedShort" use="required" />
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="gomobile-configuration-params" />
+                                        <xs:element name="communication-channels" />
+                                        <xs:element name="callback-protocol">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute name="send-psp-id" type="xs:boolean" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="identification" type="xs:unsignedByte" />
+                                        <xs:element name="transaction-time-to-live" type="xs:unsignedByte" />
+                                        <xs:element name="issuer-identification-number-ranges" />
+                                        <xs:element name="salt" />
+                                        <xs:element name="secret-key" />
+                                        <xs:element name="additional-config" />
+                                        <xs:element name="decimal" type="xs:unsignedByte" />
+                                        <xs:element name="transaction-types">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element maxOccurs="unbounded" name="transaction-type">
+                                                        <xs:complexType>
+                                                            <xs:attribute name="id" type="xs:unsignedShort" use="required" />
+                                                            <xs:attribute name="name" type="xs:string" use="required" />
+                                                            <xs:attribute name="enabled" type="xs:boolean" use="required" />
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="id" type="xs:unsignedShort" use="required" />
+                                    <xs:attribute name="auto-capture" type="xs:boolean" use="required" />
+                                    <xs:attribute name="enable-cvv" type="xs:boolean" use="required" />
+                                    <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="language" type="xs:string" use="required" />
+                                    <xs:attribute name="sms-receipt" type="xs:boolean" use="required" />
+                                    <xs:attribute name="email-receipt" type="xs:boolean" use="required" />
+                                    <xs:attribute name="mode" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="masked-digits" type="xs:unsignedByte" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="psp-config">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string" />
+                                        <xs:element name="merchant-account" type="xs:string" />
+                                        <xs:element name="merchant-sub-account" type="xs:string" />
+                                        <xs:element name="username" type="xs:string" />
+                                        <xs:element name="password" type="xs:string" />
+                                        <xs:element name="messages" />
+                                        <xs:element name="additional-config" />
+                                    </xs:sequence>
+                                    <xs:attribute name="id" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="type" type="xs:unsignedByte" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="transaction">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="captured-amount">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedByte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                        <xs:attribute name="alpha2code" type="xs:string" use="required" />
+                                                        <xs:attribute name="alpha3code" type="xs:string" use="required" />
+                                                        <xs:attribute name="code" type="xs:unsignedByte" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="foreign-exchange-info">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="service-type-id" type="xs:unsignedByte" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="initialize_amount">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="amount" type="xs:unsignedShort" />
+                                                    <xs:element name="currency_id" type="xs:unsignedByte" />
+                                                    <xs:element name="currency" type="xs:string" />
+                                                    <xs:element name="decimals" type="xs:unsignedByte" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="conversion_rate" type="xs:unsignedByte" />
+                                        <xs:element name="amount_info">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="country-id" type="xs:unsignedByte" />
+                                                    <xs:element name="currency-id" type="xs:unsignedByte" />
+                                                    <xs:element name="currency" type="xs:string" />
+                                                    <xs:element name="decimals" type="xs:unsignedByte" />
+                                                    <xs:element name="symbol" type="xs:string" />
+                                                    <xs:element name="format" type="xs:string" />
+                                                    <xs:element name="alpha2code" type="xs:string" />
+                                                    <xs:element name="alpha3code" type="xs:string" />
+                                                    <xs:element name="code" type="xs:unsignedByte" />
+                                                    <xs:element name="amount" type="xs:unsignedShort" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="fee">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedByte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="price" type="xs:string" />
+                                        <xs:element name="points">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:byte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="reward">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:byte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="refund">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedByte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="orderid" type="xs:string" />
+                                        <xs:element name="mobile">
+                                            <xs:complexType>
+                                                <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                <xs:attribute name="country-code" type="xs:unsignedByte" use="required" />
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="operator" type="xs:unsignedByte" />
+                                        <xs:element name="email" />
+                                        <xs:element name="device-id" />
+                                        <xs:element name="logo">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="url" />
+                                                    <xs:element name="width" type="xs:string" />
+                                                    <xs:element name="height" type="xs:string" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="css-url" />
+                                        <xs:element name="accept-url" />
+                                        <xs:element name="cancel-url" />
+                                        <xs:element name="decline-url" />
+                                        <xs:element name="callback-url" type="xs:string" />
+                                        <xs:element name="icon-url" />
+                                        <xs:element name="auth-url" />
+                                        <xs:element name="language" type="xs:string" />
+                                        <xs:element name="auto-capture" type="xs:boolean" />
+                                        <xs:element name="auto-store-card" type="xs:boolean" />
+                                        <xs:element name="markup-language" />
+                                        <xs:element name="customer-ref" />
+                                        <xs:element name="description" />
+                                        <xs:element name="ip" type="xs:string" />
+                                        <xs:element name="hmac" type="xs:string" />
+                                        <xs:element name="created-date" type="xs:unsignedInt" />
+                                        <xs:element name="created-time" type="xs:unsignedInt" />
+                                        <xs:element name="authorized-amount">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedShort">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="decimals" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                        <xs:attribute name="alpha2code" type="xs:string" use="required" />
+                                                        <xs:attribute name="alpha3code" type="xs:string" use="required" />
+                                                        <xs:attribute name="code" type="xs:unsignedByte" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="id" type="xs:unsignedInt" use="required" />
+                                    <xs:attribute name="type" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="gmid" type="xs:byte" use="required" />
+                                    <xs:attribute name="mode" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="eua-id" type="xs:unsignedShort" use="required" />
+                                    <xs:attribute name="attempt" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="psp-id" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="card-id" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="wallet-id" type="xs:byte" use="required" />
+                                    <xs:attribute name="product-type" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="external-id" type="xs:string" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="order-attempt" type="xs:unsignedByte" />
+                            <xs:element name="account">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="first-name" />
+                                        <xs:element name="last-name" />
+                                        <xs:element name="mobile">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedInt">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="verified" type="xs:boolean" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="email" />
+                                        <xs:element name="password">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute name="mask" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="balance">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedByte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="funds" type="xs:string" />
+                                        <xs:element name="points">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:unsignedByte">
+                                                        <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                                        <xs:attribute name="currency" type="xs:string" use="required" />
+                                                        <xs:attribute name="symbol" type="xs:string" use="required" />
+                                                        <xs:attribute name="format" type="xs:string" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="clients">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="client">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute name="id" type="xs:unsignedShort" use="required" />
+                                                                    <xs:attribute name="store-card" type="xs:unsignedByte" use="required" />
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="created">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute name="timestamp" type="xs:unsignedInt" use="required" />
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="logo-width" type="xs:string" />
+                                        <xs:element name="logo-height" type="xs:string" />
+                                    </xs:sequence>
+                                    <xs:attribute name="id" type="xs:unsignedShort" use="required" />
+                                    <xs:attribute name="country-id" type="xs:unsignedByte" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="client-id" type="xs:unsignedShort" use="required" />
+                        <xs:attribute name="account" type="xs:unsignedShort" use="required" />
+                        <xs:attribute name="store-card" type="xs:boolean" use="required" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

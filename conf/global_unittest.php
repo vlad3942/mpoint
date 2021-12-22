@@ -172,7 +172,7 @@ $aHTTP_CONN_INFO["apple-pay"]["timeout"] = 120;
 $aHTTP_CONN_INFO["apple-pay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["apple-pay"]["paths"]["get-payment-data"] = "/_test/simulators/applepay/get-payment-data.php";
 $aHTTP_CONN_INFO["apple-pay"]["paths"]["pay"] = "/_test/simulators/applepay/pay.php";
-$aHTTP_CONN_INFO["apple-pay"]["paths"]["initialize"] = "/_test/simulators/applepay/pay.php";
+$aHTTP_CONN_INFO["apple-pay"]["paths"]["initialize"] = "/_test/simulators/applepay/initialize.php";
 $aHTTP_CONN_INFO["apple-pay"]["path"] = $aHTTP_CONN_INFO["apple-pay"]["paths"]["pay"];
 
 /**
