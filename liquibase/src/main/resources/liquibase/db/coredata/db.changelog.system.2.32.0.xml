@@ -825,4 +825,20 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Amar kumar" id="2021-12-21-setup-v2.33-system-1">
+
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcard_tbl">
+            <where>pspid = 21 AND cardid = 82</where>
+        </delete>
+
+        <!-- Ingenico -->
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="82" />
+            <column name="pspid" value="21"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
