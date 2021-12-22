@@ -289,6 +289,12 @@ class ConfigurationController
 
     }
 
+    public function deleteProviderConfig($request, $additionalParams = []) {
+
+        $this->getConfigService()->deleteProviderConfig($additionalParams);
+
+    }
+
     /**
      * @param array $additionalParams
      * @return string

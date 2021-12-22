@@ -97,6 +97,11 @@ class ConfigurationService
         $this->getAggregateRoot()->deleteAddonConfig($this->getRepository(),$additionalParams);
     }
 
+    public function deleteProviderConfig($additionalParams = [])
+    {
+        $this->getAggregateRoot()->deleteProviderConfig($this->getRepository(), $additionalParams);
+    }
+
     /**
      * @param string $type
      * @param string $source

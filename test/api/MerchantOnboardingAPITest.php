@@ -1144,4 +1144,26 @@ class MerchantOnboardingAPITest extends baseAPITest
 
     }
 
+    public function testSuccessfulDeleteProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=providerconfig&params=client_id/10099",'DELETE');
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+        // $sReplyBody = $this->_httpClient->getReplyBody();
+        $this->assertEquals(200, $iStatus);
+
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 ");
+
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+    }
 }

@@ -79,6 +79,11 @@ class MerchantConfigInfo
         $configRepository->deleteAddonConfig($aDeleteConfig);
     }
 
+    public function deleteProviderConfig(MerchantConfigRepository $configRepository, $additionalParams = []){
+        $id = $additionalParams['client_id'] ?? -1;
+        $configRepository->deleteConfigDetails($id, 'provider');
+    }
+
     /**
      * @param MerchantConfigRepository $configRepository
      * @param string $type

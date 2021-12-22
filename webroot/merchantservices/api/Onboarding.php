@@ -74,7 +74,8 @@ $routes = [
     'providerconfig' => [
         'class'   => 'ConfigurationController',
         'get'     => 'getProviderConfig',
-        'put'     => 'updateProviderConfig'
+        'put'     => 'updateProviderConfig',
+        'delete'  => 'deleteProviderConfig'
     ]
 ];
 

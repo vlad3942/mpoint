@@ -832,25 +832,37 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function deleteConfigDetails(int $routeConfigId, $entity)
+    public function deleteConfigDetails(int $id, $entity)
     {
-        $SQL = "";
+        $sTableName = '';
+        $sWhereCls = " true";
         switch(strtolower($entity))
         {
             case 'feature':
-                $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX.".routefeature_tbl WHERE routeconfigid=".$routeConfigId;
+                $sTableName = "routefeature_tbl";
+                $sWhereCls = " routeconfigid = ".$id;
                 break;
             case 'country':
-                $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX.".routecountry_tbl WHERE routeconfigid=".$routeConfigId;
+                $sTableName = "routecountry_tbl";
+                $sWhereCls = " routeconfigid = ".$id;
                 break;
 
             case 'currency':
-                $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX.".routecurrency_tbl WHERE routeconfigid=".$routeConfigId;
+                $sTableName = "routecurrency_tbl";
+                $sWhereCls = " routeconfigid = ".$id;
+                break;
+
+            case 'provider':
+                $sTableName = "merchantaccount_tbl";
+                $sWhereCls = " clientid = ". $this->getClientInfo()->getID();;
                 break;
 
             default:
                 // Throw Exception
         }
+
+        $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX."." .$sTableName. " WHERE " . $sWhereCls;
+
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false)
         {

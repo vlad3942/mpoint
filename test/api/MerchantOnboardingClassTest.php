@@ -1090,4 +1090,27 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(3, pg_num_rows($res));
 
     }
+
+    public function testSuccessfulDeleteProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $xml = '';
+        $obj_DOM = simpledom_load_string($xml);
+        $additionalParams = array(
+        );
+
+        $objController = new ConfigurationController($this->_OBJ_DB,10099);
+        $objController->deleteProviderConfig($obj_DOM, $additionalParams);
+
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 ");
+
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+    }
 }
