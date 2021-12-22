@@ -1913,13 +1913,25 @@ class General
 		return $isAutoFetchBalance;
     }
 
-    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom, TxnPassbook $txnPassbookObj = NULL) : bool
+    public function saveOrderDetails(RDB $_OBJ_DB, TxnInfo $obj_TxnInfo, CountryConfig $obj_CountryConfig, SimpleDOMElement $obj_orderDom, TxnPassbook $txnPassbookObj = NULL, $bulkSettlement=false, $sToken='', $isCancelPriority='')
     {
         try {
+            $iAmount = 0;
+            $iDBAmount = 0;
+            $iCRAmount = 0;
             $lineItemCnt = count($obj_orderDom->{'line-item'});
             for ($j=0; $j<$lineItemCnt; $j++ )
             {
-                $ticketNumber = !empty($obj_orderDom->{'line-item'}[$j]->product["order-ref"]) ? (string) $obj_orderDom->{'line-item'}[$j]->product["order-ref"] : $obj_TxnInfo->getOrderId();
+                if($obj_TxnInfo->getCurrencyConfig()->getID() !== (int)$obj_orderDom->{'line-item'}[$j]->amount['currency-id'] && $bulkSettlement === true)
+                {
+                    throw new mPointException("Currency mismatch for token : ".$sToken." expected ".$obj_TxnInfo->getCurrencyConfig()->getID(), 999 );
+                }
+                if ($bulkSettlement === true) {
+                    $ticketNumber = (string)$obj_orderDom->{'line-item'}[$j]->{'additional-data'}->xpath("./param[@name='TDNR']");
+                } else {
+                    $ticketNumber = !empty($obj_orderDom->{'line-item'}[$j]->product["order-ref"]) ? (string) $obj_orderDom->{'line-item'}[$j]->product["order-ref"] : $obj_TxnInfo->getOrderId();
+                }
+
                 if (!$obj_TxnInfo->isTicketNumberIsAlreadyLogged($_OBJ_DB, $ticketNumber)) {
                     $data['orders'][0]['product-sku'] = (string)$obj_orderDom->{'line-item'}[$j]->product["sku"];
                     $data['orders'][0]['orderref'] = $ticketNumber;
@@ -2095,6 +2107,48 @@ class General
                         }
                     }
                 }
+                if ($bulkSettlement == true) {
+                    $captureAmount = 0;
+                    $voidAmount = 0;
+                    $operationType = (string)$obj_orderDom->{'line-item'}[$j]->amount['type'];
+                    if ($obj_orderDom->{'line-item'}[$j]->amount['type'] == 'DB') {
+                        $captureAmount = (int)$obj_orderDom->{'line-item'}[$j]->amount;
+                    } elseif ($obj_orderDom->{'line-item'}[$j]->amount['type'] == 'CR') {
+                        $voidAmount = (int)$obj_orderDom->{'line-item'}[$j]->amount;
+                    }
+                    if ($txnPassbookObj instanceof TxnPassbook) {
+
+                        if ($captureAmount > 0) {
+                            $passbookEntry = new PassbookEntry
+                            (
+                                NULL,
+                                $captureAmount,
+                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                Constants::iCaptureRequested,
+                                $ticketNumber,
+                                'log.additional_data_tbl  - TicketNumber'
+                            );
+                            $aResponse[$ticketNumber]['DB'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                        }
+                        if ($voidAmount > 0) {
+                            $passbookEntry = new PassbookEntry
+                            (
+                                NULL,
+                                $voidAmount,
+                                $obj_TxnInfo->getCurrencyConfig()->getID(),
+                                Constants::iVoidRequested,
+                                $ticketNumber,
+                                'log.additional_data_tbl - TicketNumber'
+                            );
+                            $aResponse[$ticketNumber]['CR'] = $txnPassbookObj->addEntry($passbookEntry, $isCancelPriority);
+                        }
+                        if($captureAmount <= 0 && $voidAmount <= 0)
+                        {
+                            $aResponse[$ticketNumber][$operationType]['Status'] = '999';
+                            $aResponse[$ticketNumber][$operationType]['Message'] = 'Invalid amount';
+                        }
+                    }
+                }
             }
 
             $shippingAddressCnt = count($obj_orderDom->{'shipping-address'});
@@ -2118,7 +2172,11 @@ class General
                 }
                 $shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
             }
-            return true;
+            if ($bulkSettlement === true) {
+                return $aResponse;
+            } else {
+                return true;
+            }
         } catch (Exception $exception) {
             return false;
         }

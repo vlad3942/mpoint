@@ -453,7 +453,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
                                 $sOrderXML = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->asXML();
                                 $obj_DOMOrder = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders;
-                                $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder);
+                                $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, null);
 							}
 							elseif((is_object($obj_DOM->{'initialize-payment'}[$i]->transaction->orders) && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 0) && $iAttemptNumber > 1 )
                             {

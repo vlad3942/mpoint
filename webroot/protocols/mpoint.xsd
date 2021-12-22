@@ -1077,32 +1077,6 @@
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="save-order-data" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="transactions">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:sequence minOccurs="0" maxOccurs="unbounded">
-													<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
-													<xs:element ref="additional-data" minOccurs="0" maxOccurs="1"/>
-												</xs:sequence>
-											</xs:sequence>
-											<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
-											<xs:attribute name="order-no" type="order-no" use="optional" />
-											<xs:attribute name="token" type="xs:string" use="optional" />
-										</xs:complexType>
-									</xs:element>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-				</xs:complexType>
-			</xs:element>
 			<xs:element name="void" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
@@ -1725,7 +1699,7 @@
 		<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
 		<xs:element ref="profiles" minOccurs="1" maxOccurs="1" />
 		<xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
-		<xs:element ref="trips"  minOccurs="1" maxOccurs="1" />
+		<xs:element ref="trips"  minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="order-type" use="optional" type="xs:string"/>
 	<xs:attribute name="order-no" use="optional" type="xs:string"/>
@@ -1814,9 +1788,9 @@
 			<xs:element name="origin" type="place" minOccurs="1" maxOccurs="1" />
 			<xs:element name="destination" type="place" minOccurs="1" maxOccurs="1" />
 			<xs:element type="xs:string" name="departure-time" minOccurs="1" maxOccurs="1" />
-			<xs:element type="xs:string" name="arrival-time" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="arrival-time" minOccurs="0" maxOccurs="1" />
 			<xs:element type="xs:string" name="booking-class" minOccurs="1" maxOccurs="1" />
-			<xs:element type="xs:string" name="service-level" minOccurs="1" maxOccurs="1" />
+			<xs:element type="xs:string" name="service-level" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="transportation" minOccurs="1" maxOccurs="1" />
 			<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 			<xs:element name="traffic-info" minOccurs="0">
@@ -2024,8 +1998,8 @@
 			<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
 			<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
 			<xs:element ref="billing-summary-bulk-capture"  minOccurs="0" maxOccurs="1" />
-			<xs:element ref="flight-detail"  minOccurs="1" maxOccurs="unbounded" />
-			<xs:element ref="passenger-detail" minOccurs="1" maxOccurs="unbounded" />
+			<xs:element ref="trips"  minOccurs="1" maxOccurs="unbounded" />
+			<xs:element ref="profiles" minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="order-type" use="optional" type="xs:string"/>
 		<xs:attribute name="order-no" use="optional" type="xs:string"/>
@@ -2087,7 +2061,7 @@
 	<xs:simpleContent>
 		<xs:extension base="xs:string">
 			<xs:attribute name="external-id" type="xs:string" use="required" />
-			<xs:attribute name="country-id" type="xs:string" use="required" />
+			<xs:attribute name="country-id" type="xs:string" use="optional" />
 			<xs:attribute name="time-zone" type="xs:string" use="optional" />
 			<xs:attribute name="terminal" type="xs:string" use="optional" />
 			<xs:attribute name="type-id" use="optional" type="xs:string"/>
@@ -2121,7 +2095,7 @@
 			<xs:element type="xs:positiveInteger" name="number" minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="code" use="required" type="xs:string"/>
-		<xs:attribute name="type-id" use="required" type="xs:string"/>
+		<xs:attribute name="type-id" use="optional" type="xs:string"/>
 	</xs:complexType>
 </xs:element>
 
