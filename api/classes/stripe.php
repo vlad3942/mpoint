@@ -1,150 +1,32 @@
 <?php
-
-// Require API for Simple DOM manipulation
-require_once(sLIB_PATH ."stripe/Stripe.php");
 /**
  * The Callback Package provide methods for informing the Client of the Transaction status automatically.
- * Callbacks can be performed either using mPoint's own Callback protocol or the PSP's native protocol.
- * The Stripe' subpackage is a specific implementation capable of imitating Stripe' own protocol.
- *
- * @author Jonatan Evald Buus
- * @copyright Cellpoint Mobile
- * @link http://www.cellpointmobile.com
- * @package Callback
- * @subpackage DIBS
- * @version 1.01
- */
+* Callbacks can be performed either using mPoint's own Callback protocol or the PSP's native protocol.
+*
+* @author Abhinav Shaha
+* @copyright Cellpoint Mobile
+* @link http://www.cellpointmobile.com
+* @package Callback
+* @subpackage Stripe
+* @version 1.00
+*/
+
+/* ==================== Stripe exception Classes Start ==================== */
+/**
+ * Super class for all Stripe Exceptions
+*/
+class StripeException extends CallbackException { }
+/* ==================== Stripe Exception Classes End ==================== */
 
 /**
- * Model Class containing all the Business Logic for handling Callback requests from Stripe.
+ * Model Class containing all the Business Logic for the Payment Service Provider: Stripe
  *
  */
-class Stripe_PSP extends Callback
+class Stripe extends CPMPSP
 {
-
-	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null,int $sub_code_id=0)
-	{
-		
-	}
-	
-	public function auth($ticket=null, $apiKey=null, $cardID=null, $storecard=null)
-	{		
-		// Construct Order ID
-		$oid = $this->getTxnInfo()->getOrderID();
-		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }		
-		Stripe::setApiKey($apiKey);
-		if(empty($ticket) === true )
-		{
-			$ticket = array('number' => '4242424242424242', 'exp_month' => 5, 'exp_year' => 2018);	
-		}
-		$customerID;
-		
-		try 
-		{
-			if ($storecard == true)
-			{
-				$customer =	Stripe_Customer::create(array("description" => "",
-						"card" => $cardID) );
-				
-				$charge = Stripe_Charge::create(array("amount" =>  $this->getTxnInfo()->getAmount(),
-													  "currency" => $this->getTxnInfo()->getCountryConfig()->getCurrency(),
-													  "customer" => $customer->id,
-													  "capture" => "false", $aParams) );
-				
-				
-			}
-			else 
-			{	
-				$charge = Stripe_Charge::create(array("amount" =>  $this->getTxnInfo()->getAmount(),
-						"currency" => $this->getTxnInfo()->getCountryConfig()->getCurrency(),
-						"card" => $ticket,
-						"capture" => "false", $aParams) );
-			}
-				
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_ACCEPTED_STATE, serialize($charge) );
-				
-			if ($charge->paid === true)
-			{
-				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". Constants::iSTRIPE_PSP .", extid = '". $this->getDBConn()->escStr($charge->id)."' cardid = ". intval($cardID) ."
-								WHERE id = ". $this->getTxnInfo()->getID();
-//					echo $sql ."\n";
-				$this->getDBConn()->query($sql);
-                $sub_code = 0;
-				$iStateID = $this->completeTransaction(Constants::iSTRIPE_PSP, 
-													   $charge->id,
-													   $cardID, Constants::iPAYMENT_ACCEPTED_STATE,
-													   0,
-													   $this->getTxnInfo()->getFee(),
-													   array('0' => var_export($charge, true) ) );
-				if ($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt)
-				{
-					return	$this->capture($charge->id, $apiKey);
-				}
-				else { return 2000; }
-			
-			}
-			
-				
-		}
-		catch (Stripe_CardError $e) 
-		{
-			
-		}
-		
-	}
-	
-	public function capture($transactionID, $apiKey)
-	{
-		Stripe::setApiKey($apiKey);
-		try
-		{
-			$charge = Stripe_Charge::retrieve($transactionID);
-			$charge->capture();
-			if ($charge->captured === true)
-			{
-				$this->completeCapture(intval($charge->amount) , 0, array('0' => var_export($charge, true) ) );
-			}
-			return 2001;
-		}
-		catch (Stripe_CardError $e)
-		{
-		
-		}
-		
-	}
-	
-	
-	public function refund($txn, $amount, $apiKey)
-	{
-		Stripe::setApiKey($apiKey);
-		try
-		{
-			$deposit = Stripe_Charge::retrieve($txn);
-			$refund = $deposit->refunds->create();
-
-			$this->newMessage( $this->getTxnInfo ()->getID (), Constants::iPAYMENT_REFUNDED_STATE, var_export($refund,true) );
-			return 0;	
-		}
-		catch (Stripe_CardError $e)
-		{
-			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $transactionID .") Could not be  Refunded, Stripe returned : ". $e->getMessage(), E_USER_WARNING);
-			return -1;
-		}
-	}
-	
-
-
-	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry)
-	{
-
-	}
-	
-	public function initialize(HTTPConnInfo &$oCI, $merchant, $account, $currency, $cardid)
-	{
-	
-	}
-
-	public function getPSPID() { return Constants::iSTRIPE_PSP; }
+    public function capture($iAmount=-1) { throw new StripeException("Method: capture is not supported by Stripe"); }
+    public function void($iAmount=-1) { throw new StripeException("Method: void is not supported by Stripe"); }
+    public function cancel($amount = -1) { throw new StripeException("Method: cancel is not supported by Stripe"); }
+    public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new StripeException("Method: getPaymentData is not supported by Stripe."); }
+    public function getPSPID() { return Constants::iSTRIPE_PSP; }
 }
-?>

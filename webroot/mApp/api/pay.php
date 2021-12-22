@@ -774,25 +774,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= trim($obj_XMLElem->asXML());
 												}
 												break;
-											case (Constants::iSTRIPE_PSP):
-												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, []);
-												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, FALSE);
-												$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0);
-												$code = $obj_PSP->auth($obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
-												if ($code >= 2000) {
-													if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) {
-														$xml .= '<status code="' . $code . '">Payment Authorized using Apple Pay</status>';
-													} else {
-														$xml .= '<status code="' . $code . '">Payment Authorized</status>';
-													}
-												} // Error: Authorization declined
-												else {
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-													header("HTTP/1.1 502 Bad Gateway");
-													$xml .= '<status code="92">Authorization failed, Stripe returned error: ' . $code . '</status>';
-												}
-												break;
 											case (Constants::iMOBILEPAY_PSP):
 
 												$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
