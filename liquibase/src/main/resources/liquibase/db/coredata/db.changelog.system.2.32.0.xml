@@ -56,13 +56,6 @@
             <column name="enabled" value="true"/>
         </insert>
 
-        <!-- Ingenico -->
-        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
-            <column name="cardid" value="82" />
-            <column name="pspid" value="21"/>
-            <column name="enabled" value="true"/>
-        </insert>
-
         <!-- CYBS -->
         <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
             <column name="cardid" value="82" />
@@ -202,8 +195,8 @@
             <column name="max" value="650522"/>
             <column name="enabled" value="true"/>
         </insert>
-
     </changeSet>
+
 
     <changeSet author="Amar kumar" id="2021-12-22-setup-v2.33-system">
         <delete  catalogName="system"
@@ -828,6 +821,22 @@
             <column name="cardid" value="82"/>
             <column name="min" value="636368"/>
             <column name="max" value="636368"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Amar kumar" id="2021-12-21-setup-v2.33-system-1">
+
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcard_tbl">
+            <where>pspid = 21 AND cardid = 82</where>
+        </delete>
+
+        <!-- Ingenico -->
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="82" />
+            <column name="pspid" value="21"/>
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
