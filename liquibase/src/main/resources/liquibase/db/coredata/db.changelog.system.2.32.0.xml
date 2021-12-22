@@ -205,4 +205,12 @@
 
     </changeSet>
 
+    <changeSet author="Amar kumar" id="2021-12-22-setup-v2.33-system">
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcard_tbl">
+            <where>pspid = 63 AND cardid = 82</where>
+        </delete>
+    </changeSet>
+
 </databaseChangeLog>
