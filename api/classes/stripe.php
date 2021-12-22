@@ -22,7 +22,7 @@ class StripeException extends CallbackException { }
  * Model Class containing all the Business Logic for the Payment Service Provider: Stripe
  *
  */
-class Stripe extends CPMPSP
+class Stripe_PSP extends CPMPSP
 {
     public function capture($iAmount=-1) { throw new StripeException("Method: capture is not supported by Stripe"); }
     public function void($iAmount=-1) { throw new StripeException("Method: void is not supported by Stripe"); }
