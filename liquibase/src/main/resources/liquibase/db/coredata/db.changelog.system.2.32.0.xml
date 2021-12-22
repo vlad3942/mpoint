@@ -59,7 +59,7 @@
         <!-- CYBS -->
         <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
             <column name="cardid" value="82" />
-            <column name="pspid" value="21"/>
+            <column name="pspid" value="63"/>
             <column name="enabled" value="true"/>
         </insert>
 
@@ -195,8 +195,8 @@
             <column name="max" value="650522"/>
             <column name="enabled" value="true"/>
         </insert>
-
     </changeSet>
+
 
     <changeSet author="Amar kumar" id="2021-12-22-setup-v2.33-system">
         <delete  catalogName="system"
