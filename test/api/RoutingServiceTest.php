@@ -86,9 +86,9 @@ class RoutingServiceTest extends baseAPITest
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 18, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, cardid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, 1,  18, 8, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, cardid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001002, 100, 10099, 1100, 1,  18, 8, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, 'Wallet103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, cardid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, 1,  18, 8, 5001, 100, 'Wallet103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, cardid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001002, 100, 10099, 1100, 1,  18, 8, 5001, 100, 'Wallet103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'inprocess',10099)");
@@ -100,6 +100,8 @@ VALUES(10099, 14, 'EFS100001149', true, 'Paymaya acq', 'sk-aXQdorOOF0zGMfyVAzTH9
         $this->queryDB("INSERT INTO Client.merchantsubaccount_tbl
     (accountid, pspid, \"name\", enabled)
 VALUES(1100, 14, 'paymaya acq',  true)");
+
+        $this->queryDB("INSERT INTO Client.additionalproperty_tbl(\"key\", value, enabled, externalid, \"type\", \"scope\") VALUES( 'IS_LEGACY', 'false',  true, 10099, 'client', 0)");
 
 
 
@@ -122,7 +124,6 @@ VALUES(1100, 14, 'paymaya acq',  true)");
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-
 
             $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
 
@@ -160,16 +161,11 @@ VALUES(1100, 14, 'paymaya acq',  true)");
                 $obj_Processor = WalletProcessor::produceConfig($this->_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, 15, $this->_aHTTP_CONN_INFO);
                 $obj_Processor->setWalletCardSchemes($obj_PaymentMethodResponse->getCardSchemes());
                 $initResponseXML = $obj_Processor->initialize();
-                $cardXML = '';
-                foreach ($initResponseXML->children() as $obj_Elem)
-                {
-                    if ($obj_Elem->getName() !== 'name')
-                    {
-                        $cardXML .= trim($obj_Elem->asXML());
-                    }
-                }
+                $aSupportedCards = (array) $initResponseXML->head->supported_cards->supported_card;
 
-                $this->assertEquals('<url method="overlay"/><head>&lt;script type=\'text/javascript\'&gt; var debug = false; var countryCode = "PH"; var currencyCode = "PHP"; var merchantIdentifier = \'EFS100001149\'; var displayName ="CEBU Pacific Air Automation"; var totalAmount = "148.55"; var supportedNetword = [\'MASTERCARD\',\'VISA\']; &lt;/script&gt; &lt;script type="text/javascript" src=""&gt;&lt;/script&gt; &lt;style&gt; #applePay{width:150px;height:50px;display:none;border-radius:5px;background-image:-webkit-named-image(apple-pay-logo-white);background-position:50% 50%;background-color:#000;background-size:60%;background-repeat:no-repeat} &lt;/style&gt;</head><body>&lt;button type="button" id="applePay"&gt;&lt;/button&gt;</body><auth-token>Auth-Token</auth-token>', $cardXML);
+                $this->assertContains('VISA', $aSupportedCards);
+                $this->assertContains('Master Card', $aSupportedCards);
+
             }
         }
     }
@@ -209,13 +205,14 @@ VALUES(1100, 14, 'paymaya acq',  true)");
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
+            print_r();
 
             $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
 
             if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
             {
                 $aObjPaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                $this->assertEquals(3, count($aObjPaymentMethods->payment_methods->payment_method) );
+                $this->assertEquals(2, count($aObjPaymentMethods->payment_methods->payment_method) );
 
                 $aCardId = array();
                 $aPSPType = array();
