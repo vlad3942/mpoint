@@ -25,6 +25,7 @@ class PaymentProcessor
     private $_objPSPConfig;
     private $_objPSP;
     private $aConnInfo = array();
+    private $aWalletCardScemes = array();
 
     private function _setConnInfo($aConnInfo, $iPSPID)
     {
@@ -79,7 +80,7 @@ class PaymentProcessor
 
     public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL)
     {
-        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), $storeCard, $cardTypeId, $cardToken, $billingAddress, $clientInfo, $authToken);
+        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), $storeCard, $cardTypeId, $cardToken, $billingAddress, $clientInfo, $authToken, $this->getWalletCardSchemes());
     }
 
     public function authorize($obj_Elem, $obj_ClientInfo= null)
@@ -151,4 +152,24 @@ class PaymentProcessor
     {
         return $this->_objPSP->notifyClient($iStateId,$vars,$obj_SurePay);
     }
+
+    /**
+     * Save Wallet Card Schemes
+     * @param $aCardSchemes
+     * @return void
+     */
+    public function setWalletCardSchemes($aCardSchemes = array())
+    {
+        $this->aWalletCardScemes = $aCardSchemes;
+    }
+
+    /**
+     * Retrieve Wallet Card schemes
+     * @return array
+     */
+    public function getWalletCardSchemes() : array
+    {
+        return $this->aWalletCardScemes;
+    }
+
 }
