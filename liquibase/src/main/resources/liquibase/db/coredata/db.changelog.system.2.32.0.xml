@@ -841,4 +841,73 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Abhinav Shaha" id="2021-12-23-setup-v2.33-system-1">
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="3" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="1" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="22" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="5" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="67" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="CRC" />
+            <column name="currencyid" value="188" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="MXN" />
+            <column name="currencyid" value="484" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="ARS" />
+            <column name="currencyid" value="32" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="CAD" />
+            <column name="currencyid" value="124" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="EUR" />
+            <column name="currencyid" value="978" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>
