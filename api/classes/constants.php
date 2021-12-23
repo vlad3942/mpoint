@@ -1632,6 +1632,12 @@ abstract class Constants
 	 */
 	const iDRAGONPAYOFFLINE = 88;
 	/**
+    	 * Unique Card ID for transaction's made using Grab Pay
+    	 *
+    	 */
+    const iELO_CARD = 82;
+
+	/**
 	 * Unique Card ID for transaction's made using Grab Pay
 	 *
 	 */
