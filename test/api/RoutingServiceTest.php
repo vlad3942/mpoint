@@ -212,7 +212,7 @@ VALUES(1100, 14, 'paymaya acq',  true)");
             if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
             {
                 $aObjPaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                $this->assertEquals(2, count($aObjPaymentMethods->payment_methods->payment_method) );
+                $this->assertEquals(3, count($aObjPaymentMethods->payment_methods->payment_method) );
 
                 $aCardId = array();
                 $aPSPType = array();
