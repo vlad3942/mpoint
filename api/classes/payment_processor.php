@@ -16,7 +16,20 @@
  * Exception class for all Payment Processor exceptions
  */
 class PaymentProcessorException extends mPointException {}
+class PaymentProcessorInitializeException extends mPointException
+{
+    private $subCode;
+    function __construct($message = "", $code = 0, Throwable $previous = null, $subCode=0)
+    {
+        parent::__construct($message, $code, $previous);
+        $this->subCode = $subCode;
+    }
 
+    function getSubcode()
+    {
+        return $this->subCode;
+    }
+}
 /* ==================== Payment Processor Exception Classes End ==================== */
 
 
