@@ -52,10 +52,11 @@ class ClientCountryCurrencyConfig
     {
         $xml = '';
         if(empty($this->_aCurrency) == false && count($this->_aCurrency) > 0){
-            foreach ($this->_aCurrency as $currencyid => $currencyCode){
+            foreach ($this->_aCurrency as $currency){
                 $xml .= '<payment_currency>';
-                $xml .= '<id>'. $currencyid .'</id>';
-                $xml .= '<name>'.$currencyCode .'</name>';
+                $xml .= '<id>'. $currency['CURRENCYID'] .'</id>';
+                $xml .= '<name>'.$currency['CURRENCYCODE'] .'</name>';
+                $xml .= '<decimals>'.$currency['DECIMALS'] .'</decimals>';
                 $xml .= '</payment_currency>';
             }
         }
@@ -75,8 +76,9 @@ class ClientCountryCurrencyConfig
         $aObj_Configurations = array();
         $aCountryConfig = array();
         $aCurrencyConfig = array();
+        $aCurrencyArr = array();
 
-		$sql = "SELECT DISTINCT ON (CCT.countryid, CCT.currencyid) CCT.countryid, CCT.currencyid, CNT.name as countryname, CUR.code AS currencycode
+		$sql = "SELECT DISTINCT ON (CCT.countryid, CCT.currencyid) CCT.countryid, CCT.currencyid, CNT.name as countryname, CUR.code AS currencycode, CUR.decimals as decimals
 				FROM Client".sSCHEMA_POSTFIX.".Countrycurrency_Tbl CCT
 				INNER JOIN System".sSCHEMA_POSTFIX.".Country_tbl CNT ON CCT.countryid = CNT.id AND CNT.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CUR ON CCT.currencyid = CUR.id AND CUR.enabled = '1'
@@ -86,7 +88,10 @@ class ClientCountryCurrencyConfig
             $res = $oDB->query($sql);
             while ($RS = $oDB->fetchName($res)) {
                 $aCountryConfig[$RS['COUNTRYID']] = $RS['COUNTRYNAME'];
-                $aCurrencyConfig[$RS['CURRENCYID']] = $RS['CURRENCYCODE'];
+                $aCurrencyArr['CURRENCYID']    = $RS['CURRENCYID'];
+                $aCurrencyArr['CURRENCYCODE']  = $RS['CURRENCYCODE'];
+                $aCurrencyArr['DECIMALS']      = $RS['DECIMALS'];
+                $aCurrencyConfig[]             = $aCurrencyArr;
 
             }
             $aObj_Configurations[] = new ClientCountryCurrencyConfig($aCountryConfig, $aCurrencyConfig);
