@@ -910,4 +910,32 @@
 
     </changeSet>
 
+	<changeSet author="Abhinav Shaha" id="2021-12-24-setup-v2.33-system-2">
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-188"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-484"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-32"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+    </changeSet>
+
 </databaseChangeLog>
