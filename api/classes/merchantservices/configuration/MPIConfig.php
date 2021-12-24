@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\configuration;
 
 
 use AddonServiceTypeIndex;
+use SimpleXMLElement;
 
 /**
  *
@@ -61,6 +62,18 @@ class MPIConfig extends BaseConfig
     public function getProperties()
     {
         return $this->_aProperty;
+    }
+
+    /**
+     * @param SimpleXMLElement $oXML
+     */
+    protected function setPropertiesFromXML(SimpleXMLElement &$oXML)
+    {
+        $this->_aProperty = array();
+        if(count($oXML->version)>0)
+        {
+            $this->_aProperty["version"] = (string)$oXML->version;
+        }
     }
 }
 

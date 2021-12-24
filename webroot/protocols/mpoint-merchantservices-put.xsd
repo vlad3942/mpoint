@@ -49,7 +49,7 @@
         </xs:element>
         <xs:element name="mpi_config" minOccurs="0" maxOccurs="1">
           <xs:complexType>
-            <xs:choice>
+            <xs:all>
               <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:choice>
@@ -57,7 +57,8 @@
                   </xs:choice>
                 </xs:complexType>
               </xs:element>
-            </xs:choice>
+              <xs:element name="version" type="xs:string" minOccurs="0" maxOccurs="1" />
+            </xs:all>
           </xs:complexType>
         </xs:element>
         <xs:element name="fraud_configs" minOccurs="0" maxOccurs="1">
@@ -74,7 +75,7 @@
                         </xs:choice>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="0" maxOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -95,7 +96,7 @@
                         </xs:choice>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="is_rollback" type="xs:boolean" minOccurs="0" maxOccurs="1" />
                     <xs:element name="is_reoffer" type="xs:boolean" minOccurs="0" maxOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>

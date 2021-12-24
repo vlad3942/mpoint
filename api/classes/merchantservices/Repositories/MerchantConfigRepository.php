@@ -113,7 +113,7 @@ class MerchantConfigRepository
                 $sColumns = 'id,payment_type, sequence_no,enabled ';
             }
             elseif($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
-            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
+            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,created,modified,enabled ';
             $sSQL = sprintf($SQL,$sColumns,$sTableName) ;
             if(empty($aWhereCls) === false)
             {
@@ -131,7 +131,7 @@ class MerchantConfigRepository
 
         $className =   'api\\classes\\merchantservices\\configuration\\'.$addonServiceType->getClassName();
         $aProperty = array();
-        if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud || $addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI  || $addonServiceType->getID() === AddonServiceTypeIndex::eFraud || $addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
             $sColumns = "is_rollback";
             $sTableName = ".fraud_property_tbl";
@@ -139,6 +139,11 @@ class MerchantConfigRepository
             {
                 $sTableName = ".split_property_tbl";
                 $sColumns .= ",is_reoffer";
+            }
+            else if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
+            {
+                $sTableName = ".mpi_property_tbl";
+                $sColumns = "version";
             }
             $SQL = 'SELECT '.$sColumns.' FROM client'. sSCHEMA_POSTFIX.$sTableName.' where enabled=true and clientid='.$this->_clientConfig->getID();
             $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
@@ -183,12 +188,26 @@ class MerchantConfigRepository
             {
                 $SQL ="INSERT INTO client". sSCHEMA_POSTFIX ;
                 $sPropTableName = '';
-                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
-                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
+                {
+                    $sPropTableName = '.fraud_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT)
+                {
+                    $sPropTableName = '.split_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eMPI)
+                {
+                    $sPropTableName = '.mpi_property_tbl';
+                }
                 foreach ($addonConfig->getProperties() as $key => $value)
                 {
-                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values (".\General::bool2xml($value).",".$this->_clientConfig->getID().")";
-                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." =".\General::bool2xml($value);
+                    if(gettype($value) === 'boolean')
+                    {
+                        $value = \General::bool2xml($value);
+                    }
+                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values ('".$value."',".$this->_clientConfig->getID().")";
+                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." ='".$value."'";
                     $result = $this->getDBConn()->executeQuery($SQL);
                     if ($result === FALSE)
                     {
@@ -330,14 +349,31 @@ class MerchantConfigRepository
             {
                 $SQL ="INSERT INTO client". sSCHEMA_POSTFIX ;
                 $sPropTableName = '';
-                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
-                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
-                $SQL .=$sPropTableName." (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
-                $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
-                $result = $this->getDBConn()->executeQuery($SQL);
-                if ($result === FALSE)
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
                 {
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
+                    $sPropTableName = '.fraud_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT)
+                {
+                    $sPropTableName = '.split_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eMPI)
+                {
+                    $sPropTableName = '.mpi_property_tbl';
+                }
+                foreach ($addonConfig->getProperties() as $key => $value)
+                {
+                    if(gettype($value) === 'boolean')
+                    {
+                        $value = \General::bool2xml($value);
+                    }
+                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values ('".$value."',".$this->_clientConfig->getID().")";
+                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." ='".$value."'";
+                    $result = $this->getDBConn()->executeQuery($SQL);
+                    if ($result === FALSE)
+                    {
+                        throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' property');
+                    }
                 }
             }
             if(empty($addonConfig->getConfiguration()) === false)
