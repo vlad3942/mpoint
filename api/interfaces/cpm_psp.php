@@ -458,7 +458,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $aWalletCardSchemes = array())
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -475,7 +475,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty) );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty, $aWalletCardSchemes) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';

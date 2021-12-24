@@ -244,7 +244,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-					
+                        $obj_PaymentMethodResponse = null;
 						$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig,Constants::iPURCHASE_VIA_APP);
 						try
 						{
@@ -733,6 +733,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]['id'], $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE)
                                             {
+                                                $obj_Processor->setWalletCardSchemes($obj_PaymentMethodResponse->getCardSchemes());
                                                 $initResponseXML = $obj_Processor->initialize();
                                                 foreach ($initResponseXML->children() as $obj_Elem)
                                                 {
