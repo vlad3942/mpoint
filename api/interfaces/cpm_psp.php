@@ -174,7 +174,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusPending);
 						}
 						//Update Refund amount in txn table
 						if((int)$iAmount === -1)
@@ -551,9 +551,26 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
                 $obj_XML->name = 'card_holderName';
                 $obj_XML->{"auth-token"} = 'Auth-Token' ;
+
+                $statusNode = $obj_XML->status;
+                if (!empty($statusNode)) {
+                    $attributes = $statusNode->attributes();
+                    $statusCode = (int) $attributes['code'];
+                    $statusSubCode = (int) $attributes['sub-code'];
+                    $message = $statusNode;
+                    $errorCodes = [Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_UNKNOWN_ERROR_STATE];
+                    if (in_array($statusCode, $errorCodes)) {
+                        throw new PaymentProcessorInitializeException($message, $statusCode, null, $statusSubCode);
+                    }
+                }
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
+        catch (PaymentProcessorInitializeException $pe)
+        {
+            trigger_error("PSP  initialization failed with code: ". $pe->getCode() . " and message: ". $pe->getMessage(), E_USER_ERROR);
+            throw $pe;
+        }
 		catch (mPointException $e)
 		{
 			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
