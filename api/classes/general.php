@@ -2314,6 +2314,8 @@ class General
      */
     public static function getRouteConfigurationAuth(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo,$clientid, $countryId,$currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL,$is_Associated_txn=TRUE)
     {
+        $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+
         $iPrimaryRoute = 0;
         $obj_CardResultSet = FALSE;
         $result = array();
@@ -2326,7 +2328,7 @@ class General
             if($is_Associated_txn == false){
                 $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
             }
-            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+            $obj_CardResultSet = $repository->getResultSetCardConfigurationsByCardIds(array($cardTypeId), $iPrimaryRoute);
         }
             $result['pspid']         = !empty($obj_CardResultSet)?$obj_CardResultSet['PSPID']:-1;
             $result['cardid']        = !empty($obj_CardResultSet)?$obj_CardResultSet['ID']:-1;

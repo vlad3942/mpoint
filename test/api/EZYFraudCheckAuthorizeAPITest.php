@@ -315,8 +315,8 @@ class EZYFraudCheckAuthorizeAPITest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, countryid, currencyid, providerid,pmid,typeoffraud) VALUES (10099,100,208, $fraudCheckPspID, 8,2)");//psp_type = Constants::iPROCESSOR_TYPE_FRAUD_GATEWAY
         $this->queryDB("INSERT INTO client.fraud_property_tbl (is_rollback,clientid) VALUES(true, 10099);");
         $this->queryDB("INSERT INTO Client.Route_Tbl (id, clientid, providerid) VALUES (1, 10099, $pspID)");
-        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (17, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
-        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (18, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (17, 1, 'Wirecard_VISA', 1, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (18, 1, 'Wirecard_VISA', 1, 'TESTMID', 'username', 'password')");
 
         $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, false);");
 
