@@ -67,7 +67,7 @@ abstract class CPMFRAUD
             throw new CPMFraudEXCEPTION("Connection Configuration not found for the given FSP ID ". $iFSPID);
         }
 
-        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iFSPID);
+        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceProviderConfig($oDB,   $iFSPID,$oTI);
         $this->_obj_mPoint = new General($oDB, $oTxt);
     }
 

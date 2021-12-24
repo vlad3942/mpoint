@@ -39,7 +39,7 @@ class Mpi
             if(empty($mpiAddon->getConfiguration()) === false)
             {
                 $iProviderId = $mpiAddon->getConfiguration()[0]->getProviderId();
-                $pspConfig = PSPConfig::produceNewConfig($objDb,$iProviderId,$obj_TxnInfo,$mpiAddon);
+                $pspConfig = PSPConfig::produceProviderConfig($objDb,$iProviderId,$obj_TxnInfo,$mpiAddon);
             }
         }
         else { $pspConfig = $this->createPSPConfig($objDb, $clientId, $countryId, $cardId); }

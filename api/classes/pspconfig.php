@@ -417,7 +417,7 @@ class PSPConfig extends BasicConfig
      * @param 	integer $pspid 	Unique ID for the Payment Service Provider
      * @return 	PSPConfig
      */
-    public static function produceNewConfig(RDB $oDB, int $pspid,TxnInfo &$oTI,BaseConfig $config=null): ?PSPConfig
+    public static function produceProviderConfig(RDB $oDB, int $pspid,TxnInfo &$oTI,BaseConfig $config=null): ?PSPConfig
     {
         $repository = new ReadOnlyConfigRepository($oDB,$oTI);
         return $repository->getProviderConfig($pspid,$config);
