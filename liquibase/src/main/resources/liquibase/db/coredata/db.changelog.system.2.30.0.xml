@@ -2060,6 +2060,7 @@
             <column name="name" value="System Record"/>
             <column name="code" value="XXX"/>
             <column name="decimals" value="0"/>
+            <column name="enabled" value="false"/>
         </insert>
     </changeSet>
 
