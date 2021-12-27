@@ -727,11 +727,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]['id'], $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE)
                                             {
-                                                $aCardSchemes = [];
                                                 if($obj_PaymentMethodResponse instanceof  RoutingServiceResponse){
-                                                    $aCardSchemes = $obj_PaymentMethodResponse->getCardSchemes();
+                                                    $obj_Processor->setWalletCardSchemes($obj_PaymentMethodResponse->getCardSchemes());
                                                 }
-                                                $obj_Processor->setWalletCardSchemes($aCardSchemes);
+
                                                 $initResponseXML = $obj_Processor->initialize();
                                                 foreach ($initResponseXML->children() as $obj_Elem)
                                                 {
