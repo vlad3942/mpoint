@@ -1156,8 +1156,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 		$expiry_month = '';
 		$expiry_year = '';
-        $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
-        $cardName = $objPaymentMethod->CardName;
 
 		if($obj_Card->expiry)
 		{
@@ -1166,8 +1164,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-		if (!empty($cardName)) {
-            $b .= '<name>'.$cardName.'</name>';
+		if (!empty($obj_Card->card_name)) {
+            $b .= '<name>'.$obj_Card->card_name.'</name>';
         }
 		if($obj_Card->{'card-holder-name'}) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 				
@@ -1227,13 +1225,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)
 	{
-        $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
-        $cardName = $objPaymentMethod->CardName;
-		[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
+        [$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 		
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-        if (!empty($cardName)) {
-            $b .= '<name>'.$cardName.'</name>';
+        if (!empty($obj_Card->card_name)) {
+            $b .= '<name>'.$obj_Card->card_name.'</name>';
         }
         $b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
