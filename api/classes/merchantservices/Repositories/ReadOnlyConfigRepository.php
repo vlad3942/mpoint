@@ -83,7 +83,7 @@ class ReadOnlyConfigRepository
             }
             else if($addonServiceType->getID() !== AddonServiceTypeIndex::eMPI)
             {
-                array_push($aWhereCls,"currencyid = ".$this->_oTI->getCurrencyConfig()->getID()." AND countryid = ".$this->_oTI->getCountryConfig()->getID());
+                array_push($aWhereCls,"(currencyid = ".$this->_oTI->getCurrencyConfig()->getID()." OR currencyid=0) AND (countryid = ".$this->_oTI->getCountryConfig()->getID()." OR countryid=0) ");
             }
         }
 
@@ -156,7 +156,7 @@ class ReadOnlyConfigRepository
         if($this->_oTI->getClientConfig()->getClientServices()->isDcc() === true)
         {
             $sJoins = "LEFT JOIN CLIENT".sSCHEMA_POSTFIX.".DCC_config_tbl dcc ON c.id = dcc.pmid AND dcc.enabled = true
-				and dcc.clientid = ".$this->_oTI->getClientConfig()->getID()." AND dcc.countryid = ".$this->_oTI->getCountryConfig()->getID()." AND dcc.currencyid=".$this->_oTI->getCurrencyConfig()->getID();
+				and dcc.clientid = ".$this->_oTI->getClientConfig()->getID()." AND (dcc.countryid = ".$this->_oTI->getCountryConfig()->getID()." OR dcc.countryid = 0) AND (dcc.currencyid=".$this->_oTI->getCurrencyConfig()->getID()." OR dcc.currencyid=0)";
             $sColumns = "coalesce(dcc.enabled,false)  as dccenabled";
         }
         else

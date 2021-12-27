@@ -2052,4 +2052,372 @@
         </update>
     </changeSet>
 
+    <changeSet author="Sagar Badave" id="2021-12-28-setup-v2.30-system-currency_default">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="currency_tbl">
+            <column name="id" value="0"/>
+            <column name="name" value="System Record"/>
+            <column name="code" value="XXX"/>
+            <column name="decimals" value="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-12-28-setup-v2.30-system-psp-prop">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PAYPAL_ORDER_NAME"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PAYPAL_ORDER_NAME_PREFIX"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PAYPAL_ORDER_NUMBER"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PAYPAL_ORDER_NUMBER_PREFIX"/>
+            <column name="pspid" value="24"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="VeriTrans4G_BROWSER_DEVICE_CATEGORY"/>
+            <column name="pspid" value="59"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="VeriTrans4G_DUMMY_REQUEST"/>
+            <column name="pspid" value="59"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="VeriTrans4G_JPO"/>
+            <column name="pspid" value="59"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="VeriTrans4G_SERVICE_OPTION_TYPE"/>
+            <column name="pspid" value="59"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="VeriTrans4G_TXN_VERSION"/>
+            <column name="pspid" value="59"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="APPLEPAY_JS_URL"/>
+            <column name="pspid" value="14"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="GOOGLE_PAY_JS_URL"/>
+            <column name="pspid" value="44"/>
+            <column name="category" value="8"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="COUPON_BUCKET_NAME"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="COUPON_GEN"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="DomesticHourToMinusFromDeparture"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="HourToAddInBookingTime"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="InterNationalHourToMinusFromDeparture"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SAFETYPAY_EXPRESS_TIMEOUT"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SAFETYPAY_EXTENDED_TIME_IN_MINUTE"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SAFETYPAY_NIT"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SAFETYPAY_PSE_TIMEOUT"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="SAFETYPAY_SIGNATURE"/>
+            <column name="pspid" value="70"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="post_fraud_rule"/>
+            <column name="pspid" value="40"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="post_fraud_rule"/>
+            <column name="pspid" value="62"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="post_fraud_rule"/>
+            <column name="pspid" value="4"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="mpi_rule"/>
+            <column name="pspid" value="63"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="INGENICO_AUTH_MODE"/>
+            <column name="pspid" value="21"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="CYBS_MerchantDescriptor"/>
+            <column name="pspid" value="63"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="HOST"/>
+            <column name="pspid" value="17"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="HOST"/>
+            <column name="pspid" value="72"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-12-28-setup-v2.30-system-property_category">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="property_category_tbl">
+            <column name="id" value="9"/>
+            <column name="name" value="Technical"/>
+            <column name="scope" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-12-28-setup-v2.30-system-client-prop">
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="isVoucherPreferred"/>
+            <column name="category" value="1"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="PROCESSING_CODE"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="2"/>
+        </insert>
+
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="hppFormRedirectMethod"/>
+            <column name="category" value="4"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <update catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="category" value="9" />
+            <where>name = 'sessiontype'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-12-28-setup-v2.30-system-url_type">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="urltype_tbl">
+            <column name="id" value="10"/>
+            <column name="name" value="Icon URL"/>
+        </insert>
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="urltype_tbl">
+            <column name="id" value="11"/>
+            <column name="name" value="Decline URL"/>
+        </insert>
+    </changeSet>
+
+
+
+
 </databaseChangeLog>

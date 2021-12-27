@@ -145,16 +145,20 @@ abstract class CPMFRAUD
 
         $aFSPStatus = array();
         $fraudCheckResponse = new FraudResult();
-        foreach ($fraudAddon->getConfiguration() as $config)
+        if($obj_TxnInfo->getClientConfig()->getClientServices()->isFraud() === true)
         {
-            if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+            foreach ($fraudAddon->getConfiguration() as $config)
             {
-                $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
-                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
-                $fraudCheckResponse->setFraudCheckAttempted(true);
-                array_push($aFSPStatus, $iFSPCode);
+                if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+                {
+                    $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
+                    $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
+                    $fraudCheckResponse->setFraudCheckAttempted(true);
+                    array_push($aFSPStatus, $iFSPCode);
+                }
             }
         }
+
         $fraudCheckResponse->setFraudCheckResult(CPMFRAUD::hasFraudPassed($aFSPStatus));
         return $fraudCheckResponse;
     }

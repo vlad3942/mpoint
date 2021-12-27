@@ -1247,7 +1247,7 @@ class MerchantConfigRepository
     public function getRouteConfiguration(int $id,bool $bAllConfig) : ?ProviderConfig
     {
 
-        $sSQL = "SELECT id,name, capturetype, mid, username, password FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl WHERE id = ". $id;
+        $sSQL = "SELECT id,name, capturetype, mid, username, password FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl WHERE isdeleted=false and id = ". $id;
         $aPSPDetails = [];
         $rs = $this->getDBConn()->getName( $sSQL );
         if (empty($rs) === false)
@@ -1493,7 +1493,7 @@ class MerchantConfigRepository
         $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
         $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
         $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
-        $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10,17) THEN 'HPP' WHEN id in (7,8,9,11) THEN 'MERCHANT' WHEN id in (15) THEN 'SDK' ELSE '' END) as url_category";
+        $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10,17) THEN 'HPP' WHEN id in (7,8,9,11,15) THEN 'MERCHANT' ELSE '' END) as url_category";
         $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true,array($urlCategory),array("id"=>"type_id"));
         $aSystemMetaData['payment_processors'] = $this->getMetaDataInfo('payment_processor', 'processortype_tbl');
 

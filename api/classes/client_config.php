@@ -1458,7 +1458,7 @@ class ClientConfig extends BasicConfig
                            $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"],'Parse 3D Secure Challenge URL',"CLIENT");
                            break;
                        case self::iMERCHANT_APP_RETURN_URL:
-                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"],"","SDK");
+                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"],"","MERCHANT");
                            break;
                        case self::iBASE_IMAGE_URL :
                            $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URL"],'Base URL for Images',"HPP");
@@ -1506,8 +1506,8 @@ class ClientConfig extends BasicConfig
 
             if($clientServicesStatus->isLegacyFlow() === false)
             {
-                $sql  = "SELECT sp.name as key,cp.value,pc.scope from SYSTEM.client_property_tbl sp 
-                  INNER JOIN CLIENT.client_property_tbl cp on cp.propertyid = sp.id  AND cp.enabled=true AND sp.enabled AND clientid =".$id." INNER JOIN SYSTEM.property_category_tbl pc on sp.category = pc.id ";
+                $sql  = "SELECT sp.name as key,cp.value,pc.scope from SYSTEM". sSCHEMA_POSTFIX .".client_property_tbl sp 
+                  INNER JOIN CLIENT". sSCHEMA_POSTFIX .".client_property_tbl cp on cp.propertyid = sp.id  AND cp.enabled=true AND sp.enabled AND clientid =".$id." INNER JOIN SYSTEM". sSCHEMA_POSTFIX .".property_category_tbl pc on sp.category = pc.id ";
             }
 
             //		echo $sql ."\n";
@@ -1532,6 +1532,19 @@ class ClientConfig extends BasicConfig
                 $aAdditionalProperties[$i]["key"] ="IS_LEGACY";
                 $aAdditionalProperties[$i]["value"] = "false";
                 $aAdditionalProperties[$i]["scope"] = Constants::iPublicProperty;
+
+                //TODO Cannot use ReadOnlyConfigRepo its required txninfo obj and refactoring it to taking client id in
+                // repo will becomes recursion ex created repo obj here repo will again create clientinfo obj
+                // Solution all addon config details need to injected from outside
+                $sql = "SELECT version from client". sSCHEMA_POSTFIX .".mpi_property_tbl WHERE enabled=true and clientid=".$id;
+                $aPropRS = $oDB->getName($sql);
+
+                if (is_array($aPropRS) === true && in_array("VERSION",$aPropRS) === true)
+                {
+                    $aAdditionalProperties[$i]["key"] = "3DSVERSION";
+                    $aAdditionalProperties[$i]["value"] = $aPropRS["VERSION"];
+                    $aAdditionalProperties[$i]["scope"] = Constants::iPrivateProperty;
+                }
             }
 
             return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["ENABLE_CVV"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$obj_ThreedRedirectURL,$RS["SECRETKEY"],$RS["INSTALLMENT"], $RS["MAX_INSTALLMENTS"], $RS["INSTALLMENT_FREQUENCY"],$obj_BaseAssetURL, $obj_TransactionTypeConfig, $obj_HPPURL,$clientServicesStatus);
