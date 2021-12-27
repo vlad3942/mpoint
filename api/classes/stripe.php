@@ -24,9 +24,6 @@ class StripeException extends CallbackException { }
  */
 class Stripe_PSP extends CPMPSP
 {
-    public function capture($iAmount=-1) { throw new StripeException("Method: capture is not supported by Stripe"); }
-    public function void($iAmount=-1) { throw new StripeException("Method: void is not supported by Stripe"); }
-    public function cancel($amount = -1) { throw new StripeException("Method: cancel is not supported by Stripe"); }
     public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new StripeException("Method: getPaymentData is not supported by Stripe."); }
     public function getPSPID() { return Constants::iSTRIPE_PSP; }
 }
