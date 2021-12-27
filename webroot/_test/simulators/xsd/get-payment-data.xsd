@@ -308,7 +308,7 @@
 										</xs:element>
 										<xs:element name="card">
 											<xs:complexType>
-												<xs:all>
+												<xs:sequence>
 													<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 													<xs:element name="amount">
 														<xs:complexType>
@@ -320,7 +320,7 @@
 														</xs:complexType>
 													</xs:element>
 													<xs:element type="xs:long" name="token"/>
-												</xs:all>
+												</xs:sequence>
 												<xs:attribute type="xs:integer" name="type-id"/>
 											</xs:complexType>
 										</xs:element>
