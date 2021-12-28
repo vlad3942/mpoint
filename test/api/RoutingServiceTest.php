@@ -205,7 +205,6 @@ VALUES(1100, 14, 'paymaya acq',  true)");
         if($obj_RS instanceof RoutingService)
         {
             $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-            print_r();
 
             $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
 

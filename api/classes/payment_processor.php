@@ -171,7 +171,7 @@ class PaymentProcessor
      * @param $aCardSchemes
      * @return void
      */
-    public function setWalletCardSchemes($aCardSchemes = array())
+    public function setWalletCardSchemes(array $aCardSchemes = array())
     {
         $this->aWalletCardScemes = $aCardSchemes;
     }
