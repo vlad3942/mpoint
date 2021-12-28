@@ -2513,22 +2513,30 @@ class General
                 $misc = [];
                 $misc['auto-capture'] = 2;
                 $iPSPID = -1;
-                if (strtolower($is_legacy) === 'false')
-                {
-                    $typeId   = Constants::iVOUCHER_CARD;
-                    $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
-                    $obj_ClientInfo     = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-                    $obj_CardResultSet  = General::getRouteConfigurationAuth($_OBJ_DB,$obj_mCard,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $voucher->amount,$typeId, NULL,$cardName);
-                    $misc["routeconfigid"] = $obj_CardResultSet['routeconfigid'];
-                    $iPSPID                = $obj_CardResultSet['pspid'];
-                }
-                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE, (string)$iPSPID, $additionalTxnData,$misc);
+                $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, (int)$voucher->amount, FALSE,$iPSPID, $additionalTxnData,$misc);
                 if ($txnObj !== NULL) {
                     $isTxnCreated = true;
                     $_OBJ_DB->query('COMMIT');
                     $_OBJ_DB->query('START TRANSACTION');
                 } else {
                     $_OBJ_DB->query('ROLLBACK');
+                }
+                if (strtolower($is_legacy) === 'false')
+                {
+                    $typeId   = Constants::iVOUCHER_CARD;
+                    $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
+                    $obj_STxnInfo = TxnInfo::produceInfo($txnObj->getID(),$_OBJ_DB, $txnObj, $misc);
+                    $obj_ClientInfo     = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                    $obj_CardResultSet  = General::getRouteConfigurationAuth($_OBJ_DB,$obj_mCard,$obj_STxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $TXN_DOM["client-id"], $voucher->amount["country-id"], $voucher->amount["currency-id"], $voucher->amount,$typeId, NULL,$cardName);
+                    $pspId = (int)$obj_CardResultSet['pspid'];
+                    if($pspId > 0) {
+                        $misc["routeconfigid"]  = $obj_CardResultSet['routeconfigid'];
+                        $misc["psp-id"]         = $pspId;
+                        $log_TxnInfo            = TxnInfo::produceInfo($txnObj->getID(),$_OBJ_DB, $txnObj, $misc);
+                        $obj_mPoint->logTransaction($log_TxnInfo);
+                    }else {
+                        $result['code']     = 24;
+                    }
                 }
             }
             $isVoucherErrorFound = TRUE; //TO Bypass error flow
