@@ -291,6 +291,9 @@ class ConfigurationController
 
     public function deleteProviderConfig($request, $additionalParams = []) {
 
+        if(isset($additionalParams['provider_type'])  === false) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_REQUEST_PARAM,'Provider Type Param Not Found');
+        }
         $this->getConfigService()->deleteProviderConfig($additionalParams);
 
     }

@@ -80,7 +80,7 @@ class MerchantConfigInfo
     }
 
     public function deleteProviderConfig(MerchantConfigRepository $configRepository, $additionalParams = []){
-        $id = $additionalParams['client_id'] ?? -1;
+        $id = $additionalParams['provider_type'] ?? -1;
         $configRepository->deleteConfigDetails($id, 'provider');
     }
 

@@ -836,6 +836,7 @@ class MerchantConfigRepository
     {
         $sTableName = '';
         $sWhereCls = " true";
+
         switch(strtolower($entity))
         {
             case 'feature':
@@ -854,7 +855,8 @@ class MerchantConfigRepository
 
             case 'provider':
                 $sTableName = "merchantaccount_tbl";
-                $sWhereCls = " clientid = ". $this->getClientInfo()->getID();;
+                $sWhereCls = " clientid = ". $this->getClientInfo()->getID()
+                            . " AND pspid IN (SELECT id FROM SYSTEM" . sSCHEMA_POSTFIX .".psp_tbl WHERE system_type = ". $id ." )";
                 break;
 
             default:
