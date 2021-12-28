@@ -228,7 +228,7 @@ class ReadOnlyConfigRepository
             }
 
             $aPSPProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("PSP","CLIENT",$pspid,array(),false);
-            $aRouteProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("ROUTE","CLIENT",$pspid,array(),false);
+            $aRouteProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("ROUTE","CLIENT",$routeconfigid,array(),false);
             $aProperty = array_merge($aPSPProperty,$aRouteProperty);
 
             $aAdditionalProperties = array();
