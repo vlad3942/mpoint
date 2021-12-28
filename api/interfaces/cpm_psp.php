@@ -458,7 +458,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $cardName='')
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -472,8 +472,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         }
 
         $this->updateTxnInfoObject();
-        $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
-        $cardName = $objPaymentMethod->CardName;
 
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
