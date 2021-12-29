@@ -1539,7 +1539,7 @@ class ClientConfig extends BasicConfig
                 $sql = "SELECT version from client". sSCHEMA_POSTFIX .".mpi_property_tbl WHERE enabled=true and clientid=".$id;
                 $aPropRS = $oDB->getName($sql);
 
-                if (is_array($aPropRS) === true && in_array("VERSION",$aPropRS) === true)
+                if (is_array($aPropRS) === true)
                 {
                     $aAdditionalProperties[$i]["key"] = "3DSVERSION";
                     $aAdditionalProperties[$i]["value"] = $aPropRS["VERSION"];

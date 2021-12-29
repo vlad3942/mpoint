@@ -1289,7 +1289,7 @@ class MerchantConfigRepository
         else if($type === 'PSP')
         {
             $sTableName = 'psp_property_tbl';
-            $sWhereArgs = " AND cp.enabled=true AND sp.enabled AND clientid =".$this->_clientConfig->getID();
+            $sWhereArgs = " AND cp.enabled=true AND SP.pspid=".$id." AND sp.enabled AND clientid =".$this->_clientConfig->getID();
         }
         else if($type === 'ROUTE')
         {
