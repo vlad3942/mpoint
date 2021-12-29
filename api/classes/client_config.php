@@ -1541,7 +1541,7 @@ class ClientConfig extends BasicConfig
 
                 if (is_array($aPropRS) === true)
                 {
-                    $i += i;
+                    $i++;
                     $aAdditionalProperties[$i]["key"] = "3DSVERSION";
                     $aAdditionalProperties[$i]["value"] = $aPropRS["VERSION"];
                     $aAdditionalProperties[$i]["scope"] = Constants::iPrivateProperty;
