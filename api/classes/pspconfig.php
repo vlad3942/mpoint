@@ -192,11 +192,11 @@ class PSPConfig extends BasicConfig
     public function isRouteFeatureEnabled(int $featureId) :bool
     {
 
-        if(empty($this->_aRouteFeature) === false && count($this->_aRouteFeature) > 0)
+        if(empty($this->_aRouteFeature) === false)
         {
             foreach ($this->_aRouteFeature as $feature)
             {
-                if((int)$feature['ID'] === $featureId) return true;
+                if((int)$feature['ID'] === $featureId && $feature['ENABLED'] === true  ) return true;
             }
         }
         return false;
