@@ -316,6 +316,8 @@ try
                                             } else if ($processVoucher['code'] == 53) {
                                                 $aMsgCds[53] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
                                                 $xml .= '<status code="53">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
+                                            }else if ($processVoucher['code'] == 24) {
+                                                $aMsgCds[24] = "The selected payment card is not available";
                                             }
                                         }
                                         $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
@@ -518,7 +520,7 @@ try
                                             $iPSPId = $obj_TxnInfo->getPSPID();
                                             $iPrimaryRoute = $obj_TxnInfo->getRouteConfigID();
 
-                                            if($iPrimaryRoute <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET)
+                                            if(($iPrimaryRoute <=0 || $isCardTokenExist === true || $card_psp_id === Constants::iMVAULT_PSP  || $iPaymentType == Constants::iPROCESSOR_TYPE_WALLET) && $iPaymentType != Constants::iPROCESSOR_TYPE_APM)
                                             {
                                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'authorize-payment'}[$i]["client-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount, $typeId, $issuerIdentificationNumber, $obj_card->getCardName(), NULL, $walletId);
                                                 if($obj_RS instanceof RoutingService)
