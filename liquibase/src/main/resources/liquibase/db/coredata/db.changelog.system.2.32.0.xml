@@ -938,4 +938,22 @@
 
     </changeSet>
 
+    <changeSet author="Abhinav Shaha" id="2021-12-29-setup-v2.33-system-3">
+
+		<update catalogName="system" schemaName="system" tableName="card_tbl">
+			<column name="minlength" value="16" />
+			<column name="maxlength" value="19" />
+			<column name="cvclength" value="3" />
+			<where>id = 67</where>
+		</update>
+
+		<insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+			<column name="cardid" value="67"/>
+			<column name="min" value="62" />
+			<column name="max" value="62"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+    </changeSet>
+
 </databaseChangeLog>
