@@ -120,6 +120,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else
 		{
+            //Update Refund amount in txn table
+            if((int)$iAmount === -1)
+            {
+                //get auth amount
+                $iAmount = $this->getTxnInfo()->getAmount();
+            }
 		    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 			$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<root>';
@@ -170,19 +176,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusDone);
+                            $this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 						}
 						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusPending);
-						}
-						//Update Refund amount in txn table
-						if((int)$iAmount === -1)
-						{
-							//get auth amount
-							$iAmount = $this->getTxnInfo()->getAmount();
-						}
-						$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
+							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
+                            $iStatusCode = Constants::iTRANSACTION_CREATED;
+						} else {
+                            $this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
+                        }
 						return $iStatusCode;
 					}
 					else
@@ -458,7 +461,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $aWalletCardSchemes = array())
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -475,7 +478,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty) );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty, $aWalletCardSchemes) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';

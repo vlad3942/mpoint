@@ -77,6 +77,99 @@ class RoutingServiceTest extends baseAPITest
         return $xml;
     }
 
+    public function testGetWalletPaymentMethods()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 18, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, 'Wallet103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, cardid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001001, 100, 10099, 1100, 1,  18, 8, 5001, 100, 'Wallet103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, cardid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001002, 100, 10099, 1100, 1,  18, 8, 5001, 100, 'Wallet103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 5000,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 5000,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
+        $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208,". Constants::iAuthorizeRequested. ",NULL,'inprocess',10099)");
+
+        $this->queryDB("INSERT INTO Client.merchantaccount_tbl
+    (clientid, pspid, \"name\",  enabled, username, passwd, stored_card, supportedpartialoperations)
+VALUES(10099, 14, 'EFS100001149', true, 'Paymaya acq', 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5zz', NULL, 0)");
+
+        $this->queryDB("INSERT INTO Client.merchantsubaccount_tbl
+    (accountid, pspid, \"name\", enabled)
+VALUES(1100, 14, 'paymaya acq',  true)");
+
+        $this->queryDB("INSERT INTO Client.additionalproperty_tbl(\"key\", value, enabled, externalid, \"type\", \"scope\") VALUES( 'IS_LEGACY', 'false',  true, 10099, 'client', 0)");
+
+
+
+        $xml = $this->getInitDoc(10099, 1100, 100, 208, 10);
+        $obj_DOM = simpledom_load_string($xml);
+        $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+
+        $iTxnID = 1001001;
+        $obj_FailedPaymentMethod = null;
+        $sessionId = (string)$obj_DOM->{'initialize-payment'}->transaction["session-id"];
+        if(empty($sessionId)===false){
+            $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($this->_OBJ_DB, $sessionId, 10099);
+        }
+        $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
+        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}["client-id"], $obj_DOM->{'initialize-payment'}->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
+
+        $this->assertInstanceOf(RoutingService::class, $obj_RS);
+
+        if($obj_RS instanceof RoutingService)
+        {
+            $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
+
+            $this->assertInstanceOf(RoutingServiceResponse::class, $obj_PaymentMethodResponse);
+
+            if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
+            {
+                $aObjPaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
+
+                $this->assertEquals(3, count($aObjPaymentMethods->payment_methods->payment_method) );
+
+                $aCardId = array();
+                $aPSPType = array();
+                foreach ($aObjPaymentMethods->payment_methods->payment_method as $paymentMethod)
+                {
+                    $aCardId[] = $paymentMethod->id;
+                    $aPSPType[] = $paymentMethod->psp_type;
+                }
+
+                $this->assertContains(17, $aCardId);
+                $this->assertContains(18, $aCardId);
+                $this->assertContains(15, $aCardId);
+                $this->assertContains(1, $aPSPType);
+                $this->assertContains(2, $aPSPType);
+                $this->assertContains(3, $aPSPType);
+
+                $aWalletCardId = [];
+                foreach ($aObjPaymentMethods->card_schemes as $iProviderId => $iCardId)
+                {
+                    $aWalletCardId = $iCardId;
+                }
+                $this->assertContains(7, $aWalletCardId);
+                $this->assertContains(8, $aWalletCardId);
+
+                // Processor initialize API
+
+                $obj_Processor = WalletProcessor::produceConfig($this->_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, 15, $this->_aHTTP_CONN_INFO);
+                $obj_Processor->setWalletCardSchemes($obj_PaymentMethodResponse->getCardSchemes());
+                $initResponseXML = $obj_Processor->initialize();
+                $aSupportedCards = (array) $initResponseXML->head->supported_cards->supported_card;
+
+                $this->assertContains('VISA', $aSupportedCards);
+                $this->assertContains('Master Card', $aSupportedCards);
+
+            }
+        }
+    }
+
     public function testGetPaymentMethods()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -118,7 +211,7 @@ class RoutingServiceTest extends baseAPITest
             if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
             {
                 $aObjPaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                $this->assertEquals(2, count($aObjPaymentMethods->payment_methods->payment_method) );
+                $this->assertEquals(3, count($aObjPaymentMethods->payment_methods->payment_method) );
 
                 $aCardId = array();
                 $aPSPType = array();
@@ -163,6 +256,8 @@ class RoutingServiceTest extends baseAPITest
         }
 
     }
+
+
 
     public function testDefaultCountryCurrecnyGetPaymentMethods()
     {
