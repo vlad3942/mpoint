@@ -841,4 +841,12 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Amar kumar" id="2021-12-30-setup-v2.33-system-1">
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="82" />
+            <column name="pspid" value="64"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
