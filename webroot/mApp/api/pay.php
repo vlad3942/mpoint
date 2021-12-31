@@ -428,7 +428,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$walletId = (int) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"];
 						}
-
+                        $cardName = $obj_card->getCardName();
 
                         $obj_CardResultSet = FALSE;
 						$aRoutes = array();
@@ -735,7 +735,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$aHTTP_CONN_INFO["payex"]["username"] = $obj_paymentProcessor->getPSPConfig()->getUsername();
 												$aHTTP_CONN_INFO["payex"]["password"] = $obj_paymentProcessor->getPSPConfig()->getPassword();
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
-												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), (string)$obj_CardResultSet['CURRENCY']);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
+                                                                                $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(),
+                                                                                (string)$obj_CardResultSet['CURRENCY'],
+                                                                                $cardName);
 												foreach ($obj_XML->children() as $obj_XMLElem) {
 													// Hidden Fields
 													if (count($obj_XMLElem->children()) > 0) {
@@ -810,7 +813,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= '<url method="overlay" />';
 												$obj_PSP = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex-express-checkout"]);
 
-												$obj_XML = $obj_PSP->initialize($obj_paymentProcessor->getPSPConfig(), $obj_TxnInfo->getAccountID(), FALSE);
+												$obj_XML = $obj_PSP->initialize($obj_paymentProcessor->getPSPConfig(), $obj_TxnInfo->getAccountID(), FALSE, $cardName);
 
 												foreach ($obj_XML->children() as $obj_Elem) {
 													$xml .= trim($obj_Elem->asXML());
@@ -837,7 +840,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
 												}
 												$authToken = (trim($obj_DOM->{'pay'}[$i]->{'auth-token'}))?(trim($obj_DOM->{'pay'}[$i]->{'auth-token'})):(NULL);
-												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']), $authToken);
+												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']), $authToken, $cardName);
 												if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === TRUE) {
 													$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "");
 												}
