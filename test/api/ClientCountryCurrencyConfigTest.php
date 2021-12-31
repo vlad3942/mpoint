@@ -54,7 +54,7 @@ class ClientCountryCurrencyConfigTest extends baseAPITest
         }
         $xml .= '</payment_currencies>';
 
-        $this->assertStringContainsString('<payment_currencies><payment_currency><id>840</id><name>USD</name></payment_currency></payment_currencies>', $xml);
+        $this->assertStringContainsString('<payment_currencies><payment_currency><id>840</id><name>USD</name><decimals>2</decimals></payment_currency></payment_currencies>', $xml);
     }
 
 

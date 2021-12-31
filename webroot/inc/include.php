@@ -162,6 +162,4 @@ define("sLANG", General::getLanguage() );
 // Intialise Text Translation Object
 $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
-// set oldOrderXml variable from request header if set else set to false(default)
-$GLOBALS['oldOrderXml'] = isset($_SERVER['HTTP_OLDORDERXML']) ? (bool) $_SERVER['HTTP_OLDORDERXML'] : false;
 ?>

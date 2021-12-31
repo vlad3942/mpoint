@@ -24,6 +24,20 @@ if(empty($obj_DOM->client_info->client_id) === false && empty($obj_DOM->transact
 					<psp_type>1</psp_type>
 					<preference/>
 				</payment_method>
+               <payment_method>
+                    <id>15</id>
+                    <psp_type>3</psp_type>
+                    <preference>2</preference>
+                    <state_id>1</state_id>
+                    <card_schemes>
+                        <card_scheme>
+                            <id>7</id>
+                        </card_scheme>
+                        <card_scheme>
+                            <id>8</id>
+                        </card_scheme>
+                    </card_schemes>
+                </payment_method>
 			</payment_methods>
 		</payment_method_search_response>';
     echo $xml;

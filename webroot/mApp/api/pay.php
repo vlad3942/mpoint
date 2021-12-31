@@ -866,6 +866,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $xml .= '<status code="'.Constants::iPAYMENT_INIT_WITH_PSP_STATE.'">Payment Initialize with PSP</status>';
                                         }
 									}
+                                    catch (PaymentProcessorInitializeException $e)
+                                    {
+                                        $xml = '<status code="' . $e->getCode() . '" sub-code="' . $e->getSubcode() . '">' . $e->getMessage() . '</status>';
+                                    }
 									catch (mPointException $e)
 									{
 										header("HTTP/1.1 502 Bad Gateway");

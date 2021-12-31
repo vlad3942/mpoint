@@ -296,6 +296,12 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
+	/**
+	 * Defines the ID of the State that indicates that the unknown error occurred and payment was rejected by the Payment Service Provider (PSP)
+	 * when doing an Authorisation
+	 *
+	 */
+	const iPAYMENT_UNKNOWN_ERROR_STATE = 99;
     /**
      * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
      * when doing an Authorisation due to incorrect payment information
@@ -1632,6 +1638,12 @@ abstract class Constants
 	 */
 	const iDRAGONPAYOFFLINE = 88;
 	/**
+    	 * Unique Card ID for transaction's made using Grab Pay
+    	 *
+    	 */
+    const iELO_CARD = 82;
+
+	/**
 	 * Unique Card ID for transaction's made using Grab Pay
 	 *
 	 */
@@ -1867,6 +1879,7 @@ abstract class Constants
     const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
     const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
 	const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP = 5;
+	const iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION= 6;
 
     /*
      * Defines unique ID of the State that indicates payment soft declined
@@ -1997,6 +2010,11 @@ abstract class Constants
 	 * Initialize API flight info Service class constants for Business
 	 */
 	const BUSINESS = 5;
+
+	/**
+	 * Exnternal MCP service opted
+	 */
+	const iExternalMCPOpted = 31;
 
 
 }

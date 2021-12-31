@@ -242,13 +242,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-					
+                        $obj_PaymentMethodResponse = null;
 						$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig,Constants::iPURCHASE_VIA_APP);
 						try
 						{
 							// Update Transaction State
 							$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
-                            $aTransactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE, Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE,Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP);
+                            $aTransactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE, Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE,Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP,Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION);
 
                             $iTransactionTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
                             if(in_array($iTransactionTypeId, $aTransactionTypes)){
@@ -453,7 +453,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
                                 $sOrderXML = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->asXML();
                                 $obj_DOMOrder = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders;
-                                $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder);
+                                $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, null);
 							}
 							elseif((is_object($obj_DOM->{'initialize-payment'}[$i]->transaction->orders) && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 0) && $iAttemptNumber > 1 )
                             {
@@ -664,7 +664,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     //Get list of presentment currencies
                                     $presentmentCurrency = false;
                                     $presentmentCurrencies = array();
-                                    if (General::bool2xml($obj_XML->item [$j] ["dcc"]))
+                                    $isDCCEnabled = General::xml2bool($obj_XML->item [$j] ["dcc"]);
+                                    if ($fxServiceTypeId == Constants::iExternalMCPOpted) {
+                                        $isDCCEnabled = false;
+                                    }
+                                    if ($isDCCEnabled)
                                     {
 										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$obj_XML->item[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
 										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
@@ -683,7 +687,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     $fetchBalance = $obj_mPoint->isAutoFetchBalance($obj_TxnInfo, $cardId);
 
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. General::bool2xml($isDCCEnabled) .'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
                                     if($fetchBalance === true){
                                         $cardXML .= '<fetch-balance>true</fetch-balance>';
@@ -727,6 +731,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]['id'], $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE)
                                             {
+                                                if($obj_PaymentMethodResponse instanceof  RoutingServiceResponse){
+                                                    $obj_Processor->setWalletCardSchemes($obj_PaymentMethodResponse->getCardSchemes());
+                                                }
+
                                                 $initResponseXML = $obj_Processor->initialize();
                                                 foreach ($initResponseXML->children() as $obj_Elem)
                                                 {
@@ -816,7 +824,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// Get list of presentment currencies
 									$presentmentCurrency = false;
 									$presentmentCurrencies = array();
-									if (General::bool2xml($aObj_XML [$j] ["dcc"]))
+                                    $isDCCEnabled = General::xml2bool($aObj_XML [$j] ["dcc"]);
+                                    if ($fxServiceTypeId == Constants::iExternalMCPOpted) {
+                                        $isDCCEnabled = false;
+                                    }
+									if ($isDCCEnabled)
 									{
 										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$aObj_XML[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
 										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
@@ -824,7 +836,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 									}
 
-									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . $aObj_XML[$j]["dcc"] .'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
+									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . General::bool2xml($isDCCEnabled) .'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 
 									if($presentmentCurrency)

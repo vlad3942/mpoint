@@ -248,35 +248,30 @@ class PassengerInfo {
 	public function toXML()
     {
 		$xml = '';
-		if ($GLOBALS['oldOrderXml'] === true) {
-		    // return old AID format
-            $xml = $this->_toOldXML();
-        } else {
-		    //return new AID format
-            $xml .= '<profile>';
-            $xml .= '<seq>' . $this->getSeqNumber() . '</seq>';
-            $xml .= '<title>' . $this->getTitle() . '</title>';
-            $xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
-            $xml .= '<last-name>' . $this->getLastName () . '</last-name>';
-            $xml .= '<type>' . $this->getType () . '</type>';
-            if ($this->getAmount() > 0) { $xml .= '<amount>' . $this->getAmount() . '</amount>'; }
-            if ($this->getEmail() || $this->getMobile())
-            {
-                $xml .= '<contact-info>';
-                $xml .= '<email>' . $this->getEmail() .'</email>';
-                $xml .= '<mobile country-id="' . $this->getCountryId() .'">' . $this->getMobile() .'</mobile>';
-                $xml .= '</contact-info>';
-            }
-            if ($this->getAdditionalData ()) {
-                $xml .= '<additional-data>';
-                foreach ( $this->getAdditionalData () as $pAdditionalData ) {
-                    $xml .= $this->getAdditionalDataArr ( $pAdditionalData );
-                }
-                $xml .= '</additional-data>';
-            } else {
-            }
-            $xml .= '</profile>';
+
+        $xml .= '<profile>';
+        $xml .= '<seq>' . $this->getSeqNumber() . '</seq>';
+        $xml .= '<title>' . $this->getTitle() . '</title>';
+        $xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
+        $xml .= '<last-name>' . $this->getLastName () . '</last-name>';
+        $xml .= '<type>' . $this->getType () . '</type>';
+        if ($this->getAmount() > 0) { $xml .= '<amount>' . $this->getAmount() . '</amount>'; }
+        if ($this->getEmail() || $this->getMobile())
+        {
+            $xml .= '<contact-info>';
+            $xml .= '<email>' . $this->getEmail() .'</email>';
+            $xml .= '<mobile country-id="' . $this->getCountryId() .'">' . $this->getMobile() .'</mobile>';
+            $xml .= '</contact-info>';
         }
+        if ($this->getAdditionalData ()) {
+            $xml .= '<additional-data>';
+            foreach ( $this->getAdditionalData () as $pAdditionalData ) {
+                $xml .= $this->getAdditionalDataArr ( $pAdditionalData );
+            }
+            $xml .= '</additional-data>';
+        } else {
+        }
+        $xml .= '</profile>';
 
 		return $xml;
 	}
