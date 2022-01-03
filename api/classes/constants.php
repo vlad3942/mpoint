@@ -296,6 +296,12 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
+	/**
+	 * Defines the ID of the State that indicates that the unknown error occurred and payment was rejected by the Payment Service Provider (PSP)
+	 * when doing an Authorisation
+	 *
+	 */
+	const iPAYMENT_UNKNOWN_ERROR_STATE = 99;
     /**
      * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
      * when doing an Authorisation due to incorrect payment information

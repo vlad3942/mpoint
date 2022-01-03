@@ -124,6 +124,7 @@
 							<xs:element name="card" minOccurs="1" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
+										<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="card-number" type="xs:string"	minOccurs="0" maxOccurs="1" />
 										<xs:element name="expiry-month" type="xs:string" minOccurs="0" maxOccurs="1" />

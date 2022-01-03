@@ -16,7 +16,20 @@
  * Exception class for all Payment Processor exceptions
  */
 class PaymentProcessorException extends mPointException {}
+class PaymentProcessorInitializeException extends mPointException
+{
+    private $subCode;
+    function __construct($message = "", $code = 0, Throwable $previous = null, $subCode=0)
+    {
+        parent::__construct($message, $code, $previous);
+        $this->subCode = $subCode;
+    }
 
+    function getSubcode()
+    {
+        return $this->subCode;
+    }
+}
 /* ==================== Payment Processor Exception Classes End ==================== */
 
 
@@ -78,9 +91,9 @@ class PaymentProcessor
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }
 
-    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL)
+    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL, $cardName='')
     {
-        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), $storeCard, $cardTypeId, $cardToken, $billingAddress, $clientInfo, $authToken, $this->getWalletCardSchemes());
+        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), $storeCard, $cardTypeId, $cardToken, $billingAddress, $clientInfo, $authToken, $cardName, $this->getWalletCardSchemes());
     }
 
     public function authorize($obj_Elem, $obj_ClientInfo= null)
