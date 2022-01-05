@@ -845,7 +845,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
  										$isDCCEnabled = General::xml2bool($obj_XML->item [$j] ["dcc"]);
 									}
 
-````````````````````````````````````$bPresentmentCurrency = false;
+                                    $bPresentmentCurrency = false;
 									if($fxServiceTypeId !== Constants::iExternalMCPOpted && isset($aPresentmentConf[(int)$aObj_XML[$j]["id"]]) === true) {
                                         $bPresentmentCurrency = true;
                                     }
