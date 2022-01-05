@@ -602,12 +602,12 @@ class ClientConfig extends BasicConfig
      *
      * @return    Array
      */
-    public function getPaymentMethods(RDB &$oDB = NULL)
+    public function getPaymentMethods(RDB &$oDB = NULL, $aWalletCardSchemes = array())
     {
         if ($this->_aObj_PaymentMethodConfigurations === NULL && $oDB !== NULL )
         {
             if($this->getClientServices()->isLegacyFlow() === false) {
-                $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::getConfigurations($oDB, $this->getID());
+                $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::getConfigurations($oDB, $aWalletCardSchemes);
             }else{
                 $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $this->getID());
             }
@@ -1020,10 +1020,10 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getPaymentMethodsAsXML(RDB &$oDB)
+	private function _getPaymentMethodsAsXML(RDB &$oDB, $aWalletCardSchemes = array())
 	{
 		$xml = '<payment-methods store-card="'. $this->_iStoreCard .'" show-all-cards="'. General::bool2xml($this->_bShowAllCards) .'" max-stored-cards="'. $this->_iMaxCards .'">';
-		foreach ($this->getPaymentMethods($oDB) as $obj_PM)
+		foreach ($this->getPaymentMethods($oDB, $aWalletCardSchemes) as $obj_PM)
 		{
 			if ( ($obj_PM instanceof ClientPaymentMethodConfig) === true)
 			{
@@ -1192,7 +1192,7 @@ class ClientConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public function toFullXML(RDB &$oDB,$propertyScope=2)
+	public function toFullXML(RDB &$oDB,$propertyScope=2, $aWalletCardSchemes = array())
 	{
 		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -1217,11 +1217,10 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_ThreedRedirectURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_ThreedRedirectURL->toXML(); }
         if ( ($this->_obj_HPPURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_HPPURL->toXML(); }
         $xml .= '</urls>';
-        $xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
-        $xml .= $this->_aObj_ClientServicesStatus->toXML();
-        $xml .= $this->_getPaymentMethodsAsXML($oDB);
-        $xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
-        $xml .= $this->_getAccountsConfigurationsAsXML($oDB);
+		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
+		$xml .= $this->_getPaymentMethodsAsXML($oDB, $aWalletCardSchemes);
+		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
+		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
 		$xml .= $this->_getGoMobileConfigAsXML($oDB);
         $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';

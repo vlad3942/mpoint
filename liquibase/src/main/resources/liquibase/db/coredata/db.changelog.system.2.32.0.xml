@@ -27,4 +27,818 @@
             <column name="name" value="HPP Host URL"/>
         </insert>
     </changeSet>
+
+    <changeSet author="Amar kumar" id="2021-12-21-setup-v2.33-system">
+
+        <!-- ELO Credit Card Scheme setup queries -->
+
+        <insert catalogName="system" schemaName="system" tableName="card_tbl">
+            <column name="id" value="82"/>
+            <column name="name" value="ELO"/>
+            <column name="position" value="3"/>
+            <column name="minlength" value="13"/>
+            <column name="maxlength" value="19"/>
+            <column name="cvclength" value="3"/>
+            <column name="enabled" value="true"/>
+            <column name="paymenttype" value="1"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="82"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <!-- WorldPay -->
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="82" />
+            <column name="pspid" value="4"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <!-- CYBS -->
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="82" />
+            <column name="pspid" value="63"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650405"/>
+            <column name="max" value="650405"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509059"/>
+            <column name="max" value="509059"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650438"/>
+            <column name="max" value="650438"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650424"/>
+            <column name="max" value="650424"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650422"/>
+            <column name="max" value="650422"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650039"/>
+            <column name="max" value="650039"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650038"/>
+            <column name="max" value="650038"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650963"/>
+            <column name="max" value="650963"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650560"/>
+            <column name="max" value="650560"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="431274"/>
+            <column name="max" value="431274"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="655016"/>
+            <column name="max" value="655016"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650911"/>
+            <column name="max" value="650911"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650523"/>
+            <column name="max" value="650523"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650556"/>
+            <column name="max" value="650556"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650558"/>
+            <column name="max" value="650558"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="655038"/>
+            <column name="max" value="655038"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506741"/>
+            <column name="max" value="506741"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650574"/>
+            <column name="max" value="650574"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="650522"/>
+            <column name="max" value="650522"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="Amar kumar" id="2021-12-22-setup-v2.33-system">
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcard_tbl">
+            <where>pspid = 63 AND cardid = 82</where>
+        </delete>
+    </changeSet>
+
+    <changeSet author="Amar kumar" id="2021-DEC-22-setup-v2.33_system">
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="451416"/>
+            <column name="max" value="451416"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="457393"/>
+            <column name="max" value="457393"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="504175"/>
+            <column name="max" value="504175"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506707"/>
+            <column name="max" value="506708"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506715"/>
+            <column name="max" value="506715"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506717"/>
+            <column name="max" value="506717"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506718"/>
+            <column name="max" value="506718"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506719"/>
+            <column name="max" value="506719"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506720"/>
+            <column name="max" value="506720"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506721"/>
+            <column name="max" value="506721"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506722"/>
+            <column name="max" value="506722"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506723"/>
+            <column name="max" value="506723"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506724"/>
+            <column name="max" value="506724"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506725"/>
+            <column name="max" value="506725"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506726"/>
+            <column name="max" value="506727"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506728"/>
+            <column name="max" value="506730"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506731"/>
+            <column name="max" value="506732"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506733"/>
+            <column name="max" value="506733"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506734"/>
+            <column name="max" value="506736"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506739"/>
+            <column name="max" value="506739"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506740"/>
+            <column name="max" value="506742"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506743"/>
+            <column name="max" value="506743"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506744"/>
+            <column name="max" value="506748"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506753"/>
+            <column name="max" value="506753"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506774"/>
+            <column name="max" value="506774"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506775"/>
+            <column name="max" value="506775"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506776"/>
+            <column name="max" value="506776"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506777"/>
+            <column name="max" value="506777"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="506778"/>
+            <column name="max" value="506778"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509000"/>
+            <column name="max" value="509001"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509002"/>
+            <column name="max" value="509002"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509003"/>
+            <column name="max" value="509003"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509004"/>
+            <column name="max" value="509006"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509007"/>
+            <column name="max" value="509007"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509008"/>
+            <column name="max" value="509008"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509009"/>
+            <column name="max" value="509012"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509013"/>
+            <column name="max" value="509013"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509014"/>
+            <column name="max" value="509014"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509020"/>
+            <column name="max" value="509023"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509024"/>
+            <column name="max" value="509030"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509031"/>
+            <column name="max" value="509034"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509035"/>
+            <column name="max" value="509035"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509036"/>
+            <column name="max" value="509038"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509039"/>
+            <column name="max" value="509041"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509042"/>
+            <column name="max" value="509043"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509044"/>
+            <column name="max" value="509044"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509045"/>
+            <column name="max" value="509045"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509046"/>
+            <column name="max" value="509047"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509048"/>
+            <column name="max" value="509048"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509049"/>
+            <column name="max" value="509050"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509051"/>
+            <column name="max" value="509053"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509054"/>
+            <column name="max" value="509063"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509064"/>
+            <column name="max" value="509064"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509065"/>
+            <column name="max" value="509065"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509066"/>
+            <column name="max" value="509066"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509067"/>
+            <column name="max" value="509069"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509070"/>
+            <column name="max" value="509072"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509073"/>
+            <column name="max" value="509073"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509074"/>
+            <column name="max" value="509074"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509075"/>
+            <column name="max" value="509076"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509077"/>
+            <column name="max" value="509080"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509081"/>
+            <column name="max" value="509083"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509084"/>
+            <column name="max" value="509084"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509085"/>
+            <column name="max" value="509090"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509091"/>
+            <column name="max" value="509091"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509092"/>
+            <column name="max" value="509092"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509093"/>
+            <column name="max" value="509094"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509095"/>
+            <column name="max" value="509097"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509098"/>
+            <column name="max" value="509098"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509099"/>
+            <column name="max" value="509099"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509100"/>
+            <column name="max" value="509100"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509101"/>
+            <column name="max" value="509102"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509103"/>
+            <column name="max" value="509103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509104"/>
+            <column name="max" value="509104"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509105"/>
+            <column name="max" value="509105"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509106"/>
+            <column name="max" value="509106"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509107"/>
+            <column name="max" value="509107"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509108"/>
+            <column name="max" value="509108"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509109"/>
+            <column name="max" value="509109"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509110"/>
+            <column name="max" value="509807"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509831"/>
+            <column name="max" value="509879"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509897"/>
+            <column name="max" value="509900"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509918"/>
+            <column name="max" value="509964"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509971"/>
+            <column name="max" value="509986"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="509995"/>
+            <column name="max" value="509999"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="627780"/>
+            <column name="max" value="627780"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="636297"/>
+            <column name="max" value="636297"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="82"/>
+            <column name="min" value="636368"/>
+            <column name="max" value="636368"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Amar kumar" id="2021-12-21-setup-v2.33-system-1">
+
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="pspcard_tbl">
+            <where>pspid = 21 AND cardid = 82</where>
+        </delete>
+
+        <!-- Ingenico -->
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="82" />
+            <column name="pspid" value="21"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
