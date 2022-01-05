@@ -972,7 +972,7 @@ try
                                                     }
                                                     $cardName = $obj_card->getCardName();
                                                     if (!empty($cardName) && !is_array($obj_Elem)) {
-                                                        $obj_Elem->card_name = $cardName;
+                                                        $obj_Elem->addChild('card_name',$cardName);
                                                     }
 
 													if ($code >= 10)
