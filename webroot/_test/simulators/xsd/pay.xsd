@@ -119,6 +119,7 @@
 							<xs:element name="card" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
+										<xs:element name="name" type="xs:string"  minOccurs="0" maxOccurs="1" />
 										<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
 										<xs:element name="issuer-identification-number" minOccurs="0" maxOccurs="1">
 											<xs:simpleType>

@@ -970,6 +970,10 @@ try
                                                             $aMsgCds[22] = 'Invalid CVC';
                                                         }
                                                     }
+                                                    $cardName = $obj_card->getCardName();
+                                                    if (empty($cardName) === false) {
+                                                        $obj_Elem->card_name = $cardName;
+                                                    }
 
 													if ($code >= 10)
 													{

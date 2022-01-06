@@ -181,8 +181,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
-                            $iStatusCode = Constants::iTRANSACTION_CREATED;
 						} else {
                             $this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
                         }
@@ -461,7 +459,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $aWalletCardSchemes = array())
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $cardName='', $aWalletCardSchemes = array())
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -497,16 +495,23 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
-		{ 
+		{
+             $cardNameXml = '';
+             if (!empty($cardName)) {
+                 $cardNameXml = '<name>' . $cardName . '</name>';
+             }
 			 if($card_token == '')
 			 {
-			 	$b .= '<card type-id="'.$card_type_id.'"></card>';
+			 	$b .= '<card type-id="'.$card_type_id.'">' .
+                            $cardNameXml .
+                      '</card>';
 			 }
 			 else
 			 {
-			 	$b .= '<card type-id="'.$card_type_id.'">
-			 			  <token>'.$card_token.'</token>
-			 		   </card>';
+			 	$b .= '<card type-id="'.$card_type_id.'">' .
+                          $cardNameXml .
+                          '<token>'.$card_token.'</token>
+			 		 </card>';
 			 }
 		}
 		if(is_null($obj_BillingAddress) == false)
@@ -1175,7 +1180,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-		
+		if (!empty($obj_Card->card_name)) {
+            $b .= '<name>'.$obj_Card->card_name.'</name>';
+        }
 		if($obj_Card->{'card-holder-name'}) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 				
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
@@ -1234,10 +1241,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)
 	{
-		[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
+        [$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 		
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-		$b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
+        if (!empty($obj_Card->card_name)) {
+            $b .= '<name>'.$obj_Card->card_name.'</name>';
+        }
+        $b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
 		$b .= '<token>'. $obj_Card->ticket .'</token>';
