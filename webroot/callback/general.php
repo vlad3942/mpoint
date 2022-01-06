@@ -397,7 +397,7 @@ try
                 $sIssuingBank = (string)$obj_XML->callback->{'issuing-bank'};
                 $authOriginalData = (string)$obj_XML->callback->{'auth-original-data'};
 
-                if ($iStateID === Constants::iPAYMENT_PENDING_STATE ||
+                if (($iStateID === Constants::iPAYMENT_PENDING_STATE && $obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE) ||
                     ($obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType !== Constants::iPAYMENT_TYPE_OFFLINE && $iStateID === Constants::iPAYMENT_ACCEPTED_STATE)) {
                     $obj_mPoint->getTxnInfo()->setExternalId($obj_XML->callback->transaction["external-id"]);
                     $obj_mPoint->generate_receipt();
