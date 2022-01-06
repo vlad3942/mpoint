@@ -1289,26 +1289,25 @@
 			<!-- Validate Rule -->
 
 			<!-- Generate hmac Security Hash -->
-			<xs:element name="generate-hmac-security-hash">
+			<xs:element name="hmac_parameters">
 				<xs:complexType>
 					<xs:all>
-						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+						<xs:element name="hmac_parameter_details" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+									<xs:element name="hmac_parameter_detail" minOccurs="1" maxOccurs="unbounded">
 										<xs:complexType>
 											<xs:all>
-												<xs:element name="hmac-type" type="xs:string" minOccurs="0" maxOccurs="1"/>
-												<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
-												<xs:element name="order-no" type="xs:string" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="hmac_type" type="xs:string" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="client_id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="order_number" type="xs:string" minOccurs="1" maxOccurs="1"/>
 												<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
-												<xs:element name="unique-reference" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="unique_reference_identifier" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
 												<xs:element name="nonce" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
-												<xs:element name="country-id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
-												<xs:element name="cfx-id" type="xs:string"	minOccurs="0" maxOccurs="1" />
-												<xs:element name="sale-amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
-												<xs:element name="sale-currency" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-												<xs:element name="client-info" minOccurs="0" maxOccurs="1">
+												<xs:element name="country_id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="sale_amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="sale_currency" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+												<xs:element name="client_info" minOccurs="0" maxOccurs="1">
 												<xs:complexType>
 													<xs:all>
 														<xs:element name="mobile" minOccurs="0" maxOccurs="1">
@@ -1320,9 +1319,9 @@
 																</xs:restriction>
 															</xs:simpleType>
 														</xs:element>
-														<xs:element name="mobile-country" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+														<xs:element name="mobile_country" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
 														<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
-														<xs:element name="device-id" type="device-id" minOccurs="0" maxOccurs="1" />
+														<xs:element name="device_id" type="device-id" minOccurs="0" maxOccurs="1" />
 													</xs:all>
 												</xs:complexType>
 											</xs:element>
@@ -1336,6 +1335,30 @@
 				</xs:complexType>
 			</xs:element>
 			<!-- Generate hmac Security Hash -->
+
+			<!-- Generate init-token Security Hash -->
+			<xs:element name="init_token_parameters">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="init_token_parameter_details" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="init_token_parameter_detail" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="client_id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="nonce" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="unique_reference_identifier" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>												
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!-- Generate init-token Security Hash -->
 
 			<!-- Get Successful Txn From Session -->
 			<xs:element name="get-successful-txn-from-session" minOccurs="1" maxOccurs="1">
