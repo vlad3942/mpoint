@@ -211,7 +211,7 @@ class PayEx extends Callback
 		return $id;
 	}
 
-	public function initialize(HTTPConnInfo &$oCI, $an, $currency)
+	public function initialize(HTTPConnInfo &$oCI, $an, $currency, $cardName='')
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
 																						"exceptions" => true) );
@@ -388,7 +388,10 @@ class PayEx extends Callback
 			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 			$xml .= '<root>';
 			$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">https://'. $obj_ConnInfo->getHost() . $sURL .'</url>';
-			$xml .= '<card-number>'. htmlspecialchars($sCardNo, ENT_NOQUOTES) .'</card-number>';
+			if (!empty($cardName)) {
+                $xml .= '<name>'. htmlspecialchars($cardName, ENT_NOQUOTES) .'</name>';
+            }
+            $xml .= '<card-number>'. htmlspecialchars($sCardNo, ENT_NOQUOTES) .'</card-number>';
 			$xml .= '<expiry-month>'. htmlspecialchars($sExpiryMonth, ENT_NOQUOTES) .'</expiry-month>';
 			$xml .= '<expiry-year>'. htmlspecialchars($sExpiryYear, ENT_NOQUOTES) .'</expiry-year>';
 			$xml .= '<cvc>'. htmlspecialchars($sCVC, ENT_NOQUOTES) .'</cvc>';
