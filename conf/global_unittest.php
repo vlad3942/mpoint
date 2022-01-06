@@ -345,6 +345,19 @@ $aHTTP_CONN_INFO["paymaya_acq"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["paymaya_acq"]["paths"]["initialize"] = "/_test/simulators/paymaya-acq/init.php";
 $aHTTP_CONN_INFO["paymaya_acq"]["paths"]["auth"] = "/_test/simulators/paymaya-acq/auth.php";
 
+/**
+ * Connection info for connecting to Stripe
+ */
+$aHTTP_CONN_INFO["stripe"]["protocol"] = "http";
+$aHTTP_CONN_INFO["stripe"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["stripe"]["port"] = 80;
+$aHTTP_CONN_INFO["stripe"]["timeout"] = 120;
+$aHTTP_CONN_INFO["stripe"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["stripe"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["stripe"]["paths"]["auth"] = "/_test/simulators/stripe/auth.php";
+$aHTTP_CONN_INFO["stripe"]["paths"]["pay"] = "/_test/simulators/stripe/pay.php";
+$aHTTP_CONN_INFO["stripe"]["paths"]["initialize"] = "/_test/simulators/stripe/pay.php";
+
 
 /**
  * Message Queue Provider Information

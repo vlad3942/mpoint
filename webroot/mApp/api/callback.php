@@ -48,11 +48,8 @@ require_once(sCLASS_PATH ."/cpg.php");
 require_once(sCLASS_PATH ."/dsb.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
-if (function_exists("json_encode") === true && function_exists("curl_init") === true)
-{
-    // Require specific Business logic for the Stripe component
-    require_once(sCLASS_PATH ."/stripe.php");
-}
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH ."/stripe.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the Apple Pay component

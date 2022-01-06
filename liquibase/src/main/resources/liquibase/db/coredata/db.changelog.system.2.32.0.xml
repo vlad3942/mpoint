@@ -849,4 +849,118 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Abhinav Shaha" id="2021-12-23-setup-v2.33-system-1">
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="3" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="1" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="22" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="5" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="67" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="CRC" />
+            <column name="currencyid" value="188" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="MXN" />
+            <column name="currencyid" value="484" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="ARS" />
+            <column name="currencyid" value="32" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="CAD" />
+            <column name="currencyid" value="124" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="EUR" />
+            <column name="currencyid" value="978" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+    </changeSet>
+
+	<changeSet author="Abhinav Shaha" id="2021-12-24-setup-v2.33-system-2">
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-188"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-484"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-32"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978"/>
+		    <column name="cardid" value="67" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+    </changeSet>
+
+    <changeSet author="Abhinav Shaha" id="2021-12-29-setup-v2.33-system-3">
+
+		<update catalogName="system" schemaName="system" tableName="card_tbl">
+			<column name="minlength" value="16" />
+			<column name="maxlength" value="19" />
+			<column name="cvclength" value="3" />
+			<where>id = 67</where>
+		</update>
+
+		<insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+			<column name="cardid" value="67"/>
+			<column name="min" value="62" />
+			<column name="max" value="62"/>
+			<column name="enabled" value="true"/>
+		</insert>
+	</changeSet>
+
 </databaseChangeLog>
