@@ -971,7 +971,7 @@ try
                                                         }
                                                     }
                                                     $cardName = $obj_card->getCardName();
-                                                    if (!empty($cardName)) {
+                                                    if (empty($cardName) === false) {
                                                         $obj_Elem->card_name = $cardName;
                                                     }
 
