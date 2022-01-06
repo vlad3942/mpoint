@@ -156,6 +156,8 @@ require_once(sCLASS_PATH .'/voucher/TravelFund.php');
 require_once(sCLASS_PATH ."/authorize.php");
 // Require specific Business logic for the Paymaya-Acq component
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH ."/stripe.php");
 
 
 /**
