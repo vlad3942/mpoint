@@ -197,15 +197,19 @@ class MerchantConfigRepository
        }
 
        $aSplitConfig = $this->getSplitConfigID($addonServiceType);
-       foreach ($aSplitConfig as $SplitConfig)
+       if(is_array($aSplitConfig) && empty($aSplitConfig) === false)
        {
-           $serviceTypeid = AddonServiceTypeIndex::valueOf($SplitConfig['TYPE']);
-           if($serviceTypeid !== 0 )
+           foreach ($aSplitConfig as $SplitConfig)
            {
-               array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId($serviceTypeid,$SplitConfig['TYPE']),array(),false,$SplitConfig['ID']));
+               $serviceTypeid = AddonServiceTypeIndex::valueOf($SplitConfig['TYPE']);
+               if($serviceTypeid !== 0 )
+               {
+                   array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId($serviceTypeid,$SplitConfig['TYPE']),array(),false,$SplitConfig['ID']));
 
+               }
            }
        }
+
 
 
        return  $aAddonConfig;

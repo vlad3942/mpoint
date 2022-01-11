@@ -855,24 +855,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertGreaterThan(0, count($aClientProperty['Basic']));
         $this->assertGreaterThan(0, count($aClientProperty['Technical']));
 
-        $aAddonConf = $this->_merchantAggregateRoot->getAllAddonConfig($this->_merchantConfigRepository);
-        $aClassSet = array(
-            'DCCConfig' => 1 , 'MCPConfig' => 1 , 'PCCConfig' => 1 ,'FraudConfig' => 1 , 'MPIConfig' => 1 , 'Split_PaymentConfig' => 1 , 'TokenizationConfig' => 1
-        );
 
-        $sprevBaseClass = '';
-        foreach($aAddonConf as $config)
-        {
-            $baseClass = substr(strrchr('\\'.get_class($config), '\\'), 1);
-            if(isset($aClassSet[$baseClass]))
-            {
-                unset($aClassSet[$baseClass]);
-            } else if($sprevBaseClass !== $baseClass){
-                $aClassSet['Unkown'] = 1;
-            }
-            $sprevBaseClass = $baseClass;
-        }
-        $this->assertEquals(0, count($aClassSet));
     }
 
     public function testSuccessfulPostClientConfiguration()
