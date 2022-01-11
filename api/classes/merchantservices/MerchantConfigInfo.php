@@ -27,9 +27,9 @@ class MerchantConfigInfo
      * @param MerchantConfigRepository $configRepository
      * @return array
      */
-    public function getAllAddonConfig(MerchantConfigRepository $configRepository) : array
+    public function getAllAddonConfig(MerchantConfigRepository $configRepository,AddonServiceType $addonServiceType=null) : array
     {
-        return $configRepository->getAllAddonConfig();
+        return $configRepository->getAllAddonConfig($addonServiceType);
     }
 
     /**

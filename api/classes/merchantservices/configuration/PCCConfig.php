@@ -28,15 +28,21 @@ class PCCConfig extends BaseConfig
     private array $_aProperty;
 
     /**
+     * @var array
+     */
+    private string $_sName;
+
+    /**
      * @param array $config
      * @param array $property
      * @param string $subType
      */
-    public function __construct(array $config,array $property,string $subType='PCC')
+    public function __construct(array $config,array $property,string $subType='PCC',string $name='')
     {
         $this->_aConfig = $config;
         $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC,$subType);
         $this->_aProperty = $property;
+        $this->_sName = $name;
     }
 
     /**
@@ -62,5 +68,14 @@ class PCCConfig extends BaseConfig
     {
         return $this->_aProperty;
     }
+
+    /**
+     * @return string
+     */
+    public function getName() :string
+    {
+        return $this->_sName;
+    }
+
 }
 

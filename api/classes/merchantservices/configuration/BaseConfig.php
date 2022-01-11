@@ -18,6 +18,7 @@ Abstract class BaseConfig
     public Abstract function getConfiguration() : array;
     public Abstract function getServiceType() : AddonServiceType;
     public Abstract function getProperties();
+    public Abstract function getName():string;
 
     /**
      * @param string $keyfun
@@ -51,6 +52,10 @@ Abstract class BaseConfig
         if($this->getServiceType()->getID() == AddonServiceTypeIndex::eSPLIT_PAYMENT || $this->getServiceType()->getID() == AddonServiceTypeIndex::eFraud)
         {
             $xml .= sprintf('<sub_type>%s</sub_type>',$this->getServiceType()->getSubType());
+            if(empty($this->getName()) === false)
+            {
+                $xml .= "<name>".$this->getName()."</name>";
+            }
         }
         $xml .= "<addon_configurations>";
         foreach ($this->getConfiguration() as $config)
@@ -86,6 +91,7 @@ Abstract class BaseConfig
 
         foreach ($oXML as $key => $addon_config_detail) {
             $addonSubType = (string)$addon_config_detail->sub_type;
+            $name = (string)$addon_config_detail->name;
             if (strpos($key, '_configs') !== false) {
                 $aConfigs = BaseConfig::produceFromXML($addon_config_detail);
                 $aBaseconfig = array_merge($aBaseconfig, $aConfigs);
@@ -101,7 +107,7 @@ Abstract class BaseConfig
             }
 
             $className = __NAMESPACE__ . '\\' . $addonServiceTYpe->getClassName();
-            $config = new $className($aServiceCon, array(), $addonSubType);
+            $config = new $className($aServiceCon, array(), $addonSubType,$name);
             $config->setPropertiesFromXML($addon_config_detail);
             array_push($aBaseconfig, $config);
         }

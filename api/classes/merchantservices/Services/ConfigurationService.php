@@ -39,7 +39,17 @@ class ConfigurationService
 
     public function getAddonConfig( $additionalParams = []) : string
     {
-        $aAddonConf = $this->getAggregateRoot()->getAllAddonConfig($this->getRepository());
+        $addonServiceType = null;
+        if(isset($additionalParams['type']) === true)
+        {
+            $serviceTypeid = AddonServiceTypeIndex::valueOf($additionalParams['type']);
+            if($serviceTypeid !== 0)
+            {
+                $addonServiceType = AddonServiceType::produceAddonServiceTypebyId($serviceTypeid,$additionalParams['type']);
+            }
+
+        }
+        $aAddonConf = $this->getAggregateRoot()->getAllAddonConfig($this->getRepository(),$addonServiceType);
         $responseXml = "<addon_configuration_response>";
         $sFraudXML ='';
         $sSplitPaymentXML ='';

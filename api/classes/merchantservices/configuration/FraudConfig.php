@@ -31,15 +31,21 @@ class FraudConfig extends BaseConfig
     private array $_aProperty;
 
     /**
+     * @var array
+     */
+    private string $_sName;
+
+    /**
      * @param array $config
      * @param array $property
      * @param string $subType
      */
-    public function __construct(array $config,array $property,string $subType='Fraud')
+    public function __construct(array $config,array $property,string $subType='Fraud',string $name='')
     {
         $this->_aConfig = $config;
         $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType);
         $this->_aProperty = $property;
+        $this->_sName = $name;
     }
 
     /**
@@ -64,6 +70,14 @@ class FraudConfig extends BaseConfig
     public function getProperties()
     {
         return $this->_aProperty;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() :string
+    {
+        return $this->_sName;
     }
 
     /**

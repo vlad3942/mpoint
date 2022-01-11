@@ -30,15 +30,21 @@ class DCCConfig extends BaseConfig
     private array $_aProperty;
 
     /**
+     * @var array
+     */
+    private string $_sName;
+
+    /**
      * @param array $config
      * @param array $property
      * @param string $subType
      */
-    public function __construct(array $config,array $property,string $subType = 'DCC')
+    public function __construct(array $config,array $property,string $subType = 'DCC',string $name='')
     {
         $this->_aConfig = $config;
         $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eDCC,$subType);
         $this->_aProperty = $property;
+        $this->_sName = $name;
     }
 
     /**
@@ -65,6 +71,12 @@ class DCCConfig extends BaseConfig
         return $this->_aProperty;
     }
 
-
+    /**
+     * @return string
+     */
+    public function getName() :string
+    {
+       return $this->_sName;
+    }
 }
 
