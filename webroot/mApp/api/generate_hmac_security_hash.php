@@ -50,7 +50,7 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
                 
                 if ($code == 100) {
                     $obj_Config = ClientConfig::produceConfig($_OBJ_DB, $clientId);
-                    if ($obj_Config->getID() > 0) {
+                    if ($obj_Config->getID() > 0 && $obj_Config->getSalt()) {
 
                         $obj_HmacSecurityHash = new HmacSecurityHash($clientId, $orderId, $amount, $countryid, $obj_Config->getSalt());
                         
@@ -62,12 +62,13 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
                         $obj_HmacSecurityHash->setSaleAmount($saleAmount);
                         $obj_HmacSecurityHash->setSaleCurrency($saleCurrency);
                         $obj_HmacSecurityHash->setCfxID($uniqueReference);                
-                        $hmac = $obj_HmacSecurityHash->generateHmac();
+                        $hmac = $obj_HmacSecurityHash->generate512Hash();
                         
                         $obj_SecurityHashResponse[] = new SecurityHashResponse($hmac, $uniqueReference);
                     }else{
-                        $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, "Configuration not found for client: " . $clientId);
-                        trigger_error("Configuration not found for client: " . $clientId, E_USER_WARNING);
+                        (empty($obj_Config->getSalt()) === true) ? $errorMsg = "The salt setup has not been configured for the client: "  . $clientId : $errorMsg = "Configuration not found for client: " . $clientId;
+                        $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, $errorMsg);
+                        trigger_error($errorMsg, E_USER_WARNING);
                     }
                 }else{
                     $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, "Invalid client detail: " . $clientId);

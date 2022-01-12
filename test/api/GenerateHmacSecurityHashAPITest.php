@@ -74,7 +74,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 
     public function testGenerateRegularHmac()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, salt) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 'salt')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
@@ -82,12 +82,12 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>03474f0a133a327a8b97952fb37e88bba6ad9873167a524670c7e33e1201692d566a57a7c10f3968d104f3fcc57a90f1a5fe22fa4d24a6beedbc3121efc3d8c5</token></security_token_detail></security_token_details></root>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>2fe86f669ea608d424390d5faffa7539101625cd604892aa2a448cb8c62842a600a9e4eb941c70b313de2b0cd66a25f0aac65aab70c524cd88eb94e0e6f0217b</token></security_token_detail></security_token_details></root>', $sReplyBody);
 	}
 	
 	public function testGenerateFxHmac()
     {
-	    $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+	    $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, salt) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass', 'salt')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
@@ -95,7 +95,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>10d12c7cbb5dffaa1383d520b30b6e1e6e5776bbef3a07062ce5c698cd73706a3216d3d8d759a51e1f8e2b4ffc2d3af6079891f71069e557c85c51bdf6f49442</token></security_token_detail></security_token_details></root>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>a6ad6f9f6f0e59a20b58626212a4ddd4c762439e109d406675be26d2010b91cb75f009d09a4c7c9e4d73144e7def4dfa97bc2639fe4b132472e697131ce99e72</token></security_token_detail></security_token_details></root>', $sReplyBody);
 	}
 	
 	public function testInvalidClient()
@@ -108,7 +108,20 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details></security_token_details></root>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><status>Invalid client detail: 10095</status></security_token_detail></security_token_details></root>', $sReplyBody);
+    }
+	
+	public function testMissingSalt()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+		$xml = $this->getDoc(10099);
+		$this->_httpClient->connect();
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><status>The salt setup has not been configured for the client: 10099</status></security_token_detail></security_token_details></root>', $sReplyBody);
     }
 
 }

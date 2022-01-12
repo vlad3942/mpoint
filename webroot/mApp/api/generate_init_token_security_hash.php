@@ -34,6 +34,7 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
         $clientId = (integer) $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'client_id'};
         $uniqueReference = (integer) $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'unique_reference_identifier'};
         $nonce = $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'nonce'};
+        $acceptUrl = $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'accept_url'};
         
         $code = Validate::valClient($_OBJ_DB, $clientId);
         
@@ -43,12 +44,15 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
                 $username = htmlspecialchars($obj_Config->getUsername(), ENT_NOQUOTES);
                 $password = htmlspecialchars($obj_Config->getPassword(), ENT_NOQUOTES);
                 $obj_InitTokenSecurityHash = new InitTokenSecurityHash($clientId, $nonce, $username, $password);
-                $initToken = $obj_InitTokenSecurityHash->generateInitToken();
+                $obj_InitTokenSecurityHash->setAcceptUrl($acceptUrl);
+                $initToken = $obj_InitTokenSecurityHash->generate512Hash();
                 $obj_SecurityHashResponse[] = new SecurityHashResponse($initToken, $uniqueReference);
             }else{
+                $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, "Configuration not found for client: " . $clientId);
                 trigger_error("Configuration not found for client: " . $clientId, E_USER_WARNING);
             }
         }else{
+            $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, "Invalid client detail: " . $clientId);
             trigger_error("Invalid client detail: " . $clientId, E_USER_WARNING); 
         }
     }

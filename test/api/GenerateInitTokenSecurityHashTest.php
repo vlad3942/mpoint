@@ -23,7 +23,7 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($this->_aMPOINT_CONN_INFO));
 	}
 
-    protected function getDoc($clientid, $hmacType="")
+    protected function getDoc($clientid, $acceptUrl="")
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
@@ -33,6 +33,9 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
 		$xml .= '<unique_reference_identifier>101</unique_reference_identifier>';
 		$xml .= '<client_id>'.$clientid.'</client_id>';
 		$xml .= '<nonce>123456</nonce>';
+		if($acceptUrl != ''){
+			$xml .= '<accept_url>'.$acceptUrl.'</accept_url>';
+		}
         $xml .= '</init_token_parameter_detail>';
         $xml .= '</init_token_parameter_details>';
         $xml .= '</init_token_parameters>';
@@ -61,7 +64,7 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
 	}
 
 
-    public function testGenerateInitTokent()
+    public function testGenerateInitToken()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -72,6 +75,19 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><init_token_response><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>18524a48db73503fe266fa5e583f1f11c27a7a482c63ff24ca2abd72b2869c1e320eb4ffa1f12ba1e0e45f1307735a5c0f1effb385ef5ce0e7e687a0c4bd181d</token></security_token_detail></init_token_response></root>', $sReplyBody);
+	}
+	
+	public function testGenerateInitTokenWithAcceptURL()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+		$xml = $this->getDoc(10099, 'http://www');
+		$this->_httpClient->connect();
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><init_token_response><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>8674328ce684aabe01c11f1c60a28fdadb4314b1646aa019bb2f4cc5237991654b420dcbe705ae49d5f366e5aae8f83eee390edf03a54942846ab63809f62d00</token></security_token_detail></init_token_response></root>', $sReplyBody);
 	}
 		
 	public function testInvalidClient()
@@ -84,7 +100,7 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><init_token_response></init_token_response></root>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><init_token_response><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><status>Invalid client detail: 10095</status></security_token_detail></init_token_response></root>', $sReplyBody);
     }
 
 }

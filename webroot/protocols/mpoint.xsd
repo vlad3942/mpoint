@@ -1348,6 +1348,7 @@
 											<xs:all>
 												<xs:element name="client_id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
 												<xs:element name="nonce" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="accept_url" type="url" minOccurs="0" maxOccurs="1" />
 												<xs:element name="unique_reference_identifier" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>												
 											</xs:all>
 										</xs:complexType>

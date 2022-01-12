@@ -11,11 +11,10 @@
 
 namespace api\classes;
 
-class HmacSecurityHash
+class HmacSecurityHash extends SecurityHash
 {
 
     private string $_sHmacType;
-    private int $_iClientID;
     private string $_sOrderID;
     private int $_lAmount;
     private int $_iCountryID;
@@ -23,11 +22,9 @@ class HmacSecurityHash
     private int $_iMobileCountryID;
     private string $_sEMail;
     private string $_sDeviceID;
-    private string $_sSalt;
     private string $_lSaleAmount;
     private string $_iSaleCurrency;
     private string $_iCfxID;
-    private string $_sAlgo;
     
     /**
      * HmacSecurityHash constructor.
@@ -38,15 +35,12 @@ class HmacSecurityHash
      * @param int $countryid
      * @param string $string
      */
-    // public function __construct(string $hmac, string $unique_reference = null, string $init_token = null)
     public function __construct(int $clientId, string $orderId, int $amount, int $countryid, string $salt)
     {
-        $this->_iClientID = (integer) $clientId;
+        parent::__construct($clientId, $salt);
         $this->_sOrderID = $orderId;
         $this->_lAmount = $amount;
         $this->_iCountryID = $countryid;
-        $this->_sSalt = $salt;
-        $this->_sAlgo = "sha512";
     }
 
     /**
@@ -114,6 +108,13 @@ class HmacSecurityHash
         $this->_iCfxID = $iCfxID;
     }
 
+    public function generate512Hash()
+    {
+        $this->_hashString = $this->generateHmac();
+        if($this->_hashString)
+            return parent::generate512Hash();
+    }
+
     public function generateHmac()
 	{
         switch ($this->_sHmacType)
@@ -130,14 +131,14 @@ class HmacSecurityHash
     
     private function _regularHmac()
 	{
-        $hmac = hash($this->_sAlgo, $this->_iClientID.$this->_sOrderID.$this->_lAmount.$this->_iCountryID.$this->_lMobile.$this->_iMobileCountryID.$this->_sEMail.$this->_sDeviceID.$this->_sSalt);
-		return $hmac;
+        $hmacString = $this->_iClientID.$this->_sOrderID.$this->_lAmount.$this->_iCountryID.$this->_lMobile.$this->_iMobileCountryID.$this->_sEMail.$this->_sDeviceID.$this->_sSalt;
+		return $hmacString;
 	}
     
     private function _fxHmac()
 	{
-        $hmac = hash($this->_sAlgo, $this->_iClientID.$this->_sOrderID.$this->_lAmount.$this->_iCountryID.$this->_lMobile.$this->_iMobileCountryID.$this->_sEMail.$this->_sDeviceID.$this->_sSalt.$this->_lSaleAmount.$this->_iSaleCurrency.$this->_iCfxID);
-		return $hmac;
+        $hmacString = $this->_iClientID.$this->_sOrderID.$this->_lAmount.$this->_iCountryID.$this->_lMobile.$this->_iMobileCountryID.$this->_sEMail.$this->_sDeviceID.$this->_sSalt.$this->_lSaleAmount.$this->_iSaleCurrency.$this->_iCfxID;
+		return $hmacString;
 	}
 
 }
