@@ -77,6 +77,8 @@ require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the Paymaya-Acq component
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH ."/stripe.php");
 
 ignore_user_abort(true);
 set_time_limit(0);

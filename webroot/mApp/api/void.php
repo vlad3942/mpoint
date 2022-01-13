@@ -38,12 +38,8 @@ require_once(sCLASS_PATH ."/netaxept.php");
 require_once(sCLASS_PATH ."/dsb.php");
 // Require specific customer info
 require_once(sCLASS_PATH ."/customer_info.php");
-
-if (function_exists("json_encode") === true && function_exists("curl_init") === true)
-{
-	// Require specific Business logic for the Stripe component
-	require_once(sCLASS_PATH ."/stripe.php");
-}
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH ."/stripe.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require specific Business logic for the Adyen component
