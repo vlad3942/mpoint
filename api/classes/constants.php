@@ -1684,6 +1684,11 @@ abstract class Constants
 	*
 	*/
 	const iBANCODEBOGATA  = 100;
+	/**
+	 * Unique Card ID for transaction's made using UNIONPAY_CARD
+	 *
+	 */
+	const iUNIONPAY_CARD = 101;
 	
 	
 
