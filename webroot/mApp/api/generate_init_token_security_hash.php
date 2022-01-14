@@ -29,6 +29,7 @@ try{
 if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "security_hash.xsd") === true && count($obj_DOM->{'init_token_parameter_details'}) > 0) {
     $detailCount = count($obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'});
     $xml = '<init_token_response>';
+    $xml .= '<security_token_details>';
     for ($i=0; $i < $detailCount; $i++)
     {
         $clientId = (integer) $obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'client_id'};
@@ -57,6 +58,7 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
         }
     }
     $xml .= xml_encode($obj_SecurityHashResponse);
+    $xml .='</security_token_details>';
     $xml .='</init_token_response>';
     
 } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {

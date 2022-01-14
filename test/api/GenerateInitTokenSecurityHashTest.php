@@ -72,7 +72,7 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><init_token_response><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>18524a48db73503fe266fa5e583f1f11c27a7a482c63ff24ca2abd72b2869c1e320eb4ffa1f12ba1e0e45f1307735a5c0f1effb385ef5ce0e7e687a0c4bd181d</token></security_token_detail></init_token_response>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><init_token_response><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>18524a48db73503fe266fa5e583f1f11c27a7a482c63ff24ca2abd72b2869c1e320eb4ffa1f12ba1e0e45f1307735a5c0f1effb385ef5ce0e7e687a0c4bd181d</token></security_token_detail></security_token_details></init_token_response>', $sReplyBody);
 	}
 	
 	public function testGenerateInitTokenWithAcceptURL()
@@ -85,7 +85,7 @@ class GenerateInitTokenSecurityHashTest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><init_token_response><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>8674328ce684aabe01c11f1c60a28fdadb4314b1646aa019bb2f4cc5237991654b420dcbe705ae49d5f366e5aae8f83eee390edf03a54942846ab63809f62d00</token></security_token_detail></init_token_response>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><init_token_response><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>8674328ce684aabe01c11f1c60a28fdadb4314b1646aa019bb2f4cc5237991654b420dcbe705ae49d5f366e5aae8f83eee390edf03a54942846ab63809f62d00</token></security_token_detail></security_token_details></init_token_response>', $sReplyBody);
 	}
 		
 	public function testInvalidClient()
