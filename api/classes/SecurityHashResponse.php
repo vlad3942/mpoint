@@ -24,7 +24,6 @@ class SecurityHashResponse implements JsonSerializable, XMLSerializable
 {
     private string $unique_reference_identifier;
     private string $token;
-    private string $status;
     
     /**
      * SecurityHashResponse constructor.
@@ -32,15 +31,11 @@ class SecurityHashResponse implements JsonSerializable, XMLSerializable
      * @param string $token
      * @param string $unique_reference_identifier
      */
-    public function __construct(string $token = null, string $unique_reference_identifier = null, string $status = null)
+    public function __construct(string $token = null, string $unique_reference_identifier = null)
     {
         if(empty($token) ===FALSE)
         {
             $this->token = $token;
-        }        
-        if(empty($status) ===FALSE)
-        {
-            $this->status = $status;
         }        
         if(empty($unique_reference_identifier) ===FALSE)
         {

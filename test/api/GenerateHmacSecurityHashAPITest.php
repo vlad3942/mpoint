@@ -26,7 +26,6 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
     protected function getDoc($clientid, $hmacType="")
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<root>';
         $xml .= '<hmac_parameters>';
         $xml .= '<hmac_parameter_details>';
 		$xml .= '<hmac_parameter_detail>';		
@@ -47,7 +46,6 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
         $xml .= '</hmac_parameter_detail>';        
         $xml .= '</hmac_parameter_details>';        
         $xml .= '</hmac_parameters>';
-        $xml .= '</root>';
 
         return $xml;
     }
@@ -58,7 +56,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), '<xml></xml>');
 		$sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(400, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root></root>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>400</code><description>Wrong operation: </description><uuid>', $sReplyBody);
     }
 
 
@@ -68,7 +66,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), '<xl</xl>');
 		$sReplyBody = $this->_httpClient->getReplyBody();
 		$this->assertEquals(415, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="415">Invalid XML Document</status></root>', $sReplyBody);
+		$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>415</code><description>Invalid XML Document</description><uuid>', $sReplyBody);
 	}
 
 
@@ -82,7 +80,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>2fe86f669ea608d424390d5faffa7539101625cd604892aa2a448cb8c62842a600a9e4eb941c70b313de2b0cd66a25f0aac65aab70c524cd88eb94e0e6f0217b</token></security_token_detail></security_token_details></root>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>2fe86f669ea608d424390d5faffa7539101625cd604892aa2a448cb8c62842a600a9e4eb941c70b313de2b0cd66a25f0aac65aab70c524cd88eb94e0e6f0217b</token></security_token_detail></security_token_details>', $sReplyBody);
 	}
 	
 	public function testGenerateFxHmac()
@@ -95,7 +93,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>a6ad6f9f6f0e59a20b58626212a4ddd4c762439e109d406675be26d2010b91cb75f009d09a4c7c9e4d73144e7def4dfa97bc2639fe4b132472e697131ce99e72</token></security_token_detail></security_token_details></root>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>a6ad6f9f6f0e59a20b58626212a4ddd4c762439e109d406675be26d2010b91cb75f009d09a4c7c9e4d73144e7def4dfa97bc2639fe4b132472e697131ce99e72</token></security_token_detail></security_token_details>', $sReplyBody);
 	}
 	
 	public function testInvalidClient()
@@ -108,7 +106,8 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><status>Invalid client detail: 10095</status></security_token_detail></security_token_details></root>', $sReplyBody);
+		$this->assertEquals(400, $iStatus);
+	  	$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>400</code><description>Invalid client detail: 10095</description><uuid>', $sReplyBody);
     }
 	
 	public function testMissingSalt()
@@ -121,7 +120,8 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><status>The salt setup has not been configured for the client: 10099</status></security_token_detail></security_token_details></root>', $sReplyBody);
+		$this->assertEquals(400, $iStatus);
+	  	$this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>400</code><description>The salt setup has not been configured for the client: 10099</description><uuid>', $sReplyBody);
     }
 
 }

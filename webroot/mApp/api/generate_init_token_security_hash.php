@@ -25,16 +25,16 @@ use api\classes\SecurityHashResponse;
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
 $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
-
-
-if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'init_token_parameters'}) > 0) {
+try{
+if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "security_hash.xsd") === true && count($obj_DOM->{'init_token_parameter_details'}) > 0) {
+    $detailCount = count($obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'});
     $xml = '<init_token_response>';
-    for ($i=0; $i<count($obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}); $i++)
+    for ($i=0; $i < $detailCount; $i++)
     {
-        $clientId = (integer) $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'client_id'};
-        $uniqueReference = (integer) $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'unique_reference_identifier'};
-        $nonce = $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'nonce'};
-        $acceptUrl = $obj_DOM->{'init_token_parameters'}->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'accept_url'};
+        $clientId = (integer) $obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'client_id'};
+        $uniqueReference = (integer) $obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'unique_reference_identifier'};
+        $nonce = $obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'nonce'};
+        $acceptUrl = $obj_DOM->{'init_token_parameter_details'}->{'init_token_parameter_detail'}[$i]->{'accept_url'};
         
         $code = Validate::valClient($_OBJ_DB, $clientId);
         
@@ -48,12 +48,12 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
                 $initToken = $obj_InitTokenSecurityHash->generate512Hash();
                 $obj_SecurityHashResponse[] = new SecurityHashResponse($initToken, $uniqueReference);
             }else{
-                $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, "Configuration not found for client: " . $clientId);
-                trigger_error("Configuration not found for client: " . $clientId, E_USER_WARNING);
+                header("HTTP/1.1 400 Bad Request");
+                throw new mPointException("Configuration not found for client: " . $clientId, 400);
             }
         }else{
-            $obj_SecurityHashResponse[] = new SecurityHashResponse("", $uniqueReference, "Invalid client detail: " . $clientId);
-            trigger_error("Invalid client detail: " . $clientId, E_USER_WARNING); 
+            header("HTTP/1.1 400 Bad Request");
+            throw new mPointException("Invalid client detail: " . $clientId, 400);
         }
     }
     $xml .= xml_encode($obj_SecurityHashResponse);
@@ -61,33 +61,38 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
     
 } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
     header("HTTP/1.1 415 Unsupported Media Type");
-
-    $xml = '<status code="415">Invalid XML Document</status>';
+    throw new mPointException("Invalid XML Document", 415);
 } // Error: Wrong operation
-elseif (count($obj_DOM->{'init_token_parameters'}) == 0) {
-    header("HTTP/1.1 400 Bad Request");
-
-    $xml = '';
+elseif (count($obj_DOM->{'init_token_parameter_details'}) == 0) {
     foreach ($obj_DOM->children() as $obj_Elem) {
-        $xml .= '<status code="400">Wrong operation: ' . $obj_Elem->getName() . '</status>';
+        $errorMsg[] = $obj_Elem->getName();
     }
+    $errorMsgStr = implode("", $errorMsg);
+    header("HTTP/1.1 400 Bad Request");
+    throw new mPointException("Wrong operation: " . $errorMsgStr, 400);
 }
 else
 {
-    header("HTTP/1.1 400 Bad Request");
     $aObj_Errs = libxml_get_errors();
-
-    $xml = '';
     for ($i=0; $i<count($aObj_Errs); $i++)
     {
-        $xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+        $errorMsg[] = htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES);
     }
+    $errorMsgStr = implode("", $errorMsg);
+    header("HTTP/1.1 400 Bad Request");
+    throw new mPointException($errorMsgStr, 400);
+}
+
+}catch (mPointException $e) {
+    $xml = '<status>';
+    $xml .= '<code>'.$e->getCode().'</code>';
+    //$xml = '<text_code>{{sub code}}</text_code>';
+    $xml .= '<description>'.$e->getMessage().'</description>';
+    $xml .= '<uuid>'.uniqid().'</uuid>';
+    $xml .= '</status>';
 }
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
 echo $xml;
-echo '</root>';
 ?>

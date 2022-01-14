@@ -43,8 +43,9 @@ class InitTokenSecurityHash extends SecurityHash
     public function generate512Hash()
     {
         $this->_hashString = $this->generateInitToken();
-        if($this->_hashString)
+        if($this->_hashString){
             return parent::generate512Hash();
+        }
     }
 
     public function generateInitToken()

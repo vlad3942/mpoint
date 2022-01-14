@@ -26,7 +26,7 @@ class SecurityHash
      */
     public function __construct(int $clientId, string $salt)
     {
-        $this->_iClientID = (integer) $clientId;
+        $this->_iClientID = $clientId;
         $this->_sSalt = $salt;
     }
 

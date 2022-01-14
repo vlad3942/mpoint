@@ -27,18 +27,4 @@ class SecurityHashResponseTest extends baseAPITest
         $this->assertEquals('{"unique_reference_identifier":"101","token":"123456"}', json_encode($this->SecurityHashResponse));
         $this->assertStringContainsString("<security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>123456</token></security_token_detail>", xml_encode($this->SecurityHashResponse));
     }
-    
-    public function testConstructorCallsForError()
-    {
-        $unique_reference_identifier = 101;
-        $token = '';
-        $errorMsg = 'Invalid client detail';
-    
-        $this->SecurityHashResponse = new SecurityHashResponse($token, $unique_reference_identifier, $errorMsg);
-        $x = xml_encode($this->SecurityHashResponse);
-        $j = json_encode($this->SecurityHashResponse);
-        
-        $this->assertEquals('{"unique_reference_identifier":"101","status":"'.$errorMsg.'"}', json_encode($this->SecurityHashResponse));
-        $this->assertStringContainsString("<security_token_detail><unique_reference_identifier>101</unique_reference_identifier><status>".$errorMsg."</status></security_token_detail>", xml_encode($this->SecurityHashResponse));
-    }
 }
