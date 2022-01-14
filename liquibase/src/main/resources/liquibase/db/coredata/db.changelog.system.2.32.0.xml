@@ -985,4 +985,13 @@
 
     </changeSet>
 
+    <changeSet author="Abhinav Shaha" id="2022-01-14-setup-v2.33-system-5">
+
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="system_type" value="7" />
+            <where>id = 10</where>
+        </update>
+
+    </changeSet>
+
 </databaseChangeLog>
