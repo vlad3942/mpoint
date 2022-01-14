@@ -30,7 +30,8 @@ try{
 
 if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "security_hash.xsd") === true && count($obj_DOM->{'hmac_parameter_details'}) > 0) {
             $detailCount = count($obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'});
-            $xml = '<security_token_details>';
+            $xml = '<hmac_response>';
+            $xml .= '<security_token_details>';
             for ($i=0; $i < $detailCount; $i++)
             {
                 $hmacType = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'hmac_type'};
@@ -78,6 +79,7 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
             }
             $xml .= xml_encode($obj_SecurityHashResponse);
             $xml .='</security_token_details>';
+            $xml .='</hmac_response>';
 } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
     header("HTTP/1.1 415 Unsupported Media Type");
     throw new mPointException("Invalid XML Document", 415);

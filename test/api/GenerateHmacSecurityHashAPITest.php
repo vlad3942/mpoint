@@ -80,7 +80,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>2fe86f669ea608d424390d5faffa7539101625cd604892aa2a448cb8c62842a600a9e4eb941c70b313de2b0cd66a25f0aac65aab70c524cd88eb94e0e6f0217b</token></security_token_detail></security_token_details>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><hmac_response><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>2fe86f669ea608d424390d5faffa7539101625cd604892aa2a448cb8c62842a600a9e4eb941c70b313de2b0cd66a25f0aac65aab70c524cd88eb94e0e6f0217b</token></security_token_detail></security_token_details></hmac_response>', $sReplyBody);
 	}
 	
 	public function testGenerateFxHmac()
@@ -93,7 +93,7 @@ class GenerateHmacSecurityHashAPITest extends baseAPITest
 		$this->_httpClient->connect();
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
-	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>a6ad6f9f6f0e59a20b58626212a4ddd4c762439e109d406675be26d2010b91cb75f009d09a4c7c9e4d73144e7def4dfa97bc2639fe4b132472e697131ce99e72</token></security_token_detail></security_token_details>', $sReplyBody);
+	  	$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><hmac_response><security_token_details><security_token_detail><unique_reference_identifier>101</unique_reference_identifier><token>a6ad6f9f6f0e59a20b58626212a4ddd4c762439e109d406675be26d2010b91cb75f009d09a4c7c9e4d73144e7def4dfa97bc2639fe4b132472e697131ce99e72</token></security_token_detail></security_token_details></hmac_response>', $sReplyBody);
 	}
 	
 	public function testInvalidClient()
