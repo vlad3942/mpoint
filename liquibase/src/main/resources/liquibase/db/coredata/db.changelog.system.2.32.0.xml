@@ -999,6 +999,12 @@
             <column name="cardid" value="101"/>
             <column name="enabled" value="true"/>
         </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-978"/>
+            <column name="cardid" value="101"/>
+            <column name="enabled" value="true"/>
+        </insert>
         
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-188"/>
