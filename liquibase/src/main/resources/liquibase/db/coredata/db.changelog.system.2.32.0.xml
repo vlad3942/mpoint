@@ -963,28 +963,6 @@
 		</insert>
 	</changeSet>
 
-    <changeSet author="Abhinav Shaha" id="2022-01-11-setup-v2.33-system-4">
-
-        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
-            <column name="cardid" value="32" />
-            <column name="pspid" value="10"/>
-            <column name="enabled" value="true"/>
-        </insert>
-
-        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="-124"/>
-            <column name="cardid" value="32" />
-            <column name="enabled" value="true"/>
-        </insert>
-
-        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="-978"/>
-            <column name="cardid" value="32" />
-            <column name="enabled" value="true"/>
-        </insert>
-
-	</changeSet>
-
 	<changeSet author="Abhinav Shaha" id="2022-01-14-setup-v2.33-system-4">
 
 		<update catalogName="system" schemaName="system" tableName="card_tbl">
@@ -1054,7 +1032,25 @@
 
     </changeSet>
 
-    <changeSet author="Abhinav Shaha" id="2022-01-14-setup-v2.33-system-5">
+    <changeSet author="Abhinav Shaha" id="2022-01-17-setup-v2.33-system-5">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="32" />
+            <column name="pspid" value="10"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-124"/>
+            <column name="cardid" value="32" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-978"/>
+            <column name="cardid" value="32" />
+            <column name="enabled" value="true"/>
+        </insert>
 
         <update catalogName="system" schemaName="system" tableName="psp_tbl">
             <column name="system_type" value="7" />
