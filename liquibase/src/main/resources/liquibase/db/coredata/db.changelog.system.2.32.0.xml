@@ -974,12 +974,82 @@
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-124"/>
             <column name="cardid" value="32" />
+            <column name="cardid" value="101"/>
             <column name="enabled" value="true"/>
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-978"/>
             <column name="cardid" value="32" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+	</changeSet>
+
+	<changeSet author="Abhinav Shaha" id="2022-01-14-setup-v2.33-system-4">
+
+		<update catalogName="system" schemaName="system" tableName="card_tbl">
+			<column name="minlength" value="-1" />
+			<column name="maxlength" value="-1" />
+			<column name="cvclength" value="-1" />
+			<where>id = 67</where>
+		</update>
+
+		<delete catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <where>pspid = 10 AND cardid = 67</where>
+        </delete>
+
+        <insert catalogName="system" schemaName="system" tableName="card_tbl">
+            <column name="id" value="101"/>
+            <column name="name" value="UnionPay Card"/>
+            <column name="position" value="23"/>
+            <column name="minlength" value="16"/>
+            <column name="maxlength" value="19"/>
+            <column name="cvclength" value="3"/>
+            <column name="enabled" value="true"/>
+            <column name="paymenttype" value="1"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+			<column name="cardid" value="101"/>
+			<column name="min" value="62" />
+			<column name="max" value="62"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="101"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-188"/>
+            <column name="cardid" value="101"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-484"/>
+            <column name="cardid" value="101"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="101"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-124"/>
+            <column name="cardid" value="101"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="101" />
+            <column name="pspid" value="10"/>
             <column name="enabled" value="true"/>
         </insert>
 
@@ -992,6 +1062,6 @@
             <where>id = 10</where>
         </update>
 
-    </changeSet>
+	</changeSet>
 
 </databaseChangeLog>
