@@ -35,7 +35,7 @@ class HmacSecurityHashTest extends baseAPITest
         $hmacSecurityHash->setMobileCountry($mobileCountry);
         $hmacSecurityHash->setEMail($email);
         $hmacSecurityHash->setDeviceId($device);
-        $hmac = $hmacSecurityHash->generateHmac();
+        $hmac = $hmacSecurityHash->generate512Hash();
         $this->assertEquals('314003aa0fdea3680d3cf375269aceb1a24fe332aa5cc5a15906bcc368b9c57ff82efcef4aa9a7edc04e67343d9eed139264a2dface21b334049cc2f551d8ad8', $hmac);
     }
     
@@ -67,7 +67,7 @@ class HmacSecurityHashTest extends baseAPITest
         $hmacSecurityHash->setSaleCurrency($saleCurrency);
         $hmacSecurityHash->setCfxID($cfxId);
         
-        $fxhmac = $hmacSecurityHash->generateHmac();
+        $fxhmac = $hmacSecurityHash->generate512Hash();
         $this->assertEquals('0d6a6dcedec93a36706a29f1aeae65afef4f7422e755daf4d6e2a1e4a33a1b89afc3d8a07e486b75747fa8e85d6d87f00677d881bdf1f3e4869aa56f86718548', $fxhmac);
         
     }
