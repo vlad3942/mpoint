@@ -1065,4 +1065,13 @@
 
 	</changeSet>
 
+	<changeSet author="Abhinav Shaha" id="2022-01-18-setup-v2.33-system-6">
+		<insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+		    <column name="pspid" value="10"/>
+		    <column name="name" value="CNY" />
+		    <column name="currencyid" value="156" />
+		    <column name="enabled" value="true"/>
+		</insert>
+	</changeSet>
+
 </databaseChangeLog>
