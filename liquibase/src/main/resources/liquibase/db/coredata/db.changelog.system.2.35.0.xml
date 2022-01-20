@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+	<changeSet author="Abhinav Shaha" id="2021-11-15-setup-v2.32">
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="45" />
+		    <column name="name" value="Bancontact" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="50" />
+		    <column name="name" value="EPS" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="52" />
+		    <column name="name" value="giropay" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="53" />
+		    <column name="name" value="Ideal" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="61" />
+		    <column name="name" value="Przelewy24" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="66" />
+		    <column name="name" value="Sofort" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="45" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="50" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="52" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="53" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="61" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="66" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+	</changeSet>
+
+</databaseChangeLog>
