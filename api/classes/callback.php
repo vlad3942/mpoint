@@ -1375,7 +1375,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 		//Callbacks for transaction
-		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
+		elseif($isSessionCallback === FALSE && ($sid === Constants::iPAYMENT_PENDING_STATE || strpos($sid, '2') === 0)) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
 			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn,$sub_code_id, $sid, $amt, $this->_obj_PSPConfig);
