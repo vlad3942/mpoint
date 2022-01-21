@@ -85,6 +85,42 @@
 		    <column name="enabled" value="true"/>
 		</insert>
 
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="45"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="50"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="52"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="53"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="61"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="66"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
 	</changeSet>
 
 </databaseChangeLog>
