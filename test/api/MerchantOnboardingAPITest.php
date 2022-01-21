@@ -27,23 +27,23 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
-        $this->queryDB("INSERT INTO client.dcc_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
-        $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
-        $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1)");
-        $this->queryDB("INSERT INTO client.tokenization_config_tbl (clientid, pmid, providerid, countryid, currencyid) VALUES(10099, 8, 15, 640, 654)");
-        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid) VALUES(10099, 1, 17)");
+        $this->queryDB("INSERT INTO client.dcc_config_tbl (id,pmid, clientid, countryid, currencyid) VALUES(1,8, 10099, 200, 566)");
+        $this->queryDB("INSERT INTO client.mcp_config_tbl (id,pmid, clientid, countryid, currencyid) VALUES(1,8, 10099, 200, 566)");
+        $this->queryDB("INSERT INTO client.fraud_config_tbl (id,clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(1,10099, 8, 15, 640, 654, 1)");
+        $this->queryDB("INSERT INTO client.tokenization_config_tbl (id,clientid, pmid, providerid, countryid, currencyid) VALUES(1,10099, 8, 15, 640, 654)");
+        $this->queryDB("INSERT INTO client.mpi_config_tbl (id,clientid, pmid, providerid) VALUES(1,10099, 1, 17)");
         $this->queryDB("INSERT INTO client.mpi_property_tbl (clientid, version) VALUES(10099,'1.0')");
-        $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
+        $this->queryDB("INSERT INTO client.pcc_config_tbl (id,clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(1,10099, 8, 608, true, 590)");
         $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(1, 10099, 'hybrid', true,'hybrid')");
         $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(2, 10099, 'cashless', false,'cashless')");
         $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(3, 10099, 'conventional', false,'conventional')");
 
-        $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 1, 1)");
-        $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 2, 2)");
-        $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(2, 1, 1)");
-        $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(2, 2, 2)");
-        $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(3, 1, 1)");
-        $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(3, 2, 2)");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES(1,1, 1, 1)");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES(2,1, 2, 2)");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES(3,2, 1, 1)");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES(4,2, 2, 2)");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES(5,3, 1, 1)");
+        $this->queryDB("INSERT INTO client.split_combination_tbl (id,split_config_id, payment_type, sequence_no) VALUES(6,3, 2, 2)");
 
         $this->queryDB("INSERT INTO client.fraud_property_tbl (clientid,is_rollback) VALUES(10099,true)");
         $this->queryDB("INSERT INTO client.split_property_tbl (clientid,is_rollback) VALUES(10099,true)");
@@ -341,7 +341,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><psp_id>52</psp_id><pm_configuration><pm_id>1</pm_id><enabled>true</enabled></pm_configuration><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details></client_psp_configuration>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_response><client_psp_configurations><client_psp_configuration><id>52</id><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>true</enabled></pm_configuration></pm_configurations><property_details><property_detail><property_sub_category>Technical</property_sub_category><properties><property><id>25</id><name>CHASE_FILE_PREFIX</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>21</id><name>FILE_EXPIRY</name><value>CPD_</value><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>22</id><name>IS_TICKET_LEVEL_SETTLEMENT</name><value>true</value><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>30</id><name>MAX_DOWNLOAD_FILE_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>23</id><name>MVAULT_BATCH_SIZE</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>29</id><name>SETTLEMENT_BATCH_LIMIT</name><data_type>2</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>28</id><name>debug</name><data_type>1</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>26</id><name>CHASE_SFTP_PASSWORD</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>27</id><name>CHASE_SFTP_USERNAME</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>24</id><name>MERCHANT.CITY</name><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details></client_psp_configuration></client_psp_configurations></client_psp_configuration_response>', $sReplyBody);
     }
 
     public function testSuccessfulSavePSPProperty()
@@ -355,7 +355,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'POST');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_request><client_id>10099</client_id><client_psp_configurations><client_psp_configuration><id>52</id><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration></client_psp_configurations></client_psp_configuration_request>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -369,8 +369,6 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'TestPSPName' AND username = 'TestPSPUser' AND passwd = 'TestPSPPass'" );
-        $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
     }
@@ -388,7 +386,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.psp_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.psp_property_tbl where name='IS_TICKET_LEVEL_SETTLEMENT' AND PSPID=52),'true')");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'POST');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_request><client_id>10099</client_id><client_psp_configurations><client_psp_configuration><id>52</id><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration></client_psp_configurations></client_psp_configuration_request>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -411,7 +409,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 1)");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'PUT');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>EFS10000114912</name><credentials><username>Paymaya ac1q2</username><password>sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z</password></credentials><properties><property><id>22</id><value>true</value><enabled>true</enabled></property><property><id>21</id><value>CPD_123</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>false</enabled></pm_configuration></pm_configurations></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_request><client_id>10099</client_id><client_psp_configurations><client_psp_configuration><id>52</id><name>EFS10000114912</name><properties><property><id>22</id><value>true</value><enabled>true</enabled></property><property><id>21</id><value>CPD_123</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>false</enabled></pm_configuration></pm_configurations></client_psp_configuration></client_psp_configurations></client_psp_configuration_request>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -510,7 +508,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig",'POST');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>50</psp_id><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_request><client_id>10099</client_id><client_psp_configurations><client_psp_configuration><id>50</id><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties></client_psp_configuration></client_psp_configurations></client_psp_configuration_request>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -543,7 +541,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
 
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><route_configuration><id>1</id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><route_configurations_response><route_configurations><route_configuration><id>1</id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><property_details><property_detail><property_sub_category>Basic</property_sub_category><properties><property><id>41</id><name>CeptorAccessId</name><value>1234</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property><property><id>42</id><name>CeptorAccessKey</name><value>1233</value><data_type>3</data_type><enabled>true</enabled><mandatory>true</mandatory></property></properties></property_detail></property_details><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_response>', $sReplyBody);
     }
 
     public function testSuccessfulSaveRouteProperty()
@@ -558,7 +556,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         // $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'POST');
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configurations_request><client_id>10099</client_id><route_configurations><route_configuration><provider_id>50</provider_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_request>';
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
@@ -606,13 +604,13 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
 
        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'POST');
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configurations_request><client_id>10099</client_id><route_configurations><route_configuration><provider_id>50</provider_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_request>';
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(500, $iStatus);
-        $this->assertStringContainsString('<code>101</code>',$sReplyBody);
+        $this->assertStringContainsString('<code>100</code>',$sReplyBody);
 
     }
 
@@ -634,17 +632,17 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
 
        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'POST');
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configurations_request><client_id>10099</client_id><route_configurations><route_configuration><provider_id>50</provider_id><name>TEST</name><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_request>';
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(500, $iStatus);
-        $this->assertStringContainsString('<code>101</code>',$sReplyBody);
+        $this->assertStringContainsString('<code>100</code>',$sReplyBody);
 
     }
 
-    public function testSuccessfulUpdateRoutetestSuccessfulUpdateRoutePropertyProperty()
+    public function testSuccessfulUpdateRoutetest()
     {
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -665,7 +663,7 @@ class MerchantOnboardingAPITest extends baseAPITest
 
         $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig",'PUT');
 
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>12345</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configurations_request><client_id>10099</client_id><route_configurations><route_configuration><provider_id>50</provider_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>12345</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_request>';
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'),$xml);

@@ -15,6 +15,7 @@ class ProviderConfig extends BaseInfo
     private string $mid = '';
     private int $capture_type = -1;
     private int $pspId = -1;
+    private int $provider_id = -1;
     private array $aFeatureId = array() ;
     private array $aCountryIds = array();
     private array $aCurrencyIds = array();
@@ -204,6 +205,24 @@ class ProviderConfig extends BaseInfo
     }
 
     /**
+     * @return int
+     */
+    public function getProviderId(): int
+    {
+        return $this->provider_id;
+    }
+
+    /**
+     * @param int $providerid
+     * @return ProviderConfig
+     */
+    public function setProviderId(int $providerid): ProviderConfig
+    {
+        $this->provider_id = $providerid;
+        return $this;
+    }
+
+    /**
      * @param $oXML
      * @return ProviderConfig
      */
@@ -214,6 +233,7 @@ class ProviderConfig extends BaseInfo
         if(count($oXML->id)>0) { $providerConfig->setId((int)$oXML->id); }
         else { $providerConfig->setId(-1); }
         if(count($oXML->psp_id)>0) { $providerConfig->setPspId((int)$oXML->psp_id); }
+        if(count($oXML->provider_id)>0) { $providerConfig->setProviderId((int)$oXML->provider_id); }
         if(count($oXML->name)>0) { $providerConfig->setName((string)$oXML->name); }
         else { $providerConfig->setName(""); }
         if(count($oXML->mid)>0) { $providerConfig->setMid((string)$oXML->mid); }
@@ -294,15 +314,17 @@ class ProviderConfig extends BaseInfo
     /**
      * @return string
      */
-    public function toXML(string $rootNode = '')
+    public function toXML(string $rootNode = '',array $aNodeAlias=array())
     {
         $xml = "<$rootNode>";
+        $this->setNodeAlias($aNodeAlias);
         $xml .= parent::toXML();
         if($this->getPspId() > 0) { $xml .= "<psp_id>".$this->getPspId()."</psp_id>"; }
         if(empty($this->getMid()) === false) { $xml .= "<mid>".$this->getMid()."</mid>"; }
         if(empty($this->getUserName()) === false) { $xml .= "<username>".$this->getUserName()."</username>"; }
         if(empty($this->getPassword()) === false) { $xml .= "<password>".$this->getPassword()."</password>"; }
         if($this->getCaptureType() > 0) { $xml .= "<capture_type>".$this->getCaptureType()."</capture_type>"; }
+        if($this->getProviderId() > 0) { $xml .= "<provider_id>".$this->getProviderId()."</provider_id>"; }
         if(empty($this->getProperty()) === false)
         {
             $xml .= Helpers::getPropertiesXML($this->getProperty());

@@ -445,19 +445,19 @@ class MerchantConfigInfo
         $configRepository->saveProviders($aProviderConfig);
     }
 
-    public function getRouteConfiguration(MerchantConfigRepository $configRepository, int $id,bool $bAllConfig):ProviderConfig
+    public function getRouteConfiguration(MerchantConfigRepository $configRepository, int $id,bool $bAllConfig):?ProviderConfig
     {
         return $configRepository->getRouteConfiguration($id,$bAllConfig);
     }
 
-    public function updateRouteConfig(MerchantConfigRepository $configRepository, ProviderConfig $provider)
+    public function updateRouteConfig(MerchantConfigRepository $configRepository, ProviderConfig $provider,bool $isDeleteOld=true)
     {
-        $configRepository->updateRouteConfig($provider);
+        $configRepository->updateRouteConfig($provider,$isDeleteOld);
     }
 
-    public function updatePSPConfig(MerchantConfigRepository $configRepository, $providerConfig)
+    public function updatePSPConfig(MerchantConfigRepository $configRepository, $providerConfig,bool $deleteOld=true)
     {
-        $configRepository->updatePSPConfig($providerConfig);
+        $configRepository->updatePSPConfig($providerConfig,$deleteOld);
     }
 
 }

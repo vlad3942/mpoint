@@ -366,19 +366,19 @@ class ConfigurationService
          $this->getAggregateRoot()->saveProvider($this->getRepository(),$aProviderConfig);
     }
 
-    public function getRouteConfiguration(int $id,bool $bAllConfig):ProviderConfig
+    public function getRouteConfiguration(int $id,bool $bAllConfig):?ProviderConfig
     {
         return $this->getAggregateRoot()->getRouteConfiguration($this->getRepository(),$id,$bAllConfig);
     }
 
-    public function updateRouteConfig(ProviderConfig &$providerConfig)
+    public function updateRouteConfig(ProviderConfig &$providerConfig,bool $isDeleteOld=true)
     {
-         $this->getAggregateRoot()->updateRouteConfig($this->getRepository(),$providerConfig);
+         $this->getAggregateRoot()->updateRouteConfig($this->getRepository(),$providerConfig,$isDeleteOld);
     }
 
-    public function updatePSPConfig($providerConfig)
+    public function updatePSPConfig($providerConfig,bool $deleteOld=true)
     {
-        $this->getAggregateRoot()->updatePSPConfig($this->getRepository(),$providerConfig);
+        $this->getAggregateRoot()->updatePSPConfig($this->getRepository(),$providerConfig,$deleteOld);
 
     }
 }

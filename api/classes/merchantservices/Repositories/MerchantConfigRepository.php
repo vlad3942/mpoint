@@ -373,7 +373,7 @@ class MerchantConfigRepository
 
             if ($Ids === "-1" && $addonServiceType->getSubType() === 'cashless' || $addonServiceType->getSubType() === 'conventional' || $addonServiceType->getSubType() === 'hybrid')
             {
-                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE split_config_id in (SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->getClientInfo()->getID()."  AND name = '" . $addonServiceType->getSubType() . "')";
+                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE split_config_id in (SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->getClientInfo()->getID()."  AND type = '" . $addonServiceType->getSubType() . "')";
 
             }
             else if ($Ids === "-1" && $addonServiceType->getSubType() === 'post_auth' || $addonServiceType->getSubType() === 'pre_auth')
@@ -1314,7 +1314,6 @@ class MerchantConfigRepository
     {
 
         $sSQL = "SELECT id,name, capturetype, mid, username, password FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl WHERE isdeleted=false and id = ". $id;
-        $aPSPDetails = [];
         $rs = $this->getDBConn()->getName( $sSQL );
         if (empty($rs) === false)
         {
@@ -1848,7 +1847,7 @@ class MerchantConfigRepository
 
     }
 
-    public function updateRouteConfig(ProviderConfig $provider)
+    public function updateRouteConfig(ProviderConfig $provider,bool $isDeleteOld=true)
     {
        $aUpdateColumns =array();
        $aValues = array();
@@ -1888,7 +1887,7 @@ class MerchantConfigRepository
        {
            if($provider->getId() === -1)
            {
-               $routeId = $this->getRouteIDByProvider($provider->getPspId(),true);
+               $routeId = $this->getRouteIDByProvider($provider->getProviderId(),true);
 
                array_push($aColumns,"routeid");
                array_push($aValues,$routeId);
@@ -1922,44 +1921,44 @@ class MerchantConfigRepository
            }
            if(empty($provider->getFeatureId()) === false)
            {
-               $this->deleteConfigDetails($provider->getId(),"FEATURE");
+               if($isDeleteOld === true) { $this->deleteConfigDetails($provider->getId(),"FEATURE");}
                $this->saveConfigDetails("", $provider->getFeatureId(), $provider->getId(), 'FEATURE');
            }
            if(empty($provider->getCountryIds()) === false)
            {
-               $this->deleteConfigDetails($provider->getId(),"COUNTRY");
-               $this->saveConfigDetails("", $provider->getFeatureId(), $provider->getId(), 'COUNTRY');
+               if($isDeleteOld === true) { $this->deleteConfigDetails($provider->getId(),"COUNTRY");}
+               $this->saveConfigDetails("", $provider->getCurrencyIds(), $provider->getId(), 'COUNTRY');
            }
            if(empty($provider->getCurrencyIds()) === false)
            {
-               $this->deleteConfigDetails($provider->getId(),"CURRENCY");
+               if($isDeleteOld === true) {  $this->deleteConfigDetails($provider->getId(),"CURRENCY");}
                $this->saveConfigDetails("", $provider->getCurrencyIds(), $provider->getId(), 'CURRENCY');
            }
            if(empty($provider->getProperty()) === false)
            {
-               $this->deleteAllProperty("ROUTE",$provider->getId());
+               if($isDeleteOld === true) {  $this->deleteAllProperty("ROUTE",$provider->getId());}
                $this->savePropertyConfig("ROUTE", $provider->getProperty(),$provider->getId());
            }
            if(empty($provider->getPm()) === false)
            {
-               $this->deleteAllPM("ROUTE",$provider->getId());
+               if($isDeleteOld === true) { $this->deleteAllPM("ROUTE",$provider->getId());}
                $this->savePM("ROUTE", $provider->getPm(),$provider->getId());
            }
        }
     }
 
-    public function updatePSPConfig(ProviderConfig $provider)
+    public function updatePSPConfig(ProviderConfig $provider,bool $deleteOld=true)
     {
-        $routeId = $this->getRouteIDByProvider($provider->getPspId());
+        $routeId = $this->getRouteIDByProvider($provider->getId());
         if(empty($provider->getProperty()) === false)
         {
-            $this->deleteAllProperty("PSP",$provider->getPspId());
-            $this->savePropertyConfig("PSP", $provider->getProperty(),$provider->getPspId());
+            if($deleteOld === true){$this->deleteAllProperty("PSP",$provider->getId());}
+            $this->savePropertyConfig("PSP", $provider->getProperty(),$provider->getId());
         }
         if(empty($provider->getPm()) === false)
         {
-            $this->deleteAllPM("PSP",$routeId);
-            $this->savePM("PSP", $provider->getPm(),$provider->getPspId());
+            if($deleteOld === true){$this->deleteAllPM("PSP",$routeId);}
+            $this->savePM("PSP", $provider->getPm(),$provider->getId());
         }
     }
 
