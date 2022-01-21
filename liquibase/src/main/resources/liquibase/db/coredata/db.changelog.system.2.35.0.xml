@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-	<changeSet author="Abhinav Shaha" id="2021-11-15-setup-v2.32">
+	<changeSet author="Abhinav Shaha" id="2022-01-21-CMP-6350-setup-v2.35">
 
 		<insert catalogName="system" schemaName="system" tableName="card_tbl">
 		    <column name="id" value="45" />
