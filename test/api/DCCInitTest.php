@@ -123,7 +123,7 @@ class DCCInitTest extends baseAPITest
 		$this->queryDB("INSERT INTO client.pcc_config_tbl (pmId,clientId,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (8,10018,840,156,'true','true')");
 		$this->queryDB("INSERT INTO client.pcc_config_tbl (pmId,clientId,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (8,10018,840,360,'true','true')");
 
-		$xml = $this->getInitDoc(10018, 1100, 840, null, 1000, 'ebed76a1736c4a755e0ed8ec38c58a0b7abb409cfb82bdb40bd3e9a63208b5016a5f68a8a01dbee6f2cc2dada268af743a7fc4ecc4208d912fd1915538a58c1a');
+        $xml = $this->getInitDoc(10018, 1100, 840, null, 1000, 'ebed76a1736c4a755e0ed8ec38c58a0b7abb409cfb82bdb40bd3e9a63208b5016a5f68a8a01dbee6f2cc2dada268af743a7fc4ecc4208d912fd1915538a58c1a');
 
 		$this->_httpClient->connect();
 		$this->bIgnoreErrors = true; // User Warning Expected
