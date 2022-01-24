@@ -2004,22 +2004,9 @@ class MerchantConfigRepository
             $siDs = implode(" , ",$aRouteIds);
             $SQL = "UPDATE client".sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID();
             $rs = $this->getDBConn()->executeQuery($SQL);
-            if($rs!= null && ($this->getDBConn()->countAffectedRows($rs) < 1))
-            {
-                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                throw new MerchantOnboardingException($statusCode,"Failed to Old Entries");
-            }
-            else
-            {
-                $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE routeid in ( SELECT id from client".sSCHEMA_POSTFIX.".route_tbl WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID().")";
-                $rs = $this->getDBConn()->executeQuery($SQL);
-                if($rs!= null && ($this->getDBConn()->countAffectedRows($rs) < 1))
-                {
-                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                    throw new MerchantOnboardingException($statusCode,"Failed to Old Entries");
-                }
+            $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE routeid in ( SELECT id from client".sSCHEMA_POSTFIX.".route_tbl WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID().")";
+            $rs = $this->getDBConn()->executeQuery($SQL);
 
-            }
         }
 
     }

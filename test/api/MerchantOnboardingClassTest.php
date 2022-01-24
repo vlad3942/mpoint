@@ -699,7 +699,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
             'client_id' => 10099,
-            'route_conf_id' => 1,
+            'id' => 1,
             'p_id' => 41,
             'pm' => 8,
             'r_f' => 1,
@@ -754,7 +754,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
             'client_id' => 10099,
-            'route_conf_id' => 1,
+            'id' => 1,
             'p_id' => -1,
             'pm' => -1,
             'r_f' => -1,
