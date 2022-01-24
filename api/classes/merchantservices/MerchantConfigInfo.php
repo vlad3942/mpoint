@@ -333,9 +333,9 @@ class MerchantConfigInfo
 
         if($type === 'ROUTE')
         {
-            if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['route_conf_id']))
+            if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
             {
-                $configRepository->deleteAllRouteConfig($type, $additionalParams['route_conf_id']);
+                $configRepository->deleteAllRouteConfig($type, $additionalParams['id']);
                 return true;
             }
         }
@@ -454,10 +454,17 @@ class MerchantConfigInfo
     {
         $configRepository->updateRouteConfig($provider,$isDeleteOld);
     }
+    public function updateRouteConfigs(MerchantConfigRepository $configRepository, array $aProvider,bool $isDeleteOld=true)
+    {
+        $configRepository->updateRouteConfigs($aProvider,$isDeleteOld);
+    }
 
     public function updatePSPConfig(MerchantConfigRepository $configRepository, $providerConfig,bool $deleteOld=true)
     {
         $configRepository->updatePSPConfig($providerConfig,$deleteOld);
     }
-
+    public function updatePSPConfigs(MerchantConfigRepository $configRepository, array $aProviderConfig,bool $deleteOld=true)
+    {
+        $configRepository->updatePSPConfigs($aProviderConfig,$deleteOld);
+    }
 }

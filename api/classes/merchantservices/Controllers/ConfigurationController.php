@@ -346,11 +346,15 @@ class ConfigurationController
      */
     public function savePSPConfig($request, $additionalParams = [])
     {
+        $aPSPs = array();
+
         foreach ($request->client_psp_configurations->client_psp_configuration as $client_psp_configuration)
         {
             $provider = ProviderConfig::produceFromXML($client_psp_configuration);
-            $this->getConfigService()->updatePSPConfig($provider,false);
+            array_push($aPSPs,$provider);
         }
+        $this->getConfigService()->updatePSPConfigs($aPSPs,false);
+
 
     }
 
@@ -361,11 +365,14 @@ class ConfigurationController
      */
     public function updatePSPConfig($request, $additionalParams = [])
     {
+        $aPSPs = array();
+
         foreach ($request->client_psp_configurations->client_psp_configuration as $client_psp_configuration)
         {
             $provider = ProviderConfig::produceFromXML($client_psp_configuration);
-            $this->getConfigService()->updatePSPConfig($provider);
+            array_push($aPSPs,$provider);
         }
+        $this->getConfigService()->updatePSPConfigs($aPSPs);
 
     }
 
@@ -419,11 +426,14 @@ class ConfigurationController
      */
     public function saveRouteConfig($request, $additionalParams = [])
     {
+        $aRoutes = array();
         foreach ($request->route_configurations->route_configuration as $route_configuration)
         {
             $provider = ProviderConfig::produceFromXML($route_configuration);
-            $this->getConfigService()->updateRouteConfig($provider,false);
+            array_push($aRoutes,$provider);
         }
+        $this->getConfigService()->updateRouteConfigs($aRoutes,false);
+
     }
 
     /**
@@ -433,11 +443,13 @@ class ConfigurationController
      */
     public function updateRouteConfig($request, $additionalParams = [])
     {
+        $aRoutes = array();
         foreach ($request->route_configurations->route_configuration as $route_configuration)
         {
             $provider = ProviderConfig::produceFromXML($route_configuration);
-            $this->getConfigService()->updateRouteConfig($provider);
+            array_push($aRoutes,$provider);
         }
+        $this->getConfigService()->updateRouteConfigs($aRoutes);
 
     }
 
@@ -447,7 +459,7 @@ class ConfigurationController
      */
     public function deleteRouteConfig($request, $additionalParams = [])
     {
-        $this->getConfigService()->deletePropertyConfig('ROUTE',$additionalParams,(int)$additionalParams['route_conf_id']);
+        $this->getConfigService()->deletePropertyConfig('ROUTE',$additionalParams,(int)$additionalParams['id']);
     }
 
 }

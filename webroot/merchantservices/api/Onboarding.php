@@ -114,7 +114,7 @@ try
             $sErrorResponse = '';
             for ($i=0; $i<count($aObj_Errs); $i++)
             {
-                $sErrorResponse .= '<error>'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</error>';
+                $sErrorResponse .=  htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .',';
             }
             throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_XML, $sErrorResponse, MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         }

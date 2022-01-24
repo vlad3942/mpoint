@@ -375,10 +375,19 @@ class ConfigurationService
     {
          $this->getAggregateRoot()->updateRouteConfig($this->getRepository(),$providerConfig,$isDeleteOld);
     }
+    public function updateRouteConfigs(array $aProviderConfig,bool $isDeleteOld=true)
+    {
+        $this->getAggregateRoot()->updateRouteConfigs($this->getRepository(),$aProviderConfig,$isDeleteOld);
+    }
 
     public function updatePSPConfig($providerConfig,bool $deleteOld=true)
     {
         $this->getAggregateRoot()->updatePSPConfig($this->getRepository(),$providerConfig,$deleteOld);
 
+    }
+
+    public function updatePSPConfigs(array $aProviderConfig,bool $deleteOld=true)
+    {
+        $this->getAggregateRoot()->updatePSPConfigs($this->getRepository(),$aProviderConfig,$deleteOld);
     }
 }

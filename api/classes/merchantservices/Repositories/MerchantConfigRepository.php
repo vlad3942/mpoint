@@ -472,7 +472,7 @@ class MerchantConfigRepository
      */
     public function deleteAllRouteConfig(string $type,  int $id)
     {
-        $sWhereCls = " AND routeconfigid = " . $id;
+       /* $sWhereCls = " AND routeconfigid = " . $id;
 
         $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routepm_tbl WHERE true ".$sWhereCls;
         $rs = $this->getDBConn()->executeQuery($SQL);
@@ -507,9 +507,9 @@ class MerchantConfigRepository
         if($rs === false)
         {
             throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currencies for IDs {".$id."}");
-        }
+        }*/
 
-        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routeconfig_tbl WHERE id = ".$id;
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id = ".$id;
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
@@ -1846,12 +1846,53 @@ class MerchantConfigRepository
 
 
     }
+    public function updateRouteConfigs(array $aProvider,bool $isDeleteOld=true)
+    {
+        $aRouteConfigIds = array();
 
-    public function updateRouteConfig(ProviderConfig $provider,bool $isDeleteOld=true)
+        foreach ($aProvider as $provider)
+        {
+            $routeId = (int)$this->updateRouteConfig($provider,$isDeleteOld);
+            array_push($aRouteConfigIds,$routeId);
+        }
+
+        if($isDeleteOld === true)
+        {
+            $siDs = implode(" , ",$aRouteConfigIds);
+
+
+            $sql = "select DISTINCT routeid FROM client".sSCHEMA_POSTFIX.".routeconfig_tbl where id  in (".$siDs.")";
+            $aRS = $this->getDBConn()->getAllNames($sql);
+            if(is_array($aRS) && count($aRS) === 1)
+            {
+                $routeid = $aRS[0]["ROUTEID"];
+
+                $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id not in (".$siDs.") and routeid = ".$routeid;
+                $rs = $this->getDBConn()->executeQuery($SQL);
+                if($rs!= null && ($this->getDBConn()->countAffectedRows($rs) < 1))
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    throw new MerchantOnboardingException($statusCode,"Failed to Old Entries");
+                }
+            }
+            else
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                throw new MerchantOnboardingException($statusCode,"Request Contains Multiple type of Gateway/PSP/Acquirer Configuration, Allowed only one type");
+            }
+
+
+
+
+        }
+    }
+
+    public function updateRouteConfig(ProviderConfig $provider,bool $isDeleteOld=true) : int
     {
        $aUpdateColumns =array();
        $aValues = array();
        $aColumns = array();
+       $routeId = 0;
        if(empty($provider->getName()) === false)
        {
            array_push($aUpdateColumns,"name='".$provider->getName()."'");
@@ -1866,7 +1907,7 @@ class MerchantConfigRepository
        }
        if(empty($provider->getPassword()) === false)
        {
-           array_push(          $aUpdateColumns,"password='".$provider->getPassword()."'");
+           array_push($aUpdateColumns,"password='".$provider->getPassword()."'");
            array_push($aValues,"'".$provider->getPassword()."'");
            array_push($aColumns,"password");
        }
@@ -1945,11 +1986,46 @@ class MerchantConfigRepository
                $this->savePM("ROUTE", $provider->getPm(),$provider->getId());
            }
        }
+       return $provider->getId();
     }
-
-    public function updatePSPConfig(ProviderConfig $provider,bool $deleteOld=true)
+    public function updatePSPConfigs(array $aProvider,bool $deleteOld=true)
     {
-        $routeId = $this->getRouteIDByProvider($provider->getId());
+        $aRouteIds = array();
+
+        foreach ($aProvider as $provider)
+        {
+            $routeId = $this->updatePSPConfig($provider,$deleteOld);
+            array_push($aRouteIds,$routeId);
+        }
+
+        if($deleteOld === true)
+        {
+
+            $siDs = implode(" , ",$aRouteIds);
+            $SQL = "UPDATE client".sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID();
+            $rs = $this->getDBConn()->executeQuery($SQL);
+            if($rs!= null && ($this->getDBConn()->countAffectedRows($rs) < 1))
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                throw new MerchantOnboardingException($statusCode,"Failed to Old Entries");
+            }
+            else
+            {
+                $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE routeid in ( SELECT id from client".sSCHEMA_POSTFIX.".route_tbl WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID().")";
+                $rs = $this->getDBConn()->executeQuery($SQL);
+                if($rs!= null && ($this->getDBConn()->countAffectedRows($rs) < 1))
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    throw new MerchantOnboardingException($statusCode,"Failed to Old Entries");
+                }
+
+            }
+        }
+
+    }
+    public function updatePSPConfig(ProviderConfig $provider,bool $deleteOld=true) : int
+    {
+        $routeId = $this->getRouteIDByProvider($provider->getId(),$deleteOld);
         if(empty($provider->getProperty()) === false)
         {
             if($deleteOld === true){$this->deleteAllProperty("PSP",$provider->getId());}
@@ -1960,6 +2036,7 @@ class MerchantConfigRepository
             if($deleteOld === true){$this->deleteAllPM("PSP",$routeId);}
             $this->savePM("PSP", $provider->getPm(),$provider->getId());
         }
+        return $routeId;
     }
 
     private function deleteAllPM($type,$id)
