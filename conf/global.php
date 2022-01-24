@@ -1192,6 +1192,24 @@ $aHTTP_CONN_INFO["paymaya_acq"]["paths"]["status"] = "/mpsp/paymaya-acq/status";
 $aHTTP_CONN_INFO["paymaya_acq"]["paths"]["void"] = "/mpsp/paymaya-acq/refund";
 
 /**
+ * Connection info for connecting to Stripe
+ */
+$aHTTP_CONN_INFO["stripe"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["stripe"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["stripe"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["stripe"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["stripe"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["stripe"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["stripe"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["stripe"]["paths"]["initialize"] = "/mpoint/aggregator/stripe/initialize";
+$aHTTP_CONN_INFO["stripe"]["paths"]["auth"] = "/mpoint/aggregator/stripe/authorize-payment";
+$aHTTP_CONN_INFO["stripe"]["paths"]["capture"] = "/mpoint/aggregator/stripe/capture";
+$aHTTP_CONN_INFO["stripe"]["paths"]["refund"] = "/mpoint/aggregator/stripe/refund";
+$aHTTP_CONN_INFO["stripe"]["paths"]["cancel"] = "/mpoint/aggregator/stripe/cancel";
+$aHTTP_CONN_INFO["stripe"]["paths"]["callback"] = "/mpoint/aggregator/stripe/callback";
+$aHTTP_CONN_INFO["stripe"]["paths"]["status"] = "/mpoint/aggregator/stripe/status";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

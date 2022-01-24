@@ -595,7 +595,7 @@ final class TxnPassbook
 							$code = 1000;
 						}
                         $codes[$passbookEntry->getPerformedOperation()] = $code;
-                        if(in_array($code, [100 , Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE, Constants::iPRODUCTS_STATE ]))
+                        if(in_array($code, [100 , 1000, 1001, 1002, 1100]))
                         {
                             $passbookEntry->setStatus(Constants::sPassbookStatusInProgress);
                         }

@@ -400,13 +400,14 @@ abstract class CPMFRAUD
 
     protected function _constNewCardAuthorizationRequest($obj_Card)
     {
-
         list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
 
         $expiry_year = substr_replace(date('Y'), $expiry_year, -2);
 
         $b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-
+        if (!empty($obj_Card->card_name)) {
+            $b .= '<name>' . $obj_Card->card_name . '</name>';
+        }
         if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 
         $b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';

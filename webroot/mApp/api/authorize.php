@@ -66,11 +66,8 @@ require_once(sCLASS_PATH ."/cpg.php");
 require_once(sCLASS_PATH ."/dsb.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
-if (function_exists("json_encode") === true && function_exists("curl_init") === true)
-{
-	// Require specific Business logic for the Stripe component
-	require_once(sCLASS_PATH ."/stripe.php");
-}
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH ."/stripe.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the Apple Pay component
@@ -974,6 +971,10 @@ try
                                                             $aMsgCds[22] = 'Invalid CVC';
                                                         }
                                                     }
+                                                    $cardName = $obj_card->getCardName();
+                                                    if (empty($cardName) === false) {
+                                                        $obj_Elem->card_name = $cardName;
+                                                    }
 
 													if ($code >= 10)
 													{
@@ -1077,25 +1078,6 @@ try
                                                                         }
                                                                     }
                                                                     switch (intval($obj_Elem["pspid"])) {
-                                                                        case (Constants::iSTRIPE_PSP):
-                                                                            $obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array());
-                                                                            $aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
-                                                                            $code = $obj_PSP->authTicket((integer)$obj_Elem->ticket, $aLogin["password"]);
-                                                                            if ($code == "OK") {
-                                                                                if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) {
-                                                                                    $xml .= '<status code="100">Payment Authorized using Apple Pay</status>';
-                                                                                } else {
-                                                                                    $xml .= '<status code="100">Payment Authorized using Stored Card</status>';
-                                                                                }
-                                                                            } // Error: Authorization declined
-                                                                            else {
-                                                                                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                                header("HTTP/1.1 502 Bad Gateway");
-
-                                                                                $xml .= '<status code="92">Authorization failed, Stripe returned error: ' . $code . '</status>';
-                                                                            }
-                                                                            break;
                                                                         case (Constants::iDIBS_PSP):    // DIBS
                                                                             // Authorise payment with PSP based on Ticket
 
