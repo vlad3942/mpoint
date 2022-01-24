@@ -382,7 +382,7 @@ class ConfigurationController
      */
     public function deletePSPConfig($request, $additionalParams = [])
     {
-        $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams,(int)$additionalParams['psp_id']);
+        $this->getConfigService()->deletePropertyConfig('PSP',$additionalParams,(int)$additionalParams['id']);
     }
 
     /**

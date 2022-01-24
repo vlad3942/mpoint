@@ -470,7 +470,7 @@ class MerchantConfigRepository
      * @param int $id
      * @throws MerchantOnboardingException
      */
-    public function deleteAllRouteConfig(string $type,  int $id)
+    public function deleteAllRouteConfig(string $type,  string $id)
     {
        /* $sWhereCls = " AND routeconfigid = " . $id;
 
@@ -509,7 +509,23 @@ class MerchantConfigRepository
             throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currencies for IDs {".$id."}");
         }*/
 
-        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id = ".$id;
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id in( ".$id.")";
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$id."}");
+        }
+    }
+
+    public function deleteAllPSPConfig( string $id)
+    {
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE id in( ".$id.") AND clientid=".$this->_clientConfig->getID();
+
+        if($id == -1)
+        {
+            $SQL = "UPDATE client". sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE clientid=".$this->_clientConfig->getID();
+
+        }
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
@@ -1019,7 +1035,7 @@ class MerchantConfigRepository
     {
         $iClientId = $this->getClientInfo()->getID();
         $sSQL = "SELECT rc.id FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN  CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rc
-        On rc.routeid=r.id AND rc.enabled=true  WHERE r.enabled=true AND providerid = $iProviderId AND  clientid = $iClientId";
+        On rc.routeid=r.id AND rc.enabled=true  WHERE r.enabled=true and rc.isdeleted=false AND providerid = $iProviderId AND  clientid = $iClientId";
         $aRS = $this->getDBConn()->getAllNames($sSQL);
         $aRouteConfigId = array();
         if(is_array($aRS) && count($aRS)>0)
@@ -1268,7 +1284,7 @@ class MerchantConfigRepository
     public function getRoutes(int $pspType=-1,int $pspid=-1):array
     {
         $sSQL = "SELECT providerid as pspid FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN
-                SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on r.providerid = p.id   Where clientid  = ".$this->_clientConfig->getID();
+                SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on r.providerid = p.id   Where clientid  = ".$this->_clientConfig->getID()." AND r.enabled=true AND p.enabled=true";
         if($pspType>0)  { $sSQL .= " AND p.system_type = $pspType"; }
         if($pspid>0) { $sSQL .= " AND p.id = $pspid"; }
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );

@@ -335,7 +335,24 @@ class MerchantConfigInfo
         {
             if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
             {
+                $aIds = explode(',', $additionalParams['id']);
+                foreach ($aIds as $id)
+                {
+                    if(is_numeric($id) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for ID {param:".$id."}"); }
+                }
                 $configRepository->deleteAllRouteConfig($type, $additionalParams['id']);
+                return true;
+            }
+        }else if($type === "PSP")
+        {
+            if(count($additionalParams) === 2 && isset($additionalParams['id']))
+            {
+                $aIds = explode(',', $additionalParams['id']);
+                foreach ($aIds as $id)
+                {
+                    if(is_numeric($id) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for ID {param:".$id."}"); }
+                }
+                $configRepository->deleteAllPSPConfig( $additionalParams['id']);
                 return true;
             }
         }

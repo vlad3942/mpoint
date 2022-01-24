@@ -130,8 +130,8 @@
         <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
         <xs:element name="client_psp_configurations" minOccurs="1" maxOccurs="1">
           <xs:complexType>
-            <xs:all>
-              <xs:element name="client_psp_configuration" minOccurs="1" maxOccurs="1">
+            <xs:sequence>
+              <xs:element name="client_psp_configuration" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:all>
                     <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
@@ -176,7 +176,7 @@
                   </xs:all>
                 </xs:complexType>
               </xs:element>
-            </xs:all>
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:all>
