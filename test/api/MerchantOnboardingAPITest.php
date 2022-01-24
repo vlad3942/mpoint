@@ -476,7 +476,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 52)");
         $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 2)");
 
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/psp_id/52/pm/-1/p_id/-1",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=pspconfig&params=client_id/10099/id/52/pm/-1/p_id/-1",'DELETE');
 
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
