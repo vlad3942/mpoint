@@ -1155,7 +1155,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
 
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=providerconfig&params=client_id/10099",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=providerconfig&params=client_id/10099/provider_type/1",'DELETE');
 
         $this->_httpClient->connect();
 
@@ -1163,7 +1163,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         // $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(200, $iStatus);
 
-        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 ");
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 AND pspid IN (SELECT id FROM SYSTEM.psp_tbl WHERE system_type = 1)");
 
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res));

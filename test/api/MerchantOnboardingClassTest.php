@@ -1085,12 +1085,13 @@ class MerchantOnboardingClassTest extends baseAPITest
         $xml = '';
         $obj_DOM = simpledom_load_string($xml);
         $additionalParams = array(
+            'provider_type' => 1
         );
 
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $objController->deleteProviderConfig($obj_DOM, $additionalParams);
 
-        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 ");
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 AND  pspid IN (SELECT id FROM SYSTEM.psp_tbl WHERE system_type = 1)");
 
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res));
