@@ -55,7 +55,7 @@ class GeneralTest extends baseAPITest
 		$this->queryDB("INSERT INTO client.pcc_config_tbl (pmId,clientId,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (8,10018,840,156,'true','true')" );
 		$this->queryDB("INSERT INTO client.pcc_config_tbl (pmId,clientId,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (8,10018,840,360,'true','true')" );
 
-		$presentmentCurrencies = array();
+        $presentmentCurrencies = array();
 
 		$obj_mPoint = new General($this->_OBJ_DB, $this->_OBJ_TXT);
 		$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($this->_OBJ_DB, 10018, 8, 840);
