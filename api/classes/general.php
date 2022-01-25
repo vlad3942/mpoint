@@ -1682,13 +1682,13 @@ class General
 		if ($oDB instanceof RDB) {
 
 			// Added Distinct clause as one card-id may have multiple pspid hence to avoid occurence of duplicate settlement-currency-id
-			$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
-					FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
-					WHERE CCMT.client_id = " . $clientid . "
+            $sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
+					FROM Client" . sSCHEMA_POSTFIX . ".pcc_config_tbl CCMT
+					WHERE CCMT.clientId = " . $clientid . "
 					AND CCMT.enabled = '1'
 					AND CCMT.is_presentment = '1'
-					AND CCMT.card_id = " . $cardid . "
-					AND CCMT.sale_currency_id = " . $salecurrencyid . "";
+					AND CCMT.pmId = " . $cardid . "
+					AND CCMT.sale_currency_id = " . $salecurrencyid ;
 
 			//echo $sql ."\n";die;
 			$aRS = $oDB->getAllNames($sql);

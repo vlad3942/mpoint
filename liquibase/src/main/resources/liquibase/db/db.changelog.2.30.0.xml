@@ -7,4 +7,7 @@
 
     <include file="schema/db.changelog.log.2.30.0.xml" relativeToChangelogFile="true"/>
     <include file="schema/db.changelog.client.2.30.0.xml" relativeToChangelogFile="true"/>
+    <include file="schema/db.changelog.system.2.30.0.1.xml" relativeToChangelogFile="true"/> <!-- NOTICE: For merchant on-boarding Only -->
+    <include file="schema/db.changelog.client.2.30.0.2.xml" relativeToChangelogFile="true"/> <!-- NOTICE: For merchant on-boarding Only -->
+    <include file="coredata/db.changelog.system.2.30.0.xml" relativeToChangelogFile="true"/> <!-- NOTICE: For merchant on-boarding Only -->
 </databaseChangeLog>
