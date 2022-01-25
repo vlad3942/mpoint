@@ -1887,11 +1887,7 @@ class MerchantConfigRepository
 
                 $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id not in (".$siDs.") and routeid = ".$routeid;
                 $rs = $this->getDBConn()->executeQuery($SQL);
-                if($rs!= null && ($this->getDBConn()->countAffectedRows($rs) < 1))
-                {
-                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
-                    throw new MerchantOnboardingException($statusCode,"Failed to Old Entries");
-                }
+
             }
             else
             {
