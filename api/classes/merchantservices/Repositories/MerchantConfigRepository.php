@@ -1874,7 +1874,12 @@ class MerchantConfigRepository
             array_push($aRouteConfigIds,$routeId);
         }
 
-        if($isDeleteOld === true)
+        $onlyPropertyUpdate =false;
+        if(count($aProvider) === 1 && empty($aProvider[0]->getProperty()) === false)
+        {
+            $onlyPropertyUpdate=true;
+        }
+        if($isDeleteOld === true && $onlyPropertyUpdate === false)
         {
             $siDs = implode(" , ",$aRouteConfigIds);
 
@@ -2011,8 +2016,12 @@ class MerchantConfigRepository
             $routeId = $this->updatePSPConfig($provider,$deleteOld);
             array_push($aRouteIds,$routeId);
         }
-
-        if($deleteOld === true)
+        $onlyPropertyUpdate =false;
+        if(count($aProvider) === 1 && empty($aProvider[0]->getProperty()) === false)
+        {
+            $onlyPropertyUpdate=true;
+        }
+        if($deleteOld === true && $onlyPropertyUpdate===false)
         {
 
             $siDs = implode(" , ",$aRouteIds);
@@ -2077,7 +2086,7 @@ class MerchantConfigRepository
         }
         else if($type === 'PSP') {
             $sTableName = 'psp_property_tbl';
-            $sWhereCls = " clientid = ".$this->_clientConfig->getID();
+            $sWhereCls = " clientid = ".$this->_clientConfig->getID()." AND propertyid in (SELECT ID FROM SYSTEM". sSCHEMA_POSTFIX .".psp_property_tbl WHERE pspid=".$id.")";
         }
         else if($type === 'ROUTE')
         {

@@ -1246,6 +1246,8 @@ class ClientConfig extends BasicConfig
         $xml ='<client_configuration>';
         $xml .='<id>'.$this->getID().'</id>';
         $xml .='<name>'.$this->getName().'</name>';
+        $xml .='<language>'.$this->getLanguage().'</language>';
+        $xml .='<username>'.$this->getUsername().'</username>';
         $xml .='<salt>'.$this->getSalt().'</salt>';
         $xml .='<max_amount>'.$this->getMaxAmount().'</max_amount>';
         $xml .='<country_id>'.$this->getCountryConfig()->getID().'</country_id>';

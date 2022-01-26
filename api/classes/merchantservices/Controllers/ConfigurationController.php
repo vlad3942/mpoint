@@ -51,19 +51,31 @@ class ConfigurationController
         $aPM = $this->getConfigService()->getClientPM();
         $aClientProperty = $this->getConfigService()->getPropertyConfig("CLIENT","ALL");
         $additionalXml = '';
-        $aAllClientProperty = array_merge($aClientProperty['Basic'],$aClientProperty['Technical']);
 
-        foreach ($aAllClientProperty as $clientProperty)
+        foreach ($aClientProperty as $category=>&$aProperty)
         {
-            if($clientProperty->getName() === 'TIMEZONE' && empty($clientProperty->getValue()) === false)
+            foreach ($aProperty as $index=>&$clientProperty)
             {
-                $additionalXml .= "<timezone>".$clientProperty->getValue()."</timezone>";
+                if($clientProperty->getName() === 'TIMEZONE' )
+                {
+                    if(empty($clientProperty->getValue()) === false)
+                    {
+                        $additionalXml .= "<timezone>".$clientProperty->getValue()."</timezone>";
+                    }
+                    unset($aClientProperty[$category][$index]);
+                    continue;
+                }
+
+                if($clientProperty->getName() === 'SSO_PREFERENCE')
+                {
+                    if(empty($clientProperty->getValue()) === false)
+                    {
+                        $additionalXml .= "<authentication_mode>".$clientProperty->getValue()."</authentication_mode>";
+                    }
+                    unset($aClientProperty[$category][$index]);
+                }
             }
 
-            if($clientProperty->getName() === 'SSO_PREFERENCE' && empty($clientProperty->getValue()) === false)
-            {
-                $additionalXml .= "<authentication_mode>".$clientProperty->getValue()."</authentication_mode>";
-            }
         }
 
         $additionalXml .="<pm_configurations>";
@@ -135,20 +147,6 @@ class ConfigurationController
     public function putClientConfig(\SimpleDOMElement $request): void
     {
 
-        $aClientParam = array();
-        if(count($request->name)>0) $aClientParam["name"] =(string)$request->name;
-        if(count($request->salt)>0) $aClientParam["salt"] =(string)$request->salt;
-        if(count($request->max_amount)>0) $aClientParam["maxamount"] =(int)$request->max_amount;
-        if(count($request->country_id)>0) $aClientParam["countryid"] =(int)$request->country_id;
-        if(count($request->email_notification)>0) $aClientParam["emailrcpt"] =(string)$request->email_notification;
-        if(count($request->sms_notification)>0) $aClientParam["smsrcpt"] =(string)$request->sms_notification;
-        if(count($request->timezone)>0) $aClientParam["TIMEZONE"] =(string)$request->timezone;
-        if(count($request->authentication_mode)>0) $aClientParam["SSO_PREFERENCE"] =(string)$request->authentication_mode;
-        if(empty($aClientParam) === false)
-        {
-            $this->getConfigService()->updateClientdetails($aClientParam);
-        }
-
         if(is_object($request->pm_configurations->pm_configuration))
         {
             $aPMIDs = array();
@@ -168,7 +166,21 @@ class ConfigurationController
             }
             $this->getConfigService()->savePropertyConfig("CLIENT",$aProperty, -1, array(), true);
         }
-
+        $aClientParam = array();
+        if(count($request->name)>0) $aClientParam["name"] =(string)$request->name;
+        if(count($request->language)>0) $aClientParam["lang"] =(string)$request->language;
+        if(count($request->username)>0) $aClientParam["username"] =(string)$request->username;
+        if(count($request->salt)>0) $aClientParam["salt"] =(string)$request->salt;
+        if(count($request->max_amount)>0) $aClientParam["maxamount"] =(int)$request->max_amount;
+        if(count($request->country_id)>0) $aClientParam["countryid"] =(int)$request->country_id;
+        if(count($request->email_notification)>0) $aClientParam["emailrcpt"] =(string)$request->email_notification;
+        if(count($request->sms_notification)>0) $aClientParam["smsrcpt"] =(string)$request->sms_notification;
+        if(count($request->timezone)>0) $aClientParam["TIMEZONE"] =(string)$request->timezone;
+        if(count($request->authentication_mode)>0) $aClientParam["SSO_PREFERENCE"] =(string)$request->authentication_mode;
+        if(empty($aClientParam) === false)
+        {
+            $this->getConfigService()->updateClientdetails($aClientParam);
+        }
         if(empty($request->client_urls) === false && count($request->client_urls) > 0)
         {
             $urls = array();
