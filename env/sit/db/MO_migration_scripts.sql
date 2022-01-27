@@ -11,6 +11,11 @@ insert into client.pm_tbl (pmid,clientid) select distinct cardid,clientid from c
 -- Merchant Onboarding - Migration of client configuration (CEBU)
 
 -- MPI Enabled
+INSERT INTO client.mpi_config_tbl ( clientid, pmid, providerid) VALUES(10077, 1, 47);
+INSERT INTO client.mpi_config_tbl ( clientid, pmid, providerid) VALUES(10077, 7, 47);
+INSERT INTO client.mpi_config_tbl ( clientid, pmid, providerid) VALUES(10077, 8, 47);
+INSERT INTO client.mpi_property_tbl ( clientid, version) VALUES( 10077, '2.0');
+
 insert into client.routefeature_tbl (routeconfigid,clientid,featureid) select id,10077,20 from client.routeconfig_tbl where routeid in ( select id from client.route_tbl where clientid=10077 and providerid in (4,63))
 -- PSP 3ds Enabled
 insert into client.routefeature_tbl (routeconfigid,clientid,featureid) select id,10077,9 from client.routeconfig_tbl where routeid in ( select id from client.route_tbl where clientid=10077 and providerid in (62))
