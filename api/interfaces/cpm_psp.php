@@ -963,8 +963,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 		$aCI = $this->aCONN_INFO;
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
-
-		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
+        if(isset($aURLInfo['port']) === false)
+        {
+            $aURLInfo['port'] = $aURLInfo["scheme"] === 'https' ? 443 : 80;
+        }
+		return new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
 	
 	/**

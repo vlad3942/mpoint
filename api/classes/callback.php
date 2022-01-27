@@ -930,74 +930,22 @@ abstract class Callback extends EndUserAccount
 		{
 		case (Constants::iDIBS_PSP):
 			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"],$obj_PSPConfig);
-		case (Constants::iWORLDPAY_PSP):
-			return new WorldPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["worldpay"],$obj_PSPConfig);
 		case (Constants::iWANNAFIND_PSP):
 			return new WannaFind($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wannafind"],$obj_PSPConfig);
 		case (Constants::iNETAXEPT_PSP):
 			return new NetAxept($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["netaxept"],$obj_PSPConfig);
 		case (Constants::iMOBILEPAY_PSP):
 			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"],$obj_PSPConfig);
-		case (Constants::iADYEN_PSP):
-			return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"],$obj_PSPConfig);
 		case (Constants::iDSB_PSP):
 			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
-		case (Constants::iVISA_CHECKOUT_PSP) :
-			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"],$obj_PSPConfig);
-		case (Constants::iAPPLE_PAY_PSP):
-			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"],$obj_PSPConfig);
 		case (Constants::iCPG_PSP):
 			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"],$obj_PSPConfig);
-		case (Constants::iMASTER_PASS_PSP):
-			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"],$obj_PSPConfig);
-		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
-			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"],$obj_PSPConfig);
 		case (Constants::iWIRE_CARD_PSP):
 			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"],$obj_PSPConfig);
-		case (Constants::iDATA_CASH_PSP):
-			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"],$obj_PSPConfig);
-		case (Constants::iMADA_MPGS_PSP):
-			return new MadaMpgs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mada-mpgs"],$obj_PSPConfig);
-		case (Constants::iGLOBAL_COLLECT_PSP):
-			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"],$obj_PSPConfig);
-		case (Constants::iSECURE_TRADING_PSP):
-			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"],$obj_PSPConfig);
-		case (Constants::iPAYFORT_PSP):
-			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"],$obj_PSPConfig);
-		case (Constants::iPAYPAL_PSP):
-			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"],$obj_PSPConfig);
-		case (Constants::iCCAVENUE_PSP):
-			return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"],$obj_PSPConfig);
-		case (Constants::i2C2P_PSP):
-			return new CCPP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p"],$obj_PSPConfig);
-		case (Constants::iMAYBANK_PSP):
-			return new MayBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["maybank"],$obj_PSPConfig);
-		case (Constants::iPUBLIC_BANK_PSP):
-			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"],$obj_PSPConfig);
-		case (Constants::iALIPAY_PSP):
-	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"],$obj_PSPConfig);
-		case (Constants::iQIWI_PSP):
-			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"],$obj_PSPConfig);
-		case (Constants::iPOLI_PSP):
-            return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"],$obj_PSPConfig);
-		case (Constants::iKLARNA_PSP):
-				return new Klarna($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["klarna"],$obj_PSPConfig);
         case (Constants::iMVAULT_PSP):
             return new MVault($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mvault"],$obj_PSPConfig);
         case (Constants::iNETS_ACQUIRER):
             return new Nets($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nets"],$obj_PSPConfig);
-        case (Constants::iTRUSTLY_PSP):
-            	return new Trustly($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["trustly"],$obj_PSPConfig);
-        case (Constants::iPAY_TABS_PSP):
-        	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"],$obj_PSPConfig);
-        case (Constants::i2C2P_ALC_PSP):
-        		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"],$obj_PSPConfig);
-        case (Constants::iALIPAY_CHINESE_PSP):
-                return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"],$obj_PSPConfig);
-        case (Constants::iCITCON_PSP):
-                return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"],$obj_PSPConfig);
-        case (Constants::iPPRO_GATEWAY):
-            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ppro"],$obj_PSPConfig);
         case (Constants::iAMEX_ACQUIRER):
                 return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"],$obj_PSPConfig);
         case (Constants::iCHUBB_PSP):
@@ -1006,51 +954,17 @@ abstract class Callback extends EndUserAccount
             return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"],$obj_PSPConfig);
 		case (Constants::iUATP_CARD_ACCOUNT):
             return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"],$obj_PSPConfig);
-        case (Constants::iEGHL_PSP):
-            return new EGHL($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["eghl"],$obj_PSPConfig);
-        case (Constants::iGOOGLE_PAY_PSP) :
-            return new GooglePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["google-pay"],$obj_PSPConfig);
         case (Constants::iCHASE_ACQUIRER):
             return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"],$obj_PSPConfig);
-        case (Constants::iPAYU_PSP):
-            return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payu"],$obj_PSPConfig);
-		case (Constants::iCielo_ACQUIRER):
-            return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"],$obj_PSPConfig);
-		case (Constants::iGlobal_Payments_PSP):
-			return new GlobalPayments($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-payments"],$obj_PSPConfig);
-		case (Constants::iVeriTrans4G_PSP):
-		    return new VeriTrans4G($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["veritrans4g"],$obj_PSPConfig);
         case (Constants::iEZY_PSP):
 			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"],$obj_PSPConfig);
-		case (Constants::iCellulant_PSP):
-				return new Cellulant($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cellulant"],$obj_PSPConfig);
-		case (Constants::iDragonPay_AGGREGATOR):
-		    return new DragonPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dragonpay"],$obj_PSPConfig);
-        case (Constants::iFirstData_PSP):
-			return new FirstData($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["first-data"],$obj_PSPConfig);
-        case (Constants::iCyberSource_PSP):
-			return new CyberSource($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"],$obj_PSPConfig);
-        case (Constants::iSWISH_APM):
-            return new SWISH($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["swish"],$obj_PSPConfig);
-        case (Constants::iPAYMAYA_WALLET):
-            return new Paymaya($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya"],$obj_PSPConfig);
-		case (Constants::iGRAB_PAY_PSP):
-			return new GrabPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"],$obj_PSPConfig);
 		case (Constants::iCEBUPAYMENTCENTER_APM):
-			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["grabpay"],$obj_PSPConfig);
-		case (Constants::iMPGS_PSP):
-			return new MPGS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mpgs"],$obj_PSPConfig);
-		case (Constants::iSAFETYPAY_AGGREGATOR):
-		    return new SafetyPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["safetypay"],$obj_PSPConfig);
+			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[67],$obj_PSPConfig);
 		case (Constants::iTRAVELFUND_VOUCHER):
 			return new TravelFund($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["travel-fund"],$obj_PSPConfig);
-		case (Constants::iPAYMAYA_ACQ):
-			return new Paymaya_Acq($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya_acq"],$obj_PSPConfig);
-		case (Constants::iSTRIPE_PSP):
-		    return new Stripe_PSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["stripe"],$obj_PSPConfig);
 
 		default:
- 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
+ 			throw new CallbackException("Unknown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
 

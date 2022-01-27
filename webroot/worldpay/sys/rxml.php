@@ -20,9 +20,6 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
-
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
 

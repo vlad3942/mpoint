@@ -41,18 +41,6 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the CPM GATEWAY component
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Android Pay component
-require_once(sCLASS_PATH ."/androidpay.php");
-// Require specific Business logic for the MasterPass component
-require_once(sCLASS_PATH ."/masterpass.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
 
 require_once(sCLASS_PATH ."/payment_processor.php");
 

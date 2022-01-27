@@ -47,38 +47,13 @@ require_once(sCLASS_PATH ."/cpm.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WannaFind component
 require_once(sCLASS_PATH ."/wannafind.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
-
 require_once(sCLASS_PATH ."/wirecard.php");
-require_once(sCLASS_PATH ."/datacash.php");
-require_once(sCLASS_PATH ."/globalcollect.php");
-require_once(sCLASS_PATH ."/adyen.php");
-require_once(sCLASS_PATH ."/ccavenue.php");
-require_once(sCLASS_PATH ."/payfort.php");
-require_once(sCLASS_PATH ."/maybank.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the 2C2P component
-require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-
-// Require specific Business logic for the VeriTrans4G component
-require_once(sCLASS_PATH ."/psp/veritrans4g.php");
-// Require specific Business logic for the DragonPay component
-require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
-// Require specific Business logic for the SWISH component
-require_once(sCLASS_PATH ."/apm/swish.php");
-require_once(sCLASS_PATH .'/apm/paymaya.php');
-// Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/Paymaya_Acq.php");
-// Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
 
 ignore_user_abort(true);
 set_time_limit(0);

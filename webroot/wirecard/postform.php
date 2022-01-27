@@ -30,12 +30,6 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the wirecard component
 require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the datacash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the globalcollect component
-require_once(sCLASS_PATH ."/globalcollect.php");
 
 // Instantiate main mPoint object for handling the component's functionality
 $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
