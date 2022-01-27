@@ -4,11 +4,16 @@ insert into client.services_tbl (clientid,legacy_flow_enabled) select id,true fr
 UPDATE client.services_tbl set dcc_enabled=true,pcc_enabled=true,fraud_enabled=true,splitpayment_enabled=true,mpi_enabled=true,legacy_flow_enabled=false
 WHERE clientid=10077;
 
-UPDATE client.services_tbl set fraud_enabled=true,splitpayment_enabled=true,mpi_enabled=true,legacy_flow_enabled=false WHERE clientid=10101;
+UPDATE client.services_tbl set fraud_enabled=true,splitpayment_enabled=true,mpi_enabled=false,legacy_flow_enabled=false WHERE clientid=10101;
 
 insert into client.pm_tbl (pmid,clientid) select distinct cardid,clientid from client.cardaccess_tbl where psp_type in (1,2,3,4,7,11) and clientid in (10077,10101) ON CONFLICT (pmid,clientid) DO NOTHING;
 
 -- Merchant Onboarding - Migration of client configuration (CEBU)
+
+-- MPI Enabled
+insert into client.routefeature_tbl (routeconfigid,clientid,featureid) select id,10077,20 from client.routeconfig_tbl where routeid in ( select id from client.route_tbl where clientid=10077 and providerid in (4,63))
+-- PSP 3ds Enabled
+insert into client.routefeature_tbl (routeconfigid,clientid,featureid) select id,10077,9 from client.routeconfig_tbl where routeid in ( select id from client.route_tbl where clientid=10077 and providerid in (62))
 
 -- Fraud Config
 insert into client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud, enabled)
@@ -20,6 +25,8 @@ select  clientid, CA.cardid as pmid, pspid as providerid, COALESCE(countryid,0) 
         true as enabled
 from client.cardaccess_tbl CA
 where CA.clientid = 10077 and psp_type in (9,10) and enabled = true on conflict (pmid, clientid, countryid, currencyid, typeoffraud) do  nothing ;
+
+INSERT INTO client.fraud_property_tbl (clientid, is_rollback) VALUES(10077, true);
 
 -- DCC Config
 insert into client.dcc_config_tbl (clientid, pmid, countryid, currencyid, enabled)
@@ -76,18 +83,12 @@ select  clientid, CA.cardid as pmid, pspid as providerid, COALESCE(countryid,0) 
         true as enabled
 from client.cardaccess_tbl CA
 where CA.clientid = 10101 and psp_type in (9,10) and enabled = true;
-
--- DCC Config
-insert into client.dcc_config_tbl (clientid, pmid, countryid, currencyid, enabled)
-select distinct  clientid, CA.cardid as pmid, COALESCE(countryid,0) as countryid , 0 as currencyid,
-                 true as enabled
-from client.cardaccess_tbl CA
-where CA.clientid = 10101 and psp_type not in (9,10,6) and  dccenabled =true and walletid is null  and enabled = true;
+INSERT INTO client.fraud_property_tbl (clientid, is_rollback) VALUES(10101, false);
 
 -- Client Config
 insert into client.client_property_tbl (propertyid,value,clientid)
 select distinct sp.id,ap.value,ap.externalid from client.additionalproperty_tbl ap inner join system.client_property_tbl sp on ap.key=sp.name
-where ap.externalid =10101 and ap."type" ='client';
+where ap.externalid =10101 and ap."type" ='client' on conflict (propertyid, clientid) do  nothing ;
 
 -- PSP Config
 insert into client.psp_property_tbl (propertyid,value,clientid)
@@ -95,7 +96,7 @@ select distinct sp.id,ap.value, rt.clientid from client.route_tbl rt
                                                      inner join client.additionalproperty_tbl ap on ap.externalid=rt.id
                                                      inner join system.psp_property_tbl sp on ap.key=sp.name
     and rt .providerid = sp.pspid
-where ap."type" ='merchant' and rt.clientid =10101 and ap.enabled =true;
+where ap."type" ='merchant' and rt.clientid =10101 and ap.enabled =true on conflict (propertyid, clientid) do  nothing;
 
 -- Route Config
 insert into client.route_property_tbl (propertyid,value,routeconfigid)
@@ -103,12 +104,12 @@ select distinct sp.id,ap.value, rc.id from client.route_tbl rt
                                                inner join client.additionalproperty_tbl ap on ap.externalid=rt.id
                                                inner join system.route_property_tbl sp on ap.key=sp.name and rt .providerid = sp.pspid
                                                inner join client.routeconfig_tbl rc on rt.id=rc.routeid
-where ap."type" ='merchant' and rt.clientid =10101 and ap.enabled =true;
+where ap."type" ='merchant' and rt.clientid =10101 and ap.enabled =true on conflict (propertyid, routeconfigid) do  nothing;
 
 --------PSP Property which is wrongly added under client level
 insert into client.psp_property_tbl (propertyid,value,clientid)
 select sp.id,ap.value,ap.externalid from client.additionalproperty_tbl ap inner join system.psp_property_tbl sp on ap.key=sp.name
-where ap.externalid =10101 and ap."type" ='client'
+where ap.externalid =10101 and ap."type" ='client' on conflict  (propertyid, clientid) do  nothing;
 
 -- Split Payment Config
     INSERT INTO client.split_property_tbl
