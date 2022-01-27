@@ -67,7 +67,7 @@ abstract class CPMFRAUD
             throw new CPMFraudEXCEPTION("Connection Configuration not found for the given FSP ID ". $iFSPID);
         }
 
-        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iFSPID);
+        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceProviderConfig($oDB,   $iFSPID,$oTI);
         $this->_obj_mPoint = new General($oDB, $oTxt);
     }
 
@@ -145,16 +145,20 @@ abstract class CPMFRAUD
 
         $aFSPStatus = array();
         $fraudCheckResponse = new FraudResult();
-        foreach ($fraudAddon->getConfiguration() as $config)
+        if($obj_TxnInfo->getClientConfig()->getClientServices()->isFraud() === true)
         {
-            if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+            foreach ($fraudAddon->getConfiguration() as $config)
             {
-                $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
-                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
-                $fraudCheckResponse->setFraudCheckAttempted(true);
-                array_push($aFSPStatus, $iFSPCode);
+                if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+                {
+                    $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
+                    $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
+                    $fraudCheckResponse->setFraudCheckAttempted(true);
+                    array_push($aFSPStatus, $iFSPCode);
+                }
             }
         }
+
         $fraudCheckResponse->setFraudCheckResult(CPMFRAUD::hasFraudPassed($aFSPStatus));
         return $fraudCheckResponse;
     }
@@ -396,13 +400,14 @@ abstract class CPMFRAUD
 
     protected function _constNewCardAuthorizationRequest($obj_Card)
     {
-
         list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
 
         $expiry_year = substr_replace(date('Y'), $expiry_year, -2);
 
         $b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-
+        if (!empty($obj_Card->card_name)) {
+            $b .= '<name>' . $obj_Card->card_name . '</name>';
+        }
         if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 
         $b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';

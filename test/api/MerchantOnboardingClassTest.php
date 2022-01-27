@@ -52,11 +52,12 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1)");
         $this->queryDB("INSERT INTO client.tokenization_config_tbl (clientid, pmid, providerid, countryid, currencyid) VALUES(10099, 8, 15, 640, 654)");
-        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid, \"version\") VALUES(10099, 1, 17, '1.0')");
+        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid) VALUES(10099, 1, 17)");
+        $this->queryDB("INSERT INTO client.mpi_property_tbl (clientid, version) VALUES(10099,'1.0')");
         $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(1, 10099, 'hybrid', true)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(2, 10099, 'cashless', false)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(3, 10099, 'conventional', false)");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(1, 10099, 'hybrid', true,'hybrid')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(2, 10099, 'cashless', false,'cashless')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(3, 10099, 'conventional', false,'conventional')");
 
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 1, 1)");
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 2, 2)");
@@ -103,7 +104,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");        
 
         //<editor-fold desc="Request">
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>608</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>true</is_presentment></addon_configuration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_configuration><pm_id>1</pm_id><provider_id>17</provider_id><version>1.0</version></addon_configuration></addon_configurations></mpi_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs><tokenization_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>840</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations></tokenization_config></addon_configuration_request>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>608</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>true</is_presentment></addon_configuration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_configuration><pm_id>1</pm_id><provider_id>17</provider_id></addon_configuration></addon_configurations><version>1.0</version></mpi_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><name>hybrid</name><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><name>cashless</name><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><name>conventional</name><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs><tokenization_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>840</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations></tokenization_config></addon_configuration_request>';
         //</editor-fold>
 
         $obj_DOM = simpledom_load_string($xml);
@@ -141,7 +142,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(1, pg_num_rows($res));
 
         // MPI
-        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 17 AND \"version\" = '1.0'");
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 17");
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
@@ -165,11 +166,12 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.dcc_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1)");
-        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid, \"version\") VALUES(10099, 1, 17, '1.0')");
+        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid) VALUES(10099, 1, 17)");
+        $this->queryDB("INSERT INTO client.mpi_property_tbl (clientid, version) VALUES(10099,'1.0')");
         $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(1, 10099, 'hybrid', true)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(2, 10099, 'cashless', false)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(3, 10099, 'conventional', false)");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(1, 10099, 'hybrid', true,'hybrid')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(2, 10099, 'cashless', false,'cashless')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(3, 10099, 'conventional', false,'conventional')");
 
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 1, 1)");
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 2, 2)");
@@ -182,7 +184,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.split_property_tbl (clientid,is_rollback) VALUES(10099,true)");
 
         //<editor-fold desc="Request">
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>567</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>608</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>true</is_presentment></addon_configuration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_configuration><pm_id>1</pm_id><provider_id>17</provider_id><version>1.0</version></addon_configuration></addon_configurations></mpi_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs><tokenization_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>840</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations></tokenization_config></addon_configuration_request>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id></addon_configuration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>608</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>true</is_presentment></addon_configuration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_configuration><pm_id>1</pm_id><provider_id>17</provider_id></addon_configuration></addon_configurations><version>1.0</version></mpi_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><name>hybrid</name><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><name>cashless</name><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><name>conventional</name><addon_configurations><addon_configuration><sequence_no>1</sequence_no><payment_type_id>1</payment_type_id></addon_configuration><addon_configuration><sequence_no>2</sequence_no><payment_type_id>2</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs><tokenization_config><addon_configurations><addon_configuration><pm_id>8</pm_id><currency_id>840</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations></tokenization_config></addon_configuration_request>';
         //</editor-fold>
 
         $obj_DOM = simpledom_load_string($xml);
@@ -218,11 +220,12 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1),(10099, 8, 15, 640, 654, 2)");
         $this->queryDB("INSERT INTO client.tokenization_config_tbl (clientid, pmid, providerid, countryid, currencyid) VALUES(10099, 8, 15, 640, 654)");
-        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid, \"version\") VALUES(10099, 1, 17, '1.0')");
+        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid) VALUES(10099, 1, 17)");
+        $this->queryDB("INSERT INTO client.mpi_property_tbl (clientid, version) VALUES(10099,'1.0')");
         $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(1, 10099, 'hybrid', true)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(2, 10099, 'cashless', false)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(3, 10099, 'conventional', false)");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(1, 10099, 'hybrid', true,'hybrid')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(2, 10099, 'cashless', false,'cashless')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(3, 10099, 'conventional', false,'conventional')");
 
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 1, 1)");
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 2, 2)");
@@ -235,7 +238,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.split_property_tbl (clientid,is_rollback) VALUES(10099,true)");
 
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id></addon_configuration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id></addon_configuration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>false</is_presentment></addon_configuration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>1</pm_id><provider_id>1</provider_id><version>1.0</version></addon_configuration></addon_configurations></mpi_config><tokenization_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations></tokenization_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_configuration><id>2</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><addon_configurations><addon_configuration><id>1</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_configuration><addon_configuration><id>2</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><addon_configurations><addon_configuration><id>3</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_configuration><addon_configuration><id>4</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><addon_configurations><addon_configuration><id>5</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_configuration><addon_configuration><id>6</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs></addon_configuration_request>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><addon_configuration_request><client_id>10099</client_id><dcc_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id></addon_configuration></addon_configurations></dcc_config><mcp_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id></addon_configuration></addon_configurations></mcp_config><pcc_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><settlement_currency_id>590</settlement_currency_id><is_presentment>false</is_presentment></addon_configuration></addon_configurations></pcc_config><mpi_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>1</pm_id><provider_id>1</provider_id></addon_configuration></addon_configurations><version>1.0</version></mpi_config><tokenization_config><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations></tokenization_config><fraud_configs><fraud_config><sub_type>pre_auth</sub_type><addon_configurations><addon_configuration><id>1</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>566</currency_id><country_id>200</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config><fraud_config><sub_type>post_auth</sub_type><addon_configurations><addon_configuration><id>2</id><enabled>true</enabled><pm_id>8</pm_id><currency_id>654</currency_id><country_id>640</country_id><provider_id>15</provider_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></fraud_config></fraud_configs><split_payment_configs><split_payment_config><sub_type>hybrid</sub_type><name>hybrid</name><addon_configurations><addon_configuration><id>1</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_configuration><addon_configuration><id>2</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>cashless</sub_type><name>cashless</name><addon_configurations><addon_configuration><id>3</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_configuration><addon_configuration><id>4</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config><split_payment_config><sub_type>conventional</sub_type><name>conventional</name><addon_configurations><addon_configuration><id>5</id><enabled>false</enabled><sequence_no>3</sequence_no><payment_type_id>3</payment_type_id></addon_configuration><addon_configuration><id>6</id><enabled>false</enabled><sequence_no>4</sequence_no><payment_type_id>4</payment_type_id></addon_configuration></addon_configurations><is_rollback>true</is_rollback></split_payment_config></split_payment_configs></addon_configuration_request>';
 
         $obj_DOM = simpledom_load_string($xml);
         $this->_merchantConfigRepository = new MerchantConfigRepository($this->_OBJ_DB,10099);
@@ -273,7 +276,7 @@ class MerchantOnboardingClassTest extends baseAPITest
 
 
         // MPI
-        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 1 AND \"version\" = '1.0'");
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 1");
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
@@ -298,11 +301,12 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.mcp_config_tbl (pmid, clientid, countryid, currencyid) VALUES(8, 10099, 200, 566)");
         $this->queryDB("INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud) VALUES(10099, 8, 15, 640, 654, 1)");
         $this->queryDB("INSERT INTO client.tokenization_config_tbl (clientid, pmid, providerid, countryid, currencyid) VALUES(10099, 8, 15, 640, 654)");
-        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid, \"version\") VALUES(10099, 1, 17, '1.0')");
+        $this->queryDB("INSERT INTO client.mpi_config_tbl (clientid, pmid, providerid) VALUES(10099, 1, 17)");
+        $this->queryDB("INSERT INTO client.mpi_property_tbl (clientid, version) VALUES(10099,'1.0')");
         $this->queryDB("INSERT INTO client.pcc_config_tbl (clientid, pmid, sale_currency_id, is_presentment, settlement_currency_id) VALUES(10099, 8, 608, true, 590)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(1, 10099, 'hybrid', true)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(2, 10099, 'cashless', false)");
-        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth) VALUES(3, 10099, 'conventional', false)");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(1, 10099, 'hybrid', true,'hybrid')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(2, 10099, 'cashless', false,'cashless')");
+        $this->queryDB("INSERT INTO client.split_configuration_tbl (id, client_id, name, is_one_step_auth,type) VALUES(3, 10099, 'conventional', false,'conventional')");
 
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 1, 1)");
         $this->queryDB("INSERT INTO client.split_combination_tbl (split_config_id, payment_type, sequence_no) VALUES(1, 2, 2)");
@@ -356,7 +360,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertEquals(0, pg_num_rows($res));
 
         // MPI
-        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 17 AND \"version\" = '1.0'");
+        $res =  $this->queryDB("SELECT id FROM CLIENT.mpi_config_tbl where pmid = 1 AND clientid = 10099 AND providerid = 17");
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res));
 
@@ -409,7 +413,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
 
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>TestPSPName</name><credentials><username>TestPSPUser</username><password>TestPSPPass</password></credentials><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_request><client_id>10099</client_id><client_psp_configurations><client_psp_configuration><id>52</id><name>TestPSPName</name><properties><property><id>22</id><value>true</value></property><property><id>21</id><value>CPD_</value></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id></pm_configuration></pm_configurations></client_psp_configuration></client_psp_configurations></client_psp_configuration_request>';
 
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
@@ -423,8 +427,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
 
-        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'TestPSPName' AND username = 'TestPSPUser' AND passwd = 'TestPSPPass'" );
-        $this->assertIsResource($res);
+
         $this->assertEquals(1, pg_num_rows($res));
 
     }
@@ -444,7 +447,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("insert into Client.providerpm_tbl (routeid, pmid) values (1, 1)");
 
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration><client_id>10099</client_id><psp_id>52</psp_id><name>EFS10000114912</name><credentials><username>Paymaya ac1q2</username><password>sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z</password></credentials><properties><property><id>22</id><value>true</value><enabled>true</enabled></property><property><id>21</id><value>CPD_123</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>false</enabled></pm_configuration></pm_configurations></client_psp_configuration>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><client_psp_configuration_request><client_psp_configurations><client_psp_configuration><client_id>10099</client_id><id>52</id><properties><property><id>22</id><value>true</value><enabled>true</enabled></property><property><id>21</id><value>CPD_123</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>1</pm_id><enabled>false</enabled></pm_configuration></pm_configurations></client_psp_configuration></client_psp_configurations></client_psp_configuration_request>';
 
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
@@ -457,11 +460,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $res =  $this->queryDB("SELECT id FROM CLIENT.providerpm_tbl where pmid = 1" );
         $this->assertIsResource($res);
         $this->assertEquals(1, pg_num_rows($res));
-/*
-        $res =  $this->queryDB("SELECT id FROM CLIENT.merchantaccount_tbl where clientid = 10099 AND pspid =  52 AND name = 'EFS10000114912' AND username = 'Paymaya ac1q2' AND passwd = 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5z'" );
-        $this->assertIsResource($res);
-        $this->assertEquals(1, pg_num_rows($res));
-        */
+
 
     }
 
@@ -599,7 +598,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         // $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
         // $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
 
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><client_route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><credentials><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type></credentials><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></client_route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configurations_request><client_id>10099</client_id><route_configurations><route_configuration><provider_id>50</provider_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>1234</value></property><property><id>42</id><value>1233</value></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id></pm_configuration><pm_configuration><pm_id>7</pm_id></pm_configuration></pm_configurations><route_features><route_feature><id>1</id></route_feature></route_features><country_details><country_detail><id>1</id></country_detail></country_details><currency_details><currency_detail><id>1</id></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_request>';
 
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
@@ -650,7 +649,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
 
 
-        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configuration><client_id>10099</client_id> <psp_id>50</psp_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>12345</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>false</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>false</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>false</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>false</enabled></currency_detail></currency_details></route_configuration>';
+        $xml= '<?xml version="1.0" encoding="UTF-8"?><route_configurations_request><client_id>10099</client_id><route_configurations><route_configuration><client_id>10099</client_id><provider_id>50</provider_id><name>TEST</name><mid>TESTMID</mid><username>username</username><password>password</password><capture_type>2</capture_type><properties><property><id>41</id><value>12345</value><enabled>true</enabled></property></properties><pm_configurations><pm_configuration><pm_id>8</pm_id><enabled>false</enabled></pm_configuration></pm_configurations><route_features><route_feature><id>1</id><enabled>false</enabled></route_feature></route_features><country_details><country_detail><id>1</id><enabled>false</enabled></country_detail></country_details><currency_details><currency_detail><id>1</id><enabled>false</enabled></currency_detail></currency_details></route_configuration></route_configurations></route_configurations_request>';
 
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
@@ -700,7 +699,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
             'client_id' => 10099,
-            'route_conf_id' => 1,
+            'id' => 1,
             'p_id' => 41,
             'pm' => 8,
             'r_f' => 1,
@@ -755,7 +754,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
             'client_id' => 10099,
-            'route_conf_id' => 1,
+            'id' => 1,
             'p_id' => -1,
             'pm' => -1,
             'r_f' => -1,
@@ -851,24 +850,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertGreaterThan(0, count($aClientProperty['Basic']));
         $this->assertGreaterThan(0, count($aClientProperty['Technical']));
 
-        $aAddonConf = $this->_merchantAggregateRoot->getAllAddonConfig($this->_merchantConfigRepository);
-        $aClassSet = array(
-            'DCCConfig' => 1 , 'MCPConfig' => 1 , 'PCCConfig' => 1 ,'FraudConfig' => 1 , 'MPIConfig' => 1 , 'Split_PaymentConfig' => 1 , 'TokenizationConfig' => 1
-        );
 
-        $sprevBaseClass = '';
-        foreach($aAddonConf as $config)
-        {
-            $baseClass = substr(strrchr('\\'.get_class($config), '\\'), 1);
-            if(isset($aClassSet[$baseClass]))
-            {
-                unset($aClassSet[$baseClass]);
-            } else if($sprevBaseClass !== $baseClass){
-                $aClassSet['Unkown'] = 1;
-            }
-            $sprevBaseClass = $baseClass;
-        }
-        $this->assertEquals(0, count($aClassSet));
     }
 
     public function testSuccessfulPostClientConfiguration()
@@ -1089,5 +1071,29 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->assertIsResource($res);
         $this->assertEquals(3, pg_num_rows($res));
 
+    }
+
+    public function testSuccessfulDeleteProviderConfig()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("insert into Client.merchantaccount_tbl (clientid, pspid, name, username, passwd) values (10099, 52, 'TestPSPName','TestPSPUser','TestPSPPass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $xml = '';
+        $obj_DOM = simpledom_load_string($xml);
+        $additionalParams = array(
+            'provider_type' => 1
+        );
+
+        $objController = new ConfigurationController($this->_OBJ_DB,10099);
+        $objController->deleteProviderConfig($obj_DOM, $additionalParams);
+
+        $res =  $this->queryDB("select pspid from Client.merchantaccount_tbl WHERE clientid = 10099 AND  pspid IN (SELECT id FROM SYSTEM.psp_tbl WHERE system_type = 1)");
+
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
     }
 }

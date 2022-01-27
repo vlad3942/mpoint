@@ -93,6 +93,7 @@ class ClientURLConfig
         $xml .= '<name>'.$this->_sName.'</name>';
         $xml .= '<type_id>'.$this->_iTypeID.'</type_id>';
         $xml .= '<value>'.htmlspecialchars($this->_sURL, ENT_NOQUOTES).'</value>';
+        $xml .= '<url_category>'.$this->_sCategory.'</url_category>';
         $xml .= '</client_url>';
         return $xml;
     }

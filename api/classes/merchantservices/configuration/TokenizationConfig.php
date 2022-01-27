@@ -28,15 +28,21 @@ class TokenizationConfig extends BaseConfig
     private array $_aProperty;
 
     /**
+     * @var array
+     */
+    private string $_sName;
+
+    /**
      * @param array $config
      * @param array $property
      * @param string $subType
      */
-    public function __construct(array $config,array $property,string $subType='Tokenization')
+    public function __construct(array $config,array $property,string $subType='Tokenization',string $name='')
     {
         $this->_aConfig = $config;
         $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eTOKENIZATION,"Tokenization");
         $this->_aProperty = $property;
+        $this->_sName = $name;
     }
 
     /**
@@ -62,4 +68,13 @@ class TokenizationConfig extends BaseConfig
     {
         return $this->_aProperty;
     }
+
+    /**
+     * @return string
+     */
+    public function getName() :string
+    {
+        return $this->_sName;
+    }
+
 }

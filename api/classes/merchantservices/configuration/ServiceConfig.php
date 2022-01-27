@@ -384,7 +384,7 @@ class ServiceConfig
         }
         else if ($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
         {
-            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid, "version" ',"$1,$2,$3,$4");
+            return sprintf($sql,$addonServiceType->getTableName(),'clientid, pmid, providerid ',"$1,$2,$3");
         }
         else if ($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
@@ -416,7 +416,7 @@ class ServiceConfig
         }
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
         {
-            return array($iId,$this->getPaymentMethodId(),$this->getProviderId(),$this->getVersion());
+            return array($iId,$this->getPaymentMethodId(),$this->getProviderId());
         }
         else  if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud)
         {

@@ -27,9 +27,9 @@ class MerchantConfigInfo
      * @param MerchantConfigRepository $configRepository
      * @return array
      */
-    public function getAllAddonConfig(MerchantConfigRepository $configRepository) : array
+    public function getAllAddonConfig(MerchantConfigRepository $configRepository,AddonServiceType $addonServiceType=null) : array
     {
-        return $configRepository->getAllAddonConfig();
+        return $configRepository->getAllAddonConfig($addonServiceType);
     }
 
     /**
@@ -77,6 +77,11 @@ class MerchantConfigInfo
 
         }
         $configRepository->deleteAddonConfig($aDeleteConfig);
+    }
+
+    public function deleteProviderConfig(MerchantConfigRepository $configRepository, $additionalParams = []){
+        $id = $additionalParams['provider_type'] ?? -1;
+        $configRepository->deleteConfigDetails($id, 'provider');
     }
 
     /**
@@ -328,9 +333,26 @@ class MerchantConfigInfo
 
         if($type === 'ROUTE')
         {
-            if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['route_conf_id']))
+            if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
             {
-                $configRepository->deleteAllRouteConfig($type, $additionalParams['route_conf_id']);
+                $aIds = explode(',', $additionalParams['id']);
+                foreach ($aIds as $id)
+                {
+                    if(is_numeric($id) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for ID {param:".$id."}"); }
+                }
+                $configRepository->deleteAllRouteConfig($type, $additionalParams['id']);
+                return true;
+            }
+        }else if($type === "PSP")
+        {
+            if(count($additionalParams) === 2 && isset($additionalParams['id']))
+            {
+                $aIds = explode(',', $additionalParams['id']);
+                foreach ($aIds as $id)
+                {
+                    if(is_numeric($id) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for ID {param:".$id."}"); }
+                }
+                $configRepository->deleteAllPSPConfig( $additionalParams['id']);
                 return true;
             }
         }
@@ -440,19 +462,26 @@ class MerchantConfigInfo
         $configRepository->saveProviders($aProviderConfig);
     }
 
-    public function getRouteConfiguration(MerchantConfigRepository $configRepository, int $id,bool $bAllConfig):ProviderConfig
+    public function getRouteConfiguration(MerchantConfigRepository $configRepository, int $id,bool $bAllConfig):?ProviderConfig
     {
         return $configRepository->getRouteConfiguration($id,$bAllConfig);
     }
 
-    public function updateRouteConfig(MerchantConfigRepository $configRepository, ProviderConfig $provider)
+    public function updateRouteConfig(MerchantConfigRepository $configRepository, ProviderConfig $provider,bool $isDeleteOld=true)
     {
-        $configRepository->updateRouteConfig($provider);
+        $configRepository->updateRouteConfig($provider,$isDeleteOld);
+    }
+    public function updateRouteConfigs(MerchantConfigRepository $configRepository, array $aProvider,bool $isDeleteOld=true)
+    {
+        $configRepository->updateRouteConfigs($aProvider,$isDeleteOld);
     }
 
-    public function updatePSPConfig(MerchantConfigRepository $configRepository, $providerConfig)
+    public function updatePSPConfig(MerchantConfigRepository $configRepository, $providerConfig,bool $deleteOld=true)
     {
-        $configRepository->updatePSPConfig($providerConfig);
+        $configRepository->updatePSPConfig($providerConfig,$deleteOld);
     }
-
+    public function updatePSPConfigs(MerchantConfigRepository $configRepository, array $aProviderConfig,bool $deleteOld=true)
+    {
+        $configRepository->updatePSPConfigs($aProviderConfig,$deleteOld);
+    }
 }

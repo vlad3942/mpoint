@@ -83,7 +83,7 @@ class ReadOnlyConfigRepository
             }
             else if($addonServiceType->getID() !== AddonServiceTypeIndex::eMPI)
             {
-                array_push($aWhereCls,"currencyid = ".$this->_oTI->getCurrencyConfig()->getID()." AND countryid = ".$this->_oTI->getCountryConfig()->getID());
+                array_push($aWhereCls,"(currencyid = ".$this->_oTI->getCurrencyConfig()->getID()." OR currencyid=0) AND (countryid = ".$this->_oTI->getCountryConfig()->getID()." OR countryid=0) ");
             }
         }
 
@@ -156,7 +156,7 @@ class ReadOnlyConfigRepository
         if($this->_oTI->getClientConfig()->getClientServices()->isDcc() === true)
         {
             $sJoins = "LEFT JOIN CLIENT".sSCHEMA_POSTFIX.".DCC_config_tbl dcc ON c.id = dcc.pmid AND dcc.enabled = true
-				and dcc.clientid = ".$this->_oTI->getClientConfig()->getID()." AND dcc.countryid = ".$this->_oTI->getCountryConfig()->getID()." AND dcc.currencyid=".$this->_oTI->getCurrencyConfig()->getID();
+				and dcc.clientid = ".$this->_oTI->getClientConfig()->getID()." AND (dcc.countryid = ".$this->_oTI->getCountryConfig()->getID()." OR dcc.countryid = 0) AND (dcc.currencyid=".$this->_oTI->getCurrencyConfig()->getID()." OR dcc.currencyid=0)";
             $sColumns = "coalesce(dcc.enabled,false)  as dccenabled";
         }
         else
@@ -228,7 +228,7 @@ class ReadOnlyConfigRepository
             }
 
             $aPSPProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("PSP","CLIENT",$pspid,array(),false);
-            $aRouteProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("ROUTE","CLIENT",$pspid,array(),false);
+            $aRouteProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("ROUTE","CLIENT",$routeconfigid,array(),false);
             $aProperty = array_merge($aPSPProperty,$aRouteProperty);
 
             $aAdditionalProperties = array();
@@ -263,6 +263,75 @@ class ReadOnlyConfigRepository
         else
         {
             trigger_error("PSP Configuration not found using Client ID: ". $this->_oTI->getClientConfig()->getID() .", Account: ". $this->_oTI->getClientConfig()->getAccountConfig()->getID() .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
+            return null;
+        }
+    }
+
+
+    /**
+     * @param int $pspid
+     * @param int $routeconfigid
+     * @return PSPConfig|null
+     */
+    public function getProviderConfig(int $pspid,BaseConfig $addonConfig=null): ?PSPConfig
+    {
+        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
+					MA.name AS ma, MA.username, MA.passwd AS password, '' AS msa, MA.id as MerchantId
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
+				WHERE CL.id = ". $this->getTxnInfo()->getClientConfig()->getID() ." AND PSP.id = ". $pspid ." AND PSP.enabled = '1' AND Acc.id = ". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID() ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+        if (is_array($RS) === true && count($RS) > 1)
+        {
+            $sql = "SELECT I.language, I.text
+					FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
+					INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
+					WHERE I.clientid = ". $this->getTxnInfo()->getClientConfig()->getID() ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". $pspid ." OR I.pspid IS NULL)";
+//			echo $sql ."\n";
+            $aRS = $this->getDBConn()->getAllNames($sql);
+            $aMessages = array();
+            if (is_array($aRS) === true)
+            {
+                for ($i=0; $i<count($aRS); $i++)
+                {
+                    $aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"];
+                }
+            }
+
+            $aPSPProperty  =  $this->getMerchantConfigRepo()->getPropertyConfig("PSP","CLIENT",$pspid,array(),false);
+            $aProperty = $aPSPProperty;
+            $i=0;
+            $aAdditionalProperties = array();
+            if (is_array($aProperty) === true && count($aProperty) > 0)
+            {
+                $iConstOfRows = count($aProperty);
+                for (; $i<$iConstOfRows; $i++)
+                {
+                    $aAdditionalProperties[$i]["key"] =$aProperty[$i]->getName();
+                    $aAdditionalProperties[$i]["value"] = $aProperty[$i]->getValue();
+                    $aAdditionalProperties[$i]["scope"] = $aProperty[$i]->getScope();
+                }
+            }
+            if($addonConfig !== null)
+            {
+                foreach ($addonConfig->getProperties() as $key => $value)
+                {
+                    $aAdditionalProperties[$i]["key"] =$key;
+                    $aAdditionalProperties[$i]["value"] = $value;
+                    $aAdditionalProperties[$i]["scope"] = Constants::iPrivateProperty;
+                }
+
+            }
+
+            return new PSPConfig($RS["ID"], $RS["NAME"], (int) $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages, $aAdditionalProperties);
+        }
+        else
+        {
+            trigger_error("PSP Configuration not found using Client ID: ". $this->getTxnInfo()->getClientConfig()->getID() .", Account: ". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID() .", PSP ID: ". $pspid, E_USER_WARNING);
             return null;
         }
     }

@@ -29,15 +29,21 @@ class Split_PaymentConfig extends BaseConfig
     private array $_aProperty;
 
     /**
+     * @var array
+     */
+    private string $_sName;
+
+    /**
      * @param array $config
      * @param array $property
      * @param string $subType
      */
-    public function __construct(array $config,array $property,string $subType='Split_payment')
+    public function __construct(array $config,array $property,string $subType='Split_payment',string $name='')
     {
         $this->_aConfig = $config;
         $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,$subType);
         $this->_aProperty = $property;
+        $this->_sName = $name;
     }
 
     /**
@@ -62,6 +68,14 @@ class Split_PaymentConfig extends BaseConfig
     public function getProperties()
     {
         return $this->_aProperty;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() :string
+    {
+        return $this->_sName;
     }
 
     /**

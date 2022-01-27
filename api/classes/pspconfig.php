@@ -1,5 +1,6 @@
 <?php
 
+use api\classes\merchantservices\configuration\BaseConfig;
 use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 
 /**
@@ -191,11 +192,11 @@ class PSPConfig extends BasicConfig
     public function isRouteFeatureEnabled(int $featureId) :bool
     {
 
-        if(empty($this->_aRouteFeature) === false && count($this->_aRouteFeature) > 0)
+        if(empty($this->_aRouteFeature) === false)
         {
             foreach ($this->_aRouteFeature as $feature)
             {
-                if((int)$feature['ID'] === $featureId) return true;
+                if((int)$feature['ID'] === $featureId && $feature['ENABLED'] === true  ) return true;
             }
         }
         return false;
@@ -407,6 +408,20 @@ class PSPConfig extends BasicConfig
 		}
 	}
 
+    /**
+     * Produces a new instance of a Payment Service Provider Configuration Object For Non Legacy Flow.
+     *
+     * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $clid 	Unique ID for the Client performing the request
+     * @param 	integer $accid 	Unique ID for the Account-id performing the request
+     * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @return 	PSPConfig
+     */
+    public static function produceProviderConfig(RDB $oDB, int $pspid,TxnInfo &$oTI,BaseConfig $config=null): ?PSPConfig
+    {
+        $repository = new ReadOnlyConfigRepository($oDB,$oTI);
+        return $repository->getProviderConfig($pspid,$config);
+    }
     /*
 	 * Get Additional properties
 	 * If key is send as parameter then value of that key will return

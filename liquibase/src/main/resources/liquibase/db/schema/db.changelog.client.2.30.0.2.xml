@@ -668,11 +668,6 @@
                     remarks="Holds System PSP ID">
                 <constraints nullable="false" foreignKeyName="fk_mpiconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
             </column>
-            <!-- Column -->
-            <column name="version"
-                    type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
             <!-- Common Columns -->
             <column name="enabled"
                     type="boolean"
@@ -1028,5 +1023,80 @@
             <sql>DROP TRIGGER client_split_property_tbl IF EXISTS ON client.split_property_tbl CASCADE TRUE;</sql>
             <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="split_property_tbl"/>
         </rollback>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-10-setup-v2.30.0-client-merchant-onboard-18">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="mpi_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="mpi_property_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_mpiproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="version"
+                    type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint  catalogName="client"
+                              columnNames="clientid"
+                              constraintName="idx_uq_mpiprop_clientid"
+                              schemaName="client"
+                              tableName="mpi_property_tbl"/>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.mpi_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_mpi_property_tbl BEFORE INSERT OR UPDATE ON client.mpi_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_mpi_property_tbl IF EXISTS ON client.mpi_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="mpi_property_tbl"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-10-setup-v2.30.0-client-merchant-onboard-19">
+        <addColumn catalogName="client"
+                   schemaName= "client"
+                   tableName="split_configuration_tbl" >
+            <column name="type"
+                    type="varchar(20)"
+                    remarks="type of the splitpayment"
+                    defaultValue="20" />
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

@@ -22,7 +22,7 @@
     <xs:sequence>
       <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
       <xs:element name="provider_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-      <xs:element name="version" type="xs:decimal" minOccurs="1" maxOccurs="1" />
+      <xs:element name="version" type="xs:decimal" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
   </xs:group>
 

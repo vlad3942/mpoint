@@ -120,6 +120,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else
 		{
+            //Update Refund amount in txn table
+            if((int)$iAmount === -1)
+            {
+                //get auth amount
+                $iAmount = $this->getTxnInfo()->getAmount();
+            }
 		    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 			$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<root>';
@@ -174,15 +180,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						else if ($iStatusCode == Constants::i3D_SECURE_ACTIVATED_STATE)
 						{
 							$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-							$txnPassbookObj->updateInProgressOperations($iAmount, Constants::iPAYMENT_REFUNDED_STATE, Constants::sPassbookStatusError);
 						}
-						//Update Refund amount in txn table
-						if((int)$iAmount === -1)
-						{
-							//get auth amount
-							$iAmount = $this->getTxnInfo()->getAmount();
-						}
-						$this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
+                        $this->getTxnInfo()->updateRefundedAmount($this->getDBConn(), $iAmount);
 						return $iStatusCode;
 					}
 					else
@@ -458,7 +457,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL, $authToken = NULL, $cardName='', $aWalletCardSchemes = array())
 	{
 	    // save ext id in database
         if($card_type_id !== -1)
@@ -475,7 +474,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty) );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML($this->getDBConn(), Constants::iPrivateProperty, $aWalletCardSchemes) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -494,16 +493,23 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
-		{ 
+		{
+             $cardNameXml = '';
+             if (!empty($cardName)) {
+                 $cardNameXml = '<name>' . $cardName . '</name>';
+             }
 			 if($card_token == '')
 			 {
-			 	$b .= '<card type-id="'.$card_type_id.'"></card>';
+			 	$b .= '<card type-id="'.$card_type_id.'">' .
+                            $cardNameXml .
+                      '</card>';
 			 }
 			 else
 			 {
-			 	$b .= '<card type-id="'.$card_type_id.'">
-			 			  <token>'.$card_token.'</token>
-			 		   </card>';
+			 	$b .= '<card type-id="'.$card_type_id.'">' .
+                          $cardNameXml .
+                          '<token>'.$card_token.'</token>
+			 		 </card>';
 			 }
 		}
 		if(is_null($obj_BillingAddress) == false)
@@ -551,9 +557,26 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
                 $obj_XML->name = 'card_holderName';
                 $obj_XML->{"auth-token"} = 'Auth-Token' ;
+
+                $statusNode = $obj_XML->status;
+                if (!empty($statusNode)) {
+                    $attributes = $statusNode->attributes();
+                    $statusCode = (int) $attributes['code'];
+                    $statusSubCode = (int) $attributes['sub-code'];
+                    $message = $statusNode;
+                    $errorCodes = [Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_UNKNOWN_ERROR_STATE];
+                    if (in_array($statusCode, $errorCodes)) {
+                        throw new PaymentProcessorInitializeException($message, $statusCode, null, $statusSubCode);
+                    }
+                }
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
+        catch (PaymentProcessorInitializeException $pe)
+        {
+            trigger_error("PSP  initialization failed with code: ". $pe->getCode() . " and message: ". $pe->getMessage(), E_USER_ERROR);
+            throw $pe;
+        }
 		catch (mPointException $e)
 		{
 			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
@@ -1155,7 +1178,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-		
+		if (!empty($obj_Card->card_name)) {
+            $b .= '<name>'.$obj_Card->card_name.'</name>';
+        }
 		if($obj_Card->{'card-holder-name'}) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 				
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
@@ -1214,10 +1239,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)
 	{
-		[$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
+        [$expiry_month, $expiry_year] = explode("/", $obj_Card->expiry);
 		
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-		$b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
+        if (!empty($obj_Card->card_name)) {
+            $b .= '<name>'.$obj_Card->card_name.'</name>';
+        }
+        $b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
 		$b .= '<token>'. $obj_Card->ticket .'</token>';

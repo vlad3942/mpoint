@@ -39,7 +39,17 @@ class ConfigurationService
 
     public function getAddonConfig( $additionalParams = []) : string
     {
-        $aAddonConf = $this->getAggregateRoot()->getAllAddonConfig($this->getRepository());
+        $addonServiceType = null;
+        if(isset($additionalParams['type']) === true)
+        {
+            $serviceTypeid = AddonServiceTypeIndex::valueOf($additionalParams['type']);
+            if($serviceTypeid !== 0)
+            {
+                $addonServiceType = AddonServiceType::produceAddonServiceTypebyId($serviceTypeid,$additionalParams['type']);
+            }
+
+        }
+        $aAddonConf = $this->getAggregateRoot()->getAllAddonConfig($this->getRepository(),$addonServiceType);
         $responseXml = "<addon_configuration_response>";
         $sFraudXML ='';
         $sSplitPaymentXML ='';
@@ -95,6 +105,11 @@ class ConfigurationService
     public function deleteAddonConfig($additionalParams = [])
     {
         $this->getAggregateRoot()->deleteAddonConfig($this->getRepository(),$additionalParams);
+    }
+
+    public function deleteProviderConfig($additionalParams = [])
+    {
+        $this->getAggregateRoot()->deleteProviderConfig($this->getRepository(), $additionalParams);
     }
 
     /**
@@ -351,19 +366,28 @@ class ConfigurationService
          $this->getAggregateRoot()->saveProvider($this->getRepository(),$aProviderConfig);
     }
 
-    public function getRouteConfiguration(int $id,bool $bAllConfig):ProviderConfig
+    public function getRouteConfiguration(int $id,bool $bAllConfig):?ProviderConfig
     {
         return $this->getAggregateRoot()->getRouteConfiguration($this->getRepository(),$id,$bAllConfig);
     }
 
-    public function updateRouteConfig(ProviderConfig &$providerConfig)
+    public function updateRouteConfig(ProviderConfig &$providerConfig,bool $isDeleteOld=true)
     {
-         $this->getAggregateRoot()->updateRouteConfig($this->getRepository(),$providerConfig);
+         $this->getAggregateRoot()->updateRouteConfig($this->getRepository(),$providerConfig,$isDeleteOld);
+    }
+    public function updateRouteConfigs(array $aProviderConfig,bool $isDeleteOld=true)
+    {
+        $this->getAggregateRoot()->updateRouteConfigs($this->getRepository(),$aProviderConfig,$isDeleteOld);
     }
 
-    public function updatePSPConfig($providerConfig)
+    public function updatePSPConfig($providerConfig,bool $deleteOld=true)
     {
-        $this->getAggregateRoot()->updatePSPConfig($this->getRepository(),$providerConfig);
+        $this->getAggregateRoot()->updatePSPConfig($this->getRepository(),$providerConfig,$deleteOld);
 
+    }
+
+    public function updatePSPConfigs(array $aProviderConfig,bool $deleteOld=true)
+    {
+        $this->getAggregateRoot()->updatePSPConfigs($this->getRepository(),$aProviderConfig,$deleteOld);
     }
 }

@@ -78,20 +78,29 @@ class MerchantConfigRepository
      * @param bool $isPropertyOnly
      * @return mixed
      */
-    public function getAddonConfig(AddonServiceType $addonServiceType,array $aWhereCls = array(),bool $isPropertyOnly = false)
+    public function getAddonConfig(AddonServiceType $addonServiceType,array $aWhereCls = array(),bool $isPropertyOnly = false,int $id = 0)
     {
         $SQL ="";
+        $name ="";
         $aServiceConfig = array();
         if($isPropertyOnly === false)
         {
             if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
             {
-                $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and name='".$addonServiceType->getSubType()."'";
-                $aRS = $this->getDBConn()->getName ( $SQL );
-                if (empty($aRS) === false)
-                {
-                    $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and split_config_id=".$aRS['ID'];
-                }
+               $SQL ="SELECT id,name FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and type='".$addonServiceType->getSubType()."'";
+               if($id !== 0)
+               {
+                   $SQL .= " and id=".$id;
+               }
+               $aRS = $this->getDBConn()->getName ( $SQL );
+               if (empty($aRS) === false)
+               {
+                   $id = $aRS['ID'];
+                   $name = $aRS['NAME'];
+               }
+
+               $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and split_config_id=".$id;
+
             }
             else
                 $SQL = "SELECT %s FROM CLIENT". sSCHEMA_POSTFIX .".%s WHERE enabled = true and clientid=".$this->_clientConfig->getID();
@@ -113,7 +122,7 @@ class MerchantConfigRepository
                 $sColumns = 'id,payment_type, sequence_no,enabled ';
             }
             elseif($addonServiceType->getID() ===AddonServiceTypeIndex::ePCC) $sColumns = 'id,pmid,sale_currency_id,is_presentment,settlement_currency_id,created,modified,enabled ';
-            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,version,created,modified,enabled ';
+            elseif($addonServiceType->getID() ===AddonServiceTypeIndex::eMPI) $sColumns = 'id, clientid, pmid, providerid,created,modified,enabled ';
             $sSQL = sprintf($SQL,$sColumns,$sTableName) ;
             if(empty($aWhereCls) === false)
             {
@@ -131,7 +140,7 @@ class MerchantConfigRepository
 
         $className =   'api\\classes\\merchantservices\\configuration\\'.$addonServiceType->getClassName();
         $aProperty = array();
-        if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud || $addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+        if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI  || $addonServiceType->getID() === AddonServiceTypeIndex::eFraud || $addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
             $sColumns = "is_rollback";
             $sTableName = ".fraud_property_tbl";
@@ -140,32 +149,68 @@ class MerchantConfigRepository
                 $sTableName = ".split_property_tbl";
                 $sColumns .= ",is_reoffer";
             }
+            else if($addonServiceType->getID() === AddonServiceTypeIndex::eMPI)
+            {
+                $sTableName = ".mpi_property_tbl";
+                $sColumns = "version";
+            }
             $SQL = 'SELECT '.$sColumns.' FROM client'. sSCHEMA_POSTFIX.$sTableName.' where enabled=true and clientid='.$this->_clientConfig->getID();
             $aRS = $this->getDBConn()->getName ( sprintf($SQL,$sColumns,$sTableName) );
             if(empty($aRS) === false) $aProperty = array_change_key_case($aRS,CASE_LOWER);
         }
-        return new $className($aServiceConfig,$aProperty,$addonServiceType->getSubType());
+        return new $className($aServiceConfig,$aProperty,$addonServiceType->getSubType(),$name);
 
+    }
+
+    private function getSplitConfigID(AddonServiceType $addonServiceType = null)
+    {
+        $SQL ="SELECT id,name,type FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID();
+        if($addonServiceType !== null)
+        {
+            $SQL .= " AND type='".$addonServiceType->getSubType()."'";
+        }
+        $aRS = $this->getDBConn()->getAllNames ( $SQL );
+        return $aRS;
     }
 
     /**
      * @return array
      */
-    public function getAllAddonConfig() : array
+    public function getAllAddonConfig(AddonServiceType $addonServiceType = null) : array
     {
        $aAddonConfig = array();
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eDCC,'')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP,'')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC,'')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'pre_auth')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'post_auth')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI,'')));
+       if($addonServiceType !== null && $addonServiceType->getID() !== AddonServiceTypeIndex::eSPLIT_PAYMENT)
+       {
+           array_push($aAddonConfig,$this->getAddonConfig($addonServiceType));
+       }
+       else if($addonServiceType === null)
+       {
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eDCC,'')));
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMCP,'')));
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC,'')));
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'pre_auth')));
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'post_auth')));
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI,'')));
 
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'hybrid')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'cashless')));
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT,'conventional')));
+           array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eTOKENIZATION,'Tokenization')));
 
-       array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eTOKENIZATION,'Tokenization')));
+       }
+
+       $aSplitConfig = $this->getSplitConfigID($addonServiceType);
+       if(is_array($aSplitConfig) && empty($aSplitConfig) === false)
+       {
+           foreach ($aSplitConfig as $SplitConfig)
+           {
+               $serviceTypeid = AddonServiceTypeIndex::valueOf($SplitConfig['TYPE']);
+               if($serviceTypeid !== 0 )
+               {
+                   array_push($aAddonConfig,$this->getAddonConfig(AddonServiceType::produceAddonServiceTypebyId($serviceTypeid,$SplitConfig['TYPE']),array(),false,$SplitConfig['ID']));
+
+               }
+           }
+       }
+
+
 
        return  $aAddonConfig;
     }
@@ -175,20 +220,46 @@ class MerchantConfigRepository
      */
     public function saveAddonConfig(array &$aAddonConfig, $isDeleteOldConfig = false)
     {
+        $aSplitPaymentDeleted = array();
         foreach ($aAddonConfig as $addonConfig)
         {
-            if($isDeleteOldConfig === true)  $this->deleteAllAddonConfig($addonConfig->getServiceType());
+            if($isDeleteOldConfig === true)
+            {
+
+               if(in_array($addonConfig->getServiceType()->getSubType(),$aSplitPaymentDeleted) === false)
+               {
+                   $this->deleteAllAddonConfig($addonConfig->getServiceType());
+               }
+               if($addonConfig->getServiceType()->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+               {
+                   array_push($aSplitPaymentDeleted,$addonConfig->getServiceType()->getSubType()) ;
+               }
+            }
 
             if(empty($addonConfig->getProperties()) === false)
             {
                 $SQL ="INSERT INTO client". sSCHEMA_POSTFIX ;
                 $sPropTableName = '';
-                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
-                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
+                {
+                    $sPropTableName = '.fraud_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT)
+                {
+                    $sPropTableName = '.split_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eMPI)
+                {
+                    $sPropTableName = '.mpi_property_tbl';
+                }
                 foreach ($addonConfig->getProperties() as $key => $value)
                 {
-                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values (".\General::bool2xml($value).",".$this->_clientConfig->getID().")";
-                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." =".\General::bool2xml($value);
+                    if(gettype($value) === 'boolean')
+                    {
+                        $value = \General::bool2xml($value);
+                    }
+                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values ('".$value."',".$this->_clientConfig->getID().")";
+                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." ='".$value."'";
                     $result = $this->getDBConn()->executeQuery($SQL);
                     if ($result === FALSE)
                     {
@@ -203,7 +274,7 @@ class MerchantConfigRepository
 
                 if($addonConfig->getServiceType()->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
                 {
-                    $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and name='".$addonConfig->getServiceType()->getSubType()."'";
+                    $SQL ="SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->_clientConfig->getID()." and type='".$addonConfig->getServiceType()->getSubType()."' and name='".$addonConfig->getName()."'";
                     $aRS = $this->getDBConn()->getName ( $SQL );
                     if (empty($aRS) === false)
                     {
@@ -211,13 +282,13 @@ class MerchantConfigRepository
                     }
                     else
                     {
-                        $SQL ="INSERT INTO CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl (client_id, name, is_one_step_auth) values ($1,$2,$3) RETURNING id";
+                        $SQL ="INSERT INTO CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl (client_id, name, is_one_step_auth,type) values ($1,$2,$3,$4) RETURNING id";
                         $isOneStepAuth = 'false';
                         if($addonConfig->getServiceType()->getSubType() === 'hybrid')
                         {
                             $isOneStepAuth = 'true';
                         }
-                        $aParam = array($this->_clientConfig->getID(),$addonConfig->getServiceType()->getSubType(),$isOneStepAuth);
+                        $aParam = array($this->_clientConfig->getID(),$addonConfig->getName(),$isOneStepAuth,$addonConfig->getServiceType()->getSubType());
                         $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
                         if($rs === false) return array();
                         else $id = $this->getDBConn()->fetchName($rs)['ID'];
@@ -255,7 +326,7 @@ class MerchantConfigRepository
 
         if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
         {
-            $sWhereClause = " WHERE split_config_id in (SELECT id from CLIENT".sSCHEMA_POSTFIX.".split_configuration_tbl WHERE  client_id = " .$this->_clientConfig->getID() . " AND name = '" . $addonServiceType->getSubType() . "')";
+            $sWhereClause = " WHERE split_config_id in (SELECT id from CLIENT".sSCHEMA_POSTFIX.".split_configuration_tbl WHERE  client_id = " .$this->_clientConfig->getID() . " AND type = '" . $addonServiceType->getSubType() . "')";
         } else if($addonServiceType->getID() === AddonServiceTypeIndex::eFraud) {
             if($addonServiceType->getSubType() === 'pre_auth') {
                 $sWhereClause .= " AND typeofFraud = 1 ";
@@ -271,6 +342,20 @@ class MerchantConfigRepository
         {
             $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
             throw new MerchantOnboardingException($statusCode,"Failed to Delete ".$addonServiceType->getType()." Config ");
+        }
+        else
+        {
+            if($addonServiceType->getID() === AddonServiceTypeIndex::eSPLIT_PAYMENT)
+            {
+                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".split_configuration_tbl WHERE  client_id = " .$this->_clientConfig->getID() . " AND type = '" . $addonServiceType->getSubType() . "'";
+                $rs = $this->getDBConn()->executeQuery($SQL);
+
+                if($rs === false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    throw new MerchantOnboardingException($statusCode,"Failed to Delete ".$addonServiceType->getType()." Config ");
+                }
+            }
         }
 
     }
@@ -288,7 +373,7 @@ class MerchantConfigRepository
 
             if ($Ids === "-1" && $addonServiceType->getSubType() === 'cashless' || $addonServiceType->getSubType() === 'conventional' || $addonServiceType->getSubType() === 'hybrid')
             {
-                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE split_config_id in (SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->getClientInfo()->getID()."  AND name = '" . $addonServiceType->getSubType() . "')";
+                $SQL = "DELETE FROM CLIENT".sSCHEMA_POSTFIX.".". $addonServiceType->getTableName() ." WHERE split_config_id in (SELECT id FROM CLIENT". sSCHEMA_POSTFIX .".split_configuration_tbl WHERE client_id=".$this->getClientInfo()->getID()."  AND type = '" . $addonServiceType->getSubType() . "')";
 
             }
             else if ($Ids === "-1" && $addonServiceType->getSubType() === 'post_auth' || $addonServiceType->getSubType() === 'pre_auth')
@@ -330,14 +415,31 @@ class MerchantConfigRepository
             {
                 $SQL ="INSERT INTO client". sSCHEMA_POSTFIX ;
                 $sPropTableName = '';
-                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud) $sPropTableName = '.fraud_property_tbl';
-                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT) $sPropTableName = '.split_property_tbl';
-                $SQL .=$sPropTableName." (is_rollback,clientid) values (".\General::bool2xml($addonConfig->getProperties()["is_rollback"]).",".$this->_clientConfig->getID().")";
-                $SQL .=" ON CONFLICT (clientid) do update set is_rollback =".\General::bool2xml($addonConfig->getProperties()["is_rollback"]);
-                $result = $this->getDBConn()->executeQuery($SQL);
-                if ($result === FALSE)
+                if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eFraud)
                 {
-                    throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' is_rollback property');
+                    $sPropTableName = '.fraud_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eSPLIT_PAYMENT)
+                {
+                    $sPropTableName = '.split_property_tbl';
+                }
+                else if ($addonConfig->getServiceType()->getID()=== AddonServiceTypeIndex::eMPI)
+                {
+                    $sPropTableName = '.mpi_property_tbl';
+                }
+                foreach ($addonConfig->getProperties() as $key => $value)
+                {
+                    if(gettype($value) === 'boolean')
+                    {
+                        $value = \General::bool2xml($value);
+                    }
+                    $SQL ="INSERT INTO client". sSCHEMA_POSTFIX .$sPropTableName." (".$key.",clientid) values ('".$value."',".$this->_clientConfig->getID().")";
+                    $SQL .=" ON CONFLICT (clientid) do update set ".$key." ='".$value."'";
+                    $result = $this->getDBConn()->executeQuery($SQL);
+                    if ($result === FALSE)
+                    {
+                        throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,'Failed to Update '.$addonConfig->getServiceType()->getName().' property');
+                    }
                 }
             }
             if(empty($addonConfig->getConfiguration()) === false)
@@ -368,9 +470,9 @@ class MerchantConfigRepository
      * @param int $id
      * @throws MerchantOnboardingException
      */
-    public function deleteAllRouteConfig(string $type,  int $id)
+    public function deleteAllRouteConfig(string $type,  string $id)
     {
-        $sWhereCls = " AND routeconfigid = " . $id;
+       /* $sWhereCls = " AND routeconfigid = " . $id;
 
         $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routepm_tbl WHERE true ".$sWhereCls;
         $rs = $this->getDBConn()->executeQuery($SQL);
@@ -405,9 +507,25 @@ class MerchantConfigRepository
         if($rs === false)
         {
             throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currencies for IDs {".$id."}");
-        }
+        }*/
 
-        $SQL = "DELETE FROM client". sSCHEMA_POSTFIX.".routeconfig_tbl WHERE id = ".$id;
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id in( ".$id.")";
+        $rs = $this->getDBConn()->executeQuery($SQL);
+        if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
+        {
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$id."}");
+        }
+    }
+
+    public function deleteAllPSPConfig( string $id)
+    {
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE id in( ".$id.") AND clientid=".$this->_clientConfig->getID();
+
+        if($id == -1)
+        {
+            $SQL = "UPDATE client". sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE clientid=".$this->_clientConfig->getID();
+
+        }
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
@@ -832,25 +950,39 @@ class MerchantConfigRepository
      * @throws MerchantOnboardingException
      * @throws \SQLQueryException
      */
-    public function deleteConfigDetails(int $routeConfigId, $entity)
+    public function deleteConfigDetails(int $id, $entity)
     {
-        $SQL = "";
+        $sTableName = '';
+        $sWhereCls = " true";
+
         switch(strtolower($entity))
         {
             case 'feature':
-                $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX.".routefeature_tbl WHERE routeconfigid=".$routeConfigId;
+                $sTableName = "routefeature_tbl";
+                $sWhereCls = " routeconfigid = ".$id;
                 break;
             case 'country':
-                $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX.".routecountry_tbl WHERE routeconfigid=".$routeConfigId;
+                $sTableName = "routecountry_tbl";
+                $sWhereCls = " routeconfigid = ".$id;
                 break;
 
             case 'currency':
-                $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX.".routecurrency_tbl WHERE routeconfigid=".$routeConfigId;
+                $sTableName = "routecurrency_tbl";
+                $sWhereCls = " routeconfigid = ".$id;
+                break;
+
+            case 'provider':
+                $sTableName = "merchantaccount_tbl";
+                $sWhereCls = " clientid = ". $this->getClientInfo()->getID()
+                            . " AND pspid IN (SELECT id FROM SYSTEM" . sSCHEMA_POSTFIX .".psp_tbl WHERE system_type = ". $id ." )";
                 break;
 
             default:
                 // Throw Exception
         }
+
+        $SQL = "DELETE FROM CLIENT". sSCHEMA_POSTFIX."." .$sTableName. " WHERE " . $sWhereCls;
+
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false)
         {
@@ -905,7 +1037,7 @@ class MerchantConfigRepository
     {
         $iClientId = $this->getClientInfo()->getID();
         $sSQL = "SELECT rc.id FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN  CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl rc
-        On rc.routeid=r.id AND rc.enabled=true  WHERE r.enabled=true AND providerid = $iProviderId AND  clientid = $iClientId";
+        On rc.routeid=r.id AND rc.enabled=true  WHERE r.enabled=true and rc.isdeleted=false AND providerid = $iProviderId AND  clientid = $iClientId";
         $aRS = $this->getDBConn()->getAllNames($sSQL);
         $aRouteConfigId = array();
         if(is_array($aRS) && count($aRS)>0)
@@ -1154,7 +1286,7 @@ class MerchantConfigRepository
     public function getRoutes(int $pspType=-1,int $pspid=-1):array
     {
         $sSQL = "SELECT providerid as pspid FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN
-                SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on r.providerid = p.id   Where clientid  = ".$this->_clientConfig->getID();
+                SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on r.providerid = p.id   Where clientid  = ".$this->_clientConfig->getID()." AND r.enabled=true AND p.enabled=true";
         if($pspType>0)  { $sSQL .= " AND p.system_type = $pspType"; }
         if($pspid>0) { $sSQL .= " AND p.id = $pspid"; }
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
@@ -1199,8 +1331,7 @@ class MerchantConfigRepository
     public function getRouteConfiguration(int $id,bool $bAllConfig) : ?ProviderConfig
     {
 
-        $sSQL = "SELECT id,name, capturetype, mid, username, password FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl WHERE id = ". $id;
-        $aPSPDetails = [];
+        $sSQL = "SELECT id,name, capturetype, mid, username, password FROM CLIENT". sSCHEMA_POSTFIX .".routeconfig_tbl WHERE isdeleted=false and id = ". $id;
         $rs = $this->getDBConn()->getName( $sSQL );
         if (empty($rs) === false)
         {
@@ -1241,7 +1372,7 @@ class MerchantConfigRepository
         else if($type === 'PSP')
         {
             $sTableName = 'psp_property_tbl';
-            $sWhereArgs = " AND cp.enabled=true AND sp.enabled AND clientid =".$this->_clientConfig->getID();
+            $sWhereArgs = " AND cp.enabled=true AND SP.pspid=".$id." AND sp.enabled AND clientid =".$this->_clientConfig->getID();
         }
         else if($type === 'ROUTE')
         {
@@ -1445,7 +1576,7 @@ class MerchantConfigRepository
         $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
         $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
         $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
-        $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10,17) THEN 'HPP' WHEN id in (7,8,9,11) THEN 'MERCHANT' WHEN id in (15) THEN 'SDK' ELSE '' END) as url_category";
+        $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10,17) THEN 'HPP' WHEN id in (7,8,9,11,15) THEN 'MERCHANT' ELSE '' END) as url_category";
         $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true,array($urlCategory),array("id"=>"type_id"));
         $aSystemMetaData['payment_processors'] = $this->getMetaDataInfo('payment_processor', 'processortype_tbl');
 
@@ -1670,6 +1801,7 @@ class MerchantConfigRepository
 
     public function saveProviders(array $aProvider)
     {
+        $aProviderIds = array();
         foreach ($aProvider as $provider)
         {
             $aUpdateColumns =array();
@@ -1717,15 +1849,69 @@ class MerchantConfigRepository
                 }
 
             }
+            array_push($aProviderIds,$provider->getId());
+        }
+        $sProviderids = implode(" , ",$aProviderIds);
+
+        $sql = "SELECT DISTINCT system_type FROM system".sSCHEMA_POSTFIX.".psp_tbl where id in (".$sProviderids.")  ";
+        $aRS = $this->getDBConn()->getAllNames($sql);
+        if(is_array($aRS) && count($aRS) === 1)
+        {
+            $systemType = $aRS[0]["SYSTEM_TYPE"];
+            $SQL ="DELETE FROM client".sSCHEMA_POSTFIX.".merchantaccount_tbl WHERE clientid = ".$this->getClientInfo()->getID()." and pspid not in (".$sProviderids.") and pspid in (SELECT id from system".sSCHEMA_POSTFIX.".psp_tbl where system_type=".$systemType.")";
+            $rs = $this->getDBConn()->executeQuery($SQL);
         }
 
+
+    }
+    public function updateRouteConfigs(array $aProvider,bool $isDeleteOld=true)
+    {
+        $aRouteConfigIds = array();
+
+        foreach ($aProvider as $provider)
+        {
+            $routeId = (int)$this->updateRouteConfig($provider,$isDeleteOld);
+            array_push($aRouteConfigIds,$routeId);
+        }
+
+        $onlyPropertyUpdate =false;
+        if(count($aProvider) === 1 && empty($aProvider[0]->getProperty()) === false)
+        {
+            $onlyPropertyUpdate=true;
+        }
+        if($isDeleteOld === true && $onlyPropertyUpdate === false)
+        {
+            $siDs = implode(" , ",$aRouteConfigIds);
+
+
+            $sql = "select DISTINCT routeid FROM client".sSCHEMA_POSTFIX.".routeconfig_tbl where id  in (".$siDs.")";
+            $aRS = $this->getDBConn()->getAllNames($sql);
+            if(is_array($aRS) && count($aRS) === 1)
+            {
+                $routeid = $aRS[0]["ROUTEID"];
+
+                $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id not in (".$siDs.") and routeid = ".$routeid;
+                $rs = $this->getDBConn()->executeQuery($SQL);
+
+            }
+            else
+            {
+                $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                throw new MerchantOnboardingException($statusCode,"Request Contains Multiple type of Gateway/PSP/Acquirer Configuration, Allowed only one type");
+            }
+
+
+
+
+        }
     }
 
-    public function updateRouteConfig(ProviderConfig $provider)
+    public function updateRouteConfig(ProviderConfig $provider,bool $isDeleteOld=true) : int
     {
        $aUpdateColumns =array();
        $aValues = array();
        $aColumns = array();
+       $routeId = 0;
        if(empty($provider->getName()) === false)
        {
            array_push($aUpdateColumns,"name='".$provider->getName()."'");
@@ -1740,7 +1926,7 @@ class MerchantConfigRepository
        }
        if(empty($provider->getPassword()) === false)
        {
-           array_push(          $aUpdateColumns,"password='".$provider->getPassword()."'");
+           array_push($aUpdateColumns,"password='".$provider->getPassword()."'");
            array_push($aValues,"'".$provider->getPassword()."'");
            array_push($aColumns,"password");
        }
@@ -1761,7 +1947,7 @@ class MerchantConfigRepository
        {
            if($provider->getId() === -1)
            {
-               $routeId = $this->getRouteIDByProvider($provider->getPspId(),true);
+               $routeId = $this->getRouteIDByProvider($provider->getProviderId(),true);
 
                array_push($aColumns,"routeid");
                array_push($aValues,$routeId);
@@ -1795,45 +1981,72 @@ class MerchantConfigRepository
            }
            if(empty($provider->getFeatureId()) === false)
            {
-               $this->deleteConfigDetails($provider->getId(),"FEATURE");
+               if($isDeleteOld === true) { $this->deleteConfigDetails($provider->getId(),"FEATURE");}
                $this->saveConfigDetails("", $provider->getFeatureId(), $provider->getId(), 'FEATURE');
            }
            if(empty($provider->getCountryIds()) === false)
            {
-               $this->deleteConfigDetails($provider->getId(),"COUNTRY");
-               $this->saveConfigDetails("", $provider->getFeatureId(), $provider->getId(), 'COUNTRY');
+               if($isDeleteOld === true) { $this->deleteConfigDetails($provider->getId(),"COUNTRY");}
+               $this->saveConfigDetails("", $provider->getCurrencyIds(), $provider->getId(), 'COUNTRY');
            }
            if(empty($provider->getCurrencyIds()) === false)
            {
-               $this->deleteConfigDetails($provider->getId(),"CURRENCY");
+               if($isDeleteOld === true) {  $this->deleteConfigDetails($provider->getId(),"CURRENCY");}
                $this->saveConfigDetails("", $provider->getCurrencyIds(), $provider->getId(), 'CURRENCY');
            }
            if(empty($provider->getProperty()) === false)
            {
-               $this->deleteAllProperty("ROUTE",$provider->getId());
+               if($isDeleteOld === true) {  $this->deleteAllProperty("ROUTE",$provider->getId());}
                $this->savePropertyConfig("ROUTE", $provider->getProperty(),$provider->getId());
            }
            if(empty($provider->getPm()) === false)
            {
-               $this->deleteAllPM("ROUTE",$provider->getId());
+               if($isDeleteOld === true) { $this->deleteAllPM("ROUTE",$provider->getId());}
                $this->savePM("ROUTE", $provider->getPm(),$provider->getId());
            }
        }
+       return $provider->getId();
     }
-
-    public function updatePSPConfig(ProviderConfig $provider)
+    public function updatePSPConfigs(array $aProvider,bool $deleteOld=true)
     {
-        $routeId = $this->getRouteIDByProvider($provider->getPspId());
+        $aRouteIds = array();
+
+        foreach ($aProvider as $provider)
+        {
+            $routeId = $this->updatePSPConfig($provider,$deleteOld);
+            array_push($aRouteIds,$routeId);
+        }
+        $onlyPropertyUpdate =false;
+        if(count($aProvider) === 1 && empty($aProvider[0]->getProperty()) === false)
+        {
+            $onlyPropertyUpdate=true;
+        }
+        if($deleteOld === true && $onlyPropertyUpdate===false)
+        {
+
+            $siDs = implode(" , ",$aRouteIds);
+            $SQL = "UPDATE client".sSCHEMA_POSTFIX.".route_tbl SET enabled=false WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID();
+            $rs = $this->getDBConn()->executeQuery($SQL);
+            $SQL = "UPDATE client".sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE routeid in ( SELECT id from client".sSCHEMA_POSTFIX.".route_tbl WHERE id not in (".$siDs.") and clientid=".$this->_clientConfig->getID().")";
+            $rs = $this->getDBConn()->executeQuery($SQL);
+
+        }
+
+    }
+    public function updatePSPConfig(ProviderConfig $provider,bool $deleteOld=true) : int
+    {
+        $routeId = $this->getRouteIDByProvider($provider->getId(),$deleteOld);
         if(empty($provider->getProperty()) === false)
         {
-            $this->deleteAllProperty("PSP",$provider->getPspId());
-            $this->savePropertyConfig("PSP", $provider->getProperty(),$provider->getPspId());
+            if($deleteOld === true){$this->deleteAllProperty("PSP",$provider->getId());}
+            $this->savePropertyConfig("PSP", $provider->getProperty(),$provider->getId());
         }
         if(empty($provider->getPm()) === false)
         {
-            $this->deleteAllPM("PSP",$routeId);
-            $this->savePM("PSP", $provider->getPm(),$provider->getPspId());
+            if($deleteOld === true){$this->deleteAllPM("PSP",$routeId);}
+            $this->savePM("PSP", $provider->getPm(),$provider->getId());
         }
+        return $routeId;
     }
 
     private function deleteAllPM($type,$id)
@@ -1873,7 +2086,7 @@ class MerchantConfigRepository
         }
         else if($type === 'PSP') {
             $sTableName = 'psp_property_tbl';
-            $sWhereCls = " clientid = ".$this->_clientConfig->getID();
+            $sWhereCls = " clientid = ".$this->_clientConfig->getID()." AND propertyid in (SELECT ID FROM SYSTEM". sSCHEMA_POSTFIX .".psp_property_tbl WHERE pspid=".$id.")";
         }
         else if($type === 'ROUTE')
         {

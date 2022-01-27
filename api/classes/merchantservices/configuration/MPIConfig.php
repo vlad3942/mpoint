@@ -3,6 +3,7 @@ namespace api\classes\merchantservices\configuration;
 
 
 use AddonServiceTypeIndex;
+use SimpleXMLElement;
 
 /**
  *
@@ -28,15 +29,21 @@ class MPIConfig extends BaseConfig
     private array $_aProperty;
 
     /**
+     * @var array
+     */
+    private string $_sName;
+
+    /**
      * @param array $config
      * @param array $property
      * @param string $subType
      */
-    public function __construct(array $config,array $property,string $subType='MPI')
+    public function __construct(array $config,array $property,string $subType='MPI',string $name = '')
     {
         $this->_aConfig = $config;
         $this->_iServiceType = AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI,$subType);
         $this->_aProperty = $property;
+        $this->_sName = $name;
     }
 
     /**
@@ -61,6 +68,25 @@ class MPIConfig extends BaseConfig
     public function getProperties()
     {
         return $this->_aProperty;
+    }
+    /**
+     * @return string
+     */
+    public function getName() :string
+    {
+        return $this->_sName;
+    }
+
+    /**
+     * @param SimpleXMLElement $oXML
+     */
+    protected function setPropertiesFromXML(SimpleXMLElement &$oXML)
+    {
+        $this->_aProperty = array();
+        if(count($oXML->version)>0)
+        {
+            $this->_aProperty["version"] = (string)$oXML->version;
+        }
     }
 }
 

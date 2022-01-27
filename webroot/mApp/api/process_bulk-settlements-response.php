@@ -34,10 +34,8 @@ require_once(sCLASS_PATH . "/netaxept.php");
 require_once(sCLASS_PATH . "/wannafind.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH . "/dsb.php");
-if (function_exists("json_encode") === true && function_exists("curl_init") === true) {
-    // Require specific Business logic for the Stripe component
-    require_once(sCLASS_PATH . "/stripe.php");
-}
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH . "/stripe.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH . "/mobilepay.php");
 // Require specific Business logic for the Adyen component
@@ -109,66 +107,111 @@ require_once(sCLASS_PATH ."/apm/swish.php");
  $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<bulk-capture client-id="10007">
-		<transactions>
-			<transaction token="165400018651748">
-				<orders>
-					<line-item>
-						<amount country-id="200" type="DB">20000</amount>
-						<product sku="12345678920   ">
-							<airline-data>
-								<flight-detail>
-									<departure-date />
-									<additional-data>
-										<param name="TDNR">35412345678920</param>
-										<param name="CCAC">165400018651748</param>
-										<param name="CINN">3543201811</param>
-										<param name="SQNR">00000016</param>
-										<param name="FPAM">00000000020000</param>
-										<param name="CUTP">USD2</param>
-										<param name="DBCR">DB</param>
-									</additional-data>
-								</flight-detail>
-								<passenger-detail>
-									<title />
-									<first-name>Mejra</first-name>
-									<last-name>Causevic</last-name>
-								</passenger-detail>
-							</airline-data>
-						</product>
-					</line-item>
-				</orders>
-			</transaction>
-			<transaction token="165400018653587">
-				<orders>
-					<line-item>
-						<amount country-id="200" type="DB">500000</amount>
-						<product sku="35420180509A  ">
-							<airline-data>
-								<flight-detail>
-									<departure-date />
-									<additional-data>
-										<param name="TDNR">35412345678900</param>
-										<param name="CCAC">165400018653587</param>
-										<param name="CINN">3543201811</param>
-										<param name="SQNR">00000017</param>
-										<param name="FPAM">00000000500000</param>
-										<param name="CUTP">USD2</param>
-										<param name="DBCR">DB</param>
-									</additional-data>
-								</flight-detail>
-								<passenger-detail>
-									<title />
-									<first-name>Jack</first-name>
-									<last-name>Frieh</last-name>
-								</passenger-detail>
-							</airline-data>
-						</product>
-					</line-item>
-				</orders>
-			</transaction>
-		</transactions>
-	</bulk-capture>
+    <bulk-capture client-id="10007">
+        <transactions>
+            <transaction token="165400018651748">
+                <orders>
+                    <line-item>
+                        <amount country-id="200" currency-id="840" type="DB">2500</amount>
+                        <product order-ref="1635095154165" sku="1635095154168">
+                            <airline-data>
+                                <trips>
+                                    <trip seq="1" tag="1">
+                                        <origin external-id="DAL">DAL</origin>
+                                        <destination external-id="PHX">PHX</destination>
+                                        <departure-time>2019-07-17 07:10:00</departure-time>
+                                        <booking-class>U</booking-class>
+                                        <transportation code="WN">
+                                            <carriers>
+                                                <carrier code="WN">
+                                                    <number>155</number>
+                                                </carrier>
+                                            </carriers>
+                                        </transportation>
+                                        <additional-data>
+                                            <param name="fare_basis">ULAVVNRO</param>
+                                            <param name="TicketNumber">1635095154165</param>
+                                        </additional-data>
+                                    </trip>
+                                    <trip seq="1" tag="1">
+                                        <origin external-id="PHX">PHX</origin>
+                                        <destination external-id="LAS">LAS</destination>
+                                        <departure-time>2019-07-17 08:40:00</departure-time>
+                                        <booking-class>U</booking-class>
+                                        <transportation code="WN">
+                                            <carriers>
+                                                <carrier code="WN">
+                                                    <number>380</number>
+                                                </carrier>
+                                            </carriers>
+                                        </transportation>
+                                        <additional-data>
+                                            <param name="fare_basis">ULAVVNRO</param>
+                                            <param name="TicketNumber">1635095154165</param>
+                                        </additional-data>
+                                    </trip>
+                                    <trip seq="1" tag="1">
+                                        <origin external-id="LAS">LAS</origin>
+                                        <destination external-id="PHX">PHX</destination>
+                                        <departure-time>2019-07-21 06:30:00</departure-time>
+                                        <booking-class>N</booking-class>
+                                        <transportation code="WN">
+                                            <carriers>
+                                                <carrier code="WN">
+                                                    <number>6568</number>
+                                                </carrier>
+                                            </carriers>
+                                        </transportation>
+                                        <additional-data>
+                                            <param name="fare_basis">NLAUPNRO</param>
+                                            <param name="TicketNumber">1635095154165</param>
+                                        </additional-data>
+                                    </trip>
+                                    <trip seq="1" tag="1">
+                                        <origin external-id="PHX">PHX</origin>
+                                        <destination external-id="DAL">DAL</destination>
+                                        <departure-time>2019-07-21 08:45:00</departure-time>
+                                        <booking-class>N</booking-class>
+                                        <transportation code="WN">
+                                            <carriers>
+                                                <carrier code="WN">
+                                                    <number>5067</number>
+                                                </carrier>
+                                            </carriers>
+                                        </transportation>
+                                        <additional-data>
+                                            <param name="fare_basis">NLAUPNRO</param>
+                                            <param name="TicketNumber">1635095154165</param>
+                                        </additional-data>
+                                    </trip>
+                                </trips>
+                                <profiles>
+                                    <profile>
+                                        <title>EARL JR</title>
+                                        <first-name>BOBBY</first-name>
+                                        <last-name>RACY</last-name>
+                                    </profile>
+                                </profiles>
+                            </airline-data>
+                        </product>
+                        <additional-data>
+                            <param name="TDNR">1635095154165</param>
+                            <param name="CCAC">165404050332324</param>
+                            <param name="CINN">5261781906</param>
+                            <param name="SQNR">00000844</param>
+                            <param name="FPAM">00000000043300</param>
+                            <param name="CUTP">USD2</param>
+                            <param name="DBCR">DB</param>
+                            <param name="PRDA">2021-10-24 18:05:00</param>
+                        </additional-data>
+                    </line-item>
+                </orders>
+                <additional-data>
+                    <param name="booking-ref">LCKW9L</param>
+                </additional-data>
+            </transaction>
+        </transactions>
+    </bulk-capture>
 </root>';
  */
 

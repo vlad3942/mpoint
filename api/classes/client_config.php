@@ -602,12 +602,12 @@ class ClientConfig extends BasicConfig
      *
      * @return    Array
      */
-    public function getPaymentMethods(RDB &$oDB = NULL)
+    public function getPaymentMethods(RDB &$oDB = NULL, $aWalletCardSchemes = array())
     {
         if ($this->_aObj_PaymentMethodConfigurations === NULL && $oDB !== NULL )
         {
             if($this->getClientServices()->isLegacyFlow() === false) {
-                $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::getConfigurations($oDB, $this->getID());
+                $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::getConfigurations($oDB, $aWalletCardSchemes);
             }else{
                 $this->_aObj_PaymentMethodConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $this->getID());
             }
@@ -1020,10 +1020,10 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getPaymentMethodsAsXML(RDB &$oDB)
+	private function _getPaymentMethodsAsXML(RDB &$oDB, $aWalletCardSchemes = array())
 	{
 		$xml = '<payment-methods store-card="'. $this->_iStoreCard .'" show-all-cards="'. General::bool2xml($this->_bShowAllCards) .'" max-stored-cards="'. $this->_iMaxCards .'">';
-		foreach ($this->getPaymentMethods($oDB) as $obj_PM)
+		foreach ($this->getPaymentMethods($oDB, $aWalletCardSchemes) as $obj_PM)
 		{
 			if ( ($obj_PM instanceof ClientPaymentMethodConfig) === true)
 			{
@@ -1192,7 +1192,7 @@ class ClientConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public function toFullXML(RDB &$oDB,$propertyScope=2)
+	public function toFullXML(RDB &$oDB,$propertyScope=2, $aWalletCardSchemes = array())
 	{
 		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture) .'" enable-cvv = "'. General::bool2xml($this->_bEnableCVV) .'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -1217,11 +1217,10 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_ThreedRedirectURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_ThreedRedirectURL->toXML(); }
         if ( ($this->_obj_HPPURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_HPPURL->toXML(); }
         $xml .= '</urls>';
-        $xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
-        $xml .= $this->_aObj_ClientServicesStatus->toXML();
-        $xml .= $this->_getPaymentMethodsAsXML($oDB);
-        $xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
-        $xml .= $this->_getAccountsConfigurationsAsXML($oDB);
+		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
+		$xml .= $this->_getPaymentMethodsAsXML($oDB, $aWalletCardSchemes);
+		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
+		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
 		$xml .= $this->_getGoMobileConfigAsXML($oDB);
         $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
@@ -1247,6 +1246,8 @@ class ClientConfig extends BasicConfig
         $xml ='<client_configuration>';
         $xml .='<id>'.$this->getID().'</id>';
         $xml .='<name>'.$this->getName().'</name>';
+        $xml .='<language>'.$this->getLanguage().'</language>';
+        $xml .='<username>'.$this->getUsername().'</username>';
         $xml .='<salt>'.$this->getSalt().'</salt>';
         $xml .='<max_amount>'.$this->getMaxAmount().'</max_amount>';
         $xml .='<country_id>'.$this->getCountryConfig()->getID().'</country_id>';
@@ -1458,7 +1459,7 @@ class ClientConfig extends BasicConfig
                            $obj_Parse3DSecureURL = new ClientURLConfig($aRS[$i]["ID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $aRS[$i]["URL"],'Parse 3D Secure Challenge URL',"CLIENT");
                            break;
                        case self::iMERCHANT_APP_RETURN_URL:
-                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"],"","SDK");
+                           $obj_AppURL = new ClientURLConfig($aRS[$i]["ID"], self::iMERCHANT_APP_RETURN_URL, $aRS[$i]["URL"],"","MERCHANT");
                            break;
                        case self::iBASE_IMAGE_URL :
                            $obj_BaseImageURL = new ClientURLConfig($aRS[$i]["ID"], self::iBASE_IMAGE_URL, $aRS[$i]["URL"],'Base URL for Images',"HPP");
@@ -1470,7 +1471,7 @@ class ClientConfig extends BasicConfig
                            $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URL"],"","HPP");
                            break;
                        case self::iHPP_URL:
-                           $obj_HPPURL= new ClientURLConfig($aRS[$i]["ID"], self::iHPP_URL, $aRS[$i]["URL"],"HPP");
+                           $obj_HPPURL= new ClientURLConfig($aRS[$i]["ID"], self::iHPP_URL, $aRS[$i]["URL"],"HPP", "HPP");
                            break;
                    }
                 }
@@ -1506,8 +1507,8 @@ class ClientConfig extends BasicConfig
 
             if($clientServicesStatus->isLegacyFlow() === false)
             {
-                $sql  = "SELECT sp.name as key,cp.value,pc.scope from SYSTEM.client_property_tbl sp 
-                  INNER JOIN CLIENT.client_property_tbl cp on cp.propertyid = sp.id  AND cp.enabled=true AND sp.enabled AND clientid =".$id." INNER JOIN SYSTEM.property_category_tbl pc on sp.category = pc.id ";
+                $sql  = "SELECT sp.name as key,cp.value,pc.scope from SYSTEM". sSCHEMA_POSTFIX .".client_property_tbl sp 
+                  INNER JOIN CLIENT". sSCHEMA_POSTFIX .".client_property_tbl cp on cp.propertyid = sp.id  AND cp.enabled=true AND sp.enabled AND clientid =".$id." INNER JOIN SYSTEM". sSCHEMA_POSTFIX .".property_category_tbl pc on sp.category = pc.id ";
             }
 
             //		echo $sql ."\n";
@@ -1521,6 +1522,30 @@ class ClientConfig extends BasicConfig
                 	$aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
                 	$aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
                 	$aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
+                }
+            }
+
+            /*Adding is_legacy flag for mesb side of backward compatibility
+             Post all client migrated to CRS this flag can be removed and mesb side needs to be refactored*/
+            if($clientServicesStatus->isLegacyFlow() === false)
+            {
+                $i = sizeof($aAdditionalProperties);
+                $aAdditionalProperties[$i]["key"] ="IS_LEGACY";
+                $aAdditionalProperties[$i]["value"] = "false";
+                $aAdditionalProperties[$i]["scope"] = Constants::iPublicProperty;
+
+                //TODO Cannot use ReadOnlyConfigRepo its required txninfo obj and refactoring it to taking client id in
+                // repo will becomes recursion ex created repo obj here repo will again create clientinfo obj
+                // Solution all addon config details need to injected from outside
+                $sql = "SELECT version from client". sSCHEMA_POSTFIX .".mpi_property_tbl WHERE enabled=true and clientid=".$id;
+                $aPropRS = $oDB->getName($sql);
+
+                if (is_array($aPropRS) === true)
+                {
+                    $i++;
+                    $aAdditionalProperties[$i]["key"] = "3DSVERSION";
+                    $aAdditionalProperties[$i]["value"] = $aPropRS["VERSION"];
+                    $aAdditionalProperties[$i]["scope"] = Constants::iPrivateProperty;
                 }
             }
 
