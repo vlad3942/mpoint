@@ -1471,7 +1471,7 @@ class ClientConfig extends BasicConfig
                            $obj_BaseAssetURL= new ClientURLConfig($aRS[$i]["ID"], self::iBASE_ASSET_URL, $aRS[$i]["URL"],"","HPP");
                            break;
                        case self::iHPP_URL:
-                           $obj_HPPURL= new ClientURLConfig($aRS[$i]["ID"], self::iHPP_URL, $aRS[$i]["URL"],"HPP");
+                           $obj_HPPURL= new ClientURLConfig($aRS[$i]["ID"], self::iHPP_URL, $aRS[$i]["URL"],"HPP", "HPP");
                            break;
                    }
                 }
