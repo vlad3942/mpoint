@@ -96,6 +96,8 @@ require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 require_once(sCLASS_PATH ."/MPGS.php");
 // Require specific Business logic for the Paymaya-Acq component
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 set_time_limit(120);
 

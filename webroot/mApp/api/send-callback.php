@@ -110,6 +110,8 @@ require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 // Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 

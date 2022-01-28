@@ -79,6 +79,8 @@ require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 // Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 ignore_user_abort(true);
 set_time_limit(0);

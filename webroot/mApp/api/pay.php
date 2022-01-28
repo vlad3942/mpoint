@@ -166,6 +166,8 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/MPGS.php");
 // Require specific Business logic for the Paymaya-Acq component
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 $aMsgCds = array();
 
