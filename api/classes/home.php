@@ -470,7 +470,7 @@ class Home extends General
      * @param   integer $countryId
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $is_legacy='true')
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $is_legacy = true)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -569,14 +569,14 @@ class Home extends General
      * @param boolean $adc            Include Stored Cards where the card type has been disabled, defaults to false
      * @param array $aPaymentMethods  Holds list of payment methods given by CRS
      * @param integer $countryId      Hold unqiue ID cof the country
-     * @param string $is_legacy       Hold a flag which will deside whether to use legacy flow or not
+     * @param bool $is_legacy       Hold a flag which will deside whether to use legacy flow or not
      * @return string
      */
 	private function getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $is_legacy)
     {
         $sql = '';
         $aCardId = array_map(function ($paymentMethod) { return $paymentMethod->id; }, $aPaymentMethods);
-        if(strtolower($is_legacy) == 'false')
+        if($is_legacy === false)
         {
             $sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
 					SC.id AS typeid, SC.name AS type, SC.cvclength AS cvclength,
