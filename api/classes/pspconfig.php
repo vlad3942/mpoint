@@ -1,4 +1,8 @@
 <?php
+
+use api\classes\merchantservices\configuration\BaseConfig;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * The Configuration package contains various data classes holding information such as:
  * 	- Configuration for the Country the transaction is processed in
@@ -184,6 +188,19 @@ class PSPConfig extends BasicConfig
      * Set the Client's Password for the Route
      */
     public function getRoutePassword() : string {  return $this->_sRoutePassword;  }
+
+    public function isRouteFeatureEnabled(int $featureId) :bool
+    {
+
+        if(empty($this->_aRouteFeature) === false)
+        {
+            foreach ($this->_aRouteFeature as $feature)
+            {
+                if((int)$feature['ID'] === $featureId && $feature['ENABLED'] === true  ) return true;
+            }
+        }
+        return false;
+    }
 
 	public function toXML(?int $propertyScope=2, array $aMerchantAccountDetails = array()): string
 	{
@@ -391,6 +408,20 @@ class PSPConfig extends BasicConfig
 		}
 	}
 
+    /**
+     * Produces a new instance of a Payment Service Provider Configuration Object For Non Legacy Flow.
+     *
+     * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $clid 	Unique ID for the Client performing the request
+     * @param 	integer $accid 	Unique ID for the Account-id performing the request
+     * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @return 	PSPConfig
+     */
+    public static function produceProviderConfig(RDB $oDB, int $pspid,TxnInfo &$oTI,BaseConfig $config=null): ?PSPConfig
+    {
+        $repository = new ReadOnlyConfigRepository($oDB,$oTI);
+        return $repository->getProviderConfig($pspid,$config);
+    }
     /*
 	 * Get Additional properties
 	 * If key is send as parameter then value of that key will return
@@ -445,88 +476,10 @@ class PSPConfig extends BasicConfig
      *
      * @return 	PSPConfig|null
      */
-    public static function produceConfiguration(RDB $oDB, int $clid, int $accid, int $pspid, int $routeconfigid): ?PSPConfig
+    public static function produceConfiguration(RDB $oDB, TxnInfo &$oTI, int $pspid, int $routeconfigid): ?PSPConfig
     {
-        $sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type, RC.mid, RC.username, RC.password, MSA.name AS msa, R.id as MerchantId, RC.id AS routeconfigid
-				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R ON PSP.id = R.providerid AND R.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON R.id = RC.routeid AND RC.enabled = '1'
-                INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'
-                INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCurrency_Tbl RCUR ON RC.id = RCUR.routeconfigid AND RCUR.enabled = '1'				
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON R.clientid = CL.id AND CL.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
-				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id
-				WHERE CL.id = ". $clid ." AND PSP.enabled = '1' 
-				    AND Acc.id = ". $accid ." AND RC.id = ". $routeconfigid;
-
-        $RS = $oDB->getName($sql);
-
-        if (is_array($RS) === true && count($RS) > 1)
-        {
-            $sql = "SELECT I.language, I.text
-					FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
-					INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
-					WHERE I.clientid = ". $clid ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". $pspid ." OR I.pspid IS NULL)";
-
-            $aRS = $oDB->getAllNames($sql);
-            $aMessages = array();
-            if (is_array($aRS) === true)
-            {
-                for ($i=0; $i<count($aRS); $i++)
-                {
-                    $aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"];
-                }
-            }
-
-            $sql  = "SELECT key,value, scope
-					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-					 WHERE externalid = ". (int)$RS["MERCHANTID"] ." and type='merchant' and enabled=true" ;
-
-            $aRS = $oDB->getAllNames($sql);
-            $aAdditionalProperties = array();
-            if (is_array($aRS) === true && count($aRS) > 0)
-            {
-                $iConstOfRows = count($aRS);
-                for ($i=0; $i<$iConstOfRows; $i++)
-                {
-                    $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
-                    $aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
-                    $aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
-                }
-            }
-
-            //Get route feature
-            $sql  = "SELECT CRF.id, CRF.enabled, SRF.featurename
-					 FROM Client". sSCHEMA_POSTFIX .".RouteFeature_Tbl CRF
-					 INNER JOIN System". sSCHEMA_POSTFIX .".RouteFeature_Tbl SRF ON CRF.featureid = SRF.id AND SRF.enabled = '1'
-					 WHERE routeconfigid = ". (int)$RS["ROUTECONFIGID"];
-
-            $aRS = $oDB->getAllNames($sql);
-            $aRouteFeature = array();
-            if (is_array($aRS) === true) {
-                $aRouteFeature = $aRS;
-                unset($aRS);
-            }
-
-            //Get merchant account details
-            $sqlQuery =  self::getQuery($clid, $accid, $pspid);
-            $aRS = $oDB->getName($sqlQuery);
-            $ma = $username = $password = '';
-            if (is_array($aRS) === true && count($aRS) > 1)
-            {
-                $ma = $aRS["MA"];
-                $username = $aRS["USERNAME"];
-                $password = $aRS["PASSWORD"];
-            }
-
-            return  new PSPConfig($RS["ID"], $RS["NAME"], (int)$RS["SYSTEM_TYPE"], $ma, $RS["MSA"], $username, $password, $aMessages,$aAdditionalProperties, $RS["ROUTECONFIGID"], $aRouteFeature, $RS["MID"], $RS["USERNAME"], $RS["PASSWORD"]);
-        }
-        else
-        {
-            trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid .", Route Config ID: ". $routeconfigid, E_USER_WARNING);
-            return null;
-        }
+        $repository = new ReadOnlyConfigRepository($oDB,$oTI);
+        return $repository->getPSPConfig($pspid,$routeconfigid);
     }
 
     /**

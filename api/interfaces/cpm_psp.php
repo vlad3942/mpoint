@@ -45,7 +45,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '</client-config>';
             $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
             {
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }
@@ -142,7 +142,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '</client-config>';
 			$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
             {
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }
@@ -234,7 +234,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $this->getPSPConfig()->toRouteConfigXML();
         }
@@ -304,7 +304,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $this->getPSPConfig()->toRouteConfigXML();
         }
@@ -409,7 +409,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $this->getPSPConfig()->toRouteConfigXML();
         }
@@ -483,7 +483,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
@@ -632,7 +632,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
@@ -745,7 +745,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<tokenize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
         $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
@@ -831,7 +831,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b .= '<redeem-voucher id="'. $iVoucherID .'">';
 		}
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
-		if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) == 'false')
+		if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
 		{
 			$b .= $this->getPSPConfig()->toRouteConfigXML();
 		}
@@ -997,7 +997,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<get-payment-data mode="'. $mode .'">';
 		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
-        if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+        if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
         {
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
@@ -1412,7 +1412,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '<get-payment-method client-id="' . $this->getClientConfig()->getID() . '" account="' . $this->getClientConfig()->getAccountConfig()->getID() . '" store-card="' . parent::bool2xml($sc) . '">';
             $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML());
             $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
-            if(strtolower($this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY')) === 'false')
+            if($this->getClientConfig()->getClientServices()->isLegacyFlow() === false)
             {
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }

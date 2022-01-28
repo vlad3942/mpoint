@@ -1,4 +1,8 @@
 <?php
+
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Sagar Narayane
@@ -27,8 +31,19 @@ class Mpi
      */
     public function GetMpi(RDB $objDb, $_OBJ_TXT, $obj_TxnInfo, $obj_Card, $obj_ClientInfo, $aHTTP_CONN_INFO, $clientId, $countryId, $cardId){
         $obj = null;
+        $pspConfig = null;
+        if($obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow() === false)
+        {
+            $repository = new ReadOnlyConfigRepository($objDb,$obj_TxnInfo);
+            $mpiAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eMPI));
+            if(empty($mpiAddon->getConfiguration()) === false)
+            {
+                $iProviderId = $mpiAddon->getConfiguration()[0]->getProviderId();
+                $pspConfig = PSPConfig::produceProviderConfig($objDb,$iProviderId,$obj_TxnInfo,$mpiAddon);
+            }
+        }
+        else { $pspConfig = $this->createPSPConfig($objDb, $clientId, $countryId, $cardId); }
 
-        $pspConfig = $this->createPSPConfig($objDb, $clientId, $countryId, $cardId);
         switch ($pspConfig->getId()) {
             case Constants::iNETS_MPI:
                 $obj = new NetsMpi($objDb,$_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netsmpi"],$pspConfig, $obj_Card, $obj_ClientInfo);

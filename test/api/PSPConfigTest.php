@@ -42,7 +42,7 @@ class PSPConfigTest extends baseAPITest
 
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid,dccenabled) VALUES (10018, 8, $pspID,100,true)");
         $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10018,100,840, true)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10018, 'client',0)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10018, true);");
 
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (50011, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10018, 50011)");
@@ -87,7 +87,7 @@ class PSPConfigTest extends baseAPITest
      */
     public function testSuccessPSPConfiguration()
     {
-        $pspID = Constants::iWIRE_CARD_PSP;
+        $pspID = Constants::iAMEX_ACQUIRER;
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd,salt) VALUES (10018, 1, 100, 'Test Client', 'Tuser', 'Tpass','23lkhfgjh24qsdfkjh')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10018, 4, 'http://mpoint.local.cellpointmobile.com:80/')");
@@ -100,16 +100,15 @@ class PSPConfigTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid,dccenabled) VALUES (10018, 8, $pspID,100,true)");
         $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10018,100,840, true)");
 
-        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value,  enabled, externalid, type, scope) VALUES ('3DVERIFICATION', 'true', true, 10001, 'merchant', 2)");
-        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value,  enabled, externalid, type, scope) VALUES ('TEST_MPI', 'true', true, 10001, 'merchant', 2)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10018, 'client',0)");
+        $this->queryDB("INSERT INTO client.psp_property_tbl (propertyid,value,clientid) SELECT id,'TEST',10018 FROM SYSTEM.psp_property_tbl where name='AMEX_CARD_ACCEPTOR_ADDRESS'");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10018, true);");
 
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (50011, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10018, 50011)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 50011, 8, $pspID, '501910******3742', '06/24', TRUE, 10018, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
 
         ## Route Related SQL
-        $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10001, 10018, 18)");
+        $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10001, 10018, 45)");
         $this->queryDB("INSERT INTO client.routeconfig_tbl( id, routeid, name, capturetype, mid, username, password, enabled) VALUES (1126, 10001, '2c2p-alc_Master_VISA_USD', 2, 'CebuPacific_USD', 'CELLPM', 'HC1XBPV0O4WLKZMG', 'true')");
         $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (1126)");
         $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (1126)");
@@ -127,23 +126,22 @@ class PSPConfigTest extends baseAPITest
 
         $iTxnID = 1001012;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
-        $obj_PSPConfig = PSPConfig::produceConfiguration($this->_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspID, $obj_TxnInfo->getRouteConfigID());
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->_OBJ_DB, $obj_TxnInfo, $pspID, $obj_TxnInfo->getRouteConfigID());
 
         $this->assertInstanceOf('PSPConfig', $obj_PSPConfig);
 
-        $this->assertEquals('Test Sub Merchant', $obj_PSPConfig->getMerchantSubAccount(), 'Error:: Merchant SubAccount name missing');
-        $toXML = $obj_PSPConfig->toXML();
-        $this->assertStringContainsString('<psp-config id="18" type="1"><name>Wire Card</name><merchant-account>Test 2c2p-alc</merchant-account><merchant-sub-account>Test Sub Merchant</merchant-sub-account><username>CELLPM</username><password>HC1XBPV0O4WLKZMG</password><messages></messages><additional-config><property name="3DVERIFICATION">true</property><property name="TEST_MPI">true</property></additional-config></psp-config>', $toXML, 'Error :: To XML not matched');
+        $toXML = $obj_PSPConfig->toXML(Constants::iPrivateProperty);
+        $this->assertStringContainsString('<psp-config id="45" type="2"><name>Amex</name><merchant-account>CebuPacific_USD</merchant-account><merchant-sub-account></merchant-sub-account><username>CELLPM</username><password>HC1XBPV0O4WLKZMG</password><messages></messages><additional-config><property name="AMEX_CARD_ACCEPTOR_ADDRESS">TEST</property></additional-config></psp-config>', $toXML, 'Error :: To XML not matched');
 
-        $toAttributeLessXML = $obj_PSPConfig->toAttributeLessXML();
-        $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>Test 2c2p-alc</merchantAccount><merchantSubAccount>Test Sub Merchant</merchantSubAccount><username>CELLPM</username><password>HC1XBPV0O4WLKZMG</password><messages></messages><additionalConfig><property><name>3DVERIFICATION</name><value>true</value></property><property><name>TEST_MPI</name><value>true</value></property></additionalConfig></pspConfig>', $toAttributeLessXML, 'Error :: Attribute less XML not matched');
+        $toAttributeLessXML = $obj_PSPConfig->toAttributeLessXML(Constants::iPrivateProperty);
+        $this->assertStringContainsString('<pspConfig><id>45</id><type>2</type><name>Amex</name><merchantAccount>CebuPacific_USD</merchantAccount><merchantSubAccount></merchantSubAccount><username>CELLPM</username><password>HC1XBPV0O4WLKZMG</password><messages></messages><additionalConfig><property><name>AMEX_CARD_ACCEPTOR_ADDRESS</name><value>TEST</value></property></additionalConfig></pspConfig>', $toAttributeLessXML, 'Error :: Attribute less XML not matched');
 
         $aMerchantAccountDetails = array('merchantaccount' => 'Test 2c2p-alc', 'username' => 'CELLPM', 'password' => 'HC1XBPV0O4WLKZMG');
         $toAttributeLessXML = $obj_PSPConfig->toAttributeLessXML(2, $aMerchantAccountDetails);
-        $this->assertStringContainsString('<pspConfig><id>18</id><type>1</type><name>Wire Card</name><merchantAccount>Test 2c2p-alc</merchantAccount><merchantSubAccount>Test Sub Merchant</merchantSubAccount><username>CELLPM</username>', $toAttributeLessXML, 'Error :: Attribute less XML not matched with additional');
+        $this->assertStringContainsString('<pspConfig><id>45</id><type>2</type><name>Amex</name><merchantAccount>Test 2c2p-alc</merchantAccount><merchantSubAccount></merchantSubAccount><username>CELLPM</username>', $toAttributeLessXML, 'Error :: Attribute less XML not matched with additional');
 
         $toRouteConfigXML = $obj_PSPConfig->toRouteConfigXML();
-        $this->assertStringContainsString('<id>1126</id><route_id>18</route_id><name>Wire Card</name><mid>CebuPacific_USD</mid><username>CELLPM</username>', $toRouteConfigXML, 'Error :: Route Configuration not matched');
+        $this->assertStringContainsString('<id>1126</id><route_id>45</route_id><name>Amex</name><mid>CebuPacific_USD</mid><username>CELLPM</username>', $toRouteConfigXML, 'Error :: Route Configuration not matched');
     }
 
     /**
@@ -165,7 +163,7 @@ class PSPConfigTest extends baseAPITest
 
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid,dccenabled) VALUES (10018, 8, $pspID,100,true)");
         $this->queryDB("INSERT INTO client.countrycurrency_tbl(clientid, countryid, currencyid, enabled) VALUES (10018,100,840, true)");
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'true', 10018, 'client',0)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10018, true);");
 
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (50011, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10018, 50011)");
@@ -177,7 +175,7 @@ class PSPConfigTest extends baseAPITest
 
         $iTxnID = 1001012;
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
-        $obj_PSPConfig = PSPConfig::produceConfiguration($this->_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspID, $obj_TxnInfo->getRouteConfigID());
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->_OBJ_DB, $obj_TxnInfo, $pspID, $obj_TxnInfo->getRouteConfigID());
 
         $this->assertNotInstanceOf('PSPConfig', $obj_PSPConfig);
         $this->assertNull($obj_PSPConfig);
