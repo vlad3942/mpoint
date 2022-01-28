@@ -123,4 +123,13 @@
 
 	</changeSet>
 
+	<changeSet author="Chaitenya Yadav" id="2022-01-28-PSP-Currency-AUD-71">
+		<insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+			<column name="pspid" value="71"/>
+			<column name="enabled" value="true"/>
+			<column name="name" value="AUD"/>
+			<column name="currencyid" value="36" />
+		</insert>
+	</changeSet>
+
 </databaseChangeLog>
