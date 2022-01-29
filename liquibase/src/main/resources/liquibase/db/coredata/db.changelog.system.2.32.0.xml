@@ -964,6 +964,16 @@
 	</changeSet>
 
     <!--Nmi Credomatic -->
+    <changeSet author="Amar Kumar" id="2022-01-29-setup-v2.33-system-3">
+        <insert catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="id" value="74" />
+            <column name="name" value="nmi"/>
+            <column name="enabled" value="true"/>
+            <column name="system_type" value="1"/>
+            <column name="supportedpartialoperations" value="0"/>
+        </insert>
+    </changeSet>
+
     <changeSet author="Amar Kumar" id="2021-01-12-setup-v2.33-system-3">
         <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
             <column name="cardid" value="8" />
