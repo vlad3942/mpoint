@@ -963,4 +963,45 @@
 		</insert>
 	</changeSet>
 
+    <!--Nmi Credomatic -->
+    <changeSet author="Amar Kumar" id="2021-01-12-setup-v2.33-system-3">
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="8" />
+            <column name="pspid" value="74"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="7" />
+            <column name="pspid" value="74"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="1" />
+            <column name="pspid" value="74"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="3" />
+            <column name="pspid" value="74"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="22" />
+            <column name="pspid" value="74"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="74"/>
+            <column name="name" value="USD" />
+            <column name="currencyid" value="840" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+
 </databaseChangeLog>
