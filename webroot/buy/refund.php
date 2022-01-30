@@ -107,6 +107,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			{	
 				try
 				{
+                    if($obj_TxnInfo->getPSPID() <= 0 )
+                    {
+                        throw new mPointException("Unknown Payment Service Provider: 0", 1001);
+                    }
                     $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
                     $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
