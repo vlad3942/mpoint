@@ -669,40 +669,11 @@ class General
         $obj_TxnInfo->setRouteConfigID($iSecondaryRoute);
         $this->logTransaction($obj_TxnInfo);
 
-        /*******************************
-        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
-        $passbookEntry = new PassbookEntry
-        (
-            NULL,
-            $obj_TxnInfo->getAmount(),
-            $obj_TxnInfo->getCurrencyConfig()->getID(),
-            Constants::iInitializeRequested
-        );
-        if($txnPassbookObj instanceof TxnPassbook) {
-            $txnPassbookObj->addEntry($passbookEntry);
-            $txnPassbookObj->performPendingOperations();
-        }
-
-        $txnPassbookObj = TxnPassbook::Get($this->getDBConn(), $iAssociatedTxnId, $obj_TxnInfo->getClientConfig ()->getID ());
-        $passbookEntry = new PassbookEntry
-        (
-            NULL,
-            $obj_TxnInfo->getAmount(),
-            $obj_TxnInfo->getCurrencyConfig()->getID(),
-            Constants::iAuthorizeRequested
-        );
-        if($txnPassbookObj instanceof TxnPassbook) {
-            $txnPassbookObj->addEntry($passbookEntry);
-            $txnPassbookObj->performPendingOperations();
-        }
-
-        $txnPassbookObj->updateInProgressOperations($obj_TxnInfo->getAmount(), Constants::iPAYMENT_ACCEPTED_STATE, Constants::sPassbookStatusError);
-        ********************************/
-
         $this->newMessage($iAssociatedTxnId, Constants::iPAYMENT_RETRIED_USING_DR_STATE, "Payment retried using dynamic routing");
-        $obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+        $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $_OBJ_TXT, $obj_TxnInfo, $obj_PSPConfig->getID(), $aHTTP_CONN_INFO);
+        $obj_second_PSP = $obj_PaymentProcessor->getPSPInfo();
 
-        return $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
+        return $obj_second_PSP->authorize( $obj_PaymentProcessor->getPSPConfig() , $obj_Elem );
 
 	}
 
@@ -2423,12 +2394,11 @@ class General
                 }
             }
             if($iPSPID > 0){
-                $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $iPSPID);
-
                 $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB, $obj_TxnInfo, $misc);
                 $obj_mPoint->logTransaction($obj_TxnInfo);
 
-                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $iPSPID, $aHTTP_CONN_INFO);
+                $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
                 $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
                 $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(), $obj_TxnInfo->getClientConfig()->getID());

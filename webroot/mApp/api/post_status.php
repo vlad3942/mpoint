@@ -106,8 +106,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $obj_Elem = $obj_DOM->{'callback'}[$i];
             if (intval($obj_Elem->{'psp-config'}['id']) > 0) {
                 $obj_TxnInfo = TxnInfo::produceInfo($obj_Elem->transaction["id"], $_OBJ_DB);
-                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem->{'psp-config'}['id']));
-                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem->{'psp-config'}['id']), $aHTTP_CONN_INFO);
+                $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
+                $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
                 $code = $obj_PSP->postStatus($obj_Elem);
             } else if (intval($obj_Elem->{'session'}['id']) > 0) {
 

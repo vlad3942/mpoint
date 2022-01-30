@@ -97,9 +97,9 @@ try
 	$iStateID = (integer) $obj_XML->{'threed-redirect'}->status["code"];
     $iSubCodeID = (integer) $obj_XML->{'threed-redirect'}->status["sub-code"];
 
-    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo,$obj_TxnInfo->getPSPID());
-
-    $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+    $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
+    $obj_mPoint = $obj_PaymentProcessor->getPSPInfo();
+    $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
 
     $obj_ClientInfo = ClientInfo::produceInfo($obj_XML->{'threed-redirect'}->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->{'threed-redirect'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 

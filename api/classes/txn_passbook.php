@@ -570,7 +570,8 @@ final class TxnPassbook
 						if($isPSPCallRequired === TRUE)
 						{
 						    $txnInfoObj = TxnInfo::produceInfo($this->getTransactionId(), $this->getDBConn());
-							$obj_PSP = Callback::producePSP($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $aHTTP_CONN_INFO);
+                            $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $_OBJ_TXT, $txnInfoObj, $txnInfoObj->getPSPID(), $aHTTP_CONN_INFO);
+                            $obj_PSP =  $obj_PaymentProcessor->getPSPInfo();
 
 							switch ($passbookEntry->getPerformedOperation())
 							{

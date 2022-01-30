@@ -167,8 +167,8 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 										{	
 											try
 											{
-											
-												$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+                                                $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
+                                                $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
 												$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
 												$code = 0;

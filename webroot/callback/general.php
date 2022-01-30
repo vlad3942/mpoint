@@ -190,7 +190,6 @@ try
 
             if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP) && $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
                 if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
-                    $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
                     $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
                     $xmlString = "<card id='" . $obj_XML->callback->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
                     $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
@@ -505,7 +504,6 @@ try
                     "amount" => $obj_TxnInfo->getAmount(),
                     "card-id" => $obj_XML->callback->transaction->card["type-id"]);
                 $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-              //  $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
                 $paymentSecureInfo = null;
                 if ($obj_XML->callback->transaction->card->{'info-3d-secure'}) {
@@ -548,9 +546,9 @@ try
                     if ($bIsSkipFraud === true) {
                         $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE, 'Fraud Check Skipped due to rule matched');
                     } else {
-                        $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-
-                        $obj_mVaultPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mVaultPSPConfig);
+                        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, Constants::iMVAULT_PSP, $aHTTP_CONN_INFO);
+                        $obj_mVaultPSP = $obj_PaymentProcessor->getPSPInfo();
+                        $obj_mVaultPSPConfig = $obj_PaymentProcessor->getPSPConfig();
                         $obj_CardElem = $obj_mVaultPSP->getCardDetails();
                         if ($paymentSecureInfo !== null && $obj_CardElem !== null) {
                             $paymentSecureInfo->attachPaymentSecureNode($obj_CardElem);
@@ -659,11 +657,11 @@ try
                             $iPSPID = $newTxnInfo->getPSPID();
                             $iAmount = (int)$newTxnInfo->getAmount();
 
-                            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $newTxnInfo, $iPSPID);
-
+                            $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $iPSPID, $aHTTP_CONN_INFO);
+                            $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
                             if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
                                 && ($newTxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_REJECTED_STATE)) === FALSE)) {
-                                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                                $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
                                 $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $obj_PSP);
 
                                 $voucherId = $newTxnInfo->getAdditionalData('voucherid');

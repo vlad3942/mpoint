@@ -163,7 +163,8 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 							{
 								try
 								{
-									$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+                                    $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
+                                    $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
 									$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 									//$code = $obj_mPoint->capture( (integer) $amount);
 

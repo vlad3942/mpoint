@@ -42,8 +42,6 @@ require_once(sCLASS_PATH . "/wirecard.php");
 require_once(sCLASS_PATH . "/dibs.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH . "/nets.php");
-// Require specific Business logic for the Klarna component
-require_once(sCLASS_PATH . "/klarna.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH . "/mvault.php");
 // Require specific Business logic for the UATP component
@@ -95,7 +93,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 if (is_array($aRS) === true && count($aRS) > 0) {
                     for ($i = 0; $i < count($aRS); $i++) {
                         $obj_TxnInfo = TxnInfo::produceInfo($aRS[$i]["ID"], $_OBJ_DB);
-                        $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+                        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
+                        $obj_mPoint = $obj_PaymentProcessor->getPSPInfo();
 
                         $sql1 = "SELECT DISTINCT data
                             FROM LOG". sSCHEMA_POSTFIX .".MESSAGE_TBL

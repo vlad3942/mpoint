@@ -102,7 +102,9 @@ class PSPSettlement extends mPointSettlement
                         $txnId = $rs['TRANSACTIONID'];
 
                         $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-                        $obj_PSP = Callback::producePSP($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
+                        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $this->_objConnectionInfo);
+                        $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
+
                         if ($recordType === "CAPTURE") {
                             $messageData = $obj_TxnInfo->getMessageData($_OBJ_DB, [Constants::iPAYMENT_CAPTURE_INITIATED_STATE]);
                             $captureAmount = (int)$messageData[0]['data'];

@@ -41,7 +41,6 @@ require_once(sCLASS_PATH . "/netaxept.php");
 require_once(sCLASS_PATH . "/cpg.php");
 require_once(sCLASS_PATH . "/dsb.php");
 require_once(sCLASS_PATH . "/wirecard.php");
-require_once(sCLASS_PATH . "/klarna.php");
 require_once(sCLASS_PATH . "/clientinfo.php");
 require_once(sCLASS_PATH . "/nets.php");
 require_once(sCLASS_PATH . "/amex.php");
@@ -52,7 +51,6 @@ require_once(sCLASS_PATH . "/uatp_card_account.php");
 require_once(sCLASS_PATH . "/chase.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
-require_once(sCLASS_PATH . '/apm/paymaya.php');
 require_once(sCLASS_PATH . '/GeneralPSP.php');
 // </editor-fold>
 
