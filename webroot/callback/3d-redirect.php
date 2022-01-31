@@ -228,7 +228,7 @@ try
             $bIsProceedAuth = $obj_mPoint->applyRule([$obj_XML],$aMpiRule);
         }
 
-        if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth ===true))
+        if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& ($propertyValue === 'mpi' || $obj_PSPConfig->isRouteFeatureEnabled(RouteFeatureType::eMPI)) && ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth ===true))
         {
 
 

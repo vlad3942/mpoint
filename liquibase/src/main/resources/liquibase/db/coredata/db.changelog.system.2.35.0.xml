@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+	<changeSet author="Abhinav Shaha" id="2022-01-21-CMP-6350-setup-v2.35">
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="45" />
+		    <column name="name" value="Bancontact" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="50" />
+		    <column name="name" value="EPS" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="52" />
+		    <column name="name" value="giropay" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="53" />
+		    <column name="name" value="Ideal" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="61" />
+		    <column name="name" value="Przelewy24" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="card_tbl">
+		    <column name="id" value="66" />
+		    <column name="name" value="Sofort" />
+		    <column name="paymenttype" value="7" />
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="45" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="50" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="52" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="53" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="61" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+		    <column name="cardid" value="66" />
+		    <column name="pspid" value="10"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="45"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="50"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="52"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="53"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="61"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+		    <column name="pricepointid" value="-978" />
+		    <column name="cardid" value="66"/>
+		    <column name="enabled" value="true"/>
+		</insert>
+
+	</changeSet>
+
+	<changeSet author="Chaitenya Yadav" id="2022-01-28-PSP-Currency-AUD-71">
+		<insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+			<column name="pspid" value="71"/>
+			<column name="enabled" value="true"/>
+			<column name="name" value="AUD"/>
+			<column name="currencyid" value="36" />
+		</insert>
+	</changeSet>
+
+	<!--Nmi Credomatic -->
+	<changeSet author="Amar Kumar" id="2022-01-29-setup-v2.33-system-3">
+		<insert catalogName="system" schemaName="system" tableName="psp_tbl">
+			<column name="id" value="74" />
+			<column name="name" value="nmi"/>
+			<column name="enabled" value="true"/>
+			<column name="system_type" value="1"/>
+			<column name="supportedpartialoperations" value="0"/>
+		</insert>
+	</changeSet>
+
+	<changeSet author="Amar Kumar" id="2021-01-12-setup-v2.33-system-3">
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="8" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="7" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="1" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="3" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="22" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+			<column name="pspid" value="74"/>
+			<column name="name" value="USD" />
+			<column name="currencyid" value="840" />
+			<column name="enabled" value="true"/>
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>

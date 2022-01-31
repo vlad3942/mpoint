@@ -13,6 +13,7 @@
  * @version 1.11
  */
 
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 use api\classes\splitpayment\config\Configuration;
 
 require_once sCLASS_PATH .'/Parser.php';
@@ -657,7 +658,7 @@ class General
 	{
         global $_OBJ_TXT;
 
-        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), -1, $iSecondaryRoute);
+        $obj_PSPConfig = PSPConfig::produceConfiguration($this->getDBConn(), $obj_TxnInfo, -1, $iSecondaryRoute);
         $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
 
         // Update Associated Transaction ID
@@ -1556,7 +1557,7 @@ class General
             case Constants::iPAYMENT_REJECTED_STATE :
             case 504:
                 if ($code == 504 || $obj_TxnInfo->hasEitherSoftDeclinedState($subCode) === true) {
-                    if(strtolower($is_legacy) == 'false') {
+                    if($is_legacy === false) {
 
                         $objTxnRoute = new PaymentRoute($this->_obj_DB, $obj_TxnInfo->getSessionId());
                         $iAlternateRoute = $objTxnRoute->getAlternateRoute($preference);
@@ -1683,12 +1684,12 @@ class General
 
 			// Added Distinct clause as one card-id may have multiple pspid hence to avoid occurence of duplicate settlement-currency-id
 			$sql = "SELECT DISTINCT CCMT.Settlement_Currency_Id
-					FROM Client" . sSCHEMA_POSTFIX . ".Card_Currency_Mapping_Tbl CCMT
-					WHERE CCMT.client_id = " . $clientid . "
+					FROM Client" . sSCHEMA_POSTFIX . ".pcc_config_tbl CCMT
+					WHERE CCMT.clientId = " . $clientid . "
 					AND CCMT.enabled = '1'
 					AND CCMT.is_presentment = '1'
-					AND CCMT.card_id = " . $cardid . "
-					AND CCMT.sale_currency_id = " . $salecurrencyid . "";
+					AND CCMT.pmId = " . $cardid . "
+					AND CCMT.sale_currency_id = " . $salecurrencyid ;
 
 			//echo $sql ."\n";die;
 			$aRS = $oDB->getAllNames($sql);
@@ -1739,12 +1740,12 @@ class General
     // Get PSP Config Object
     public static function producePSPConfigObject(RDB $oDB, TxnInfo $oTI, ?int $pspID, bool $bForceLegacy = false): ?PSPConfig
     {
-        $isLegacy           = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+        $isLegacy           = $oTI->getClientConfig()->getClientServices()->isLegacyFlow();
         $iProcessorType     = self::getPSPType($oDB, $pspID);
         $routeConfigID      = (int)$oTI->getRouteConfigID();
 
-        if(strtolower($isLegacy) == 'false' && ($iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0  && $bForceLegacy === false ){
-            $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID, $routeConfigID);
+        if($isLegacy === false && ($iProcessorType != Constants::iPROCESSOR_TYPE_WALLET ) && $routeConfigID > 0  && $bForceLegacy === false ){
+            $oPSPConfig = PSPConfig::produceConfiguration($oDB, $oTI, $pspID, $routeConfigID);
         }else{
             $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID);
         }
@@ -2349,7 +2350,7 @@ class General
      * @param int|null $walletId
      * @return bool|array
      */
-    public static function getRouteConfiguration(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
+    public static function getRouteConfiguration(ReadOnlyConfigRepository $repository,RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, int $clientid, int $countryId, int $currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
 
     {
         $iPrimaryRoute = 0;
@@ -2362,7 +2363,7 @@ class General
         }
         if ($iPrimaryRoute > 0) {
             $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+            $obj_CardResultSet = $repository->getResultSetCardConfigurationsByCardIds(array($cardTypeId), $iPrimaryRoute);
         }
         return $obj_CardResultSet;
     }
@@ -2371,6 +2372,8 @@ class General
      */
     public static function getRouteConfigurationAuth(RDB $_OBJ_DB, $obj_mPoint,TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo,$clientid, $countryId,$currencyId = NULL, $amount = NULL, int $cardTypeId = NULL, $issuerIdentificationNumber = NULL,string $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL,$is_Associated_txn=TRUE)
     {
+        $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+
         $iPrimaryRoute = 0;
         $obj_CardResultSet = FALSE;
         $result = array();
@@ -2383,7 +2386,7 @@ class General
             if($is_Associated_txn == false){
                 $obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
             }
-            $obj_CardResultSet = $obj_mPoint->getCardConfigurationObject($amount, $cardTypeId, $iPrimaryRoute);
+            $obj_CardResultSet = $repository->getResultSetCardConfigurationsByCardIds(array($cardTypeId), $iPrimaryRoute);
         }
             $result['pspid']         = !empty($obj_CardResultSet)?$obj_CardResultSet['PSPID']:-1;
             $result['cardid']        = !empty($obj_CardResultSet)?$obj_CardResultSet['ID']:-1;
@@ -2408,7 +2411,7 @@ class General
             }
             $misc['auto-capture'] = AutoCaptureType::ePSPLevelAutoCapt; // Voucher will always be auto-capture at PSP side.
             $iPSPID = -1;
-            if (strtolower($is_legacy) === 'false') {
+            if ($is_legacy === false) {
                 $typeId = Constants::iVOUCHER_CARD;
                 $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)
                 $obj_ClientInfo = ClientInfo::produceInfo($TXN_DOM->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$TXN_DOM->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -2465,11 +2468,11 @@ class General
      * @param $aHTTP_CONN_INFO
      * @param string $isVoucherPreferred
      * @param int $sessiontype
-     * @param string $is_legacy
+     * @param bool $is_legacy
      * @return array
      * @throws SQLQueryException
      */
-    public static function processVoucher($_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$aHTTP_CONN_INFO,string $isVoucherPreferred,int $sessiontype,string $is_legacy): array
+    public static function processVoucher($_OBJ_DB,$TXN_DOM,$obj_TxnInfo,$obj_mPoint,$obj_mCard,$aHTTP_CONN_INFO,string $isVoucherPreferred,int $sessiontype,bool $is_legacy): array
     {
         $isVoucherRedeem = FALSE;
         $isTxnCreated    = False;
@@ -2521,7 +2524,7 @@ class General
                 } else {
                     $_OBJ_DB->query('ROLLBACK');
                 }
-                if (strtolower($is_legacy) === 'false')
+                if ($is_legacy === false)
                 {
                     $typeId   = Constants::iVOUCHER_CARD;
                     $cardName = 'Voucher';  // TODO: Enhace to fetch the name from class (Voucher/Card)

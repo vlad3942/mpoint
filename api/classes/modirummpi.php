@@ -43,7 +43,7 @@ class ModirumMPI extends CPMMPI
         $b .= '</additional-config>';
         $b .= '</client-config>';
 
-        $b .= $this->getPSPConfig()->toXML();
+        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;

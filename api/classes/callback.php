@@ -14,6 +14,7 @@ require_once(sCLASS_PATH ."/core/card.php");
 
 use api\classes\Amount;
 use api\classes\CallbackMessageRequest;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 use api\classes\StateInfo;
 use api\classes\messagequeue\client\MessageQueueClient;
 /* ==================== Callback Exception Classes Start ==================== */
@@ -94,7 +95,6 @@ abstract class Callback extends EndUserAccount
         {
             throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
         }
-        $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
         if ($oPSPConfig == null) {
 
 			$oPSPConfig = General::producePSPConfigObject($oDB, $oTI, $pspID);
@@ -1086,7 +1086,8 @@ abstract class Callback extends EndUserAccount
     public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null, int $sub_code_id=0 )
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
-		$isStateUpdated = $sessionObj->updateState((int)$state);
+        $repository = new ReadOnlyConfigRepository($this->getDBConn(),$this->_obj_TxnInfo);
+		$isStateUpdated = $sessionObj->updateState($repository,(int)$state);
         $isMessagePublished = false;
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
@@ -1354,7 +1355,8 @@ abstract class Callback extends EndUserAccount
 		//Callback for session
 		if($sid > 4001 && ($isSessionCallback === TRUE  || $sid < 4999)) {
 			$sessionObj = $this->getTxnInfo()->getPaymentSession();
-			$isStateUpdated = $sessionObj->updateState();
+            $repository = new ReadOnlyConfigRepository($this->getDBConn(),$this->_obj_TxnInfo);
+            $isStateUpdated = $sessionObj->updateState($repository);
 			//Here Session Callback is triggering 2nd time, queryParam callback is already sent
 			//Below lines (1325, 1328, 1330) "TRUE || and false" needs to be remove the queryParam callback flow is removed
 			if (TRUE || $isStateUpdated === 1) {
@@ -1377,7 +1379,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 		//Callbacks for transaction
-		elseif($isSessionCallback === FALSE && strpos($sid, '2') === 0) {
+		elseif($isSessionCallback === FALSE && ($sid === Constants::iPAYMENT_PENDING_STATE || strpos($sid, '2') === 0)) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
 			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn,$sub_code_id, $sid, $amt, $this->_obj_PSPConfig);

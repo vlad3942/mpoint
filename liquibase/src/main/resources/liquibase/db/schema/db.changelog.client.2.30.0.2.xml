@@ -1,0 +1,1102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-client-merchant-onboard-01">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="pm_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="pm_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_pm2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)  ">
+                <constraints nullable="false" foreignKeyName="fk_pm2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.pm_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_pm_tbl BEFORE INSERT OR UPDATE ON client.pm_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_pm_pmid_clid" catalogName="client" schemaName="client" tableName="pm_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="clientid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_pm_tbl IF EXISTS ON client.pm_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="pm_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-client-merchant-onboard-02">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="routepm_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="routepm_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="routeconfigid"
+                    type="int"
+                    remarks="Hold route config ID from client.routeconfig_tbl ">
+                <constraints nullable="false" foreignKeyName="fk_routepm2routeConfig" referencedTableSchemaName="client" referencedTableName="routeconfig_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_routepm2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.routepm_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_routepm_tbl BEFORE INSERT OR UPDATE ON client.routepm_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_routepm_pmid_routeconfigid" catalogName="client" schemaName="client" tableName="routepm_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="routeconfigid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_routepm_tbl IF EXISTS ON client.routepm_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="routepm_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-client-merchant-onboard-03">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="dcc_config_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="dcc_config_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK Key -->
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_dccconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_dccconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="countryid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_dccconfig2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="currencyid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_dccconfig2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.dcc_config_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_dcc_config_tbl BEFORE INSERT OR UPDATE ON client.dcc_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_dcc_pmid_clid_coid_cuid" catalogName="client" schemaName="client" tableName="dcc_config_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_dcc_config_tbl IF EXISTS ON client.dcc_config_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="dcc_config_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-16-setup-v2.30.0-client-merchant-onboard-04">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="mcp_config_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="mcp_config_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK Key -->
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_mcpconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_mcpconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="countryid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_mcpconfig2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="currencyid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_mcpconfig2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.mcp_config_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_mcp_config_tbl BEFORE INSERT OR UPDATE ON client.mcp_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_mcp_pmid_clid_coid_cuid" catalogName="client" schemaName="client" tableName="mcp_config_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_mcp_config_tbl IF EXISTS ON client.mcp_config_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="mcp_config_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-05">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="services_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="services_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK Key -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" unique="true" foreignKeyName="fk_clientservice2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="dcc_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mcp_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pcc_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fraud_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tokenization_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="splitpayment_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="callback_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="void_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mpi_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="legacy_flow_enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.services_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_services_tbl BEFORE INSERT OR UPDATE ON client.services_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_services_tbl IF EXISTS ON client.services_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="services_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-06">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="fraud_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="fraud_property_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_fraudproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="isRollback"
+                    type="boolean"
+                    remarks="Flag indicating Active/In Active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.fraud_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_fraud_property_tbl BEFORE INSERT OR UPDATE ON client.fraud_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_fraud_property_tbl IF EXISTS ON client.fraud_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="fraud_property_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-06.1">
+        <renameColumn  catalogName="client"
+                       newColumnName="is_rollback"
+                       oldColumnName="isRollback"
+                       schemaName="client"
+                       tableName="fraud_property_tbl"/>
+    </changeSet>
+    <changeSet author="Sagar Badave"  id="2021-09-17-setup-v2.30.0-client-merchant-onboard-06.2">
+        <addUniqueConstraint  catalogName="client"
+                              columnNames="clientid"
+                              constraintName="idx_uq_fraudpprop_clientid"
+                              schemaName="client"
+                              tableName="fraud_property_tbl"/>
+
+    </changeSet>
+
+    <changeSet author="Vikas Gupta" id="2021-09-17-setup-v2.30.0-client-merchant-onboard-08">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="tokenization_config_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="tokenization_config_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK Key -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_tokenization2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_tokenization2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="providerid"
+                    type="int"
+                    remarks="Holds System PSP ID">
+                <constraints nullable="false" foreignKeyName="fk_tokenization2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="countryid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_tokenization2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="currencyid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_tokenization2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.tokenization_config_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_tokenization_config_tbl BEFORE INSERT OR UPDATE ON client.tokenization_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_tokenization_pmid_clid_coid_cuid" catalogName="client" schemaName="client" tableName="tokenization_config_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_tokenization_config_tbl IF EXISTS ON client.tokenization_config_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="tokenization_config_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-09">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="client" tableName="card_currency_mapping_tbl"/>
+        </preConditions>
+        <renameTable  catalogName="client"
+                      newTableName="pcc_config_tbl"
+                      oldTableName="card_currency_mapping_tbl"
+                      schemaName="client"/>
+
+        <renameSequence catalogName="client"
+                        newSequenceName="pcc_config_tbl_id_seq"
+                        oldSequenceName="card_currency_mapping_tbl_id_seq"
+                      schemaName="client"/>
+        <renameColumn  catalogName="client"
+                       newColumnName="clientid"
+                       oldColumnName="client_id"
+                       schemaName="client"
+                       tableName="pcc_config_tbl"/>
+        <renameColumn  catalogName="client"
+                       newColumnName="pmid"
+                       oldColumnName="card_id"
+                       schemaName="client"
+                       tableName="pcc_config_tbl"/>
+
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-10">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="fraud_config_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="fraud_config_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK Key -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_fraudconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_fraudconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="providerid"
+                    type="int"
+                    remarks="Holds System PSP ID">
+                <constraints nullable="false" foreignKeyName="fk_fraudconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="countryid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_fraudconfig2country" referencedTableSchemaName="system" referencedTableName="country_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="currencyid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_fraudconfig2currency" referencedTableSchemaName="system" referencedTableName="currency_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="typeOfFraud"
+                    type="int"
+                    remarks="denotes 1) PreFraud, 2) PostFraud">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.fraud_config_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_fraud_config_tbl BEFORE INSERT OR UPDATE ON client.fraud_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_fraud_pmid_clid_coid_cuid_type" catalogName="client" schemaName="client" tableName="fraud_config_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="clientid"/>
+            <column name="countryid"/>
+            <column name="currencyid"/>
+            <column name="typeOfFraud"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_fraud_config_tbl IF EXISTS ON client.fraud_config_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="fraud_config_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-10.1">
+        <renameColumn  catalogName="client"
+                       newColumnName="typeoffraud"
+                       oldColumnName="typeOfFraud"
+                       schemaName="client"
+                       tableName="fraud_config_tbl"/>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-11">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="mpi_config_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="mpi_config_tbl">
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK Key -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_mpiconfig2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_mpiconfig2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="providerid"
+                    type="int"
+                    remarks="Holds System PSP ID">
+                <constraints nullable="false" foreignKeyName="fk_mpiconfig2systempsp" referencedTableSchemaName="system" referencedTableName="psp_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.mpi_config_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_mpi_config_tbl BEFORE INSERT OR UPDATE ON client.mpi_config_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_mpi_pmid_providerid_clientid" catalogName="client" schemaName="client" tableName="mpi_config_tbl" unique="true">
+            <column name="pmid"/>
+            <column name="providerid"/>
+            <column name="clientid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_mpi_config_tbl IF EXISTS ON client.mpi_config_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="mpi_config_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-12">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="client_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="client_property_tbl">
+
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_clientproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="propertyid" type="int">
+                <constraints nullable="false" foreignKeyName="fk_clientproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="client_property_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="value"
+                    type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.client_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_client_property_tbl BEFORE INSERT OR UPDATE ON client.client_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_clclprop_propid_clid" catalogName="client" schemaName="client" tableName="client_property_tbl" unique="true">
+            <column name="propertyid"/>
+            <column name="clientid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_client_property_tbl IF EXISTS ON client.client_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="client_property_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-13">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="providerpm_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="providerpm_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="pmid"
+                    type="int"
+                    remarks="System payment method ID, (former card_tbl)">
+                <constraints nullable="false" foreignKeyName="fk_providerpm2systempm" referencedTableSchemaName="system" referencedTableName="card_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="routeid"
+                    type="int"
+                    remarks="Holds System Route ID">
+                <constraints nullable="false" foreignKeyName="fk_providerpm2route" referencedTableSchemaName="client" referencedTableName="route_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.providerpm_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_providerpm_tbl BEFORE INSERT OR UPDATE ON client.providerpm_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_providerpm_tbl IF EXISTS ON client.providerpm_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="providerpm_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-14">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="route_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="route_property_tbl">
+
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="propertyid" type="int">
+                <constraints nullable="false" foreignKeyName="fk_routeproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="route_property_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="routeconfigid"
+                    type="int"
+                    remarks="Hold route config ID from client.routeconfig_tbl ">
+                <constraints nullable="false" foreignKeyName="fk_routeproperty2routeConfig" referencedTableSchemaName="client" referencedTableName="routeconfig_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="value"
+                    type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.route_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_route_property_tbl BEFORE INSERT OR UPDATE ON client.route_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_clrprop_propid_rid" catalogName="client" schemaName="client" tableName="route_property_tbl" unique="true">
+            <column name="propertyid"/>
+            <column name="routeconfigid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_route_property_tbl IF EXISTS ON client.route_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="route_property_tbl"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Vikas Gupta" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-15">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="psp_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="psp_property_tbl">
+
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_pspproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <column name="propertyid" type="int">
+                <constraints nullable="false" foreignKeyName="fk_pspproperty2sysproperty" referencedTableSchemaName="system" referencedTableName="psp_property_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="value"
+                    type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.psp_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_psp_property_tbl BEFORE INSERT OR UPDATE ON client.psp_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <createIndex indexName="idx_uq_clpspprop_propid_clid" catalogName="client" schemaName="client" tableName="psp_property_tbl" unique="true">
+            <column name="propertyid"/>
+            <column name="clientid"/>
+        </createIndex>
+        <rollback>
+            <sql>DROP TRIGGER client_psp_property_tbl IF EXISTS ON client.psp_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="psp_property_tbl"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="sagar badave" id="2021-09-20-setup-v2.30.0-client-merchant-onboard-16">
+        <addColumn catalogName="client"
+                   schemaName= "client"
+                   tableName="split_combination_tbl">
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-05-setup-v2.30.0-client-merchant-onboard-17">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="split_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="split_property_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_splitproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="is_rollback"
+                    type="boolean"
+                    remarks="Flag indicating Active/In Active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_reoffer"
+                    type="boolean"
+                    remarks="Flag indicating Active/In Active"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint  catalogName="client"
+                              columnNames="clientid"
+                              constraintName="idx_uq_splitpprop_clientid"
+                              schemaName="client"
+                              tableName="split_property_tbl"/>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.split_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_split_property_tbl BEFORE INSERT OR UPDATE ON client.split_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_split_property_tbl IF EXISTS ON client.split_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="split_property_tbl"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-10-setup-v2.30.0-client-merchant-onboard-18">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="client" tableName="mpi_property_tbl"/>
+            </not>
+        </preConditions>
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="mpi_property_tbl">
+
+            <column name="id"
+                    type="int"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- FK -->
+            <column name="clientid"
+                    type="int">
+                <constraints nullable="false" foreignKeyName="fk_mpiproperty2client" referencedTableSchemaName="client" referencedTableName="client_tbl" referencedColumnNames="id"/>
+            </column>
+            <!-- Column -->
+            <column name="version"
+                    type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Common Columns -->
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating state active"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying originally created"
+                    defaultValueComputed="now()">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified"
+                    type="timestamp with time zone"
+                    remarks="Timestamp identifying last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint  catalogName="client"
+                              columnNames="clientid"
+                              constraintName="idx_uq_mpiprop_clientid"
+                              schemaName="client"
+                              tableName="mpi_property_tbl"/>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.mpi_property_tbl OWNER TO mpoint;
+            CREATE TRIGGER client_mpi_property_tbl BEFORE INSERT OR UPDATE ON client.mpi_property_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER client_mpi_property_tbl IF EXISTS ON client.mpi_property_tbl CASCADE TRUE;</sql>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="mpi_property_tbl"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Sagar Badave" id="2021-10-10-setup-v2.30.0-client-merchant-onboard-19">
+        <addColumn catalogName="client"
+                   schemaName= "client"
+                   tableName="split_configuration_tbl" >
+            <column name="type"
+                    type="varchar(20)"
+                    remarks="type of the splitpayment"
+                    defaultValue="20" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
