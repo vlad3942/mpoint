@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!-- ***************************           Group Starts       ***************************************** -->
+
+  <xs:group name="id_enabled">
+    <xs:sequence>
+      <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="enabled" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:group>
+
+  <xs:group name="addon_info_basic">
+    <xs:sequence>
+      <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="currency_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="country_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:group>
+
+  <xs:group name="addon_info_mpi">
+    <xs:sequence>
+      <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="provider_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="version" type="xs:decimal" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+  </xs:group>
+
+  <xs:group name="addon_info_split">
+    <xs:sequence>
+      <xs:element name="sequence_no" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="payment_type_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:group>
+
+  <xs:group name="addon_info_pcc">
+    <xs:sequence>
+      <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="currency_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="settlement_currency_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="is_presentment" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:group>
+
+  <!-- ***************************           Group Ends       ***************************************** -->
+
+  <!-- ************************      Complex Entities Starts       ************************************ -->
+
+  <xs:complexType name="addon_info_basic">
+    <xs:group ref="addon_info_basic" />
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_basic_provider_id">
+    <xs:sequence>
+      <xs:group ref="addon_info_basic" />
+      <xs:element name="provider_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_basic_id_enabled">
+    <xs:sequence>
+      <xs:group ref="id_enabled" />
+      <xs:group ref="addon_info_basic" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_basic_id_enabled_provider_id">
+    <xs:sequence>
+      <xs:group ref="id_enabled" />
+      <xs:group ref="addon_info_basic" />
+      <xs:element name="provider_id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_pcc">
+    <xs:group ref="addon_info_pcc" />
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_pcc_id_enabled">
+    <xs:sequence>
+      <xs:group ref="id_enabled" />
+      <xs:group ref="addon_info_pcc" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_mpi">
+    <xs:group ref="addon_info_mpi" />
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_mpi_id_enabled">
+    <xs:sequence>
+      <xs:group ref="id_enabled" />
+      <xs:group ref="addon_info_mpi" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addon_info_split">
+    <xs:group ref="addon_info_split" />
+  </xs:complexType>
+
+
+  <xs:complexType name="addon_info_split_id_enabled">
+    <xs:sequence>
+      <xs:group ref="id_enabled"></xs:group>
+      <xs:group ref="addon_info_split"></xs:group>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property_info">
+    <xs:sequence>
+      <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+      <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property_info_enabled">
+    <xs:complexContent>
+      <xs:extension base="property_info">
+        <xs:sequence>
+          <xs:element name="enabled" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="url_info">
+    <xs:sequence>
+      <xs:element type="xs:integer" name="id" minOccurs="0" maxOccurs="1" />
+      <xs:element type="xs:string" name="name" minOccurs="0" maxOccurs="1" />
+      <xs:element type="xs:integer" name="type_id" minOccurs="1" maxOccurs="1" />
+      <xs:element type="xs:string" name="value" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ************************      Complex Entities Ends       ************************************ -->
+</xs:schema>

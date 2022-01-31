@@ -1,5 +1,9 @@
 <?php
 /* ==================== Callback Exception Classes Start ==================== */
+
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Exception class for all Callback exceptions
  */
@@ -63,7 +67,7 @@ abstract class CPMFRAUD
             throw new CPMFraudEXCEPTION("Connection Configuration not found for the given FSP ID ". $iFSPID);
         }
 
-        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iFSPID);
+        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceProviderConfig($oDB,   $iFSPID,$oTI);
         $this->_obj_mPoint = new General($oDB, $oTxt);
     }
 
@@ -133,31 +137,43 @@ abstract class CPMFRAUD
      */
     public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
-        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
+        $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
+        $subType ='pre_auth';
+        if($iFraudType === Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY) { $subType ='post_auth'; }
+
+        $fraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType));
 
         $aFSPStatus = array();
         $fraudCheckResponse = new FraudResult();
-        while ($RS = $obj_DB->fetchName($iFSPRoutes) )
+        if($obj_TxnInfo->getClientConfig()->getClientServices()->isFraud() === true)
         {
-            if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+            foreach ($fraudAddon->getConfiguration() as $config)
             {
-                $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
-                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
-                $fraudCheckResponse->setFraudCheckAttempted(true);
-                array_push($aFSPStatus, $iFSPCode);
+                if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+                {
+                    $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
+                    $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
+                    $fraudCheckResponse->setFraudCheckAttempted(true);
+                    array_push($aFSPStatus, $iFSPCode);
+                }
             }
         }
+
         $fraudCheckResponse->setFraudCheckResult(CPMFRAUD::hasFraudPassed($aFSPStatus));
         return $fraudCheckResponse;
     }
 
     public static function attemptFraudInitCallback($iStateId,$sStateName,RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
-        $obj_mCard = new CreditCard($obj_DB, $obj_Txt, $obj_TxnInfo);
-        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
-        while ($RS = $obj_DB->fetchName($iFSPRoutes) )
+        $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
+        $subType ='pre_auth';
+        if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) { $subType ='post_auth'; }
+
+        $fraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType));
+
+        foreach ($fraudAddon->getConfiguration() as $config)
         {
-            $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
+            $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
             $obj_FSP->initCallback($iStateId,$sStateName,$cardTypeId,$iFraudType);
         }
     }

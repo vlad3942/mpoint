@@ -10,6 +10,9 @@
  */
 
 // Require Global Include File
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 require_once("../inc/include.php");
 
 // Require the PHP API for handling the connection to GoMobile
@@ -207,8 +210,9 @@ $aStateId = array();
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+    $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
 	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
-    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+    $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
@@ -407,10 +411,12 @@ try
                 // change split details status
                 if($obj_TxnInfo->getPaymentSession()->getSessionType() > 1) {
                     $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
-                    if($iStateID === Constants::iPAYMENT_REJECTED_STATE) {
+                    if($iStateID === Constants::iPAYMENT_REJECTED_STATE)
+                    {
+                        $splitPaymentAddOn = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT),array(),true);
                         $obj_general->changeSplitDetailStatus($obj_TxnInfo->getID(),'Failed');
-                        $isReoffer = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_REOFFER"));
-                        $isManualRefund = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "IS_MANUAL_REFUND"));
+                        $isReoffer = $splitPaymentAddOn->getProperties()["is_reoffer"];
+                        $isManualRefund = !$splitPaymentAddOn->getProperties()["is_rollback"];
                         if ($isReoffer === false) {
                             $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_TxnInfo->getPaymentSession()->getId(), 'Failed', $isManualRefund);
                         }
@@ -422,9 +428,10 @@ try
 
                 //Post-Auth-Fraud Check call
                 $isPostAuthFraudGatewayEnabled = false;
+                $postFraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,'post_auth'));
                 $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
                 if (($iStateID == Constants::iPAYMENT_ACCEPTED_STATE) && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE, Constants::iPOST_FRAUD_CHECK_INITIATED_STATE,Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE)) === false
-                    && $_OBJ_DB->countAffectedRows($obj_mCard->getFraudCheckRoute((int)$obj_XML->callback->transaction->card["type-id"], Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY)) > 0) {
+                    && count($postFraudAddon->getConfiguration()) > 0) {
                     $isPostAuthFraudGatewayEnabled = true;
                     $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE, '');
                 }
@@ -633,7 +640,7 @@ try
                             $paymentSecureInfo->attachPaymentSecureNode($obj_CardElem);
                         }
                         $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_CardElem, $_OBJ_DB, null, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mCard, (int)$obj_XML->callback->transaction->card["type-id"], Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY);
-                        $bisRollBack = General::xml2bool($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "ISROLLBACK_ON_FRAUD_FAIL"));
+                        $bisRollBack = $postFraudAddon->getProperties()['is_rollback'];
 
                         if($bisRollBack === true
                             && $fraudCheckResponse->isFraudCheckAccepted() === false

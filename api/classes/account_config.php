@@ -136,7 +136,13 @@ class AccountConfig extends BasicConfig
 		}
 		else { return null; }
 	}
-	
+
+    public static function produceFromXML( &$oXML):AccountConfig
+    {
+        $clAccount = new AccountConfig((int)$oXML->id,(int)$oXML->client_id,(string)$oXML->name,(string)$oXML->mobile,(string)$oXML->markup);
+
+        return $clAccount;
+    }
 	public static function produceConfigurations(RDB $oDB, $id)
 	{			
 		$sql = "SELECT id			
