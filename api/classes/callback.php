@@ -1085,7 +1085,7 @@ abstract class Callback extends EndUserAccount
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
         $repository = new ReadOnlyConfigRepository($this->getDBConn(),$this->_obj_TxnInfo);
-		$isStateUpdated = $sessionObj->updateState($repository,(int)$state);
+		$isStateUpdated = $sessionObj->updateState($repository,$state);
         $isMessagePublished = false;
 		if ($isStateUpdated == 1) {
 			$sid = $sessionObj->getStateId();
