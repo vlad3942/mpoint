@@ -25,5 +25,5 @@ class NMI_CREDOMATICException extends CallbackException { }
 class NMI_CREDOMATICE extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new NMI_CREDOMATICException("Method: getPaymentData is not supported by nmi_credomatic"); }
-	public function getPSPID() { return Constants::iiNMI_CREDOMATIC; }
+	public function getPSPID() { return Constants::iNMI_CREDOMATIC; }
 }
