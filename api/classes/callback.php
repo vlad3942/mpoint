@@ -1278,7 +1278,7 @@ abstract class Callback extends EndUserAccount
 						$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
 						if ($iSessionStateValidation !== 1) {
 							$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
-							if ($sessionObj->getStateId() === Constants::iSESSION_EXPIRED  || $sessionObj->getStateId() === Constants::iSESSION_FAILED) {
+							if ($sessionObj->getPendingAmount() === 0 || $sessionObj->getStateId() === Constants::iSESSION_EXPIRED  || $sessionObj->getStateId() === Constants::iSESSION_FAILED) {
                                 // Publish message before callback
 							    if ($callbackMessageRequest !== NULL) {
                                     $filter = ['status_code' => (string)$sid,'txn_type_id'=> (string)$this->_obj_TxnInfo->getTypeID()];
