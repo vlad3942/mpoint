@@ -260,6 +260,7 @@ class ClientServiceStatus
         $xml .= sprintf("<callback>%s</callback>", \General::bool2xml($this->isCallback()));
         $xml .= sprintf("<mcp>%s</mcp>", \General::bool2xml($this->isMcp()));
         $xml .= sprintf("<pcc>%s</pcc>", \General::bool2xml($this->isPcc()));
+        $xml .= sprintf("<mpi>%s</mpi>", \General::bool2xml($this->isMpi()));
         $xml .= sprintf("<split_payment>%s</split_payment>", \General::bool2xml($this->isSplitPayment()));
         $xml .= sprintf("<tokenization>%s</tokenization>", \General::bool2xml($this->isTokenization()));
         $xml .= sprintf("<void>%s</void>", \General::bool2xml($this->isVoid()));
@@ -290,6 +291,7 @@ class ClientServiceStatus
         $clService->setDcc(\General::xml2bool( $oXML->dcc ?? (!empty($oClientServices) ? $oClientServices->isDCC() : FALSE)));
         $clService->setMcp(\General::xml2bool($oXML->mcp ?? (!empty($oClientServices) ? $oClientServices->isMCP() : FALSE )));
         $clService->setPcc(\General::xml2bool($oXML->pcc  ?? (!empty($oClientServices) ?  $oClientServices->isPCC() : FALSE )));
+        $clService->setMpi(\General::xml2bool($oXML->mpi  ?? (!empty($oClientServices) ?  $oClientServices->isMPI() : FALSE )));
         $clService->setFraud(\General::xml2bool($oXML->fraud  ?? (!empty($oClientServices) ?  $oClientServices->isFraud() : FALSE )));
         $clService->setTokenization(\General::xml2bool($oXML->tokenization  ?? (!empty($oClientServices) ? $oClientServices->isTokenization() : FALSE )));
         $clService->setSplitPayment(\General::xml2bool($oXML->split_payment ?? (!empty($oClientServices) ?  $oClientServices->isSplitPayment() : FALSE )));

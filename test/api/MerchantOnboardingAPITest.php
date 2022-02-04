@@ -1019,7 +1019,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.client_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.client_property_tbl where id=61),'true')");
 
         # External Call
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/p_id/60,61/pm/1,4",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/p_id/60,61/pm/1,4/url/4,6",'DELETE');
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $this->assertEquals(200, $iStatus);
@@ -1028,6 +1028,15 @@ class MerchantOnboardingAPITest extends baseAPITest
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+
+        $res =  $this->queryDB("select * from client.url_tbl where clientid = 10099 AND urltypeid = 4");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
+        $res =  $this->queryDB("select * from client.client_tbl where id = 10099 AND CSSURL != ''");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
     }
 
     /***
@@ -1058,7 +1067,7 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.client_property_tbl (clientid,propertyid,value) VALUES ( 10099,(select ID from system.client_property_tbl where id=61),'true')");
 
         # External Call
-        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/p_id/-1/pm/-1",'DELETE');
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=clientconfig&params=client_id/10099/p_id/-1/pm/-1/url/-1",'DELETE');
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
         $this->assertEquals(200, $iStatus);
@@ -1067,6 +1076,15 @@ class MerchantOnboardingAPITest extends baseAPITest
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+
+        $res =  $this->queryDB("select * from client.url_tbl where clientid = 10099");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
+        $res =  $this->queryDB("select * from client.client_tbl where id = 10099 AND CSSURL != ''");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
     }
 
     /***

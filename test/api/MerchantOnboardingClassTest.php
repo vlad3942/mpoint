@@ -928,7 +928,8 @@ class MerchantOnboardingClassTest extends baseAPITest
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
-            'pm' => '1,4'
+            'pm' => '1,4',
+            'url' => '4,6'
         );
         $objController->deleteClientConfig($obj_DOM, $additionalParams);
 
@@ -936,6 +937,14 @@ class MerchantOnboardingClassTest extends baseAPITest
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+
+        $res =  $this->queryDB("select * from client.url_tbl where clientid = 10099 AND urltypeid = 4");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
+        $res =  $this->queryDB("select * from client.client_tbl where id = 10099 AND CSSURL != ''");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
     }
 
     public function testSuccessfulDeleteAllClientConfiguration()
@@ -958,6 +967,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
             'pm' => '-1',
+            'url' => '-1'
         );
         $objController->deleteClientConfig($obj_DOM, $additionalParams);
 
@@ -965,6 +975,14 @@ class MerchantOnboardingClassTest extends baseAPITest
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+
+        $res =  $this->queryDB("select * from client.url_tbl where clientid = 10099");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
+        $res =  $this->queryDB("select * from client.client_tbl where id = 10099 AND CSSURL != ''");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
     }
 
     public function  testSuccessfulReadOnlyAddonConfig()

@@ -84,6 +84,16 @@ class MerchantConfigInfo
         $configRepository->deleteConfigDetails($id, 'provider');
     }
 
+    public function deleteClientUrlConfig(MerchantConfigRepository $configRepository, string $urls)
+    {
+        $a_urls = explode(',', $urls); // Explode String
+        foreach ($a_urls as $url)
+        {
+            if(is_numeric($url) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for URL {param:".$url."}"); }
+        }
+        $configRepository->deleteClientUrls($a_urls);
+    }
+
     /**
      * @param MerchantConfigRepository $configRepository
      * @param string $type
@@ -363,11 +373,9 @@ class MerchantConfigInfo
         $countries = $additionalParams['country']??'';
         $currencies = $additionalParams['currency']??'';
 
-
-
-        if(empty($value) === true && empty($pms) === true) {
+        /* if(empty($value) === true && empty($pms) === true) {
             throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE, "No parameters for ID");
-        }
+        }*/
         if(empty($value) === false)
         {
             $aIds = explode(',', $value);
