@@ -81,7 +81,7 @@ class PostStatusAPITest extends baseAPITest
         while ($row = pg_fetch_assoc($res)) {
             $aStates[] = $row["stateid"];
         }
-        $this->assertCount(11, $aStates);
+        $this->assertCount(12, $aStates);
         $this->assertTrue(is_int(array_search(2002, $aStates)));
         $this->assertTrue(is_int(array_search(4020, $aStates)));
 
