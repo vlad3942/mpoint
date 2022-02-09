@@ -9,11 +9,11 @@ class NmiInitAPITest extends InitializeAPIValidationTest
         $pspID = Constants::iNMI_CREDOMATIC;
         $clientId = 10099;
         $accountId = 1100;
-        $countryId = 100;
-        $currencyId = 170;
+        $countryId = 200;
+        $currencyId = 840;
         $captureTypeId = 2;
         $pspTypeId = 2;
-        $cardId = 7;
+        $cardId = 8;
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES ($clientId, 1, $countryId, 'Test Client', 'Tuser', 'Tpass')");
         $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES ($clientId, 4, 'http://mpoint.local.cellpointmobile.com/')");
