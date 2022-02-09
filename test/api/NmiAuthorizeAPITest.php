@@ -6,7 +6,7 @@
 
 require_once __DIR__ . '/AuthorizeAPITest.php';
 
-class StripeAuthorizeAPITest extends AuthorizeAPITest
+class NmiAuthorizeAPITest extends AuthorizeAPITest
 {
     public function testSuccessfulAuthorize()
     {

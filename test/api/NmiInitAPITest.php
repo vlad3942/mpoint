@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/InitializeAPIValidationTest.php';
 
-class StripeInitTest extends InitializeAPIValidationTest
+class NmiInitAPITest extends InitializeAPIValidationTest
 {
     public function testSuccessfullInit()
     {

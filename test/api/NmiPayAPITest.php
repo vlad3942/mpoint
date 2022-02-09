@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/PayAPITest.php';
 
-class StripePayAPITest extends PayAPITest
+class NmiPayAPITest extends PayAPITest
 {
     public function testSuccessfulPay()
     {
