@@ -1367,7 +1367,7 @@ abstract class Callback extends EndUserAccount
 					if(FALSE) {
 						$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), '');
 					}
-					if ($sessionObj->getPendingAmount() === 0) {
+					if ($sessionObj->getPendingAmount() === 0 || $sid === Constants::iSESSION_EXPIRED || $sid === Constants::iSESSION_FAILED) {
 						$aTransaction = $this->_obj_TxnInfo->getPaymentSession()->getTransactions();
 						$isIgnoreRequest = FALSE;
 					}

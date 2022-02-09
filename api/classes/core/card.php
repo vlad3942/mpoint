@@ -46,7 +46,7 @@ class Card implements JsonSerializable, XMLSerializable
 
     public function __construct($obj_Card = NULL, RDB &$oDB = NULL, array $prefixes = NULL)
     {
-        if ( ($obj_Card instanceof SimpleDOMElement) === true)
+        if ( ($obj_Card instanceof SimpleDOMElement) === true || ($obj_Card instanceof SimpleXMLElement) === true)
         {
             $this->initializePropFromXML($obj_Card);
         }
