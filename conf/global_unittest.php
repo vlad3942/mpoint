@@ -375,20 +375,6 @@ $aHTTP_CONN_INFO["stripe"]["paths"]["pay"] = "/_test/simulators/stripe/pay.php";
 $aHTTP_CONN_INFO["stripe"]["paths"]["initialize"] = "/_test/simulators/stripe/pay.php";
 
 /**
- * Connection info for connecting to NMI
- */
-$aHTTP_CONN_INFO["nmi_credomatic"]["protocol"] = "http";
-$aHTTP_CONN_INFO["nmi_credomatic"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["nmi_credomatic"]["port"] = 80;
-$aHTTP_CONN_INFO["nmi_credomatic"]["timeout"] = 120;
-$aHTTP_CONN_INFO["nmi_credomatic"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["nmi_credomatic"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["auth"] = "/_test/simulators/nmi_credomatic/auth.php";
-$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["pay"] = "/_test/simulators/nmi_credomatic/pay.php";
-$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["initialize"] = "/_test/simulators/nmi_credomatic/pay.php";
-
-
-/**
  * Message Queue Provider Information
  *
  */
