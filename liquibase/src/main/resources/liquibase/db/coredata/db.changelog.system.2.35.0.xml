@@ -132,4 +132,11 @@
 		</insert>
 	</changeSet>
 
+	<changeSet author="Ijaj Inamdar" id="2022-02-10-CMP-6425-setup-v2.36">
+		<update catalogName="system" schemaName="system" tableName="client_property_tbl">
+			<column name="name" value="invoiceidrule" />
+			<where>name = 'invoiceidrules'</where>
+		</update>
+	</changeSet>
+
 </databaseChangeLog>
