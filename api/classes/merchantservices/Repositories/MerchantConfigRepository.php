@@ -1673,7 +1673,7 @@ class MerchantConfigRepository
         $aSystemMetaData['psps'] = $this->getMetaDataInfo('psp', 'psp_tbl', true, array('system_type as type_id'));
         $aSystemMetaData['pm_types'] = $this->getMetaDataInfo('pm_type', 'paymenttype_tbl');
         $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
-        $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
+        $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true, array('code'));
         $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
         $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10,17) THEN 'HPP' WHEN id in (7,8,9,11,15) THEN 'MERCHANT' ELSE '' END) as url_category";
         $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true,array($urlCategory),array("id"=>"type_id"));
