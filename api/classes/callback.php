@@ -1048,6 +1048,8 @@ abstract class Callback extends EndUserAccount
 			return new Paymaya_Acq($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paymaya_acq"],$obj_PSPConfig);
 		case (Constants::iSTRIPE_PSP):
 		    return new Stripe_PSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["stripe"],$obj_PSPConfig);
+		case (Constants::iNMI_CREDOMATIC):
+            return new NMI_CREDOMATICE($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nmi_credomatic"],$obj_PSPConfig);
 
 		default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);

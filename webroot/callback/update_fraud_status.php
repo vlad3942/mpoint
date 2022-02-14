@@ -143,6 +143,8 @@ require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH ."/cybersource.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 /*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";

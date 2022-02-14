@@ -138,6 +138,8 @@ require_once(sCLASS_PATH ."/psp/veritrans4g.php");
 require_once(sCLASS_PATH ."/cellulant.php");
 // Require specific Business logic for the FirstData component
 require_once(sCLASS_PATH ."/first-data.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 $aMsgCds = array();
 
