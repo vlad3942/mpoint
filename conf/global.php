@@ -1226,6 +1226,7 @@ $aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["refund"] = "/mpoint/psp/nmi-credoma
 $aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["cancel"] = "/mpoint/psp/nmi-credomatic/cancel";
 $aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["callback"] = "/mpoint/psp/nmi-credomatic/callback";
 $aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["status"] = "/mpoint/psp/nmi-credomatic/status";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
  * GoMobile Connection Info.
