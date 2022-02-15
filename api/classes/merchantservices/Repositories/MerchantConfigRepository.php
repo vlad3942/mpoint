@@ -509,7 +509,15 @@ class MerchantConfigRepository
             throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currencies for IDs {".$id."}");
         }*/
 
-        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id in( ".$id.")";
+        $sWhereCls = "";
+
+        if($id === "-1") {
+            $sWhereCls = " WHERE routeid IN (SELECT id FROM client". sSCHEMA_POSTFIX.".route_tbl WHERE clientid = " . $this->_clientConfig->getID() .")";
+        } else {
+            $sWhereCls = " WHERE id IN (" . $id . ")";
+        }
+
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true " . $sWhereCls;
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {

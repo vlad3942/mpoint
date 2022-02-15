@@ -343,7 +343,7 @@ class MerchantConfigInfo
 
         if($type === 'ROUTE')
         {
-            if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
+            if(count($additionalParams) === 3 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
             {
                 $aIds = explode(',', $additionalParams['id']);
                 foreach ($aIds as $id)
