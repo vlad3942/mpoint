@@ -1205,6 +1205,12 @@ abstract class Constants
      */
     const iPAYMAYA_ACQ = 73;
 
+     /**
+     * Unique PSP ID for transaction's made using AV NMI
+     *
+     */
+     const iNMI_CREDOMATIC = 74;
+
 
     /**
 	 * Unique ID for the Electronic Payment Flow

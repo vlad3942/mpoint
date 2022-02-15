@@ -123,4 +123,70 @@
 
 	</changeSet>
 
+	<changeSet author="Chaitenya Yadav" id="2022-01-28-PSP-Currency-AUD-71">
+		<insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+			<column name="pspid" value="71"/>
+			<column name="enabled" value="true"/>
+			<column name="name" value="AUD"/>
+			<column name="currencyid" value="36" />
+		</insert>
+	</changeSet>
+
+	<!--Nmi Credomatic -->
+	<changeSet author="Amar Kumar" id="2022-01-29-setup-v2.33-system-3">
+		<insert catalogName="system" schemaName="system" tableName="psp_tbl">
+			<column name="id" value="74" />
+			<column name="name" value="nmi"/>
+			<column name="enabled" value="true"/>
+			<column name="system_type" value="1"/>
+			<column name="supportedpartialoperations" value="0"/>
+		</insert>
+	</changeSet>
+
+	<changeSet author="Amar Kumar" id="2021-01-12-setup-v2.33-system-3">
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="8" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="7" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="1" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="3" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+			<column name="cardid" value="22" />
+			<column name="pspid" value="74"/>
+			<column name="enabled" value="true"/>
+		</insert>
+
+		<insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+			<column name="pspid" value="74"/>
+			<column name="name" value="USD" />
+			<column name="currencyid" value="840" />
+			<column name="enabled" value="true"/>
+		</insert>
+	</changeSet>
+
+	<changeSet author="Ijaj Inamdar" id="2022-02-10-CMP-6425-setup-v2.36">
+		<update catalogName="system" schemaName="system" tableName="client_property_tbl">
+			<column name="name" value="invoiceidrule" />
+			<where>name = 'invoiceidrules'</where>
+		</update>
+	</changeSet>
+
 </databaseChangeLog>

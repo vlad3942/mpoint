@@ -1210,6 +1210,24 @@ $aHTTP_CONN_INFO["stripe"]["paths"]["callback"] = "/mpoint/aggregator/stripe/cal
 $aHTTP_CONN_INFO["stripe"]["paths"]["status"] = "/mpoint/aggregator/stripe/status";
 
 /**
+ * Connection info for connecting to Nmi Credomatic
+ */
+$aHTTP_CONN_INFO["nmi_credomatic"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["nmi_credomatic"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["nmi_credomatic"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["nmi_credomatic"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["nmi_credomatic"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["nmi_credomatic"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["nmi_credomatic"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["initialize"] = "/mpoint/psp/nmi-credomatic/initialize";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["auth"] = "/mpoint/psp/nmi-credomatic/authorize-payment";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["capture"] = "/mpoint/psp/nmi-credomatic/capture";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["refund"] = "/mpoint/psp/nmi-credomatic/refund";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["cancel"] = "/mpoint/psp/nmi-credomatic/cancel";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["callback"] = "/mpoint/psp/nmi-credomatic/callback";
+$aHTTP_CONN_INFO["nmi_credomatic"]["paths"]["status"] = "/mpoint/psp/nmi-credomatic/status";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

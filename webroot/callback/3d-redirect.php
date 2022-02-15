@@ -114,6 +114,8 @@ require_once(sCLASS_PATH ."/clientinfo.php");
 require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 // Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
+// Require specific Business logic for the Nmi-Credomatic component
+require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 /**
  * Input XML format
@@ -299,6 +301,11 @@ try
                 $additionalTxnData[1]['type'] = 'Transaction';
                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
 
+                $obj_card = new Card($card_obj->card, $_OBJ_DB);
+                $cardName = $obj_card->getCardName();
+                if (empty($cardName) === false) {
+                    $card_obj->card->card_name = $cardName;
+                }
 
                 $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
                 $code = $response->code;

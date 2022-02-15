@@ -962,7 +962,6 @@
 			<column name="enabled" value="true"/>
 		</insert>
 	</changeSet>
-
 	<changeSet author="Abhinav Shaha" id="2022-01-14-setup-v2.33-system-4">
 
 		<update catalogName="system" schemaName="system" tableName="card_tbl">
