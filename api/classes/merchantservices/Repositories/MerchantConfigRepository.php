@@ -2094,7 +2094,7 @@ class MerchantConfigRepository
            if(empty($provider->getCountryIds()) === false)
            {
                if($isDeleteOld === true) { $this->deleteConfigDetails($provider->getId(),"COUNTRY");}
-               $this->saveConfigDetails("", $provider->getCurrencyIds(), $provider->getId(), 'COUNTRY');
+               $this->saveConfigDetails("", $provider->getCountryIds(), $provider->getId(), 'COUNTRY');
            }
            if(empty($provider->getCurrencyIds()) === false)
            {
