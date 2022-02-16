@@ -787,6 +787,34 @@ class MerchantOnboardingAPITest extends baseAPITest
         $this->assertEquals(0, pg_num_rows($res));
     }
 
+    public function testSuccessfulDeleteAllRouteConfig()
+    {
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessId' AND PSPID=50),1,'1234')");
+        $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
+        $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
+        $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
+        $this->queryDB("INSERT INTO client.routefeature_tbl (clientid,routeconfigid, featureid) VALUES (10099,1,1)");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid, countryid) VALUES (1,1)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
+
+        $this->constHTTPClient("/merchantservices/api/Onboarding.php?service=routeconfig&params=client_id/10099/psp_id/50/id/-1", 'DELETE');
+
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'));
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routeconfig_tbl where id = 1 AND isdeleted=false" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+    }
 
     public function testSuccessfulGetSystemMetadata()
     {
