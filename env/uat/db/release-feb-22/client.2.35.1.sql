@@ -7,4 +7,4 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
     ('IS_LEGACY_CALLBACK_FLOW', 'false', true, 10077, 'client', 2);
 
 UPDATE client.client_property_tbl set value=false
-WHERE clientid=10077 and propertyid=29;
+WHERE clientid=10077 and propertyid= (select id from system.client_property_tbl  where name='IS_LEGACY_CALLBACK_FLOW');
