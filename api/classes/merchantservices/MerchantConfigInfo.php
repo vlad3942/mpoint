@@ -343,14 +343,14 @@ class MerchantConfigInfo
 
         if($type === 'ROUTE')
         {
-            if(count($additionalParams) === 3 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
+            if(count($additionalParams) === 3 && isset($additionalParams['client_id']) && isset($additionalParams['id']) && isset($additionalParams['psp_id']))
             {
                 $aIds = explode(',', $additionalParams['id']);
                 foreach ($aIds as $id)
                 {
                     if(is_numeric($id) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for ID {param:".$id."}"); }
                 }
-                $configRepository->deleteAllRouteConfig($type, $additionalParams['id']);
+                $configRepository->deleteAllRouteConfig($type, $additionalParams);
                 return true;
             }
         }else if($type === "PSP")

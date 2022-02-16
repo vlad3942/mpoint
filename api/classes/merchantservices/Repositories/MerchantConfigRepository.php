@@ -470,7 +470,7 @@ class MerchantConfigRepository
      * @param int $id
      * @throws MerchantOnboardingException
      */
-    public function deleteAllRouteConfig(string $type,  string $id)
+    public function deleteAllRouteConfig(string $type,  array $aParams)
     {
        /* $sWhereCls = " AND routeconfigid = " . $id;
 
@@ -511,17 +511,17 @@ class MerchantConfigRepository
 
         $sWhereCls = "";
 
-        if($id === "-1") {
-            $sWhereCls = " WHERE routeid IN (SELECT id FROM client". sSCHEMA_POSTFIX.".route_tbl WHERE clientid = " . $this->_clientConfig->getID() .")";
+        if($aParams['id'] === "-1") {
+            $sWhereCls = " WHERE routeid IN (SELECT id FROM client". sSCHEMA_POSTFIX.".route_tbl WHERE clientid = " . $this->_clientConfig->getID() ." AND providerid = " . $aParams['psp_id'] . ")";
         } else {
-            $sWhereCls = " WHERE id IN (" . $id . ")";
+            $sWhereCls = " WHERE id IN (" . $aParams['id'] . ")";
         }
 
         $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true " . $sWhereCls;
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
-            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$id."}");
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$aParams['id']."}");
         }
     }
 
