@@ -470,7 +470,7 @@ class MerchantConfigRepository
      * @param int $id
      * @throws MerchantOnboardingException
      */
-    public function deleteAllRouteConfig(string $type,  string $id)
+    public function deleteAllRouteConfig(string $type,  array $aParams)
     {
        /* $sWhereCls = " AND routeconfigid = " . $id;
 
@@ -509,11 +509,19 @@ class MerchantConfigRepository
             throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currencies for IDs {".$id."}");
         }*/
 
-        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true WHERE id in( ".$id.")";
+        $sWhereCls = "";
+
+        if($aParams['id'] === "-1") {
+            $sWhereCls = " WHERE routeid IN (SELECT id FROM client". sSCHEMA_POSTFIX.".route_tbl WHERE clientid = " . $this->_clientConfig->getID() ." AND providerid = " . $aParams['psp_id'] . ")";
+        } else {
+            $sWhereCls = " WHERE id IN (" . $aParams['id'] . ")";
+        }
+
+        $SQL = "UPDATE client". sSCHEMA_POSTFIX.".routeconfig_tbl SET isdeleted=true " . $sWhereCls;
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)
         {
-            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$id."}");
+            throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." RouteConfig for IDs {".$aParams['id']."}");
         }
     }
 
@@ -646,6 +654,64 @@ class MerchantConfigRepository
             {
                 throw new MerchantOnboardingException(MerchantOnboardingException::SQL_EXCEPTION,"Failed to delete ".strtolower($type)." Currency  for IDs {".$currencies."}");
             }
+        }
+    }
+
+    public function deleteClientUrls(array $aUrls) {
+
+        $sWhereCls = ' clientid  = ' . $this->_clientConfig->getID();
+        $SQL = '';
+        $column = '';
+
+        if($aUrls[0] !== '-1') {
+            foreach ($aUrls as $urlType) {
+                switch ($urlType)
+                {
+                    case ClientConfig::iLOGO_URL:
+                        $column = "LOGOURL = ''";
+                        break;
+                    case ClientConfig::iCSS_URL:
+                        $column = "CSSURL = ''";
+                        break;
+                    case ClientConfig::iACCEPT_URL:
+                        $column = "ACCEPTURL = ''";
+                        break;
+                    case ClientConfig::iCANCEL_URL:
+                        $column = "CANCELURL = ''";
+                        break;
+                    case ClientConfig::iDECLINE_URL:
+                        $column = "DECLINEURL = ''";
+                        break;
+                    case ClientConfig::iCALLBACK_URL:
+                        $column = "CALLBACKURL = ''";
+                        break;
+                    case ClientConfig::iICON_URL:
+                        $column = "ICONURL = ''";
+                        break;
+                    default:
+                    {
+                        $SQL = "DELETE FROM  client".sSCHEMA_POSTFIX.".url_tbl WHERE  ". $sWhereCls . " AND urltypeid = " . $urlType;
+                    }
+                }
+                if(empty($column) === false ) {
+                    $sWhereCls = ' id  = ' . $this->_clientConfig->getID();
+                    $SQL = "UPDATE  client".sSCHEMA_POSTFIX.".client_tbl SET " . $column . " WHERE  ". $sWhereCls;
+                }
+                $rs = $this->getDBConn()->executeQuery($SQL);
+                if($rs === false)
+                {
+                    $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+                    if(strpos($this->getDBConn()->getErrMsg(),'duplicate key value violates unique constraint') !== false)
+                    {
+                        $statusCode = MerchantOnboardingException::SQL_DUPLICATE_EXCEPTION;
+                    }
+                    throw new MerchantOnboardingException($statusCode,"Failed to Delete Client URl Id:".$urlType);
+                }
+            }
+        } else {
+            $this->deleteConfigDetails(-1, 'URL');
+            $sWhereClause = " WHERE id = " . $this->_clientConfig->getID();
+            $this->resetClientTblColumns($this->_clientConfig->getID(), array("LOGOURL", "CSSURL", "ACCEPTURL", "CANCELURL", "DECLINEURL", "CALLBACKURL", "ICONURL"), $sWhereClause);
         }
     }
 
@@ -844,6 +910,43 @@ class MerchantConfigRepository
             $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
             throw new MerchantOnboardingException($statusCode,"Failed to Delete Client ".$sClientAttr." Config ");
         }
+
+        if(strtolower($sClientAttr) === 'urls'){
+
+            $sWhereClause = " WHERE id = " . $this->_clientConfig->getID();
+            $this->resetClientTblColumns($this->_clientConfig->getID(), array("LOGOURL", "CSSURL", "ACCEPTURL", "CANCELURL", "DECLINEURL", "CALLBACKURL", "ICONURL"), $sWhereClause);
+        }
+    }
+
+    /**
+     * @param int $iClientId
+     * @param array $aColumns
+     * @return false|void
+     * @throws MerchantOnboardingException
+     */
+    public function resetClientTblColumns(int $iClientId, array $aColumns, $sWhereClause)
+    {
+
+        if(empty($iClientId) === true || empty($aColumns) === true || empty($sWhereClause) === true)
+        {
+            return false;
+        }
+
+        $aSetClause = array();
+
+        foreach ($aColumns as $column) {
+            array_push($aSetClause, $column . " = ''");
+        }
+
+        $SQL = 'UPDATE CLIENT'.sSCHEMA_POSTFIX.'.client_tbl SET ' . implode(',' , $aSetClause) . ' ' . $sWhereClause;
+        $rs = $this->getDBConn()->executeQuery($SQL);
+
+        if($rs === false)
+        {
+            $statusCode = MerchantOnboardingException::SQL_EXCEPTION;
+            throw new MerchantOnboardingException($statusCode,"Failed to Reset Client ".$iClientId." Config ");
+        }
+
     }
 
     /**
@@ -975,6 +1078,10 @@ class MerchantConfigRepository
                 $sTableName = "merchantaccount_tbl";
                 $sWhereCls = " clientid = ". $this->getClientInfo()->getID()
                             . " AND pspid IN (SELECT id FROM SYSTEM" . sSCHEMA_POSTFIX .".psp_tbl WHERE system_type = ". $id ." )";
+                break;
+            case 'url':
+                $sTableName = "url_tbl";
+                $sWhereCls = " clientid = ". $this->getClientInfo()->getID();
                 break;
 
             default:
@@ -1574,7 +1681,7 @@ class MerchantConfigRepository
         $aSystemMetaData['psps'] = $this->getMetaDataInfo('psp', 'psp_tbl', true, array('system_type as type_id'));
         $aSystemMetaData['pm_types'] = $this->getMetaDataInfo('pm_type', 'paymenttype_tbl');
         $aSystemMetaData['country_details'] = $this->getMetaDataInfo('country_detail', 'country_tbl', true);
-        $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true);
+        $aSystemMetaData['currency_details'] = $this->getMetaDataInfo('currency_detail', 'currency_tbl', true, array('code'));
         $aSystemMetaData['capture_types'] = $this->getMetaDataInfo('capture_type', 'capturetype_tbl', true);
         $urlCategory = "(CASE WHEN id in (1,2,3,4,12) THEN 'CLIENT' WHEN id in (14,16,5,6,10,17) THEN 'HPP' WHEN id in (7,8,9,11,15) THEN 'MERCHANT' ELSE '' END) as url_category";
         $aSystemMetaData['client_urls'] = $this->getMetaDataInfo('client_url', 'urltype_tbl', true,array($urlCategory),array("id"=>"type_id"));
@@ -1692,9 +1799,9 @@ class MerchantConfigRepository
      */
     public function updateAddonServiceStatus(ClientServiceStatus  $clService)
     {
-        $SQL = "INSERT INTO CLIENT".sSCHEMA_POSTFIX.".services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled)
-         values(".$this->_clientConfig->getID().",".General::bool2xml($clService->isDcc()).",".General::bool2xml($clService->isMcp()).",".General::bool2xml($clService->isPcc()).",".General::bool2xml($clService->isFraud()).",".General::bool2xml($clService->isTokenization()).",".General::bool2xml($clService->isSplitPayment())."
-         ,".General::bool2xml($clService->isCallback()).",".General::bool2xml($clService->isVoid()).") ON CONFLICT(clientid) DO UPDATE SET dcc_enabled=EXCLUDED.dcc_enabled,mcp_enabled=EXCLUDED.mcp_enabled,pcc_enabled=EXCLUDED.pcc_enabled,fraud_enabled=EXCLUDED.fraud_enabled,tokenization_enabled=EXCLUDED.tokenization_enabled
+        $SQL = "INSERT INTO CLIENT".sSCHEMA_POSTFIX.".services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, mpi_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled)
+         values(".$this->_clientConfig->getID().",".General::bool2xml($clService->isDcc()).",".General::bool2xml($clService->isMcp()).",".General::bool2xml($clService->isPcc()).",".General::bool2xml($clService->isMpi()).",".General::bool2xml($clService->isFraud()).",".General::bool2xml($clService->isTokenization()).",".General::bool2xml($clService->isSplitPayment())."
+         ,".General::bool2xml($clService->isCallback()).",".General::bool2xml($clService->isVoid()).") ON CONFLICT(clientid) DO UPDATE SET dcc_enabled=EXCLUDED.dcc_enabled,mcp_enabled=EXCLUDED.mcp_enabled,pcc_enabled=EXCLUDED.pcc_enabled,mpi_enabled=EXCLUDED.mpi_enabled,fraud_enabled=EXCLUDED.fraud_enabled,tokenization_enabled=EXCLUDED.tokenization_enabled
          ,splitpayment_enabled=EXCLUDED.splitpayment_enabled,callback_enabled=EXCLUDED.callback_enabled,void_enabled=EXCLUDED.void_enabled";
         $rs = $this->getDBConn()->executeQuery($SQL);
         if($rs === false || $this->getDBConn()->countAffectedRows($rs) < 1)

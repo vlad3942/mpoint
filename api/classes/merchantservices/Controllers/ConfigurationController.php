@@ -219,6 +219,12 @@ class ConfigurationController
     {
         $this->getConfigService()->deletePropertyConfig('CLIENT',$additionalParams);
 
+        $urls = $additionalParams['url']??'';
+        if(empty($urls) === false)
+        {
+            $this->getConfigService()->deleteClientUrlConfig($urls);
+        }
+
     }
 
     /**
