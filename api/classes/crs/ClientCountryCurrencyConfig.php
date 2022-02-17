@@ -39,7 +39,7 @@ class ClientCountryCurrencyConfig
         $xml = '';
 		if(empty($this->_aCountry) == false && count($this->_aCountry) > 0){
             $countryArr =  array_unique($this->_aCountry, SORT_REGULAR);
-		    foreach ($countryArr as $country ){
+            foreach ($countryArr as $country ){
                 $xml .= '<payment_country>';
                 $xml .= '<id>'. $country['COUNTRYID'] .'</id>';
 			    $xml .= '<name>'.$country['COUNTRYNAME'] .'</name>';
