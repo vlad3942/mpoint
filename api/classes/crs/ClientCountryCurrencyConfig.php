@@ -55,7 +55,8 @@ class ClientCountryCurrencyConfig
     {
         $xml = '';
         if(empty($this->_aCurrency) == false && count($this->_aCurrency) > 0){
-            foreach ($this->_aCurrency as $currency){
+            $currencyArr =  array_unique($this->_aCurrency, SORT_REGULAR);
+            foreach ($currencyArr as $currency){
                 $xml .= '<payment_currency>';
                 $xml .= '<id>'. $currency['CURRENCYID'] .'</id>';
                 $xml .= '<name>'.$currency['CURRENCYCODE'] .'</name>';
