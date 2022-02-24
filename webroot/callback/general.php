@@ -38,97 +38,26 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH ."/dsb.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
 // Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
 require_once(sCLASS_PATH ."/cpg.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the Wirecard component
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-// Require specific Business logic for the DIBS component
-require_once(sCLASS_PATH ."/securetrading.php");
-// Require specific Business logic for the CCAvenue component
-require_once(sCLASS_PATH ."/ccavenue.php");
-// Require specific Business logic for the PayPal component
-require_once(sCLASS_PATH ."/paypal.php");
-// Require specific Business logic for the PayFort component
-require_once(sCLASS_PATH ."/payfort.php");
-// Require specific Business logic for the DataCash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the 2C2P component
-require_once(sCLASS_PATH ."/ccpp.php");
-// Require specific Business logic for the MayBank component
-require_once(sCLASS_PATH ."/maybank.php");
-// Require specific Business logic for the PublicBank component
-require_once(sCLASS_PATH ."/publicbank.php");
-// Require specific Business logic for the AliPay component
-require_once(sCLASS_PATH ."/alipay.php");
-require_once(sCLASS_PATH ."/alipay_chinese.php");
-// Require specific Business logic for the POLi component
-require_once(sCLASS_PATH ."/poli.php");
-// Require specific Business logic for the QIWI component
-require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
-// Require specific Business logic for the Klarna component
-require_once(sCLASS_PATH ."/klarna.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the Trustly component
-require_once(sCLASS_PATH ."/trustly.php");
-// Require specific Business logic for the 2C2P-ALC component
-require_once(sCLASS_PATH ."/ccpp_alc.php");
-// Require specific Business logic for the paytabs component
-require_once(sCLASS_PATH ."/paytabs.php");
-// Require specific Business logic for the citcon component
-require_once(sCLASS_PATH ."/citcon.php");
-// Require specific Business logic for the PPRO component
-require_once(sCLASS_PATH ."/ppro.php");
-
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
-// Require specific Business logic for the eGHL FPX component
-require_once(sCLASS_PATH ."/eghl.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
-// Require specific Business logic for the Global Collect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-require_once(sCLASS_PATH ."/worldpay.php");
-// Require specific Business logic for the PayU component
-require_once(sCLASS_PATH ."/payu.php");
-// Require specific Business logic for the Cielo component
-require_once(sCLASS_PATH ."/cielo.php");
-// Require specific Business logic for the cellulant component
-require_once(sCLASS_PATH ."/cellulant.php");
-require_once(sCLASS_PATH ."/global-payments.php");
-// Require specific Business logic for the cybs component
-require_once(sCLASS_PATH ."/cybersource.php");
-// Require specific Business logic for the VeriTrans4G component
-require_once(sCLASS_PATH ."/psp/veritrans4g.php");
-// Require specific Business logic for the DragonPay component
-require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
-// Require specific Business logic for the SWISH component
-require_once(sCLASS_PATH ."/apm/swish.php");
-// Require specific Business logic for the FirstData component
-require_once(sCLASS_PATH ."/first-data.php");
-
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 require_once sCLASS_PATH . '/routing_service.php';
@@ -143,27 +72,12 @@ require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH .'/credit_card.php');
-// Require specific Business logic for the Grab Pay component
-require_once(sCLASS_PATH ."/grabpay.php");
-// Require specific Business logic for the Paymaya component
-require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
-// Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/MPGS.php");
-// Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/voucher/TravelFund.php');
 // Require model class for Payment Authorization
 require_once(sCLASS_PATH ."/authorize.php");
-// Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/Paymaya_Acq.php");
-// Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
-// Require specific Business logic for the Nmi-Credomatic component
-require_once(sCLASS_PATH ."/nmi_credomatic.php");
-
 
 /**
  * Input XML format
@@ -245,12 +159,14 @@ try
 
     if($bHoldSessionComplete === false) {
 
+        $pspid = (int)$obj_XML->callback->{"psp-config"}["id"];
         if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE) {
-            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, (int)$obj_TxnInfo->getPSPID());
-        } else {
-            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, (int)$obj_XML->callback->{"psp-config"}["id"]);
+            $pspid = $obj_TxnInfo->getPSPID();
         }
-        $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+
+        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspid, $aHTTP_CONN_INFO);
+        $obj_mPoint = $obj_PaymentProcessor->getPSPInfo();
+        $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
         // check if callback state is already logged if logged then log appropriate duplicate callback state and prevent further processing
         $iIsCompleteTransactionStateLogged = $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID);
         if ($iIsCompleteTransactionStateLogged > 0) {
@@ -278,7 +194,6 @@ try
 
             if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP) && $propertyValue === 'mpi' && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
                 if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
-                    $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
                     $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
                     $xmlString = "<card id='" . $obj_XML->callback->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
                     $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
@@ -407,7 +322,11 @@ try
 
                 if ($iStateID === Constants::iPAYMENT_PENDING_STATE && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE) {
                     $obj_mPoint->getTxnInfo()->setExternalId($obj_XML->callback->transaction["external-id"]);
-                    $obj_mPoint->generate_receipt();
+                    try {
+                        $obj_mPoint->generate_receipt();
+                    }catch (mPointException $e) {
+                        trigger_error($e->getMessage(), E_USER_NOTICE);
+                    }
                 }
 
                 // change split details status
@@ -591,7 +510,6 @@ try
                     "amount" => $obj_TxnInfo->getAmount(),
                     "card-id" => $obj_XML->callback->transaction->card["type-id"]);
                 $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-                $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 
                 $paymentSecureInfo = null;
                 if ($obj_XML->callback->transaction->card->{'info-3d-secure'}) {
@@ -634,9 +552,9 @@ try
                     if ($bIsSkipFraud === true) {
                         $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE, 'Fraud Check Skipped due to rule matched');
                     } else {
-                        $obj_mVaultPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-
-                        $obj_mVaultPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_mVaultPSPConfig);
+                        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, Constants::iMVAULT_PSP, $aHTTP_CONN_INFO);
+                        $obj_mVaultPSP = $obj_PaymentProcessor->getPSPInfo();
+                        $obj_mVaultPSPConfig = $obj_PaymentProcessor->getPSPConfig();
                         $obj_CardElem = $obj_mVaultPSP->getCardDetails();
                         if ($paymentSecureInfo !== null && $obj_CardElem !== null) {
                             $paymentSecureInfo->attachPaymentSecureNode($obj_CardElem);
@@ -745,11 +663,11 @@ try
                             $iPSPID = $newTxnInfo->getPSPID();
                             $iAmount = (int)$newTxnInfo->getAmount();
 
-                            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $newTxnInfo, $iPSPID);
-
+                            $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $iPSPID, $aHTTP_CONN_INFO);
+                            $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
                             if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
                                 && ($newTxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_REJECTED_STATE)) === FALSE)) {
-                                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                                $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
                                 $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $obj_PSP);
 
                                 $voucherId = $newTxnInfo->getAdditionalData('voucherid');

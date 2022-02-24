@@ -53,23 +53,8 @@ require_once(sCLASS_PATH ."/account_config.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 // Require Data class for Wallet processor
 require_once(sCLASS_PATH ."/wallet_processor.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the mVault component
-require_once(sCLASS_PATH ."/eghl.php");
-// Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
-require_once(sCLASS_PATH ."/cellulant.php");
-// Require specific Business logic for the FirstData component
-require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 require_once(sCLASS_PATH ."/core/card.php");
@@ -77,17 +62,9 @@ require_once(sCLASS_PATH ."/card_prefix_config.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
-require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 require_once(sCLASS_PATH . '/payment_route.php');
-// Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/Paymaya_Acq.php");
-// Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
-// Require specific Business logic for the Nmi-Credomatic component
-require_once(sCLASS_PATH ."/nmi_credomatic.php");
-
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -842,7 +819,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								for ($j=0, $jMax = count($aObj_XML); $j< $jMax; $j++)
 								{
 									// Get list of presentment currencies
-									
+
 									$isDCCEnabled = false;
                                     if($fxServiceTypeId !== Constants::iExternalMCPOpted)
 									{
