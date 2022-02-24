@@ -1075,9 +1075,6 @@ $aHTTP_CONN_INFO[10]["paths"]["status"] = "/mpoint/aggregator/stripe/status";
 /**
  * Connection info for connecting to Nmi Credomatic
  */
-$aHTTP_CONN_INFO[74]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO[74]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO[74]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO[74]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO[74]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO[74]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
