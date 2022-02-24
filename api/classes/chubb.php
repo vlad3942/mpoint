@@ -12,6 +12,9 @@
 */
 
 /* ==================== PublicBank Exception Classes Start ==================== */
+
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Super class for all PublicBank Exceptions
 */
@@ -98,7 +101,10 @@ Class CHUBB extends CPMPSP
 
                 if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-                $this->getTxnInfo()->getPaymentSession()->updateState();
+                $oTI = $this->getTxnInfo();
+                $repository = new ReadOnlyConfigRepository($this->getDBConn(), $oTI);
+
+                $this->getTxnInfo()->getPaymentSession()->updateState($repository);
                 // In case of 3D verification status code 2005 will be received
                 if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
                 {

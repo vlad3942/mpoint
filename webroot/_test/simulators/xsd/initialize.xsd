@@ -119,7 +119,13 @@
                                         <xs:element type="xs:string" name="issuer-identification-number-ranges"/>
                                         <xs:element type="xs:string" name="salt"/>
                                         <xs:element type="xs:string" name="secret-key"/>
-                                        <xs:element type="xs:string" name="additional-config"/>
+                                        <xs:element name="additional-config">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded">
+                                                    <xs:element name="property" minOccurs="0" maxOccurs="unbounded" />
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
                                         <xs:element type="xs:byte" name="decimal"/>
                                         <xs:element name="transaction-types">
                                             <xs:complexType>

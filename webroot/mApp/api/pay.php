@@ -16,6 +16,8 @@
  */
 
 // Require Global Include File
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation
@@ -137,14 +139,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])) {
+ 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW']))
+                 {
+                    $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
                     $isVoucherRedeem = FALSE;
                     $isVoucherRedeemStatus = -1;
                     $validRequest= true; // for split payment request validation
                     $isTxnCreated = False; // for split txn is already is created or not
                     $checkPaymentType = array();
                     $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
-                    $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
+                    $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
                     $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
                     // check voucher node is appearing before card node and according to that set preference
@@ -353,8 +357,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 
 
-                        if (strtolower($is_legacy) == 'false') {
-                                $obj_CardResultSet = General::getRouteConfiguration($_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
+                        if ($is_legacy === false)
+                        {
+                                $obj_CardResultSet = General::getRouteConfiguration($repository,$_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
                         } else {
                                 $obj_CardResultSet = $obj_mCard->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
                         }

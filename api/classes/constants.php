@@ -12,6 +12,8 @@
  * @version 1.02
  */
 
+use api\classes\merchantservices\AddonServiceType;
+
 /**
  * Data class for holding all defined Constants
  *
@@ -1203,6 +1205,12 @@ abstract class Constants
      */
     const iPAYMAYA_ACQ = 73;
 
+     /**
+     * Unique PSP ID for transaction's made using AV NMI
+     *
+     */
+     const iNMI_CREDOMATIC = 74;
+
 
     /**
 	 * Unique ID for the Electronic Payment Flow
@@ -1684,6 +1692,11 @@ abstract class Constants
 	*
 	*/
 	const iBANCODEBOGATA  = 100;
+	/**
+	 * Unique Card ID for transaction's made using UNIONPAY_CARD
+	 *
+	 */
+	const iUNIONPAY_CARD = 101;
 	
 	
 
@@ -2016,6 +2029,10 @@ abstract class Constants
 	 */
 	const iExternalMCPOpted = 31;
 
+	/*
+	 * Velocity url ID in client configuration
+	*/
+	const iBASE_IMAGE_URL = 14;
 
 }
 
@@ -2058,4 +2075,44 @@ abstract class UserType
    */
 	const iRegisterUser = 2;
 }
+
+abstract class RouteFeatureType
+{
+	const ePartialCapture = 4;
+	const eRefund = 5;
+	const ePartialRefund=6;
+	const e3DS=9;
+	const eInstallment=10;
+	const eCancel=18;
+	const ePartialCancel=19;
+	const eMPI=20;
+}
+
+abstract class AddonServiceTypeIndex
+{
+
+       const eDCC = 1;
+       const ePCC = 2;
+       const eMCP = 3;
+       const eFraud = 4;
+       const eMPI = 5;
+       const eSPLIT_PAYMENT = 6;
+       const eTOKENIZATION = 7;
+
+
+	   public static function valueOf(string $type):int
+	   {
+		    $type =strtolower($type);
+		   if($type === 'dcc') { return self::eDCC; }
+		   if($type === 'pcc') { return self::ePCC; }
+		   if($type === 'mcp') { return self::eMCP; }
+		   if($type === 'mpi') { return self::eMPI; }
+		   if($type === 'pre_auth' || $type === 'post_auth' || $type === 'fraud' ) { return self::eFraud; }
+		   if($type === 'cashless' || $type === 'conventional' || $type === 'hybrid' || $type === 'split_payment') { return self::eSPLIT_PAYMENT; }
+		   if($type === 'tokenization') { return self::eTOKENIZATION; }
+		   else  { return 0; }
+	   }
+}
+
+
 ?>

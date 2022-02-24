@@ -41,7 +41,7 @@ class ClientCountryCurrencyConfigTest extends baseAPITest
         }
         $xml .= '</payment_countries>';
 
-        $this->assertStringContainsString('<payment_countries><payment_country><id>100</id><name>Denmark</name></payment_country></payment_countries>', $xml);
+        $this->assertStringContainsString('<payment_countries><payment_country><id>100</id><name>Denmark</name><iso_code>208</iso_code><country_calling_code>45</country_calling_code></payment_country></payment_countries>', $xml);
 
         $xml = '<payment_currencies>';
         foreach ($aObj_ClientCountryCurrencyConfig as $obj_ClientCountryCurrencyConfig)

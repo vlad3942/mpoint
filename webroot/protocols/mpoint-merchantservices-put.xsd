@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:include schemaLocation="mpoint-merchantservices-entities.xsd"/>
+
+    <!-- Addon configuration -->
+    <xs:element name="addon_configuration_request">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="dcc_config" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:choice>
+                                        <xs:element name="addon_configuration" type="addon_info_basic" minOccurs="1"
+                                                    maxOccurs="unbounded"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="mcp_config" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:choice>
+                                        <xs:element name="addon_configuration" type="addon_info_basic" minOccurs="1"
+                                                    maxOccurs="unbounded"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="pcc_config" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:choice>
+                                        <xs:element name="addon_configuration" type="addon_info_pcc" minOccurs="1"
+                                                    maxOccurs="unbounded"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="mpi_config" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:choice>
+                                        <xs:element name="addon_configuration" type="addon_info_mpi" minOccurs="1"
+                                                    maxOccurs="unbounded"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="version" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="fraud_configs" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="fraud_config" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="sub_type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="addon_configuration"
+                                                                type="addon_info_basic_provider_id" minOccurs="1"
+                                                                maxOccurs="unbounded"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="is_rollback" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="split_payment_configs" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="split_payment_config" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="sub_type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="addon_configuration" type="addon_info_split"
+                                                                minOccurs="1" maxOccurs="unbounded"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="is_rollback" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="is_reoffer" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="tokenization_config" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="addon_configurations" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:choice>
+                                        <xs:element name="addon_configuration" type="addon_info_basic_provider_id"
+                                                    minOccurs="1" maxOccurs="unbounded"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- PSP Configuration -->
+
+    <xs:element name="client_psp_configuration_request">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="client_psp_configurations" minOccurs="1" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="client_psp_configuration" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="properties" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="property" type="property_info_enabled"
+                                                                minOccurs="1"
+                                                                maxOccurs="unbounded"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="pm_configurations" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="pm_configuration" minOccurs="1"
+                                                                maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="pm_id" type="xs:integer" minOccurs="1"
+                                                                            maxOccurs="1"/>
+                                                                <xs:element name="enabled" type="xs:boolean"
+                                                                            minOccurs="0"
+                                                                            maxOccurs="1"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Route Configuration -->
+    <xs:element name="route_configurations_request">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="route_configurations">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="route_configuration" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="id" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="provider_id" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="mid" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="username" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="capture_type" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="properties" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="property" type="property_info" minOccurs="1"
+                                                                maxOccurs="unbounded"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="pm_configurations" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="pm_configuration" minOccurs="1"
+                                                                maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="pm_id" type="xs:integer" minOccurs="1"
+                                                                            maxOccurs="1"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="route_features" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="route_feature" minOccurs="1"
+                                                                maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="id" type="xs:integer" minOccurs="1"
+                                                                            maxOccurs="1"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="country_details" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="country_detail" minOccurs="0"
+                                                                maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="id" type="xs:integer" minOccurs="1"
+                                                                            maxOccurs="1"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="currency_details" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="currency_detail" minOccurs="0"
+                                                                maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="id" type="xs:integer" minOccurs="1"
+                                                                            maxOccurs="1"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Client Configuration -->
+
+    <xs:element name="client_configuration">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+                <xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="1"/>
+                <xs:element type="xs:string" name="name" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:string" name="salt" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:decimal" name="max_amount" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:integer" name="country_id" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:boolean" name="email_notification" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:boolean" name="sms_notification" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:string" name="authentication_mode" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:string" name="timezone" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="xs:string"  name="language" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="client_urls" maxOccurs="1" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="client_url" type="url_info" maxOccurs="unbounded" minOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="services" maxOccurs="1" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:boolean" name="dcc" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="fraud" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="callback" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="mcp" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="pcc" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="split_payment" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="tokenization" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:boolean" name="void" minOccurs="0" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="account_configurations" maxOccurs="1" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="account_config" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element type="xs:integer" name="client_id" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element type="xs:string" name="name" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element type="xs:string" name="markup" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element type="xs:integer" name="mobile" minOccurs="1" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="pm_configurations" maxOccurs="1" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="pm_configuration" maxOccurs="unbounded" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="pm_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+                                        <xs:element name="enabled" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="properties" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="property" type="property_info_enabled" minOccurs="1"
+                                        maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Provider Configuration -->
+
+    <xs:element name="client_provider_configurations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="client_provider_configuration" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element type="xs:integer" name="id"/>
+                            <xs:element type="xs:integer" name="client_id"/>
+                            <xs:element type="xs:string" name="name"/>
+                            <xs:element type="xs:string" name="username"/>
+                            <xs:element type="xs:string" name="password"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="client_provider_configuration">
+        <xs:complexType>
+            <xs:all>
+                <xs:element type="xs:integer" name="id"/>
+                <xs:element type="xs:integer" name="client_id"/>
+                <xs:element type="xs:string" name="name"/>
+                <xs:element type="xs:string" name="username"/>
+                <xs:element type="xs:string" name="password"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

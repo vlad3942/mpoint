@@ -20,7 +20,7 @@ if (PHP_SAPI == "cli") {
     $pspid = $_REQUEST['pspid'];
 }
 
-ini_set('max_execution_time', 1200);
+ini_set('max_execution_time', 0);
 include $_SERVER['DOCUMENT_ROOT'].'/cron/cron-include.php';
 // <editor-fold defaultstate="collapsed" desc="Required dependancies">
 require_once($_SERVER['DOCUMENT_ROOT'].'/inc/include.php');

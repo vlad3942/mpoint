@@ -161,7 +161,7 @@ $aHTTP_CONN_INFO[14]["paths"]["initialize"] = "/_test/simulators/applepay/pay.ph
 $aHTTP_CONN_INFO[14]["path"] = $aHTTP_CONN_INFO[14]["paths"]["pay"];
 
 /**
- * Connection info for connecting to DataCash
+ * Connection info for connecting to Alipay
  */
 $aHTTP_CONN_INFO[30]["timeout"] = 120;
 $aHTTP_CONN_INFO[30]["contenttype"] = "text/xml";
@@ -180,6 +180,19 @@ $aHTTP_CONN_INFO[4]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO[4]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
 $aHTTP_CONN_INFO[4]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
 $aHTTP_CONN_INFO[4]["paths"]["status"] = "/_test/simulators/status.php";
+$aHTTP_CONN_INFO[4]["paths"]["authenticate"] = "/_test/simulators/modirum/authenticate.php";
+
+
+/**
+ * Connection info for connecting to Modirum MPI
+ */
+$aHTTP_CONN_INFO["modirummpi"]["timeout"] = 120;
+$aHTTP_CONN_INFO["modirummpi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["modirummpi"]["method"] = "POST";
+$aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/_test/simulators/modirum/modirum_authenticate.php";
+
+
 /**
  * Connection info for connecting to UATP
  */
@@ -322,6 +335,15 @@ $aHTTP_CONN_INFO[10]["paths"]["auth"] = "/_test/simulators/stripe/auth.php";
 $aHTTP_CONN_INFO[10]["paths"]["pay"] = "/_test/simulators/stripe/pay.php";
 $aHTTP_CONN_INFO[10]["paths"]["initialize"] = "/_test/simulators/stripe/pay.php";
 
+/**
+ * Connection info for connecting to NMI
+ */
+$aHTTP_CONN_INFO[74]["timeout"] = 120;
+$aHTTP_CONN_INFO[74]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[74]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[74]["paths"]["auth"] = "/_test/simulators/nmi_credomatic/auth.php";
+$aHTTP_CONN_INFO[74]["paths"]["pay"] = "/_test/simulators/nmi_credomatic/pay.php";
+$aHTTP_CONN_INFO[74]["paths"]["initialize"] = "/_test/simulators/nmi_credomatic/pay.php";
 
 /**
  * Message Queue Provider Information
