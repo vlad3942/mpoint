@@ -1226,7 +1226,11 @@ class Validate extends ValidateBase
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
-		$countryISO_id = sprintf('%03s', $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "");
+		$countryISO_id = "";
+		if (empty($mobile) === false) {
+			$countryISO_id = sprintf('%03s', $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "");
+		}
+
 		$countryISOCode = "";
 		if($obj_CountryConfig != null && $obj_CountryConfig->getID() >0)
         {
