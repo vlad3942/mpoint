@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Sarvesh" id="2022-02-22-master-v2.37">
+        <sql>
+            ALTER PUBLICATION mpoint_client_pub ADD TABLE client.pm_tbl;
+						GRANT SELECT ON client.pm_tbl TO repuser;
+            ALTER PUBLICATION mpoint_client_pub ADD TABLE client.routepm_tbl;
+						GRANT SELECT ON client.routepm_tbl TO repuser;
+            ALTER PUBLICATION mpoint_client_pub ADD TABLE client.services_tbl;
+						GRANT SELECT ON client.services_tbl TO repuser;
+    	    ALTER PUBLICATION mpoint_client_pub ADD TABLE client.providerpm_tbl;
+						GRANT SELECT ON client.providerpm_tbl TO repuser;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
