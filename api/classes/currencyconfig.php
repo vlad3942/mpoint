@@ -50,7 +50,7 @@ class CurrencyConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-        if(array_key_exists($id,self::$instances) === false)
+        if(array_key_exists((int)$id,self::$instances) === false)
         {
             $sql = "SELECT id, name, code, decimals, symbol
 				FROM System".sSCHEMA_POSTFIX.".Currency_Tbl CT			
@@ -58,9 +58,9 @@ class CurrencyConfig extends BasicConfig
 
             $RS = $oDB->getName($sql);
 
-            self::$instances[$id] = new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE'], $RS['DECIMALS'], $RS['SYMBOL']);
+            self::$instances[(int)$id] = new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE'], $RS['DECIMALS'], $RS['SYMBOL']);
         }
-        return self::$instances[$id];
+        return self::$instances[(int)$id];
     }
 }
 ?>

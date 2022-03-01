@@ -355,7 +355,7 @@ class CountryConfig extends BasicConfig
 	public static function produceConfig(RDB &$oDB, $id)
 	{
 
-        if(array_key_exists($id,self::$instances) === false)
+        if(array_key_exists((int)$id,self::$instances) === false)
         {
             $sql = "SELECT CT.id, CT.name,  CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
                 CT.channel, CT.priceformat, 
@@ -368,9 +368,9 @@ class CountryConfig extends BasicConfig
 
             $obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
 
-            self::$instances[$id] = new CountryConfig($RS["ID"], $RS["NAME"],$obj_CurrencyConfig->getCode(), $obj_CurrencyConfig, $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $obj_CurrencyConfig->getDecimals(), $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
+            self::$instances[(int)$id] = new CountryConfig($RS["ID"], $RS["NAME"],$obj_CurrencyConfig->getCode(), $obj_CurrencyConfig, $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $obj_CurrencyConfig->getDecimals(), $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
         }
-        return self::$instances[$id];
+        return self::$instances[(int)$id];
 	}
 	
 	/**
