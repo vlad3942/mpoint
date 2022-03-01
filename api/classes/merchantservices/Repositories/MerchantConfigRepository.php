@@ -1366,15 +1366,15 @@ class MerchantConfigRepository
             case 'country':
                 $sTableName = "routecountry_tbl";
                 $sWhereCls = " and routeconfigid = ". $id;
+                $sSELECTFields = "COALESCE(COUNTRYID,0) AS COUNTRYID";
                 $sSelectId = "COUNTRYID";
-                $sSELECTFields = $sSelectId;
                 break;
 
             case 'currency':
                 $sTableName = "routecurrency_tbl";
                 $sWhereCls = " and routeconfigid = ". $id;
+                $sSELECTFields = "COALESCE(CURRENCYID) AS CURRENCYID";
                 $sSelectId = "CURRENCYID";
-                $sSELECTFields = $sSelectId;
                 break;
 
             default:
@@ -1383,6 +1383,7 @@ class MerchantConfigRepository
 
         $sSQL = "SELECT $sSELECTFields FROM CLIENT". sSCHEMA_POSTFIX .".".$sTableName." WHERE enabled=true ".$sWhereCls;
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+
         if (empty($aRS) === false)
         {
             foreach ($aRS as $rs) array_push($aConfigDetails,$rs[$sSelectId]);
