@@ -18,6 +18,8 @@
  */
 class CurrencyConfig extends BasicConfig
 {
+    private static $instances = array();
+
     /**
      * The 3 Digit alphabetic code as per the ISO 4127 standards
      *
@@ -48,13 +50,17 @@ class CurrencyConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-		$sql = "SELECT id, name, code, decimals, symbol
+        if(array_key_exists($id,self::$instances) === false)
+        {
+            $sql = "SELECT id, name, code, decimals, symbol
 				FROM System".sSCHEMA_POSTFIX.".Currency_Tbl CT			
 				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1'";
-		
-		$RS = $oDB->getName($sql);
 
-		return new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE'], $RS['DECIMALS'], $RS['SYMBOL']);
-	}
+            $RS = $oDB->getName($sql);
+
+            self::$instances[$id] = new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE'], $RS['DECIMALS'], $RS['SYMBOL']);
+        }
+        return self::$instances[$id];
+    }
 }
 ?>

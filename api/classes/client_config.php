@@ -25,7 +25,10 @@ use api\classes\merchantservices\MetaData\ClientServiceStatus;
  */
 class ClientConfig extends BasicConfig
 {
-	/**
+
+    private static $instance = null;
+
+    /**
 	 * Constants for each URL Type
 	 *
 	 * @var integer
@@ -1344,8 +1347,17 @@ class ClientConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 	{
-		$acc = (integer) $acc;
-		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
+        if(self::$instance === null)
+        {
+            self::$instance = ClientConfig::_Get($oDB,$id,$acc,$kw);
+        }
+		return self::$instance;
+	}
+
+    private static function _Get(RDB $oDB, $id, $acc=-1, $kw=-1)
+    {
+        $acc = (integer) $acc;
+        $sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
 					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.declineurl, CL.callbackurl, CL.iconurl,
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
@@ -1555,7 +1567,7 @@ class ClientConfig extends BasicConfig
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
 
 		return NULL;
-	}
+    }
 
 	public static function authenticate($obj_DB, $clientID, $accountID, $username, $password, $ip='')
 	{

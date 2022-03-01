@@ -18,9 +18,10 @@
  */
 class CountryConfig extends BasicConfig
 {
-	
-	
-	/**
+
+    private static $instances = array();
+
+    /**
 	 * Configuration for the Currency the transactions was processed in
 	 *
 	 * @var CurrencyConfig
@@ -353,19 +354,23 @@ class CountryConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-		$sql = "SELECT CT.id, CT.name, CUT.code AS currency, CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
-                CT.channel, CT.priceformat, CUT.decimals,
+
+        if(array_key_exists($id,self::$instances) === false)
+        {
+            $sql = "SELECT CT.id, CT.name,  CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
+                CT.channel, CT.priceformat, 
 					CT.addr_lookup, CT.doi, CT.add_card_amount, CT.max_psms_amount, CT.min_pwd_amount, CT.min_2fa_amount, 
-					CT.alpha2code, CT.alpha3code, CT.code,CUT.id AS currencyid, CT.country_calling_code
+					CT.alpha2code, CT.alpha3code, CT.code,CT.currencyid, CT.country_calling_code
 				FROM System".sSCHEMA_POSTFIX.".Country_Tbl CT
-				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CUT ON CT.currencyid = CUT.id
-				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1' AND CUT.enabled = '1'";
-//		echo $sql ."\n";
-		$RS = $oDB->getName($sql);
-		
-		$obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
-		
-		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
+				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1'";
+
+            $RS = $oDB->getName($sql);
+
+            $obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
+
+            self::$instances[$id] = new CountryConfig($RS["ID"], $RS["NAME"],$obj_CurrencyConfig->getCode(), $obj_CurrencyConfig, $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $obj_CurrencyConfig->getDecimals(), $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
+        }
+        return self::$instances[$id];
 	}
 	
 	/**
