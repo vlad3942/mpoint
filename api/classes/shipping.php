@@ -39,7 +39,7 @@ class Shipping extends General
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	ShopConfig $oSC 	Data object holding the Shop Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, ShopConfig &$oSC)
+	public function __construct(RDB &$oDB,api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI, ShopConfig &$oSC)
 	{
 		parent::__construct($oDB, $oTxt);
 

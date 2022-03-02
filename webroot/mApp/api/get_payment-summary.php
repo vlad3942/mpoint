@@ -106,7 +106,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				{
 					$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'get-payment-summary'}[$i]->transaction["id"], $_OBJ_DB);
 					// Re-Intialise Text Translation Object based on transaction
-					$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+					$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 					$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 					for ($j=0; $j<count($obj_DOM->{'get-payment-summary'}[$i]->transaction->card); $j++)
 					{

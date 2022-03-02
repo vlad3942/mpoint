@@ -48,7 +48,7 @@ class PaymentProcessor
         }
     }
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
         $sPSPClassName = '';
         $this->_setConnInfo($aConnInfo, $iPSPID);
@@ -86,7 +86,7 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }

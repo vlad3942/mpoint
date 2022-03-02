@@ -42,7 +42,7 @@ class Home extends General
 	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param 	CountryConfig $oCC 		Reference to the data object with the Country Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCC=null)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, CountryConfig &$oCC=null)
 	{
 		parent::__construct($oDB, $oTxt);
 

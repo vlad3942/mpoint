@@ -41,7 +41,7 @@ class EndUserAccount extends Home
 	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param 	ClientConfig $oCI 		Reference to the data object with the Client Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, ClientConfig &$oCI)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, ClientConfig &$oCI)
 	{
 		parent::__construct($oDB, $oTxt, $oCI->getCountryConfig() );
 

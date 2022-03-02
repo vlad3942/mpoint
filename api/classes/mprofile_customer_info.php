@@ -10,7 +10,7 @@ class mProfileCustomerInfo extends CustomerInfo
 {
     private $_obj_Profile;
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid, $profileid)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid, $profileid)
     {
         parent::__construct($id, $cid, $mob, $email, $cr, $name, $lang, $profileid);
         $this->_obj_Profile = mProfile::produceConfiguration($oDB, $oTxt, $clientid, $this, $deviceid);

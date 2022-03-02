@@ -38,7 +38,7 @@ class CaptureLoggingNegativeCaseTest extends baseAPITest
 		global $aMPOINT_CONN_INFO;
 		
 		$this->_obj_DB = RDB::produceDatabase($this->mPointDBInfo);
-		$this->_obj_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+		$this->_obj_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$this->_aWireCardConnInfo = $aHTTP_CONN_INFO["wire-card"];
 		$this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
 	}

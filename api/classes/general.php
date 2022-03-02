@@ -42,7 +42,7 @@ class General
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt)
 	{
 		$this->_obj_DB = $oDB;
 		// Enable Timestamp compatibility for Oracle

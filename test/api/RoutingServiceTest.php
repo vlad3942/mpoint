@@ -108,7 +108,7 @@ VALUES(1100, 14, 'paymaya acq',  true)");
 
         $xml = $this->getInitDoc(10099, 1100, 100, 208, 10);
         $obj_DOM = simpledom_load_string($xml);
-        $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+        $_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
         $iTxnID = 1001001;
         $obj_FailedPaymentMethod = null;

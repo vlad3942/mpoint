@@ -31,7 +31,7 @@ class Overview extends General
 	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
 	 * @param 	TxnInfo $oTI 		Data object with the Transaction Information
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		parent::__construct($oDB, $oTxt);
 
