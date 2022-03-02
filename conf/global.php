@@ -251,12 +251,12 @@ $aHTTP_CONN_INFO[12]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO[12]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO[12]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO[12]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[12]["paths"]["initialize"] = "/mpoint/adyen/initialize";
-$aHTTP_CONN_INFO[12]["paths"]["auth"] = "/mpoint/adyen/authorize-payment";
-$aHTTP_CONN_INFO[12]["paths"]["capture"] = "/mpoint/adyen/capture";
-$aHTTP_CONN_INFO[12]["paths"]["void"] = "/mpoint/adyen/void";
-$aHTTP_CONN_INFO[12]["paths"]["cancel"] = "/mpoint/adyen/cancel";
-$aHTTP_CONN_INFO[12]["paths"]["refund"] = "/mpoint/adyen/refund";
+$aHTTP_CONN_INFO[12]["paths"]["initialize"] = "/mpoint/aggregator/adyen/initialize";
+$aHTTP_CONN_INFO[12]["paths"]["auth"] = "/mpoint/aggregator/adyen/authorize-payment";
+$aHTTP_CONN_INFO[12]["paths"]["capture"] = "/mpoint/aggregator/adyen/capture";
+$aHTTP_CONN_INFO[12]["paths"]["void"] = "/mpoint/aggregator/adyen/void";
+$aHTTP_CONN_INFO[12]["paths"]["cancel"] = "/mpoint/aggregator/adyen/cancel";
+$aHTTP_CONN_INFO[12]["paths"]["refund"] = "/mpoint/aggregator/adyen/refund";
 
 /**
  * Connection info for DSB PSP
