@@ -1002,6 +1002,7 @@ class MerchantConfigRepository
     public function saveConfigDetails(string $type,array $aConfigDetails=array(),int $id=-1, $entity = '')
     {
         $iClientId = $this->_clientConfig->getID();
+        $isNULLConversion = false;
         switch(strtolower($entity)){
             case 'feature':
                 $sColumns = "clientid, routeconfigid, featureid";
@@ -1015,6 +1016,7 @@ class MerchantConfigRepository
                 $sColumns = 'routeconfigid, countryid';
                 $sValues = 'VALUES ($1,$2)';
                 $aParam = array($id);
+                $isNULLConversion = true;
                 break;
 
             case 'currency':
@@ -1022,6 +1024,7 @@ class MerchantConfigRepository
                 $sColumns = 'routeconfigid, currencyid';
                 $sValues = 'VALUES ($1,$2)';
                 $aParam = array($id);
+                $isNULLConversion = true;
                 break;
 
             default:
@@ -1032,7 +1035,12 @@ class MerchantConfigRepository
         $SQL = "INSERT INTO client". sSCHEMA_POSTFIX.".".$sTableName." (".$sColumns.") $sValues";
         foreach ($aConfigDetails as $configDetail)
         {
-            array_push($aParam, $configDetail);
+            if($isNULLConversion === true) {
+                $value = empty($configDetail) === false ? $configDetail : NULL;
+            } else {
+                $value = $configDetail;
+            }
+            array_push($aParam, $value);
             $rs = $this->getDBConn()->executeQuery($SQL, $aParam);
             array_pop($aParam);
             if($rs === false)
@@ -1366,15 +1374,15 @@ class MerchantConfigRepository
             case 'country':
                 $sTableName = "routecountry_tbl";
                 $sWhereCls = " and routeconfigid = ". $id;
+                $sSELECTFields = "COALESCE(COUNTRYID,0) AS COUNTRYID";
                 $sSelectId = "COUNTRYID";
-                $sSELECTFields = $sSelectId;
                 break;
 
             case 'currency':
                 $sTableName = "routecurrency_tbl";
                 $sWhereCls = " and routeconfigid = ". $id;
+                $sSELECTFields = "COALESCE(CURRENCYID) AS CURRENCYID";
                 $sSelectId = "CURRENCYID";
-                $sSELECTFields = $sSelectId;
                 break;
 
             default:
@@ -1383,6 +1391,7 @@ class MerchantConfigRepository
 
         $sSQL = "SELECT $sSELECTFields FROM CLIENT". sSCHEMA_POSTFIX .".".$sTableName." WHERE enabled=true ".$sWhereCls;
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
+
         if (empty($aRS) === false)
         {
             foreach ($aRS as $rs) array_push($aConfigDetails,$rs[$sSelectId]);
@@ -1390,14 +1399,14 @@ class MerchantConfigRepository
         return $aConfigDetails;
     }
 
-    public function getRoutes(int $pspType=-1,int $pspid=-1):array
+    public function getRoutes(int $pspType=-1,int $pspid=-1) : array
     {
         $sSQL = "SELECT providerid as pspid FROM CLIENT". sSCHEMA_POSTFIX .".route_tbl r INNER JOIN
                 SYSTEM". sSCHEMA_POSTFIX .".PSP_tbl p on r.providerid = p.id   Where clientid  = ".$this->_clientConfig->getID()." AND r.enabled=true AND p.enabled=true";
         if($pspType>0)  { $sSQL .= " AND p.system_type = $pspType"; }
         if($pspid>0) { $sSQL .= " AND p.id = $pspid"; }
         $aRS = $this->getDBConn()->getAllNames ( $sSQL );
-        return $aRS;
+        return empty($aRS) === false ? $aRS : array();
     }
 
     /**
