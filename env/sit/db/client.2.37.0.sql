@@ -1,0 +1,2 @@
+UPDATE client.split_configuration_tbl SET type = 'hybrid' WHERE trim(name) IN ('Card+Voucher','APM+Voucher','Wallet+Voucher');
+UPDATE client.split_configuration_tbl SET type = 'conventional' WHERE trim(name) IN ('Card+Card');
