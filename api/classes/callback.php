@@ -956,8 +956,6 @@ abstract class Callback extends EndUserAccount
             return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"],$obj_PSPConfig);
         case (Constants::iCHASE_ACQUIRER):
             return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"],$obj_PSPConfig);
-        case (Constants::iEZY_PSP):
-			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"],$obj_PSPConfig);
 		case (Constants::iCEBUPAYMENTCENTER_APM):
 			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[67],$obj_PSPConfig);
 		case (Constants::iTRAVELFUND_VOUCHER):

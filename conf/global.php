@@ -830,14 +830,11 @@ $aHTTP_CONN_INFO[56]["paths"]["authenticate"] = "/mpoint/authenticate";
 /**
  * Connection info for connecting to EZY fraud gateway
  */
-$aHTTP_CONN_INFO["ezy"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["ezy"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["ezy"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["ezy"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["ezy"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
+$aHTTP_CONN_INFO[60]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[60]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[60]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[60]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[60]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
 
 /**
  * Connection info for connecting to VeriTrans4G
@@ -950,16 +947,13 @@ $aHTTP_CONN_INFO[67]["paths"]["status"] = "/mpoint/grab-pay/status";
 
 
 /**
- * Connection info for connecting to cybersource fraud gateway
+ * Connection info for connecting to CEBU-RMFSS
  */
-$aHTTP_CONN_INFO["cebu-rmfss"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["cebu-rmfss"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["cebu-rmfss"]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
+$aHTTP_CONN_INFO[65]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[65]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[65]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[65]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[65]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
 
 
 /**
