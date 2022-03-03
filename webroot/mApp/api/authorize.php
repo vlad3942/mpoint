@@ -58,65 +58,18 @@ require_once(sCLASS_PATH ."/cpm.php");
 require_once(sCLASS_PATH ."/wannafind.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
 require_once(sCLASS_PATH ."/cpg.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH ."/dsb.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Data Cash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the Global Collect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-// Require specific Business logic for the Android Pay component
-require_once(sCLASS_PATH ."/androidpay.php");
-// Require specific Business logic for the Secure Trading component
-require_once(sCLASS_PATH ."/securetrading.php");
-// Require specific Business logic for the PayFort component
-require_once(sCLASS_PATH ."/payfort.php");
-// Require specific Business logic for the PayPal component
-require_once(sCLASS_PATH ."/paypal.php");
-// Require specific Business logic for the CCAvenue component
-require_once(sCLASS_PATH ."/ccavenue.php");
-// Require specific Business logic for the 2C2P component
-require_once(sCLASS_PATH ."/ccpp.php");
-// Require specific Business logic for the MayBank component
-require_once(sCLASS_PATH ."/maybank.php");
-// Require specific Business logic for the PublicBank component
-require_once(sCLASS_PATH ."/publicbank.php");
-// Require specific Business logic for the MobilePay Online component
-require_once(sCLASS_PATH ."/mobilepayonline.php");
-// Require specific Business logic for the Klarna Online component
-require_once(sCLASS_PATH ."/klarna.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the 2c2p alc component
-require_once(sCLASS_PATH ."/ccpp_alc.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
-
-// Require specific Business logic for the PPro component
-require_once(sCLASS_PATH ."/ppro.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
@@ -129,28 +82,7 @@ require_once(sCLASS_PATH . "/uatp.php");
 require_once(sCLASS_PATH . "/uatp_card_account.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
-// Require specific Business logic for the PayU component
-require_once(sCLASS_PATH ."/payu.php");
-// Require specific Business logic for the Cielo component
-require_once(sCLASS_PATH ."/cielo.php");
-// Require specific Business logic for the cellulant component
-require_once(sCLASS_PATH ."/cellulant.php");
-
 require_once(sCLASS_PATH ."/wallet_processor.php");
-
-// Require specific Business logic for the Global payments component
-require_once(sCLASS_PATH ."/global-payments.php");
-// Require specific Business logic for the cybs component
-require_once(sCLASS_PATH ."/cybersource.php");
-// Require specific Business logic for the VeriTrans4G component
-require_once(sCLASS_PATH ."/psp/veritrans4g.php");
-// Require specific Business logic for the DragonPay component
-require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
-// Require specific Business logic for the SWISH component
-require_once(sCLASS_PATH ."/apm/swish.php");
-
-// Require specific Business logic for the FirstData component
-require_once(sCLASS_PATH ."/first-data.php");
 
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
@@ -165,14 +97,9 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
 require_once(sCLASS_PATH . '/payment_route.php');
-require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
-// Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/MPGS.php");
 require_once(sCLASS_PATH . '/Route.php');
 require_once(sCLASS_PATH ."/voucher/TravelFund.php");
-// Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/Paymaya_Acq.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -208,7 +135,7 @@ $obj_DOM = simpledom_load_string(file_get_contents("php://input") );
 
 try
 {
-	
+
 	if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 	{
 		if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'authorize-payment'}) > 0)
@@ -919,10 +846,11 @@ try
 														if ($iPSPID > 0)
 														{
 
-                                                            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $iPSPID);
+                                                            $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $iPSPID, $aHTTP_CONN_INFO);
+                                                            $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
+                                                            $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
 
-															$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-															$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+                                                            $obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 															$iInvoiceStatus = $obj_Authorize->invoice($obj_DOM->{'authorize-payment'}[$i]->transaction->description);
 																// Set the code to 5 so stored card payemnt if statment is skipped.
 																$code = 5;
@@ -1022,9 +950,9 @@ try
 
                                                                     if($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE)) === false && count($postFraudAddon->getConfiguration()) > 0)
                                                                     {
-                                                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-
-                                                                        $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                                                                        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, Constants::iMVAULT_PSP, $aHTTP_CONN_INFO);
+                                                                        $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
+                                                                        $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
                                                                         $obj_PSP->saveCard($obj_Elem);
                                                                     }
 
@@ -1162,34 +1090,6 @@ try
 
                                                                                 $xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
                                                                             break;
-                                                                        case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
-                                                                            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iGLOBAL_COLLECT_PSP);
-                                                                            $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
-
-                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-                                                                            $code = $response->code;
-                                                                            // Authorization succeeded
-                                                                            if ($code == "100") {
-                                                                                $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
-                                                                                $obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_Elem->type["id"]));
-
-                                                                                $xml .= '<status code="100">Payment authorized using  card</status>';
-                                                                            } else if ($code == "2000") {
-                                                                                $xml .= '<status code="2000">Payment authorized using card</status>';
-                                                                            } else if (strpos($code, '2005') !== false) {
-                                                                                header("HTTP/1.1 303");
-                                                                                $xml .= $response->body;
-                                                                            } else if (is_null($token) == false) {
-                                                                                $xml .= '<status code="' . $code . '">Globalcollect returned : ' . $code . '</status>';
-                                                                            } // Error: Authorization declined
-                                                                            else {
-                                                                                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                                header("HTTP/1.1 502 Bad Gateway");
-
-                                                                                $xml .= '<status code="92">Authorization failed, Globalcollect returned error: ' . $code . '</status>';
-                                                                            }
-                                                                            break;
 
                                                                         case (Constants::iCHUBB_PSP): // CHUBB
                                                                             $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iCHUBB_PSP);
@@ -1211,39 +1111,6 @@ try
                                                                                 header("HTTP/1.1 502 Bad Gateway");
 
                                                                                 $xml .= '<status code="92">Authorization failed, CHUBB returned error: ' . $code . '</status>';
-                                                                            }
-                                                                            break;
-                                                                        case (Constants::iSWISH_APM): // SWISH
-                                                                            try {
-
-                                                                                $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-
-                                                                                $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
-                                                                                $code = $response->code;
-                                                                                
-                                                                                // Authorization succeeded
-                                                                                //2001 is not expected response code for any request
-                                                                                if ($code == "2000" || $code == "2001") {
-                                                                                    $xml .= '<status code="2000">Payment authorized</status>';
-                                                                                } // Error: Authorization declined'
-                                                                                else if ($code == "2010") {
-                                                                                    $xml .= '<status code="2010">Payment declined</status>';
-                                                                                } // Error: Authorization declined'
-                                                                                
-                                                                                else {
-                                                                                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-                                                                                    
-                                                                                    header("HTTP/1.1 502 Bad Gateway");
-                                                                                    
-                                                                                    $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
-                                                                                }
-                                                                                
-                                                                            } catch (PaymentProcessorException $e) {
-                                                                                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-                                                                                
-                                                                                header("HTTP/1.1 500 Internal Server Error");
-                                                                                
-                                                                                $xml .= '<status code="99">' . $e->getMessage() . '</status>';
                                                                             }
                                                                             break;
 

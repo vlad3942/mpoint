@@ -36,32 +36,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require specific Business logic for the DSB component
 require_once(sCLASS_PATH ."/dsb.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Data Cash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the Global Collect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-// Require specific Business logic for the Android Pay component
-require_once(sCLASS_PATH ."/androidpay.php");
-// Require specific Business logic for the Secure Trading component
-require_once(sCLASS_PATH ."/securetrading.php");
-// Require specific Business logic for the PayFort component
-require_once(sCLASS_PATH ."/payfort.php");
-// Require specific Business logic for the PayPal component
-require_once(sCLASS_PATH ."/paypal.php");
-// Require specific Business logic for the CCAvenue component
-require_once(sCLASS_PATH ."/ccavenue.php");
 
 set_time_limit(0);
 $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);

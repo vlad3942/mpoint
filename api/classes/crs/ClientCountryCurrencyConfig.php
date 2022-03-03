@@ -38,10 +38,13 @@ class ClientCountryCurrencyConfig
 	{
         $xml = '';
 		if(empty($this->_aCountry) == false && count($this->_aCountry) > 0){
-		    foreach ($this->_aCountry as $countryid => $name){
+            $countryArr =  array_unique($this->_aCountry, SORT_REGULAR);
+            foreach ($countryArr as $country ){
                 $xml .= '<payment_country>';
-                $xml .= '<id>'. $countryid .'</id>';
-			    $xml .= '<name>'.$name .'</name>';
+                $xml .= '<id>'. $country['COUNTRYID'] .'</id>';
+			    $xml .= '<name>'.$country['COUNTRYNAME'] .'</name>';
+                $xml .= '<iso_code>'.$country['ISO_CODE'] .'</iso_code>';
+                $xml .= '<country_calling_code>'.$country['COUNTRY_CALLING_CODE'] .'</country_calling_code>';
                 $xml .= '</payment_country>';
             }
         }
@@ -52,7 +55,8 @@ class ClientCountryCurrencyConfig
     {
         $xml = '';
         if(empty($this->_aCurrency) == false && count($this->_aCurrency) > 0){
-            foreach ($this->_aCurrency as $currency){
+            $currencyArr =  array_unique($this->_aCurrency, SORT_REGULAR);
+            foreach ($currencyArr as $currency){
                 $xml .= '<payment_currency>';
                 $xml .= '<id>'. $currency['CURRENCYID'] .'</id>';
                 $xml .= '<name>'.$currency['CURRENCYCODE'] .'</name>';
@@ -77,8 +81,9 @@ class ClientCountryCurrencyConfig
         $aCountryConfig = array();
         $aCurrencyConfig = array();
         $aCurrencyArr = array();
+        $aCountryArr = array();
 
-		$sql = "SELECT DISTINCT ON (CCT.countryid, CCT.currencyid) CCT.countryid, CCT.currencyid, CNT.name as countryname, CUR.code AS currencycode, CUR.decimals as decimals
+		$sql = "SELECT DISTINCT ON (CCT.countryid, CCT.currencyid) CCT.countryid, CCT.currencyid, CNT.name as countryname, CUR.code AS currencycode, CUR.decimals as decimals, CNT.code as iso_code, CNT.country_calling_code as country_calling_code
 				FROM Client".sSCHEMA_POSTFIX.".Countrycurrency_Tbl CCT
 				INNER JOIN System".sSCHEMA_POSTFIX.".Country_tbl CNT ON CCT.countryid = CNT.id AND CNT.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CUR ON CCT.currencyid = CUR.id AND CUR.enabled = '1'
@@ -87,12 +92,15 @@ class ClientCountryCurrencyConfig
         try {
             $res = $oDB->query($sql);
             while ($RS = $oDB->fetchName($res)) {
-                $aCountryConfig[$RS['COUNTRYID']] = $RS['COUNTRYNAME'];
+                $aCountryArr['COUNTRYID']      = $RS['COUNTRYID'];
+                $aCountryArr['COUNTRYNAME']    = $RS['COUNTRYNAME'];
+                $aCountryArr['ISO_CODE']       = $RS['ISO_CODE'];
+                $aCountryArr['COUNTRY_CALLING_CODE']  = $RS['COUNTRY_CALLING_CODE'];
                 $aCurrencyArr['CURRENCYID']    = $RS['CURRENCYID'];
                 $aCurrencyArr['CURRENCYCODE']  = $RS['CURRENCYCODE'];
                 $aCurrencyArr['DECIMALS']      = $RS['DECIMALS'];
                 $aCurrencyConfig[]             = $aCurrencyArr;
-
+                $aCountryConfig[]              = $aCountryArr;
             }
             $aObj_Configurations[] = new ClientCountryCurrencyConfig($aCountryConfig, $aCurrencyConfig);
         }catch (SQLQueryException $e){

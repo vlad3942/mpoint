@@ -10,7 +10,7 @@
 
 require_once __DIR__ . '/InitializeAPIValidationTest.php';
 
-class PayUInitTest extends InitializeAPIValidationTest
+class PayUPayInitTest extends InitializeAPIValidationTest
 {
     public function testSuccessfulPayUInit()
     {

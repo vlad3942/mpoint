@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Priya Alamwar"
+               id="2021-02-16-setup-v2.36-log">
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="20109"/>
+            <column name="name" value="Rejected sub state on timeout"/>
+            <column name="func" value="Payment"/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2010000"/>
+            <column name="name" value="Unknown error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2010111"/>
+            <column name="name" value="Invalid Expiry Date"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2010118"/>
+            <column name="name" value="Invalid token"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2010119"/>
+            <column name="name" value="No Amount Due"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2010336"/>
+            <column name="name" value="Transaction Expired"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019000"/>
+            <column name="name" value="Unknown error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019100"/>
+            <column name="name" value="Payment Reference is invalid"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019101"/>
+            <column name="name" value="Callback URL is missing or does not use HTTPS"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019102"/>
+            <column name="name" value="Payer alias is invalid"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019103"/>
+            <column name="name" value="Missing Merchant Swish Number"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019104"/>
+            <column name="name" value="Amount value is missing or not a valid number"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019105"/>
+            <column name="name" value="Specified transaction amount is less than agreed minimum"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019106"/>
+            <column name="name" value="Amount value is too large"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019107"/>
+            <column name="name" value="Invalid or missing Currency"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019108"/>
+            <column name="name" value="Wrong formatted message"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019109"/>
+            <column name="name" value="Payment request already exists for that payer"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019110"/>
+            <column name="name" value="Payer not Enrolled"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019111"/>
+            <column name="name" value="Counterpart is not activated"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019114"/>
+            <column name="name" value="Payee not Enrolled"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019200"/>
+            <column name="name" value="Internal error / general system error"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019201"/>
+            <column name="name" value="Invalid Operation / Operation Rejected"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="1019203"/>
+            <column name="name" value="Time out"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+        <insert catalogName="Log"
+                schemaName="Log"
+                tableName="State_Tbl">
+
+            <column name="id" value="2000100"/>
+            <column name="name" value="Transaction Authorize with Payment center in offline state"/>
+            <column name="module" value="sub-code"/>
+            <column name="func" value=""/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
