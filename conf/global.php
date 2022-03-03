@@ -257,6 +257,7 @@ $aHTTP_CONN_INFO[12]["paths"]["capture"] = "/mpoint/aggregator/adyen/capture";
 $aHTTP_CONN_INFO[12]["paths"]["void"] = "/mpoint/aggregator/adyen/void";
 $aHTTP_CONN_INFO[12]["paths"]["cancel"] = "/mpoint/aggregator/adyen/cancel";
 $aHTTP_CONN_INFO[12]["paths"]["refund"] = "/mpoint/aggregator/adyen/refund";
+$aHTTP_CONN_INFO[12]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
  * Connection info for DSB PSP
