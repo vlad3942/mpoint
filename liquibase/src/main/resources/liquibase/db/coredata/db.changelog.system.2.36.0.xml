@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Ijaj Inamdar" id="2022-02-10-CMP-6425-setup-v2.36">
+        <update catalogName="system" schemaName="system" tableName="client_property_tbl">
+            <column name="name" value="invoiceidrule" />
+            <where>name = 'invoiceidrules'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

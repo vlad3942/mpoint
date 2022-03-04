@@ -84,6 +84,16 @@ class MerchantConfigInfo
         $configRepository->deleteConfigDetails($id, 'provider');
     }
 
+    public function deleteClientUrlConfig(MerchantConfigRepository $configRepository, string $urls)
+    {
+        $a_urls = explode(',', $urls); // Explode String
+        foreach ($a_urls as $url)
+        {
+            if(is_numeric($url) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for URL {param:".$url."}"); }
+        }
+        $configRepository->deleteClientUrls($a_urls);
+    }
+
     /**
      * @param MerchantConfigRepository $configRepository
      * @param string $type
@@ -333,14 +343,14 @@ class MerchantConfigInfo
 
         if($type === 'ROUTE')
         {
-            if(count($additionalParams) === 2 && isset($additionalParams['client_id']) && isset($additionalParams['id']))
+            if(count($additionalParams) === 3 && isset($additionalParams['client_id']) && isset($additionalParams['id']) && isset($additionalParams['psp_id']))
             {
                 $aIds = explode(',', $additionalParams['id']);
                 foreach ($aIds as $id)
                 {
                     if(is_numeric($id) === false) { throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE,"Invalid parameter for ID {param:".$id."}"); }
                 }
-                $configRepository->deleteAllRouteConfig($type, $additionalParams['id']);
+                $configRepository->deleteAllRouteConfig($type, $additionalParams);
                 return true;
             }
         }else if($type === "PSP")
@@ -363,11 +373,9 @@ class MerchantConfigInfo
         $countries = $additionalParams['country']??'';
         $currencies = $additionalParams['currency']??'';
 
-
-
-        if(empty($value) === true && empty($pms) === true) {
+        /* if(empty($value) === true && empty($pms) === true) {
             throw new MerchantOnboardingException(MerchantOnboardingException::INVALID_PARAMETER_VALUE, "No parameters for ID");
-        }
+        }*/
         if(empty($value) === false)
         {
             $aIds = explode(',', $value);
