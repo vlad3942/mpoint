@@ -1578,12 +1578,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
             $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
 
+            # Get Flight Departure TZ Offset
+            $departureDetails = $this->getDepartureDetails($this->getTxnInfo()->getID());
+            $flight_depart_tz_offset = ($departureDetails['departure_timezone']) ?? '+00:00';
+
+            // Extend <transaction> node
+            $extendElement = '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
+            $extendElement .= '<first-departure-time-zone>'.(string)$flight_depart_tz_offset.'</first-departure-time-zone>';
+            $extendElement .= "</transaction>";
+
+            // Prepare XML
             $body  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$body .= '<root>';
 			$body .= '<generate-receipt>';
 			$body .= '<bucket-name>'.$couponBucketName.'</bucket-name>';
 			// transaction details
-			$body .= str_replace("</transaction>","<card-name>".$objPaymentMethod->CardName."</card-name>" . "</transaction>", $this->getTxnInfo()->toXML() );
+			$body .= str_replace("</transaction>", $extendElement, $this->getTxnInfo()->toXML() );
 
 			$body .= '</generate-receipt>';
 			$body .= '</root>';
