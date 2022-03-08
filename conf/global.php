@@ -932,6 +932,16 @@ $aHTTP_CONN_INFO[63]["paths"]["callback"] = "/fraud/cybersource/fraud-check";
 $aHTTP_CONN_INFO[63]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
+ * Connection info for connecting to CYBS fraud
+ */
+$aHTTP_CONN_INFO[64]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[64]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[64]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[64]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[64]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
+$aHTTP_CONN_INFO[64]["paths"]["callback"] = "/fraud/cybersource/fraud-check";
+
+/**
  * Connection info for connecting to GrabPay
  */
 $aHTTP_CONN_INFO[67]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
