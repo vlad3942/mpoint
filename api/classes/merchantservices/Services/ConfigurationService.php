@@ -298,6 +298,11 @@ class ConfigurationService
         return $this->getAggregateRoot()->getClientConfigurations($this->getRepository());
     }
 
+    public function deleteClientUrlConfig(string $urls)
+    {
+        return $this->getAggregateRoot()->deleteClientUrlConfig($this->getRepository(), $urls);
+    }
+
     /**
      * @param string $type
      * @param array $additionalParams
