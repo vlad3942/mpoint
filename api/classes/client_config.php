@@ -1105,11 +1105,11 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getGoMobileConfigAsXML(RDB &$oDB = NULL)
+	private function _getGoMobileConfigAsXML()
 	{
-	    if($this->_aObj_GoMobileConfigurations === NULL && $oDB !== NULL)
+	    if(empty($this->_aAdditionalProperties)=== false)
         {
-            $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $this->getID());
+            $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($this->_aAdditionalProperties);
         }
 		$xml = '<gomobile-configuration-params>';
 		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
@@ -1224,7 +1224,7 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getPaymentMethodsAsXML($oDB, $aWalletCardSchemes);
 		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
 		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
-		$xml .= $this->_getGoMobileConfigAsXML($oDB);
+		$xml .= $this->_getGoMobileConfigAsXML();
         $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
