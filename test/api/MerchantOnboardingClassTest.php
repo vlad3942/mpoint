@@ -785,6 +785,41 @@ class MerchantOnboardingClassTest extends baseAPITest
 
     }
 
+    public function testSuccessfulDeleteRouteAllConfig()
+    {
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.route_tbl (id, clientid, providerid) VALUES (1, 10099, 50)");
+        $this->queryDB("INSERT INTO Client.routeconfig_tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'TEST', 2, 'TESTMID', 'username', 'password')");
+        $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessId' AND PSPID=50),1,'1234')");
+        $this->queryDB("INSERT INTO Client.route_property_tbl (propertyid,routeconfigid,value) VALUES ( (select ID from system.route_property_tbl where name='CeptorAccessKey' AND PSPID=50),1,'1233')");
+        $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,8)");
+        $this->queryDB("INSERT INTO client.routepm_tbl (routeconfigid, pmid) VALUES (1,7)");
+        $this->queryDB("INSERT INTO client.routefeature_tbl (clientid,routeconfigid, featureid) VALUES (10099,1,1)");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid, countryid) VALUES (1,1)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid, currencyid) VALUES (1,1)");
+
+        $xml= '';
+
+        $obj_DOM = simpledom_load_string($xml);
+        $objController = new ConfigurationController($this->_OBJ_DB,10099);
+        $additionalParams = array(
+            'client_id' => 10099,
+            'id' => "-1",
+            'psp_id' => 50
+        );
+        $objController->deleteRouteConfig($obj_DOM, $additionalParams);
+
+        $res =  $this->queryDB("SELECT id FROM CLIENT.routeconfig_tbl where id = 1 AND isdeleted=false" );
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res));
+
+    }
+
     public function testSuccessfulGetSystemMetadata()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
@@ -832,7 +867,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
 
-        $this->queryDB("INSERT INTO client.services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled, enabled, legacy_flow_enabled) VALUES (10099, true, true, true, true, true, true, true, true, true, false);");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, dcc_enabled, mcp_enabled, pcc_enabled, mpi_enabled, fraud_enabled, tokenization_enabled, splitpayment_enabled, callback_enabled, void_enabled, enabled, legacy_flow_enabled) VALUES (10099, true, true, true, true, true, true, true, true, true, true, false);");
         $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 1::integer, DEFAULT, DEFAULT, DEFAULT);");
         $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 4::integer, DEFAULT, DEFAULT, DEFAULT);");
         $this->queryDB("INSERT INTO client.pm_tbl (clientid, pmid, enabled, created, modified) VALUES (10099::integer, 12::integer, DEFAULT, DEFAULT, DEFAULT);");
@@ -928,7 +963,8 @@ class MerchantOnboardingClassTest extends baseAPITest
         $obj_DOM = simpledom_load_string($xml);
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
-            'pm' => '1,4'
+            'pm' => '1,4',
+            'url' => '4,6'
         );
         $objController->deleteClientConfig($obj_DOM, $additionalParams);
 
@@ -936,6 +972,14 @@ class MerchantOnboardingClassTest extends baseAPITest
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+
+        $res =  $this->queryDB("select * from client.url_tbl where clientid = 10099 AND urltypeid = 4");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
+        $res =  $this->queryDB("select * from client.client_tbl where id = 10099 AND CSSURL != ''");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
     }
 
     public function testSuccessfulDeleteAllClientConfiguration()
@@ -958,6 +1002,7 @@ class MerchantOnboardingClassTest extends baseAPITest
         $objController = new ConfigurationController($this->_OBJ_DB,10099);
         $additionalParams = array(
             'pm' => '-1',
+            'url' => '-1'
         );
         $objController->deleteClientConfig($obj_DOM, $additionalParams);
 
@@ -965,6 +1010,14 @@ class MerchantOnboardingClassTest extends baseAPITest
         # Test 1 : Client PM Table
         $this->assertIsResource($res);
         $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for Payment method against client');
+
+        $res =  $this->queryDB("select * from client.url_tbl where clientid = 10099");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
+
+        $res =  $this->queryDB("select * from client.client_tbl where id = 10099 AND CSSURL != ''");
+        $this->assertIsResource($res);
+        $this->assertEquals(0, pg_num_rows($res), 'Error | Delete Operation Failed for URL against client');
     }
 
     public function  testSuccessfulReadOnlyAddonConfig()
