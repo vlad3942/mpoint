@@ -14,13 +14,13 @@
 
     <changeSet author="Abhinav Shaha" id="2022-03-07-CMP-6524-setup-v2.36">
         <insert catalogName="log" schemaName="log" tableName="state_tbl">
-            <column name="id" value="1019115" />
+            <column name="id" value="2010120" />
             <column name="name" value="Customer's Name is Missing or Invalid" />
             <column name="module" value="sub-code" />
             <column name="enabled" value="true" />
         </insert>
         <insert catalogName="log" schemaName="log" tableName="state_tbl">
-            <column name="id" value="1019116" />
+            <column name="id" value="2010121" />
             <column name="name" value="Customer's Email is Missing or Invalid" />
             <column name="module" value="sub-code" />
             <column name="enabled" value="true" />
