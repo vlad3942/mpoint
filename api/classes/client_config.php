@@ -1112,7 +1112,7 @@ class ClientConfig extends BasicConfig
             $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($this->_aAdditionalProperties);
         }
 		$xml = '<gomobile-configuration-params>';
-        if(count($this->_aObj_GoMobileConfigurations) > 0)
+        if(empty($this->_aObj_GoMobileConfigurations) === false)
         {
             foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
             {
