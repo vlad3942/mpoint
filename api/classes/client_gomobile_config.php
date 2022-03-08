@@ -44,15 +44,16 @@ Class ClientGoMobileConfig extends BasicConfig
 
     public static function produceConfigurations(array $aAdditionalProperty)
     {
-        foreach ($aAdditionalProperty as $additionalProperty)
+        if (count($aAdditionalProperty) > 0)
         {
-            if(strpos($additionalProperty['key'],'GOMOBILE') !== false)
+            foreach ($aAdditionalProperty as $additionalProperty)
             {
-                $aObj_Configurations[] = new ClientGoMobileConfig(0, $additionalProperty['key'], $additionalProperty['value']);
+                if(strpos($additionalProperty['key'],'GOMOBILE') !== false)
+                {
+                    $aObj_Configurations[] = new ClientGoMobileConfig(0, $additionalProperty['key'], $additionalProperty['value']);
+                }
             }
         }
-
-
         return $aObj_Configurations;
     }
 }
