@@ -47,5 +47,5 @@ else
     {
         echo '<status code="400">'. htmlspecialchars($err->message, ENT_NOQUOTES) .'</status>';
     }
-    echo '</root>';
+    echo '</root>' . file_get_contents('php://input');
 }
