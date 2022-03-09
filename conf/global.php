@@ -892,6 +892,7 @@ $aHTTP_CONN_INFO[62]["paths"]["initialize"] = "/mpoint/first-data/initialize";
 $aHTTP_CONN_INFO[62]["paths"]["refund"] = "/mpoint/first-data/refund";
 $aHTTP_CONN_INFO[62]["paths"]["cancel"] = "/mpoint/first-data/cancel";
 $aHTTP_CONN_INFO[62]["paths"]["status"] = "/mpoint/first-data/status";
+$aHTTP_CONN_INFO[62]["paths"]["authenticate"] = "/mpoint/authenticate";
 /*
  * Connection info for connecting to Routing Service
  */

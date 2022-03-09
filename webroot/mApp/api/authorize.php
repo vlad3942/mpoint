@@ -1087,34 +1087,6 @@ try
 
                                                                                 $xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
                                                                             break;
-                                                                        case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
-                                                                            $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iGLOBAL_COLLECT_PSP);
-                                                                            $obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
-
-                                                                            $response = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem, $obj_ClientInfo);
-                                                                            $code = $response->code;
-                                                                            // Authorization succeeded
-                                                                            if ($code == "100") {
-                                                                                $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
-                                                                                $obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_Elem->type["id"]));
-
-                                                                                $xml .= '<status code="100">Payment authorized using  card</status>';
-                                                                            } else if ($code == "2000") {
-                                                                                $xml .= '<status code="2000">Payment authorized using card</status>';
-                                                                            } else if (strpos($code, '2005') !== false) {
-                                                                                header("HTTP/1.1 303");
-                                                                                $xml .= $response->body;
-                                                                            } else if (is_null($token) == false) {
-                                                                                $xml .= '<status code="' . $code . '">Globalcollect returned : ' . $code . '</status>';
-                                                                            } // Error: Authorization declined
-                                                                            else {
-                                                                                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                                header("HTTP/1.1 502 Bad Gateway");
-
-                                                                                $xml .= '<status code="92">Authorization failed, Globalcollect returned error: ' . $code . '</status>';
-                                                                            }
-                                                                            break;
 
                                                                         case (Constants::iCHUBB_PSP): // CHUBB
                                                                             $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iCHUBB_PSP);
@@ -1136,39 +1108,6 @@ try
                                                                                 header("HTTP/1.1 502 Bad Gateway");
 
                                                                                 $xml .= '<status code="92">Authorization failed, CHUBB returned error: ' . $code . '</status>';
-                                                                            }
-                                                                            break;
-                                                                        case (Constants::iSWISH_APM): // SWISH
-                                                                            try {
-
-                                                                                $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-
-                                                                                $response = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo);
-                                                                                $code = $response->code;
-                                                                                
-                                                                                // Authorization succeeded
-                                                                                //2001 is not expected response code for any request
-                                                                                if ($code == "2000" || $code == "2001") {
-                                                                                    $xml .= '<status code="2000">Payment authorized</status>';
-                                                                                } // Error: Authorization declined'
-                                                                                else if ($code == "2010") {
-                                                                                    $xml .= '<status code="2010">Payment declined</status>';
-                                                                                } // Error: Authorization declined'
-                                                                                
-                                                                                else {
-                                                                                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-                                                                                    
-                                                                                    header("HTTP/1.1 502 Bad Gateway");
-                                                                                    
-                                                                                    $xml .= '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
-                                                                                }
-                                                                                
-                                                                            } catch (PaymentProcessorException $e) {
-                                                                                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-                                                                                
-                                                                                header("HTTP/1.1 500 Internal Server Error");
-                                                                                
-                                                                                $xml .= '<status code="99">' . $e->getMessage() . '</status>';
                                                                             }
                                                                             break;
 

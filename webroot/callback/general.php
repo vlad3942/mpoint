@@ -507,6 +507,8 @@ try
                     "amount" => $obj_TxnInfo->getAmount(),
                     "card-id" => $obj_XML->callback->transaction->card["type-id"]);
                 $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+                $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspid, $aHTTP_CONN_INFO);
+                $obj_mPoint = $obj_PaymentProcessor->getPSPInfo();
 
                 $paymentSecureInfo = null;
                 if ($obj_XML->callback->transaction->card->{'info-3d-secure'}) {
@@ -660,7 +662,7 @@ try
                             $iPSPID = $newTxnInfo->getPSPID();
                             $iAmount = (int)$newTxnInfo->getAmount();
 
-                            $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $iPSPID, $aHTTP_CONN_INFO);
+                            $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $newTxnInfo, $iPSPID, $aHTTP_CONN_INFO);
                             $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
                             if (($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_VOUCHER)
                                 && ($newTxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_REJECTED_STATE)) === FALSE)) {
