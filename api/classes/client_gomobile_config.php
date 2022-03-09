@@ -46,11 +46,12 @@ Class ClientGoMobileConfig extends BasicConfig
     {
         if (count($aAdditionalProperty) > 0)
         {
+            $id = 1;
             foreach ($aAdditionalProperty as $additionalProperty)
             {
                 if(strpos($additionalProperty['key'],'GOMOBILE') !== false)
                 {
-                    $aObj_Configurations[] = new ClientGoMobileConfig(0, $additionalProperty['key'], $additionalProperty['value']);
+                    $aObj_Configurations[] = new ClientGoMobileConfig($id++, $additionalProperty['key'], $additionalProperty['value']);
                 }
             }
         }
