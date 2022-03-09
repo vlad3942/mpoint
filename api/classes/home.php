@@ -1834,7 +1834,11 @@ class Home extends General
         $transactionData->setRouteConfigId($txnInfo->getRouteConfigID());
         $transactionData->setFee($txnInfo->getFee());
         $transactionData->setDescription($txnInfo->getDescription());
-        $transactionData->setHmac($txnInfo->getHMAC());
+        if (isset($aTxnAdditionalData['hmac'])) {
+            $transactionData->setHmac($aTxnAdditionalData['hmac']);
+        } else {
+            $transactionData->setHmac($txnInfo->getHMAC());
+        }
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());

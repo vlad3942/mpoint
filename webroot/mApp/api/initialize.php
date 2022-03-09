@@ -418,6 +418,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["locale"];
                                 $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
                             }
+                            if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac)) {
+                                $additionalTxnDataIndex++;
+                                $additionalTxnData[$additionalTxnDataIndex]['name'] = "hmac";
+                                $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->hmac;
+                                $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
+                            }
 							$aSessionAdditionalData = [];
                             if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
@@ -428,6 +434,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $aSessionAdditionalData[$index]['type'] = (string)'Session';
                                 }
                             }
+
                             if($additionalTxnDataIndex > -1)
                             {
                                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
