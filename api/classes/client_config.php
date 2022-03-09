@@ -26,7 +26,7 @@ use api\classes\merchantservices\MetaData\ClientServiceStatus;
 class ClientConfig extends BasicConfig
 {
 
-    private static $instance = null;
+    private static $instances = [];
 
     /**
 	 * Constants for each URL Type
@@ -1350,11 +1350,11 @@ class ClientConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 	{
-        if(self::$instance === null)
+        if(array_key_exists($id.$acc,self::$instances) === false)
         {
-            self::$instance = ClientConfig::_Get($oDB,$id,$acc,$kw);
+            self::$instances[$id.$acc] = ClientConfig::_Get($oDB,$id,$acc,$kw);
         }
-		return self::$instance;
+		return self::$instances[$id.$acc];
 	}
 
     private static function _Get(RDB $oDB, $id, $acc=-1, $kw=-1)
