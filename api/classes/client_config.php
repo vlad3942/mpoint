@@ -1357,6 +1357,12 @@ class ClientConfig extends BasicConfig
 		return self::$instances[$id.$acc];
 	}
 
+    //To handle Unit test cases
+    public static function tearDown()
+    {
+        self::$instances = [];
+    }
+
     private static function _Get(RDB $oDB, $id, $acc=-1, $kw=-1)
     {
         $acc = (integer) $acc;

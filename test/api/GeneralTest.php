@@ -623,6 +623,7 @@ class GeneralTest extends baseAPITest
 
     public function tearDown() : void
     {
+        ClientConfig::tearDown();
         $this->_OBJ_DB->disConnect();
         parent::tearDown();
     }
