@@ -50,24 +50,15 @@ class PaymentProcessor
 
     public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
-        $sPSPClassName = '';
         $this->_setConnInfo($aConnInfo, $iPSPID);
 
         $this->_objPSPConfig = General::producePSPConfigObject($oDB, $oTI, $iPSPID );
 
-        if($this->_objPSPConfig !== NULL)
-        {
-            $sPSPClassName = $this->_objPSPConfig->getName();
-        }
-        else if(empty($this->aConnInfo['ClassName']) === FALSE && class_exists($this->aConnInfo['ClassName']))
-        {
-            $sPSPClassName = $this->aConnInfo['ClassName'];
-        }
         try {
             if (empty($this->aConnInfo) === true) {
                 $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
-            } else if (class_exists($sPSPClassName) === true && empty($this->aConnInfo) === false) {
-                $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+            } else if (empty($this->aConnInfo) === false) {
+                $this->_objPSP = new \api\classes\GenericPSP($oDB, $oTxt, $oTI, $this->aConnInfo, $this->_objPSPConfig, null, $iPSPID);
             } else {
                 throw new PaymentProcessorException("Could not construct PSP object for the given PSPID ".$iPSPID );
             }

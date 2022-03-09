@@ -1758,7 +1758,6 @@ class Home extends General
         $aDeliveryInfo = [];
         $aShippingInfo = [];
         $additionalData = [];
-        $aBillingAddress = [];
         $sub_code = NULL;
 
         $obj_getPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
@@ -1901,18 +1900,14 @@ class Home extends General
 
         $transactionData->setShippingInfo($aShippingInfo);
 
-        // Add Billing address
-        foreach ($abillingaddress as $name => $value) {
-            if($name == 'mobile_country_id'){
-                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(),(integer)$value);
-                $value = $obj_MobileCountryConfig->getCountryCode();
-            }
-            $aBillingAddress[] = new AdditionalData($name, $value);
-        }
-
         if (empty($abillingaddress) === false) {
             $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (int)$abillingaddress['country']);
-
+            
+            if (isset($abillingaddress['mobile_country_id']) && empty($abillingaddress['mobile_country_id']) === false) {
+                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(),(integer)$abillingaddress['mobile_country_id']);
+                $abillingaddress['billing_idc'] = $obj_MobileCountryConfig->getCountryCode();
+            }
+            
             // get country iso code
             $abillingaddress['country'] = $obj_CountryConfig->getNumericCode();
             // get country alpha2code code

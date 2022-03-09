@@ -32,84 +32,26 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH ."/dsb.php");
-// Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Data Cash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the Global Collect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-// Require specific Business logic for the Secure Trading component
-require_once(sCLASS_PATH ."/securetrading.php");
-// Require specific Business logic for the PayFort component
-require_once(sCLASS_PATH ."/payfort.php");
-// Require specific Business logic for the CCAvenue component
-require_once(sCLASS_PATH ."/ccavenue.php");
-// Require specific Business logic for the PayPal component
-require_once(sCLASS_PATH ."/paypal.php");
-// Require specific Business logic for the 2C2P component
-require_once(sCLASS_PATH ."/ccpp.php");
-// Require specific Business logic for the MayBank component
-require_once(sCLASS_PATH ."/maybank.php");
-// Require specific Business logic for the PublicBank component
-require_once(sCLASS_PATH ."/publicbank.php");
-// Require specific Business logic for the Qiwi component
-require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
-// Require specific Business logic for the Paytabs component
-require_once(sCLASS_PATH ."/paytabs.php");
-// Require specific Business logic for the eGHL FPX component
-require_once(sCLASS_PATH ."/eghl.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
-// Require specific Business logic for the global payments component
-require_once(sCLASS_PATH ."/global-payments.php");
-// Require specific Business logic for the cybs component
-require_once(sCLASS_PATH ."/cybersource.php");
-// Require specific Business logic for the VeriTrans4G component
-require_once(sCLASS_PATH ."/psp/veritrans4g.php");
-// Require specific Business logic for the DragonPay component
-require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
-// Require specific Business logic for the SWISH component
-require_once(sCLASS_PATH ."/apm/swish.php");
-// Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
-// Require specific Business logic for the Grab Pay component
-require_once(sCLASS_PATH ."/grabpay.php");
+
 
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
-// Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/MPGS.php");
-// Require specific Business logic for the Paymaya-Acq component
-require_once(sCLASS_PATH ."/Paymaya_Acq.php");
-// Require specific Business logic for the Nmi-Credomatic component
-require_once(sCLASS_PATH ."/nmi_credomatic.php");
 
 set_time_limit(120);
 $aMsgCds = array();
@@ -153,7 +95,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			{	
 				try
 				{
-					$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+                    $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
+                    $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
 					// Refund operation succeeded
