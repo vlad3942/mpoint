@@ -18,7 +18,6 @@ require_once __DIR__ . '/../../api/classes/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
 require_once(sCLASS_PATH . '/payment_route.php');
-require_once(sCLASS_PATH . '/applepay.php');
 
 
 class RoutingServiceTest extends baseAPITest
