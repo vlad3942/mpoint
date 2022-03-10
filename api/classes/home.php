@@ -1836,6 +1836,7 @@ class Home extends General
         $transactionData->setDescription($txnInfo->getDescription());
         if (isset($aTxnAdditionalData['hmac'])) {
             $transactionData->setHmac($aTxnAdditionalData['hmac']);
+            unset($aTxnAdditionalData['hmac']);
         } else {
             $transactionData->setHmac($txnInfo->getHMAC());
         }
