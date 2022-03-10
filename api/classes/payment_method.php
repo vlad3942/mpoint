@@ -37,7 +37,7 @@ class PaymentMethodOld extends EndUserAccount
 	 * @param	TxnInfo $oTI 		Reference to the Data object with the Transaction Information
 	 * @param	UAProfile $oUA 		Reference to the data object with the User Agent Profile for the customer's mobile device
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA=null)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA=null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 

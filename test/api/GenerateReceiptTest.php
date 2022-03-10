@@ -47,7 +47,7 @@ class GenerateReceiptTest extends baseAPITest
         $this->_obj_DB = RDB::produceDatabase($this->mPointDBInfo);
         $this->_obj_txnInfo = TxnInfo::produceInfo(1001001, $this->_obj_DB);
 
-        $this->_obj_TXT = new TranslateText([sLANGUAGE_PATH . sLANG . "/global.txt", sLANGUAGE_PATH . sLANG . "/custom.txt"], sSYSTEM_PATH, 0, "UTF-8");
+        $this->_obj_TXT = new api\classes\core\TranslateText([sLANGUAGE_PATH . sLANG . "/global.txt", sLANGUAGE_PATH . sLANG . "/custom.txt"], sSYSTEM_PATH, 0, "UTF-8");
         $this->_obj_PSP = new GeneralPSP($this->_obj_DB, $this->_obj_TXT, $this->_obj_txnInfo, $aMPOINT_CONN_INFO, NULL, NULL);
     }
 

@@ -23,7 +23,7 @@ abstract class UpdateSettlementStatusAPITest extends baseAPITest
 		global $aMPOINT_CONN_INFO;
 
 		$this->_obj_DB = RDB::produceDatabase($this->mPointDBInfo);
-		$this->_obj_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+		$this->_obj_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$aMPOINT_CONN_INFO['path'] = "/mApp/api/process-settlement.php";
 		$aMPOINT_CONN_INFO["contenttype"] = "text/xml";
 		$aMPOINT_CONN_INFO["method"] = "GET";

@@ -53,7 +53,7 @@ abstract class CPMFRAUD
      * @param 	TxnInfo $oTI 			Data object with the Transaction Information
      * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
      */
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, ?array $aConnInfo)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, ?array $aConnInfo)
     {
         $this->_obj_TxnInfo = $oTI;
         $this->_oDB = $oDB;
@@ -105,7 +105,7 @@ abstract class CPMFRAUD
      * @throws CPMFraudEXCEPTION
      * @throws CallbackException
      */
-    public static function produceFSP(RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo, $iFSPID)
+    public static function produceFSP(RDB &$obj_DB, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo, $iFSPID)
     {
         switch ($iFSPID)
         {
@@ -135,7 +135,7 @@ abstract class CPMFRAUD
      * @param  null $authToken
      * @return FraudResult
      */
-    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
+    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
         $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
         $subType ='pre_auth';
@@ -163,7 +163,7 @@ abstract class CPMFRAUD
         return $fraudCheckResponse;
     }
 
-    public static function attemptFraudInitCallback($iStateId,$sStateName,RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public static function attemptFraudInitCallback($iStateId,$sStateName,RDB &$obj_DB, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
         $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
         $subType ='pre_auth';

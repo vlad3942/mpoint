@@ -2034,6 +2034,17 @@ abstract class Constants
 	*/
 	const iBASE_IMAGE_URL = 14;
 
+	const aFXServiceType = [
+		11 => 'DCC Opt',
+		12 => 'DCC Not opt',
+		21 => 'MCP opt',
+		22 => 'MCP Not opt',
+		31 => 'External MCP opt',
+		32 => 'External MCP Not opt',
+		41 => 'PCC Opt',
+		42 => 'PCC Not opt'
+	];
+
 }
 
 abstract class AutoCaptureType

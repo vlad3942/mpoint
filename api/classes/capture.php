@@ -47,7 +47,7 @@ class Capture extends General
 	 * @param    TxnInfo $oTI Data object with the Transaction Information
 	 * @param	 Callback $oPSP
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
