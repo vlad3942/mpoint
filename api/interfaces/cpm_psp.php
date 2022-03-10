@@ -1577,7 +1577,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if(General::xml2bool($isGenerateCoupon) === false || strlen($this->aCONN_INFO["paths"]["generate-receipt"]) == 0 ) { return false; }
 
             $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
-
+            if(empty($this->getTxnInfo()->getOrderConfigs()) === true)
+            {
+                $this->updateTxnInfoObject();
+            }
             $body  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$body .= '<root>';
 			$body .= '<generate-receipt>';
