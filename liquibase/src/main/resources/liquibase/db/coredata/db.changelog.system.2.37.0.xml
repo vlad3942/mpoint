@@ -19,4 +19,34 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Ramesh Tiwari" id="2022-03-01-inf-18-setup-v2.36_1">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="75"/>
+            <column name="name" value="AUB"/>
+            <column name="system_type" value="4"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="32" />
+            <column name="pspid" value="75"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="39" />
+            <column name="pspid" value="75"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="75"/>
+            <column name="name" value="USD" />
+            <column name="currencyid" value="840" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
