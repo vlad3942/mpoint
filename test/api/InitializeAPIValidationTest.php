@@ -112,6 +112,7 @@ class InitializeAPIValidationTest extends baseAPITest
 
     public function testBadRequestDisabledClient()
     {
+        $this->bIgnoreErrors = true;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled) VALUES (10099, 1, 100, 'Test Client', false)");
 
 		$xml = $this->getInitDoc(10099, 1100);
@@ -127,6 +128,7 @@ class InitializeAPIValidationTest extends baseAPITest
 
     public function testDisabledAccount()
     {
+        $this->bIgnoreErrors = true;
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled) VALUES (10099, 1, 100, 'Test Client', true)");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, enabled) VALUES (1100, 10099, false)");
 

@@ -29,12 +29,12 @@ header("Content-Type: text/plain");
 try
 {
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_REQUEST['language'] ."/global.txt", sLANGUAGE_PATH . $_REQUEST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $_REQUEST['language'] ."/global.txt", sLANGUAGE_PATH . $_REQUEST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 }
 catch (TranslateTextException $e)
 {
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	trigger_error("Unknown Language received from WannaFind. language: ". $_REQUEST['language'], E_USER_WARNING);
 }
 try

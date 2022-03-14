@@ -34,15 +34,20 @@ class FareInfo extends BillingSummaryAbstract
             return null;
         }
     }
-    public static function produceConfigurations(\RDB $oDB, $fid) {
-        $sql = "SELECT id
-				FROM Log" . sSCHEMA_POSTFIX . ".billing_summary_tbl
-				WHERE order_id = " . intval ( $fid ) . " and bill_type='Fare'";
+    public static function produceConfigurations(\RDB $oDB, $fid)
+    {
+        $sql = "SELECT id, journey_ref, bill_type, description, amount, currency, created, modified, profile_seq, trip_tag,  trip_seq, product_code, product_category, product_item
+					FROM log" . sSCHEMA_POSTFIX . ".billing_summary_tbl WHERE order_id = " . intval ( $fid ) . " and bill_type='Fare'";
+
+        $aRS = $oDB->getAllNames($sql);
         // echo $sql ."\n";
         $aConfigurations = array ();
-        $res = $oDB->query ( $sql );
-        while ( $RS = $oDB->fetchName ( $res ) ) {
-            $aConfigurations [] = self::produceConfig ( $oDB, $RS ["ID"] );
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $RS)
+            {
+                $aConfigurations[] = new FareInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
+            }
         }
         return $aConfigurations;
     }

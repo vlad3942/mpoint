@@ -25,7 +25,10 @@ use api\classes\merchantservices\MetaData\ClientServiceStatus;
  */
 class ClientConfig extends BasicConfig
 {
-	/**
+
+    private static $instances = [];
+
+    /**
 	 * Constants for each URL Type
 	 *
 	 * @var integer
@@ -1102,20 +1105,23 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	String
 	 */
-	private function _getGoMobileConfigAsXML(RDB &$oDB = NULL)
+	private function _getGoMobileConfigAsXML()
 	{
-	    if($this->_aObj_GoMobileConfigurations === NULL && $oDB !== NULL)
+	    if(empty($this->_aAdditionalProperties)=== false)
         {
-            $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $this->getID());
+            $this->_aObj_GoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($this->_aAdditionalProperties);
         }
 		$xml = '<gomobile-configuration-params>';
-		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
-		{
-			if ( ($obj_GMP instanceof ClientGoMobileConfig) === true)
-			{
-				$xml .= $obj_GMP->toXML();
-			}
-		}
+        if(empty($this->_aObj_GoMobileConfigurations) === false)
+        {
+            foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
+            {
+                if ( ($obj_GMP instanceof ClientGoMobileConfig) === true)
+                {
+                    $xml .= $obj_GMP->toXML();
+                }
+            }
+        }
 		$xml .= '</gomobile-configuration-params>';
 
 		return $xml;
@@ -1221,7 +1227,7 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getPaymentMethodsAsXML($oDB, $aWalletCardSchemes);
 		$xml .= $this->_getMerchantAccountsConfigAsXML($oDB);
 		$xml .= $this->_getAccountsConfigurationsAsXML($oDB);
-		$xml .= $this->_getGoMobileConfigAsXML($oDB);
+		$xml .= $this->_getGoMobileConfigAsXML();
         $xml .= $this->_getCommunicationCannelConfigAsXML($oDB);
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
@@ -1344,8 +1350,23 @@ class ClientConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 	{
-		$acc = (integer) $acc;
-		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
+        if(array_key_exists($id.$acc,self::$instances) === false)
+        {
+            self::$instances[$id.$acc] = ClientConfig::_Get($oDB,$id,$acc,$kw);
+        }
+		return self::$instances[$id.$acc];
+	}
+
+    //To handle Unit test cases
+    public static function tearDown()
+    {
+        self::$instances = [];
+    }
+
+    private static function _Get(RDB $oDB, $id, $acc=-1, $kw=-1)
+    {
+        $acc = (integer) $acc;
+        $sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
 					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.declineurl, CL.callbackurl, CL.iconurl,
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
@@ -1555,7 +1576,7 @@ class ClientConfig extends BasicConfig
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
 
 		return NULL;
-	}
+    }
 
 	public static function authenticate($obj_DB, $clientID, $accountID, $username, $password, $ip='')
 	{
