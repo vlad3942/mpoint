@@ -26,7 +26,7 @@ class Authorize extends General
 	 * @param	 TxnInfo $oTxn_Info Transaction information object
 	 * @param	 callable $oPSP PSP Communication object
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTxn_Info, Callback $oPSP)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTxn_Info, Callback $oPSP)
 	{
 		parent::__construct($oDB, $oTxt);
 

@@ -11,7 +11,7 @@
 
 final class GeneralPSP extends CPMACQUIRER
 {
-    public function __construct(RDB $oDB, TranslateText $oTxt, ?TxnInfo $oTI = NULL, ?array $aConnInfo = NULL, ?PSPConfig $obj_PSPConfig = NULL, ClientInfo $oClientInfo = NULL)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, ?TxnInfo $oTI = NULL, ?array $aConnInfo = NULL, ?PSPConfig $obj_PSPConfig = NULL, ClientInfo $oClientInfo = NULL)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }

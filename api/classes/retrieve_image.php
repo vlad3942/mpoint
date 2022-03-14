@@ -27,7 +27,7 @@ class RetrieveImage extends General
 	 * @param	TranslateText $oDB 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param	UAProfile $oUA 		Reference to the data object with the User Agent Profile for the customer's mobile device
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt)
 	{
 		parent::__construct($oDB, $oTxt);
 	}

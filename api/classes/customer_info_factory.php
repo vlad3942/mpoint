@@ -8,7 +8,7 @@
  */
 class CustomerInfoFactory
 {
-    public static function getInstance(RDB $oDB, TranslateText $oTxt, ClientURLConfig $obj_URLConfig, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid, $profileid)
+    public static function getInstance(RDB $oDB, api\classes\core\TranslateText $oTxt, ClientURLConfig $obj_URLConfig, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid, $profileid)
     {
 		$url= $obj_URLConfig->getURL();
         if (empty($url)  === true )
