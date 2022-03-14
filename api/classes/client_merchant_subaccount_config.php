@@ -57,33 +57,25 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public static function produceConfig(RDB $oDB, $id)
-	{
-		$sql = "SELECT MSA.id, MSA.pspid, MSA.name, A.id AS accountid, A.clientid, MSA.modified
-				FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl MSA
-				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON MSA.accountid = A.id AND A.enabled = '1'			
-				WHERE MSA.id = ". intval($id) ." AND MSA.enabled = '1'";
-//		echo $sql ."\n";					
-		$RS = $oDB->getName($sql);		
-		if (is_array($RS) === true && count($RS) > 0)
-		{			
-			return new ClientMerchantSubAccountConfig($RS["ID"], $RS["ACCOUNTID"], $RS["PSPID"], $RS["NAME"], gmdate("Y-m-d H:i:sP", strtotime(substr($RS['MODIFIED'], 0, strpos($RS['MODIFIED'], ".") ) ) ));
-		}
-		else { return null; }
-	}
+
 	
 	public static function produceConfigurations(RDB $oDB, $accountid)
-	{			
-		$sql = "SELECT id	
-				FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl				
-				WHERE accountid = ". intval($accountid) ." AND enabled = '1' ORDER BY modified DESC";		
+	{
+        $sql = "SELECT MSA.id, MSA.pspid, MSA.name, MSA.accountid, MSA.modified
+				FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl MSA
+				WHERE accountid = ". (int)$accountid ." AND MSA.enabled = '1' ORDER BY modified DESC";
 //		echo $sql ."\n";
-		$aObj_Configurations = array();
-		$res = $oDB->query($sql);
-		while ($RS = $oDB->fetchName($res) )
-		{
-			$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]);
-		}
+        $aRS = $oDB->getAllNames($sql);
+        $aObj_Configurations = array();
+
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $RS)
+            {
+                $aObj_Configurations[] = new ClientMerchantSubAccountConfig($RS["ID"], $RS["ACCOUNTID"], $RS["PSPID"], $RS["NAME"], gmdate("Y-m-d H:i:sP", strtotime(substr($RS['MODIFIED'], 0, strpos($RS['MODIFIED'], ".") ) ) ));
+            }
+        }
+
 		
 		return $aObj_Configurations;		
 	}	

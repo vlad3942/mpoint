@@ -57,8 +57,9 @@ require_once(sAPI_CLASS_PATH ."remote_report.php");
 require_once(sAPI_CLASS_PATH ."database.php");
 // Require API for Custom User Session handling
 require_once(sAPI_CLASS_PATH ."session.php");
-// Require API for Text Transalation
-require_once(sAPI_CLASS_PATH ."text.php");
+// Require API for Text Transalation // This functionality no longer required. To minimize the impact dummy class is created instead of removing code. Code refactoring is required in phase 2.
+use api\classes\core\TranslateText;
+//require_once(sCLASS_PATH ."core/TranslateText.php");
 // Require API for controlling Output prior to sending it to the device
 require_once(sAPI_CLASS_PATH ."output.php");
 // Require API for handling resizing of images
@@ -192,5 +193,5 @@ if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] =
 define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/webroot") ), 0, "UTF-8");
+$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/webroot") ), 0, "UTF-8");
 ?>

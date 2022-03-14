@@ -25,7 +25,7 @@ class mProfile extends General
     private $_iMProfileID;
 
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, ClientConfig $obj_CC, CustomerInfo $obj_CI, $sDeviceID)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, ClientConfig $obj_CC, CustomerInfo $obj_CI, $sDeviceID)
     {
         parent::__construct($oDB, $oTxt);
         $this->_obj_ClientConfig = $obj_CC;
@@ -90,7 +90,7 @@ class mProfile extends General
             $this->_obj_ClientConfig->getPassword() );
     }
 
-    public static function produceConfiguration(RDB $oDB, TranslateText $oTxt, $iClientID, CustomerInfo $oCI, $sDeviceID)
+    public static function produceConfiguration(RDB $oDB, api\classes\core\TranslateText $oTxt, $iClientID, CustomerInfo $oCI, $sDeviceID)
     {
         $oCC = ClientConfig::produceConfig($oDB, $iClientID);
         return new mProfile($oDB, $oTxt, $oCC, $oCI, $sDeviceID);

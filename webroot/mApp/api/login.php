@@ -183,7 +183,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 // Account disabled due to too many failed login attempts
                                 if ($code == 3) {
                                     // Re-Intialise Text Translation Object based on transaction
-                                    $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_DOM->login[$i]->{'client-info'}["language"] . "/global.txt", sLANGUAGE_PATH . $obj_DOM->login[$i]->{'client-info'}["language"] . "/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+                                    $_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_DOM->login[$i]->{'client-info'}["language"] . "/global.txt", sLANGUAGE_PATH . $obj_DOM->login[$i]->{'client-info'}["language"] . "/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
                                     $obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
                                     $obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_DOM->login[$i]->{'client-info'}->mobile);
                                 }

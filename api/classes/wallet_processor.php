@@ -39,7 +39,7 @@ class WalletProcessor extends PaymentProcessor
         Constants::iMVAULT_WALLET => 'mvault');
 
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
     {
         try {
             parent::__construct($oDB, $oTxt, $oTI, self::$aWalletConstants[$iTypeId], $aConnInfo);
@@ -55,7 +55,7 @@ class WalletProcessor extends PaymentProcessor
         }
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
+    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
     {
         if (empty(self::$aWalletConstants[$iTypeId] ) === false) {
             return new WalletProcessor($oDB, $oTxt, $oTI, $iTypeId, $aConnInfo);

@@ -100,15 +100,18 @@ class FailedPaymentMethodConfig
 				WHERE Txn.sessionid = " . $sessionId . " AND txnpass.performedopt = " . Constants::iPAYMENT_ACCEPTED_STATE . "  and txn.clientid = " . $clientId;
 
 
-            $res = $obj->query($sql);
-            while ($RS = $obj->fetchName($res))
+            $aRS = $obj->getAllNames($sql);
+            if (is_array($aRS) === true && count($aRS) > 0)
             {
-                if (empty($RS["CARDID"]) === false && empty($RS["PAYMENTTYPE"]) === false)
+                foreach ($aRS as $RS)
                 {
-                    $aStates = array();
-                    if (empty($RS["STATEID"]) === false && $RS["STATUS"] === Constants::sPassbookStatusError) { array_push($aStates, $RS["STATEID"]); }
-                    if (empty($RS["FRAUDSTATEID"]) === false) { array_push($aStates, $RS["FRAUDSTATEID"]); }
-                    if(empty($aStates) === false) { $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $aStates,$RS["TXNID"]); }
+                    if (empty($RS["CARDID"]) === false && empty($RS["PAYMENTTYPE"]) === false)
+                    {
+                        $aStates = array();
+                        if (empty($RS["STATEID"]) === false && $RS["STATUS"] === Constants::sPassbookStatusError) { array_push($aStates, $RS["STATEID"]); }
+                        if (empty($RS["FRAUDSTATEID"]) === false) { array_push($aStates, $RS["FRAUDSTATEID"]); }
+                        if(empty($aStates) === false) { $aObj_Configurations[] = new FailedPaymentMethodConfig($RS["CARDID"], $RS["PAYMENTTYPE"], $aStates,$RS["TXNID"]); }
+                    }
                 }
             }
 

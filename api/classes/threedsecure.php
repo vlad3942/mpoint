@@ -24,7 +24,7 @@ class ThreeDSecure extends General
 	 * @param TranslateText $oTxt			Text Translation Object for translating any text into a specific language
 	 * @param ClientConfig $oClientConfig	Client Configuration object for the sessions active client
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, ClientConfig $oClientConfig)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, ClientConfig $oClientConfig)
 	{
 		parent::__construct($oDB, $oTxt);
 		$this->_obj_ClientConfig = $oClientConfig;

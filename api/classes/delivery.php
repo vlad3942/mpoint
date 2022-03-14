@@ -40,7 +40,7 @@ class Delivery extends General
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	HTTPConnInfo $oCI 		Data object with the Connection Information to a Lookup Server
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, HTTPConnInfo &$oCI=null)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI, HTTPConnInfo &$oCI=null)
 	{
 		parent::__construct($oDB, $oTxt);
 

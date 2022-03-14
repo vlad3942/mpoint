@@ -82,7 +82,7 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 	try
 	{
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+		$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
         $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspid, $aHTTP_CONN_INFO);
         $obj_UATP = $obj_PaymentProcessor->getPSPInfo();
         $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
@@ -107,7 +107,7 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 		$obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
 
 		$txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $obj_TxnInfo->getID(),$obj_TxnInfo->getClientConfig()->getID());
-
+		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $sPassbookStatus, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 		
 		if($code === Constants::iTRANSACTION_CREATED)
