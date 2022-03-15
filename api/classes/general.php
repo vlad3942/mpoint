@@ -1622,9 +1622,9 @@ class General
      * @param $cardno integer  Card Number
      * @return string          Issuer identification number
      */
-    public static function getIssuerIdentificationNumber($cardno)
+    public static function getIssuerIdentificationNumber($cardno, $length = 6)
     {
-        return substr($cardno, 0, 6);
+        return substr($cardno, 0, $length);
     }
 
     /**
