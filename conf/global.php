@@ -1094,6 +1094,19 @@ $aHTTP_CONN_INFO[74]["paths"]["status"] = "/mpoint/psp/nmi-credomatic/status";
 $aHTTP_CONN_INFO[74]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
+ * Connection info for connecting to AUB
+ */
+$aHTTP_CONN_INFO[75]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[75]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[75]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[75]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[75]["paths"]["initialize"] = "/mpoint/aggregator/aub/initialize";
+$aHTTP_CONN_INFO[75]["paths"]["refund"] = "/mpoint/aggregator/aub/refund";
+$aHTTP_CONN_INFO[75]["paths"]["callback"] = "/mpoint/aggregator/aub/callback";
+$aHTTP_CONN_INFO[75]["paths"]["status"] = "/mpoint/aggregator/aub/status";
+$aHTTP_CONN_INFO[75]["paths"]["redirect"] = "/mpoint/aggregator/aub/redirect";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
