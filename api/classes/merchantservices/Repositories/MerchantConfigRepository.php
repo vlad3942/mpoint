@@ -1586,9 +1586,9 @@ class MerchantConfigRepository
     /**
      * Generate Payment provider data
      *
-     * @return void
+     * @return array|boolean
      */
-    private function paymentProvidersData() : array
+    private function paymentProvidersData()
     {
         $iClientId = $this->_clientConfig->getID();
 
@@ -1600,6 +1600,7 @@ class MerchantConfigRepository
         order by rt.id";
 
         return $this->getDBConn()->getAllNames($SQL);
+
     }
 
     /**
