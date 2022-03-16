@@ -1586,7 +1586,7 @@ class MerchantConfigRepository
     /**
      * Generate Payment provider data
      *
-     * @return array|boolean
+     * @return array
      */
     private function paymentProvidersData() : array
     {
