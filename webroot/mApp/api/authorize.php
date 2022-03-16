@@ -87,9 +87,6 @@ require_once(sCLASS_PATH ."/wallet_processor.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
-require_once(sCLASS_PATH ."/fraud/provider/ezy.php");
-require_once(sCLASS_PATH ."/fraud/provider/cyberSourceFsp.php");
-require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
@@ -433,7 +430,7 @@ try
                                             $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
                                         }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
-                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}, Constants::iNoOfBINDigit);
                                         }
 
                                         if (empty($issuerIdentificationNumber) === false) {

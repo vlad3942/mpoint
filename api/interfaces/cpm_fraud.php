@@ -107,16 +107,10 @@ abstract class CPMFRAUD
      */
     public static function produceFSP(RDB &$obj_DB, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo, $iFSPID)
     {
-        switch ($iFSPID)
-        {
-             case (Constants::iEZY_PSP):
-                return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
-            case (Constants::iCYBER_SOURCE_FSP):
-                return new CyberSourceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[63]);
-            case (Constants::iCEBU_RMFSS_FSP):
-                return new CebuRmfssFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cebu-rmfss"]);
-            default:
-                throw new CallbackException("Unknown Fraud Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
+        if (empty($aConnInfo) === false) {
+            return new \api\classes\GenericFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo,$iFSPID);
+        } else {
+            throw new CallbackException("Could not construct PSP object for the given Fraud PSPID ".$iFSPID );
         }
     }
     /**
