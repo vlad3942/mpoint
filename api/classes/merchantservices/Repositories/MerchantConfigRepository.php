@@ -1588,7 +1588,7 @@ class MerchantConfigRepository
      *
      * @return array|boolean
      */
-    private function paymentProvidersData()
+    private function paymentProvidersData() : array
     {
         $iClientId = $this->_clientConfig->getID();
 
@@ -1599,7 +1599,8 @@ class MerchantConfigRepository
         WHERE clientid = $iClientId
         order by rt.id";
 
-        return $this->getDBConn()->getAllNames($SQL);
+        $aProvidersData =  $this->getDBConn()->getAllNames($SQL);
+        return empty($aProvidersData) === false ? $aProvidersData : array();
 
     }
 
