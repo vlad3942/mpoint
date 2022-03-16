@@ -28,50 +28,50 @@ class PassengerInfo {
 	 *
 	 * @var integer
 	 */
-	private $_iID;
+	private $id;
 	/**
 	 * Value for First Name
 	 */
-	private $_First_Name;
+	private $first_name;
 	/**
 	 * Value for Last Name
 	 */
-	private $_Last_Name;
+	private $last_name;
 	/**
 	 * Value of Type
 	 */
-	private $_Type;
+	private $type;
 	/**
 	 * Data for Additional info related to Passenger
 	 *
 	 * @var integer
 	 */
-	private $_AdditionalData;
+	private $additional_data;
 
     /**
      * Value of title
      */
-    private $_Title;
+    private $title;
     /**
      * Value of Email
      */
-    private $_Email;
+    private $email;
     /**
      * Value of Mobile
      */
-    private $_Mobile;
+    private $mobile;
     /**
      * Value of Country id
      */
-    private $_CountryId;
+    private $country_id;
     /**
      * Amount Paid by Passenger
      */
-    private $_Amount;
+    private $amount;
     /**
      * The sequence number of a passenger
      */
-    private $_Seq;
+    private $seq;
 
     /**
      * Default Constructor
@@ -88,17 +88,17 @@ class PassengerInfo {
      * @param $Adata
      */
 	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $amount, $seq, $Adata = null) {
-		$this->_iID = ( integer ) $id;
-		$this->_First_Name = $fnm;
-		$this->_Last_Name = $lnm;
-		$this->_Type = $type;
-		$this->_AdditionalData = $Adata;
-		$this->_Title = $title;
-		$this->_Email = $email;
-		$this->_Mobile = $mobile;
-		$this->_CountryId = $countryId;
-		$this->_Amount = $amount;
-        $this->_Seq = $seq;
+		$this->id = ( integer ) $id;
+		$this->first_name = $fnm;
+		$this->last_name = $lnm;
+		$this->type = $type;
+		$this->additional_data = $Adata;
+		$this->title = $title;
+		$this->email = $email;
+		$this->mobile = $mobile;
+		$this->country_id = $countryId;
+		$this->amount = $amount;
+        $this->seq = $seq;
 	}
 	
 	/**
@@ -107,7 +107,7 @@ class PassengerInfo {
 	 * @return integer
 	 */
 	public function getID() {
-		return $this->_iID;
+		return $this->id;
 	}
 	/**
 	 * Returns the First Name of a Passenger For that Transaction
@@ -115,7 +115,7 @@ class PassengerInfo {
 	 * @return string
 	 */
 	public function getFirstName() {
-		return $this->_First_Name;
+		return $this->first_name;
 	}
 	/**
 	 * Returns the Last Name of a Passenger For that Transaction
@@ -123,7 +123,7 @@ class PassengerInfo {
 	 * @return string
 	 */
 	public function getLastName() {
-		return $this->_Last_Name;
+		return $this->last_name;
 	}
 	/**
 	 * Returns the type of the Passenger
@@ -131,7 +131,7 @@ class PassengerInfo {
 	 * @return string
 	 */
 	public function getType() {
-		return $this->_Type;
+		return $this->type;
 	}
 	/**
 	 * Returns the Additional Data of the passenger
@@ -139,7 +139,7 @@ class PassengerInfo {
 	 * @return array
 	 */
 	public function getAdditionalData() {
-		return $this->_AdditionalData;
+		return $this->additional_data;
 	}
 
     /**
@@ -148,7 +148,7 @@ class PassengerInfo {
      */
     public function getTitle()
     {
-        return $this->_Title;
+        return $this->title;
     }
 
     /**
@@ -157,7 +157,7 @@ class PassengerInfo {
      */
     public function getEmail()
     {
-        return $this->_Email;
+        return $this->email;
     }
 
     /**
@@ -166,7 +166,7 @@ class PassengerInfo {
      */
     public function getMobile()
     {
-        return $this->_Mobile;
+        return $this->mobile;
     }
 
     /**
@@ -175,7 +175,7 @@ class PassengerInfo {
      */
     public function getCountryId()
     {
-        return $this->_CountryId;
+        return $this->country_id;
     }
 
     /**
@@ -184,7 +184,7 @@ class PassengerInfo {
      */
     public function getAmount()
     {
-        return $this->_Amount;
+        return $this->amount;
     }
 
     /**
@@ -193,7 +193,7 @@ class PassengerInfo {
      */
     public function getSeqNumber()
     {
-        return $this->_Seq;
+        return $this->seq;
     }
 
 

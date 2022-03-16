@@ -28,124 +28,145 @@ class FlightInfo {
 	 *
 	 * @var integer
 	 */
-	private $_iID;
+	private $id;
 	/**
 	 * Value for the Service Class
 	 */
-	private $_ServiceClass;
+	private $service_class;
 	/**
 	 * Value of the Departure Airport
 	 */
-	private $_DepartureAirport;
+	private $departure_airport;
 	/**
 	 * Value of the Arrival Airport
 	 */
-	private $_ArrivalAirport;
+	private $arrival_airport;
 	/**
 	 * Unique Value of Operating Airline
 	 *
 	 * @var integer
 	 */
-	private $_OpAirlineCode;
+	private $op_airline_code;
     /**
      * Unique Value of Marketing Airline
      *
      * @var integer
      */
-    private $_MktAirlineCode;
+    private $mkt_airline_code;
 	/**
 	 * Arrival Date of Passenger
 	 *
 	 * @var timestamp
 	 */
-	private $_ArrivalDate;
+	private $arrival_date;
 	/**
 	 * Departure Date of Passenger
 	 *
 	 * @var timestamp
 	 */
-	private $_DepartureDate;
+	private $departure_date;
 	/**
 	 * Additional Data related to flight
 	 *
 	 * @var array
 	 */
-	private $_aAdditionalData;
+	private $additional_data;
 	/**
 	 * Marketing Flight number of this flight
 	 *
 	 * @var string
 	 */
-	private $_MktFlightNumber;
+	private $mkt_flight_number;
 
     /**
      * Operating Flight number of this flight
      *
      * @var string
      */
-    private $_OpFlightNumber;
+    private $op_flight_number;
 
     /**
      * Captures the itinerary sequence of this flight
      *
      * @var string
      */
-    private $_aTag;
+    private $tag;
 
     /**
      * Captures the flight segment sequence
      *
      * @var string
      */
-    private $_aTripCount;
+    private $trip_count;
 
     /**
      * Indicates the service level of this flight
      *
      * @var string
      */
-    private $_aServiceLevel;
+    private $service_level;
 
     /**
      * Indicates the departure country of the flight
      *
      * @var string
      */
-    private $_iDepartureCountryId;
+    private $departure_country_id;
 
     /**
      * Indicates the arrival country of the flight
      *
      * @var string
      */
-    private $_iArrivalCountryId;
+    private $arrival_country_id;
 
     /**
      * Indicates the departure date time zone
      *
      * @var string
      */
-    private $_DeptTimeZone;
+    private $dept_time_zone;
     /**
      * Indicates the arrival date time zone
      *
      * @var string
      */
-    private $_ArrivalTimeZone;
+    private $arrival_time_zone;
 
     /**
      * Indicates the arrival terminal
      *
      * @var string
      */
-    private $_ArrivalTerminal;
+    private $arrival_terminal;
 
     /**
      * Indicates the departure terminal
      *
      * @var string
      */
-    private $_DeptTerminal;
+    private $dept_terminal;
+
+    /**
+     * Indicates the departure city
+     *
+     * @var string
+     */
+    private $dept_city;
+
+    /**
+     * Indicates the arrival city
+     *
+     * @var string
+     */
+    private $arrival_city;
+
+    /**
+     * Indicates the aircraft type
+     *
+     * @var string
+     */
+    private $aircraft_type;
 
 
 
@@ -154,29 +175,29 @@ class FlightInfo {
 	 * Default Constructor
 	 */
 	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $departureCountryId, $arrivalCountryId, $Adata, $timeZone, $opFlightNumber, $aTimeZone, $mAirlineCode, $deptCity, $arrivalCity, $airCraftType, $aTerminal, $dTerminal ) {
-		$this->_iID = ( integer ) $id;
-		$this->_ServiceClass = $scid;
-		$this->_DepartureAirport = $daid;
-		$this->_ArrivalAirport = $aaid;
-		$this->_OpAirlineCode = $alid;
-		$this->_ArrivalDate = $adid;
-		$this->_DepartureDate = $ddid;
-		$this->_aAdditionalData = $Adata;
-		$this->_MktFlightNumber = $fnum;
-		$this->_aTag = $tag;
-		$this->_aTripCount = $tripCount;
-		$this->_aServiceLevel = $serviceLevel;
-        $this->_iDepartureCountryId = $departureCountryId;
-        $this->_iArrivalCountryId = $arrivalCountryId;
-        $this->_DeptTimeZone = $timeZone;
-        $this->_OpFlightNumber = $opFlightNumber;
-        $this->_ArrivalTimeZone = $aTimeZone;
-        $this->_MktAirlineCode = $mAirlineCode;
-        $this->_DepartureCity = $deptCity;
-        $this->_ArrivalCity = $arrivalCity;
-        $this->_AirCraftType = $airCraftType;
-        $this->_ArrivalTerminal = $aTerminal;
-        $this->_DeptTerminal = $dTerminal;
+		$this->id = ( integer ) $id;
+		$this->service_class = $scid;
+		$this->departure_airport = $daid;
+		$this->arrival_airport = $aaid;
+		$this->op_airline_code = $alid;
+		$this->arrival_date = $adid;
+		$this->departure_date = $ddid;
+		$this->additional_data = $Adata;
+		$this->mkt_flight_number = $fnum;
+		$this->tag = $tag;
+		$this->trip_count = $tripCount;
+		$this->service_level = $serviceLevel;
+        $this->departure_country_id = $departureCountryId;
+        $this->arrival_country_id = $arrivalCountryId;
+        $this->dept_time_zone = $timeZone;
+        $this->op_flight_number = $opFlightNumber;
+        $this->arrival_time_zone = $aTimeZone;
+        $this->mkt_airline_code = $mAirlineCode;
+        $this->dept_city = $deptCity;
+        $this->arrival_city = $arrivalCity;
+        $this->aircraft_type = $airCraftType;
+        $this->arrival_terminal = $aTerminal;
+        $this->dept_terminal = $dTerminal;
 	}
 	
 	/**
@@ -185,7 +206,7 @@ class FlightInfo {
 	 * @return integer
 	 */
 	public function getID() {
-		return $this->_iID;
+		return $this->id;
 	}
 	/**
 	 * Returns the Service Class of a Passenger For that Transaction
@@ -193,7 +214,7 @@ class FlightInfo {
 	 * @return string
 	 */
 	public function getServiceClass() {
-		return $this->_ServiceClass;
+		return $this->service_class;
 	}
 	/**
 	 * Returns the Departure Airport of that Passenger
@@ -201,7 +222,7 @@ class FlightInfo {
 	 * @return string
 	 */
 	public function getDepartureAirport() {
-		return $this->_DepartureAirport;
+		return $this->departure_airport;
 	}
 	/**
 	 * Returns the Arrival Airport of that Passenger
@@ -209,7 +230,7 @@ class FlightInfo {
 	 * @return string
 	 */
 	public function getArrivalAirport() {
-		return $this->_ArrivalAirport;
+		return $this->arrival_airport;
 	}
 	/**
 	 * Returns the Operating Code of that Airline from which Passenger Transacts
@@ -217,7 +238,7 @@ class FlightInfo {
 	 * @return string
 	 */
 	public function getOperatingAirline() {
-		return $this->_OpAirlineCode;
+		return $this->op_airline_code;
 	}
 
     /**
@@ -226,7 +247,7 @@ class FlightInfo {
      * @return string
      */
     public function getMarketingAirline() {
-        return $this->_MktAirlineCode;
+        return $this->mkt_airline_code;
     }
 	/**
 	 * Returns the date of Arrival of that Passenger
@@ -234,7 +255,7 @@ class FlightInfo {
 	 * @return timestamp
 	 */
 	public function getArrivalDate() {
-		return $this->_ArrivalDate;
+		return $this->arrival_date;
 	}
 	/**
 	 * Returns the date of Departure of that Passenger
@@ -242,7 +263,7 @@ class FlightInfo {
 	 * @return timestamp
 	 */
 	public function getDepartureDate() {
-		return $this->_DepartureDate;
+		return $this->departure_date;
 	}
 	/**
 	 * Returns the Additional Data of this flight
@@ -250,7 +271,7 @@ class FlightInfo {
 	 * @return array
 	 */
 	public function getAdditionalData() {
-		return $this->_aAdditionalData;
+		return $this->additional_data;
 	}
 	/**
 	 * Returns the marketing flight number of this flight
@@ -258,7 +279,7 @@ class FlightInfo {
 	 * @return array
 	 */
 	public function getMktFlightNumber() {
-		return $this->_MktFlightNumber;
+		return $this->mkt_flight_number;
 	}
 
     /**
@@ -267,7 +288,7 @@ class FlightInfo {
      * @return array
      */
     public function getOpFlightNumber() {
-        return $this->_OpFlightNumber;
+        return $this->op_flight_number;
     }
 
     /**
@@ -276,7 +297,7 @@ class FlightInfo {
      */
     public function getATag()
     {
-        return $this->_aTag;
+        return $this->tag;
     }
 
     /**
@@ -285,7 +306,7 @@ class FlightInfo {
      */
     public function getATripCount()
     {
-        return $this->_aTripCount;
+        return $this->trip_count;
     }
 
     /**
@@ -294,7 +315,7 @@ class FlightInfo {
      */
     public function getAServiceLevel()
     {
-        return $this->_aServiceLevel;
+        return $this->service_level;
     }
 
     /**
@@ -303,7 +324,7 @@ class FlightInfo {
      */
     public function getDepartureCountry()
     {
-        return $this->_iDepartureCountryId;
+        return $this->departure_country_id;
     }
 
     /**
@@ -312,7 +333,7 @@ class FlightInfo {
      */
     public function getArrivalCountry()
     {
-        return $this->_iArrivalCountryId;
+        return $this->arrival_country_id;
     }
 
     /**
@@ -321,7 +342,7 @@ class FlightInfo {
      */
     public function getDeparturetTimeZone()
     {
-        return $this->_DeptTimeZone;
+        return $this->dept_time_zone;
     }
 
     /**
@@ -330,7 +351,7 @@ class FlightInfo {
      */
     public function getArrivalTimeZone()
     {
-        return $this->_ArrivalTimeZone;
+        return $this->arrival_time_zone;
     }
 
     /**
@@ -339,7 +360,7 @@ class FlightInfo {
      */
     public function getDepartureCity()
     {
-        return $this->_DepartureCity;
+        return $this->dept_city;
     }
 
     /**
@@ -348,7 +369,7 @@ class FlightInfo {
      */
     public function getArrivalCity()
     {
-        return $this->_ArrivalCity;
+        return $this->arrival_city;
     }
 
     /**
@@ -357,7 +378,7 @@ class FlightInfo {
      */
     public function getAircraftType()
     {
-        return $this->_AirCraftType;
+        return $this->aircraft_type;
     }
 
     /**
@@ -366,7 +387,7 @@ class FlightInfo {
      */
     public function getArrivalTerminal()
     {
-        return $this->_ArrivalTerminal;
+        return $this->arrival_terminal;
     }
 
     /**
@@ -375,7 +396,7 @@ class FlightInfo {
      */
     public function getDepartureTerminal()
     {
-        return $this->_DeptTerminal;
+        return $this->dept_terminal;
     }
 
     /**
