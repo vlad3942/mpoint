@@ -207,14 +207,11 @@ $aHTTP_CONN_INFO["uatp"]["paths"]["process-settlement"] = "/_test/simulators/uat
 /**
  * Connection info for connecting to EZY-fraud check
  */
-$aHTTP_CONN_INFO["ezy"]["protocol"] = "http";
-$aHTTP_CONN_INFO["ezy"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["ezy"]["port"] = 80;
-$aHTTP_CONN_INFO["ezy"]["timeout"] = 120;
-$aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["ezy"]["method"] = "POST";
-$aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
+$aHTTP_CONN_INFO[60]["timeout"] = 120;
+$aHTTP_CONN_INFO[60]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[60]["method"] = "POST";
+$aHTTP_CONN_INFO[60]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[60]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
 
 /**
  * Connection info for connecting to routing service

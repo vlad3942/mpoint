@@ -2045,6 +2045,11 @@ abstract class Constants
 		42 => 'PCC Not opt'
 	];
 
+	/*
+	 * Number of digits supported in issuer identification number
+	 */
+	const iNoOfBINDigit = 11;
+
 }
 
 abstract class AutoCaptureType

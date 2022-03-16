@@ -49,4 +49,11 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Ramesh Tiwari" id="2022-03-14-inf-18-setup-v2.37">
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="system_type" value="7" />
+            <where>id = 75</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
