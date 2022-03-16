@@ -214,7 +214,7 @@ class PropertyInfo extends BaseInfo
             $propertyInfo->setMandatory($rs["ISMANDATORY"]);
         }
         if(isset($rs["VALUE"])) {
-            $propertyInfo->setValue($rs["VALUE"]);
+            $propertyInfo->setValue(htmlspecialchars($rs["VALUE"]));
         }
         if(isset($rs['SCOPE'])) {
             $propertyInfo->setScope($rs['SCOPE']);
