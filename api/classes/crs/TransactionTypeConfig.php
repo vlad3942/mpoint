@@ -95,7 +95,9 @@ class TransactionTypeConfig
 	 */
 	public static function produceConfig(RDB $oDB): array
 	{
-		$sql = "SELECT id,name,enabled FROM System". sSCHEMA_POSTFIX .".Type_Tbl ORDER BY id ASC";
+		$sql = "SELECT id,name,enabled FROM System". sSCHEMA_POSTFIX .".Type_Tbl 
+		        WHERE ID IN (".Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE.",".Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE.",". Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE.",". Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE.",".Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP.",".Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION.",".Constants::iTRANSACTION_TYPE_CALL_CENTER_PURCHASE.") 
+		        ORDER BY id ASC";
 		$res = $oDB->query($sql);
 		$aObj_Configurations = array();
 		while ($RS = $oDB->fetchName($res) )
