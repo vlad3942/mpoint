@@ -66,7 +66,7 @@ class ValidateRule
                             INNER JOIN Client" . sSCHEMA_POSTFIX . ".Route_Tbl R ON RC.routeid = R.id AND R.enabled = '1'
                             INNER JOIN Client" . sSCHEMA_POSTFIX . ".Account_Tbl A ON R.clientid = A.clientid AND A.enabled = '1'
                             LEFT JOIN Client" . sSCHEMA_POSTFIX . ".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid AND MSA.enabled = '1'
-                            INNER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON R.providerid = PSP.id AND MSA.pspid = PSP.id AND PSP.system_type NOT IN (" . Constants::iPROCESSOR_TYPE_TOKENIZATION . "," . Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY . "," . Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY . ") AND PSP.enabled = '1'
+                            INNER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON R.providerid = PSP.id AND PSP.system_type NOT IN (" . Constants::iPROCESSOR_TYPE_TOKENIZATION . "," . Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY . "," . Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY . ") AND PSP.enabled = '1'
                             INNER JOIN System" . sSCHEMA_POSTFIX . ".PSPCurrency_Tbl PC ON PSP.id = PC.pspid  AND PC.enabled = '1'
                             INNER JOIN System" . sSCHEMA_POSTFIX . ".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND PCD.enabled = '1'
                             INNER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl C ON C.id = PCD.cardid AND C.enabled = '1'
