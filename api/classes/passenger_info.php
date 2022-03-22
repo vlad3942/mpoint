@@ -22,7 +22,7 @@ class PassengerInfoException extends mPointException {
 /**
  * Data class for hold all data relevant of Passenger for a Transaction
  */
-class PassengerInfo {
+class PassengerInfo implements JsonSerializable {
 	/**
 	 * Unique ID for the Passenger
 	 *
@@ -335,6 +335,15 @@ class PassengerInfo {
         }
         $xml .= '</passengerDetail>';
         return $xml;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
     }
 }
 ?>

@@ -22,7 +22,7 @@ class FlightInfoException extends mPointException {
 /**
  * Data class for hold all data relevant of flight for a Transaction
  */
-class FlightInfo {
+class FlightInfo implements JsonSerializable {
 	/**
 	 * Unique ID for the Flight
 	 *
@@ -548,6 +548,15 @@ class FlightInfo {
         else { }
         $xml .= '</flightDetail>';
         return $xml;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
     }
 }
 ?>

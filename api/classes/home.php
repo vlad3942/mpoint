@@ -1000,6 +1000,7 @@ class Home extends General
 
 
                     } else {
+
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
                         if($aTxnAdditionalData !== null)
@@ -1987,7 +1988,7 @@ class Home extends General
             $obj_OrderInfo = OrderInfo::produceConfigurations($this->getDBConn(), $txnInfo->getID());
 
             if (empty($obj_OrderInfo) === false) {
-                $orderData = new OrderData($this->getDBConn(), $obj_OrderInfo[0]->getId());
+                $orderData = OrderData::produceConfigurations($this->getDBConn(), $obj_OrderInfo[0]->getId());
                 if (empty($orderData) === false) {
                     $aTransactionData->setOrderData($orderData);
                 }

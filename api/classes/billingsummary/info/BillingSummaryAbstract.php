@@ -12,7 +12,7 @@
 namespace api\classes\billingsummary\info;
 
 
-abstract class BillingSummaryAbstract
+abstract class BillingSummaryAbstract implements \JsonSerializable
 {
     /**
      * Unique ID for the billing summary
@@ -208,6 +208,15 @@ abstract class BillingSummaryAbstract
     public function getProductItem()
     {
         return $this->product_item;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
     }
 
     abstract public function toXML();

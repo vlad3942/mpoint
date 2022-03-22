@@ -30,16 +30,31 @@ class OrderData implements JsonSerializable
 
 
     /**
-     * AirlineData constructor.
+     * OrderData constructor.
+     *
+     * @param $profiles
+     * @param $trips
+     * @param $billing_summary
+     */
+    public function __construct($profiles, $trips, $billing_summary)
+    {
+        $this->profiles = $profiles;
+        $this->trips = $trips;
+        $this->billing_summary = $billing_summary;
+    }
+
+    /**
+     * OrderData produceConfigurations.
      *
      * @param \RDB $oDB
      * @param int $order_id
      */
-    public function __construct(\RDB $oDB, int $order_id)
-    {
-        $this->profiles = \PassengerInfo::produceConfigurations($oDB, $order_id);
-        $this->trips = \FlightInfo::produceConfigurations($oDB, $order_id);
-        $this->billing_summary = new BillingSummaryData($oDB, $order_id);
+    public static function produceConfigurations(\RDB $oDB, int $order_id) {
+        $profiles = \PassengerInfo::produceConfigurations($oDB, $order_id);
+        $trips = \FlightInfo::produceConfigurations($oDB, $order_id);
+        $billing_summary = new BillingSummaryData($oDB, $order_id);
+
+        return new OrderData($profiles, $trips, $billing_summary);
     }
 
     /**

@@ -29,13 +29,26 @@ class BillingSummaryData implements JsonSerializable
 
     /**
      * BillingSummaryData constructor.
-     *
+     * @param $fare_details
+     * @param $add_on
+     */
+    public function __construct($fare_details, $add_on)
+    {
+        $this->fare_details = $fare_details;
+        $this->add_on = $add_on;
+    }
+
+    /**
+     * BillingSummaryData produceConfigurations.
+     * @param \RDB $oDB
      * @param int $order_id
      */
-    public function __construct(\RDB $oDB, int $order_id)
+    public static function produceConfigurations(\RDB $oDB, int $order_id)
     {
-        $this->fare_details = FareInfo::produceConfigurations($oDB, $order_id);
-        $this->add_on = AddonInfo::produceConfigurations($oDB, $order_id);
+        $fare_details = FareInfo::produceConfigurations($oDB, $order_id);
+        $add_on = AddonInfo::produceConfigurations($oDB, $order_id);
+
+        return new BillingSummaryData($fare_details, $add_on);
     }
 
     /**
