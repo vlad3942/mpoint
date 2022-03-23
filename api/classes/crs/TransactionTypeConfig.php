@@ -95,14 +95,17 @@ class TransactionTypeConfig
 	 */
 	public static function produceConfig(RDB $oDB): array
 	{
-		$sql = "SELECT id,name,enabled FROM System". sSCHEMA_POSTFIX .".Type_Tbl 
-		        WHERE ID IN (".Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE.",".Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE.",". Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE.",". Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE.",".Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP.",".Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION.",".Constants::iTRANSACTION_TYPE_CALL_CENTER_PURCHASE.") 
-		        ORDER BY id ASC";
-		$res = $oDB->query($sql);
-		$aObj_Configurations = array();
-		while ($RS = $oDB->fetchName($res) )
+        $transactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE=>'Shopping Online',
+                                   Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE=>'Shopping Offline',
+                                   Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE=>'Self Service Online',
+                                   Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE=>'Self Service Offline',
+                                   Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP=>'Self Service Online with additional rules on FOP',
+                                   Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION=>'Payment Link Transaction',
+                                   Constants::iTRANSACTION_TYPE_CALL_CENTER_PURCHASE=>'Call Center Purchase');
+        
+		foreach($transactionTypes as $txnType=>$value)
 		{
-			$aObj_Configurations[] = new TransactionTypeConfig ($RS["ID"], $RS["NAME"], $RS["ENABLED"]);
+			$aObj_Configurations[] = new TransactionTypeConfig ($txnType, $value, true);
 		}
 		return $aObj_Configurations;
 	}
