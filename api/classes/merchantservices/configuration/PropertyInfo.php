@@ -160,7 +160,7 @@ class PropertyInfo extends BaseInfo
         $xml = "<property>";
         $xml .= parent::toXML();
         if(empty($this->getValue()) === false) {
-            $xml .= "<value>".$this->getValue()."</value>";
+            $xml .= "<value>".htmlspecialchars($this->getValue(),ENT_NOQUOTES)."</value>";
         }
         $xml .= "<data_type>".$this->getDataType()."</data_type>";
         $xml .= sprintf("<enabled>%s</enabled>",\General::bool2xml($this->isEnabled()));
