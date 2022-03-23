@@ -30,7 +30,7 @@ class TransactionTypeConfigTest extends baseAPITest
 
     public function testSuccessGetTransactionType()
     {
-        $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($this->_OBJ_DB);
+        $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig();
         $xml = '<transaction-types>';
         foreach ($obj_TransactionTypeConfig as $obj_TransactionType)
         {
@@ -46,7 +46,7 @@ class TransactionTypeConfigTest extends baseAPITest
 
     public function testSuccessGetTransactionTypeAsAttributelessXML()
     {
-        $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($this->_OBJ_DB);
+        $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig();
         $xml = '<transaction_types>';
         foreach ($obj_TransactionTypeConfig as $obj_TransactionType)
         {

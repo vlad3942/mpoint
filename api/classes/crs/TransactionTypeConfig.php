@@ -89,11 +89,9 @@ class TransactionTypeConfig
 
 	/**
 	 * Creates a list of al transaction type configuration instances that are enabled in the database
-	 * 
-	 * @param	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @return	TransactionTypeConfig $aObj_Configurations	List of Transaction Type Configurations
+	 * @return array
 	 */
-	public static function produceConfig(RDB $oDB): array
+	public static function produceConfig(): array
 	{
         $transactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE=>'Shopping Online',
                                    Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE=>'Shopping Offline',
