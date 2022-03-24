@@ -88,4 +88,16 @@
 		</update>
     </changeSet>
 
+    <changeSet author="Priya Alamwar"
+               id="2022-03-21-setup-v2.37">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="type_tbl">
+            <column name="id" value="7"/>
+            <column name="name" value="Call Center Purchase"/>
+        </insert>
+
+    </changeSet>
+
 </databaseChangeLog>
