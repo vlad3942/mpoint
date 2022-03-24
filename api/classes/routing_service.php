@@ -207,6 +207,7 @@ class RoutingService extends General
         $b .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $b .= '<transaction>';
         $b .= '<id>'.$this->_obj_TxnInfo->getID().'</id>';
+        $b .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
         $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
         //Type will hard coded 1 - design - https://confluence.t.cpm.dev/display/CS/Feature+-+Add-on+Product+type+and+Fee
         $b .= '<fees><fee><value>' . $this->_obj_TxnInfo->getFee() . '</value><type>1</type></fee></fees>';

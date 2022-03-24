@@ -1136,7 +1136,7 @@ class ClientConfig extends BasicConfig
     {
         if($this->_aObj_TransactionTypeConfigurations === NULL)
         {
-            $this->_aObj_TransactionTypeConfigurations = TransactionTypeConfig::produceConfig($oDB);
+            $this->_aObj_TransactionTypeConfigurations = TransactionTypeConfig::produceConfig();
         }
         $xml = '<transaction-types>';
         foreach ($this->_aObj_TransactionTypeConfigurations as $obj_TransactionType)
