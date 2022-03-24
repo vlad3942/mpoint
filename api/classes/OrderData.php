@@ -52,7 +52,7 @@ class OrderData implements JsonSerializable
     public static function produceConfigurations(\RDB $oDB, int $order_id) {
         $profiles = \PassengerInfo::produceConfigurations($oDB, $order_id);
         $trips = \FlightInfo::produceConfigurations($oDB, $order_id);
-        $billing_summary = new BillingSummaryData($oDB, $order_id);
+        $billing_summary = BillingSummaryData::produceConfigurations($oDB, $order_id);
 
         return new OrderData($profiles, $trips, $billing_summary);
     }
