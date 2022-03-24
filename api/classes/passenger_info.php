@@ -22,7 +22,7 @@ class PassengerInfoException extends mPointException {
 /**
  * Data class for hold all data relevant of Passenger for a Transaction
  */
-class PassengerInfo {
+class PassengerInfo implements JsonSerializable {
 	/**
 	 * Unique ID for the Passenger
 	 *

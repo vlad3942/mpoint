@@ -19,7 +19,6 @@ class CallbackMessageRequestTest extends baseAPITest
 {
     protected $_aMPOINT_CONN_INFO;
     private CallbackMessageRequest $callbackMessageRequest;
-    private TransactionData $transactionData;
     public function __construct()
     {
         parent::__construct();

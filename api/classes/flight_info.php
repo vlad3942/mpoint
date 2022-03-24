@@ -22,7 +22,7 @@ class FlightInfoException extends mPointException {
 /**
  * Data class for hold all data relevant of flight for a Transaction
  */
-class FlightInfo {
+class FlightInfo implements JsonSerializable {
 	/**
 	 * Unique ID for the Flight
 	 *
