@@ -12,7 +12,7 @@
 namespace api\classes\billingsummary\info;
 
 
-abstract class BillingSummaryAbstract implements \JsonSerializable
+abstract class BillingSummaryAbstract
 {
     /**
      * Unique ID for the billing summary
