@@ -2768,5 +2768,10 @@ class TxnInfo
 		}
 		return null;
 	}
+
+	public function setCardID($cardid)
+	{
+		$this->_iCardID = $cardid;
+	}
 }
 ?>
