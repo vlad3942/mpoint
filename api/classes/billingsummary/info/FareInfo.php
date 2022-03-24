@@ -46,7 +46,7 @@ class FareInfo extends BillingSummaryAbstract
         {
             foreach ($aRS as $RS)
             {
-                $aConfigurations[] = new FareInfo( $RS ["ID"], $RS ["JOURNEY_REF"], $RS ["BILL_TYPE"], $RS ["DESCRIPTION"], $RS ["AMOUNT"], $RS ["CURRENCY"], $RS ["PROFILE_SEQ"], $RS ["TRIP_TAG"], $RS ["TRIP_SEQ"], $RS ["PRODUCT_CODE"], $RS ["PRODUCT_CATEGORY"], $RS["PRODUCT_ITEM"]);
+                $aConfigurations[] = self::produceConfig ( $oDB, $RS ["ID"] );
             }
         }
         return $aConfigurations;
