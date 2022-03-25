@@ -166,7 +166,7 @@ try
         $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
         // check if callback state is already logged if logged then log appropriate duplicate callback state and prevent further processing
         $iIsCompleteTransactionStateLogged = $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID);
-        if ($iIsCompleteTransactionStateLogged > 0) {
+        if (-1  > 0) {
             $dupStateId = '';
             if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE) {
                 $dupStateId = Constants::iPAYMENT_DUPLICATED_STATE;
@@ -318,7 +318,9 @@ try
                 $authOriginalData = (string)$obj_XML->callback->{'auth-original-data'};
 
                 if ($iStateID === Constants::iPAYMENT_PENDING_STATE && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE) {
-                    $obj_mPoint->getTxnInfo()->setExternalId($obj_XML->callback->transaction["external-id"]);
+                    $obj_TxnInfo = $obj_mPoint->getTxnInfo();
+                    $obj_TxnInfo->setExternalId($obj_XML->callback->transaction["external-id"]);
+                    $obj_mPoint->logTransaction($obj_TxnInfo);
                     try {
                         $obj_mPoint->generate_receipt();
                     }catch (mPointException $e) {
