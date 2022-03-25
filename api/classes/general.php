@@ -42,7 +42,7 @@ class General
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt)
 	{
 		$this->_obj_DB = $oDB;
 		// Enable Timestamp compatibility for Oracle
@@ -894,7 +894,7 @@ class General
 		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
 		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 		$h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-		$h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
+		$h .= "user-agent: mPoint-MESB Client/1.23" .HTTPClient::CRLF;
 		$h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
 		/* ----- Construct HTTP Header End ----- */
 
@@ -1387,17 +1387,25 @@ class General
             $txnIdCheck = " id= $txnId AND ";
         }
 
-        $sql = "SELECT max(attempt) as attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+        $sql = "SELECT attempt as attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 					WHERE {$txnIdCheck} orderid = '" . trim($orderid) . "' AND enabled = true
 					AND clientid= ".$clientConfig->getID(). ' AND accountid = ' .$clientConfig->getAccountConfig()->getID(). '
 					AND countryid = '.$countryConfig->getID()."
 					AND created > NOW() - interval '15 days' ";
 //			echo $sql ."\n";
-        $RS = $this->getDBConn()->getName($sql);
-
-        if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
-        else { $code = 0; }    // Transaction not found
-
+        $aRS = $this->getDBConn()->getAllNames($sql);
+        $code = 0;
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs)
+            {
+                $iAttempt = (int) $rs["ATTEMPT"];
+               if( $iAttempt>$code === true)
+               {
+                   $code =$iAttempt;
+               }
+            }
+        }
         return $code;
     }
 
@@ -1614,9 +1622,9 @@ class General
      * @param $cardno integer  Card Number
      * @return string          Issuer identification number
      */
-    public static function getIssuerIdentificationNumber($cardno)
+    public static function getIssuerIdentificationNumber($cardno, $length = 6)
     {
-        return substr($cardno, 0, 6);
+        return substr($cardno, 0, $length);
     }
 
     /**

@@ -5,7 +5,7 @@ require_once sCLASS_PATH .'/Parser.php';
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
     private $_obj_ResponseXML = null;
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
@@ -1577,7 +1577,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if(General::xml2bool($isGenerateCoupon) === false || strlen($this->aCONN_INFO["paths"]["generate-receipt"]) == 0 ) { return false; }
 
             $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
-
+            if(empty($this->getTxnInfo()->getOrderConfigs()) === true)
+            {
+                $this->updateTxnInfoObject();
+            }
             $body  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$body .= '<root>';
 			$body .= '<generate-receipt>';

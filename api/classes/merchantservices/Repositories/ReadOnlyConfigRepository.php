@@ -98,7 +98,7 @@ class ReadOnlyConfigRepository
      * @param $aObj_PaymentMethods
      * @return array
      */
-    public function getCardConfigurationsByCardIds(TranslateText &$oTxt,  $aObj_PaymentMethods) :array
+    public function getCardConfigurationsByCardIds(\api\classes\core\TranslateText &$oTxt,  $aObj_PaymentMethods) :array
     {
         $paymentMethods = $aObj_PaymentMethods->payment_methods->payment_method;
         $aPaymentMethodsConfig = array();

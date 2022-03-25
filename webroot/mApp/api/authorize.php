@@ -87,9 +87,6 @@ require_once(sCLASS_PATH ."/wallet_processor.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 
-require_once(sCLASS_PATH ."/fraud/provider/ezy.php");
-require_once(sCLASS_PATH ."/fraud/provider/cyberSourceFsp.php");
-require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/validation/cardvalidator.php");
 require_once sCLASS_PATH . '/routing_service.php';
@@ -170,7 +167,7 @@ try
 						{
                             $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
 							// Re-Intialise Text Translation Object based on transaction
-							$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+							$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 							$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 
 							// Payment has not previously been attempted for transaction
@@ -433,7 +430,7 @@ try
                                             $maskCardNumber = $obj_mPoint->getMaskCard($obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
                                             $issuerIdentificationNumber = General::getIssuerIdentificationNumber($maskCardNumber);
                                         }elseif ($isStoredCardPayment === false && $isCardTokenExist === false && $isCardNetworkExist === false){
-                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'});
+                                            $issuerIdentificationNumber = General::getIssuerIdentificationNumber((string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}, Constants::iNoOfBINDigit);
                                         }
 
                                         if (empty($issuerIdentificationNumber) === false) {
@@ -940,9 +937,10 @@ try
 																	}
 																}
                                                                 //Refresh TxnInfo obj In case of Wallet payment to get wallet-id
-                                                                if($obj_card->getPaymentType() === 3)
-                                                                $obj_TxnInfo =  TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
-
+                                                                if($obj_card->getPaymentType() === 3) {
+                                                                    $obj_TxnInfo = TxnInfo::produceInfo((integer)$obj_TxnInfo->getID(), $_OBJ_DB);
+                                                                }
+                                                                $obj_TxnInfo->setCardID($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
                                                                 $fraudCheckResponse = CPMFRAUD::attemptFraudCheckIfRoutePresent($obj_Elem,$_OBJ_DB,$obj_ClientInfo, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO,$obj_mCard,$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken);
                                                                 if ($fraudCheckResponse->isFraudCheckAccepted() === true || $fraudCheckResponse->isFraudCheckAttempted() === false)
                                                                 {

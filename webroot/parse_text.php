@@ -18,8 +18,9 @@ define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
 define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
 
-// Require API for Text Transalation
-require_once(sAPI_CLASS_PATH ."text.php");
+// Require API for Text Transalation // This functionality no longer required. To minimize the impact dummy class is created instead of removing code. Code refactoring is required in phase 2.
+use api\classes\core\TranslateText;
+//require_once(sCLASS_PATH ."core/TranslateText.php");
 
 header("content-type: text/plain");
 

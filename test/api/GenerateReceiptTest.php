@@ -44,10 +44,15 @@ class GenerateReceiptTest extends baseAPITest
 
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
+        $this->queryDB("INSERT INTO log.order_tbl (id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity, enabled, orderref, fees) VALUES (23940, 1001001, 100, 5000, 'product-ticket', 'ONE WAY', 'ONE WAY', '', 0, 0, 1, true, '900-55150298', 0)");
+        $this->queryDB("INSERT INTO log.flight_tbl (id, service_class, departure_airport, arrival_airport, op_airline_code, order_id, arrival_date, departure_date, mkt_flight_number, tag, trip_count, service_level, departure_countryid, arrival_countryid, departure_timezone) VALUES (36174, 'A', 'MNL', 'DVO', '5J', 23940, '2021-06-09 06:30:00.000', '2021-06-09 04:30:00.000', '961', '1', '1', '3', 100, 100, '+08:00')");
+        $this->queryDB("INSERT INTO log.passenger_tbl (id, first_name, last_name, type, order_id, title, email, mobile, country_id, amount, seq) VALUES (41798, 'fname', 'lname', '', 23940, 'Mr', 'demo@cellpointmobile.com', '639123123123', '100', 0, 1)");
+
+
         $this->_obj_DB = RDB::produceDatabase($this->mPointDBInfo);
         $this->_obj_txnInfo = TxnInfo::produceInfo(1001001, $this->_obj_DB);
 
-        $this->_obj_TXT = new TranslateText([sLANGUAGE_PATH . sLANG . "/global.txt", sLANGUAGE_PATH . sLANG . "/custom.txt"], sSYSTEM_PATH, 0, "UTF-8");
+        $this->_obj_TXT = new api\classes\core\TranslateText([sLANGUAGE_PATH . sLANG . "/global.txt", sLANGUAGE_PATH . sLANG . "/custom.txt"], sSYSTEM_PATH, 0, "UTF-8");
         $this->_obj_PSP = new GeneralPSP($this->_obj_DB, $this->_obj_TXT, $this->_obj_txnInfo, $aMPOINT_CONN_INFO, NULL, NULL);
     }
 

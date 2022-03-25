@@ -24,7 +24,7 @@ require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the Authorize.Net component
 require_once(sCLASS_PATH ."/anet.php");
 
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 // Intialise Text Translation Object
 $obj_TxnInfo = TxnInfo::produceInfo($_POST['mpoint-id'], $_OBJ_DB);

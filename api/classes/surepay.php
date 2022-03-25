@@ -70,7 +70,7 @@ class SurePay extends General
 	 * @param 	String $email 			E-Mail Address to Client's Customer Service
 	 * @param 	String $ts 				Timestamp for when the Customer's Transaction was created in the format: YYYY-MM-DD hh:mm:ss
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, $url, $email, $ts)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI, $url, $email, $ts)
 	{
 		parent::__construct($oDB, $oTxt);
 
@@ -217,7 +217,7 @@ class SurePay extends General
 		{
 			$obj_TxnInfo = TxnInfo::produceInfo($RS["ID"], $oDB);
 			// Intialise Text Translation Object
-			$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+			$obj_Txt = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 			$aObj_mPoints[] = new SurePay($oDB, $obj_Txt, $obj_TxnInfo, $RS["URL"], $RS["EMAIL"], date("Y-m-d H:i:s", $RS["CREATED"]) );
 			$aObj_mPoints[count($aObj_mPoints)-1]->newMessage($RS["ID"], $iState, "");
