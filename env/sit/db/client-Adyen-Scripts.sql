@@ -5,4 +5,4 @@ INSERT INTO client.psp_property_tbl (clientid,propertyid,value,enabled) VALUES (
 INSERT INTO client.routefeature_tbl (routeconfigid,clientid,featureid) SELECT id, <client-id>, 9 FROM client.routeconfig_tbl WHERE routeid IN (SELECT id FROM client.route_tbl WHERE clientid = <client-id> AND providerid IN (12));
 
 -- Add MPI property for Adyen Provider
-INSERT INTO client.routefeature_tbl (routeconfigid,clientid,featureid) SELECT id, <client-id> ,20 FROM client.routeconfig_tbl WHERE routeid IN (SELECT id FROM client.route_tbl WHERE clientid = <client-id> AND providerid IN (74));
+INSERT INTO client.routefeature_tbl (routeconfigid,clientid,featureid) SELECT id, <client-id> ,20 FROM client.routeconfig_tbl WHERE routeid IN (SELECT id FROM client.route_tbl WHERE clientid = <client-id> AND providerid IN (12));
