@@ -16,7 +16,7 @@ use api\classes\billingsummary\info\AddonInfo;
 use api\classes\billingsummary\info\FareInfo;
 
 /**
- * Class TransactionData
+ * Class BillingSummaryData
  *
  * @package api\classes
  * @xmlName billing_summary

@@ -14,7 +14,7 @@ namespace api\classes;
 use JsonSerializable;
 
 /**
- * Class AirlineData
+ * Class OrderData
  *
  * @package api\classes
  * @xmlName order_data
