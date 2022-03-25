@@ -166,7 +166,7 @@ try
         $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
         // check if callback state is already logged if logged then log appropriate duplicate callback state and prevent further processing
         $iIsCompleteTransactionStateLogged = $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID);
-        if (-1  > 0) {
+        if ($iIsCompleteTransactionStateLogged > 0) {
             $dupStateId = '';
             if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE) {
                 $dupStateId = Constants::iPAYMENT_DUPLICATED_STATE;
