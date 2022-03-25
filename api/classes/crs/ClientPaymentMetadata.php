@@ -442,7 +442,7 @@ class ClientPaymentMetadata
         }
 
         if($restrictData['transaction_type'] === true) {
-            $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig($oDB);
+            $obj_TransactionTypeConfig = TransactionTypeConfig::produceConfig();
         }
 
         if($restrictData['card_state'] === true) {

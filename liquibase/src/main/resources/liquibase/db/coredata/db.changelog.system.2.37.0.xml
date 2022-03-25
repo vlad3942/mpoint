@@ -99,6 +99,7 @@
         </insert>
 
     </changeSet>
+
     <changeSet author="Ramesh Tiwari" id="2022-03-11-inf-45-setup-v2.37">
 
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
@@ -129,6 +130,5 @@
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
-
 
 </databaseChangeLog>
