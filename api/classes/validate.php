@@ -1351,7 +1351,7 @@ class Validate extends ValidateBase
 	 */
 	public function valIssuerIdentificationNumber(RDB &$oDB, $clid, $iin)
 	{
-		$iin = (integer) $iin;
+		$iin = (integer) substr($iin, 0, 6);
 		if ($iin == 0) { $code = 1; }
 		elseif ($iin < 1000) { $code = 2; }
 		elseif ($iin > 999999) { $code = 3; }
