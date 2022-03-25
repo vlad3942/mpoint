@@ -472,6 +472,7 @@ class General
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', declineurl = '". $this->getDBConn()->escStr($oTI->getDeclineURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
+					extid = '". $this->getDBConn()->escStr($oTI->getExternalID() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". $oTI->useAutoCapture() .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',

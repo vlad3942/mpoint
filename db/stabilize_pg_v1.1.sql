@@ -22,7 +22,7 @@ barray boolean[];
 v_bool boolean;
 
   conn_sql text;
-  rec record;
+  r record;
 
 BEGIN
 
