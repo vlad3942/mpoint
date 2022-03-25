@@ -113,6 +113,11 @@ class TransactionData implements JsonSerializable, XMLSerializable
 
     private string $cancel_url;
 
+    /**
+     * @var OrderData
+     */
+    private OrderData $order_data;
+
 
     /**
      * TransactionData constructor.
@@ -446,6 +451,14 @@ class TransactionData implements JsonSerializable, XMLSerializable
     public function setCancelUrl(string $cancel_url): void
     {
         $this->cancel_url = $cancel_url;
+    }
+
+    /**
+     * @param OrderData $orderData
+     */
+    public function setOrderData(OrderData $orderData): void
+    {
+        $this->order_data = $orderData;
     }
 
 }

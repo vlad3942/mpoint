@@ -22,6 +22,7 @@ use api\classes\PSPData;
 use api\classes\StateInfo;
 use api\classes\TransactionData;
 use \api\classes\BillingAddress;
+use api\classes\OrderData;
 /**
  * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
@@ -999,6 +1000,7 @@ class Home extends General
 
 
                     } else {
+
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
                         if($aTxnAdditionalData !== null)
@@ -1968,6 +1970,33 @@ class Home extends General
             $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
         }
         return $obj_CallbackMessageRequest;
+    }
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int      $amt
+     * @param int $sub_code_id
+     *
+     * @return \TransactionData
+     * @throws \Exception
+     */
+    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    {
+        try {
+            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig);
+            $obj_OrderInfo = OrderInfo::produceConfigurations($this->getDBConn(), $txnInfo->getID());
+
+            if (empty($obj_OrderInfo) === false) {
+                $orderData = OrderData::produceConfigurations($this->getDBConn(), $obj_OrderInfo[0]->getId());
+                if (empty($orderData) === false) {
+                    $aTransactionData->setOrderData($orderData);
+                }
+            }
+            return $aTransactionData;
+        } catch (Exception $e) {
+            trigger_error($e->getMessage());
+        }
     }
 }
 
