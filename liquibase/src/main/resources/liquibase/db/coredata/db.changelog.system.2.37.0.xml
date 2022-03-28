@@ -172,4 +172,15 @@
         </update>
     </changeSet>
 
+    <!-- cellulant  -->
+    <insert catalogName="System"
+            schemaName="System"
+            tableName="route_property_tbl">
+        <column name="name" value="'PAYMENT_TIMEOUT_IN_MINT'"/>
+        <column name="pspid" value="58"/>
+        <column name="category" value="2"/>
+        <column name="ismandatory" value="true"/>
+        <column name="datatype" value="2"/>
+    </insert>
+
 </databaseChangeLog>
