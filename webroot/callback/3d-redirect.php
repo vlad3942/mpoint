@@ -268,8 +268,8 @@ try
         }
         else
         {
-            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
-            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, $sRawXML);
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, $sRawXML);
 
             $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",0,null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),0,null,$iSubCodeID);
 
