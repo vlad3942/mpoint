@@ -171,18 +171,38 @@
         </update>
     </changeSet>
 
-<changeSet author="Ramesh"
+    <changeSet author="Ramesh"
                id="2022-03-28-CMP-6527-1">
-    <insert catalogName="system"
-            schemaName="system"
-            tableName="route_property_tbl">
-        <column name="name" value="'PAYMENT_TIMEOUT_IN_MINT'"/>
-        <column name="pspid" value="58"/>
-        <column name="category" value="2"/>
-        <column name="ismandatory" value="true"/>
-        <column name="datatype" value="2"/>
-    </insert>
-</changeSet>
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="route_property_tbl">
+            <column name="name" value="'PAYMENT_TIMEOUT_IN_MINT'"/>
+            <column name="pspid" value="58"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh" id="2022-03-28-CMP-6527-2">
+        <update catalogName="system"
+                schemaName="system"
+                tableName="card_tbl">
+            <column name="name" value="CELLULANT" />
+            <column name="paymenttype" value="7" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Ramesh"
+               id="2022-03-28-CMP-6527-3">
+        <update catalogName="system"
+                schemaName="system"
+                tableName="route_property_tbl">
+            <column name="name" value="PAYMENT_TIMEOUT_IN_MINT" />
+            <where>pspid = 58</where>
+        </update>
+    </changeSet>
 
 
 </databaseChangeLog>
