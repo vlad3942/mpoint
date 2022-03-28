@@ -195,13 +195,22 @@
     </changeSet>
 
     <changeSet author="Ramesh"
-               id="2022-03-28-CMP-6527-3">
-        <update catalogName="system"
+               id="2022-03-28-CMP-6527-4">
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="route_property_tbl">
+            <where>name = 'PAYMENT_TIMEOUT_IN_MINT' and pspid = 58</where>
+        </delete>
+
+        <insert catalogName="system"
                 schemaName="system"
                 tableName="route_property_tbl">
-            <column name="name" value="PAYMENT_TIMEOUT_IN_MINT" />
-            <where>pspid = 58</where>
-        </update>
+            <column name="name" value="PAYMENT_TIMEOUT_IN_MINT"/>
+            <column name="pspid" value="58"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
     </changeSet>
 
 
