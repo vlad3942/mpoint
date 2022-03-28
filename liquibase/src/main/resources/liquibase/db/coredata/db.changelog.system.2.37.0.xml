@@ -131,4 +131,45 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Ramesh Tiwari" id="2022-03-11-inf-45-setup-v2.37">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="KES" />
+            <column name="currencyid" value="404" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="NGN" />
+            <column name="currencyid" value="566" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="GHS" />
+            <column name="currencyid" value="936" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="XOF" />
+            <column name="currencyid" value="952" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Ramesh"
+               id="2022-03-28-CMP-6527">
+
+        <update catalogName="system"
+                schemaName="system"
+                tableName="Card_tbl">
+            <column name="paymenttype" value="'7'" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
