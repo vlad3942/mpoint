@@ -172,7 +172,8 @@
         </update>
     </changeSet>
 
-    <!-- cellulant  -->
+<changeSet author="Ramesh"
+               id="2022-03-28-CMP-6527-1">
     <insert catalogName="System"
             schemaName="System"
             tableName="route_property_tbl">
@@ -182,5 +183,7 @@
         <column name="ismandatory" value="true"/>
         <column name="datatype" value="2"/>
     </insert>
+</changeSet>
+
 
 </databaseChangeLog>
