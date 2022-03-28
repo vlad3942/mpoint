@@ -161,21 +161,20 @@
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
-    <changeSet author="Ramesh"
-               id="2022-03-28-CMP-6527">
 
+    <changeSet author="Ramesh" id="2022-03-28-CMP-6527">
         <update catalogName="system"
                 schemaName="system"
-                tableName="Card_tbl">
-            <column name="paymenttype" value="'7'" />
+                tableName="card_tbl">
+            <column name="name" value="7" />
             <where>id = 86</where>
         </update>
     </changeSet>
 
 <changeSet author="Ramesh"
                id="2022-03-28-CMP-6527-1">
-    <insert catalogName="System"
-            schemaName="System"
+    <insert catalogName="system"
+            schemaName="system"
             tableName="route_property_tbl">
         <column name="name" value="'PAYMENT_TIMEOUT_IN_MINT'"/>
         <column name="pspid" value="58"/>
