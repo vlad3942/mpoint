@@ -27,4 +27,32 @@
         </insert>
     </changeSet>
 
+    <!-- Change system_type from 1 to 7 for Adyen -->
+    <changeSet author="Abhinav Shaha" id="2022-03-02-CMP-6506-setup-v2.36">
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="system_type" value="7" />
+            <where>id = 12</where>
+        </update>
+    </changeSet>
+
+    <!-- Add APIKEY property for Adyen -->
+    <changeSet author="Abhinav Shaha" id="2022-03-02-CMP-6506-setup-v2.36-2">
+        <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
+            <column name="pspid" value="12"/>
+            <column name="name" value="APIKEY" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="true"/>
+            <column name="category" value="8" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
+    <!-- Change system_type from 7 to 1 for Adyen -->
+    <changeSet author="Abhinav Shaha" id="2022-03-02-CMP-6506-setup-v2.36-3">
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="system_type" value="1" />
+            <where>id = 12</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
