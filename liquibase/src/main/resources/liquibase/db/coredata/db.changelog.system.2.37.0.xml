@@ -58,34 +58,34 @@
 
     <changeSet author="Chaitenya Yadav" id="2022-03-22-CMP-6551">
         <update catalogName="log" schemaName="log" tableName="state_tbl">
-			<column name="name" value="Invalid 3DS Secure values"/>
-			<where>id = 2010112</where>
-		</update>
+            <column name="name" value="Invalid 3DS Secure values"/>
+            <where>id = 2010112</where>
+        </update>
 
         <update catalogName="log" schemaName="log" tableName="state_tbl">
-			<column name="name" value="Invalid Card type"/>
-			<where>id = 2010113</where>
-		</update>
+            <column name="name" value="Invalid Card type"/>
+            <where>id = 2010113</where>
+        </update>
 
         <update catalogName="log" schemaName="log" tableName="state_tbl">
-			<column name="name" value="Invalid Request version"/>
-			<where>id = 2010114</where>
-		</update>
+            <column name="name" value="Invalid Request version"/>
+            <where>id = 2010114</where>
+        </update>
 
         <update catalogName="log" schemaName="log" tableName="state_tbl">
-			<column name="name" value="Return URL is not set."/>
-			<where>id = 2010115</where>
-		</update>
+            <column name="name" value="Return URL is not set."/>
+            <where>id = 2010115</where>
+        </update>
 
         <update catalogName="log" schemaName="log" tableName="state_tbl">
-			<column name="name" value="Invalid currency code."/>
-			<where>id = 2010116</where>
-		</update>
+            <column name="name" value="Invalid currency code."/>
+            <where>id = 2010116</where>
+        </update>
 
         <update catalogName="log" schemaName="log" tableName="state_tbl">
-			<column name="name" value="Invalid Promotion."/>
-			<where>id = 2010117</where>
-		</update>
+            <column name="name" value="Invalid Promotion."/>
+            <where>id = 2010117</where>
+        </update>
     </changeSet>
 
     <changeSet author="Priya Alamwar"
@@ -98,6 +98,37 @@
             <column name="name" value="Call Center Purchase"/>
         </insert>
 
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2022-03-11-inf-45-setup-v2.37">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="KES" />
+            <column name="currencyid" value="404" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="NGN" />
+            <column name="currencyid" value="566" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="GHS" />
+            <column name="currencyid" value="936" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="XOF" />
+            <column name="currencyid" value="952" />
+            <column name="enabled" value="true"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>

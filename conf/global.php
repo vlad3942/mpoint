@@ -873,12 +873,15 @@ $aHTTP_CONN_INFO[58]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO[58]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO[58]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO[58]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[58]["paths"]["initialize"] = "/mpoint/cellulant/initialize";
-$aHTTP_CONN_INFO[58]["paths"]["auth"] = "/mpoint/cellulant/authorize-payment";
-$aHTTP_CONN_INFO[58]["paths"]["get-payment-options"] = "/mpoint/cellulant/GetPaymentOptions";
-$aHTTP_CONN_INFO[58]["paths"]["status"] = "/mpoint/cellulant/status";
-$aHTTP_CONN_INFO[58]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
-$aHTTP_CONN_INFO[58]["paths"]["refund"] = "/mpoint/cellulant/refund";
+$aHTTP_CONN_INFO[58]["paths"]["get-payment-methods"] = "/mpoint/aggregator/cellulant/get-payment-methods";
+$aHTTP_CONN_INFO[58]["paths"]["initialize"] = "/mpoint/aggregator/cellulant/initialize";
+//$aHTTP_CONN_INFO[58]["paths"]["auth"] = "/mpoint/aggregator/cellulant/authorize-payment";
+//$aHTTP_CONN_INFO[58]["paths"]["get-payment-options"] = "/mpoint/aggregator/cellulant/GetPaymentOptions";
+$aHTTP_CONN_INFO[58]["paths"]["status"] = "/mpoint/aggregator/cellulant/status";
+//$aHTTP_CONN_INFO[58]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
+$aHTTP_CONN_INFO[58]["paths"]["refund"] = "/mpoint/aggregator/cellulant/refund";
+$aHTTP_CONN_INFO[58]["paths"]["cancel"] = "/mpoint/aggregator/cellulant/cancel";
+$aHTTP_CONN_INFO[58]["paths"]["callback"] = "/mpoint/aggregator/cellulant/callback";
 
 /**
  * Connection info for connecting to FirstData
