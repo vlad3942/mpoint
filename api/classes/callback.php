@@ -507,6 +507,7 @@ abstract class Callback extends EndUserAccount
 				if (strlen($sAdditionalData) > 0) {
 					$sBody .= "&" . $sAdditionalData;
 				}
+                $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
 				$sBody .= "&orderid=" . urlencode($this->_obj_TxnInfo->getOrderID());
 				if ($this->hasTransactionFailureState($sid) === TRUE) {
 					$sBody .= "&status=" . substr($sid, 0, 4);
@@ -541,7 +542,9 @@ abstract class Callback extends EndUserAccount
 					$sBody .= "&description=" . urlencode($this->_obj_TxnInfo->getDescription());
 				}
 				$sBody .= $this->getVariables();
-				$sBody .= "&hmac=" . urlencode($this->_obj_TxnInfo->getHMAC());
+                if (empty($aTxnAdditionalData["hmac"]) === true) {
+                    $sBody .= "&hmac=" . urlencode($this->_obj_TxnInfo->getHMAC());
+                }
 				if (empty($sDeviceID) === FALSE) {
 					$sBody .= "&device-id=" . urlencode($sDeviceID);
 				}
@@ -578,7 +581,6 @@ abstract class Callback extends EndUserAccount
 					}
 				}
 
-				$aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
 				if ($aTxnAdditionalData !== NULL) {
 					foreach ($aTxnAdditionalData as $key => $value) {
 						$sBody .= '&' . $key . '=' . $value;
