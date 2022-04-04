@@ -213,5 +213,13 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Ramesh"
+               id="2022-04-04-CMP-6527-5">
+        <update catalogName="system" schemaName="system"
+                tableName="card_tbl">
+            <column name="name" value="Mobile Money" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
 
 </databaseChangeLog>
