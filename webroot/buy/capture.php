@@ -159,7 +159,17 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                             "amount" => $_REQUEST['amount'],
                             "cardid" => $obj_TxnInfo->getCardID(),
                             "fee" => $obj_TxnInfo->getFee());
-                        $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                        // Handle Partial capture case
+                        $iStateID = Constants::iPAYMENT_CAPTURED_STATE;
+                        if($_REQUEST['amount'] != $obj_TxnInfo->getAmount())
+                        {
+                            $totalCapturedAmt =  $_REQUEST['amount'] + $obj_TxnInfo->getCapturedAmount();
+                            if ($totalCapturedAmt != $obj_TxnInfo->getAmount()) {
+                                $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+                            }
+                        }
+
+                        $obj_mPoint->getPSP()->notifyClient($iStateID, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                     }
 				}
 				else
