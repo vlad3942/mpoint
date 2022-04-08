@@ -159,6 +159,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                             "amount" => $_REQUEST['amount'],
                             "cardid" => $obj_TxnInfo->getCardID(),
                             "fee" => $obj_TxnInfo->getFee());
+
                         // Handle Partial capture case
                         $iStateID = Constants::iPAYMENT_CAPTURED_STATE;
                         if($_REQUEST['amount'] != $obj_TxnInfo->getAmount())
