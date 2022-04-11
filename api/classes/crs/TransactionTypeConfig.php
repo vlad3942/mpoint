@@ -89,18 +89,21 @@ class TransactionTypeConfig
 
 	/**
 	 * Creates a list of al transaction type configuration instances that are enabled in the database
-	 * 
-	 * @param	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @return	TransactionTypeConfig $aObj_Configurations	List of Transaction Type Configurations
+	 * @return array
 	 */
-	public static function produceConfig(RDB $oDB): array
+	public static function produceConfig(): array
 	{
-		$sql = "SELECT id,name,enabled FROM System". sSCHEMA_POSTFIX .".Type_Tbl ORDER BY id ASC";
-		$res = $oDB->query($sql);
-		$aObj_Configurations = array();
-		while ($RS = $oDB->fetchName($res) )
+        $transactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE=>'Shopping Online',
+                                   Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE=>'Shopping Offline',
+                                   Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE=>'Self Service Online',
+                                   Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE=>'Self Service Offline',
+                                   Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP=>'Self Service Online with additional rules on FOP',
+                                   Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION=>'Payment Link Transaction',
+                                   Constants::iTRANSACTION_TYPE_CALL_CENTER_PURCHASE=>'Call Center Purchase');
+        
+		foreach($transactionTypes as $txnType=>$value)
 		{
-			$aObj_Configurations[] = new TransactionTypeConfig ($RS["ID"], $RS["NAME"], $RS["ENABLED"]);
+			$aObj_Configurations[] = new TransactionTypeConfig ($txnType, $value, true);
 		}
 		return $aObj_Configurations;
 	}

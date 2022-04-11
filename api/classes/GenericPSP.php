@@ -22,7 +22,7 @@ use TxnInfo;
 class GenericPSP extends \CPMPSP
 {
     private int $PSP_ID = -1;
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig = null, ClientInfo $oClientInfo = null, int $pspId = -1)
+    public function __construct(RDB $oDB, \api\classes\core\TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig = null, ClientInfo $oClientInfo = null, int $pspId = -1)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
         $this->PSP_ID = $pspId;

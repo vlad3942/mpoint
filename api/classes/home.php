@@ -22,6 +22,7 @@ use api\classes\PSPData;
 use api\classes\StateInfo;
 use api\classes\TransactionData;
 use \api\classes\BillingAddress;
+use api\classes\OrderData;
 /**
  * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
@@ -42,7 +43,7 @@ class Home extends General
 	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param 	CountryConfig $oCC 		Reference to the data object with the Country Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCC=null)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, CountryConfig &$oCC=null)
 	{
 		parent::__construct($oDB, $oTxt);
 
@@ -999,6 +1000,7 @@ class Home extends General
 
 
                     } else {
+
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
                         if($aTxnAdditionalData !== null)
@@ -1834,7 +1836,12 @@ class Home extends General
         $transactionData->setRouteConfigId($txnInfo->getRouteConfigID());
         $transactionData->setFee($txnInfo->getFee());
         $transactionData->setDescription($txnInfo->getDescription());
-        $transactionData->setHmac($txnInfo->getHMAC());
+        if (isset($aTxnAdditionalData['hmac'])) {
+            $transactionData->setHmac($aTxnAdditionalData['hmac']);
+            unset($aTxnAdditionalData['hmac']);
+        } else {
+            $transactionData->setHmac($txnInfo->getHMAC());
+        }
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
@@ -1963,6 +1970,33 @@ class Home extends General
             $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
         }
         return $obj_CallbackMessageRequest;
+    }
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int      $amt
+     * @param int $sub_code_id
+     *
+     * @return \TransactionData
+     * @throws \Exception
+     */
+    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    {
+        try {
+            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig);
+            $obj_OrderInfo = OrderInfo::produceConfigurations($this->getDBConn(), $txnInfo->getID());
+
+            if (empty($obj_OrderInfo) === false) {
+                $orderData = OrderData::produceConfigurations($this->getDBConn(), $obj_OrderInfo[0]->getId());
+                if (empty($orderData) === false) {
+                    $aTransactionData->setOrderData($orderData);
+                }
+            }
+            return $aTransactionData;
+        } catch (Exception $e) {
+            trigger_error($e->getMessage());
+        }
     }
 }
 

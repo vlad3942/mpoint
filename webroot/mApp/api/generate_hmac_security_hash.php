@@ -40,11 +40,11 @@ if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTO
                 $nonce = $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'nonce'};
                 $orderId = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'order_number'};
                 $amount = (integer) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'amount'};
-                $countryid = (integer) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'country_id'};
+                $countryid = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'country_id'};
                 $saleAmount = (integer) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'sale_amount'};
                 $saleCurrency = (integer) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'sale_currency'};
                 $mobile = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'client_info'}->{'mobile'};
-                $mobileCountry = (integer) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'client_info'}->{'mobile_country'};
+                $mobileCountry = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'client_info'}->{'mobile_country'};
                 $email = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'client_info'}->{'email'};
                 $device = (string) $obj_DOM->{'hmac_parameter_details'}->{'hmac_parameter_detail'}[$i]->{'client_info'}->{'device_id'};
                 

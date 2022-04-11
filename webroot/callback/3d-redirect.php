@@ -92,7 +92,7 @@ try
 	$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 	$iStateID = (integer) $obj_XML->{'threed-redirect'}->status["code"];
     $iSubCodeID = (integer) $obj_XML->{'threed-redirect'}->status["sub-code"];
@@ -258,8 +258,8 @@ try
                 //echo $sql ."\n";
                 $_OBJ_DB->query($sql);
 
-                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
-                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, $sRawXML);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, $sRawXML);
 
                 $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",0,null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),0,null,$iSubCodeID);
 
@@ -268,8 +268,8 @@ try
         }
         else
         {
-            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
-            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, $sRawXML);
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, $sRawXML);
 
             $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",0,null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),0,null,$iSubCodeID);
 

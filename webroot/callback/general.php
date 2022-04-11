@@ -64,9 +64,6 @@ require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/fraud/fraud_response.php';
 require_once sCLASS_PATH . '/fraud/fraudResult.php';
-require_once(sCLASS_PATH .'/fraud/provider/ezy.php');
-require_once(sCLASS_PATH .'/fraud/provider/cyberSourceFsp.php');
-require_once(sCLASS_PATH ."/fraud/provider/cebuRmfss.php");
 require_once(sCLASS_PATH . '/payment_route.php');
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
 
@@ -130,7 +127,7 @@ try
 	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
     $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
     $obj_PSPConfig = null;
     $isTxnRollInitiated = false;
@@ -321,7 +318,9 @@ try
                 $authOriginalData = (string)$obj_XML->callback->{'auth-original-data'};
 
                 if ($iStateID === Constants::iPAYMENT_PENDING_STATE && (int)$obj_TxnInfo->getPaymentMethod($_OBJ_DB)->PaymentType === Constants::iPAYMENT_TYPE_OFFLINE) {
-                    $obj_mPoint->getTxnInfo()->setExternalId($obj_XML->callback->transaction["external-id"]);
+                    $obj_TxnInfo = $obj_mPoint->getTxnInfo();
+                    $obj_TxnInfo->setExternalId($obj_XML->callback->transaction["external-id"]);
+                    $obj_mPoint->logTransaction($obj_TxnInfo);
                     try {
                         $obj_mPoint->generate_receipt();
                     }catch (mPointException $e) {
@@ -510,6 +509,8 @@ try
                     "amount" => $obj_TxnInfo->getAmount(),
                     "card-id" => $obj_XML->callback->transaction->card["type-id"]);
                 $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+                $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspid, $aHTTP_CONN_INFO);
+                $obj_mPoint = $obj_PaymentProcessor->getPSPInfo();
 
                 $paymentSecureInfo = null;
                 if ($obj_XML->callback->transaction->card->{'info-3d-secure'}) {

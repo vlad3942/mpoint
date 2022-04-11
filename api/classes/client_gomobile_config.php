@@ -42,33 +42,19 @@ Class ClientGoMobileConfig extends BasicConfig
         return $xml;
     }
 
-    public static function produceConfig(RDB $oDB, $id)
+    public static function produceConfigurations(array $aAdditionalProperty)
     {
-        $sql = "SELECT GC.id, GC.key, GC.value
-				FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_Tbl GC				
-				WHERE GC.id = ". intval($id) ." AND GC.enabled = '1'";
-        //echo $sql ."\n";
-        $RS = $oDB->getName($sql);
-        if(is_array($RS) === true && count($RS) > 0)
+        if (count($aAdditionalProperty) > 0)
         {
-            return new ClientGoMobileConfig($RS["ID"], $RS["KEY"], $RS["VALUE"]);
+            $id = 1;
+            foreach ($aAdditionalProperty as $additionalProperty)
+            {
+                if(strpos($additionalProperty['key'],'GOMOBILE') !== false)
+                {
+                    $aObj_Configurations[] = new ClientGoMobileConfig($id++, $additionalProperty['key'], $additionalProperty['value']);
+                }
+            }
         }
-        else { return null; }
-    }
-
-    public static function produceConfigurations(RDB $oDB, $id)
-    {
-        $sql = "SELECT GC.id	
-				FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_Tbl GC						
-				WHERE GC.externalid = ". intval($id) ." AND GC.enabled = '1' AND GC.key like '%GOMOBILE%'";
-        //echo $sql ."\n";
-        $aObj_Configurations = array();
-        $res = $oDB->query($sql);
-        while ($RS = $oDB->fetchName($res) )
-        {
-            $aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]);
-        }
-
         return $aObj_Configurations;
     }
 }

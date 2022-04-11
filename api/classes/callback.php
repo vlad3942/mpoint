@@ -80,7 +80,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null, ClientInfo $oClientInfo = null)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null, ClientInfo $oClientInfo = null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
@@ -507,6 +507,7 @@ abstract class Callback extends EndUserAccount
 				if (strlen($sAdditionalData) > 0) {
 					$sBody .= "&" . $sAdditionalData;
 				}
+                $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
 				$sBody .= "&orderid=" . urlencode($this->_obj_TxnInfo->getOrderID());
 				if ($this->hasTransactionFailureState($sid) === TRUE) {
 					$sBody .= "&status=" . substr($sid, 0, 4);
@@ -541,7 +542,9 @@ abstract class Callback extends EndUserAccount
 					$sBody .= "&description=" . urlencode($this->_obj_TxnInfo->getDescription());
 				}
 				$sBody .= $this->getVariables();
-				$sBody .= "&hmac=" . urlencode($this->_obj_TxnInfo->getHMAC());
+                if (empty($aTxnAdditionalData["hmac"]) === true) {
+                    $sBody .= "&hmac=" . urlencode($this->_obj_TxnInfo->getHMAC());
+                }
 				if (empty($sDeviceID) === FALSE) {
 					$sBody .= "&device-id=" . urlencode($sDeviceID);
 				}
@@ -578,7 +581,6 @@ abstract class Callback extends EndUserAccount
 					}
 				}
 
-				$aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
 				if ($aTxnAdditionalData !== NULL) {
 					foreach ($aTxnAdditionalData as $key => $value) {
 						$sBody .= '&' . $key . '=' . $value;
@@ -921,7 +923,7 @@ abstract class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, ? TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
+	public static function producePSP(RDB $obj_DB, ?api\classes\core\TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
 	{
 		if (isset($obj_PSPConfig) == true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
 		else { $iPSPID = $obj_TxnInfo->getPSPID(); }
@@ -956,8 +958,6 @@ abstract class Callback extends EndUserAccount
             return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"],$obj_PSPConfig);
         case (Constants::iCHASE_ACQUIRER):
             return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"],$obj_PSPConfig);
-        case (Constants::iEZY_PSP):
-			return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"],$obj_PSPConfig);
 		case (Constants::iCEBUPAYMENTCENTER_APM):
 			return new CebuPaymentCenter($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[67],$obj_PSPConfig);
 		case (Constants::iTRAVELFUND_VOUCHER):
@@ -1286,7 +1286,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfo($obj_TransactionData,$sub_code_id, null, -1, $this->_obj_PSPConfig ));
+					array_push($aTransactionData, $this->constructTransactionInfoWithOrderData($obj_TransactionData,$sub_code_id, null, -1, $this->_obj_PSPConfig ));
 				}
 			}
 		}
@@ -1294,7 +1294,7 @@ abstract class Callback extends EndUserAccount
 		elseif($isSessionCallback === FALSE && ($sid === Constants::iPAYMENT_PENDING_STATE || strpos($sid, '2') === 0)) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
-			$obj_TransactionData = $this->constructTransactionInfo($obj_TransactionTxn,$sub_code_id, $sid, $amt, $this->_obj_PSPConfig);
+			$obj_TransactionData = $this->constructTransactionInfoWithOrderData($obj_TransactionTxn,$sub_code_id, $sid, $amt, $this->_obj_PSPConfig);
 			$aTransactionData = [$obj_TransactionData];
 			$isIgnoreRequest = FALSE;
 		}

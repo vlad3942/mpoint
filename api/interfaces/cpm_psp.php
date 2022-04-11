@@ -5,7 +5,7 @@ require_once sCLASS_PATH .'/Parser.php';
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
     private $_obj_ResponseXML = null;
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null, ClientInfo $oClientInfo = null)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
@@ -984,7 +984,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL)
 	{
         //If token is returned in the authorize call, we should update the wallet ID in mPoint's Log.Transaction_Tbl
-	    if($obj_PSPConfig->getID() > 0 )
+        if($obj_PSPConfig->getID() > 0 && $this->getTxnInfo()->getPaymentMethod($this->getDBConn())->PaymentType === Constants::iPAYMENT_TYPE_WALLET)
         {
             $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 						SET walletid = " . $obj_PSPConfig->getID() . "
@@ -1577,7 +1577,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if(General::xml2bool($isGenerateCoupon) === false || strlen($this->aCONN_INFO["paths"]["generate-receipt"]) == 0 ) { return false; }
 
             $objPaymentMethod = $this->getTxnInfo()->getPaymentMethod($this->getDBConn());
-
+            if(empty($this->getTxnInfo()->getOrderConfigs()) === true)
+            {
+                $this->updateTxnInfoObject();
+            }
             $body  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$body .= '<root>';
 			$body .= '<generate-receipt>';

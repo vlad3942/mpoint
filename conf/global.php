@@ -251,12 +251,13 @@ $aHTTP_CONN_INFO[12]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO[12]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO[12]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO[12]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[12]["paths"]["initialize"] = "/mpoint/adyen/initialize";
-$aHTTP_CONN_INFO[12]["paths"]["auth"] = "/mpoint/adyen/authorize-payment";
-$aHTTP_CONN_INFO[12]["paths"]["capture"] = "/mpoint/adyen/capture";
-$aHTTP_CONN_INFO[12]["paths"]["void"] = "/mpoint/adyen/void";
-$aHTTP_CONN_INFO[12]["paths"]["cancel"] = "/mpoint/adyen/cancel";
-$aHTTP_CONN_INFO[12]["paths"]["refund"] = "/mpoint/adyen/refund";
+$aHTTP_CONN_INFO[12]["paths"]["initialize"] = "/mpoint/aggregator/adyen/initialize";
+$aHTTP_CONN_INFO[12]["paths"]["auth"] = "/mpoint/aggregator/adyen/authorize-payment";
+$aHTTP_CONN_INFO[12]["paths"]["capture"] = "/mpoint/aggregator/adyen/capture";
+$aHTTP_CONN_INFO[12]["paths"]["void"] = "/mpoint/aggregator/adyen/void";
+$aHTTP_CONN_INFO[12]["paths"]["cancel"] = "/mpoint/aggregator/adyen/cancel";
+$aHTTP_CONN_INFO[12]["paths"]["refund"] = "/mpoint/aggregator/adyen/refund";
+$aHTTP_CONN_INFO[12]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
  * Connection info for DSB PSP
@@ -830,14 +831,11 @@ $aHTTP_CONN_INFO[56]["paths"]["authenticate"] = "/mpoint/authenticate";
 /**
  * Connection info for connecting to EZY fraud gateway
  */
-$aHTTP_CONN_INFO["ezy"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["ezy"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["ezy"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["ezy"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["ezy"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
+$aHTTP_CONN_INFO[60]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[60]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[60]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[60]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[60]["paths"]["fraud-check"] = "/fraud/ezy/check-fraud-status";
 
 /**
  * Connection info for connecting to VeriTrans4G
@@ -875,12 +873,15 @@ $aHTTP_CONN_INFO[58]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO[58]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO[58]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO[58]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[58]["paths"]["initialize"] = "/mpoint/cellulant/initialize";
-$aHTTP_CONN_INFO[58]["paths"]["auth"] = "/mpoint/cellulant/authorize-payment";
-$aHTTP_CONN_INFO[58]["paths"]["get-payment-options"] = "/mpoint/cellulant/GetPaymentOptions";
-$aHTTP_CONN_INFO[58]["paths"]["status"] = "/mpoint/cellulant/status";
-$aHTTP_CONN_INFO[58]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
-$aHTTP_CONN_INFO[58]["paths"]["refund"] = "/mpoint/cellulant/refund";
+$aHTTP_CONN_INFO[58]["paths"]["get-payment-methods"] = "/mpoint/aggregator/cellulant/get-payment-methods";
+$aHTTP_CONN_INFO[58]["paths"]["initialize"] = "/mpoint/aggregator/cellulant/initialize";
+//$aHTTP_CONN_INFO[58]["paths"]["auth"] = "/mpoint/aggregator/cellulant/authorize-payment";
+//$aHTTP_CONN_INFO[58]["paths"]["get-payment-options"] = "/mpoint/aggregator/cellulant/GetPaymentOptions";
+$aHTTP_CONN_INFO[58]["paths"]["status"] = "/mpoint/aggregator/cellulant/status";
+//$aHTTP_CONN_INFO[58]["paths"]["acknowledge-payments"] = "/mpoint/cellulant/acknowledge-payments";
+$aHTTP_CONN_INFO[58]["paths"]["refund"] = "/mpoint/aggregator/cellulant/refund";
+$aHTTP_CONN_INFO[58]["paths"]["cancel"] = "/mpoint/aggregator/cellulant/cancel";
+$aHTTP_CONN_INFO[58]["paths"]["callback"] = "/mpoint/aggregator/cellulant/callback";
 
 /**
  * Connection info for connecting to FirstData
@@ -895,6 +896,7 @@ $aHTTP_CONN_INFO[62]["paths"]["initialize"] = "/mpoint/first-data/initialize";
 $aHTTP_CONN_INFO[62]["paths"]["refund"] = "/mpoint/first-data/refund";
 $aHTTP_CONN_INFO[62]["paths"]["cancel"] = "/mpoint/first-data/cancel";
 $aHTTP_CONN_INFO[62]["paths"]["status"] = "/mpoint/first-data/status";
+$aHTTP_CONN_INFO[62]["paths"]["authenticate"] = "/mpoint/authenticate";
 /*
  * Connection info for connecting to Routing Service
  */
@@ -935,6 +937,16 @@ $aHTTP_CONN_INFO[63]["paths"]["callback"] = "/fraud/cybersource/fraud-check";
 $aHTTP_CONN_INFO[63]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
+ * Connection info for connecting to CYBS fraud
+ */
+$aHTTP_CONN_INFO[64]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[64]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[64]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[64]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[64]["paths"]["fraud-check"] = "/fraud/cybersource/fraud-check";
+$aHTTP_CONN_INFO[64]["paths"]["callback"] = "/fraud/cybersource/fraud-check";
+
+/**
  * Connection info for connecting to GrabPay
  */
 $aHTTP_CONN_INFO[67]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
@@ -950,16 +962,13 @@ $aHTTP_CONN_INFO[67]["paths"]["status"] = "/mpoint/grab-pay/status";
 
 
 /**
- * Connection info for connecting to cybersource fraud gateway
+ * Connection info for connecting to CEBU-RMFSS
  */
-$aHTTP_CONN_INFO["cebu-rmfss"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["cebu-rmfss"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["cebu-rmfss"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["cebu-rmfss"]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
+$aHTTP_CONN_INFO[65]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[65]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[65]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[65]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[65]["paths"]["fraud-check"] = "/fraud/cebu-rmfss/check-fraud-status";
 
 
 /**
@@ -1087,6 +1096,19 @@ $aHTTP_CONN_INFO[74]["paths"]["cancel"] = "/mpoint/psp/nmi-credomatic/cancel";
 $aHTTP_CONN_INFO[74]["paths"]["callback"] = "/mpoint/psp/nmi-credomatic/callback";
 $aHTTP_CONN_INFO[74]["paths"]["status"] = "/mpoint/psp/nmi-credomatic/status";
 $aHTTP_CONN_INFO[74]["paths"]["authenticate"] = "/mpoint/authenticate";
+
+/**
+ * Connection info for connecting to AUB
+ */
+$aHTTP_CONN_INFO[75]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[75]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[75]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[75]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[75]["paths"]["initialize"] = "/mpoint/aggregator/aub/initialize";
+$aHTTP_CONN_INFO[75]["paths"]["refund"] = "/mpoint/aggregator/aub/refund";
+$aHTTP_CONN_INFO[75]["paths"]["callback"] = "/mpoint/aggregator/aub/callback";
+$aHTTP_CONN_INFO[75]["paths"]["status"] = "/mpoint/aggregator/aub/status";
+$aHTTP_CONN_INFO[75]["paths"]["redirect"] = "/mpoint/aggregator/aub/redirect";
 
 /**
  * GoMobile Connection Info.

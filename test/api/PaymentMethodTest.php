@@ -31,7 +31,7 @@ class PaymentMethodTest extends baseAPITest
         $this->bIgnoreErrors = true;
         $this->_aHTTP_CONN_INFO = $aHTTP_CONN_INFO;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
-        $this->_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+        $this->_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
     }
 
 

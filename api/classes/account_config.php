@@ -119,23 +119,6 @@ class AccountConfig extends BasicConfig
 
         return $xml;
     }
-	
-	public static function produceConfig(RDB $oDB, $id)
-	{
-		$sql = "SELECT clientid, name, mobile, markup, businesstype
-				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl				
-				WHERE id = ". intval($id);
-//		echo $sql ."\n";	
-		$RS = $oDB->getName($sql);
-		
-		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
-		{	
-			$aObj_MerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $id);
-			
-			return new AccountConfig($id, $RS["CLIENTID"], $RS["NAME"], $RS["MOBILE"], $RS["MARKUP"], $aObj_MerchantSubAccounts, $RS["BUSINESSTYPE"]);
-		}
-		else { return null; }
-	}
 
     public static function produceFromXML( &$oXML):AccountConfig
     {
@@ -144,17 +127,25 @@ class AccountConfig extends BasicConfig
         return $clAccount;
     }
 	public static function produceConfigurations(RDB $oDB, $id)
-	{			
-		$sql = "SELECT id			
-				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl 				
-				WHERE clientid = ". intval($id) ." AND enabled = '1'";
-//		echo $sql ."\n";
-		$aConfigurations = array();
-		$res = $oDB->query($sql);
-		while ($RS = $oDB->fetchName($res) )
-		{
-			$aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);
-		}
+	{
+        $sql = "SELECT clientid, name, mobile, markup, businesstype,id
+				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl				
+				WHERE  clientid = ". intval($id) ." AND enabled = '1'";
+//		echo $sql ."\n";	
+        $aRS = $oDB->getAllNames($sql);
+
+        $aConfigurations = array();
+
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs)
+            {
+                $aObj_MerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $rs["ID"]);
+
+                $aConfigurations[] = new AccountConfig($rs["ID"], $rs["CLIENTID"], $rs["NAME"], $rs["MOBILE"], $rs["MARKUP"], $aObj_MerchantSubAccounts, $rs["BUSINESSTYPE"]);
+            }
+        }
+
 		
 		return $aConfigurations;		
 	}
