@@ -169,6 +169,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                                 $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
                             }
                         }
+
                         $obj_mPoint->getPSP()->notifyClient($iStateID, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                     }
 				}
