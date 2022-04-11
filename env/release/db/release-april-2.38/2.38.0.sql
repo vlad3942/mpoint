@@ -10,7 +10,7 @@ SELECT setval('client.routefeature_tbl_id_seq', COALESCE((SELECT MAX(id)+1 FROM 
 SELECT setval('client.routepm_tbl_id_seq', COALESCE((SELECT MAX(id)+1 FROM client.routepm_tbl), 1), false);
 
 -- Client propert fingerprint enchancment --
-UPDATE client.client_property_tbl SET value = '45ssiuz3' where propertyid = (select id from system.client_property_tbl where name = 'CYBS_DM_ORGID') and clientid = 10101;
+--UPDATE client.client_property_tbl SET value = '45ssiuz3' where propertyid = (select id from system.client_property_tbl where name = 'CYBS_DM_ORGID') and clientid = 10101;
 
 -- AVIANCA --
 delete from client.pm_tbl where clientid = 10101 ;
@@ -33,3 +33,8 @@ insert into client.providerpm_tbl (pmid, routeid) select id,(select id from clie
 insert into client.providerpm_tbl (pmid, routeid) select id,(select id from client.route_tbl where clientid=10077 and providerid=68 and enabled=true) from system.card_tbl where id in (95);
 insert into client.providerpm_tbl (pmid, routeid) select id,(select id from client.route_tbl where clientid=10077 and providerid=71 and enabled=true) from system.card_tbl where id in (26);
 insert into client.providerpm_tbl (pmid, routeid) select id,(select id from client.route_tbl where clientid=10077 and providerid=69 and enabled=true) from system.card_tbl where id in (96);
+
+-----CMP-6219-----
+UPDATE client.additionalproperty_tbl SET  value='UA00001654' WHERE id=172 and key='UATP_SFTP_USERNAME' and  externalid=428 and "type"='merchant';
+UPDATE client.additionalproperty_tbl SET  value='/out' WHERE id=170 and key='UATP_SFTP_FILE_PATH' and  externalid=428 and "type"='merchant';
+UPDATE client.additionalproperty_tbl SET  value='https://mft.tnsi.com' WHERE id=181 and key='SFTP_HOST' and  externalid=428 and "type"='merchant';
