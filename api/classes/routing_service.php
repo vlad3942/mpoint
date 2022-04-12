@@ -88,6 +88,10 @@ class RoutingService extends General
      * @var FailedPaymentMethodConfig
      */
     private $_iWalletId;
+    /**
+     * Hold payment group code received in request
+     */
+    private $_iPaymentGroupCode;
 
     /**
      * Default Constructor
@@ -97,7 +101,7 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL,$paymentGroupCode=NULL)
     {
         $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
@@ -111,6 +115,7 @@ class RoutingService extends General
         $this->_sCardName = $cardName;
         $this->_obj_FailedPaymentMethods = $obj_FailedPaymentMethod;
         $this->_iWalletId = $walletId;
+        $this->_iPaymentGroupCode = $paymentGroupCode;
     }
 
     private function getPaymentMethodSearchCriteriaXml()
@@ -119,6 +124,10 @@ class RoutingService extends General
         $body .= '<payment_method_search_criteria>';
         $body .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
         $body .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
+        if(empty($this->_iPaymentGroupCode)===false)
+        {
+            $body .= '<payment_group_code>'.$this->_iPaymentGroupCode.'</payment_group_code>';
+        }
         $body .= '<transaction>';
         $body .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
         $body .= '<order_no>'.$this->_obj_TxnInfo->getOrderID().'</order_no>';
