@@ -18,7 +18,7 @@
 										<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
 										<xs:element name="unique_reference_identifier" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="nonce" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
-										<xs:element name="country_id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="country_id" type="xs:string" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="sale_amount" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="1" />
 										<xs:element name="sale_currency" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 										<xs:element name="client_info" minOccurs="0" maxOccurs="1">
@@ -33,7 +33,7 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-												<xs:element name="mobile_country" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="mobile_country" type="xs:string" minOccurs="0" maxOccurs="1"/>
 												<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
 												<xs:element name="device_id" type="device-id" minOccurs="0" maxOccurs="1" />
 											</xs:all>

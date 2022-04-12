@@ -17,9 +17,9 @@ class HmacSecurityHash extends SecurityHash
     private string $_sHmacType;
     private string $_sOrderID;
     private int $_lAmount;
-    private int $_iCountryID;
+    private string $_iCountryID;
     private string $_lMobile;
-    private int $_iMobileCountryID;
+    private string $_iMobileCountryID;
     private string $_sEMail;
     private string $_sDeviceID;
     private string $_lSaleAmount;
@@ -32,10 +32,10 @@ class HmacSecurityHash extends SecurityHash
      * @param int $clientId
      * @param string $orderId
      * @param int $amount
-     * @param int $countryid
+     * @param string $countryid
      * @param string $string
      */
-    public function __construct(int $clientId, string $orderId, int $amount, int $countryid, string $salt)
+    public function __construct(int $clientId, string $orderId, int $amount, string $countryid, string $salt)
     {
         parent::__construct($clientId, $salt);
         $this->_sOrderID = $orderId;
