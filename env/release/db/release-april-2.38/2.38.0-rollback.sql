@@ -10,7 +10,7 @@ delete from client.pm_tbl where clientid = 10101 ;
 delete from client.providerpm_tbl where routeid in (select id from client.route_tbl where clientid=10101) ;
 
 -- CEBU --
-delete from client.pm_tbl where clientid = 10077;
+insert into client.pm_tbl (clientid, pmid ) select 10077, id FROM system.card_tbl where id in (7, 8, 93, 5, 1, 28, 94, 95, 26, 96);
 delete from client.providerpm_tbl where routeid in (select id from client.route_tbl where clientid=10077) ;
 
 -----CMP-6219-----
