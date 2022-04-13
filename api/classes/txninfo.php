@@ -2773,5 +2773,16 @@ class TxnInfo
 	{
 		$this->_iCardID = $cardid;
 	}
+
+	public function getUpdatedCapturedAmount(RDB $_OBJ_DB,int $txnID): int
+	{
+		$sql = "SELECT captured FROM LOG".sSCHEMA_POSTFIX.".Transaction_Tbl 
+                        WHERE id = ".$txnID;
+		$res = $_OBJ_DB->getName($sql);
+		if (is_array($res) === true) {
+			return (int)$res['CAPTURED'];
+		}
+		return 0;
+	}
 }
 ?>
