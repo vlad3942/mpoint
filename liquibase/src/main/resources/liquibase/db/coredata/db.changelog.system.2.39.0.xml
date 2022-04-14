@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Kalpesh Parikh" id="2022-04-14-setup-v2.39-system">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="client_property_tbl">
+            <column name="name" value="binsearch_required"/>
+            <column name="category" value="7"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="1"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
