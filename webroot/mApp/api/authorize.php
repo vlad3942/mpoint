@@ -560,6 +560,12 @@ try
 
                                         if($obj_card->getCardHolderName() !== '' && $obj_CardValidator->valCardFullName() !== 730){
                                                 $aMsgCds[62] = "Please Enter valid name";
+                                        } else if ($obj_card->getCardHolderName() !== '') {
+                                            $additionalTxnData[] = [ 'name' => 'card-holder-name',
+                                                                     'value' => (string) $obj_card->getCardHolderName(),
+                                                                     'type' => (string)'Transaction'
+                                            ];
+                                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
                                         }
 
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country
