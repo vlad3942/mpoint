@@ -151,7 +151,8 @@ GRANT SELECT ON TABLE log.split_details_tbl TO repuser;
 GRANT SELECT ON client.pm_tbl TO repuser;
 GRANT SELECT ON client.routepm_tbl TO repuser;
 GRANT SELECT ON client.services_tbl TO repuser;
-GRANT SELECT ON client.providerpm_tbl TO repuser;"
+GRANT SELECT ON client.providerpm_tbl TO repuser;
+GRANT SELECT ON client.fraud_config_tbl TO repuser;"
 
 
 REP_USER_EXISTS=$(echo "SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'repuser');" | psql -t | tr -d '[:space:]')
