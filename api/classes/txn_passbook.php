@@ -465,11 +465,7 @@ final class TxnPassbook
      */
     private function getSupportedPartialOperation()
     {
-
-        $clientConfig = ClientConfig::produceConfig($this->_obj_Db, $this->_clientId);
-        $is_legacy = $clientConfig->getClientServices()->isLegacyFlow();
-
-        if ($is_legacy === true && ($this->_merchantSupportedPartialOperation === -1 || $this->_pspSupportedPartialOperation === -1)) {
+        if ($this->_merchantSupportedPartialOperation === -1 || $this->_pspSupportedPartialOperation === -1) {
             $sql = 'SELECT psp.SupportedPartialOperations      as PSPSupportedPartialOperations,
                            merchant.SupportedPartialOperations as MerchantSupportedPartialOperations
                     FROM system.' . sSCHEMA_POSTFIX . 'psp_tbl psp
@@ -496,35 +492,6 @@ final class TxnPassbook
             }
             if ($this->_pspSupportedPartialOperation % 5 === 0 && $this->_merchantSupportedPartialOperation % 5 === 0) {
                 $this->_isPartialCancelSupported = TRUE;
-            }
-        } elseif ($is_legacy === false) {
-
-            $aFeatureIds = array (
-                RouteFeatureType::ePartialCapture,
-                RouteFeatureType::ePartialRefund,
-                RouteFeatureType::ePartialCancel
-            );
-
-            $sql = 'SELECT rt2.featureid, rt2.enabled
-                    FROM log.' . sSCHEMA_POSTFIX . 'transaction_tbl tt
-                             INNER JOIN client.' . sSCHEMA_POSTFIX . 'routefeature_tbl rt2 ON tt.routeconfigid = rt2.routeconfigid
-                    WHERE tt.id = $1 AND rt2.featureid IN (\'' . implode( "', '", $aFeatureIds) . '\')';
-
-            $aParams = array(
-                $this->getTransactionId()
-            );
-
-            $result = $this->getDBConn()->executeQuery($sql, $aParams);
-            while ($RS = $this->getDBConn()->fetchName($result)) {
-                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialCapture && empty($RS['ENABLED']) === false) {
-                    $this->_isPartialCaptureSupported = TRUE;
-                }
-                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialRefund && empty($RS['ENABLED']) === false) {
-                    $this->_isPartialRefundSupported = TRUE;
-                }
-                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialCancel && empty($RS['ENABLED']) === false) {
-                    $this->_isPartialCancelSupported = TRUE;
-                }
             }
         }
     }
