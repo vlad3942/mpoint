@@ -508,7 +508,7 @@ final class TxnPassbook
             $sql = 'SELECT rt2.featureid, rt2.enabled
                     FROM log.' . sSCHEMA_POSTFIX . 'transaction_tbl tt
                              INNER JOIN client.' . sSCHEMA_POSTFIX . 'routefeature_tbl rt2 ON tt.routeconfigid = rt2.routeconfigid
-                    WHERE tt.id = $1 AND rt2.enabled = true AND  rt2.featureid IN (\'' . implode( "', '", $aFeatureIds) . '\')';
+                    WHERE tt.id = $1 AND rt2.featureid IN (\'' . implode( "', '", $aFeatureIds) . '\')';
 
             $aParams = array(
                 $this->getTransactionId()
@@ -516,13 +516,13 @@ final class TxnPassbook
 
             $result = $this->getDBConn()->executeQuery($sql, $aParams);
             while ($RS = $this->getDBConn()->fetchName($result)) {
-                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialCapture) {
+                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialCapture && empty($RS['ENABLED']) === false) {
                     $this->_isPartialCaptureSupported = TRUE;
                 }
-                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialRefund) {
+                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialRefund && empty($RS['ENABLED']) === false) {
                     $this->_isPartialRefundSupported = TRUE;
                 }
-                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialCancel) {
+                if ((int)$RS['FEATUREID'] === RouteFeatureType::ePartialCancel && empty($RS['ENABLED']) === false) {
                     $this->_isPartialCancelSupported = TRUE;
                 }
             }
