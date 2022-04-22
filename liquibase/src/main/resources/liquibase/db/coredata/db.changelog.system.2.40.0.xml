@@ -26,4 +26,22 @@
 
     </changeSet>
 
+    <changeSet author="Priya Alamwar"
+               id="2022-04-22-setup-v2.39-system">
+        <update catalogName="system" schemaName="system"
+                tableName="paymenttype_tbl">
+            <column name="name" value="Voucher and Credit" />
+            <where>id = 2</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Priya Alamwar"
+               id="2022-04-22-setup-v2.39-system">
+        <update catalogName="system" schemaName="system"
+                tableName="processortype_tbl">
+            <column name="name" value="Voucher and Credit" />
+            <where>id = 11</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
