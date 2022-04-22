@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Priya Alamwar"
-               id="2022-04-22-setup-v2.40-system">
+               id="2022-04-22-setup-v2.40-system-01">
         <update catalogName="system" schemaName="system"
                 tableName="type_tbl">
             <column name="name" value="Telephone Order" />
@@ -15,7 +15,7 @@
     </changeSet>
 
     <changeSet author="Priya Alamwar"
-               id="2022-04-22-setup-v2.40-system">
+               id="2022-04-22-setup-v2.40-system-02">
 
         <insert catalogName="system"
                 schemaName="system"
