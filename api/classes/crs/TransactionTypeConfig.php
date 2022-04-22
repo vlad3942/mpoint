@@ -99,7 +99,8 @@ class TransactionTypeConfig
                                    Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE=>'Self Service Offline',
                                    Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP=>'Self Service Online with additional rules on FOP',
                                    Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION=>'Payment Link Transaction',
-                                   Constants::iTRANSACTION_TYPE_CALL_CENTER_PURCHASE=>'Call Center Purchase');
+                                   Constants::iTRANSACTION_TYPE_TELEPHONE_ORDER=>'Telephone Order',
+                                   Constants::iTRANSACTION_TYPE_MAIL_ORDER=>'Mail Order');
         
 		foreach($transactionTypes as $txnType=>$value)
 		{

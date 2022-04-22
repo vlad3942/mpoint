@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Priya Alamwar"
+               id="2022-04-22-setup-v2.40-system">
+        <update catalogName="system" schemaName="system"
+                tableName="type_tbl">
+            <column name="name" value="Telephone Order" />
+            <where>id = 7</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Priya Alamwar"
+               id="2022-04-22-setup-v2.40-system">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="type_tbl">
+            <column name="id" value="8"/>
+            <column name="name" value="Mail Order"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
