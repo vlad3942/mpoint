@@ -10,7 +10,7 @@
                 schemaName="system"
                 tableName="client_property_tbl">
             <column name="name" value="binsearch_required"/>
-            <column name="category" value="7"/>
+            <column name="category" value="5"/>
             <column name="ismandatory" value="false"/>
             <column name="datatype" value="1"/>
         </insert>
