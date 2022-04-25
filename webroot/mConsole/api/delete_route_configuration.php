@@ -30,7 +30,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     {
         $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
         global $aHTTP_CONN_INFO;
-        $code = $obj_mPoint->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId);
+        $code = $obj_mPoint->SSOCheck($aHTTP_CONN_INFO['mconsole'], $clientId, mConsole::sPERMISSION_DELETE_ROUTE_CONFIG);
         if ($code === mConsole::iAUTHORIZATION_SUCCESSFUL)
         {
             $status = ClientRouteConfigurations::DeleteRouteConfig($_OBJ_DB, $routeConfigId);
