@@ -10,110 +10,103 @@
  */
 
 namespace api\classes\billingsummary\info;
+use JsonSerializable;
 
-
-abstract class BillingSummaryAbstract
+abstract class BillingSummaryAbstract implements JsonSerializable
 {
     /**
      * Unique ID for the billing summary
      *
      * @var integer
      */
-    private $_iID;
+    private $id;
     /**
      * Value for the journey reference
      *
      * @var string
      */
-    private $_JourneyRef;
+    private $journey_ref;
     /**
      * Value of the Bill Type
      *
      * @var string
      */
-    private $_BillType;
-    /**
-     * Value of the Type Id
-     *
-     * @var integer
-     */
-    private $_TypeId;
+    private $bill_type;
     /**
      * Value of Description
      *
      * @var string
      */
-    private $_Description;
+    private $description;
     /**
      * Value of Amount
      *
      * @var string
      */
-    private $_Amount;
+    private $amount;
     /**
      * Value of Currency
      *
      * @var string
      */
-    private $_Currency;
+    private $currency;
     /**
      * Value of Profile sequence
      *
      * @var integer
      */
-    private $_ProfileSeq;
+    private $profile_seq;
     /**
      * Value of Trip Tag
      *
      * @var integer
      */
-    private $_TripTag;
+    private $trip_tag;
     /**
      * Value of Trip Sequence
      *
      * @var integer
      */
-    private $_TripSeq;
+    private $trip_seq;
 
     /**
      * Value of Product Code
      *
      * @var string
      */
-    private $_ProductCode;
+    private $product_code;
 
     /**
      * Value of Product Category
      *
      * @var string
      */
-    private $_ProductCategory;
+    private $product_category;
 
     /**
      * Value of Product Item
      *
      * @var string
      */
-    private $_ProductItem;
+    private $product_item;
 
 
     /**
      * Default Constructor
      */
-    public function __construct($id, $ref, $type, $typeId, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem) {
-        $this->_iID = ( integer ) $id;
-        $this->_JourneyRef = $ref;
-        $this->_BillType = $type;
-        $this->_TypeId = $typeId;
-        $this->_Description = $desc;
-        $this->_Amount = $amt;
-        $this->_Currency = $curr;
-        $this->_ProfileSeq = $pseq;
-        $this->_TripTag = $tripTag;
-        $this->_TripSeq = $tripSeq;
-        $this->_ProductCode = $pCode;
-        $this->_ProductCategory = $pCategory;
-        $this->_ProductItem = $pItem;
+    public function __construct($id, $ref, $type, $desc, $amt, $curr, $pseq, $tripTag, $tripSeq, $pCode, $pCategory, $pItem) {
+        $this->id = ( integer ) $id;
+        $this->journey_ref = $ref;
+        $this->bill_type = $type;
+        $this->description = $desc;
+        $this->amount = $amt;
+        $this->currency = $curr;
+        $this->profile_seq = $pseq;
+        $this->trip_tag = $tripTag;
+        $this->trip_seq = $tripSeq;
+        $this->product_code = $pCode;
+        $this->product_category = $pCategory;
+        $this->product_item = $pItem;
     }
 
     /**
@@ -122,15 +115,15 @@ abstract class BillingSummaryAbstract
      * @return integer
      */
     public function getID() {
-        return $this->_iID;
+        return $this->id;
     }
     /**
      * Returns the journey reference of Billing Summary
      *
      * @return string
      */
-    public function getJourneyRef() {
-        return $this->_JourneyRef;
+    public function getJourneyref() {
+        return $this->journey_ref;
     }
     /**
      * Returns the bill type of Billing Summary
@@ -138,15 +131,7 @@ abstract class BillingSummaryAbstract
      * @return string
      */
     public function getBillType() {
-        return $this->_BillType;
-    }
-    /**
-     * Returns the type id of Billing Summary
-     *
-     * @return integer
-     */
-    public function getTypeId() {
-        return $this->_TypeId;
+        return $this->bill_type;
     }
     /**
      * Returns the description of Billing Summary
@@ -154,7 +139,7 @@ abstract class BillingSummaryAbstract
      * @return string
      */
     public function getDescription() {
-        return $this->_Description;
+        return $this->description;
     }
 
     /**
@@ -163,7 +148,7 @@ abstract class BillingSummaryAbstract
      * @return string
      */
     public function getAmount() {
-        return $this->_Amount;
+        return $this->amount;
     }
     /**
      * Returns currency of Billing Summary
@@ -171,7 +156,7 @@ abstract class BillingSummaryAbstract
      * @return string
      */
     public function getCurrency() {
-        return $this->_Currency;
+        return $this->currency;
     }
     /**
      * Returns profile sequence of Billing Summary
@@ -179,7 +164,7 @@ abstract class BillingSummaryAbstract
      * @return integer
      */
     public function getProfileSeqence() {
-        return $this->_ProfileSeq;
+        return $this->profile_seq;
     }
     /**
      * Returns trip tag of Billing Summary
@@ -187,7 +172,7 @@ abstract class BillingSummaryAbstract
      * @return integer
      */
     public function getTripTag() {
-        return $this->_TripTag;
+        return $this->trip_tag;
     }
     /**
      * Returns trip sequence of Billing Summary
@@ -195,7 +180,7 @@ abstract class BillingSummaryAbstract
      * @return integer
      */
     public function getTripSeq() {
-        return $this->_TripSeq;
+        return $this->trip_seq;
     }
 
     /**
@@ -204,7 +189,7 @@ abstract class BillingSummaryAbstract
      * @return string
      */
     public function getProductCode() {
-        return $this->_ProductCode;
+        return $this->product_code;
     }
 
     /**
@@ -213,7 +198,7 @@ abstract class BillingSummaryAbstract
      */
     public function getProductCategory()
     {
-        return $this->_ProductCategory;
+        return $this->product_category;
     }
 
     /**
@@ -222,7 +207,16 @@ abstract class BillingSummaryAbstract
      */
     public function getProductItem()
     {
-        return $this->_ProductItem;
+        return $this->product_item;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
     }
 
     abstract public function toXML();

@@ -46,7 +46,7 @@ class Void extends General
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	Callback $oPSP 			Model for the PSP to which the VOID operation should be executed
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
@@ -77,7 +77,7 @@ class Void extends General
 		if ( ($this->_obj_PSP instanceof Voiadable) === true) { $code = $this->_obj_PSP->void($iAmount); }
 		else { throw new BadMethodCallException("Void not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
-		if ($code === 1000)
+		if ($code === Constants::iTRANSACTION_CREATED)
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET refund = refund + ". intval($iAmount) ."

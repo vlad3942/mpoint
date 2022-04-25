@@ -12,6 +12,8 @@
  * @version 1.02
  */
 
+use api\classes\merchantservices\AddonServiceType;
+
 /**
  * Data class for holding all defined Constants
  *
@@ -244,6 +246,22 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Captured
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_CAPTURED_STATE = 2201;
+	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Cancelled
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_CANCELLED_STATE = 2202;
+	/**
+	 *  Defines the ID of the State that indicates that Payment Partially Refunded
+	 *
+	 */
+	const iPAYMENT_PARTIALLY_REFUNDED_STATE = 2203;
+
+	/**
 	 * Defines the ID of the State that indicates that Card is not enrolled for 3DS by Issuer
 	 *
 	 */
@@ -280,6 +298,12 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
+	/**
+	 * Defines the ID of the State that indicates that the unknown error occurred and payment was rejected by the Payment Service Provider (PSP)
+	 * when doing an Authorisation
+	 *
+	 */
+	const iPAYMENT_UNKNOWN_ERROR_STATE = 99;
     /**
      * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
      * when doing an Authorisation due to incorrect payment information
@@ -368,6 +392,12 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_DUPLICATED_STATE = 2019;
+
+	/**
+	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
+	 *
+	 */
+	const iCALLBACK_DUPLICATED_STATE = 2018;
 
 	/**
 	 * Defines the ID of the State that indicates that payment has been settled
@@ -515,6 +545,12 @@ abstract class Constants
 	 */
 	const iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE = 3016;
 
+	/**
+	 * Defines the ID of the State that indicates that Techical Error Occured for PRE-Auth Fraud
+	 *
+	 */
+	const iPRE_FRAUD_CHECK_TECH_ERROR_STATE = 3018;
+
     /**
      * Defines the ID of the State that indicates that PRE-Auth Review Success
      *
@@ -526,6 +562,12 @@ abstract class Constants
      *
      */
     const iPRE_FRAUD_CHECK_REVIEW_FAIL_STATE = 30142;
+
+	/**
+	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
+	 *
+	 */
+	const iPOST_AUTH_FRAUD_CHECK_REQUIRED_STATE = 3100;
 
 	/**
 	 * Defines the ID of the State that indicates that POST-Auth Fraud Initiated
@@ -574,6 +616,12 @@ abstract class Constants
 	 *
 	 */
 	const iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE = 3117;
+
+	/**
+	 * Defines the ID of the State that indicates that Techical Error Occured for POST-Auth Fraud
+	 *
+	 */
+	const iPOST_FRAUD_CHECK_TECH_ERROR_STATE = 3118;
 
     /**
      * Defines the ID of the State that indicates that POST-Auth Review Success
@@ -1152,6 +1200,19 @@ abstract class Constants
 	const iTRAVELFUND_VOUCHER = 71;
 
     /**
+    * Unique PSP ID for transaction's made using CEBU Travel Fund
+     *
+     */
+    const iPAYMAYA_ACQ = 73;
+
+     /**
+     * Unique PSP ID for transaction's made using AV NMI
+     *
+     */
+     const iNMI_CREDOMATIC = 74;
+
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -1585,6 +1646,12 @@ abstract class Constants
 	 */
 	const iDRAGONPAYOFFLINE = 88;
 	/**
+    	 * Unique Card ID for transaction's made using Grab Pay
+    	 *
+    	 */
+    const iELO_CARD = 82;
+
+	/**
 	 * Unique Card ID for transaction's made using Grab Pay
 	 *
 	 */
@@ -1625,6 +1692,11 @@ abstract class Constants
 	*
 	*/
 	const iBANCODEBOGATA  = 100;
+	/**
+	 * Unique Card ID for transaction's made using UNIONPAY_CARD
+	 *
+	 */
+	const iUNIONPAY_CARD = 101;
 	
 	
 
@@ -1762,6 +1834,7 @@ abstract class Constants
 	const iInvalidOperation = 6100;
 	const iOperationNotAllowed = 6200;
 	const iAmountIsHigher = 6201;
+	const iAmountIsLower = 6202;
 
 	/*
 	 * Passbook Error Code
@@ -1818,17 +1891,54 @@ abstract class Constants
     const iTRANSACTION_TYPE_SHOPPING_OFFLINE = 2;
     const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE = 3;
     const iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE = 4;
+	const iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP = 5;
+	const iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION= 6;
+	const iTRANSACTION_TYPE_TELEPHONE_ORDER= 7;
+	const iTRANSACTION_TYPE_MAIL_ORDER= 8;
 
     /*
      * Defines unique ID of the State that indicates payment soft declined
      */
     const iPAYMENT_SOFT_DECLINED_STATE = 20103;
 
-    /*
+	/*
+     * Defines unique ID of the State that indicates payment fraud decline subcode
+     */
+	const iPAYMENT_REJECTED_FRAUD_SUSPICION_STATE = 2010401;
+	const iPAYMENT_REJECTED_FRAUD_CARD_BLOCKED_STATE = 2010405;
+	const iPAYMENT_REJECTED_FRAUD_CARD_STOLEN_STATE = 2010407;
+
+
+	/*
      * Define upper and lower limit for soft decline status sub code
      */
     const iSOFT_DECLINED_SUB_CODE_LOWER_LIMIT = 2010300;
     const iSOFT_DECLINED_SUB_CODE_UPPER_LIMIT = 2010399;
+
+	/**
+	 * Define the hard decline sub-codes which belongs to 20103XX series.
+	 *
+	 */
+
+	const iPAYMENT_CANCELLED = 2010305;
+	const iDUPLICATE_TXN = 2010310;
+	const iTXN_REJECTED_ISSUER = 2010314;
+	const iEMI_UNAVAILABLE = 2010315;
+	const iVOID_NOT_SUPPORTED = 2010316;
+	const iCAPTURED_ALREADY = 2010317;
+	const iINVALID_CAPTURE = 2010319;
+	const iRECURRING_NOT_SUPPORTED = 2010321;
+	const iSTORED_CARD_DISABLED = 2010322;
+	const iTXN_GENERATION_FAIL = 2010325;
+	const iINSTALLMENT_DISABLED = 2010326;
+	const iTICKET_ISSUE_FAIL = 2010327;
+	const iCUP_SIGN_FAIL = 2010328;
+	const iISSUE_BANK_UNAVAILABLE = 2010330;
+	const iTXN_EXCEED_LIMIT = 2010331;
+	const iUNVOIDABLE = 2010332;
+	const iUNREFUNDABLE = 2010333;
+	const iAMOUNT_LIMIT_EXCEEDS = 2010334;
+	const iNO_RESPONSE = 2010335;
 
    /*
     * Defines unique ID of the State that indicates payment decline due to
@@ -1856,6 +1966,7 @@ abstract class Constants
      */
 	const iPAYMENT_3DS_SUCCESS_FULLY_AUTHENTICATED_SUB_STATE = 2006001;
 	const iPAYMENT_3DS_SUCCESS_ATTEMPTED_SUB_STATE = 2006004;
+	const iPAYMENT_3DS_DUPLICATE_STATE = 2006018;
 	/*
      * Define substatus code of 2016 status code
      */
@@ -1871,6 +1982,25 @@ abstract class Constants
 	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_NOT_APPLICABLE_SUB_STATE = 2016998;
 	const iPAYMENT_3DS_FAILURE_AUTHENTICATED_UNKNOWN_ERROR_SUB_STATE = 2016999;
 
+	/**
+	 * Indicates the service level id and name mapping
+	 *
+	 * @var array
+	 */
+	const aServiceLevelAndIdMapp = [
+		'0' => 'Unknown',
+		'1' => 'First Class',
+		'2' => 'Standard',
+		'3' => 'Economy',
+		'4' => 'Premier',
+		'5' => 'Business',
+		'6' => 'XS',
+		'7' => 'S',
+		'8' => 'M',
+		'9' => 'L',
+		'10' => 'XL',
+		'11' => 'XXL'
+	];
 	/**
 	 * Initialize API flight info Service class constants for First Class
 	 */
@@ -1896,6 +2026,31 @@ abstract class Constants
 	 */
 	const BUSINESS = 5;
 
+	/**
+	 * Exnternal MCP service opted
+	 */
+	const iExternalMCPOpted = 31;
+
+	/*
+	 * Velocity url ID in client configuration
+	*/
+	const iBASE_IMAGE_URL = 14;
+
+	const aFXServiceType = [
+		11 => 'DCC Opt',
+		12 => 'DCC Not opt',
+		21 => 'MCP opt',
+		22 => 'MCP Not opt',
+		31 => 'External MCP opt',
+		32 => 'External MCP Not opt',
+		41 => 'PCC Opt',
+		42 => 'PCC Not opt'
+	];
+
+	/*
+	 * Number of digits supported in issuer identification number
+	 */
+	const iNoOfBINDigit = 11;
 
 }
 
@@ -1917,6 +2072,15 @@ abstract class AutoCaptureType
    * Auto-Capture flag for mPoint to perform batch-capture
    */
 	const eBatchCapt = 4;
+	/*
+   * Auto-Capture flag for mPoint to perform ticket level manual-capture
+   */
+	const eTicketLevelManualCapt = 5;
+	/*
+   * Auto-Capture flag for mPoint to perform ticket level auto-capture
+   */
+	const eTicketLevelAutoCapt = 6;
+
 }
 abstract class UserType
 {
@@ -1929,4 +2093,44 @@ abstract class UserType
    */
 	const iRegisterUser = 2;
 }
+
+abstract class RouteFeatureType
+{
+	const ePartialCapture = 4;
+	const eRefund = 5;
+	const ePartialRefund=6;
+	const e3DS=9;
+	const eInstallment=10;
+	const eCancel=18;
+	const ePartialCancel=19;
+	const eMPI=20;
+}
+
+abstract class AddonServiceTypeIndex
+{
+
+       const eDCC = 1;
+       const ePCC = 2;
+       const eMCP = 3;
+       const eFraud = 4;
+       const eMPI = 5;
+       const eSPLIT_PAYMENT = 6;
+       const eTOKENIZATION = 7;
+
+
+	   public static function valueOf(string $type):int
+	   {
+		    $type =strtolower($type);
+		   if($type === 'dcc') { return self::eDCC; }
+		   if($type === 'pcc') { return self::ePCC; }
+		   if($type === 'mcp') { return self::eMCP; }
+		   if($type === 'mpi') { return self::eMPI; }
+		   if($type === 'pre_auth' || $type === 'post_auth' || $type === 'fraud' ) { return self::eFraud; }
+		   if($type === 'cashless' || $type === 'conventional' || $type === 'hybrid' || $type === 'split_payment') { return self::eSPLIT_PAYMENT; }
+		   if($type === 'tokenization') { return self::eTOKENIZATION; }
+		   else  { return 0; }
+	   }
+}
+
+
 ?>

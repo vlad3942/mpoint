@@ -46,7 +46,7 @@ class Refund extends General
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	Callback $oPSP 			Model for the PSP to which the capture operation should be executed
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
@@ -120,7 +120,7 @@ class Refund extends General
 		if ( ($this->_obj_PSP instanceof Refundable) === true) { $code = $this->_obj_PSP->refund($iAmount,$status); }
 		else {throw new BadMethodCallException("Refund not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
-		if ($code === 1000 || $code === 1100)
+		if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::i3D_SECURE_ACTIVATED_STATE]))
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET refund = refund + ". intval($iAmount) ."

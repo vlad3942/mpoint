@@ -754,9 +754,8 @@ class mConsole extends Admin
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". implode(",", $aStateIDs) .")
 				ORDER BY id DESC";
-		
-		//		echo $sql ."\n";
-		$stmt1 = $this->getDBConn()->prepare($sql);
+
+		$sql1 = $sql;
 		
 		$sql = "SELECT id, stateid, data, created ".$sAtTimeZone." 
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
@@ -768,9 +767,8 @@ class mConsole extends Admin
 		}
 		
 		$sql.= "ORDER BY id ASC";
-		
-		//		echo $sql ."\n";
-		$stmt2 = $this->getDBConn()->prepare($sql);
+
+		$sql2 = $sql;
 		
 		$aObj_TransactionLogs = array();
 		$aObj_CountryConfigurations = array();
@@ -790,7 +788,7 @@ class mConsole extends Admin
 			if ($RS["STATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["TXNID"]);
-				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
+				$res1 = $this->getDBConn()->executeQuery($sql1, $aParams);
 				if (is_resource($res1) === true)
 				{
 					$RS1 = $this->getDBConn()->fetchName($res1);
@@ -803,7 +801,7 @@ class mConsole extends Admin
 			if ($verbose === true && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["TXNID"]);
-				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
+				$res2 = $this->getDBConn()->executeQuery($sql2, $aParams);
 				
 				if (is_resource($res2) === true)
 				{

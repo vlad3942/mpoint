@@ -187,11 +187,15 @@ function sendCallback(string $url, string $body)
         $iCode = $obj_HTTP->send(constHTTPHeaders(), $body);
         $obj_HTTP->disConnect();
 
+        if (200 < $iCode && $iCode > 300)
+            trigger_error("CEBU callback response code: ". $iCode, E_USER_WARNING);
+
+
         http_response_code($iCode);
         echo $obj_HTTP->getReplyBody();
     }
     // Error: Unable to establish Connection to Client
-    catch (HTTPConnectionException | HTTPSendException $e)
+    catch (HTTPConnectionException | HTTPSendException | HTTPInternalException $e)
     {
         trigger_error("mPoint Callback request failed Body: ". $body. ", Message: " . $e->getMessage(), E_USER_ERROR);
         http_response_code(500);
@@ -207,7 +211,7 @@ function constHTTPHeaders()
     $h .= "referer: {REFERER}" .HTTPClient::CRLF;
     $h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
     $h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-    $h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
+    $h .= "user-agent: mPoint-MESB Client/1.23" .HTTPClient::CRLF;
     $h .= "X-CPM-Merchant-Domain: {X-CPM-MERCHANT-DOMAIN}" .HTTPClient::CRLF;
     /* ----- Construct HTTP Header End ----- */
 

@@ -59,8 +59,9 @@ require_once(sAPI_CLASS_PATH ."remote_report.php");
 require_once(sAPI_CLASS_PATH ."database.php");
 // Require API for Custom User Session handling
 require_once(sAPI_CLASS_PATH ."session.php");
-// Require API for Text Transalation
-require_once(sAPI_CLASS_PATH ."text.php");
+// Require API for Text Transalation // This functionality no longer required. To minimize the impact dummy class is created instead of removing code. Code refactoring is required in phase 2.
+//require_once(sCLASS_PATH ."core/TranslateText.php");
+use api\classes\core\TranslateText;
 // Require API for controlling Output prior to sending it to the device
 require_once(sAPI_CLASS_PATH ."output.php");
 // Require API for handling resizing of images
@@ -137,7 +138,6 @@ require_once(sINTERFACE_PATH ."/voidable.php");
 require_once(sINTERFACE_PATH ."/redeemable.php");
 require_once(sINTERFACE_PATH ."/invoiceable.php");
 
-require_once(sCLASS_PATH ."post_auth_action.php");
 require_once(sCLASS_PATH ."/crs/TransactionTypeConfig.php");
 
 // Require specific Business logic for the Status component
@@ -161,8 +161,6 @@ if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] =
 define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
-// set oldOrderXml variable from request header if set else set to false(default)
-$GLOBALS['oldOrderXml'] = isset($_SERVER['HTTP_OLDORDERXML']) ? (bool) $_SERVER['HTTP_OLDORDERXML'] : false;
 ?>

@@ -9,76 +9,78 @@ require_once __DIR__ . '/AuthorizeAPITest.php';
 
 class DSBAuthorizeVoucherAPITest extends baseAPITest
 {
-	protected $_aMPOINT_CONN_INFO;
+    protected $_aMPOINT_CONN_INFO;
 
-	public function __construct()
-	{
+    public function __construct()
+    {
         parent::__construct();
-		$this->constHTTPClient();
-	}
+        $this->constHTTPClient();
+    }
 
-	public function constHTTPClient()
-	{
-		global $aMPOINT_CONN_INFO;
-		$aMPOINT_CONN_INFO['path'] = "/mApp/api/authorize.php";
-		$aMPOINT_CONN_INFO["contenttype"] = "text/xml";
-		$this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
-		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO));
-	}
+    public function constHTTPClient()
+    {
+        global $aMPOINT_CONN_INFO;
+        $aMPOINT_CONN_INFO['path'] = "/mApp/api/authorize.php";
+        $aMPOINT_CONN_INFO["contenttype"] = "text/xml";
+        $this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
+        $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO));
+    }
 
-	protected function getAuthDoc($client, $account, $txn=1, $amount=100)
-	{
-		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-		$xml .= '<root>';
-		$xml .= '<authorize-payment client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction id="'. $txn .'">';
-		$xml .= '<voucher id="61775" order-no="800-123456" />';
-		$xml .= '</transaction>';
-		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
-		$xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
-		$xml .= '<email>jona@oismail.com</email>';
-		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
-		$xml .= '</client-info>';
-		$xml .= '</authorize-payment>';
-		$xml .= '</root>';
+    protected function getAuthDoc($client, $account, $txn=1, $amount=100)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<root>';
+        $xml .= '<authorize-payment client-id="'. $client .'" account="'. $account .'">';
+        $xml .= '<transaction id="'. $txn .'">';
+        $xml .= '<voucher id="61775" order-no="800-123456" />';
+        $xml .= '</transaction>';
+        $xml .= '<client-info platform="iOS" version="1.00" language="da">';
+        $xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
+        $xml .= '<email>jona@oismail.com</email>';
+        $xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
+        $xml .= '</client-info>';
+        $xml .= '</authorize-payment>';
+        $xml .= '</root>';
 
-		return $xml;
-	}
+        return $xml;
+    }
 
-	public function testSuccessfulVoucherAuthorize()
-	{
-		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-		$pspID = Constants::iDSB_PSP;
+    public function testSuccessfulVoucherAuthorize()
+    {
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        $pspID = Constants::iDSB_PSP;
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
-		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
-		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
-		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
-		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, ". Constants::iVOUCHER_CARD .", $pspID, false)"); //Authorize must be possible even with disabled cardac
-		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 10099");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, ". Constants::iVOUCHER_CARD .", $pspID, false)"); //Authorize must be possible even with disabled cardac
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, true);");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 2, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 2, '127.0.0.1', TRUE, 208,1,2,208)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 2,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 2,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
 
-		$xml = $this->getAuthDoc(10099, 1100, 1001001, 2);
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 2);
 
-		$this->_httpClient->connect();
+        $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
-		$sReplyBody = $this->_httpClient->getReplyBody();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
 
-		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment authorized using Voucher</status></root>', $sReplyBody);
+        $this->assertEquals(200, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment authorized using Voucher</status></root>', $sReplyBody);
 
         $retries = 0;
-
+        $aStates = array();
         while ($retries++ <= 16)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
@@ -91,87 +93,80 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
                 $aStates[] = $row["stateid"];
             }
             if (count($aStates) == 16) { break; }
-            usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+            usleep(500000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-        //var_dump($aStates);
-		$this->assertEquals(61775, $trow["extid"]);
-		$this->assertEquals($pspID, $trow["pspid"]);
-		$this->assertEquals(2, $trow["amount"]);
+        $this->assertEquals(61775, $trow["extid"]);
+        $this->assertEquals($pspID, $trow["pspid"]);
+        $this->assertEquals(2, $trow["amount"]);
+        $this->assertCount(16, $aStates);
+        self::assertTrue(in_array(2000,$aStates));
+        self::assertTrue(in_array(2001,$aStates));
+        self::assertTrue(in_array(4030,$aStates));
+        self::assertTrue(in_array(2007,$aStates));
+    }
 
-		$stateIndex = 0;
-		$this->assertCount(16, $aStates);
-		$this->assertEquals(2007, $aStates[$stateIndex++]);
-		$this->assertEquals(2000, $aStates[$stateIndex++]);
-		$this->assertEquals(1991, $aStates[$stateIndex++]);
-		$this->assertEquals(1992, $aStates[$stateIndex++]);
-		$this->assertEquals(1990, $aStates[$stateIndex++]);
-		$this->assertEquals(1990, $aStates[$stateIndex++]);
-		$this->assertEquals(2001, $aStates[$stateIndex++]);
-        $this->assertEquals(4030, $aStates[$stateIndex++]);
-        $this->assertEquals(1991, $aStates[$stateIndex++]);
-		$this->assertEquals(1992, $aStates[$stateIndex++]);
-		$this->assertEquals(1990, $aStates[$stateIndex++]);
-		$this->assertEquals(1990, $aStates[$stateIndex++]);
-		$this->assertEquals(1991, $aStates[$stateIndex++]);
-		$this->assertEquals(1992, $aStates[$stateIndex++]);
-		$this->assertEquals(1990, $aStates[$stateIndex++]);
-		$this->assertEquals(1990, $aStates[$stateIndex++]);
-	}
-
-	public function testVoucherRedemptionDeniedByIssuer()
-	{
-	    $this->bIgnoreErrors = true ;//in case of txn decline mpoint will log execption
+    public function testVoucherRedemptionDeniedByIssuer()
+    {
+        $this->bIgnoreErrors = true ;//in case of txn decline mpoint will log execption
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-		$pspID = Constants::iDSB_PSP;
+        $pspID = Constants::iDSB_PSP;
 
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
-		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
-		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
-		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
-		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
-		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
-		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, ". Constants::iVOUCHER_CARD .", $pspID, false)"); //Authorize must be possible even with disabled cardac
-		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
-		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (10099, ". Constants::iVOUCHER_CARD .", $pspID, false)"); //Authorize must be possible even with disabled cardac
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid, expire) VALUES (1, 10099, 1100, 208, 100, 4001, '103-1418291', 11, 9876543210, '', '127.0.0.1', -1, 1,(NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 11, '127.0.0.1', TRUE, 208,1,11,208)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
 
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 11,208,". Constants::iInitializeRequested. ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001,11,208,NULL,". Constants::iINPUT_VALID_STATE. ",'done',100,10099)");
 
-		$xml = $this->getAuthDoc(10099, 1100, 1001001, 100);
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100);
 
-		$this->_httpClient->connect();
+        $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
-		$sReplyBody = $this->_httpClient->getReplyBody();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
 
-		$this->assertEquals(402, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
+        $this->assertEquals(402, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="43">Insufficient balance on voucher</status></root>', $sReplyBody);
 
-		$res =  $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
-		$this->assertTrue(is_resource($res) );
+        $retries = 0;
+        $aStates = array();
+        while ($retries++ <= 5)
+        {
+            $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
+            $this->assertTrue(is_resource($res) );
+            $aStates = array();
+            $trow = null;
+            while ($row = pg_fetch_assoc($res) )
+            {
+                $trow = $row;
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) == 5) { break; }
+            usleep(500000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
 
-		$aStates = array();
-		$trow = null;
-		while ($row = pg_fetch_assoc($res) )
-		{
-			$trow = $row;
-			$aStates[] = $row["stateid"];
-		}
+        $this->assertEquals(null, $trow["extid"]);
+        $this->assertEquals($pspID, $trow["pspid"]);
+        $this->assertEquals(11, $trow["amount"]);
 
-		$this->assertEquals(null, $trow["extid"]);
-		$this->assertEquals($pspID, $trow["pspid"]);
-		$this->assertEquals(11, $trow["amount"]);
+        $this->assertCount(5, $aStates);
+        $this->assertEquals(2010, $aStates[0]);
+        $this->assertEquals(1990, $aStates[1]);
+        $this->assertEquals(1991, $aStates[2]);
+        $this->assertEquals(1992, $aStates[3]);
+        $this->assertEquals(1990, $aStates[4]);
 
-		$this->assertCount(5, $aStates);
-		$this->assertEquals(2010, $aStates[0]);
-		$this->assertEquals(1991, $aStates[1]);
-		$this->assertEquals(1992, $aStates[2]);
-		$this->assertEquals(1990, $aStates[3]);
-		$this->assertEquals(1990, $aStates[4]);
-	}
+    }
 
 }

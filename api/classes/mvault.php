@@ -117,7 +117,11 @@ class MVault extends CPMPSP
         {
             $aCI = $this->aCONN_INFO;
             $aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
-            $obj_ConnInfo = new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $aCI["paths"]["get-card-details"], $aCI["method"], $aCI["mvault-contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
+            if(isset($aURLInfo['port']) === false)
+            {
+                $aURLInfo['port'] = $aURLInfo["scheme"] === 'https' ? 443 : 80;
+            }
+            $obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo['port'], $aCI["timeout"], $aCI["paths"]["get-card-details"], $aCI["method"], $aCI["mvault-contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();

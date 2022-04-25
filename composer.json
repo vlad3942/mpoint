@@ -14,7 +14,7 @@
         { "packagist": false }
     ],
     "require": {
-        "cellpointmobile/php5api": "dev-release/v2.01",
+        "cellpointmobile/php5api": "v2.02.02",
         "google/cloud-pubsub": "^1.27"
     },
 
@@ -29,7 +29,10 @@
     },
     "autoload": {
         "psr-4": {"api\\": "./api"},
-        "classmap": ["api/"]
+        "classmap": ["api/"],
+        "files": [
+            "api/helpers/functions.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

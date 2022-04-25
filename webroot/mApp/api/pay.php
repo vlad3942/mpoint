@@ -16,6 +16,8 @@
  */
 
 // Require Global Include File
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation
@@ -41,115 +43,30 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the PayEx component
 require_once(sCLASS_PATH ."/payex.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
-// Require specific Business logic for the Stripe component
-if (function_exists("json_encode") === true && function_exists("curl_init") === true)
-{
-   require_once(sCLASS_PATH ."/stripe.php");
-}
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Data Cash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the GlobalCollect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-// Require specific Business logic for the Secure Trading component
-require_once(sCLASS_PATH ."/securetrading.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-// Require specific Business logic for the PayFort component
-require_once(sCLASS_PATH ."/payfort.php");
-// Require specific Business logic for the PayPal component
-require_once(sCLASS_PATH ."/paypal.php");
-// Require specific Business logic for the CCAvenue component
-require_once(sCLASS_PATH ."/ccavenue.php");
-// Require specific Business logic for the 2C2P component
-require_once(sCLASS_PATH ."/ccpp.php");
-// Require specific Business logic for the MayBank component
-require_once(sCLASS_PATH ."/maybank.php");
-// Require specific Business logic for the PublicBank component
-require_once(sCLASS_PATH ."/publicbank.php");
-// Require specific Business logic for the AliPay component
-require_once(sCLASS_PATH ."/alipay.php");
-require_once(sCLASS_PATH ."/alipay_chinese.php");
-// Require specific Business logic for the POLi component
-require_once(sCLASS_PATH ."/poli.php");
-// Require specific Business logic for the Qiwi component
-require_once(sCLASS_PATH ."/qiwi.php");
-// Require specific Business logic for the Klarna component
-require_once(sCLASS_PATH ."/klarna.php");
-// Require specific Business logic for the MobilePay Online component
-require_once(sCLASS_PATH ."/mobilepayonline.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the Trustly component
-require_once(sCLASS_PATH ."/trustly.php");
-// Require specific Business logic for the PayTabs component
-require_once(sCLASS_PATH ."/paytabs.php");
-// Require specific Business logic for the 2C2P ALC component
-require_once(sCLASS_PATH ."/ccpp_alc.php");
-// Require specific Business logic for the Citcon component
-require_once(sCLASS_PATH ."/citcon.php");
-// Require specific Business logic for the PPRO component
-require_once(sCLASS_PATH ."/ppro.php");
-
-require_once(sCLASS_PATH ."/bre.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
-// Require specific Business logic for the eGHL FPX component
-require_once(sCLASS_PATH . "/eghl.php");
-// Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
-// Require specific Business logic for the PayU component
-require_once(sCLASS_PATH ."/payu.php");
-// Require specific Business logic for the Cielo component
-require_once(sCLASS_PATH ."/cielo.php");
-// Require specific Business logic for the cellulant component
-require_once(sCLASS_PATH ."/cellulant.php");
-// Require specific Business logic for the Global Payments component
-require_once(sCLASS_PATH ."/global-payments.php");
-// Require specific Business logic for the cybs component
-require_once(sCLASS_PATH ."/cybersource.php");
-// Require specific Business logic for the VeriTrans4G component
-require_once(sCLASS_PATH ."/psp/veritrans4g.php");
-
-// Require specific Business logic for the FirstData component
-require_once(sCLASS_PATH ."/first-data.php");
-// Require specific Business logic for the DragonPay component
-require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
-// Require specific Business logic for the SWISH component
-require_once(sCLASS_PATH ."/apm/swish.php");
 require_once(sCLASS_PATH . '/txn_passbook.php');
 require_once(sCLASS_PATH . '/passbookentry.php');
 require_once(sCLASS_PATH ."/core/card.php");
@@ -158,16 +75,10 @@ require_once sCLASS_PATH . '/routing_service_response.php';
 require_once(sCLASS_PATH . '/payment_processor.php');
 require_once(sCLASS_PATH . '/wallet_processor.php');
 require_once(sCLASS_PATH . '/payment_route.php');
-// Require specific Business logic for the Grab Pay component
-require_once(sCLASS_PATH ."/grabpay.php");
-// Require specific Business logic for the Paymaya component
-require_once(sCLASS_PATH .'/apm/paymaya.php');
 // Require specific Business logic for the CEBU Payment Center component
 require_once(sCLASS_PATH .'/apm/CebuPaymentCenter.php');
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
-// Require specific Business logic for the MPGS
-require_once(sCLASS_PATH ."/MPGS.php");
 
 $aMsgCds = array();
 
@@ -202,6 +113,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
+        $xml = '';
 		for ($i=0, $iMax = count($obj_DOM->pay); $i< $iMax; $i++)
 		{
 			// Set Global Defaults
@@ -218,19 +130,164 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 			}
-			if(count($aMsgCds) === 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === true)
+			if(count($aMsgCds) === 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE, constants::iPAYMENT_PENDING_STATE)) === true)
 			{
 				$aMsgCds[103] = "Authorization already in progress";
 			}
 			if (count($aMsgCds) === 0)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-				
-				
+
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW'])
-					)
-				{
+ 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW']))
+                 {
+                    $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+                    $isVoucherRedeem = FALSE;
+                    $isVoucherRedeemStatus = -1;
+                    $validRequest= true; // for split payment request validation
+                    $isTxnCreated = False; // for split txn is already is created or not
+                    $checkPaymentType = array();
+                    $iSessionType = (int)$obj_ClientConfig->getAdditionalProperties(0, 'sessiontype');
+                    $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
+                    $obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+
+                    // check voucher node is appearing before card node and according to that set preference
+                    $getNodes = $obj_DOM->xpath('//pay/transaction/*');
+                    foreach($getNodes as $voucherPreferred) {
+                        $preference[] = $voucherPreferred->getName();
+                    }
+                    $isVoucherPreferred = "true";
+                    if($preference[0] == 'card'){
+                        $isVoucherPreferred = "false";
+                    }
+                    $paymentTypes= array();
+                    for ($j = 0, $jMax = count($obj_DOM->pay[$i]->transaction->card); $j < $jMax; $j++) {
+                        $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
+                        $iPaymentTypes['PAYMENTTYPE'] = $obj_card->getPaymentType();
+                        //if card comes first then seq is 1 otherwise 2
+                        $iPaymentTypes['SEQUENCE_NO'] = 1;
+                        if($isVoucherPreferred == "true"){
+                            $iPaymentTypes['SEQUENCE_NO'] = 2;
+                        }
+                        $paymentTypes[] = $iPaymentTypes;
+                    }
+                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0){
+                        $iPaymentTypes['PAYMENTTYPE'] = Constants::iPAYMENT_TYPE_VOUCHER;
+                        $iPaymentTypes['SEQUENCE_NO'] = 2;
+                        //if voucher comes first then seq is 1 otherwise 2
+                        if($isVoucherPreferred == "true"){
+                            $iPaymentTypes['SEQUENCE_NO'] = 1;
+                        }
+                        array_push($paymentTypes,$iPaymentTypes);
+                    }
+
+                    //validate the request against active split
+                    if($iSessionType > 1){
+                        // check if txn is retry in same split session
+                        $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
+                        if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
+                            $validateCombinations = \General::getApplicableCombinations($_OBJ_DB,$paymentTypes,(integer) $obj_DOM->pay[$i]["client-id"],$obj_TxnInfo->getSessionId(),true);
+                            if(empty($validateCombinations)){
+                                $validRequest = false;
+                                header("HTTP/1.1 502 Bad Gateway");
+                                $xml .= '<status code="99">The given request Split Combination is not configured for the client</status>';
+                            }
+                        }
+                    }
+                    $checkPaymentType= array_column($paymentTypes, 'PAYMENTTYPE');
+                    if (count($obj_DOM->{'pay'}[$i]->transaction->voucher) > 0 && $validRequest==true) // voucher payment
+				    {
+                         if (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)) {
+                            $processVoucher = General::processVoucher($_OBJ_DB, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $obj_mCard, $aHTTP_CONN_INFO, $isVoucherPreferred, $iSessionType, $is_legacy);
+                            if(isset($processVoucher['code'])) {
+                                if ($processVoucher['code'] == 52) {
+                                    $aMsgCds[52] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
+                                    $isVoucherErrorFound = TRUE;
+                                    $xml .= '<status code="52">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
+                                    $isVoucherRedeem = TRUE;
+                                } else if ($processVoucher['code'] == 53) {
+                                    $aMsgCds[53] = "Amount is more than pending amount: " . $processVoucher['iAmount'];
+                                    $xml .= '<status code="53">Amount is more than pending amount:  ' . $processVoucher['iAmount'] . '</status>';
+                                } else {
+                                    $isVoucherRedeem = TRUE;
+                                }
+                            }
+
+                            $isVoucherErrorFound = !empty($processVoucher) ? $processVoucher['isVoucherErrorFound'] : FALSE;
+                            $isVoucherPreferred = !empty($processVoucher) ? $processVoucher['isVoucherPreferred'] : 'true';
+                            $isVoucherRedeem = !empty($processVoucher) ? $processVoucher['isVoucherRedeem'] : FALSE;
+                            $isTxnCreated = !empty($processVoucher) ? $processVoucher['isTxnCreated'] : FALSE;
+
+                            $cardNode = $obj_DOM->{'pay'}[$i]->transaction->card;
+                            if ($isVoucherErrorFound === FALSE && ((is_object($cardNode) === false || count($cardNode) === 0) || $isVoucherPreferred !== "false")) {
+                                $VoucherRedeemStatus = General::redeemVoucherAuth($_OBJ_DB, $aHTTP_CONN_INFO, $obj_DOM->{'pay'}[$i], $obj_TxnInfo, $obj_mPoint, $_OBJ_TXT, $obj_mCard, $is_legacy);
+                                $isVoucherRedeemStatus = $VoucherRedeemStatus['code'];
+                                $isVoucherRedeem       = $VoucherRedeemStatus['isVoucherRedeem'];
+                                if($isVoucherRedeemStatus === 24){
+                                    $xml .= '<status code="24">The selected payment card is not available</status>';
+                                }else if ($isVoucherRedeemStatus === 100) {
+                                    $xml .= '<status code="100">Payment authorized using Voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 43) {
+                                    header("HTTP/1.1 402 Payment Required");
+                                    $xml .= '<status code="43">Insufficient balance on voucher</status>';
+                                } elseif ($isVoucherRedeemStatus === 45) {
+                                    header("HTTP/1.1 401 Unauthorized");
+                                    $xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
+                                } elseif ($isVoucherRedeemStatus === 48) {
+                                    header("HTTP/1.1 423 Locked");
+                                    $xml .= '<status code="48">Voucher payment temporarily locked</status>';
+                                } else {
+                                    header("HTTP/1.1 502 Bad Gateway");
+                                    $xml .= '<status code="92">Payment rejected by voucher issuer</status>';
+                                }
+                            } else if ($isVoucherErrorFound === FALSE) {
+                                header("HTTP/1.1 412 Precondition Failed");
+                                $isVoucherRedeemStatus = 99;
+                                $xml .= '<status code="99">Voucher payment not configured for client</status>';
+                            }
+                        }
+                    }
+
+                    if ((($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100) || ($isVoucherRedeem === FALSE && $isVoucherRedeemStatus === -1)) && is_object($obj_DOM->{'pay'}[$i]->transaction->card) && count($obj_DOM->{'pay'}[$i]->transaction->card) > 0 && $validRequest==true) {
+                        if ($iSessionType > 1 && $isVoucherRedeem === TRUE && $isVoucherRedeemStatus === 100 && (in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)))
+                        {
+                            $misc = [];
+                            $misc["routeconfigid"] = -1;
+
+                            $txnObj = $obj_mPoint->createTxnFromTxn($obj_TxnInfo, $obj_TxnInfo->getPaymentSession()->getPendingAmount(),TRUE, '', array(),$misc);
+                            if ($txnObj !== NULL) {
+                                $isTxnCreated = true;
+                                $obj_TxnInfo = $txnObj;
+                                $_OBJ_DB->query('COMMIT');
+                                $_OBJ_DB->query('START TRANSACTION');
+                            } else {
+                                $_OBJ_DB->query('ROLLBACK');
+                            }
+                        }
+                        $amount      = (integer)$obj_DOM->pay[$i]->transaction->card->amount;
+                        $iSaleAmount = (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'};
+                        if($iSaleAmount > 0 ) {
+                            $amount =  $iSaleAmount;
+                        }
+                        $obj_TxnInfo->updateSessionType($amount);
+                        if($isTxnCreated == false && $iSessionType > 1 && in_array(Constants::iPAYMENT_TYPE_APM, $checkPaymentType)){
+                            $obj_TxnInfo->setSplitSessionDetails($_OBJ_DB,$obj_TxnInfo->getSessionId(),[$obj_TxnInfo->getID()]);
+                        }
+                        $additionalTxnData = [];
+                        if (isset($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'})) {
+                        $additionalDataParamsCount = count($obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->children());
+                        for ($index = 0; $index < $additionalDataParamsCount; $index++)
+                        {
+                            $additionalTxnData[$index]['name'] = (string)$obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                            $additionalTxnData[$index]['value'] = (string)$obj_DOM->{'pay'}[$i]->transaction->{'additional-data'}->param[$index];
+                            $additionalTxnData[$index]['type'] = (string)'Transaction';
+                        }
+
+                        if(count($additionalTxnData) > 0)
+                        {
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+                        }
+                    }
 
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$aObj_PSPConfigs = array();
@@ -283,54 +340,42 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$walletId = (int) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"];
 						}
-
+                        $cardName = $obj_card->getCardName();
 
                         $obj_CardResultSet = FALSE;
 						$aRoutes = array();
-                        $iPrimaryRoute = 0 ;
                         $pspId = -1;
 
                         if($obj_card->getPaymentType($_OBJ_DB) === Constants::iPAYMENT_TYPE_OFFLINE)
                         {
-                        	$pspId= OfflinePaymentCardPSPMapping[$obj_card->getCardTypeId()];
 							$data['auto-capture'] = 2;
-                        	$obj_TxnInfo->setPSPId($pspId);
 							//For Offline payment method fee is considered as holding charges required to add in actual amount
 							if($obj_TxnInfo->getFee() > 0 && (((integer)$obj_DOM->pay[$i]->transaction->card->amount)+ $obj_TxnInfo->getFee()) === (integer)($obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee()))
 							{
 								$data['converted-amount'] = $obj_TxnInfo->getAmount() + $obj_TxnInfo->getFee();
 							}
 						}
-                        else{
-							$is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'IS_LEGACY');
 
-							if (strtolower($is_legacy) == 'false') {
-								$obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay [$i]["client-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
-								if ($obj_RS instanceof RoutingService) {
-									$objTxnRoute = new PaymentRoute($_OBJ_DB, $obj_TxnInfo->getSessionId());
-									$iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
-								}
-								if ($iPrimaryRoute > 0) {
-									$obj_TxnInfo->setRouteConfigID($iPrimaryRoute);
-									$obj_CardResultSet = $obj_mPoint->getCardConfigurationObject((integer)$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], $iPrimaryRoute);
-								}
-							} else {
-								$obj_CardResultSet = $obj_mPoint->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
-							}
 
-							if ($obj_CardResultSet === FALSE) {
-								$aMsgCds[24] = "The selected payment card is not available";
-							} // Card disabled
+                        if ($is_legacy === false)
+                        {
+                                $obj_CardResultSet = General::getRouteConfiguration($repository,$_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
+                        } else {
+                                $obj_CardResultSet = $obj_mCard->getCardObject(( integer )$obj_DOM->pay [$i]->transaction->card [$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]['type-id'], 1, -1);
+                        }
 
-							$pspId = (int)$obj_CardResultSet['PSPID'];
-						}
+                        if ($obj_CardResultSet === FALSE) {
+                            $aMsgCds[24] = "The selected payment card is not available";
+                        } // Card disabled
+
+                        $pspId = (int)$obj_CardResultSet['PSPID'];
+
 						$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                         $ips = array_map('trim', $ips);
                         $ip = $ips[0];
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $ip);
-                        $iSessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
 
                         if (strlen($obj_ClientConfig->getSalt() ) > 0 && $iSessionType != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
                         {
@@ -344,8 +389,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						$pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 						$iSaleAmount = 0;
-						
-						if($iSessionType > 1 && $obj_CardResultSet["DCCENABLED"] === false )
+
+						if($iSessionType > 1 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true )
 						{
 							if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
 							{
@@ -353,7 +398,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else{
 								$obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
-								$obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+								$obj_TxnInfo->updateSessionType((integer)$obj_DOM->pay[$i]->transaction->card->amount);
 							}
 						}
 						else
@@ -373,7 +418,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                                 else
                                 {
-                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, $iSaleAmount);
+                                    $obj_TxnInfo->updateSessionType($iSaleAmount);
                                 }
                             }
 						    else
@@ -384,7 +429,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                                 elseif($iSessionType > 1)
                                 {
-                                    $obj_TxnInfo->updateSessionType($_OBJ_DB, (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                                    $obj_TxnInfo->updateSessionType((integer)$obj_DOM->pay[$i]->transaction->card->amount);
                                 }
                             }
 
@@ -603,7 +648,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$aHTTP_CONN_INFO["payex"]["username"] = $obj_paymentProcessor->getPSPConfig()->getUsername();
 												$aHTTP_CONN_INFO["payex"]["password"] = $obj_paymentProcessor->getPSPConfig()->getPassword();
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
-												$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(), (string)$obj_CardResultSet['CURRENCY']);
+												$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
+                                                                                $obj_paymentProcessor->getPSPConfig()->getMerchantAccount(),
+                                                                                (string)$obj_CardResultSet['CURRENCY'],
+                                                                                $cardName);
 												foreach ($obj_XML->children() as $obj_XMLElem) {
 													// Hidden Fields
 													if (count($obj_XMLElem->children()) > 0) {
@@ -642,25 +690,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= trim($obj_XMLElem->asXML());
 												}
 												break;
-											case (Constants::iSTRIPE_PSP):
-												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, []);
-												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, FALSE);
-												$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0);
-												$code = $obj_PSP->auth($obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
-												if ($code >= 2000) {
-													if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) {
-														$xml .= '<status code="' . $code . '">Payment Authorized using Apple Pay</status>';
-													} else {
-														$xml .= '<status code="' . $code . '">Payment Authorized</status>';
-													}
-												} // Error: Authorization declined
-												else {
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-													header("HTTP/1.1 502 Bad Gateway");
-													$xml .= '<status code="92">Authorization failed, Stripe returned error: ' . $code . '</status>';
-												}
-												break;
 											case (Constants::iMOBILEPAY_PSP):
 
 												$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
@@ -678,7 +707,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= '<url method="overlay" />';
 												$obj_PSP = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex-express-checkout"]);
 
-												$obj_XML = $obj_PSP->initialize($obj_paymentProcessor->getPSPConfig(), $obj_TxnInfo->getAccountID(), FALSE);
+												$obj_XML = $obj_PSP->initialize($obj_paymentProcessor->getPSPConfig(), $obj_TxnInfo->getAccountID(), FALSE, $cardName);
 
 												foreach ($obj_XML->children() as $obj_Elem) {
 													$xml .= trim($obj_Elem->asXML());
@@ -705,7 +734,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
 												}
 												$authToken = (trim($obj_DOM->{'pay'}[$i]->{'auth-token'}))?(trim($obj_DOM->{'pay'}[$i]->{'auth-token'})):(NULL);
-												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']), $authToken);
+												$obj_XML = $obj_paymentProcessor->initialize($obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress, $obj_ClientInfo, General::xml2bool($obj_DOM->pay[$i]->transaction['store-card']), $authToken, $cardName);
 												if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === TRUE) {
 													$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "");
 												}
@@ -731,6 +760,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $xml .= '<status code="'.Constants::iPAYMENT_INIT_WITH_PSP_STATE.'">Payment Initialize with PSP</status>';
                                         }
 									}
+                                    catch (PaymentProcessorInitializeException $e)
+                                    {
+                                        $xml = '<status code="' . $e->getCode() . '" sub-code="' . $e->getSubcode() . '">' . $e->getMessage() . '</status>';
+                                    }
 									catch (mPointException $e)
 									{
 										header("HTTP/1.1 502 Bad Gateway");
@@ -771,6 +804,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 					}	// Card Loop End
+                    }else if($isVoucherRedeem === FALSE && $validRequest==true)
+                    {
+                        $_OBJ_DB->query("ROLLBACK");
+                        if($isVoucherRedeemStatus === -1) {
+                            header("HTTP/1.1 400 Bad Request");
+                            $xml .= '<status code="400">Invalid Tender</status>';
+                        }
+                    }
 				}
 				else
 				{

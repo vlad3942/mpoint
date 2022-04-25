@@ -79,6 +79,8 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 16, $pspID, true, 1)");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, $pspID, true, 1)");
 
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, true);");
+
         $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 200, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
         $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 16, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -137,7 +139,7 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 16, $pspID, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
 
         # Set Is Legacy Code
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'false', 10099, 'client',2)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, false);");
 
         ## Route Related SQL
         $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10001, 10099, $pspID)");
@@ -215,7 +217,7 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 16, $pspID_2C2P_ALC, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
 
         # Set Is Legacy Code
-        $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('IS_LEGACY', 'false', 10099, 'client',2)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, false);");
 
         # Allow alternate route for client
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type) VALUES ('PAYMENT_RETRY_WITH_ALTERNATE_ROUTE', 'true', true, 10099, 'client')");
@@ -264,6 +266,107 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $this->assertTrue(is_resource($SQL_TxnSessionTbl));
         $res_TxnSessionTbl = pg_fetch_all($SQL_TxnSessionTbl);
         $this->assertEquals(2, count($res_TxnSessionTbl) );
+
+        $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001002 and type = 'Transaction'");
+        $this->assertTrue(is_resource($sql));
+        while ($row = pg_fetch_assoc($sql) )
+        {
+            $this->assertTrue((bool)$row["value"]);
+        }
+
+        // States check
+        $SQL_MessageTbl =  $this->queryDB("select * from log.message_tbl where txnid in (select id from log.transaction_tbl where sessionid = 1) ORDER BY ID ASC");
+        $this->assertTrue(is_resource($SQL_MessageTbl));
+        $aStates = array();
+        while ($row = pg_fetch_assoc($SQL_MessageTbl) )
+        {
+            $aStates[$row["stateid"]] = $row["txnid"];
+        }
+
+        $this->assertEquals(2, count($aStates) );
+        $this->assertArrayHasKey(7010, $aStates );
+    }
+
+    public function testAuthorizeFlowWithoutAlternateRouting()
+    {
+        $pspID_2C2P_ALC = Constants::i2C2P_ALC_PSP;
+        $pspID_FirstData_PSP = Constants::iFirstData_PSP;
+
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID_2C2P_ALC, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 10099, $pspID_FirstData_PSP, '4216310')");
+
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID_2C2P_ALC, '-1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID_FirstData_PSP, '-1')");
+
+        //As per talk with Jona and Simon 2016-07-19 it should not be possible to authorize a disabled card, since the client can ignore flags sent from initialize
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, $pspID_2C2P_ALC, true, 1)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, $pspID_FirstData_PSP, true, 1)");
+
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 200, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 16, $pspID_2C2P_ALC, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+
+        # Set Is Legacy Code
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, false);");
+
+        # Allow alternate route for client
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type) VALUES ('PAYMENT_RETRY_WITH_ALTERNATE_ROUTE', 'true', true, 10099, 'client')");
+
+        # Route Related SQL
+        $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10001, 10099, $pspID_2C2P_ALC)");
+        $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10002, 10099, $pspID_FirstData_PSP)");
+
+        $this->queryDB("INSERT INTO client.routeconfig_tbl( id, routeid, name, capturetype, mid, username, password, enabled) VALUES (17, 10001, '2c2p-alc_Master_VISA', 2, 'CebuPacific', 'CELLPM', 'HC1XBPV0O4WLKZMG', 'true')");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (17)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (17)");
+
+        $this->queryDB("INSERT INTO client.routeconfig_tbl( id, routeid, name, capturetype, mid, username, password, enabled) VALUES (18, 10002, 'Firstdata', 2, 'first-data', 'user', 'password', 'true')");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (18)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (18)");
+
+        # Transaction Related Entry
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 840, 200, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001001, 100, 10099, 1100, 1, 5001, 200, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 840, 1,5000,840)");
+
+        # RQ Document
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 5000, 'profilePass');
+
+        $this->_httpClient->connect();
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        // Check Transaction Against Session
+        $SQL_TxnPaymentRouteTbl =  $this->queryDB("SELECT Pr.* FROM log.paymentroute_tbl Pr WHERE Pr.sessionid = 1");
+        $this->assertTrue(is_resource($SQL_TxnPaymentRouteTbl));
+        $res_TxnPaymentRouteTbl = pg_fetch_all($SQL_TxnPaymentRouteTbl);
+
+        $this->assertEquals(303, $iStatus);
+        $this->assertStringContainsString('<status code="2005">3d verification required</status>', $sReplyBody);
+
+        // Check Route config ID
+        $SQL_TxnTbl =  $this->queryDB("SELECT Txn.* FROM Log.Transaction_Tbl Txn WHERE Txn.id = 1001001");
+        $this->assertTrue(is_resource($SQL_TxnTbl));
+        $res_TxnTbl = pg_fetch_all($SQL_TxnTbl);
+
+        // Assertion for expected Route config ID
+        $this->assertEquals(17, $res_TxnTbl[0]['routeconfigid'],'Route Config Id not matched' );
+
+        // Check Transaction Against Session
+        $SQL_TxnSessionTbl =  $this->queryDB("SELECT Txn.* FROM Log.Transaction_Tbl Txn WHERE Txn.sessionid = 1");
+        $this->assertTrue(is_resource($SQL_TxnSessionTbl));
+        $res_TxnSessionTbl = pg_fetch_all($SQL_TxnSessionTbl);
+        $this->assertEquals(2, count($res_TxnSessionTbl) );
+
+        $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001001 and type = 'Transaction' and name = 'kpi_used'");
+        $this->assertTrue(pg_num_rows($sql) == 0);
 
         // States check
         $SQL_MessageTbl =  $this->queryDB("select * from log.message_tbl where txnid in (select id from log.transaction_tbl where sessionid = 1) ORDER BY ID ASC");

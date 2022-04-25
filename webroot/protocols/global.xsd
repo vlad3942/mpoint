@@ -42,11 +42,11 @@
 	</xs:sequence>
 </xs:group>
 
-<xs:simpleType name="email"> 
-	<xs:restriction base="xs:string"> 
-		<xs:pattern value="(\w+([-+._']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
-	</xs:restriction> 
-</xs:simpleType> 
+<xs:simpleType name="email">
+	<xs:restriction base="xs:string">
+		<xs:pattern value="((_[a-zA-Z0-9]|[a-zA-Z0-9])+(_|([-+._'][a-zA-Z0-9]+)*)){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
+	</xs:restriction>
+</xs:simpleType>
 
 <xs:complexType name="phone">
 	<xs:simpleContent>
@@ -292,6 +292,8 @@
 		<xs:enumeration value="yo" />
 		<xs:enumeration value="za" />
 		<xs:enumeration value="zu" />
+		<xs:enumeration value="gb" />
+		<xs:enumeration value="us" />
 	</xs:restriction>
 </xs:simpleType>
 

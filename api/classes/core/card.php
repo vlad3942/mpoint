@@ -8,8 +8,15 @@
  * Package:
  * File Name:Card.php
  */
+use api\interfaces\XMLSerializable;
 
-class Card implements JsonSerializable
+/**
+ * Class Card
+ *
+ * @package
+ * @xmlName card
+ */
+class Card implements JsonSerializable, XMLSerializable
 {
     private $sCvc = '';
     private $sCardNumber = '';
@@ -39,7 +46,7 @@ class Card implements JsonSerializable
 
     public function __construct($obj_Card = NULL, RDB &$oDB = NULL, array $prefixes = NULL)
     {
-        if ( ($obj_Card instanceof SimpleDOMElement) === true)
+        if ( ($obj_Card instanceof SimpleDOMElement) === true || ($obj_Card instanceof SimpleXMLElement) === true)
         {
             $this->initializePropFromXML($obj_Card);
         }
@@ -364,6 +371,10 @@ class Card implements JsonSerializable
     public function jsonSerialize()
     {
         $response = ['id' => $this->getCardTypeId()];
+        if(empty($this->sCardName) === false)
+        {
+            $response['name'] = $this->sCardName;
+        }
         if(empty($this->sMaskedCardNumber) === false)
         {
             $response['masked_card_number'] = $this->sMaskedCardNumber;
@@ -374,4 +385,27 @@ class Card implements JsonSerializable
         }
         return $response;
     }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
+    {
+        $response = ['id' => $this->getCardTypeId()];
+        if(empty($this->sCardName) === false)
+        {
+            $response['card_name'] = $this->sCardName;
+        }
+        if(empty($this->sMaskedCardNumber) === false)
+        {
+            $response['masked_card_number'] = $this->sMaskedCardNumber;
+        }
+        if(empty($this->sExpiry) === false)
+        {
+            $response['expiry'] = $this->sExpiry;
+        }
+        return $response;
+    }
+
+
 }

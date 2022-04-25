@@ -38,7 +38,7 @@ class CaptureLoggingNegativeCaseTest extends baseAPITest
 		global $aMPOINT_CONN_INFO;
 		
 		$this->_obj_DB = RDB::produceDatabase($this->mPointDBInfo);
-		$this->_obj_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+		$this->_obj_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$this->_aWireCardConnInfo = $aHTTP_CONN_INFO["wire-card"];
 		$this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
 	}
@@ -55,6 +55,8 @@ class CaptureLoggingNegativeCaseTest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, ".$pspID.", '1')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, capture_type) VALUES (10099, 8, $pspID, 3)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, true);");
+
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
 

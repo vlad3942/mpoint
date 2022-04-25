@@ -124,6 +124,7 @@
 							<xs:element name="card" minOccurs="1" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
+										<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="card-number" type="xs:string"	minOccurs="0" maxOccurs="1" />
 										<xs:element name="expiry-month" type="xs:string" minOccurs="0" maxOccurs="1" />
@@ -265,11 +266,27 @@
 		</xs:sequence>
 	</xs:complexType>
 
-
+	<xs:element name="urls">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:anyURI">
+								<xs:attribute name="type-id" use="required" type="xs:positiveInteger"/>
+								<xs:attribute name="id" use="required" type="xs:positiveInteger"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:complexType name="client-config">
 	<xs:all>
 		<xs:element ref="additional-config" minOccurs="0" maxOccurs="1" />
+		<xs:element ref="urls" minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
 	<xs:attribute name="platform" type="xs:string" use="optional" />
@@ -515,6 +532,7 @@
 							<xs:element name="product" minOccurs="1" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
+										<xs:element name="type" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="name" type="name" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="description" type="name" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="image-url" type="url" minOccurs="0" maxOccurs="1"/>
@@ -549,7 +567,7 @@
 		<xs:complexType>
 			<xs:all>
 				<xs:element name="id" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-				<xs:element name="fare-detail" minOccurs="1" maxOccurs="1">
+				<xs:element name="fare-detail" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="fare" type="fare-type-detail" minOccurs="1" maxOccurs="unbounded" />
@@ -569,7 +587,7 @@
 
 	<xs:complexType name="fare-type-detail">
 		<xs:all>
-			<xs:element name="type" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="profile-seq" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 			<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="amount" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />

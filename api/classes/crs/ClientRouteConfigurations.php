@@ -148,8 +148,8 @@ class ClientRouteConfigurations
             $xml .= '<provider_id>' . $valRouteConfig['PROVIDERID'] . '</provider_id>';
             $xml .= '<mid>' . $valRouteConfig['MID'] . '</mid>';
             $xml .= '<route_name>' . $valRouteConfig['ROUTENAME'] . '</route_name>';
-            $xml .= '<username>' . $valRouteConfig['USERNAME'] . '</username>';
-            $xml .= '<password>' . $valRouteConfig['PASSWORD'] . '</password>';
+            $xml .= '<username>' . htmlspecialchars($valRouteConfig['USERNAME'], ENT_NOQUOTES). '</username>';
+            $xml .= '<password>' . htmlspecialchars($valRouteConfig['PASSWORD'], ENT_NOQUOTES). '</password>';
             $xml .= '<capture_type>' . $valRouteConfig['CAPTURETYPE'] . '</capture_type>';
             $xml .= '<enabled>' . General::bool2xml($valRouteConfig['ROUTECONFIGENABLED']) . '</enabled>';
 

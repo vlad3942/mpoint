@@ -126,7 +126,6 @@ GRANT SELECT ON TABLE client.additionalproperty_tbl TO repuser;
 GRANT SELECT ON TABLE client.cardaccess_tbl TO repuser;
 GRANT SELECT ON TABLE client.client_tbl TO repuser;
 GRANT SELECT ON TABLE client.countrycurrency_tbl TO repuser;
-GRANT SELECT ON TABLE client.gatewaytrigger_tbl TO repuser;
 GRANT SELECT ON TABLE client.iinlist_tbl TO repuser;
 GRANT SELECT ON TABLE client.keyword_tbl TO repuser;
 GRANT SELECT ON TABLE client.merchantaccount_tbl TO repuser;
@@ -144,8 +143,16 @@ GRANT SELECT ON TABLE client.routeconfig_tbl TO repuser;
 GRANT SELECT ON TABLE client.routecountry_tbl TO repuser;
 GRANT SELECT ON TABLE client.routecurrency_tbl TO repuser;
 GRANT SELECT ON TABLE client.routefeature_tbl TO repuser;
-GRANT SELECT ON TABLE system.routefeature_tbl TO repuser;"
-
+GRANT SELECT ON TABLE system.routefeature_tbl TO repuser;
+GRANT SELECT ON TABLE system.pspcard_tbl TO repuser;
+GRANT SELECT ON TABLE log.address_tbl TO repuser;
+GRANT SELECT ON TABLE log.order_tbl TO repuser;
+GRANT SELECT ON TABLE log.split_details_tbl TO repuser;
+GRANT SELECT ON client.pm_tbl TO repuser;
+GRANT SELECT ON client.routepm_tbl TO repuser;
+GRANT SELECT ON client.services_tbl TO repuser;
+GRANT SELECT ON client.providerpm_tbl TO repuser;
+GRANT SELECT ON client.fraud_config_tbl TO repuser;"
 
 
 REP_USER_EXISTS=$(echo "SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'repuser');" | psql -t | tr -d '[:space:]')

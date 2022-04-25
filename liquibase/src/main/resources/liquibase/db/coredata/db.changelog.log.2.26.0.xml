@@ -266,4 +266,13 @@
 
     </changeSet>
 
+    <changeSet  author="Kalpesh Parikh"  id="2021-05-18-setup-v2.26-log-1">
+        <dropColumn  catalogName="Log"
+                     columnName="type"
+                     schemaName="Log"
+                     tableName="billing_summary_tbl">
+        </dropColumn>
+    </changeSet>
+
+
 </databaseChangeLog>

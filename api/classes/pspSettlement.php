@@ -42,32 +42,28 @@ class PSPSettlement extends mPointSettlement
                     (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id, status)
                     values ($1, $2, $3, $4, $5, $6, $7) RETURNING id, created';
 
-        $resource = $_OBJ_DB->prepare($sql);
+        $aParam = array(
+            $this->_iRecordNumber,
+            $referenceNumber,
+            $this->_iRecordNumber,
+            $this->_iClientId,
+            $this->_sRecordType,
+            $this->_iPspId,
+            Constants::sSETTLEMENT_REQUEST_WAITING
+        );
 
-        if (is_resource($resource) === true) {
-            $aParam = array(
-                $this->_iRecordNumber,
-                $referenceNumber,
-                $this->_iRecordNumber,
-                $this->_iClientId,
-                $this->_sRecordType,
-                $this->_iPspId,
-                Constants::sSETTLEMENT_REQUEST_WAITING
-            );
-
-            $result = $_OBJ_DB->execute($resource, $aParam);
-
-            if ($result === false) {
-                throw new Exception('Unable to create settlement record', E_USER_ERROR);
-            } else {
-                $RS = $_OBJ_DB->fetchName($result);
-                $this->_iSettlementId = $RS['ID'];
-                $this->_sFileCreatedDate = $RS['CREATED'];
-                $this->_sFileReferenceNumber = $referenceNumber;
-                $this->_iFileSequenceNumber = $this->_iRecordNumber;
-                $this->_iRecordNumber = $this->_iRecordNumber;
-            }
+        $resource = $_OBJ_DB->executeQuery($sql, $aParam);
+        if($resource === false) {
+            throw new Exception('Unable to create settlement record', E_USER_ERROR);
         }
+
+        $result = $_OBJ_DB->fetchName($resource);
+        $this->_iSettlementId = $result['ID'];
+        $this->_sFileCreatedDate = $result['CREATED'];
+        $this->_sFileReferenceNumber = $referenceNumber;
+        $this->_iFileSequenceNumber = $this->_iRecordNumber;
+        $this->_iRecordNumber = $this->_iRecordNumber;
+            
     }
 
     public function _send($_OBJ_DB)
@@ -106,21 +102,23 @@ class PSPSettlement extends mPointSettlement
                         $txnId = $rs['TRANSACTIONID'];
 
                         $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-                        $obj_PSP = Callback::producePSP($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
+                        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $this->_objConnectionInfo);
+                        $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
+
                         if ($recordType === "CAPTURE") {
                             $messageData = $obj_TxnInfo->getMessageData($_OBJ_DB, [Constants::iPAYMENT_CAPTURE_INITIATED_STATE]);
                             $captureAmount = (int)$messageData[0]['data'];
                             if($captureAmount === 0)
                                 $captureAmount=null;
                             $iStatusCode = $obj_PSP->capture($captureAmount);
-                            if ($iStatusCode === 1000 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === false) {
+                            if ($iStatusCode === Constants::iTRANSACTION_CREATED && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === false) {
                                 $totalSuccessfulTxnCount++;
                                 $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                     "amount" => $obj_TxnInfo->getAmount(),
                                     "fee" => $obj_TxnInfo->getFee());
 
                                 $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
-                            } elseif ($iStatusCode === 1100) {
+                            } elseif ($iStatusCode === Constants::i3D_SECURE_ACTIVATED_STATE) {
                                 $totalSuccessfulTxnCount++;
                             }
                         }
@@ -136,16 +134,12 @@ class PSPSettlement extends mPointSettlement
                             SET  status = $1 
                             WHERE id = $2;';
 
-                $resource = $_OBJ_DB->prepare($sql);
-
-                if (is_resource($resource) === true) {
-                    $aParam = array(
-                        $fileStatus,
-                        $fileId
-                    );
-
-                    $result = $_OBJ_DB->execute($resource, $aParam);
-                }
+                $aParam = array(
+                    $fileStatus,
+                    $fileId
+                );
+                $resource = $_OBJ_DB->executeQuery($sql, $aParam);
+            
             }
         } catch (Exception $e) {
             throw new Exception('Failed to updated Confirmation report', E_USER_ERROR);

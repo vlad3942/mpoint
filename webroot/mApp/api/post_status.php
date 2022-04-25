@@ -21,10 +21,57 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
-// Require specific Business logic for the 2c2p alc component
-require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
+// Require specific Business logic for the CPM FRAUD GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_fraud.php");
+// Require specific Business logic for the DIBS component
+require_once(sCLASS_PATH ."/dibs.php");
+// Require general Business logic for the Cellpoint Mobile module
+require_once(sCLASS_PATH ."/cpm.php");
+// Require specific Business logic for the WannaFind component
+require_once(sCLASS_PATH ."/wannafind.php");
+// Require specific Business logic for the NetAxept component
+require_once(sCLASS_PATH ."/netaxept.php");
+// Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
+require_once(sCLASS_PATH ."/cpg.php");
+// Require specific Business logic for the DSB PSP component
+require_once(sCLASS_PATH ."/dsb.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/chubb.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/payment_processor.php");
+// Require specific Business logic for the UATP component
+require_once(sCLASS_PATH . "/uatp.php");
+// Require specific Business logic for the UATP Card Account services
+require_once(sCLASS_PATH . "/uatp_card_account.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
+require_once(sCLASS_PATH ."/wallet_processor.php");
+require_once sCLASS_PATH . '/txn_passbook.php';
+require_once sCLASS_PATH . '/passbookentry.php';
+require_once(sCLASS_PATH ."/core/card.php");
+require_once(sCLASS_PATH ."/validation/cardvalidator.php");
+require_once sCLASS_PATH . '/routing_service.php';
+require_once sCLASS_PATH . '/routing_service_response.php';
+require_once sCLASS_PATH . '/fraud/fraud_response.php';
+require_once sCLASS_PATH . '/fraud/fraudResult.php';
+require_once(sCLASS_PATH . '/payment_route.php');
+require_once(sCLASS_PATH . '/paymentSecureInfo.php');
+require_once(sCLASS_PATH . '/Route.php');
+require_once(sCLASS_PATH ."/voucher/TravelFund.php");
 $aMsgCds = array();
 /*
 $_SERVER['PHP_AUTH_USER'] = "MalindoDemo";
@@ -56,9 +103,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $obj_Elem = $obj_DOM->{'callback'}[$i];
             if (intval($obj_Elem->{'psp-config'}['id']) > 0) {
                 $obj_TxnInfo = TxnInfo::produceInfo($obj_Elem->transaction["id"], $_OBJ_DB);
-                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_Elem->{'psp-config'}['id']));
-                $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+                $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem->{'psp-config'}['id']), $aHTTP_CONN_INFO);
+                $obj_PSP = $obj_PaymentProcessor->getPSPInfo();
+                $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
                 $code = $obj_PSP->postStatus($obj_Elem);
+            } else if (intval($obj_Elem->{'session'}['id']) > 0) {
+
+                $query = "SELECT  id,pspid FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl WHERE sessionid = " . $obj_Elem->{'session'}['id'] ." and pspid>0 Limit 1" ;
+                $RSTxn = $_OBJ_DB->getName ( $query );
+                if(is_array($RSTxn) === true)
+                {
+                    $obj_TxnInfo = TxnInfo::produceInfo( $RSTxn["ID"], $_OBJ_DB);
+                    $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($RSTxn['PSPID']), $aHTTP_CONN_INFO);
+                    $obj_Processor->getPSPInfo()->updateSessionState(-1, $obj_TxnInfo->getExternalID(), $obj_TxnInfo->getAmount(), $obj_TxnInfo->getCardMask(), $obj_TxnInfo->getCardID(), $obj_TxnInfo->getCardExpiry(), "", $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), 0, (int)$obj_Elem->{'status'}['code']);
+
+                }
             }
 		}
 	}

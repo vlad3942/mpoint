@@ -24,12 +24,12 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 $obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB), $aCPM_CONN_INFO);
 
 // Success: Premium SMS accepted by GoMobile or Stored Value Account charged
-if ($_POST['status'] == 200 || $_POST['status'] == 2000)
+if ($_POST['status'] == 200 || $_POST['status'] == Constants::iPAYMENT_ACCEPTED_STATE)
 {
 	$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
 }

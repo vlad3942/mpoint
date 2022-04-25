@@ -23,93 +23,26 @@ require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH ."/dsb.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
 // Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
 require_once(sCLASS_PATH ."/cpg.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the Wirecard component
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-// Require specific Business logic for the DIBS component
-require_once(sCLASS_PATH ."/securetrading.php");
-// Require specific Business logic for the CCAvenue component
-require_once(sCLASS_PATH ."/ccavenue.php");
-// Require specific Business logic for the PayPal component
-require_once(sCLASS_PATH ."/paypal.php");
-// Require specific Business logic for the PayFort component
-require_once(sCLASS_PATH ."/payfort.php");
-// Require specific Business logic for the DataCash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the 2C2P component
-require_once(sCLASS_PATH ."/ccpp.php");
-// Require specific Business logic for the MayBank component
-require_once(sCLASS_PATH ."/maybank.php");
-// Require specific Business logic for the PublicBank component
-require_once(sCLASS_PATH ."/publicbank.php");
-// Require specific Business logic for the AliPay component
-require_once(sCLASS_PATH ."/alipay.php");
-require_once(sCLASS_PATH ."/alipay_chinese.php");
-// Require specific Business logic for the POLi component
-require_once(sCLASS_PATH ."/poli.php");
-// Require specific Business logic for the QIWI component
-require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
-// Require specific Business logic for the Klarna component
-require_once(sCLASS_PATH ."/klarna.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the Trustly component
-require_once(sCLASS_PATH ."/trustly.php");
-// Require specific Business logic for the 2C2P-ALC component
-require_once(sCLASS_PATH ."/ccpp_alc.php");
-// Require specific Business logic for the paytabs component
-require_once(sCLASS_PATH ."/paytabs.php");
-// Require specific Business logic for the citcon component
-require_once(sCLASS_PATH ."/citcon.php");
-// Require specific Business logic for the PPRO component
-require_once(sCLASS_PATH ."/ppro.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
-// Require specific Business logic for the Cielo component
-require_once(sCLASS_PATH ."/cielo.php");
-// Require specific Business logic for the VeriTrans4G component
-require_once(sCLASS_PATH ."/psp/veritrans4g.php");
-// Require specific Business logic for the DragonPay component
-require_once(sCLASS_PATH ."/aggregator/dragonpay.php");
-// Require specific Business logic for the SWISH component
-require_once(sCLASS_PATH ."/apm/swish.php");
-// Require specific Business logic for the cellulant component
-require_once(sCLASS_PATH ."/cellulant.php");
-
-// Require specific Business logic for the FirstData component
-require_once(sCLASS_PATH ."/first-data.php");
-// Require specific Business logic for the CYBS ie. Global Payments component
-require_once(sCLASS_PATH ."/global-payments.php");
-require_once(sCLASS_PATH ."/cybersource.php");
 require_once(sCLASS_PATH . '/paymentSecureInfo.php');
-require_once(sCLASS_PATH .'/apm/paymaya.php');
-
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH . "/worldpay.php");
-
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+
 /**
  * Input XML format
  *
@@ -159,14 +92,14 @@ try
 	$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 	$iStateID = (integer) $obj_XML->{'threed-redirect'}->status["code"];
     $iSubCodeID = (integer) $obj_XML->{'threed-redirect'}->status["sub-code"];
 
-    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, (int)$obj_XML->{'threed-redirect'}->transaction->card["type-id"],$obj_TxnInfo->getPSPID());
-
-    $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+    $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_TxnInfo->getPSPID(), $aHTTP_CONN_INFO);
+    $obj_mPoint = $obj_PaymentProcessor->getPSPInfo();
+    $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
 
     $obj_ClientInfo = ClientInfo::produceInfo($obj_XML->{'threed-redirect'}->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->{'threed-redirect'}->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
 
@@ -176,166 +109,175 @@ try
 
     array_push($aStateId,$iStateID);
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
-    //Log the incoming status code.
-    $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
-    if($iSubCodeID > 0) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iSubCodeID, ''); }
+    if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_3DS_SUCCESS_STATE, Constants::iPAYMENT_3DS_FAILURE_STATE)) === true) {
+        $iStateID = Constants::iPAYMENT_3DS_DUPLICATE_STATE;
+        $xml .= '<status code="' .$iStateID. '">Request already processed</status>';
+    } else {
+        //Log the incoming status code.
+        $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
+        if($iSubCodeID > 0) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iSubCodeID, ''); }
 
-    if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
-    {
-        $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
-        if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
-
-    }
-
-    $aMpiRule = array();
-    $bIsProceedAuth = false;
-
-    if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
-    {
-        $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);
-        foreach ($aRules as $value)
+        if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'})
         {
-            if (strpos($value['key'], 'mpi_rule') !== false)
-            {
-                $aMpiRule[] = $value['value'];
-            }
+            $paymentSecureInfo = PaymentSecureInfo::produceInfo($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'},$obj_PSPConfig->getID(),$obj_TxnInfo->getID());
+            if($paymentSecureInfo !== null) $obj_mPoint->storePaymentSecureInfo($paymentSecureInfo);
+
         }
-    }
-    else if($obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
-    {
-        $aRules = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
-        foreach ($aRules as $value)
+
+        $aMpiRule = array();
+        $bIsProceedAuth = false;
+
+        if($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
         {
-            if (strpos($value['key'], 'mpi_rule') !== false)
+            $aRules = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty);
+            foreach ($aRules as $value)
             {
-                $aMpiRule[] = $value['value'];
-            }
-        }
-    }
-    if(empty($aMpiRule) === false)
-    {
-        $bIsProceedAuth = $obj_mPoint->applyRule($obj_XML,$aMpiRule);
-    }
-
-    if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& $propertyValue === 'mpi' && ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth ===true))
-    {
-
-
-        if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth === true)
-        {
-
-            $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
-
-            $xmlString = "<card id='" . $obj_XML->{'threed-redirect'}->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
-            /* Reset the eua-id to contain txn-id which will be linked as external ref for the txn.
-            This is only applicable for Acq flow with MPI */
-            $obj_TxnInfo->setAccountID($obj_TxnInfo->getID());
-
-            $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
-            //var_dump($obj_Elem);die;
-            $card_obj = simplexml_load_string($obj_Elem);
-            $card_obj = $card_obj->{'payment-data'};
-            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()) );
-            $card_obj->card['type-id'] = $obj_XML->{'threed-redirect'}->transaction->card["type-id"];
-            if (!isset($card_obj->card->{'info-3d-secure'}))
-            {
-                $card_obj->card->addChild('info-3d-secure','');
-            }
-            if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram)
-            {
-                $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
-                $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
-                $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
-                $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
-            }
-
-            if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
-            {
-                $address = $card_obj->card->address;
-                foreach ($obj_XML->{'threed-redirect'}->transaction->card->address->attributes() as $name=>$value)
+                if (strpos($value['key'], 'mpi_rule') !== false)
                 {
-                    $address->addAttribute($name,$value);
+                    $aMpiRule[] = $value['value'];
                 }
-                foreach ($obj_XML->xpath('threed-redirect/transaction/card/address/*') as $item)
+            }
+        }
+        else if($obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,"mpi_rule") !== false)
+        {
+            $aRules = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
+            foreach ($aRules as $value)
+            {
+                if (strpos($value['key'], 'mpi_rule') !== false)
                 {
-                    $node =$address->addChild($item->getName(),$item);
-                    foreach ($item->attributes() as $name=>$value)
+                    $aMpiRule[] = $value['value'];
+                }
+            }
+        }
+        if(empty($aMpiRule) === false)
+        {
+            $bIsProceedAuth = $obj_mPoint->applyRule([$obj_XML],$aMpiRule);
+        }
+
+        if(($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER || $obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_PSP)&& ($propertyValue === 'mpi' || $obj_PSPConfig->isRouteFeatureEnabled(RouteFeatureType::eMPI)) && ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth ===true))
+        {
+
+
+            if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $bIsProceedAuth === true)
+            {
+
+                $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
+
+                $xmlString = "<card id='" . $obj_XML->{'threed-redirect'}->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+                /* Reset the eua-id to contain txn-id which will be linked as external ref for the txn.
+                This is only applicable for Acq flow with MPI */
+                $obj_TxnInfo->setAccountID($obj_TxnInfo->getID());
+
+                $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
+                //var_dump($obj_Elem);die;
+                $card_obj = simplexml_load_string($obj_Elem);
+                $card_obj = $card_obj->{'payment-data'};
+                $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()) );
+                $card_obj->card['type-id'] = $obj_XML->{'threed-redirect'}->transaction->card["type-id"];
+                if (!isset($card_obj->card->{'info-3d-secure'}))
+                {
+                    $card_obj->card->addChild('info-3d-secure','');
+                }
+                if($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram)
+                {
+                    $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
+                    $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
+                    $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+                    $cryptogram->addAttribute('xid', base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']));
+                }
+
+                if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
+                {
+                    $address = $card_obj->card->address;
+                    foreach ($obj_XML->{'threed-redirect'}->transaction->card->address->attributes() as $name=>$value)
                     {
-                        $node->addAttribute($name,$value);
+                        $address->addAttribute($name,$value);
+                    }
+                    foreach ($obj_XML->xpath('threed-redirect/transaction/card/address/*') as $item)
+                    {
+                        $node =$address->addChild($item->getName(),$item);
+                        foreach ($item->attributes() as $name=>$value)
+                        {
+                            $node->addAttribute($name,$value);
+                        }
                     }
                 }
-            }
-            if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
-            {
-                $additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
-                foreach ($obj_XML->xpath('threed-redirect/transaction/card/info-3d-secure/additional-data/param') as $item)
+                if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
                 {
-                    $param = $additionalData->addChild('param',$item);
-                    $param->addAttribute('name',$item['name']);
+                    $additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
+                    foreach ($obj_XML->xpath('threed-redirect/transaction/card/info-3d-secure/additional-data/param') as $item)
+                    {
+                        $param = $additionalData->addChild('param',$item);
+                        $param->addAttribute('name',$item['name']);
+                    }
                 }
-            }
 
-            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                         SET extid=''
                         WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
-            //echo $sql ."\n";
-            $_OBJ_DB->query($sql);
-            $additionalTxnData = [];
-            $additionalTxnData[0]['name'] = "eci";
-            $additionalTxnData[0]['value'] = (string)$card_obj->card->{'info-3d-secure'}->cryptogram["eci"];
-            $additionalTxnData[0]['type'] = 'Transaction';
-            //Store xid in DB
-            $additionalTxnData[1]['name'] = 'xid';
-            $additionalTxnData[1]['value'] = base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']);
-            $additionalTxnData[1]['type'] = 'Transaction';
-            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
+                //echo $sql ."\n";
+                $_OBJ_DB->query($sql);
+                $additionalTxnData = [];
+                $additionalTxnData[0]['name'] = "eci";
+                $additionalTxnData[0]['value'] = (string)$card_obj->card->{'info-3d-secure'}->cryptogram["eci"];
+                $additionalTxnData[0]['type'] = 'Transaction';
+                //Store xid in DB
+                $additionalTxnData[1]['name'] = 'xid';
+                $additionalTxnData[1]['value'] = base64_encode((string)$obj_XML->{'threed-redirect'}->transaction['external-id']);
+                $additionalTxnData[1]['type'] = 'Transaction';
+                $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
 
+                $obj_card = new Card($card_obj->card, $_OBJ_DB);
+                $cardName = $obj_card->getCardName();
+                if (empty($cardName) === false) {
+                    $card_obj->card->card_name = $cardName;
+                }
 
-            $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
-            $code = $response->code;
-            if ($code == "100")
-            {
-                $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
+                $code = $response->code;
+                if ($code == "100")
+                {
+                    $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                }
+                else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                else
+                {
+                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                    header("HTTP/1.1 502 Bad Gateway");
+
+                    $xml .= '<status code="92">Authorization failed, '.$obj_PSPConfig->getName().' returned error: '. $code .'</status>';
+                }
             }
-            else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-            else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
             else
             {
-                $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET extid=''
+                            WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
+                //echo $sql ."\n";
+                $_OBJ_DB->query($sql);
 
-                header("HTTP/1.1 502 Bad Gateway");
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, $sRawXML);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, $sRawXML);
 
-                $xml .= '<status code="92">Authorization failed, '.$obj_PSPConfig->getName().' returned error: '. $code .'</status>';
+                $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",0,null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),0,null,$iSubCodeID);
+
+                $xml .= '<status code="'.$iStateID.'">3D verification status : '.$obj_XML->{'threed-redirect'}->status.'</status>';
             }
         }
         else
         {
-            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                            SET extid=''
-                            WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
-            //echo $sql ."\n";
-            $_OBJ_DB->query($sql);
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, $sRawXML);
+            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, $sRawXML);
 
-            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
-            $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
+            $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",0,null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),0,null,$iSubCodeID);
 
-            $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-
-            $xml .= '<status code="'.$iStateID.'">3D verification status : '.$obj_XML->{'threed-redirect'}->status.'</status>';
+            $status = $obj_XML->{'threed-redirect'}->{'status'};
+            if (strlen($status) >0 == false){ $status .= 'Transaction Declined'; };
+            $xml .= '<status code="2010">'.$status.'</status>';
         }
     }
-    else
-    {
-        $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, '');
-        $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iAUTHENTICATION_DECLINED_SUB_CODE, '');
-
-        $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
-
-        $status = $obj_XML->{'threed-redirect'}->{'status'};
-        	 if (strlen($status) >0 == false){ $status .= 'Transaction Declined'; };
-        	 $xml .= '<status code="2010">'.$status.'</status>';
-    }
-
 }
 catch (TxnInfoException $e)
 {

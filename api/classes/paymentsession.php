@@ -1,4 +1,8 @@
 <?php
+
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Sagar Narayane
@@ -55,6 +59,8 @@ final class PaymentSession
 
     private string $_created;
 
+    private $_aSessionAdditionalData;
+
     protected function __construct()
     {
         $args = func_get_args();
@@ -106,7 +112,7 @@ final class PaymentSession
         if ($expire != null) {
             $this->_expire = $expire;
         } else {
-            $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+            $this->_expire = date("Y-m-d H:i:s.u", time() + (30 * 60));
         }
         $this->_obj_CurrencyConfig = $currencyConfig;
         $currencyConfigId = $this->_obj_CurrencyConfig->getId();
@@ -119,33 +125,30 @@ final class PaymentSession
                 VALUES 
                     ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
 
-            $res = $this->_obj_Db->prepare($sql);
-            if (is_resource($res) === true) {
-                $aParams = array(
-                    $this->_iClientId,
-                    $this->_iAccountId,
-                    $this->_iCurrencyId,
-                    $this->_iCountryId,
-                    '4001',
-                    $orderid,
-                    $amount,
-                    $this->_sMobile,
-                    $this->_sDeviceId,
-                    $this->_sIp,
-                    $sessiontypeid,
-                    $externalId,
-                    $this->_expire
-                );
-
-                $result = $this->_obj_Db->execute($res, $aParams);
-
-                if ($result === false) {
-                    throw new Exception("Fail to create session", E_USER_ERROR);
-                } else {
-                    $RS = $this->_obj_Db->fetchName($result);
-                    $this->_id = $RS["ID"];
-                }
+            $aParams = array(
+                $this->_iClientId,
+                $this->_iAccountId,
+                $this->_iCurrencyId,
+                $this->_iCountryId,
+                '4001',
+                $orderid,
+                $amount,
+                $this->_sMobile,
+                $this->_sDeviceId,
+                $this->_sIp,
+                $sessiontypeid,
+                $externalId,
+                $this->_expire
+            );
+            $res = $this->_obj_Db->executeQuery($sql, $aParams);
+            
+            if ($res === false) {
+                throw new Exception("Fail to create session", E_USER_ERROR);
             }
+
+            $result = $this->_obj_Db->fetchName($res);
+            $this->_id = $result["ID"];
+
         } catch (Exception $e) {
             trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
         }
@@ -174,6 +177,7 @@ final class PaymentSession
             if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
                 $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
             }
+            $this->_aSessionAdditionalData = self::_produceSessionAdditionalData($this->_obj_Db, $this->_id, $this->_created);
             /* $RS["MOBILE"];
              $RS["DEVICEID"];
              $RS["IPADDRESS"];*/
@@ -195,7 +199,7 @@ final class PaymentSession
         return $this->_id;
     }
 
-    public function updateState($stateId = null)
+    public function updateState(ReadOnlyConfigRepository $repository,int $stateId = null)
     {
         if ($stateId == null)
         {
@@ -229,12 +233,32 @@ final class PaymentSession
                 }
             }
 
-            $this->_iStateId = intval($stateId);
-            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
-            $RS1 = $this->_obj_Db->query($sql);
-            if (is_resource($RS1) === true)
-            {
-                return 1;
+            if ($this->isValidStateForLogging($stateId)) {
+                $this->_iStateId = $stateId;
+                $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
+                $RS1 = $this->_obj_Db->query($sql);
+                if (is_resource($RS1) === true)
+                {
+                    if($stateId === Constants::iSESSION_EXPIRED || $stateId === Constants::iSESSION_FAILED || $stateId === Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS)
+                    {
+                        if($this->getSessionType() > 1)
+                        {
+                           $splitPaymentAddOn =  $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT),array(),true);
+
+                            $isManualRefund = !$splitPaymentAddOn->getProperties()["is_rollback"];
+                            global $_OBJ_TXT;
+                            $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
+                            $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Failed', $isManualRefund);
+                        }
+                    }
+                    elseif($stateId === Constants::iSESSION_COMPLETED)
+                    {
+                        global $_OBJ_TXT;
+                        $obj_general = new General($this->_obj_Db, $_OBJ_TXT);
+                        $obj_general->changeSplitSessionStatus($this->getClientConfig()->getID(), $this->getId(), 'Completed');
+                    }
+                    return 1;
+                }
             }
         }
         return 0;
@@ -270,8 +294,12 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.")) s where s.rn =1 and s.stateid != ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE."
-                ";
+                AND txn.id not in (SELECT Sdt.Transaction_Id
+                                    FROM Log.Split_Details_Tbl AS Sdt
+                                             INNER JOIN Log.Split_Session_Tbl Sst ON Sst.Id = Sdt.Split_Session_Id
+                                    WHERE Sessionid = " . $this->_id . "
+                                      AND Sst.Status = 'failed')
+                AND msg.stateid in (".Constants::iPAYMENT_PENDING_STATE.",".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.", ". Constants::iPAYMENT_REJECTED_STATE .")) s where s.rn =1 and s.stateid not in (".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_CANCELLED_STATE.", ". Constants::iPAYMENT_REJECTED_STATE .")";
 
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
@@ -458,6 +486,128 @@ final class PaymentSession
             trigger_error("Session Get Filtered Transaction query {$sql} failed - " . $e->getMessage() , E_USER_WARNING);
         }
         return $aTransaction;
+    }
+
+    private function isValidStateForLogging($sessionState) : bool
+    {
+        $currentState = $this->_iStateId;
+        switch ($sessionState) {
+            case 4020 :
+            case 4021 :
+            case 4030 :
+            case 4010 :
+                if (in_array($currentState, [4030, 4010, 4021, 4020]))
+                    return false;
+                break;
+            case 4031 :
+                if ($currentState != 4001)
+                    return false;
+                break;
+            default :
+                return false;
+        }
+        return true;
+    }
+
+    /*
+     * Returns the Session's Additional data
+     * if param is sent returns value of property
+     *
+     * @param string    key
+     * @return 	string
+     * */
+    public function getSessionAdditionalData($key = "")
+    {
+        try
+        {
+            if (empty($key) === true)
+            {
+                if (is_array($this->_aSessionAdditionalData) && count($this->_aSessionAdditionalData) > 0)
+                {
+                    return $this->_aSessionAdditionalData;
+                }
+                return null;
+            }
+            if (is_array($this->_aSessionAdditionalData) && $this->_aSessionAdditionalData != null && array_key_exists($key, $this->_aSessionAdditionalData) === true)
+            {
+                return $this->_aSessionAdditionalData[$key];
+            }
+        }
+        catch (Exception $e)
+        {
+
+        }
+        return null;
+    }
+
+    /**
+     * Function to insert new records in the Additional Data table that are send as part of the session
+     *
+     * @param 	Array $sessionAdditionalData	Data object with the Additional Data details
+     *
+     */
+    public function setSessionAdditionalDetails(RDB $obj_DB, $sessionAdditionalData, $ExternalID)
+    {
+        $additional_id = "";
+        if( is_array($sessionAdditionalData) === true )
+        {
+            foreach ($sessionAdditionalData as $aAdditionalDataObj)
+            {
+                $name = $aAdditionalDataObj["name"];
+                $value = htmlspecialchars($aAdditionalDataObj["value"], ENT_NOQUOTES);
+                if($name === null || empty($name) === true || $value === null || empty($value) === true)
+                {
+                    return $additional_id;
+                }
+                try {
+                    $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
+								VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
+                    // Error: Unable to insert a new Additional Data record in the Additional Data Table
+                    if (is_resource($res = $obj_DB->query($sql) ) === false)
+                    {
+                        throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
+                    }
+                    else
+                    {
+                        $RS = pg_fetch_assoc($res);
+                        $additional_id = $RS["id"];
+                        $this->_aSessionAdditionalData[$name] = $value;
+                    }
+                } catch (mPointException | Exception $e) {
+                    trigger_error("Unable to insert new record for Additional Data " . $aAdditionalDataObj["name"] . " and value " . $aAdditionalDataObj["value"]);
+                }
+            }
+            return $additional_id;
+        }
+    }
+
+    public static function  _produceSessionAdditionalData($_OBJ_DB, $txnId, $sessionCreatedTimestamp)
+    {
+        $additionalData = [];
+
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Session' and created  >= '" . $sessionCreatedTimestamp  . "'::timestamp  - interval '60 seconds' and externalid=" . $txnId;
+
+        $rsa = $_OBJ_DB->getAllNames ( $sqlA );
+        if (empty($rsa) === false )
+        {
+            foreach ($rsa as $rs)
+            {
+                $additionalData[$rs["NAME"] ] = $rs ["VALUE"];
+            }
+        }
+        return $additionalData;
+    }
+
+    function updateSessionTypeId($amount)
+    {
+        if ($amount < $this->_amount)
+        {
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 2 where id = ".$this->_id . " and sessiontypeid = 1";
+            $this->_obj_Db->query($sql);
+        }else if($amount == $this->_amount){
+            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Session_tbl SET sessiontypeid = 1 where id = ".$this->_id . " and sessiontypeid = 2";
+            $this->_obj_Db->query($sql);
+        }
     }
 
 }

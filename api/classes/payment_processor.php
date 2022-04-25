@@ -16,7 +16,20 @@
  * Exception class for all Payment Processor exceptions
  */
 class PaymentProcessorException extends mPointException {}
+class PaymentProcessorInitializeException extends mPointException
+{
+    private $subCode;
+    function __construct($message = "", $code = 0, Throwable $previous = null, $subCode=0)
+    {
+        parent::__construct($message, $code, $previous);
+        $this->subCode = $subCode;
+    }
 
+    function getSubcode()
+    {
+        return $this->subCode;
+    }
+}
 /* ==================== Payment Processor Exception Classes End ==================== */
 
 
@@ -25,6 +38,7 @@ class PaymentProcessor
     private $_objPSPConfig;
     private $_objPSP;
     private $aConnInfo = array();
+    private $aWalletCardScemes = array();
 
     private function _setConnInfo($aConnInfo, $iPSPID)
     {
@@ -34,27 +48,17 @@ class PaymentProcessor
         }
     }
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$cardId=NULL)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
-        $is_legacy = $oTI->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
-        $sPSPClassName = '';
         $this->_setConnInfo($aConnInfo, $iPSPID);
 
-        $this->_objPSPConfig = General::producePSPConfigObject($oDB, $oTI, $cardId, $iPSPID );
+        $this->_objPSPConfig = General::producePSPConfigObject($oDB, $oTI, $iPSPID );
 
-        if($this->_objPSPConfig !== NULL)
-        {
-            $sPSPClassName = $this->_objPSPConfig->getName();
-        }
-        else if(empty($this->aConnInfo['ClassName']) === FALSE && class_exists($this->aConnInfo['ClassName']))
-        {
-            $sPSPClassName = $this->aConnInfo['ClassName'];
-        }
         try {
             if (empty($this->aConnInfo) === true) {
                 $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
-            } else if (class_exists($sPSPClassName) === true && empty($this->aConnInfo) === false) {
-                $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+            } else if (empty($this->aConnInfo) === false) {
+                $this->_objPSP = new \api\classes\GenericPSP($oDB, $oTxt, $oTI, $this->aConnInfo, $this->_objPSPConfig, null, $iPSPID);
             } else {
                 throw new PaymentProcessorException("Could not construct PSP object for the given PSPID ".$iPSPID );
             }
@@ -73,14 +77,14 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$cardId=NULL)
+    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
-        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo,$cardId);
+        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }
 
-    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL)
+    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL, $cardName='')
     {
-        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), $storeCard, $cardTypeId, $cardToken, $billingAddress, $clientInfo, $authToken);
+        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), $storeCard, $cardTypeId, $cardToken, $billingAddress, $clientInfo, $authToken, $cardName, $this->getWalletCardSchemes());
     }
 
     public function authorize($obj_Elem, $obj_ClientInfo= null)
@@ -152,4 +156,24 @@ class PaymentProcessor
     {
         return $this->_objPSP->notifyClient($iStateId,$vars,$obj_SurePay);
     }
+
+    /**
+     * Save Wallet Card Schemes
+     * @param $aCardSchemes
+     * @return void
+     */
+    public function setWalletCardSchemes(array $aCardSchemes = array())
+    {
+        $this->aWalletCardScemes = $aCardSchemes;
+    }
+
+    /**
+     * Retrieve Wallet Card schemes
+     * @return array
+     */
+    public function getWalletCardSchemes() : array
+    {
+        return $this->aWalletCardScemes;
+    }
+
 }

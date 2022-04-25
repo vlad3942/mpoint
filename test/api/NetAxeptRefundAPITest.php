@@ -35,6 +35,7 @@ class NetAxeptRefundAPITest extends RefundAPITest
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name, username, passwd) VALUES (1, ". self::iCLIENTID .", ". $pspid .", '". $ma ."', '". $un ."', '". $pw ."')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (". self::iACCOUNTID .", ". $pspid .", '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (". self::iCLIENTID .", ". $cardid .", ". $pspid .")");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(". self::iCLIENTID .", true);");
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (". $txnid .", 100, ". self::iCLIENTID .", ". self::iACCOUNTID .", 100, ". $pspid .", '". self::sORDER_NUMBER ."', '". $sCallbackURL. "', ". self::iAMOUNT .", '127.0.0.1', TRUE, 1)");
 	}
 

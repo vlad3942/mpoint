@@ -7,8 +7,36 @@
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="type"></xs:element>
+							<xs:element name="fail-txn-count"></xs:element>
 							<xs:element name="client-config"></xs:element>
+							<xs:element name="auth-token" type="auth-token" minOccurs="0" maxOccurs="1" />
 							<xs:element name="pspConfig"></xs:element>
+							<xs:element name="session">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="amount">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:unsignedInt">
+														<xs:attribute name="alpha2code" type="xs:string" use="required" />
+														<xs:attribute name="alpha3code" type="xs:string" use="required" />
+														<xs:attribute name="code" type="xs:unsignedByte" use="required" />
+														<xs:attribute name="country-id" type="xs:unsignedShort" use="required" />
+														<xs:attribute name="currency" type="xs:string" use="required" />
+														<xs:attribute name="currency-id" type="xs:unsignedByte" use="required" />
+														<xs:attribute name="format" type="xs:string" use="required" />
+														<xs:attribute name="symbol" type="xs:string" use="required" />
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="status" type="xs:unsignedShort" />
+									</xs:sequence>
+									<xs:attribute name="id" type="xs:unsignedShort" use="required" />
+									<xs:attribute name="total-amount" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="type" type="xs:unsignedByte" use="required" />
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="transaction">
 								<xs:complexType>
 									<xs:sequence>
@@ -166,6 +194,7 @@
 										<xs:element type="xs:string" name="expiry" minOccurs="0"/>
 										<xs:element type="xs:string" name="approvalCode" minOccurs="0"/>
 										<xs:element ref="additionalData" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="session_id" minOccurs="0" maxOccurs="1" />
 
 									</xs:sequence>
 								</xs:complexType>
@@ -173,6 +202,7 @@
 							<xs:element name="card">
 								<xs:complexType>
 									<xs:sequence>
+										<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
 										<xs:element name="card-holder-name" type="xs:string" minOccurs="0" />
 										<xs:element name="card-number" type="xs:string" />
 										<xs:element name="expiry-month" type="xs:string" />
@@ -227,6 +257,12 @@
 		<xs:attribute name="sdk-version" type="version" use="optional"/>
 		<xs:attribute name="app-version" type="version" use="optional"/>
 	</xs:complexType>
+
+	<xs:simpleType name="auth-token">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1" />
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:complexType name="mobile">
 		<xs:simpleContent>

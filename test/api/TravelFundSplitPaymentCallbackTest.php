@@ -67,8 +67,11 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, " . $pspID . ", '1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10099, 26, $pspID)");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4030, '900-55150298', 10000, 9876543210, '', '127.0.0.1', -1, 2,(NOW() + interval '1 hour'));");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, true);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4001, '900-55150298', 10000, 9876543210, '', '127.0.0.1', -1, 2,(NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, null, '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
+
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 10000,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 10000,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208," . Constants::iAuthorizeRequested . ",NULL,'done',10099)");
@@ -89,12 +92,18 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        $retries = 0;
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(700000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);
@@ -130,9 +139,11 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, $pspID, '1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10099, ".Constants::iVOUCHER_CARD.", $pspID)");
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, true);");
         
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4030, '900-55150298', 5002, 9876543210, '', '127.0.0.1', -1, 2,(NOW() + interval '1 hour'));");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid,expire) VALUES (1, 10099, 1100, 208, 100, 4001, '900-55150298', 5002, 9876543210, '', '127.0.0.1', -1, 2,(NOW() + interval '1 hour'));");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid,convertedamount) VALUES (1001001, '900-55150298', 100, 10099, 1100, 100, null, '" . $sCallbackURL . "', 5000, '127.0.0.1', TRUE, 1, 1,5000)");
+        $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) VALUES ('IS_LEGACY_CALLBACK_FLOW', 'true', 10099, 'client', 0);");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (100,1001001, 10000,208," . Constants::iInitializeRequested . ",NULL,'done',10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,extref,clientid) VALUES (101,1001001, 10000,208,NULL," . Constants::iINPUT_VALID_STATE . ",'done',100,10099)");
         $this->queryDB("INSERT INTO Log.txnpassbook_Tbl (id,transactionid,amount,currencyid,requestedopt,performedopt,status,clientid) VALUES (102,1001001, 5000,208," . Constants::iAuthorizeRequested . ",NULL,'done',10099)");
@@ -152,12 +163,18 @@ class TravelFundSplitPaymentCallbackTest extends baseAPITest
         $this->assertEquals(202, $iStatus);
         $this->assertEquals("", $sReplyBody);
 
-        $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
-        $this->assertIsResource($res);
-
         $aStates = [];
-        while ($row = pg_fetch_assoc($res)) {
-            $aStates[] = $row["stateid"];
+        $retries = 0;
+        while ($retries++ <= 6)
+        {
+            $aStates = [];
+            $res = $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001  ORDER BY id ASC");
+            $this->assertIsResource($res);
+            while ($row = pg_fetch_assoc($res)) {
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) >= 6) { break; }
+            usleep(700000);// As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
         $this->assertCount(6, $aStates);

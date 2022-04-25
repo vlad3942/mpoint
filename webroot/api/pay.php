@@ -35,9 +35,6 @@ require_once(sCLASS_PATH ."/credit_card.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 

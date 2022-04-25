@@ -112,7 +112,7 @@ while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 	try
 	{
 		$obj_TxnInfo = TxnInfo::produceInfo($txnid, $_OBJ_DB);
-		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+		$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($pspid));
 		$obj_TxnInfo->produceOrderConfig($_OBJ_DB, $aTicketNumbers);
 
@@ -120,7 +120,7 @@ while ($RESULTSET = $_OBJ_DB->fetchName($resultObj))
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $txnStateName, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 
-		if($code === 1000)
+		if($code === Constants::iTRANSACTION_CREATED)
 		{
 			$xml .= '<transaction id="'.$txnid.'"><status code="1000">Callback Success</status></transaction>';
 		}

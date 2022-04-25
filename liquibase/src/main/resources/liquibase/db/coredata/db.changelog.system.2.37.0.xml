@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Rohit Singh" id="2022-03-07-setup-v2.37-system">
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="22"/>
+            <column name="pspid" value="62"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="3"/>
+            <column name="pspid" value="62"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2022-03-01-inf-18-setup-v2.36_1">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="75"/>
+            <column name="name" value="AUB"/>
+            <column name="system_type" value="4"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="32" />
+            <column name="pspid" value="75"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="39" />
+            <column name="pspid" value="75"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="75"/>
+            <column name="name" value="USD" />
+            <column name="currencyid" value="840" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2022-03-14-inf-18-setup-v2.37">
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="system_type" value="7" />
+            <where>id = 75</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Chaitenya Yadav" id="2022-03-22-CMP-6551">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Invalid 3DS Secure values"/>
+            <where>id = 2010112</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Invalid Card type"/>
+            <where>id = 2010113</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Invalid Request version"/>
+            <where>id = 2010114</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Return URL is not set."/>
+            <where>id = 2010115</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Invalid currency code."/>
+            <where>id = 2010116</where>
+        </update>
+
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Invalid Promotion."/>
+            <where>id = 2010117</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Priya Alamwar"
+               id="2022-03-21-setup-v2.37">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="type_tbl">
+            <column name="id" value="7"/>
+            <column name="name" value="Call Center Purchase"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2022-03-11-inf-45-setup-v2.37">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="KES" />
+            <column name="currencyid" value="404" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="NGN" />
+            <column name="currencyid" value="566" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="GHS" />
+            <column name="currencyid" value="936" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="XOF" />
+            <column name="currencyid" value="952" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2022-03-11-inf-45-setup-v2.37">
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="KES" />
+            <column name="currencyid" value="404" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="NGN" />
+            <column name="currencyid" value="566" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="GHS" />
+            <column name="currencyid" value="936" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="58"/>
+            <column name="name" value="XOF" />
+            <column name="currencyid" value="952" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh" id="2022-03-28-CMP-6527">
+        <update catalogName="system"
+                schemaName="system"
+                tableName="card_tbl">
+            <column name="name" value="7" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Ramesh"
+               id="2022-03-28-CMP-6527-1">
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="route_property_tbl">
+            <column name="name" value="'PAYMENT_TIMEOUT_IN_MINT'"/>
+            <column name="pspid" value="58"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh" id="2022-03-28-CMP-6527-2">
+        <update catalogName="system"
+                schemaName="system"
+                tableName="card_tbl">
+            <column name="name" value="CELLULANT" />
+            <column name="paymenttype" value="7" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="Ramesh"
+               id="2022-03-28-CMP-6527-4">
+        <delete  catalogName="system"
+                 schemaName="system"
+                 tableName="route_property_tbl">
+            <where>name = 'PAYMENT_TIMEOUT_IN_MINT' and pspid = 58</where>
+        </delete>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="route_property_tbl">
+            <column name="name" value="PAYMENT_TIMEOUT_IN_MINT"/>
+            <column name="pspid" value="58"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Ramesh"
+               id="2022-04-04-CMP-6527-5">
+        <update catalogName="system" schemaName="system"
+                tableName="card_tbl">
+            <column name="name" value="Mobile Money" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

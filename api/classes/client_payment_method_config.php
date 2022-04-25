@@ -136,17 +136,25 @@ class ClientPaymentMethodConfig extends BasicConfig
 		return $aObj_Configurations;		
 	}
 
-    public static function getConfigurations(RDB $oDB, $clientid)
+    public static function getConfigurations(RDB $oDB, $aWalletCardSchemes = array()) : array
     {
-        $sql = "SELECT C.id, Coalesce(RCON.countryid, -1) AS countryid, R.providerid, C.enabled, RC.capturetype, C.id AS cardid, C.name, C.paymenttype, P.id AS walletid	
-				FROM Client ". sSCHEMA_POSTFIX .".Client_Tbl CL 
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R  ON CL.id = R.clientid	
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON RC.routeid = R.id
-				INNER JOIN Client".sSCHEMA_POSTFIX.".RouteCountry_Tbl RCON ON RC.id = RCON.routeconfigid AND RCON.enabled = '1'						
-				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON R.providerid = PCD.pspid AND PCD.enabled = '1'
-				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON PCD.cardid = C.id AND C.enabled = '1'
-				LEFT OUTER JOIN System.PSP_Tbl P ON  P.id = PCD.pspid AND P.system_type = ".Constants::iPROCESSOR_TYPE_WALLET."
-				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1'";
+        if(empty($aWalletCardSchemes)) {
+            return [];
+        }
+        $aSQL = [];
+
+        foreach ($aWalletCardSchemes as $iWalletId => $aCard) {
+
+            $aSQL[] = "SELECT C.id, -1 AS countryid, -1 providerid, C.enabled, -1 capturetype, C.id AS cardid, C.name, C.paymenttype, -1 AS walletid
+				FROM SYSTEM ". sSCHEMA_POSTFIX .".Card_Tbl C
+				WHERE C.id IN (" . $iWalletId . ")";
+
+            $aSQL[] = "SELECT C.id, -1 AS countryid, -1 providerid, C.enabled, -1 capturetype, C.id AS cardid, C.name, C.paymenttype, $iWalletId AS walletid	
+				FROM SYSTEM ". sSCHEMA_POSTFIX .".Card_Tbl C
+				WHERE C.id IN (" . implode(',', $aCard) . ")";
+        }
+
+        $sql = implode( ' UNION ' , $aSQL);
 
         $aObj_Configurations = array();
         $res = $oDB->query($sql);
@@ -154,7 +162,6 @@ class ClientPaymentMethodConfig extends BasicConfig
         {
             $aObj_Configurations[] = new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], 1, $RS["PROVIDERID"], $RS["ENABLED"], $RS['PAYMENTTYPE'], $RS['CAPTURETYPE'],$RS['WALLETID']);
         }
-
         return $aObj_Configurations;
     }
 

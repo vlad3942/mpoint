@@ -18,17 +18,23 @@ class Combination
      * @var PaymentType[]
      */
     private array $paymentTypes = [];
+    private ?bool $isOneStepAuth= null;
 
     /**
      * Combination constructor.
      *
      * @param PaymentTypes[] $paymentTypes Array of PaymentTypes used
+     * @param null $isOneStepAuth One step authorization
      */
-    public function __construct(array $paymentTypes = NULL)
+    public function __construct(array $paymentTypes = NULL,$isOneStepAuth=NULL)
     {
         if($paymentTypes !== NULL)
         {
             $this->paymentTypes = $paymentTypes;
+        }
+        if($isOneStepAuth !== NULL)
+        {
+            $this->isOneStepAuth = $isOneStepAuth;
         }
     }
 
@@ -42,6 +48,7 @@ class Combination
 
     /**
      * @param PaymentType $paymentTypes
+     * @return void
      */
     public function setPaymentType(PaymentType $paymentTypes): void
     {
@@ -49,6 +56,22 @@ class Combination
         $this->paymentTypes[]=$paymentTypes;
     }
 
+    /**
+     * @return bool|null
+     */
+    public function getIsOneStepAuth(): ?bool
+    {
+        return $this->isOneStepAuth;
+    }
+
+    /**
+     * @param bool isOneStepAuth
+     * @return void
+     */
+    public function setIsOneStepAuth(bool $isOneStepAuth): void
+    {
+        $this->isOneStepAuth = $isOneStepAuth;
+    }
     /**
      * @return string
      */
@@ -60,6 +83,7 @@ class Combination
             foreach ($this->paymentTypes as $paymentType) {
                 $xml .= $paymentType->toXML();
             }
+            $xml .= '<is_one_step_authorization>'.($this->isOneStepAuth ? 'true' : 'false').'</is_one_step_authorization>';
             $xml .= '</combination>';
         }
         return $xml;

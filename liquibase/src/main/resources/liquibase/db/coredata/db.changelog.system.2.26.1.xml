@@ -6,8 +6,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
   objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
-  
-
 <changeSet author="Chaitenya Yadav" id="2021-03-03-Travel-fund">
 
     <insert catalogName="System" schemaName="System" tableName="cardprefix_tbl">
@@ -963,7 +961,6 @@
             <column name="pspid" value="72"/>
             <column name="name" value="JPY"/>
         </insert>
-
 
     </changeSet>
 

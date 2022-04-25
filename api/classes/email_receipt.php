@@ -33,7 +33,7 @@ class EMailReceipt extends EndUserAccount
 	 * @param	TranslateText $oDB 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param	TxnInfo $oTI 		Reference to the Data object with the Transaction Information
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 

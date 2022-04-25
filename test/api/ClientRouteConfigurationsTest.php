@@ -89,7 +89,6 @@ class ClientRouteConfigurationsTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Routeconfig_Tbl (id, routeid, name, capturetype, mid, username, password) VALUES (1, 1, 'Wirecard_VISA', 2, 'TESTMID', 'username', 'password')");
         $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (1)");
         $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (1)");
-        $this->queryDB("INSERT INTO Client.Routefeature_Tbl (id, clientid, routeconfigid, featureid) VALUES (1, 10099, 1,2)");
         $this->queryDB("INSERT INTO Client.Routefeature_Tbl (id, clientid, routeconfigid, featureid) VALUES (2, 10099, 1, 5)");
         $this->queryDB("INSERT INTO Client.AdditionalProperty_Tbl (key, value, externalid, type,scope) VALUES ('PAYPAL_MID_MYR', 'tsto1654', 1, 'merchant',1)");
         $this->queryDB("INSERT INTO client.additionalproperty_tbl (key, value, externalid, type,scope) VALUES ('PAYPAL_USERNAME_MYR', 'test123', 1, 'merchant',1)");
@@ -100,7 +99,7 @@ class ClientRouteConfigurationsTest extends baseAPITest
         {
             $xml = $aObj_ClientRouteConfigurations->toXML();
         }
-        $this->assertStringContainsString('<route_configurations><route_configuration><id>1</id><route_id>1</route_id><provider_id>18</provider_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>2</id><name>Delayed Capture</name></route_feature><route_feature><id>5</id><name>Refund</name></route_feature></route_features><country_ids><country_id>0</country_id></country_ids><currency_ids><currency_id>0</currency_id></currency_ids><additional_data><param><key>PAYPAL_MID_MYR</key><value>tsto1654</value><scope>1</scope></param><param><key>PAYPAL_USERNAME_MYR</key><value>test123</value><scope>1</scope></param></additional_data></route_configuration></route_configurations>', $xml, 'Client Route Configuration Found');
+        $this->assertStringContainsString('<route_configurations><route_configuration><id>1</id><route_id>1</route_id><provider_id>18</provider_id><mid>TESTMID</mid><route_name>Wirecard_VISA</route_name><username>username</username><password>password</password><capture_type>2</capture_type><enabled>true</enabled><route_features><route_feature><id>5</id><name>Refund</name></route_feature></route_features><country_ids><country_id>0</country_id></country_ids><currency_ids><currency_id>0</currency_id></currency_ids><additional_data><param><key>PAYPAL_MID_MYR</key><value>tsto1654</value><scope>1</scope></param><param><key>PAYPAL_USERNAME_MYR</key><value>test123</value><scope>1</scope></param></additional_data></route_configuration></route_configurations>', $xml, 'Client Route Configuration Found');
     }
 
 

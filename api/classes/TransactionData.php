@@ -12,13 +12,15 @@
 namespace api\classes;
 
 use JsonSerializable;
+use api\interfaces\XMLSerializable;
 
 /**
  * Class TransactionData
  *
  * @package api\classes
+ * @xmlName transaction
  */
-class TransactionData implements JsonSerializable
+class TransactionData implements JsonSerializable, XMLSerializable
 {
 
     private int $id;
@@ -30,6 +32,8 @@ class TransactionData implements JsonSerializable
     private int $fee;
 
     private string $hmac;
+
+    private int $product_type;
 
     private string $approval_code;
 
@@ -85,15 +89,35 @@ class TransactionData implements JsonSerializable
     private array $shipping_info;
 
     /**
-     * @var \AdditionalData[]
+     * @var \BillingAddress
      */
-    private array $billing_address;
+    private BillingAddress $billing_address;
 
     private int $service_type_id;
+
+    private int $pos;
+
+    private string $ip_address;
 
     private string $fraud_status_code;
 
     private string $fraud_status_desc;
+
+    private int $route_config_id;
+
+    private FraudStatusTxnData $fraud;
+
+    private int $installment;
+
+    private string $accept_url;
+
+    private string $cancel_url;
+
+    /**
+     * @var OrderData
+     */
+    private OrderData $order_data;
+
 
     /**
      * TransactionData constructor.
@@ -145,6 +169,14 @@ class TransactionData implements JsonSerializable
     public function setHmac(string $hmac)
     {
         $this->hmac = $hmac;
+    }
+
+    /**
+     * @param int $product_type
+     */
+    public function setProductType(int $product_type)
+    {
+        $this->product_type = $product_type;
     }
 
     /**
@@ -252,9 +284,9 @@ class TransactionData implements JsonSerializable
     }
 
     /**
-     * @param \AdditionalData[] $billing_address
+     * @param \BillingAddress $billing_address
      */
-    public function setBillingAddress(array $billing_address)
+    public function setBillingAddress(BillingAddress $billing_address)
     {
         $this->billing_address = $billing_address;
     }
@@ -281,9 +313,25 @@ class TransactionData implements JsonSerializable
      */
     public function setServiceTypeId(int $service_type_id): void
     {
-        $this->service_type_id = $service_type_id;
+        if($service_type_id > 0) {
+            $this->service_type_id = $service_type_id;
+        }
     }
 
+    /**
+     * @param int $pos
+     */
+    public function setPos(int $pos):void
+    {
+        $this->pos = $pos;
+    }
+    /**
+     * @param string $ip_address
+     */
+    public function setIpAddress(string $ip_address):void
+    {
+        $this->ip_address = $ip_address;
+    }
     /**
      * @return string
      */
@@ -315,4 +363,102 @@ class TransactionData implements JsonSerializable
     {
         $this->fraud_status_desc = $fraud_status_desc;
     }
+
+    /**
+     * @param int $route_config_id
+     */
+    public function setRouteConfigId(int $route_config_id): void
+    {
+        $this->route_config_id = $route_config_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSRouteConfigId(): int
+    {
+        return $this->route_config_id;
+    }
+
+    /**
+     * @param FraudStatusTxnData
+     */
+    public function setFraudStatus(FraudStatusTxnData $fraud): void
+    {
+        $this->fraud = $fraud;
+    }
+
+    /**
+     * @return FraudStatusTxnData
+     */
+    public function getFraudStatus(): FraudStatusTxnData
+    {
+        return $this->fraud;
+    }
+
+    /**
+     * @param int
+     */
+    public function setInstallment(int $installment): void
+    {
+        $this->installment = $installment;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInstallment(): int
+    {
+        return $this->installment;
+    }
+
+    /**
+     * @return array
+     */
+    public function xmlSerialize()
+    {
+        $vars = get_object_vars($this);
+        return array_filter($vars, "Callback::EmptyValueComparator");
+    }
+
+    /**
+     * @return string
+     */
+    public function getAcceptUrl(): string
+    {
+        return $this->accept_url;
+    }
+
+    /**
+     * @param string $accept_url
+     */
+    public function setAcceptUrl(string $accept_url): void
+    {
+        $this->accept_url = $accept_url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCancelUrl(): string
+    {
+        return $this->cancel_url;
+    }
+
+    /**
+     * @param string $cancel_url
+     */
+    public function setCancelUrl(string $cancel_url): void
+    {
+        $this->cancel_url = $cancel_url;
+    }
+
+    /**
+     * @param OrderData $orderData
+     */
+    public function setOrderData(OrderData $orderData): void
+    {
+        $this->order_data = $orderData;
+    }
+
 }

@@ -1,5 +1,9 @@
 <?php
 /* ==================== Callback Exception Classes Start ==================== */
+
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Exception class for all Callback exceptions
  */
@@ -49,7 +53,7 @@ abstract class CPMFRAUD
      * @param 	TxnInfo $oTI 			Data object with the Transaction Information
      * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
      */
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, ?array $aConnInfo)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, ?array $aConnInfo)
     {
         $this->_obj_TxnInfo = $oTI;
         $this->_oDB = $oDB;
@@ -63,7 +67,7 @@ abstract class CPMFRAUD
             throw new CPMFraudEXCEPTION("Connection Configuration not found for the given FSP ID ". $iFSPID);
         }
 
-        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iFSPID);
+        $this->_obj_PSPConfig = $oPSPConfig = PSPConfig::produceProviderConfig($oDB,   $iFSPID,$oTI);
         $this->_obj_mPoint = new General($oDB, $oTxt);
     }
 
@@ -101,18 +105,12 @@ abstract class CPMFRAUD
      * @throws CPMFraudEXCEPTION
      * @throws CallbackException
      */
-    public static function produceFSP(RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo, $iFSPID)
+    public static function produceFSP(RDB &$obj_DB, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo, $iFSPID)
     {
-        switch ($iFSPID)
-        {
-             case (Constants::iEZY_PSP):
-                return new EZY($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ezy"]);
-            case (Constants::iCYBER_SOURCE_FSP):
-                return new CyberSourceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cybersource"]);
-            case (Constants::iCEBU_RMFSS_FSP):
-                return new CebuRmfssFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cebu-rmfss"]);
-            default:
-                throw new CallbackException("Unknown Fraud Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
+        if (empty($aConnInfo) === false) {
+            return new \api\classes\GenericFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo,$iFSPID);
+        } else {
+            throw new CallbackException("Could not construct PSP object for the given Fraud PSPID ".$iFSPID );
         }
     }
     /**
@@ -128,35 +126,48 @@ abstract class CPMFRAUD
      * @param 	CreditCard $obj_mCard	CreditCard obj used to fetch routes
      * @param 	integer $cardTypeId	Card Type
      * @param 	integer $iFraudType	Fraud Check Type
+     * @param  null $authToken
      * @return FraudResult
      */
-    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public static function attemptFraudCheckIfRoutePresent($obj_Card,RDB &$obj_DB, ?ClientInfo $clientInfo, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,CreditCard &$obj_mCard,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
-        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
+        $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
+        $subType ='pre_auth';
+        if($iFraudType === Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY) { $subType ='post_auth'; }
+
+        $fraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType));
 
         $aFSPStatus = array();
         $fraudCheckResponse = new FraudResult();
-        while ($RS = $obj_DB->fetchName($iFSPRoutes) )
+        if($obj_TxnInfo->getClientConfig()->getClientServices()->isFraud() === true)
         {
-            if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+            foreach ($fraudAddon->getConfiguration() as $config)
             {
-                $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
-                $iFSPCode = $obj_FSP->initiateFraudCheck($obj_Card,$clientInfo,$iFraudType);
-                $fraudCheckResponse->setFraudCheckAttempted(true);
-                array_push($aFSPStatus, $iFSPCode);
+                if(CPMFRAUD::hasFraudPassed($aFSPStatus) === true || empty($aFSPStatus)  === true )
+                {
+                    $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
+                    $iFSPCode = $obj_FSP->initiateFraudCheck($obj_DB,$obj_Card,$clientInfo,$iFraudType,$authToken);
+                    $fraudCheckResponse->setFraudCheckAttempted(true);
+                    array_push($aFSPStatus, $iFSPCode);
+                }
             }
         }
+
         $fraudCheckResponse->setFraudCheckResult(CPMFRAUD::hasFraudPassed($aFSPStatus));
         return $fraudCheckResponse;
     }
 
-    public static function attemptFraudInitCallback($iStateId,$sStateName,RDB &$obj_DB, TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public static function attemptFraudInitCallback($iStateId,$sStateName,RDB &$obj_DB, api\classes\core\TranslateText &$obj_Txt, TxnInfo &$obj_TxnInfo, array $aConnInfo,$cardTypeId,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
     {
-        $obj_mCard = new CreditCard($obj_DB, $obj_Txt, $obj_TxnInfo);
-        $iFSPRoutes = $obj_mCard->getFraudCheckRoute($cardTypeId, $iFraudType);
-        while ($RS = $obj_DB->fetchName($iFSPRoutes) )
+        $repository = new ReadOnlyConfigRepository($obj_DB,$obj_TxnInfo);
+        $subType ='pre_auth';
+        if($iFraudType === Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY) { $subType ='post_auth'; }
+
+        $fraudAddon = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eFraud,$subType));
+
+        foreach ($fraudAddon->getConfiguration() as $config)
         {
-            $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, (int)$RS['PSPID']);
+            $obj_FSP = CPMFRAUD::produceFSP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo, $config->getProviderId());
             $obj_FSP->initCallback($iStateId,$sStateName,$cardTypeId,$iFraudType);
         }
     }
@@ -178,6 +189,8 @@ abstract class CPMFRAUD
                 case Constants::iPOST_FRAUD_CHECK_REVIEW_STATE:
                 case Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE:
                 case Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE:
+                case Constants::iPOST_FRAUD_CHECK_TECH_ERROR_STATE:
+                case Constants::iPRE_FRAUD_CHECK_TECH_ERROR_STATE:
                  $bFraudPass = true;
                  break;
                 case Constants::iPRE_FRAUD_CHECK_REJECTED_STATE:
@@ -197,9 +210,10 @@ abstract class CPMFRAUD
      * @param	RDB $obj_DB	Reference to the Database Object that holds the active connection to the mPoint Database
      * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
      * @param 	integer $iFraudType	Fraud Check Type
+     * @param null $authToken
      * @return integer $iStatusCode
      */
-    public function initiateFraudCheck($obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY)
+    public function initiateFraudCheck(RDB $obj_DB,$obj_Card, ClientInfo $clientInfo = null,$iFraudType = Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY,$authToken=null)
     {
         if($obj_Card === null)
         {
@@ -225,6 +239,7 @@ abstract class CPMFRAUD
         {
             trigger_error("Failed to update card details", E_USER_ERROR);
         }
+        $this->_obj_TxnInfo = TxnInfo::produceInfo( $this->_obj_TxnInfo->getID(), $this->getDBConn());
 
         $this->getTxnInfo()->produceOrderConfig($this->getDBConn());
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
@@ -233,6 +248,7 @@ abstract class CPMFRAUD
         $b .= '<root>';
         $b .= '<fraudCheck>';
         $b .= '<type>'.$iFraudType.'</type>';
+        $b .= '<fail-txn-count>'.FailedPaymentMethodConfig::getFailedFraudTxnCount($obj_DB, $this->_obj_TxnInfo->getSessionId(), $this->getTxnInfo()->getClientConfig()->getID(),$this->getFSPID()).'</fail-txn-count>';
         $b .= '<client-config>';
         $b .=  '<clientId>'.$this->getTxnInfo()->getClientConfig()->getID().'</clientId>';
         $b .=  '<account>'.$this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID().'</account>';
@@ -247,9 +263,11 @@ abstract class CPMFRAUD
         $b .= '</additionalConfig>';
 
         $b .= '</client-config>';
-
+        if($authToken !== null) {
+            $b .= '<auth-token>' . $authToken . '</auth-token>';
+        }
         $b .= $this->getPSPConfig()->toAttributeLessXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
-
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML();
         $b .= $this->getTxnInfo()->toAttributeLessXML();
 
         $b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
@@ -376,13 +394,14 @@ abstract class CPMFRAUD
 
     protected function _constNewCardAuthorizationRequest($obj_Card)
     {
-
         list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
 
         $expiry_year = substr_replace(date('Y'), $expiry_year, -2);
 
         $b = '<card type-id="'.intval($obj_Card['type-id']).'">';
-
+        if (!empty($obj_Card->card_name)) {
+            $b .= '<name>' . $obj_Card->card_name . '</name>';
+        }
         if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
 
         $b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
@@ -512,8 +531,11 @@ abstract class CPMFRAUD
     {
         $aCI = $this->aCONN_INFO;
         $aURLInfo = parse_url($this->getTxnInfo()->getClientConfig()->getMESBURL() );
-
-        return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getTxnInfo()->getClientConfig()->getUsername(), $this->getTxnInfo()->getClientConfig()->getPassword() );
+        if(isset($aURLInfo['port']) === false)
+        {
+            $aURLInfo['port'] = $aURLInfo["scheme"] === 'https' ? 443 : 80;
+        }
+        return new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getTxnInfo()->getClientConfig()->getUsername(), $this->getTxnInfo()->getClientConfig()->getPassword() );
     }
 
     /**
@@ -529,7 +551,7 @@ abstract class CPMFRAUD
         $h .= "referer: {REFERER}" .HTTPClient::CRLF;
         $h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
         $h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
-        $h .= "user-agent: mPoint-{USER-AGENT}" .HTTPClient::CRLF;
+        $h .= "user-agent: mPoint-MESB Client/1.23" .HTTPClient::CRLF;
         /* ----- Construct HTTP Header End ----- */
 
         return $h;

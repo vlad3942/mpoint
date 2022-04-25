@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+  objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Kalpesh Parikh"
+               id="2021-09-22-setup-v2.29-system-CMP-5974-1">
+        <update catalogName="system" schemaName="system" tableName="country_tbl">
+            <column name="code" value="744" />
+            <where>id = 158</where>
+        </update>
+
+        <update catalogName="system" schemaName="system" tableName="country_tbl">
+            <column name="country_calling_code" value="4779" />
+            <where>id = 158</where>
+        </update>
+
+        <update catalogName="system" schemaName="system" tableName="country_tbl">
+            <column name="country_calling_code" value="211" />
+            <where>id = 359</where>
+        </update>
+
+        <update catalogName="system" schemaName="system" tableName="country_tbl">
+            <column name="country_calling_code" value="47" />
+            <where>id = 416</where>
+        </update>
+
+    </changeSet>
+</databaseChangeLog>

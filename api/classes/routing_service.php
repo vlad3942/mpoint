@@ -1,5 +1,8 @@
 <?php
 
+use api\classes\billingsummary\info\AddonInfo;
+use api\classes\billingsummary\info\FareInfo;
+
 class RoutingService extends General
 {
     /**
@@ -85,6 +88,10 @@ class RoutingService extends General
      * @var FailedPaymentMethodConfig
      */
     private $_iWalletId;
+    /**
+     * Hold payment group code received in request
+     */
+    private $_iPaymentGroupCode;
 
     /**
      * Default Constructor
@@ -94,7 +101,7 @@ class RoutingService extends General
      * @param 	HTTPConnInfo $obj_ConnInfo 	    Reference to the HTTP connection information
      * @param   SimpleDOMElement $obj_InitInfo  Initialize payment request transaction information
      */
-    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL)
+    public function __construct(TxnInfo $obj_TxnInfo, ClientInfo $obj_ClientInfo, &$obj_ConnInfo, $clientId, $countryId, $currencyId = NULL, $amount = NULL, $cardTypeId = NULL, $issuerIdentificationNumber = NULL, $cardName = NULL, $obj_FailedPaymentMethod = NULL, ?int $walletId = NULL,$paymentGroupCode=NULL)
     {
         $this->_obj_TxnInfo = $obj_TxnInfo;
         $this->_obj_ClientInfo = $obj_ClientInfo;
@@ -108,22 +115,26 @@ class RoutingService extends General
         $this->_sCardName = $cardName;
         $this->_obj_FailedPaymentMethods = $obj_FailedPaymentMethod;
         $this->_iWalletId = $walletId;
+        $this->_iPaymentGroupCode = $paymentGroupCode;
     }
 
-    /**
-     * Produces a list of eligible payment methods.
-     *
-     * @return 	SimpleDOMElement $obj_XML   List of payment methods/cards
-     */
-    public function getPaymentMethods()
+    private function getPaymentMethodSearchCriteriaXml()
     {
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
         $body .= '<payment_method_search_criteria>';
         $body .= '<event_id>'.$this->_obj_TxnInfo->getID().'</event_id>';
         $body .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
+        if(empty($this->_iPaymentGroupCode)===false)
+        {
+            $body .= '<payment_group_code>'.$this->_iPaymentGroupCode.'</payment_group_code>';
+        }
         $body .= '<transaction>';
         $body .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
+        $body .= '<order_no>'.$this->_obj_TxnInfo->getOrderID().'</order_no>';
         $body .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
+
+        //Type will hard coded 1 - design - https://confluence.t.cpm.dev/display/CS/Feature+-+Add-on+Product+type+and+Fee
+        $body .= '<fees><fee><value>' . $this->_obj_TxnInfo->getFee() . '</value><type>1</type></fee></fees>';
         $body .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -138,6 +149,11 @@ class RoutingService extends General
         }
         $body .= '<decimal>'.$this->_obj_TxnInfo->getCurrencyConfig()->getDecimals().'</decimal>';
         $body .= '</amount>';
+        if($this->_obj_TxnInfo->getFXServiceTypeID()>0) {
+            $body .= '<foreign_exchange_info>';
+            $body .= '<service_type_id>'.$this->_obj_TxnInfo->getFXServiceTypeID() .'</service_type_id>';
+            $body .= '</foreign_exchange_info>';
+        }
         if(is_array($this->_obj_FailedPaymentMethods) && count($this->_obj_FailedPaymentMethods) > 0 )
         {
             $body .= '<retry_attempts>';
@@ -157,6 +173,17 @@ class RoutingService extends General
         $body .= '<client_id>'.$this->_iClientId.'</client_id>';
         $body .= '</client_info>';
         $body .= '</payment_method_search_criteria>';
+        return $body;
+    }
+
+    /**
+     * Produces a list of eligible payment methods.
+     *
+     * @return 	SimpleDOMElement $obj_XML   List of payment methods/cards
+     */
+    public function getPaymentMethods()
+    {
+        $body = $this->getPaymentMethodSearchCriteriaXml();
         $obj_XML = '';
         try
         {
@@ -189,7 +216,10 @@ class RoutingService extends General
         $b .= '<account_id>'.$this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID().'</account_id>';
         $b .= '<transaction>';
         $b .= '<id>'.$this->_obj_TxnInfo->getID().'</id>';
+        $b .= '<type_id>'.$this->_obj_TxnInfo->getTypeID().'</type_id>';
         $b .= '<product_type>'.$this->_obj_TxnInfo->getProductType().'</product_type>';
+        //Type will hard coded 1 - design - https://confluence.t.cpm.dev/display/CS/Feature+-+Add-on+Product+type+and+Fee
+        $b .= '<fees><fee><value>' . $this->_obj_TxnInfo->getFee() . '</value><type>1</type></fee></fees>';
         $b .= '<amount>';
         if(empty($this->_iAmount)===false)
         {
@@ -275,6 +305,15 @@ class RoutingService extends General
         {
             $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
             $aRoutes = $aObj_Route->routes->route;
+
+            if(empty($aObj_Route->kpi_used) === false && $aObj_Route->kpi_used === true)
+            {
+                $additionalTxnData[0]['name'] = 'kpi_used';
+                $additionalTxnData[0]['value'] = 'true';
+                $additionalTxnData[0]['type'] = 'Transaction';
+                $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
+            }
+
         }
         $firstPSP = -1;
         if (count ( $aRoutes ) > 0) {
@@ -303,7 +342,7 @@ class RoutingService extends General
         return $firstPSP;
     }
 
-    private function toAttributeLessOrderDataXML()
+    private function toAttributeLessOrderDataXML() : string
     {
         $objOrderConfig = $this->_obj_TxnInfo->getOrderConfigs();
         $xml = '';
@@ -348,6 +387,49 @@ class RoutingService extends General
                             }
                         }
                         $xml .= '</flight_details>';
+
+                        if (count($obj_OrderInfo->getBillingSummaryFareConfigs()) > 0 || count($obj_OrderInfo->getBillingSummaryAddonConfigs()) > 0) {
+                            $xml .= '<billing_summary>';
+                            if (count($obj_OrderInfo->getBillingSummaryFareConfigs()) > 0) {
+                                $xml .= '<fare_detail>';
+                                foreach ($obj_OrderInfo->getBillingSummaryFareConfigs() as $billSummaryFare_Obj) {
+                                    if (($billSummaryFare_Obj instanceof FareInfo) === TRUE) {
+                                        $xml .= '<fare>';
+                                        $xml .= '<profile_seq>' . $billSummaryFare_Obj->getProfileSeqence() . '</profile_seq>';
+                                        $xml .= '<description>' . $billSummaryFare_Obj->getDescription() . '</description>';
+                                        $xml .= '<currency>' . $billSummaryFare_Obj->getCurrency() . '</currency>';
+                                        $xml .= '<amount>' . $billSummaryFare_Obj->getAmount() . '</amount>';
+                                        $xml .= '<product_code>' . $billSummaryFare_Obj->getProductCode() . '</product_code>';
+                                        $xml .= '<product_category>' . $billSummaryFare_Obj->getProductCategory() . '</product_category>';
+                                        $xml .= '<product_item>' . $billSummaryFare_Obj->getProductItem() . '</product_item>';
+                                        $xml .= '</fare>';
+                                    }
+                                }
+                                $xml .= '</fare_detail>';
+                            }
+
+                            if (count($obj_OrderInfo->getBillingSummaryAddonConfigs()) > 0) {
+                                $xml .= '<add_ons>';
+                                foreach ($obj_OrderInfo->getBillingSummaryAddonConfigs() as $billSummaryAddon_Obj) {
+                                    if (($billSummaryAddon_Obj instanceof AddonInfo) === TRUE) {
+                                        $xml .= '<add_on>';
+                                        $xml .= '<profile_seq>' . $billSummaryAddon_Obj->getProfileSeqence() . '</profile_seq>';
+                                        $xml .= '<trip_tag>' . $billSummaryAddon_Obj->getTripTag() . '</trip_tag>';
+                                        $xml .= '<trip_seq>' . $billSummaryAddon_Obj->getTripSeq() . '</trip_seq>';
+                                        $xml .= '<description>' . $billSummaryAddon_Obj->getDescription() . '</description>';
+                                        $xml .= '<currency>' . $billSummaryAddon_Obj->getCurrency() . '</currency>';
+                                        $xml .= '<amount>' . $billSummaryAddon_Obj->getAmount() . '</amount>';
+                                        $xml .= '<product_code>' . $billSummaryAddon_Obj->getProductCode() . '</product_code>';
+                                        $xml .= '<product_category>' . $billSummaryAddon_Obj->getProductCategory() . '</product_category>';
+                                        $xml .= '<product_item>' . $billSummaryAddon_Obj->getProductItem() . '</product_item>';
+                                        $xml .= '</add_on>';
+                                    }
+                                }
+                                $xml .= '</add_ons>';
+                            }
+
+                            $xml .= '</billing_summary>';
+                        }
                         $xml .= '</airline_data>';
                     }
                 }

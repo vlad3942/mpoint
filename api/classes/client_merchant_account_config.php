@@ -60,36 +60,26 @@ class ClientMerchantAccountConfig extends BasicConfig
 
 		return $xml;
 	}
-	
-	public static function produceConfig(RDB $oDB, $id)
-	{
-		$sql = "SELECT MA.id, MA.name, MA.username, MA.passwd, MA.pspid, MA.stored_card	
-				FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA  				
-				WHERE MA.id = ". intval($id) ." AND MA.enabled = '1'";
-		//echo $sql ."\n";				
-		$RS = $oDB->getName($sql);		
-		if(is_array($RS) === true && count($RS) > 0)
-		{		
-			return new ClientMerchantAccountConfig($RS["ID"], $RS["NAME"], $RS["USERNAME"], $RS["PASSWD"], $RS["PSPID"], $RS['STORED_CARD']);
-		}
-		else { return null; }
-	}
-	
+
 	public static function produceConfigurations(RDB $oDB, $id)
 	{			
-		$sql = "SELECT MA.id	
+		$sql = "SELECT MA.id, MA.name, MA.username, MA.passwd, MA.pspid, MA.stored_card		
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
 				INNER JOIN Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA ON CL.id = MA.clientid 				
 				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
-		//echo $sql ."\n";
-		$aObj_Configurations = array();
-		$res = $oDB->query($sql);
-		while ($RS = $oDB->fetchName($res) )
-		{
-			$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]);
-		}
-		
-		return $aObj_Configurations;		
+
+        $aRS = $oDB->getAllNames($sql);
+
+        $aConfigurations = array();
+
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $RS)
+            {
+                $aConfigurations[] = new ClientMerchantAccountConfig($RS["ID"], $RS["NAME"], $RS["USERNAME"], $RS["PASSWD"], $RS["PSPID"], $RS['STORED_CARD']);
+            }
+        }
+		return $aConfigurations;
 	}
 
     public static function getConfigurations(RDB $oDB, $id)
@@ -99,14 +89,17 @@ class ClientMerchantAccountConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Route_Tbl R  ON CL.id = R.clientid	
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Routeconfig_Tbl RC ON RC.routeid = R.id		
 				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
-        //echo $sql ."\n";
-        $aObj_Configurations = array();
-        $res = $oDB->query($sql);
-        while ($RS = $oDB->fetchName($res) )
+
+        $aRS = $oDB->getAllNames($sql);
+        $aConfigurations = array();
+        if (is_array($aRS) === true && count($aRS) > 0)
         {
-            $aObj_Configurations[] = new ClientMerchantAccountConfig($RS["ID"], $RS["MID"], $RS["USERNAME"], $RS["PASSWORD"], $RS["PROVIDERID"], false);
+            foreach ($aRS as $RS)
+            {
+                $aConfigurations[] = new ClientMerchantAccountConfig($RS["ID"], $RS["MID"], $RS["USERNAME"], $RS["PASSWORD"], $RS["PROVIDERID"], false);
+            }
         }
-        return $aObj_Configurations;
+        return $aConfigurations;
     }
 
 }

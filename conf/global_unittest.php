@@ -66,6 +66,8 @@ $aHTTP_CONN_INFO["dsb"]["host"] = "mpoint.local.cellpointmobile.com";
 $aHTTP_CONN_INFO["dsb"]["port"] = 80;
 $aHTTP_CONN_INFO["dsb"]["paths"]["redeem"] = "/_test/simulators/dsb/redeem.php";
 $aHTTP_CONN_INFO["dsb"]["paths"]["callback"] = "/callback/general.php";
+$aHTTP_CONN_INFO["dsb"]["paths"]["cancel"] = "/_test/simulators/mobilepay/cancel.php";
+
 
 /**
  * Connection info for connecting to Amex
@@ -103,100 +105,94 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["pay"] = "/_test/simulators/wire-card/pay
 $aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/_test/simulators/wire-card/capture.php";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/_test/simulators/mobilepay/cancel.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/_test/simulators/mobilepay/refund.php";
+unset($aHTTP_CONN_INFO["wire-card"]["paths"]["status"]);
 
 /**
  * Connection info for connecting to 2C2P ALC
  */
-$aHTTP_CONN_INFO["2c2p-alc"]["protocol"]    = 'http';
-$aHTTP_CONN_INFO["2c2p-alc"]["host"]        = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["2c2p-alc"]["port"]        = 80;
-$aHTTP_CONN_INFO["2c2p-alc"]["timeout"]     = 120;
-$aHTTP_CONN_INFO["2c2p-alc"]["path"]        = ""; // Set by calling class
-$aHTTP_CONN_INFO["2c2p-alc"]["method"]      = 'POST';
-$aHTTP_CONN_INFO["2c2p-alc"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["initialize"] = "/_test/simulators/2c2p-alc/pay.php";
-$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["auth"] = "/_test/simulators/2c2p-alc/auth.php";
-$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["capture"] = "/_test/simulators/2c2p-alc/capture.php";
+$aHTTP_CONN_INFO[40]["timeout"]     = 120;
+$aHTTP_CONN_INFO[40]["path"]        = ""; // Set by calling class
+$aHTTP_CONN_INFO[40]["method"]      = 'POST';
+$aHTTP_CONN_INFO[40]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[40]["paths"]["initialize"] = "/_test/simulators/2c2p-alc/pay.php";
+$aHTTP_CONN_INFO[40]["paths"]["auth"] = "/_test/simulators/2c2p-alc/auth.php";
+$aHTTP_CONN_INFO[40]["paths"]["capture"] = "/_test/simulators/2c2p-alc/capture.php";
 
 /**
  * Connection info for connecting to First data
  */
-$aHTTP_CONN_INFO["first-data"]["protocol"]    = 'http';
-$aHTTP_CONN_INFO["first-data"]["host"]        = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["first-data"]["port"]        = 80;
-$aHTTP_CONN_INFO["first-data"]["timeout"]     = 120;
-$aHTTP_CONN_INFO["first-data"]["path"]        = ""; // Set by calling class
-$aHTTP_CONN_INFO["first-data"]["method"]      = 'POST';
-$aHTTP_CONN_INFO["first-data"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["first-data"]["paths"]["initialize"] = "/_test/simulators/first-data/pay.php";
-$aHTTP_CONN_INFO["first-data"]["paths"]["auth"] = "/_test/simulators/first-data/auth.php";
+$aHTTP_CONN_INFO[62]["timeout"]     = 120;
+$aHTTP_CONN_INFO[62]["path"]        = ""; // Set by calling class
+$aHTTP_CONN_INFO[62]["method"]      = 'POST';
+$aHTTP_CONN_INFO[62]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[62]["paths"]["initialize"] = "/_test/simulators/first-data/pay.php";
+$aHTTP_CONN_INFO[62]["paths"]["auth"] = "/_test/simulators/first-data/auth.php";
 
 /**
  * Connection info for connecting to DataCash
  */
-$aHTTP_CONN_INFO["data-cash"]["protocol"] = "http";
-$aHTTP_CONN_INFO["data-cash"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["data-cash"]["port"] = 80;
-$aHTTP_CONN_INFO["data-cash"]["timeout"] = 120;
-$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["data-cash"]["paths"]["auth"] = "/_test/simulators/datacash/auth.php";
-$aHTTP_CONN_INFO["data-cash"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
-$aHTTP_CONN_INFO["data-cash"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
-$aHTTP_CONN_INFO["data-cash"]["path"] = $aHTTP_CONN_INFO["data-cash"]["paths"]["pay"];
+$aHTTP_CONN_INFO[17]["timeout"] = 120;
+$aHTTP_CONN_INFO[17]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[17]["paths"]["auth"] = "/_test/simulators/datacash/auth.php";
+$aHTTP_CONN_INFO[17]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO[17]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO[17]["path"] = $aHTTP_CONN_INFO[17]["paths"]["pay"];
 
 
 /**
  * Connection info for connecting to VisaCheckout
  */
-$aHTTP_CONN_INFO["visa-checkout"]["protocol"] = "http";
-$aHTTP_CONN_INFO["visa-checkout"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["visa-checkout"]["port"] = 80;
-$aHTTP_CONN_INFO["visa-checkout"]["timeout"] = 120;
-$aHTTP_CONN_INFO["visa-checkout"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["visa-checkout"]["paths"]["get-payment-data"] = "/_test/simulators/visacheckout/get-payment-data.php";
-$aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"] = "/_test/simulators/visacheckout/pay.php";
-$aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/_test/simulators/visacheckout/pay.php";
-$aHTTP_CONN_INFO["visa-checkout"]["path"] = $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"];
+$aHTTP_CONN_INFO[13]["timeout"] = 120;
+$aHTTP_CONN_INFO[13]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[13]["paths"]["get-payment-data"] = "/_test/simulators/visacheckout/get-payment-data.php";
+$aHTTP_CONN_INFO[13]["paths"]["pay"] = "/_test/simulators/visacheckout/pay.php";
+$aHTTP_CONN_INFO[13]["paths"]["initialize"] = "/_test/simulators/visacheckout/pay.php";
+$aHTTP_CONN_INFO[13]["path"] = $aHTTP_CONN_INFO[13]["paths"]["pay"];
 
 /**
  * Connection info for connecting to ApplePay
  */
-$aHTTP_CONN_INFO["apple-pay"]["protocol"] = "http";
-$aHTTP_CONN_INFO["apple-pay"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["apple-pay"]["port"] = 80;
-$aHTTP_CONN_INFO["apple-pay"]["timeout"] = 120;
-$aHTTP_CONN_INFO["apple-pay"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["apple-pay"]["paths"]["get-payment-data"] = "/_test/simulators/applepay/get-payment-data.php";
-$aHTTP_CONN_INFO["apple-pay"]["paths"]["pay"] = "/_test/simulators/applepay/pay.php";
-$aHTTP_CONN_INFO["apple-pay"]["paths"]["initialize"] = "/_test/simulators/applepay/pay.php";
-$aHTTP_CONN_INFO["apple-pay"]["path"] = $aHTTP_CONN_INFO["apple-pay"]["paths"]["pay"];
+$aHTTP_CONN_INFO[14]["timeout"] = 120;
+$aHTTP_CONN_INFO[14]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[14]["paths"]["get-payment-data"] = "/_test/simulators/applepay/get-payment-data.php";
+$aHTTP_CONN_INFO[14]["paths"]["pay"] = "/_test/simulators/applepay/pay.php";
+$aHTTP_CONN_INFO[14]["paths"]["initialize"] = "/_test/simulators/applepay/pay.php";
+$aHTTP_CONN_INFO[14]["path"] = $aHTTP_CONN_INFO[14]["paths"]["pay"];
 
 /**
- * Connection info for connecting to DataCash
+ * Connection info for connecting to Alipay
  */
-$aHTTP_CONN_INFO["alipay"]["protocol"] = "http";
-$aHTTP_CONN_INFO["alipay"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["alipay"]["port"] = 80;
-$aHTTP_CONN_INFO["alipay"]["timeout"] = 120;
-$aHTTP_CONN_INFO["alipay"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["alipay"]["paths"]["auth"] = "/_test/simulators/alipay/auth.php";
-$aHTTP_CONN_INFO["alipay"]["paths"]["pay"] = "/_test/simulators/alipay/pay.php";
-$aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/_test/simulators/alipay/pay.php";
-$aHTTP_CONN_INFO["alipay"]["path"] = $aHTTP_CONN_INFO["alipay"]["paths"]["pay"];
+$aHTTP_CONN_INFO[30]["timeout"] = 120;
+$aHTTP_CONN_INFO[30]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[30]["paths"]["auth"] = "/_test/simulators/alipay/auth.php";
+$aHTTP_CONN_INFO[30]["paths"]["pay"] = "/_test/simulators/alipay/pay.php";
+$aHTTP_CONN_INFO[30]["paths"]["initialize"] = "/_test/simulators/alipay/pay.php";
+$aHTTP_CONN_INFO[30]["path"] = $aHTTP_CONN_INFO[30]["paths"]["pay"];
 
 /**
  * Connection info for connecting to worldpay
  */
-$aHTTP_CONN_INFO["worldpay"]["protocol"] = "http";
-$aHTTP_CONN_INFO["worldpay"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["worldpay"]["port"] = 80;
-$aHTTP_CONN_INFO["worldpay"]["timeout"] = 120;
-$aHTTP_CONN_INFO["worldpay"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
-$aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
-$aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
-$aHTTP_CONN_INFO["worldpay"]["paths"]["status"] = "/_test/simulators/status.php";
+$aHTTP_CONN_INFO[4]["timeout"] = 120;
+$aHTTP_CONN_INFO[4]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[4]["method"] = "POST";
+$aHTTP_CONN_INFO[4]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[4]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
+$aHTTP_CONN_INFO[4]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
+$aHTTP_CONN_INFO[4]["paths"]["status"] = "/_test/simulators/status.php";
+$aHTTP_CONN_INFO[4]["paths"]["authenticate"] = "/_test/simulators/modirum/authenticate.php";
+
+
+/**
+ * Connection info for connecting to Modirum MPI
+ */
+$aHTTP_CONN_INFO["modirummpi"]["timeout"] = 120;
+$aHTTP_CONN_INFO["modirummpi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["modirummpi"]["method"] = "POST";
+$aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/_test/simulators/modirum/modirum_authenticate.php";
+
+
 /**
  * Connection info for connecting to UATP
  */
@@ -211,14 +207,11 @@ $aHTTP_CONN_INFO["uatp"]["paths"]["process-settlement"] = "/_test/simulators/uat
 /**
  * Connection info for connecting to EZY-fraud check
  */
-$aHTTP_CONN_INFO["ezy"]["protocol"] = "http";
-$aHTTP_CONN_INFO["ezy"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["ezy"]["port"] = 80;
-$aHTTP_CONN_INFO["ezy"]["timeout"] = 120;
-$aHTTP_CONN_INFO["ezy"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["ezy"]["method"] = "POST";
-$aHTTP_CONN_INFO["ezy"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["ezy"]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
+$aHTTP_CONN_INFO[60]["timeout"] = 120;
+$aHTTP_CONN_INFO[60]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[60]["method"] = "POST";
+$aHTTP_CONN_INFO[60]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[60]["paths"]["fraud-check"] = "/_test/simulators/check-fraud-status.php";
 
 /**
  * Connection info for connecting to routing service
@@ -233,7 +226,7 @@ $aHTTP_CONN_INFO["routing-service"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-payment-methods"] = "/_test/simulators/routingservice/get-payment-methods.php";
 $aHTTP_CONN_INFO["routing-service"]["paths"]["get-routes"] = "/_test/simulators/routingservice/get-routes.php";
 
-unset($aHTTP_CONN_INFO["eghl"]["paths"]["get-payment-methods"]);
+unset($aHTTP_CONN_INFO[51]["paths"]["get-payment-methods"]);
 
 
 /*
@@ -290,29 +283,64 @@ $aHTTP_CONN_INFO["travel-fund"]["paths"]["redeem"] = "/_test/simulators/travel-f
 /**
  * Connection info for connecting to SafetyPay
  */
-$aHTTP_CONN_INFO["safetypay"]["protocol"] = "http";
-$aHTTP_CONN_INFO["safetypay"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["safetypay"]["port"] = 80;
-$aHTTP_CONN_INFO["safetypay"]["timeout"] = 120;
-$aHTTP_CONN_INFO["safetypay"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["safetypay"]["paths"]["pay"] = "/_test/simulators/safetypay/pay.php";
-$aHTTP_CONN_INFO["safetypay"]["paths"]["initialize"] = "/_test/simulators/safetypay/pay.php";
-$aHTTP_CONN_INFO["safetypay"]["paths"]["get-payment-methods"] = "/_test/simulators/safetypay/get-payment-methods.php";
-$aHTTP_CONN_INFO["safetypay"]["path"] = $aHTTP_CONN_INFO["safetypay"]["paths"]["pay"];
+$aHTTP_CONN_INFO[70]["timeout"] = 120;
+$aHTTP_CONN_INFO[70]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[70]["paths"]["pay"] = "/_test/simulators/safetypay/pay.php";
+$aHTTP_CONN_INFO[70]["paths"]["initialize"] = "/_test/simulators/safetypay/pay.php";
+$aHTTP_CONN_INFO[70]["paths"]["get-payment-methods"] = "/_test/simulators/safetypay/get-payment-methods.php";
+$aHTTP_CONN_INFO[70]["path"] = $aHTTP_CONN_INFO[70]["paths"]["pay"];
+
+/**
+ * Connection info for connecting to PayU
+ */
+$aHTTP_CONN_INFO[53]["timeout"] = 120;
+$aHTTP_CONN_INFO[53]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[53]["paths"]["pay"] = "/_test/simulators/payu/pay.php";
+$aHTTP_CONN_INFO[53]["paths"]["initialize"] = "/_test/simulators/payu/pay.php";
+$aHTTP_CONN_INFO[53]["paths"]["get-payment-methods"] = "/_test/simulators/payu/get-payment-methods.php";
+$aHTTP_CONN_INFO[53]["path"] = $aHTTP_CONN_INFO[53]["paths"]["pay"];
 
 
 /**
  * Connection info for connecting to MPGS
  */
-$aHTTP_CONN_INFO["mpgs"]["protocol"] = "http";
-$aHTTP_CONN_INFO["mpgs"]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO["mpgs"]["port"] = 80;
-$aHTTP_CONN_INFO["mpgs"]["timeout"] = 120;
-$aHTTP_CONN_INFO["mpgs"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["mpgs"]["paths"]["auth"] = "/_test/simulators/datacash/auth.php";
-$aHTTP_CONN_INFO["mpgs"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
-$aHTTP_CONN_INFO["mpgs"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
-$aHTTP_CONN_INFO["mpgs"]["path"] = $aHTTP_CONN_INFO["mpgs"]["paths"]["pay"];
+$aHTTP_CONN_INFO[72]["timeout"] = 120;
+$aHTTP_CONN_INFO[72]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[72]["paths"]["auth"] = "/_test/simulators/datacash/auth.php";
+$aHTTP_CONN_INFO[72]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO[72]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO[72]["path"] = $aHTTP_CONN_INFO[72]["paths"]["pay"];
+
+
+/**
+ * Connection info for connecting to Paymaya-Acq
+ */
+$aHTTP_CONN_INFO[73]["timeout"] = 120;
+$aHTTP_CONN_INFO[73]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[73]["method"] = "POST";
+$aHTTP_CONN_INFO[73]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[73]["paths"]["initialize"] = "/_test/simulators/paymaya-acq/init.php";
+$aHTTP_CONN_INFO[73]["paths"]["auth"] = "/_test/simulators/paymaya-acq/auth.php";
+
+/**
+ * Connection info for connecting to Stripe
+ */
+$aHTTP_CONN_INFO[10]["timeout"] = 120;
+$aHTTP_CONN_INFO[10]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[10]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[10]["paths"]["auth"] = "/_test/simulators/stripe/auth.php";
+$aHTTP_CONN_INFO[10]["paths"]["pay"] = "/_test/simulators/stripe/pay.php";
+$aHTTP_CONN_INFO[10]["paths"]["initialize"] = "/_test/simulators/stripe/pay.php";
+
+/**
+ * Connection info for connecting to NMI
+ */
+$aHTTP_CONN_INFO[74]["timeout"] = 120;
+$aHTTP_CONN_INFO[74]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[74]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[74]["paths"]["auth"] = "/_test/simulators/nmi_credomatic/auth.php";
+$aHTTP_CONN_INFO[74]["paths"]["pay"] = "/_test/simulators/nmi_credomatic/pay.php";
+$aHTTP_CONN_INFO[74]["paths"]["initialize"] = "/_test/simulators/nmi_credomatic/pay.php";
 
 /**
  * Message Queue Provider Information
@@ -324,6 +352,5 @@ $aMessage_Queue_Provider_info['keyfile'] = '{"type":"service_account","project_i
 $aMessage_Queue_Provider_info['keyfilepath'] = '';
 $aMessage_Queue_Provider_info['projectid'] = 'cpm-development';
 $aMessage_Queue_Provider_info['topicname'] = 'mpoint-phpunittest';
-
 
 ?>

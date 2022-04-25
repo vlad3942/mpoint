@@ -317,15 +317,15 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 28 ;
 
 -- Cebu Icer : Add sale currency and presentment currency configuration for PayPal
-INSERT into client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,156,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,360,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,901,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,36,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,96,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,446,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,784,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,410,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,764,608,'true','true');
+INSERT into client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,156,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,360,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,901,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,36,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,96,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,446,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,784,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,410,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (28,10077,764,608,'true','true');
 
 
 -- Cebu Icer : Set dcc enabled to true for Gcash
@@ -333,20 +333,20 @@ UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and car
 
 -- Cebu Icer : Add sale currency and presentment currency configuration for Gcash
 
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,156,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,360,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,901,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,36,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,96,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,446,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,784,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,410,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,764,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,344,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,458,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,702,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,392,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,840,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,156,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,360,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,901,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,36,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,96,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,446,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,784,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,410,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,764,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,344,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,458,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,702,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,392,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (93,10077,840,608,'true','true');
 
 
 
@@ -354,20 +354,20 @@ INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id
 UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 94 ;
 -- Cebu Icer : Add sale currency and presentment currency configuration for GrabPay
 
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,156,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,360,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,901,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,36,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,96,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,446,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,784,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,410,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,764,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,344,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,458,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,702,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,392,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,840,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,156,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,360,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,901,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,36,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,96,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,446,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,784,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,410,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,764,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,344,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,458,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,702,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,392,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (94,10077,840,608,'true','true');
 
 
 
@@ -376,52 +376,52 @@ UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and car
 
 -- Cebu Icer : Add sale currency and presentment currency configuration for paymaya
 
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,156,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,360,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,901,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,36,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,96,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,446,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,784,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,410,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,764,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,344,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,458,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,702,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,392,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,840,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,156,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,360,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,901,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,36,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,96,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,446,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,784,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,410,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,764,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,344,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,458,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,702,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,392,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (95,10077,840,608,'true','true');
 
 
 -- Cebu Icer : Set dcc enabled to true for payment center
 UPDATE client.cardaccess_tbl set dccenabled = '1' where clientid = 10077 and cardid = 96 ;
 
 -- Cebu Icer : Add sale currency and presentment currency configuration for payment center
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,36,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,36,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,96,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,96,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,156,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,156,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,410,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,410,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,446,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,446,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,764,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,764,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,901,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,901,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,344,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,344,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,458,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,458,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,702,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,702,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,392,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,392,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,840,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,840,784,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,784,608,'true','true');
-INSERT INTO client.card_currency_mapping_tbl (card_id,client_id,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,608,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,36,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,36,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,96,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,96,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,156,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,156,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,410,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,410,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,446,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,446,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,764,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,764,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,901,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,901,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,344,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,344,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,458,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,458,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,702,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,702,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,392,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,392,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,840,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,840,784,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,784,608,'true','true');
+INSERT INTO client.pcc_config_tbl (pmid,clientid,sale_currency_id,settlement_currency_id,is_presentment,enabled) VALUES (96,10077,608,784,'true','true');
 
 --CEBU MPGS
 INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, username, passwd, enabled, stored_card) VALUES (10077, 72, 'TEST048583918507', 'merchant.TEST048583918507', '42b5c09392e50702e05f29c37c75841a', true, null);
@@ -560,6 +560,26 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('username.NOK', 'merchant.TEST048583918508', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('password.NOK', '78ebecfdcd194aac7c1e5fde0b584f40', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('Notification-Secret.NOK', '379001F6E4852A832F8138F70190585B', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 72), 'merchant', 2);
+
+--Paymaya Acq mpoint scripts
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid,psp_type,capture_type) VALUES (10077, 5, 73, true, 640,2,2);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid,psp_type,capture_type) VALUES (10077, 7, 73, true, 640,2,2);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid,psp_type,capture_type) VALUES (10077, 8, 73, true, 640,2,2);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10077,73, 'EFS100001149', 'Paymaya acq', 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5zz');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100770, 73, 'paymaya acq');
+INSERT INTO Client.countrycurrency_tbl(clientid, countryid, currencyid) VALUES (10077,640,608);
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES('mid.PHP', 'EFS100001149', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10077 and pspid = 73), 'merchant', 2);
+--Paymaya Acq CRS scripts
+
+
+INSERT INTO client.route_tbl (clientid, providerid) VALUES(10077, 73);
+INSERT INTO client.routeconfig_tbl( routeid, name, capturetype, mid, username, password, enabled)
+SELECT id, 'paymaya acq', 2, 'EFS100001149', 'Paymaya acq', 'sk-aXQdorOOF0zGMfyVAzTH9CbAFvqq1Oc7PAXcDlrz5zz', enabled FROM client.route_tbl WHERE clientid = 10077 AND providerid = 73;
+INSERT INTO client.routecountry_tbl(routeconfigid) SELECT rc.id FROM client.routeconfig_tbl rc inner join client.route_tbl r on r.id = rc.routeid WHERE r.clientid = 10077 and mid ='EFS100001149';
+INSERT INTO client.routecurrency_tbl(routeconfigid) select rc.id from client.routeconfig_tbl rc INNER JOIN client.route_tbl r on r.id = rc.routeid where r.clientid = 10077 and rc.mid = 'EFS100001149';
 
 
 

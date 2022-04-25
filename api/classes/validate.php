@@ -1226,7 +1226,11 @@ class Validate extends ValidateBase
 		$code = 1;
 		$mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
 		$country_id = $obj_ClientInfo->getCountryConfig()->getID() > 0 ? $obj_ClientInfo->getCountryConfig()->getID() : "";
-		$countryISO_id = sprintf('%03s', $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "");
+		$countryISO_id = "";
+		if (empty($mobile) === false) {
+			$countryISO_id = sprintf('%03s', $obj_ClientInfo->getCountryConfig()->getNumericCode() > 0 ? $obj_ClientInfo->getCountryConfig()->getNumericCode() : "");
+		}
+
 		$countryISOCode = "";
 		if($obj_CountryConfig != null && $obj_CountryConfig->getID() >0)
         {
@@ -1347,7 +1351,7 @@ class Validate extends ValidateBase
 	 */
 	public function valIssuerIdentificationNumber(RDB &$oDB, $clid, $iin)
 	{
-		$iin = (integer) $iin;
+		$iin = (integer) substr($iin, 0, 6);
 		if ($iin == 0) { $code = 1; }
 		elseif ($iin < 1000) { $code = 2; }
 		elseif ($iin > 999999) { $code = 3; }
@@ -1576,17 +1580,27 @@ class Validate extends ValidateBase
 	 */
 	public function valCurrency(RDB &$oDB, $currencyid, $obj_TransacionCountryConfig, $clid)
 	{
-			$sql = "SELECT COUNT(*) FROM Client".sSCHEMA_POSTFIX.".countrycurrency_tbl cct RIGHT JOIN 
-					System.country_tbl ct ON cct.countryid = ct.id  WHERE ((cct.countryid = ".$obj_TransacionCountryConfig->getID().
-                    " OR cct.countryid = 0) AND (cct.currencyid = ".$currencyid." OR cct.currencyid = 1) AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
-                     OR (ct.id = ".$obj_TransacionCountryConfig->getID()." AND ct.currencyid=". $currencyid . ")";
+		$code = 1;
+		if($obj_TransacionCountryConfig->getCurrencyConfig()->getID() === $currencyid)
+		{
+			$code = 10;
+		}
+		else
+		{
+			$sql = "SELECT COUNT(*) FROM Client" . sSCHEMA_POSTFIX . ".countrycurrency_tbl cct 
+			  WHERE (cct.countryid = " . $obj_TransacionCountryConfig->getID()."  OR cct.countryid = 0) 
+			  AND (cct.currencyid = " . $currencyid . " OR cct.currencyid = 1) AND cct.clientid= " . $clid . " AND cct.enabled = '1'";
 
-				//echo $sql;exit;
-				$RS = $oDB->getName($sql);
-	
-				if ($RS["COUNT"] > 0) { $code = 10; }// Success
-				else { $code = 1 ; } 
-				return $code;
+			//echo $sql;exit;
+			$RS = $oDB->getName($sql);
+
+			if ($RS["COUNT"] > 0) {
+				$code = 10;
+			}// Success
+			else { $code = 1 ; }
+		}
+		return $code;
+
 	}
 	/**
 	 * Performs validation on the fxservicetypeid used for the transaction

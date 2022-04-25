@@ -20,7 +20,7 @@ ini_set("max_execution_time", 120);
 class NetAxept extends Callback implements Captureable, Refundable
 {
 
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null)
+	public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $oPSPConfig);
 

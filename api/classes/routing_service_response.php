@@ -26,6 +26,11 @@ class RoutingServiceResponse
     private $_aObj_PaymentMethods = array();
 
     /**
+     * @var array
+     */
+    private $_aCardsSchemes = array();
+
+    /**
      * Default Constructor
      *
      * @param object  $aObjRoutingServiceResponse 	Hold array object of routing service response
@@ -39,6 +44,10 @@ class RoutingServiceResponse
         if (empty($aObjRoutingServiceResponse->routes) === false)
         {
             $this->_aObj_Route = $aObjRoutingServiceResponse;
+        }
+        if(empty($aObjRoutingServiceResponse->card_schemes) === false)
+        {
+            $this->_aCardsSchemes = $aObjRoutingServiceResponse->card_schemes;
         }
     }
 
@@ -60,6 +69,7 @@ class RoutingServiceResponse
                 $aObjRoute->routes->route[$i]->id = (int)$aObj_XML->routes->route[$i]->id;
                 $aObjRoute->routes->route[$i]->preference = (int)$aObj_XML->routes->route[$i]->preference;
             }
+            $aObjRoute->kpi_used = General::xml2bool($aObj_XML->kpi_used);
             return new RoutingServiceResponse($aObjRoute);
         }
         return null;
@@ -87,6 +97,12 @@ class RoutingServiceResponse
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->preference = (int)$aObj_XML->payment_methods->payment_method[$i]->preference;
                     $aObjPaymentMethod->payment_methods->payment_method[$i]->state_id = (int)$aObj_XML->payment_methods->payment_method[$i]->state_id;
 
+                    if(isset($aObj_XML->payment_methods->payment_method[$i]->card_schemes) && count($aObj_XML->payment_methods->payment_method[$i]->card_schemes) > 0) {
+                        $iPMId = (int)$aObjPaymentMethod->payment_methods->payment_method[$i]->id ?? -1;
+                        $iProviderId = WalletProcessor::$aWalletConstants[$iPMId] ?? -1;
+                        $aObjPaymentMethod->card_schemes[$iProviderId] = self::generateCardSchemes((array) $aObj_XML->payment_methods->payment_method[$i]->card_schemes);
+                    }
+
                 }
                 return new RoutingServiceResponse($aObjPaymentMethod);
             }
@@ -108,6 +124,27 @@ class RoutingServiceResponse
     public function getRoutes()
     {
         return $this->_aObj_Route;
+    }
+
+    /**
+     * @param array $aCardSchemes
+     * @return array
+     */
+    private function generateCardSchemes(array $aCardSchemes) : array
+    {
+        $aCardSchemeInfo = [];
+        foreach ($aCardSchemes['card_scheme'] as $card) {
+            $aCardSchemeInfo[] = (int) $card->id;
+        }
+        return $aCardSchemeInfo;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCardSchemes() : array
+    {
+        return $this->_aCardsSchemes;
     }
 
 

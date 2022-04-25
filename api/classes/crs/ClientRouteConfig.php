@@ -174,18 +174,14 @@ class ClientRouteConfig
                     (routeconfigid, countryid)
                     values ($1, $2)";
 
-                $resource = $this->getDBConn()->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array( $this->_iRouteConfigId, $countryId );
-                    $result = $this->getDBConn()->execute($resource, $aParam);
-                    if ($result === false) {
-                        throw new Exception("Unable to update route country", E_USER_ERROR);
-                        return FALSE;
-                    }
-                } else {
+                $aParam = array( $this->_iRouteConfigId, $countryId );
+                $result = $this->getDBConn()->executeQuery($sql, $aParam);
+                if ($result === false) {
                     trigger_error("Unable to build query for update route country", E_USER_WARNING);
+                    throw new Exception("Unable to update route country", E_USER_ERROR);
                     return FALSE;
                 }
+
             }
             return TRUE;
         } else {
@@ -208,18 +204,14 @@ class ClientRouteConfig
                     (routeconfigid, currencyid)
                     values ($1, $2)";
 
-                $resource = $this->getDBConn()->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array( $this->_iRouteConfigId, $currencyId );
-                    $result = $this->getDBConn()->execute($resource, $aParam);
-                    if ($result === false) {
-                        throw new Exception("Unable to update route currecny", E_USER_ERROR);
-                        return FALSE;
-                    }
-                } else {
+                $aParam = array( $this->_iRouteConfigId, $currencyId );
+                $result = $this->getDBConn()->executeQuery($sql, $aParam);
+                if ($result === false) {
                     trigger_error("Unable to build query for update route country", E_USER_WARNING);
+                    throw new Exception("Unable to update route currecny", E_USER_ERROR);
                     return FALSE;
                 }
+
             }
             return TRUE;
         } else {
@@ -265,29 +257,25 @@ class ClientRouteConfig
                     (routeid, name, capturetype, mid, username, password)
                     values ($1, $2, $3, $4, $5, $6) RETURNING id";
 
-            $resource = $this->getDBConn()->prepare($sql);
-            if (is_resource($resource) === true) {
+            $aParam = array(
+                $this->_iRouteId,
+                $this->_sRouteName,
+                $this->_iCaptureType,
+                $this->_sMID,
+                $this->_sUserName,
+                $this->_sPassword
+            );
 
-                $aParam = array(
-                    $this->_iRouteId,
-                    $this->_sRouteName,
-                    $this->_iCaptureType,
-                    $this->_sMID,
-                    $this->_sUserName,
-                    $this->_sPassword
-                );
+            $result = $this->getDBConn()->executeQuery($sql, $aParam);
 
-                $result = $this->getDBConn()->execute($resource, $aParam);
+            if ($result === false) {
+                return FALSE;
+            } 
 
-                if ($result === false) {
-                    return FALSE;
-                    throw new Exception("Unable to create route", E_USER_ERROR);
-                } else {
-                    $RS = $this->getDBConn()->fetchName($result);
-                    $this->_iRouteConfigId = $RS["ID"];
-                    return TRUE;
-                }
-            }
+            $RS = $this->getDBConn()->fetchName($result);
+            $this->_iRouteConfigId = $RS["ID"];
+            return TRUE;
+
         }
         return FALSE;
     }
@@ -331,7 +319,7 @@ class ClientRouteConfig
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON PSP.id = R.providerid AND PSP.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON R.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND R.providerid = MSA.pspid AND MSA.enabled = '1'
+				LEFT JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND R.providerid = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
 				WHERE R.clientid = ". intval($clientId) ." AND R.enabled = '1'
 				ORDER BY providername";

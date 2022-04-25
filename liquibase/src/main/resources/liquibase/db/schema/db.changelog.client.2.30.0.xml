@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="Priya Alamwar" id="2020-08-12-setup-v2.30.client-1">
+
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="split_configuration_tbl"
+                      remarks="Hold split session configuration">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="client_id"
+                    type="int"
+                    remarks="Holds client id">
+                <constraints nullable="false"
+                             foreignKeyName="client_id_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="client"
+                             referencedTableName="client_tbl"
+                             referencedTableSchemaName="client"/>
+            </column>
+
+            <column name="name"
+                    type="text"
+                    remarks="The configuration name" />
+
+            <column name="is_one_step_auth"
+                    type="boolean"
+                    remarks="Flag indicating whether one step auth is enabled or not"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="enabled"
+                    type="boolean"
+                    remarks="Flag indicating whether entry is enabled or not"
+                    defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.split_configuration_tbl OWNER TO mpoint;
+            CREATE TRIGGER Split_Configuration_Tbl BEFORE INSERT OR UPDATE ON client.split_configuration_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="split_configuration_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Priya Alamwar" id="2020-08-12-setup-v2.30.client-2">
+
+        <createTable  catalogName="client"
+                      schemaName="client"
+                      tableName="split_combination_tbl"
+                      remarks="Hold split session combination details">
+
+            <column name="id"
+                    type="bigserial"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="split_config_id"
+                    type="int"
+                    remarks="Holds split session config id">
+                <constraints nullable="false"
+                             foreignKeyName="split_config_id_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="client"
+                             referencedTableName="split_configuration_tbl"
+                             referencedTableSchemaName="client"/>
+            </column>
+
+            <column name="payment_type"
+                    type="int"
+                    remarks="Holds split session config id">
+                <constraints nullable="false"
+                             foreignKeyName="payment_type_fk"
+                             deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableCatalogName="system"
+                             referencedTableName="paymenttype_tbl"
+                             referencedTableSchemaName="system"/>
+            </column>
+
+            <column name="sequence_no"
+                    type="int"
+                    remarks="Hold sequence no within combination">
+
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was originally created"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified"
+                    type="timestamp without time zone"
+                    remarks="Timestamp identifying when entry was last modified"
+                    defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER TABLE client.split_combination_tbl OWNER TO mpoint;
+            CREATE TRIGGER split_combination_tbl BEFORE INSERT OR UPDATE ON client.split_combination_tbl FOR EACH ROW EXECUTE PROCEDURE Public.Update_Table_Proc();
+        </sql>
+
+        <rollback>
+            <dropTable cascadeConstraints="true" catalogName="client" schemaName="client" tableName="split_combination_tbl"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="Priya Alamwar"
+               id="2021-08-12-setup-v2.30-client-3">
+
+        <addUniqueConstraint  catalogName="client"
+                              columnNames="split_config_id,sequence_no"
+                              constraintName="split_config_id_sequence_no_uq"
+                              schemaName="client"
+                              tableName="split_combination_tbl"
+        />
+
+    </changeSet>
+
+</databaseChangeLog>

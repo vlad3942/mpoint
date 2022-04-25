@@ -53,7 +53,7 @@ try
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	
 	$obj_mPoint = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 	
@@ -125,19 +125,19 @@ try
 		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount() );
 		
 		
-		if ($responseCode == 1000)
+		if ($responseCode == Constants::iTRANSACTION_CREATED)
 		{				
-			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 		else
 		{
-			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+			$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $aCallbackArgs, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
 		}
 	}
 	// Callback URL has been defined for Client
-	$obj_mPoint->notifyClient($iStateID, $obj_XML, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+	$obj_mPoint->notifyClient($iStateID, $obj_XML, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),$iSubCodeID);
 
 	$xml = '<status code="1000">Callback Success</status>';
 } 

@@ -12,6 +12,9 @@
 */
 
 /* ==================== PublicBank Exception Classes Start ==================== */
+
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 /**
  * Super class for all PublicBank Exceptions
 */
@@ -78,10 +81,6 @@ Class CHUBB extends CPMPSP
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
             $obj_HTTP->disConnect();
 
-            //call post auth actions
-
-            PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
-
             if ($code == 200 || $code == 303 )
             {
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -100,11 +99,14 @@ Class CHUBB extends CPMPSP
                 }
                 else { $code = $obj_XML->status["code"]; }
 
-                if($code == 2005)
+                if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
                     $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-                $this->getTxnInfo()->getPaymentSession()->updateState();
+                $oTI = $this->getTxnInfo();
+                $repository = new ReadOnlyConfigRepository($this->getDBConn(), $oTI);
+
+                $this->getTxnInfo()->getPaymentSession()->updateState($repository);
                 // In case of 3D verification status code 2005 will be received
-                if($code == 2005)
+                if($code == Constants::iPAYMENT_3DS_VERIFICATION_STATE)
                 {
                     $str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
                     $str = str_replace("<root>","",$str);

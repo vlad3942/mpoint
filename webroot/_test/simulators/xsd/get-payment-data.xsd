@@ -59,6 +59,20 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
+										<xs:element name="services" maxOccurs="1"  minOccurs="0">
+											<xs:complexType>
+												<xs:all>
+													<xs:element type="xs:boolean" name="dcc"/>
+													<xs:element type="xs:boolean" name="fraud"/>
+													<xs:element type="xs:boolean" name="callback"/>
+													<xs:element type="xs:boolean" name="mcp"/>
+													<xs:element type="xs:boolean" name="pcc"/>
+													<xs:element type="xs:boolean" name="split_payment"/>
+													<xs:element type="xs:boolean" name="tokenization"/>
+													<xs:element type="xs:boolean" name="void"/>
+												</xs:all>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="payment-methods">
 											<xs:complexType>
 												<xs:sequence>
@@ -133,8 +147,6 @@
 										<xs:element type="xs:string" name="issuer-identification-number-ranges"/>
 										<xs:element type="xs:string" name="salt"/>
 										<xs:element type="xs:string" name="secret-key"/>
-										<xs:element type="xs:string" name="products"/>
-										<xs:element type="xs:string" name="dynamic-routing-gateways"/>
 										<xs:element type="xs:string" name="additional-config"/>
 										<xs:element type="xs:nonNegativeInteger" name="decimal" />
 										<xs:element name="transaction-types" minOccurs="0" maxOccurs="1">
@@ -311,6 +323,7 @@
 										<xs:element name="card">
 											<xs:complexType>
 												<xs:sequence>
+													<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 													<xs:element name="amount">
 														<xs:complexType>
 															<xs:simpleContent>

@@ -5,6 +5,7 @@ require_once(dirname(__FILE__). '/../../../inc/include.php');
 switch (@$_REQUEST["status"])
 {
 case Constants::iPAYMENT_ACCEPTED_STATE:
+case Constants::iPRE_FRAUD_CHECK_REVIEW_SUCCESS_STATE:
 case Constants::iPAYMENT_PENDING_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'card-id', 'language');
 	break;
@@ -28,6 +29,7 @@ case Constants::iPAYMENT_REQUEST_EXPIRED_STATE:
 case Constants::iSESSION_COMPLETED:
 case Constants::iSESSION_CREATED:
 case Constants::iSESSION_EXPIRED:
+case Constants::iSESSION_FAILED:
 	$aRequiredArguments = array('status', 'session-id', 'pspid');
 	break;
 default:

@@ -128,19 +128,14 @@ class RouteFeature
                 (clientid, routeconfigid, featureid)
                 values ($1, $2, $3)";
 
-            $resource = $_OBJ_DB->prepare($sql);
-            if (is_resource($resource) === true) {
-                $aParam = array( $clientId, $routeConfigId, $this->_iFeatureId );
-                $result = $_OBJ_DB->execute($resource, $aParam);
-                if ($result === false) {
-                    throw new Exception("Unable to update route feature", E_USER_ERROR);
-                    return FALSE;
-                }
-                return TRUE;
-            } else {
-                trigger_error("Unable to build query for update route feature", E_USER_WARNING);
-                return FALSE;
+            $aParam = array( $clientId, $routeConfigId, $this->_iFeatureId );
+            $result = $_OBJ_DB->executeQuery($sql, $aParam);
+            if ($result === false) {
+                throw new Exception("Unable to update route feature", E_USER_ERROR);
             }
+
+            return TRUE;
+
         }catch (SQLQueryException $e){
             trigger_error($e->getMessage(), E_USER_ERROR);
             return FALSE;

@@ -16,6 +16,8 @@
  */
 
 // Require Global Include File
+use api\classes\merchantservices\configuration\AddonServiceType;
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 use api\classes\splitpayment\config\Configuration;
 
 require_once("../../inc/include.php");
@@ -51,23 +53,8 @@ require_once(sCLASS_PATH ."/account_config.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 // Require Data class for Wallet processor
 require_once(sCLASS_PATH ."/wallet_processor.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the mVault component
-require_once(sCLASS_PATH ."/eghl.php");
-// Require specific Business logic for the SAFETYPAY component
-require_once(sCLASS_PATH ."/aggregator/SafetyPay.php");
-require_once(sCLASS_PATH ."/cellulant.php");
-// Require specific Business logic for the FirstData component
-require_once(sCLASS_PATH ."/first-data.php");
 require_once sCLASS_PATH . '/txn_passbook.php';
 require_once sCLASS_PATH . '/passbookentry.php';
 require_once(sCLASS_PATH ."/core/card.php");
@@ -75,11 +62,9 @@ require_once(sCLASS_PATH ."/card_prefix_config.php");
 require_once sCLASS_PATH . '/routing_service.php';
 require_once sCLASS_PATH . '/routing_service_response.php';
 require_once sCLASS_PATH . '/FailedPaymentMethodConfig.php';
-require_once(sCLASS_PATH .'/apm/paymaya.php');
 require_once sCLASS_PATH . '/crs/payment_method.php';
 require_once(sCLASS_PATH . '/apm/CebuPaymentCenter.php');
 require_once(sCLASS_PATH . '/payment_route.php');
-
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -120,10 +105,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if (empty($obj_DOM->{'initialize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'initialize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'initialize-payment'}[$i]["account"] = -1; }
 
 			// Validate basic information
-			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
-			if ($code == 100)
+            $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
+            if($obj_ClientConfig instanceof ClientConfig === false)
+            {
+                $code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
+            }
+            else
+            {
+                $code = 100;
+            }
+            if ($code == 100)
 			{
-				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
 				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -138,8 +130,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 
+                    $isSplitAbandoned = false;
+                    $initAmount = (int) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+
+                    $sessionId = (int)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
+                    $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
+                    if($sessionId > 1 )
+                    {
+                        $obj_PaymentSession = PaymentSession::Get($_OBJ_DB,$sessionId);
+                        if($obj_PaymentSession->getSessionType() > 1 && (int)$obj_PaymentSession->getAmount() === $initAmount)
+                        {
+                            $isSplitAbandoned = true;
+                            $obj_PaymentSession->updateSessionTypeId($initAmount,$obj_PaymentSession->getAmount(),$sessionId);
+                        }
+                    }
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-					if (strlen($obj_ClientConfig->getSalt() ) > 0)
+					if (strlen($obj_ClientConfig->getSalt() ) > 0 && ($isSplitAbandoned === true || $sessionId == 0))
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
 																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
@@ -148,10 +154,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]),$obj_CountryConfig, $authToken ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 
-					// Validate currency if explicitly passed in request, which defer from default currency of the country
-					if(intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) > 0){
-					$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"])) ;
-					if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'initialize-payment'}[$i]["client-id"])) != 10 ){
+                    $obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
+
+                    // Validate currency if explicitly passed in request, which defer from default currency of the country
+                    if((int)$obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"] > 0)
+                    {
+					if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ,$obj_CountryConfig, intval( $obj_DOM->{'initialize-payment'}[$i]["client-id"])) != 10 ){
 						$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ;
 					  }
 					}
@@ -212,22 +220,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     // Validate service type id if explicitly passed in request
                     $fxServiceTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
                     if($fxServiceTypeId > 0){
-                        if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                        if(array_key_exists($fxServiceTypeId,Constants::aFXServiceType) === false ){
                             $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
                         }
                     }
 
 
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-					
+                        $obj_PaymentMethodResponse = null;
 						$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig,Constants::iPURCHASE_VIA_APP);
 						try
 						{
 							// Update Transaction State
 							$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
-                            $aTransactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE, Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE);
+                            $aTransactionTypes = array(Constants::iTRANSACTION_TYPE_SHOPPING_ONLINE, Constants::iTRANSACTION_TYPE_SHOPPING_OFFLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE, Constants::iTRANSACTION_TYPE_SELF_SERVICE_OFFLINE,Constants::iTRANSACTION_TYPE_SELF_SERVICE_ONLINE_WITH_ADDITIONAL_RULES_ON_FOP,Constants::iTRANSACTION_TYPE_PAYMENT_LINK_TRANSACTION,Constants::iTRANSACTION_TYPE_TELEPHONE_ORDER,Constants::iTRANSACTION_TYPE_MAIL_ORDER);
 
                             $iTransactionTypeId = (integer)$obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
                             if(in_array($iTransactionTypeId, $aTransactionTypes)){
@@ -318,7 +327,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 							$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
 							
-							$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
 							$data['currency-config']= $obj_CurrencyConfig ;
 							$data['converted-currency-config']= $obj_CurrencyConfig ;
 							$data['conversion-rate']= 1 ;
@@ -333,17 +341,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($obj_ClientConfig, $obj_CountryConfig, $data['orderid'], $parentTxnId);
                             $data['attempt'] = $iAttemptNumber = $iAttemptNumber+1;
 
-
-
-                            $data['sessionid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                            $sessionType =  $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype");
+                            $data['sessionid'] = $sessionId;
                             if($sessionType > 1 )
                                 $data['sessiontype']=$sessionType;
                             //var_dump($data['attempt']);die;
                             if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
                                 $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
                             }
+
+                            if($userType){
+                                $data['additionaldata']['customer-type'] = $userType;
+                            }
+
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
+                            $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+                            if($isSplitAbandoned === true)
+                            {
+                                $splitPaymentAddOn = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::eSPLIT_PAYMENT),array(),true);
+                                $isManualRefund = !$splitPaymentAddOn->getProperties()["is_rollback"];
+                                $obj_general = new General($_OBJ_DB, $_OBJ_TXT);
+                                $obj_general->changeSplitSessionStatus($obj_ClientConfig->getID(), $obj_PaymentSession->getId(), 'Failed', $isManualRefund);
+                            }
 
                             $txnPassbookObj = TxnPassbook::Get($_OBJ_DB, $iTxnID, $obj_ClientConfig->getID());
                             $passbookEntry = new PassbookEntry
@@ -357,21 +375,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $txnPassbookObj->addEntry($passbookEntry);
                                 $txnPassbookObj->performPendingOperations();
                             }
-                            $is_legacy = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'IS_LEGACY');
+                            $is_legacy = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
                             $maxSessionRetryCount = (int)$obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'max_session_retry_count');
                             if($maxSessionRetryCount <= 0)
                             {
                                 $maxSessionRetryCount = 3;
                             }
-                            if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
+                            if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0)
+                            {
                                 $xml = '<status code="'. Constants::iSESSION_ALREADY_COMPLETED .'">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_ALREADY_COMPLETED, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
-                            elseif (strtolower($is_legacy) != 'false' && $obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= $maxSessionRetryCount)
+                            elseif($obj_TxnInfo->getPaymentSession()->getPendingAmount() < $obj_TxnInfo->getAmount())
+                            {
+                                $xml = '<status code="53">Amount is more than pending amount:'. $obj_TxnInfo->getAmount() .'</status>';
+                            }
+                            elseif ($is_legacy === false && $obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= $maxSessionRetryCount)
                             {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
-                                $obj_TxnInfo->getPaymentSession()->updateState(Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
+                                $obj_TxnInfo->getPaymentSession()->updateState($repository, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
                             }
                             else {
                                 // Associate End-User Account (if exists) with Transaction
@@ -403,214 +426,37 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["locale"];
                                 $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
                             }
+                            if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac)) {
+                                $additionalTxnDataIndex++;
+                                $additionalTxnData[$additionalTxnDataIndex]['name'] = "hmac";
+                                $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->hmac;
+                                $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
+                            }
+							$aSessionAdditionalData = [];
                             if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
                                 for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
                                 {
-                                    $additionalTxnDataIndex++;
-                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
-                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
-                                    $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+                                    $aSessionAdditionalData[$index]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                                    $aSessionAdditionalData[$index]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
+                                    $aSessionAdditionalData[$index]['type'] = (string)'Session';
                                 }
                             }
+
                             if($additionalTxnDataIndex > -1)
                             {
                                 $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
                             }
+                            if (empty($aSessionAdditionalData) === FALSE) {
+                                $obj_TxnInfo->getPaymentSession()->setSessionAdditionalDetails($_OBJ_DB, $aSessionAdditionalData, $obj_TxnInfo->getSessionId());
+                            }
 
-							if($userType){
-								$misc = array();
-								$misc['additionaldata']['customer-type'] = $userType;
-								$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $misc);
-							}
-							//Test if the order/cart details are passed as part of the input XML request.
+                                //Test if the order/cart details are passed as part of the input XML request.
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
                                 $sOrderXML = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->asXML();
-								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
-								{
-									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}) > 0)
-									{
-										$data['orders'][0]['product-sku'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product["sku"];
-                                        $data['orders'][0]['orderref'] = $obj_TxnInfo->getOrderID();
-                                        $data['orders'][0]['product-name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->name;
-										$data['orders'][0]['product-description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->description;
-										$data['orders'][0]['product-image-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'image-url'};
-										$data['orders'][0]['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->amount;
-										$collectiveFees = 0;
-										if($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee)
-										{
-											for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee); $k++ )
-											{
-												$collectiveFees += $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->fees->fee[$k];
-											}
-										}
-										$data['orders'][0]['fees'] = (float) $collectiveFees;
-										$data['orders'][0]['country-id'] = $obj_CountryConfig->getID();
-										$data['orders'][0]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
-										$data['orders'][0]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
-										$data['orders'][0]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
-
-										if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'})) {
-                                            for ($k = 0; $k < count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
-                                                $data['orders'][0]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
-                                                $data['orders'][0]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
-                                                $data['orders'][0]['additionaldata'][$k]['type'] = (string)'Order';
-                                            }
-                                        }
-
-                                        $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
-									}
-
-									if($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'}){
-										$billingSummary = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'billing-summary'};
-                                        if (count($billingSummary->{'fare-detail'}->fare) > 0)
-                                        {
-                                            for ($k=0; $k<count($billingSummary->{'fare-detail'}->fare); $k++)
-                                            {
-                                                $fare = $billingSummary->{'fare-detail'}->fare[$k];
-                                                $fareArr = array();
-                                                $fareArr['order_id'] = $order_id;
-                                                $fareArr['bill_type'] = (string) 'Fare';
-                                                $fareArr['type'] = (string) $fare->{'type'};
-                                                $fareArr['profile_seq'] = (int) $fare->{'profile-seq'};
-                                                $fareArr['trip_tag'] = (int) $fare->{'trip-tag'};
-                                                $fareArr['trip_seq'] = (int) $fare->{'trip-seq'};
-                                                $fareArr['description'] = (string) $fare->{'description'};
-                                                $fareArr['currency'] = (string) $fare->{'currency'};
-                                                $fareArr['amount'] = (string) $fare->{'amount'};
-                                                $fareArr['product_code'] = (string) $fare->{'product-code'};
-                                                $fareArr['product_category'] = (string) $fare->{'product-category'};
-                                                $fareArr['product_item'] = (string) $fare->{'product-item'};
-                                                $obj_TxnInfo->setBillingSummary($_OBJ_DB, $fareArr);
-                                            }
-                                        }
-
-                                        if (count($billingSummary->{'add-ons'}->{'add-on'}) > 0)
-                                        {
-                                            for ($k=0; $k<count($billingSummary->{'add-ons'}->{'add-on'}); $k++)
-                                            {
-                                                $addOn = $billingSummary->{'add-ons'}->{'add-on'}[$k];
-                                                $addOnArr = array();
-                                                $addOnArr['order_id'] = $order_id;
-                                                $addOnArr['bill_type'] = (string) 'Add-on';
-                                                $addOnArr['type'] = (int) $addOn->{'type'};
-                                                $addOnArr['profile_seq'] = $addOn->{'profile-seq'};
-                                                $addOnArr['trip_tag'] = $addOn->{'trip-tag'};
-                                                $addOnArr['trip_seq'] = $addOn->{'trip-seq'};
-                                                $addOnArr['description'] = (string) $addOn->{'description'};
-                                                $addOnArr['currency'] = (string) $addOn->{'currency'};
-                                                $addOnArr['amount'] = (string) $addOn->{'amount'};
-                                                $addOnArr['product_code'] = (string) $addOn->{'product-code'};
-                                                $addOnArr['product_category'] = (string) $addOn->{'product-category'};
-                                                $addOnArr['product_item'] = (string) $addOn->{'product-item'};
-                                                $obj_TxnInfo->setBillingSummary($_OBJ_DB, $addOnArr);
-                                            }
-                                        }
-									}
-
-									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip) > 0)
-									{
-										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip); $k++ )
-										{
-										$flight =  $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->trips->trip[$k];
-                                        $serviceClass = strtoupper(preg_replace('/\s+/','',$flight->{'service-level'}));
-										$data['flights']['service_level'] = (string) constant("Constants::$serviceClass");
-										$data['flights']['service_class'] = (string) $flight->{'booking-class'};
-                                        $data['flights']['arrival_date'] = (string) $flight->{'arrival-time'};
-                                        $data['flights']['departure_date'] = (string) $flight->{'departure-time'};
-                                        $data['flights']['departure_terminal'] = (string) $flight->origin['terminal'];
-                                        $data['flights']['arrival_terminal'] = (string) $flight->destination['terminal'];
-                                        $data['flights']['departure_city'] = (string) $flight->origin;
-                                        $data['flights']['arrival_city'] = (string) $flight->destination;
-                                        $data['flights']['departure_timezone'] = (string) $flight->origin['time-zone'];
-                                        $data['flights']['arrival_timezone'] = (string) $flight->destination['time-zone'];
-
-										$data['flights']['departure_airport'] = (string) $flight->origin['external-id'];
-										$data['flights']['arrival_airport'] = (string) $flight->destination['external-id'];
-										$data['flights']['op_airline_code'] = (string) $flight->transportation->carriers->carrier['code'];
-                                        $data['flights']['mkt_airline_code'] = (string) $flight->transportation['code'];
-										$data['flights']['aircraft_type'] = (string) $flight->transportation->carriers->carrier['type-id'];
-										$data['flights']['op_flight_number'] = (string) $flight->transportation['number'];
-										$data['flights']['mkt_flight_number'] = (string) $flight->transportation->carriers->carrier->number;
-                                        $data['flights']['departure_country'] = (int) $flight->origin['country-id'];
-                                        $data['flights']['arrival_country'] = (int) $flight->destination['country-id'];
-                                        $data['flights']['order_id'] = $order_id;
-                                        $data['flights']['tag'] = (string) $flight['tag'];
-                                        $data['flights']['trip_count'] = (string) $flight['seq'];
-
-										if(count($flight->{'additional-data'}) > 0)
-											{
-												for ($l=0; $l<count($flight->{'additional-data'}->children()); $l++)
-												{
-													$data['additional'][$l]['name'] = (string) $flight->{'additional-data'}->param[$l]['name'];
-													$data['additional'][$l]['value'] = (string) $flight->{'additional-data'}->param[$l];
-													$data['additional'][$l]['type'] = (string) "Flight";
-												}
-											}
-											else
-											{
-												$data['additional'] = array();
-											}
-											$flight = $obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
-										}
-									}
-
-									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile) > 0)
-									{
-										for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile); $k++ )
-										{
-										    $profile = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->profiles->profile[$k];
-                                            $data['passenger']['seq'] = (integer) $profile->{'seq'};
-										    $data['passenger']['first_name'] = (string) $profile->{'first-name'};
-											$data['passenger']['last_name'] = (string) $profile->{'last-name'};
-											$data['passenger']['type'] = (string) $profile->{'type'};
-                                            $data['passenger']['amount'] = (integer) $profile->{'amount'};
-                                            $data['passenger']['order_id'] = $order_id;
-                                            $data['passenger']['title'] = (string) $profile->{'title'};
-                                            $data['passenger']['email'] = (string) $profile->{'contact-info'}->email;
-                                            $data['passenger']['mobile'] = (string) $profile->{'contact-info'}->mobile;
-                                            $data['passenger']['country_id'] = (string) $profile->{'contact-info'}->mobile["country-id"];
-
-											if(count($profile->{'additional-data'}) > 0)
-											{
-												for ($l=0; $l<count($profile->{'additional-data'}->children()); $l++)
-												{
-													$data['additionalp'][$l]['name'] = (string) $profile->{'additional-data'}->param[$l]['name'];
-													$data['additionalp'][$l]['value'] = (string) $profile->{'additional-data'}->param[$l];
-													$data['additionalp'][$l]['type'] = (string) "Passenger";
-												}
-											}
-											else
-											{
-												$data['additionalp'] = array();
-											}
-											$passenger = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
-										}
-									}
-								}
-
-								if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}) > 0)
-								{
-									for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}); $j++ )
-									{
-
-										$data['shipping_address'][$j]['first_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->name;
-										$data['shipping_address'][$j]['last_name'] = "";
-										$data['shipping_address'][$j]['street'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street;
-										$data['shipping_address'][$j]['street2'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street2;
-										$data['shipping_address'][$j]['city'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->city;
-										$data['shipping_address'][$j]['state'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->state;
-										$data['shipping_address'][$j]['zip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->zip;
-										$data['shipping_address'][$j]['country'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->country;
-										$data['shipping_address'][$j]['reference_type'] = (string) "order";
-										if($order_id!="")
-										{
-											$data['shipping_address'][$j]['reference_id'] = $order_id;
-										}
-									}
-									$shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
-								}
+                                $obj_DOMOrder = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders;
+                                $obj_mPoint->saveOrderDetails($_OBJ_DB, $obj_TxnInfo, $obj_CountryConfig, $obj_DOMOrder, null);
 							}
 							elseif((is_object($obj_DOM->{'initialize-payment'}[$i]->transaction->orders) && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 0) && $iAttemptNumber > 1 )
                             {
@@ -680,18 +526,66 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $euaId = $obj_TxnInfo->getAccountID();
                             }
-							if($sessionType > 1)
+                            // Call routing service to get eligible payment methods if the client is configured to use it.
+                            $obj_PaymentMethods = null;
+                            $obj_FailedPaymentMethod = null;
+                            if ($is_legacy === false)
+                            {
+                                if (empty($sessionId) === false)
+                                {
+                                    $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+                                }
+                                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
+                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod,NULL,(string)$obj_DOM->{'initialize-payment'}[$i]->{'payment-group-code'});
+                                $obj_PaymentMethodResponse = null;
+                                if ($obj_RS instanceof RoutingService) {
+                                    $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
+
+                                    if ($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
+                                    {
+                                        $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
+                                        $obj_PM = $repository->getCardConfigurationsByCardIds($_OBJ_TXT,$obj_PaymentMethods);
+                                        ksort($obj_PM, 1);
+                                        $cOj_XML = '<cards>';
+                                        foreach ($obj_PM as $key => $value)
+                                        {
+                                            if (($value instanceof PaymentMethod) === true) $cOj_XML .= $value->toXML();
+
+                                        }
+                                        $cOj_XML .='</cards>';
+                                        $CardObj_XML = simplexml_load_string($cOj_XML, "SimpleXMLElement", LIBXML_COMPACT);
+                                    }
+                                }
+                            } else {
+                                $CardObj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray), "SimpleXMLElement", LIBXML_COMPACT);
+                            }
+                            $paymentTypes = array();
+                            $aDCCPmid = array();
+                            for ($j=0, $jMax = count($CardObj_XML->item); $j< $jMax; $j++)
+                            {
+                                $paymentTypes[]= (int)$CardObj_XML->item[$j]['payment-type'] ;
+                                if(General::xml2bool((string)$CardObj_XML->item[$j]["dcc"]) === true)  array_push($aDCCPmid,(string)$CardObj_XML->item[$j]["id"]);
+
+                            }
+
+                            $presentmentCurrencies = null;
+                            if(empty($aDCCPmid) === false && $obj_ClientConfig->getClientServices()->isPcc() === true) {
+                                $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$aDCCPmid);
+                            }
+
+                            if($sessionType > 1)
                             {
                                 try {
-                                    $splitPaymentConfig = Configuration::ProduceConfig($obj_TxnInfo->getClientConfig()->getAdditionalProperties(0, 'SplitPaymentConfig'));
-                                    if($splitPaymentConfig instanceof Configuration) {
+                                    $splitPaymentConfig = Configuration::ProduceConfig($_OBJ_DB,$clientId,array_unique($paymentTypes),$sessionId);
+                                    if ($splitPaymentConfig instanceof Configuration) {
                                         $xml .= "<split_payment>";
                                         $xml .= $splitPaymentConfig->toXML();
                                         $xml .= "</split_payment>";
                                     }
                                 }
                                 catch (JsonException $e) {
-                                    trigger_error("SplitPayment Configuration for client id $clientId invalid, Please check SplitPaymentConfig in client.additionalproperty_tbl" , E_USER_WARNING);
+                                    trigger_error("SplitPayment Configuration for client id $clientId invalid" , E_USER_WARNING);
                                 }
                             }
 							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. htmlspecialchars($obj_TxnInfo->useAutoCapture() === AutoCaptureType::ePSPLevelAutoCapt ? "true" : "false") .'" mode="'. $obj_TxnInfo->getMode() .'">';
@@ -714,55 +608,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= '</transaction>';
 							$xml .= $obj_TxnInfo->getPaymentSessionXML();
 
-                            // Call routing service to get eligible payment methods if the client is configured to use it.
-                            $obj_PaymentMethods = null;
-                            $obj_FailedPaymentMethod = null;
-                            if (strtolower($is_legacy) == 'false')
-                            {
-
-                                $sessionId = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
-                                $fraudDettectedForPMType = -1;
-                                if (empty($sessionId) === false)
-                                {
-                                    $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
-                                    $fraudDettectedForPMType = $obj_mPoint->findFraudDetected($sessionId);
-                                }
-                                // Call mProfile to get customer type
-                                if (empty($authenticationURL) === false && empty($authToken) === false && empty($profileTypeId) === true) {
-                                    $obj_CustomerInfo = new CustomerInfo(0, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email, $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"]);
-                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
-                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                    $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, $authToken, (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
-                                    if ($code == 10) {
-                                        $profileTypeId = $obj_CustomerInfo->getProfileTypeID();
-                                    }
-                                }
-
-                                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
-                                $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod);
-                                $obj_PaymentMethodResponse = null;
-                                if ($obj_RS instanceof RoutingService) {
-                                    $obj_PaymentMethodResponse = $obj_RS->getPaymentMethods();
-
-                                    if ($obj_PaymentMethodResponse instanceof RoutingServiceResponse) {
-                                        $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-                                        $obj_PM = PaymentMethod::produceConfigurations($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods,$fraudDettectedForPMType);
-                                        ksort($obj_PM, 1);
-                                        $obj_XML = '<cards>';
-                                        foreach ($obj_PM as $key => $value) {
-                                            if (($value instanceof PaymentMethod) === true) {
-                                                $obj_XML .= $value->toXML();
-                                            }
-                                        }
-                                        $obj_XML .= '</cards>';
-                                        $obj_XML = simplexml_load_string($obj_XML, "SimpleXMLElement", LIBXML_COMPACT);
-                                    }
-                                }
-                            } else {
-                                $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray), "SimpleXMLElement", LIBXML_COMPACT);
-                            }
-
+                            $obj_XML=$CardObj_XML;
 							// End-User already has an account and payment with Account enabled
 							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1 && $bIsSingleSingOnPass === true)
 							{
@@ -805,15 +651,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$offlineXML = '<offline>';
 							$voucherXML = '<vouchers>';
 
-							$splitPaymentFOPConfig = null;
-							if($sessionType > 1)
-                            {
-                                $splitPaymentFOPConfig = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"SplitPaymentFOPConfig");
+//							$splitPaymentFOPConfig = null;
+//							if($sessionType > 1)
+//                            {
+//                                $splitPaymentFOPConfig = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(0,"SplitPaymentFOPConfig");
+//
+//                                if (isset($splitPaymentFOPConfig) === true) {
+//                                    $splitPaymentFOPConfig = json_decode($splitPaymentFOPConfig, TRUE, 512, JSON_THROW_ON_ERROR);
+//                                }
+//                            }
 
-                                if (isset($splitPaymentFOPConfig) === true) {
-                                    $splitPaymentFOPConfig = json_decode($splitPaymentFOPConfig, TRUE, 512, JSON_THROW_ON_ERROR);
-                                }
-                            }
+                           $aPresentmentConf= array();
+                           if($presentmentCurrencies !== null) {
+                               $aPresentmentConf = $presentmentCurrencies->toKeyValueConfigArray("getPaymentMethodId");
+                           }
 
 
                             for ($j=0, $jMax = count($obj_XML->item); $j< $jMax; $j++)
@@ -828,41 +679,39 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $aPSPs[] = intval($obj_XML->item[$j]["pspid"]);
                                     }
 
-                                    //Get list of presentment currencies
-                                    $presentmentCurrency = false;
-                                    $presentmentCurrencies = array();
-                                    if (General::bool2xml($obj_XML->item [$j] ["dcc"]))
-                                    {
-										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$obj_XML->item[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
-										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
-											$presentmentCurrency = true;
-										}
-									}
-
                                     $processorType = (int)$obj_XML->item[$j]['payment-type'] ;
                                     $cardId = (int)$obj_XML->item[$j]["id"];
-                                    $splittable = "false";
-                                    if($sessionType > 1 && isset($splitPaymentFOPConfig) && array_key_exists($processorType, $splitPaymentFOPConfig) === TRUE) {
-                                        if (is_array($splitPaymentFOPConfig[$processorType]) === FALSE || in_array($cardId, $splitPaymentFOPConfig[$processorType], TRUE) === TRUE) {
-                                            $splittable = "true";
-                                        }
-                                    }
+//                                    $splittable = "false";
+//                                    if($sessionType > 1 && isset($splitPaymentFOPConfig) && array_key_exists($processorType, $splitPaymentFOPConfig) === TRUE) {
+//                                        if (is_array($splitPaymentFOPConfig[$processorType]) === FALSE || in_array($cardId, $splitPaymentFOPConfig[$processorType], TRUE) === TRUE) {
+//                                            $splittable = "true";
+//                                        }
+//                                    }
 
                                     $fetchBalance = $obj_mPoint->isAutoFetchBalance($obj_TxnInfo, $cardId);
+                                    $isDCCEnabled = false;
+                                    if($fxServiceTypeId !== Constants::iExternalMCPOpted)
+									{
+ 										$isDCCEnabled = General::xml2bool($obj_XML->item [$j] ["dcc"]);
+									}
+									$bPresentmentCurrency = false;
+                                    if($fxServiceTypeId !== Constants::iExternalMCPOpted && isset($aPresentmentConf[(int)$obj_XML->item[$j]["id"]]) === true) {
+                                        $bPresentmentCurrency = true;
+                                    }
 
-                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. $obj_XML->item[$j]["dcc"].'" presentment-currency="'.General::bool2xml($presentmentCurrency).'" splittable="'.$splittable.'">';
+                                    $cardXML = '<card id="' . $obj_XML->item[$j]["id"] . '" type-id="' . $obj_XML->item[$j]['type-id'] . '" psp-id="' . $obj_XML->item[$j]['pspid'] . '" min-length="' . $obj_XML->item[$j]['min-length'] . '" max-length="' . $obj_XML->item[$j]['max-length'] . '" cvc-length="' . $obj_XML->item[$j]['cvc-length'] . '" state-id="' . $obj_XML->item[$j]['state-id'] . '" payment-type="' . $obj_XML->item[$j]['payment-type'] . '" preferred="' . $obj_XML->item[$j]['preferred'] . '" enabled="' . $obj_XML->item[$j]['enabled'] . '" processor-type="' . $obj_XML->item[$j]['processor-type'] . '" installment="' . $obj_XML->item[$j]['installment'] . '" cvcmandatory="' . $obj_XML->item[$j]['cvcmandatory'] . '" dcc="'. General::bool2xml($isDCCEnabled).'" presentment-currency="'.General::bool2xml($bPresentmentCurrency).'">';
                                     $cardXML .= '<name>' . htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) . '</name>';
                                     if($fetchBalance === true){
                                         $cardXML .= '<fetch-balance>true</fetch-balance>';
                                     }
 
-									if($presentmentCurrency)
+									if($bPresentmentCurrency === true)
                                     {
 										$cardXML .= '<settlement-currencies>';
-										for($k = 0; $k < count($presentmentCurrencies); $k++)
+										for($k = 0; $k < count($aPresentmentConf[(int)$obj_XML->item[$j]["id"]]); $k++)
 										{
 											$cardXML .= '<settlement-currency>';
-											$cardXML .= '<id>'.$presentmentCurrencies[$k].'</id>';
+											$cardXML .= '<id>'.$aPresentmentConf[(int)$obj_XML->item[$j]["id"]][$k]->getSettlementCurrencyId().'</id>';
 											$cardXML .= '</settlement-currency>';
 										}
 										$cardXML .= '</settlement-currencies>';
@@ -873,13 +722,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPAYMENT_TYPE_ONLINE_BANKING) {
                                         try {
                                             $pspId  = (int)$obj_XML->item[$j]['pspid'];
-                                            $cardId = NULL;
-                                            if (strtolower($is_legacy) == 'false') {
-                                                $cardId = (int)$obj_XML->item[$j]["id"];
-                                                $pspId  = OnlinePaymentCardPSPMapping[$cardId];
+                                            if ($is_legacy === false) {
+                                                $obj_CardResultSet = General::getRouteConfiguration($repository,$_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), (int)$obj_XML->item[$j]["type-id"], NULL,(string)$obj_XML->item[$j]->name,(int)$obj_XML->item[$j]["walletid"]);
+                                                $pspId = (int)$obj_CardResultSet['PSPID'];
                                             }
-
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$cardId);
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
@@ -896,6 +743,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, (int)$obj_XML->item[$j]['id'], $aHTTP_CONN_INFO);
                                             if ($obj_Processor !== FALSE)
                                             {
+                                                if($obj_PaymentMethodResponse instanceof  RoutingServiceResponse){
+                                                    $obj_Processor->setWalletCardSchemes($obj_PaymentMethodResponse->getCardSchemes());
+                                                }
+
                                                 $initResponseXML = $obj_Processor->initialize();
                                                 foreach ($initResponseXML->children() as $obj_Elem)
                                                 {
@@ -967,7 +818,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								switch ($aPSPs[$j])
 								{
 								case (Constants::iDSB_PSP):
-                                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, null, Constants::iDSB_PSP);
+                                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, Constants::iDSB_PSP);
 									$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
 									$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
 									break;
@@ -983,26 +834,28 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								for ($j=0, $jMax = count($aObj_XML); $j< $jMax; $j++)
 								{
 									// Get list of presentment currencies
-									$presentmentCurrency = false;
-									$presentmentCurrencies = array();
-									if (General::bool2xml($aObj_XML [$j] ["dcc"]))
+
+									$isDCCEnabled = false;
+                                    if($fxServiceTypeId !== Constants::iExternalMCPOpted)
 									{
-										$presentmentCurrencies = $obj_mPoint->getPresentmentCurrencies($_OBJ_DB, $obj_ClientConfig->getID (), (int)$aObj_XML[$j]["id"], $obj_TxnInfo->getCurrencyConfig ()->getID () );
-										if (is_array ( $presentmentCurrencies ) === true && count ( $presentmentCurrencies ) > 0) {
-											$presentmentCurrency = true;
-										}
+ 										$isDCCEnabled = General::xml2bool($obj_XML->item [$j] ["dcc"]);
 									}
 
-									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . $aObj_XML[$j]["dcc"] .'" presentment-currency="'.General::bool2xml($presentmentCurrency).'">';
+                                    $bPresentmentCurrency = false;
+									if($fxServiceTypeId !== Constants::iExternalMCPOpted && isset($aPresentmentConf[(int)$aObj_XML[$j]["id"]]) === true) {
+                                        $bPresentmentCurrency = true;
+                                    }
+
+									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'" expired="' . $aObj_XML[$j]["expired"] .'" cvcmandatory="' . $aObj_XML[$j]["cvcmandatory"] .'" dcc="' . General::bool2xml($isDCCEnabled) .'" presentment-currency="'.General::bool2xml($bPresentmentCurrency).'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 
-									if($presentmentCurrency)
+									if($bPresentmentCurrency === true)
 									{
 										$xml .= '<settlement-currencies>';
-										for($k = 0; $k < count($presentmentCurrencies); $k++)
+										for($k = 0; $k < count($aPresentmentConf[(int)$aObj_XML[$j]["id"]]); $k++)
 										{
 											$xml .= '<settlement-currency>';
-											$xml .= '<id>'.$presentmentCurrencies[$k].'</id>';
+											$xml .= '<id>'.$aPresentmentConf[(int)$aObj_XML[$j]["id"]][$k]->getSettlementCurrencyId().'</id>';
 											$xml .= '</settlement-currency>';
 										}
 										$xml .= '</settlement-currencies>';

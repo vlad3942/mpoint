@@ -32,12 +32,13 @@ class PayEx extends Callback
      * @param integer $sid Unique ID of the State that the Transaction terminated in
      * @param array $_post Array of data received from DIBS via HTTP POST
      * @param SurePayConfig|null $obj_SurePay
+     * @param int $sub_code_id
      * @see    Callback::notifyClient()
      * @see    Callback::send()
      * @see    Callback::getVariables()
      *
      */
-	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null)
+	public function notifyClient(int $sid, array $_post, ?SurePayConfig $obj_SurePay=null,int $sub_code_id=0)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
@@ -210,7 +211,7 @@ class PayEx extends Callback
 		return $id;
 	}
 
-	public function initialize(HTTPConnInfo &$oCI, $an, $currency)
+	public function initialize(HTTPConnInfo &$oCI, $an, $currency, $cardName='')
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
 																						"exceptions" => true) );
@@ -387,7 +388,10 @@ class PayEx extends Callback
 			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 			$xml .= '<root>';
 			$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">https://'. $obj_ConnInfo->getHost() . $sURL .'</url>';
-			$xml .= '<card-number>'. htmlspecialchars($sCardNo, ENT_NOQUOTES) .'</card-number>';
+			if (!empty($cardName)) {
+                $xml .= '<name>'. htmlspecialchars($cardName, ENT_NOQUOTES) .'</name>';
+            }
+            $xml .= '<card-number>'. htmlspecialchars($sCardNo, ENT_NOQUOTES) .'</card-number>';
 			$xml .= '<expiry-month>'. htmlspecialchars($sExpiryMonth, ENT_NOQUOTES) .'</expiry-month>';
 			$xml .= '<expiry-year>'. htmlspecialchars($sExpiryYear, ENT_NOQUOTES) .'</expiry-year>';
 			$xml .= '<cvc>'. htmlspecialchars($sCVC, ENT_NOQUOTES) .'</cvc>';

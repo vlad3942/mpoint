@@ -8,6 +8,8 @@
  * File Name:StaticRouteTest.php
  */
 
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
+
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
@@ -29,7 +31,7 @@ class PaymentMethodTest extends baseAPITest
         $this->bIgnoreErrors = true;
         $this->_aHTTP_CONN_INFO = $aHTTP_CONN_INFO;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
-        $this->_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+        $this->_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
     }
 
 
@@ -58,11 +60,12 @@ class PaymentMethodTest extends baseAPITest
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_XML = $this->getPaymentMethods(array(8,11,5,7));
         $obj_PaymentMethodResponse = RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
+        $readOnlyRepo = new ReadOnlyConfigRepository($this->_OBJ_DB,$obj_TxnInfo);
 
         if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
         {
             $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-            $obj_SR = PaymentMethod::produceConfigurations($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+            $obj_SR = $readOnlyRepo->getCardConfigurationsByCardIds( $this->_OBJ_TXT, $obj_PaymentMethods);
 
             $this->assertEquals(8, $obj_SR[1]->getCardTypeId());
             $this->assertEquals(11, $obj_SR[2]->getCardTypeId());
@@ -92,11 +95,11 @@ class PaymentMethodTest extends baseAPITest
         $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
         $obj_XML = $this->getPaymentMethods(array(111,222));
         $obj_PaymentMethodResponse = RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
-
+        $readOnlyRepo = new ReadOnlyConfigRepository($this->_OBJ_DB,$obj_TxnInfo);
         if($obj_PaymentMethodResponse instanceof RoutingServiceResponse)
         {
             $obj_PaymentMethods = $obj_PaymentMethodResponse->getPaymentMethods();
-            $obj_SR = PaymentMethod::produceConfigurations($this->_OBJ_DB, $this->_OBJ_TXT, $obj_TxnInfo, $obj_PaymentMethods);
+            $obj_SR = $readOnlyRepo->getCardConfigurationsByCardIds( $this->_OBJ_TXT, $obj_PaymentMethods);
             $this->assertEmpty($obj_SR);
         }
     }

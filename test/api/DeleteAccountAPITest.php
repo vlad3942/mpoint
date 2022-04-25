@@ -87,7 +87,7 @@ class DeleteAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card and account successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
@@ -149,7 +149,7 @@ class DeleteAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card and account successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
@@ -183,7 +183,7 @@ class DeleteAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card and account successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
@@ -214,7 +214,7 @@ class DeleteAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card and account successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
@@ -246,7 +246,7 @@ class DeleteAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card and account successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
@@ -274,7 +274,7 @@ class DeleteAccountAPITest extends baseAPITest
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
-        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card and account successfully deleted</status><card-tokens eua-id="5001"><token>1767989 ### CELLPOINT ### 100 ### DKK</token></card-tokens></root>', $sReplyBody);
 
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));

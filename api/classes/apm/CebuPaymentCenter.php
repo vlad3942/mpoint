@@ -24,7 +24,7 @@ class CebuPaymentCenter extends CPMPSP
 {
     public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new CebuPaymentCenterException("Method: getPaymentData is not supported by Cebu Payment Center"); }
 	public function getPSPID() { return Constants::iCEBUPAYMENTCENTER_APM; }
-    public function initialize(PSPConfig $obj_PSPConfig = NULL, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL,$authToken = NULL)
+    public function initialize(PSPConfig $obj_PSPConfig = NULL, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL,$authToken = NULL, $cardName='', $aWalletCardSchemes = array())
     {
         if($card_type_id !== -1)
         {

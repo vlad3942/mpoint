@@ -34,7 +34,9 @@ define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
 // Require API for handling and reporting errors
 require_once(sAPI_CLASS_PATH ."report.php");
-require_once(sAPI_CLASS_PATH ."text.php");
+//Require API for Text Transalation // This functionality no longer required. To minimize the impact dummy class is created instead of removing code. Code refactoring is required in phase 2.
+use api\classes\core\TranslateText;
+//require_once(sCLASS_PATH ."core/TranslateText.php");
 // Require API for defining the Database interface
 require_once(sAPI_INTERFACE_PATH ."database.php");
 // Require Database Abstraction API
@@ -57,5 +59,5 @@ $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 ?>

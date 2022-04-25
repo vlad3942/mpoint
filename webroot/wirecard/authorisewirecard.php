@@ -14,13 +14,6 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the wirecard component
 require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the datacash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the Mada Mpgs component
-require_once(sCLASS_PATH ."/mada_mpgs.php");
-// Require specific Business logic for the globalcollect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
 
@@ -287,7 +280,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 		}
 	
 	
-		if ($code == 2000)
+		if ($code == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_ACCEPTED_STATE, $obj_Client->getReplyBody());
 		}

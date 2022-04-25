@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Kalpesh Parikh"
+               id="2021-06-30-setup-v2.29.0-log-2">
+
+        <modifyDataType  catalogName="log"
+                         schemaName="log"
+                         tableName="additional_data_tbl"
+                         columnName="type"
+                         newDataType="varchar(255)"
+        />
+
+        <sql dbms="postgresql" endDelimiter=";">
+
+            DROP TYPE IF EXISTS log.additional_data_ref;
+
+            CREATE TYPE log.additional_data_ref AS ENUM (
+            'Flight',
+            'Passenger',
+            'Order',
+            'Transaction',
+            'Session'
+            );
+
+            ALTER TABLE log.additional_data_tbl
+            ALTER COLUMN type TYPE log.additional_data_ref
+            USING (type::log.additional_data_ref);
+        </sql>
+
+    </changeSet>
+
+    <changeSet author="Kalpesh Parikh"
+               id="2021-09-07-setup-v2.29.0-log-1">
+
+        <sql dbms="postgresql" endDelimiter=";">
+            ALTER PUBLICATION mpoint_log_pub ADD TABLE log.order_tbl;
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -41,18 +41,6 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the CPM GATEWAY component
 require_once(sINTERFACE_PATH ."/cpm_gateway.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Android Pay component
-require_once(sCLASS_PATH ."/androidpay.php");
-// Require specific Business logic for the MasterPass component
-require_once(sCLASS_PATH ."/masterpass.php");
-// Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresscheckout.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
 
 require_once(sCLASS_PATH ."/payment_processor.php");
 
@@ -106,7 +94,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				{
 					$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'get-payment-summary'}[$i]->transaction["id"], $_OBJ_DB);
 					// Re-Intialise Text Translation Object based on transaction
-					$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+					$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 					$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 					for ($j=0; $j<count($obj_DOM->{'get-payment-summary'}[$i]->transaction->card); $j++)
 					{

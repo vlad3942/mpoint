@@ -40,7 +40,7 @@ try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($imPointID, $_OBJ_DB);
 
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 	$obj_mPoint = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"]);
 
@@ -131,7 +131,7 @@ try
 		if ($obj_TxnInfo->useAutoCapture() == AutoCaptureType::eMerchantLevelAutoCapt && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			$responseCode = $obj_mPoint->capture();
-			if ($responseCode == 1000)
+			if ($responseCode == Constants::iTRANSACTION_CREATED)
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));

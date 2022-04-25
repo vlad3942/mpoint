@@ -2,7 +2,7 @@
 
 FROM registry.t.cpm.dev/library/phpcomposerbuildimage:latest as devbuilder
 COPY api api
-COPY composer.json composer.lock* ./
+COPY composer.json composer.lock ./
 RUN composer install -v --prefer-dist
 
 #-----------------------RUN UNITTESTS-----------------------------
@@ -42,7 +42,7 @@ FROM devbuilder as builder
 RUN composer install -v --prefer-dist --no-dev
 
 #-----------------------FINAL IMAGE-------------------------------
-FROM registry.t.cpm.dev/library/phpfpmextras:master20210127155931
+FROM registry.t.cpm.dev/library/phpfpmextras:master20210907122925
 
 USER 0
 

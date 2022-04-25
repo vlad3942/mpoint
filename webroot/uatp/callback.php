@@ -54,7 +54,24 @@ if(isset($_REQUEST['tickernumbers']))
 	$ticketNumbers = $_REQUEST['tickernumbers'];
 }
 
-$status = $_REQUEST['status'];
+$status = (int)$_REQUEST['status'];
+
+/**
+ * Partial State are not scoped for SWA-UATP
+ */
+switch ($status)
+{
+    CASE Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+        $status = Constants::iPAYMENT_CAPTURED_STATE;
+        break;
+    CASE Constants::iPAYMENT_PARTIALLY_CANCELLED_STATE;
+        $status = Constants::iPAYMENT_CANCELLED_STATE;
+        break;
+    CASE Constants::iPAYMENT_PARTIALLY_REFUNDED_STATE;
+        $status = Constants::iPAYMENT_REFUNDED_STATE;
+        break;
+}
+
 
 $sPassbookStatus = 'done';
 if($status == Constants::iPAYMENT_CAPTURE_FAILED_STATE || $status == Constants::iPAYMENT_CANCEL_FAILED_STATE || $status == Constants::iPAYMENT_REFUND_FAILED_STATE) { $sPassbookStatus = 'error'; }
@@ -65,8 +82,10 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 	try
 	{
 		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspid);
+		$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+        $obj_PaymentProcessor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspid, $aHTTP_CONN_INFO);
+        $obj_UATP = $obj_PaymentProcessor->getPSPInfo();
+        $obj_PSPConfig = $obj_PaymentProcessor->getPSPConfig();
 
 		$iStateID = (integer) $status;
 		$performedOptArray = array($iStateID);
@@ -91,7 +110,7 @@ if($status != Constants::iSESSION_COMPLETED && $status != Constants::iPAYMENT_RE
 		$obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 		$code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, $sPassbookStatus, $obj_TxnInfo->getCardID(), $performedOptArray, $txnPassbookObj);
 		
-		if($code === 1000)
+		if($code === Constants::iTRANSACTION_CREATED)
 		{
 			header("HTTP/1.1 200 Ok");
 			header("Content-Type: text/xml; charset=\"UTF-8\"");

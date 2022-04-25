@@ -44,14 +44,6 @@ require_once(sCLASS_PATH ."/account_config.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 // Require Data class for Wallet processor
 require_once(sCLASS_PATH ."/wallet_processor.php");
-// Require specific Business logic for the VISA checkout component
-require_once(sCLASS_PATH ."/visacheckout.php");
-// Require specific Business logic for the Apple Pay component
-require_once(sCLASS_PATH ."/applepay.php");
-// Require specific Business logic for the Google Pay component
-require_once(sCLASS_PATH ."/googlepay.php");
-// Require specific Business logic for the Master Pass component
-require_once(sCLASS_PATH ."/masterpass.php");
 
 $aMsgCds = array();
 

@@ -110,18 +110,14 @@ class ClientRouteCountry
                     (routeconfigid, countryid)
                     values ($1, $2)";
 
-                $resource = $this->objDB->prepare($sql);
-                if (is_resource($resource) === true) {
-                    $aParam = array( $routeConfigId, $countryId );
-                    $result = $this->objDB->execute($resource, $aParam);
-                    if ($result === false) {
-                        throw new Exception("Unable to add route country", E_USER_ERROR);
-                        return false;
-                    }
-                } else {
+                $aParam = array( $routeConfigId, $countryId );
+                $result = $this->objDB->executeQuery($sql, $aParam);
+                if ($result === false) {
                     trigger_error("Unable to build query for add route country", E_USER_WARNING);
+                    throw new Exception("Unable to add route country", E_USER_ERROR);
                     return false;
                 }
+
             }
             return true;
         } else {

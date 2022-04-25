@@ -13,6 +13,16 @@
  * @license Cellpoint Mobile
  */
 
+require_once(sCLASS_PATH ."/core/card.php");
+use api\classes\AdditionalData;
+use api\classes\Amount;
+use api\classes\FraudStatusTxnData;
+use api\classes\CallbackMessageRequest;
+use api\classes\PSPData;
+use api\classes\StateInfo;
+use api\classes\TransactionData;
+use \api\classes\BillingAddress;
+use api\classes\OrderData;
 /**
  * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
@@ -33,7 +43,7 @@ class Home extends General
 	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param 	CountryConfig $oCC 		Reference to the data object with the Country Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCC=null)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, CountryConfig &$oCC=null)
 	{
 		parent::__construct($oDB, $oTxt);
 
@@ -461,7 +471,7 @@ class Home extends General
      * @param   integer $countryId
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $is_legacy='true')
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null, $aPaymentMethods = array(), $countryId = null, $is_legacy = true)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -560,14 +570,14 @@ class Home extends General
      * @param boolean $adc            Include Stored Cards where the card type has been disabled, defaults to false
      * @param array $aPaymentMethods  Holds list of payment methods given by CRS
      * @param integer $countryId      Hold unqiue ID cof the country
-     * @param string $is_legacy       Hold a flag which will deside whether to use legacy flow or not
+     * @param bool $is_legacy       Hold a flag which will deside whether to use legacy flow or not
      * @return string
      */
 	private function getCardQuery($id, $oCC, $adc, $aPaymentMethods, $countryId, $is_legacy)
     {
         $sql = '';
         $aCardId = array_map(function ($paymentMethod) { return $paymentMethod->id; }, $aPaymentMethods);
-        if(strtolower($is_legacy) == 'false')
+        if($is_legacy === false)
         {
             $sql = "SELECT DISTINCT ON (EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket) EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
 					SC.id AS typeid, SC.name AS type, SC.cvclength AS cvclength,
@@ -722,14 +732,15 @@ class Home extends General
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE .", ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id DESC";
-//		echo $sql ."\n";
-		$stmt1 = $this->getDBConn()->prepare($sql);
+
+		$sqlState = $sql;
+
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_CAPTURE_FAILED_STATE ." ". Constants::iPAYMENT_CANCEL_FAILED_STATE .", ". Constants::iPAYMENT_REFUND_FAILED_STATE .", ". Constants::iPAYMENT_REQUEST_CANCELLED_STATE .", ". Constants::iPAYMENT_REQUEST_EXPIRED_STATE.")
 				ORDER BY id ASC";
-//		echo $sql ."\n";
-		$stmt2 = $this->getDBConn()->prepare($sql);
+
+		$sqlStateData = $sql;
 
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
@@ -739,7 +750,7 @@ class Home extends General
 			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
+				$res1 = $this->getDBConn()->executeQuery($sqlState, $aParams);
 				if (is_resource($res1) === true)
 				{
 					$RS1 = $this->getDBConn()->fetchName($res1);
@@ -758,7 +769,7 @@ class Home extends General
 			if ($debug === true && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
+				$res2 = $this->getDBConn()->executeQuery($sqlStateData, $aParams);
 				
 				if (is_resource($res2) === true)
 				{
@@ -910,12 +921,33 @@ class Home extends General
 		    $aTxnId = array();
 		    if($sessionId !== 0)
             {
-                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId;
+                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId ." order by id asc ";
                 $RSTxnId = $this->getDBConn()->query($sql);
                 while ($RS = $this->getDBConn()->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
             }
 		    else { $aTxnId[0] = $txnId; }
+            $txnXml = "";
+		    $txnCnt = count($aTxnId);
+            $aTxnData = [];
 
+            $objPaymentMethod = null;
+            $obj_TxnInfo = null;
+            /**
+             * CMP-6016
+             * This is made for split payment retry cases where session type id will be 1 after init with full amount
+             * In such cases if session tpe id is 1 then send only latest txn
+             */
+            if($sessionId !== 0 && $mode === 1 && empty($aTxnId) === false) {
+                $getLastTxn = end($aTxnId);
+                $sql = "SELECT sessiontypeid  FROM Log" . sSCHEMA_POSTFIX . ".Session_Tbl Where id = " . $sessionId ;
+                $getSessionTypeId = $this->getDBConn()->query($sql);
+                while ($RSES = $this->getDBConn()->fetchName($getSessionTypeId)) {
+                    if($RSES["SESSIONTYPEID"] == 1) {
+                        $aTxnId  = array();
+                        $aTxnId[] = $getLastTxn;
+                    }
+                }
+            }
             foreach ($aTxnId as $index => $txnid)
             {
 
@@ -929,51 +961,46 @@ class Home extends General
              // only final payment status code will be returned to avoid extra checks at API consumer side
                 if($mode === 1)
                 {
-                    $state = -1;
-                    if($objPaymentMethod->PaymentType == Constants::iPAYMENT_TYPE_OFFLINE)
-                    {
-                        $state = Constants::iPAYMENT_PENDING_STATE;
-                    }
-                    $RSMsg = false;
-
-                    if(($obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_COMPLETED ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_PARTIALLY_COMPLETED ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS ||
-                        $obj_TxnInfo->getPaymentSession()->getStateId() == Constants::iPAYMENT_3DS_FAILURE_STATE) ||
-                        $obj_TxnInfo->hasEitherState($this->getDBConn(),array(Constants::iPAYMENT_REJECTED_STATE ,Constants::iPRE_FRAUD_CHECK_REJECTED_STATE,Constants::iPOST_FRAUD_CHECK_REJECTED_STATE,$state)))
-                    {
-                        $sql = "WITH WT1 as
-                           (SELECT DISTINCT stateid, txnid, S.name,m.id  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id WHERE txnid = ".$txnid." and M.enabled = true),
-                            WT2 as (SELECT stateid,txnid,name,id FROM (SELECT *,rank() over(partition by txnid order by id desc) FROM WT1 WHERE stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",
-                            ".Constants::iPAYMENT_CANCELLED_STATE.",".Constants::iPAYMENT_REFUNDED_STATE.",".Constants::iPAYMENT_3DS_VERIFICATION_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_STATE.",
-                            ".Constants::iPAYMENT_REJECTED_STATE.",".Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE.",".Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE.",
-                            ".Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE.",".Constants::iPAYMENT_TIME_OUT_STATE.",".Constants::iPSP_TIME_OUT_STATE.",".Constants::iPAYMENT_CAPTURE_FAILED_STATE.",".Constants::iPAYMENT_3DS_FAILURE_STATE.",
-                            ".Constants::iPAYMENT_CANCEL_FAILED_STATE.",".Constants::iPAYMENT_REFUND_FAILED_STATE.",".Constants::iPAYMENT_REQUEST_CANCELLED_STATE.",".Constants::iPAYMENT_REQUEST_EXPIRED_STATE.",
-                            ".Constants::iPAYMENT_DUPLICATED_STATE.",".Constants::iPAYMENT_3DS_SUCCESS_AUTH_NOT_ATTEMPTED_STATE.",".$state.")) s where s.rank=1
-                            UNION
-                            SELECT * FROM WT1 WHERE stateid in (".Constants::iPRE_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPRE_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPRE_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPRE_FRAUD_CHECK_REVIEW_STATE.",".Constants::iPRE_FRAUD_CHECK_REJECTED_STATE.",
-                            ".Constants::iPRE_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_ACCEPTED_STATE.",".Constants::iPOST_FRAUD_CHECK_UNAVAILABLE_STATE.",".Constants::iPOST_FRAUD_CHECK_UNKNOWN_STATE.",".Constants::iPOST_FRAUD_CHECK_REVIEW_STATE.",
-                            ".Constants::iPOST_FRAUD_CHECK_REJECTED_STATE.",".Constants::iPOST_FRAUD_CHECK_CONNECTION_FAILED_STATE.",".Constants::iPOST_FRAUD_CHECK_SKIP_RULE_MATCHED_STATE.") 
-                            )
-                           SELECT  *,row_number() OVER(ORDER BY id ASC) AS rownum FROM WT2";
-
-                            $RSMsg = $this->getDBConn()->query($sql);
-                    }
+                    $RSMsg = $this->getLatestTxnState($obj_TxnInfo->getID());
                 }
                 else
                 {
-                    $sql = "SELECT DISTINCT stateid, txnid, row_number() OVER(ORDER BY m.id ASC) AS rownum, S.name 
-                                  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl m INNER JOIN Log".sSCHEMA_POSTFIX.".State_Tbl S on M.stateid = S.id
-                                  WHERE txnid = ".$txnid." and M.enabled = true";
-                    $RSMsg = $this->getDBConn()->query($sql);
-
+                    $RSMsg = $this->getAllTxnState($obj_TxnInfo->getID());
                 }
 
-                    $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
-                    $objCountryConf = $obj_TxnInfo->getCountryConfig();
-            		$objClientConf = $obj_TxnInfo->getClientConfig();
-            		if($objClientConf->getID() === $clientid)
-            		{
+                $objCurrConf = $obj_TxnInfo->getCurrencyConfig();
+                $objCountryConf = $obj_TxnInfo->getCountryConfig();
+                $objClientConf = $obj_TxnInfo->getClientConfig();
+
+                if($objClientConf->getID() === $clientid)
+                {
+
+                    if ($mode == 2) {
+
+
+                        array_push($aTxnData, $this->constructTransactionInfo($obj_TxnInfo));
+                        if ($index == $txnCnt - 1) {
+
+                                $status = $obj_TxnInfo->getLatestPaymentState($this->getDBConn());
+                                $sub_code = null;
+                                $response = $this->constructSessionInfo($obj_TxnInfo, $aTxnData, $status, $sub_code);
+                                $xml .= xml_encode($response);
+
+                                if($sessionId === 0) {
+                                    $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                                    // add linked transaction
+                                    if ($linkedTxnId !== null) {
+                                        $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(), $objPaymentMethod->PaymentType);
+                                        $xml .= $getLinkedTxns;
+                                    } else {
+                                        $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(), $objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                                    }
+                                }
+                        }
+
+
+                    } else {
+
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
                         if($aTxnAdditionalData !== null)
@@ -981,24 +1008,24 @@ class Home extends General
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
                             {
-                                $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                                $sTxnAdditionalDataXml .= '<param name="'.$key.'">'. $value .'</param>';
                             }
                             $sTxnAdditionalDataXml .="</additional-data>";
                         }
 
-                         $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
-                         $pendingAmount = intval($obj_paymentSession->getPendingAmount());
-                         $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
+                        $obj_paymentSession = $obj_TxnInfo->getPaymentSession();
+                        $pendingAmount = intval($obj_paymentSession->getPendingAmount());
+                        $objPSPType = $obj_TxnInfo->getPSPType($this->getDBConn());
 
-                         $amount = $obj_TxnInfo->getAmount();
+                        $amount = $obj_TxnInfo->getAmount();
 
-                         $sStatusMessagesXML = '';
-                         while ($RS = $this->getDBConn()->fetchName($RSMsg) )
-                         {
-                             $sStatusMessagesXML .= '<status-message id = "'.$RS['STATEID'].'" position = "'.$RS['ROWNUM'] .'">' . $RS['NAME'] . '</status-message>';
-                         }
+                        $sStatusMessagesXML = '';
+                        foreach ($RSMsg as $msg )
+                        {
+                            $sStatusMessagesXML .= '<status-message id = "'.$msg['STATEID'].'" position = "'.$msg['ROWNUM'] .'">' . $msg['NAME'] . '</status-message>';
+                        }
 
-                         $sessionType = $objClientConf->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+                         $sessionType = $obj_paymentSession->getSessionType();
                          $googleAnalyticsId = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
                          $paymentCompleteMethod = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
                          $isEmbeddedHpp = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
@@ -1009,6 +1036,7 @@ class Home extends General
                          $cancelUrl = $obj_TxnInfo->getCancelURL();
                          $cssUrl = $obj_TxnInfo->getCSSURL();
                          $logoUrl = $obj_TxnInfo->getLogoURL();
+                         $issuingBank = $obj_TxnInfo->getIssuingBankName();
                          if($sessionId > 0 && $index === 0)
                          {
                              $xml .= $obj_TxnInfo->getPaymentSessionXML();
@@ -1021,8 +1049,12 @@ class Home extends General
                          }
                          if(empty($cardMask) === false){ $xml .= '<card-mask>'.htmlspecialchars($cardMask, ENT_NOQUOTES).'</card-mask>'; }
                          if(empty($cardExpiry) === false){ $xml .= '<card-expiry>'.htmlspecialchars($cardExpiry, ENT_NOQUOTES).'</card-expiry>'; }
+                         if(empty($issuingBank) === false){ $xml .= '<issuing-bank>'.htmlspecialchars($issuingBank, ENT_NOQUOTES).'</issuing-bank>'; }
                          $xml .= '<card-name>'.$objPaymentMethod->CardName.'</card-name>';
                          $xml .= '<psp-name>'.$objPSPType->PSPName.'</psp-name>';
+                         if($obj_TxnInfo->getInstallmentValue() > 0) {
+                             $xml .= '<installment-value>' . $obj_TxnInfo->getInstallmentValue() . '</installment-value>';
+                         }
                          $xml .= '<accept-url>' . htmlspecialchars($acceptUrl, ENT_NOQUOTES) . '</accept-url>';
                          $xml .= '<cancel-url>' . htmlspecialchars($cancelUrl, ENT_NOQUOTES) . '</cancel-url>';
                          $xml .= '<css-url>' . htmlspecialchars($cssUrl, ENT_NOQUOTES) . '</css-url>';
@@ -1034,69 +1066,84 @@ class Home extends General
             		     $xml .= '<createdDate>'. htmlspecialchars(date("Y-m-d", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdDate>'; //YYMMDD
             		     $xml .= '<createdTime>'. htmlspecialchars(date("H:i:s", strtotime($obj_TxnInfo->getCreatedTimestamp())), ENT_NOQUOTES) .'</createdTime>'; //hhmmss
 
-                         $xml .= '<status>' . $sStatusMessagesXML . '</status>';
-                         $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
-                     //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
-            		     $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
-            		     if ($obj_TxnInfo->getProfileID() !== '') { $xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"'; }
-            		     $xml .= '>';
-                         $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
-                         $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
-                         $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
-                         $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
-                         $xml .= '</client-info>';
-                         $xml .= $sTxnAdditionalDataXml;
-                         $aShippingAddress = $obj_TxnInfo->getBillingAddr();
-                         if (empty($aShippingAddress) === false)
-                         {
-                             $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
-                             $xml .= '<address>';
-                             $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
-                             $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
-                             $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
-                             $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
-                             $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
-                             $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
-                             $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
-                             if (($obj_CountryConfig instanceof CountryConfig) === true)
-                             {
-                                 $xml .= '<country>';
-                                 $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
-                                 $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
-                                 $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
-            		     		 $xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
-            		     		 $xml .= '</country>';
-                             }
-                             if (empty($aShippingAddress['mobile']) === false)
-                             {
-                                 $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
-                                 $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
-                             }
-                             if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
-                             $xml .= '</address>';
-                         }
+                        $xml .= '<status>' . $sStatusMessagesXML . '</status>';
+                        $xml .= '<sign>' . md5($objClientConf->getID() . '&' . $obj_TxnInfo->getID() . '&' . $obj_TxnInfo->getOrderID() . '&' . $objCurrConf->getID() . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $objClientConf->getSalt()) . '</sign>';
+                        //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
+                        $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
+                        if ($obj_TxnInfo->getProfileID() !== '') { $xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"'; }
+                        $xml .= '>';
+                        $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
+                        $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
+                        $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
+                        $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
+                        $xml .= '</client-info>';
+                        $xml .= $sTxnAdditionalDataXml;
+                        $aShippingAddress = $obj_TxnInfo->getBillingAddr();
+                        if (empty($aShippingAddress) === false)
+                        {
+                            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+                            $xml .= '<address>';
+                            $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
+                            $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
+                            $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
+                            $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
+                            $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
+                            $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
+                            $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
+                            if (($obj_CountryConfig instanceof CountryConfig) === true)
+                            {
+                                $xml .= '<country>';
+                                $xml .= '<name>' . $obj_CountryConfig->getName() . '</name>';
+                                $xml .= '<code>' . $obj_CountryConfig->getNumericCode() . '</code>';
+                                $xml .= '<alpha2code>' . $obj_CountryConfig->getAlpha2code() . '</alpha2code>';
+                                $xml .= '<alpha3code>' . $obj_CountryConfig->getAlpha3code() . '</alpha3code>';
+                                $xml .= '</country>';
+                            }
+                            if (empty($aShippingAddress['mobile']) === false)
+                            {
+                                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
+                                $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+                            }
+                            if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
+                            $xml .= '</address>';
+                        }
+
                          $xml .= '</transaction>';
-
-                         if ( ($objCountryConf instanceof CountryConfig) === true)
-                         {
-                             $iAccountID = $obj_TxnInfo->getAccountID();
-
-                             $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
-                                          WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
-                                          ORDER BY EC.created DESC LIMIT 1";
-                             $resultSet = $this->getDBConn()->getName($cardsSql);
-                             if (empty($resultSet) === false)
-                             {
-                                 $xml .= '<stored-card>';
-                                 $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
-                                 $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
-                                 $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
-                                 $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
-                                 $xml .= '</stored-card>';
+                         if($sessionId == 0 && $index == 0) {
+                             // this needs to be added only for parent txn
+                             $linkedTxnId = $obj_TxnInfo->getAdditionalData('linked_txn_id');
+                             // add linked transaction
+                             if ($linkedTxnId !== null) {
+                                 $getLinkedTxns = General::getLinkedTransactions($this->getDBConn(), $linkedTxnId, $obj_TxnInfo->getID(),$objPaymentMethod->PaymentType);
+                                 $xml .= $getLinkedTxns;
                              }
-            		     }
-            		}
-            		else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
+                             else
+                             {
+                                 $xml .= "<payment_status>" . General::checkTxnStatus($this->getDBConn(),$objPaymentMethod->PaymentType, $obj_TxnInfo->getID()) . "</payment_status>";
+                             }
+                         }
+
+                        if ( ($objCountryConf instanceof CountryConfig) === true)
+                        {
+                            $iAccountID = $obj_TxnInfo->getAccountID();
+
+                            $cardsSql = "SELECT EC.id, EC.cardid, EC.mask, EC.expiry FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EC
+                                      WHERE EC.accountid = $iAccountID AND EC.enabled = '1'
+                                      ORDER BY EC.created DESC LIMIT 1";
+                            $resultSet = $this->getDBConn()->getName($cardsSql);
+                            if (empty($resultSet) === false)
+                            {
+                                $xml .= '<stored-card>';
+                                $xml .= '<card-id>' . $resultSet['ID'] . '</card-id>';
+                                $xml .= '<card-mask>' . $resultSet['MASK'] . '</card-mask>';
+                                $xml .= '<card-expiry>' . $resultSet['EXPIRY'] . '</card-expiry>';
+                                $xml .= '<card-type>' . $resultSet['CARDID'] . '</card-type>';
+                                $xml .= '</stored-card>';
+                            }
+                        }
+                    }
+                }
+                else { trigger_error("Txn Id : ". $txnid. " doesn't belongs to the client: ". $clientid, E_USER_NOTICE); }
             }
         }
         catch (mPointException $e) { return $xml; }
@@ -1694,7 +1741,263 @@ class Home extends General
         return [];
     }
 
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int      $amt
+     * @param int $sub_code_id
+     *
+     * @return \TransactionData
+     * @throws \Exception
+     */
+    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    {
+        $obj_CustomerInfo = NULL;
+        $obj_PSPInfo = NULL;
+        $obj_StateInfo= NULL;
+        $aClientData = [];
+        $aProductInfo = [];
+        $aDeliveryInfo = [];
+        $aShippingInfo = [];
+        $additionalData = [];
+        $sub_code = NULL;
 
+        $obj_getPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
+        if($amt === -1)
+        {
+            $amt = $txnInfo->getConvertedAmount();
+        }
+
+        $amount = new Amount($amt, $txnInfo->getCurrencyConfig()->getID(),$txnInfo->getCurrencyConfig()->getDecimals(),$txnInfo->getCurrencyConfig()->getCode(), $txnInfo->getConversationRate());
+
+        if(empty($sid))
+        {
+            $sid = $txnInfo->getLatestPaymentState($this->getDBConn());
+        }
+        $objPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
+        $aCardInfo = [
+            'ID' => $txnInfo->getCardID(),
+            'NAME' => $objPaymentMethod->CardName,
+            'MASKEDCARDNUMBER' => $txnInfo->getCardMask(),
+            'EXPIRY' => $txnInfo->getCardExpiry()
+        ];
+        $obj_CardInfo = new Card($aCardInfo);
+
+        $status      = $sid;
+        if($sub_code_id > 0){
+            $sub_code= $sub_code_id;
+        }
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
+
+        if ($txnInfo->getClientConfig()->sendPSPID() === TRUE) {
+            $pspId = $txnInfo->getPSPID();
+            $obj_PSPInfo =  new PSPData($pspId, $this->getPSPName($pspId), $txnInfo->getExternalID());
+        }
+
+        if (($txnInfo->getAccountID() > 0) === TRUE) {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setEMail($txnInfo->getEMail());
+            $obj_CustomerInfo->setMobile($txnInfo->getMobile());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+            $obj_CustomerInfo->setLanguage($txnInfo->getLanguage());
+        }
+        else{
+            $obj_CustomerInfo = new CustomerInfo(-1,null, $txnInfo->getMobile(),$txnInfo->getEMail(),'','',$txnInfo->getLanguage() );
+            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+            $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+        }
+
+        $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
+        $aTxnAdditionalData = $txnInfo->getAdditionalData("", true);
+        $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
+
+        if (empty($getFraudStatusCode) === FALSE) {
+
+            if (isset($aTxnAdditionalData['pre_auth_ext_id'])) {
+                $pre_auth_ext_id = $aTxnAdditionalData['pre_auth_ext_id'];
+            }
+            if (isset($aTxnAdditionalData['pre_auth_ext_status_code'])) {
+                $pre_auth_ext_status_code = $aTxnAdditionalData['pre_auth_ext_status_code'];
+            }
+            if (isset($aTxnAdditionalData['post_auth_ext_id'])) {
+                $post_auth_ext_id = $aTxnAdditionalData['post_auth_ext_id'];
+            }
+            if (isset($aTxnAdditionalData['post_auth_ext_status_code'])) {
+                $post_auth_ext_status_code = $aTxnAdditionalData['post_auth_ext_status_code'];
+            }
+
+            $status_code = $getFraudStatusCode['status_code'];
+            $status_desc = $getFraudStatusCode['status_desc'];
+            $obj_FraudStatus = new FraudStatusTxnData($status_code, $status_desc, $pre_auth_ext_id, $pre_auth_ext_status_code, $post_auth_ext_id, $post_auth_ext_status_code);
+            $transactionData->setFraudStatus($obj_FraudStatus);
+        }
+
+        $transactionData->setRouteConfigId($txnInfo->getRouteConfigID());
+        $transactionData->setFee($txnInfo->getFee());
+        $transactionData->setDescription($txnInfo->getDescription());
+        if (isset($aTxnAdditionalData['hmac'])) {
+            $transactionData->setHmac($aTxnAdditionalData['hmac']);
+            unset($aTxnAdditionalData['hmac']);
+        } else {
+            $transactionData->setHmac($txnInfo->getHMAC());
+        }
+        $transactionData->setProductType($txnInfo->getProductType());
+        $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
+        $transactionData->setWalletId($txnInfo->getWalletID());
+
+        if (!is_null($obj_PSPConfig)) {
+            $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
+        }
+
+        $foreignExchangeId = $txnInfo->getExternalRef(Constants::iForeignExchange,$txnInfo->getPSPID());
+        if(empty($foreignExchangeId) === false) {
+            $transactionData->setForeignExchangeId($foreignExchangeId);
+        }
+        $dateTime = new DateTime($txnInfo->getCreatedTimestamp());
+        $transactionData->setDateTime($dateTime->format('c'));
+        $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
+        if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
+            $dateTime->setTimezone(new DateTimeZone($timeZone));
+            $transactionData->setLocalDateTime($dateTime->format('c'));
+        }
+        $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
+
+        if ($aTxnAdditionalData !== NULL) {
+            foreach ($aTxnAdditionalData as $name => $value) {
+                array_push($additionalData, new AdditionalData($name, $value));
+            }
+        }
+        $transactionData->setAdditionalData($additionalData);
+
+        $transactionId = $txnInfo->getID();
+        $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);
+        $aProducts = $this->getMessageData($transactionId, Constants::iPRODUCTS_STATE);
+        $adeliveryinfo = $this->getMessageData($transactionId, Constants::iDELIVERY_INFO_STATE);
+        $ashippinginfo = $this->getMessageData($transactionId, Constants::iSHIPPING_INFO_STATE);
+        $abillingaddress = $txnInfo->getBillingAddr();
+
+        // Add custom Client Variables
+        foreach ($aClientVars as $name => $value) {
+            $aClientData[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setClientData($aClientData);
+
+        // Add Purchased Products
+        if (count($aProducts) > 0) {
+            foreach ($aProducts["names"] as $key => $name) {
+                $aProductInfo[] = new ProductInfo($name, $aProducts["quantities"][$key], $aProducts["prices"][$key]);
+            }
+        }
+
+        $transactionData->setProductInfo($aProductInfo);
+
+        // Add Delivery Information
+        foreach ($adeliveryinfo as $name => $value) {
+            $aDeliveryInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setDeliveryInfo($aDeliveryInfo);
+
+        // Add Shipping Information
+        foreach ($ashippinginfo as $name => $value) {
+            $aShippingInfo[] = new AdditionalData($name, $value);
+        }
+
+        $transactionData->setShippingInfo($aShippingInfo);
+
+        if (empty($abillingaddress) === false) {
+            $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (int)$abillingaddress['country']);
+            
+            if (isset($abillingaddress['mobile_country_id']) && empty($abillingaddress['mobile_country_id']) === false) {
+                $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(),(integer)$abillingaddress['mobile_country_id']);
+                $abillingaddress['billing_idc'] = $obj_MobileCountryConfig->getCountryCode();
+            }
+            
+            // get country iso code
+            $abillingaddress['country'] = $obj_CountryConfig->getNumericCode();
+            // get country alpha2code code
+            $abillingaddress['alpha2code'] = $obj_CountryConfig->getAlpha2code();
+            $objBillingAddr = new BillingAddress($abillingaddress);
+            $transactionData->setBillingAddress($objBillingAddr);
+        }
+
+
+        $transactionData->setServiceTypeId($txnInfo->getFXServiceTypeID());
+        $transactionData->setPos($txnInfo->getCountryConfig()->getID());
+        $transactionData->setIpAddress($txnInfo->getIP());
+        $transactionData->setInstallment($txnInfo->getInstallmentValue());
+        $getFraudStatusCode = $this->getFraudDetails($txnInfo->getID());
+        if (empty($getFraudStatusCode) === FALSE) {
+            $transactionData->setFraudStatusCode($getFraudStatusCode['status_code']);
+            $transactionData->setFraudStatusDesc($getFraudStatusCode['status_desc']);
+        }
+
+        $transactionData->setAcceptUrl($txnInfo->getAcceptURL());
+        $transactionData->setCancelUrl($txnInfo->getCancelURL());
+        return $transactionData;
+    }
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int|null $sub_code_id
+     * @return \CallbackMessageRequestTest
+     * @throws \Exception
+     */
+    public function constructSessionInfo(TxnInfo $txnInfo, array $aTransactionData, int $status=null, $sub_code = null)
+    {
+        $sale_amount = new Amount($txnInfo->getPaymentSession()->getAmount(), $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+
+        $status      = $status;
+        if($sub_code > 0){
+            $sub_code= $sub_code;
+        }
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($status));
+        $session_type = $txnInfo->getPaymentSession()->getSessionType();
+        $aSessionAdditionalData = $txnInfo->getPaymentSession()->getSessionAdditionalData();
+        $additionalData = [];
+        if ($aSessionAdditionalData !== NULL) {
+            foreach ($aSessionAdditionalData as $name => $value) {
+                array_push($additionalData, new AdditionalData($name, $value));
+            }
+        }
+        $obj_CallbackMessageRequest = new CallbackMessageRequest($txnInfo->getClientConfig()->getID(), $txnInfo->getClientConfig()->getAccountConfig()->getID(), $txnInfo->getSessionId(), $sale_amount, $obj_StateInfo, $aTransactionData,$txnInfo->getCallbackURL(), $session_type, $additionalData);
+        if ($txnInfo->getPaymentSession()->getPendingAmount() > 0) {
+            $pending_amount = $txnInfo->getPaymentSession()->getPendingAmount();
+            $obj_PendingAmt = new Amount($pending_amount, $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
+            $obj_CallbackMessageRequest->setPendingAmt($obj_PendingAmt);
+        }
+        return $obj_CallbackMessageRequest;
+    }
+
+    /**
+     * @param \TxnInfo $txnInfo
+     * @param int|null $sid
+     * @param int      $amt
+     * @param int $sub_code_id
+     *
+     * @return \TransactionData
+     * @throws \Exception
+     */
+    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    {
+        try {
+            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig);
+            $obj_OrderInfo = OrderInfo::produceConfigurations($this->getDBConn(), $txnInfo->getID());
+
+            if (empty($obj_OrderInfo) === false) {
+                $orderData = OrderData::produceConfigurations($this->getDBConn(), $obj_OrderInfo[0]->getId());
+                if (empty($orderData) === false) {
+                    $aTransactionData->setOrderData($orderData);
+                }
+            }
+            return $aTransactionData;
+        } catch (Exception $e) {
+            trigger_error($e->getMessage());
+        }
+    }
 }
 
 

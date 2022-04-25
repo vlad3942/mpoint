@@ -37,7 +37,7 @@ class CreditCard extends EndUserAccount
 	 * @param	TxnInfo $oTI 		Reference to the Data object with the Transaction Information
 	 * @param	UAProfile $oUA 		Reference to the data object with the User Agent Profile for the customer's mobile device
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA=null)
+	public function __construct(RDB &$oDB, api\classes\core\TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA=null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
@@ -269,116 +269,8 @@ class CreditCard extends EndUserAccount
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".StaticRouteLevelConfiguration SRLC ON SRLC.cardaccessid = CA.id AND SRLC.enabled = '1'";
     }
 
-    public function getCardsForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null)
-	{
-	    $res = $this->getCardsQueryForDR($amount, $typeid, $iRoute);
 
-	    if(is_array($res) === false){
-            $res = $this->getCardsQueryForDR($amount, $typeid);
-        }
-
-        $xml = '<cards accountid="' . $this->_obj_TxnInfo->getAccountID() . '">';
-        foreach ($res as $RS ) {
-            $aRS = [];
-            // Transaction instantiated via SMS or "Card" is NOT Premium SMS
-            if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10) {
-                // My Account
-
-                $sName = $RS["NAME"];
-
-                $sql = "SELECT min, \"max\"
-							FROM System" . sSCHEMA_POSTFIX . ".CardPrefix_Tbl
-							WHERE cardid = " . $RS["ID"];
-
-                $aRS = $this->getDBConn()->getAllNames($sql);
-            }
-
-            $pspId = '';
-
-            if (is_null($iRoute)) {
-                $pspId = $RS ["PSPID"];
-            } else {
-                $pspId = $iRoute;
-            }
-
-            // Construct XML Document with card data
-            $enabled = TRUE;
-            if (in_array($RS['ID'], $aDiabledPMs) === TRUE) {
-                $enabled = FALSE;
-            }
-            // Construct XML Document with card data
-            $xml .= '<item id="' . $RS["ID"] . '" type-id="' . $RS["ID"] . '" pspid="' . $pspId . '" min-length="' . $RS["MINLENGTH"] . '" max-length="' . $RS["MAXLENGTH"] . '" cvc-length="' . $RS["CVCLENGTH"] . '" state-id="' . $RS["STATEID"] . '" payment-type="' . $RS['PAYMENTTYPE'] . '"' . ' preferred="' . General::bool2xml($RS['PREFERRED']) . '"' . ' enabled = "' . General::bool2xml($enabled) . '"' . ' processor-type = "' . $RS['PSP_TYPE'] . '" installment = "' . $RS['INSTALLMENT'] . '" cvcmandatory = "' . General::bool2xml($RS['CVCMANDATORY']) . '" walletid = "' . $RS['WALLETID'] . '" dcc="' . var_export($RS["DCCENABLED"], TRUE) . '" >';
-            $xml .= '<name>' . htmlspecialchars($sName, ENT_NOQUOTES) . '</name>';
-            $xml .= '<account>' . $RS["ACCOUNT"] . '</account>';
-            $xml .= '<subaccount>' . $RS["SUBACCOUNT"] . '</subaccount>';
-            $xml .= '<currency>' . $RS["CURRENCY"] . '</currency>';
-            $xml .= '<capture_type>' . $RS["CAPTURE_TYPE"] . '</capture_type>';
-            if (is_array($aRS) === TRUE && count($aRS) > 0) {
-                $xml .= '<prefixes>';
-                for ($i = 0, $iMax = count($aRS); $i < $iMax; $i++) {
-                    $xml .= '<prefix>';
-                    $xml .= '<min>' . $aRS[$i]["MIN"] . '</min>';
-                    $xml .= '<max>' . $aRS[$i]["MAX"] . '</max>';
-                    $xml .= '</prefix>';
-                }
-                $xml .= '</prefixes>';
-            } else {
-                $xml .= '<prefixes />';
-            }
-            $xml .= '</item>';
-
-        }
-        $xml .= '</cards>';
-
-        return $xml;
-    }
-
-    private function getCardsQueryForDR($amount, $typeid = null, $iRoute = null, $walletid = null)
-    {
-        $sql = 'SELECT DISTINCT ON (C.id, CA.walletid) C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
-					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type, CA.installment, CA.capture_type, SRLC.cvcmandatory, CA.walletid,CA.dccEnabled
-				FROM ' . $this->_constDataSourceQuery() . '
-				WHERE CA.clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . ' 
-                AND A.id = ' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
-                AND PC.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
-                AND PP.currencyid = ' . $this->_obj_TxnInfo->getCurrencyConfig()->getID(). '
-                AND PP.amount IN (-1, ' . (int)$amount .")
-                AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
-                AND PSP.system_type NOT IN (".Constants::iPROCESSOR_TYPE_TOKENIZATION.",".Constants::iPROCESSOR_TYPE_PRE_FRAUD_GATEWAY. ",".Constants::iPROCESSOR_TYPE_POST_FRAUD_GATEWAY.')';
-
-        if(empty($iRoute) === false){
-            $sql .= ' AND CA.pspid =' . $iRoute ;
-            $sql .= ' AND CA.countryid IS NOT NULL';
-        }else{
-            $sql .= ' AND CA.countryid IS NULL';
-        }
-
-        if($typeid !== null)
-        {
-            $sql .= ' AND C.ID =' . $typeid ;
-        }
-
-        if($walletid !== null)
-        {
-            $sql .= ' AND coalesce(walletid,-1) = '. $walletid;
-        }
-
-        $res = $this->getDBConn()->getAllNames($sql);
-        return $res;
-    }
-
-    public function getCardsObjectForDR($amount, $aDiabledPMs = array(),$iRoute = null, $typeid = null, $walletid = null)
-    {
-        $res = $this->getCardsQueryForDR($amount, $typeid, $iRoute, $walletid);
-
-        if(is_array($res) === false){
-            $res = $this->getCardsQueryForDR($amount, $typeid, null, $walletid);
-        }
-        return isset($res[0])?$res[0]:FALSE;
-    }
-
-
+//TODO Remove
     public function getCardConfigurationObject($amount, $cardTypeId, $routeId)
     {
        $sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength, R.providerid AS pspid, RC.capturetype as capture_type, RC.mid AS account, MSA.name AS subaccount, PC.name AS currency,
@@ -407,9 +299,8 @@ class CreditCard extends EndUserAccount
                 return $result;
     }
 
-    public function getCardConfigurationXML($amount, $cardTypeId, $routeId)
+    public function getCardConfigurationXML($RS)
     {
-        $RS = $this->getCardConfigurationObject($amount, $cardTypeId, $routeId);
 
         $xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
         if (is_array($RS) === true && count($RS) > 0) {

@@ -48,7 +48,7 @@ class PaymentRoute
     /**
      * @return mixed
      */
-    private function getDBConn()
+    public function getDBConn()
     {
         return $this->_obj_DB;
     }
@@ -71,21 +71,18 @@ class PaymentRoute
                 VALUES 
                     ($1, $2, $3)';
 
-                $res = $this->getDBConn()->prepare($sql);
-                if (is_resource($res) === TRUE) {
-                    $aParams = array(
-                        $this->iSessionId,
-                        $aRoute['id'],
-                        $aRoute['preference']
-                    );
+                $aParams = array(
+                    $this->iSessionId,
+                    $aRoute['id'],
+                    $aRoute['preference']
+                );
 
-                    $result = $this->getDBConn()->execute($res, $aParams);
-
-                    if ($result === false) {
-                        trigger_error('Fail to store route for session ' . $this->iSessionId, E_USER_ERROR);
-                        return false;
-                    }
+                $result = $this->getDBConn()->executeQuery($sql, $aParams);
+                if ($result === false) {
+                    trigger_error('Fail to store route for session ' . $this->iSessionId, E_USER_ERROR);
+                    return false;
                 }
+    
             }
             return true;
         }
@@ -114,23 +111,22 @@ class PaymentRoute
     public function getRoutes()
     {
         $sql = 'SELECT routeconfigid, preference FROM Log.' . sSCHEMA_POSTFIX . 'PaymentRoute_tbl WHERE sessionid = $1';
-        $res = $this->getDBConn()->prepare($sql);
-        if (is_resource($res) === TRUE) {
-            $aParams = array(
-                $this->iSessionId
-            );
 
-            $result = $this->getDBConn()->execute($res, $aParams);
+        $aParams = array(
+            $this->iSessionId
+        );
 
-            if (is_resource($result) === TRUE) {
-                while ($RS = $this->getDBConn()->fetchName($result)) {
-                    $this->_aRoutes[$RS['PREFERENCE']] = $RS['ROUTECONFIGID'];
-                }
+        $result = $this->getDBConn()->executeQuery($sql, $aParams);
+
+        if (is_resource($result) === TRUE) {
+            while ($RS = $this->getDBConn()->fetchName($result)) {
+                $this->_aRoutes[$RS['PREFERENCE']] = $RS['ROUTECONFIGID'];
             }
-        }else{
+        } else {
             trigger_error('Fail to fetch route for session : ' . $this->iSessionId, E_USER_ERROR);
             return false;
         }
+
         return $this->_aRoutes;
     }
 

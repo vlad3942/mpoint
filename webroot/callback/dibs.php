@@ -45,12 +45,12 @@ try
 	if (array_key_exists("language", $_POST) === false) { $sLang = $_POST['lang']; }
 	else { $sLang = $_POST['language']; }
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $sLang ."/global.txt", sLANGUAGE_PATH . $sLang ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $sLang ."/global.txt", sLANGUAGE_PATH . $sLang ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 }
 catch (TranslateTextException $e)
 {
 	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	trigger_error("Unknown Language received from DIBS. language: ". $_POST['language'] .", lang: ". $_POST['lang'], E_USER_WARNING);
 }
 try
@@ -202,7 +202,7 @@ try
 			}
 
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
-			if (array_key_exists("capturenow", $_POST) === true || $code == 1000)
+			if (array_key_exists("capturenow", $_POST) === true || $code == Constants::iTRANSACTION_CREATED)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
 				if (array_key_exists("capturenow", $_POST) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }

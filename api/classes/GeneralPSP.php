@@ -11,7 +11,7 @@
 
 final class GeneralPSP extends CPMACQUIRER
 {
-    public function __construct(RDB $oDB, TranslateText $oTxt, ?TxnInfo $oTI = NULL, ?array $aConnInfo = NULL, ?PSPConfig $obj_PSPConfig = NULL, ClientInfo $oClientInfo = NULL)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, ?TxnInfo $oTI = NULL, ?array $aConnInfo = NULL, ?PSPConfig $obj_PSPConfig = NULL, ClientInfo $oClientInfo = NULL)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig, $oClientInfo);
     }
@@ -146,6 +146,18 @@ final class GeneralPSP extends CPMACQUIRER
             if ($txnPassbookObj instanceof TxnPassbook) {
                 try {
                     $txnPassbookObj->addEntry($passbookEntry);
+                }
+                catch (Exception $e) {
+                    trigger_error($e, E_USER_WARNING);
+                }
+            }
+
+            if($txnPassbookObj instanceof TxnPassbook && (($this->getTxnInfo()->useAutoCapture() == AutoCaptureType::ePSPLevelAutoCapt
+                    &&  $this->getTxnInfo()->hasEitherState($this->getDBConn(),[Constants::iPAYMENT_CAPTURED_STATE]) === true)
+                    || ($this->getTxnInfo()->useAutoCapture() != AutoCaptureType::ePSPLevelAutoCapt
+                        && $this->getTxnInfo()->hasEitherState($this->getDBConn(),[Constants::iPAYMENT_ACCEPTED_STATE]))))
+            {
+                try {
                     $codes = $txnPassbookObj->performPendingOperations($_OBJ_TXT, $aHTTP_CONN_INFO);
                     $code = reset($codes);
                 }
@@ -153,20 +165,25 @@ final class GeneralPSP extends CPMACQUIRER
                     trigger_error($e, E_USER_WARNING);
                 }
             }
-            $this->updateTxnInfoObject();
+            else
+            {
+                return $aMsgCds;
+            }
+
             // Refund operation succeeded
-            if ($code === 1000 || $code === 1001) {
+            if (in_array($code, [ 1000, 1001 ])) {
+                $this->updateTxnInfoObject();
                 $aMsgCds[$code] = "Success";
                 // Perform callback to Client
                 if ($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUNDED_STATE) === TRUE) {
                     if ($this->getTxnInfo()->getCallbackURL() != '') {
                         $args = ["transact" => $this->getTxnInfo()->getExternalID(),
                                 "cardid" =>  $this->getTxnInfo()->getCardID(),
-                                 "amount"   => $_REQUEST['amount']];
+                                 "amount" => $amount];
                         parent::notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->getTxnInfo()->getClientConfig()->getSurePayConfig($this->getDBConn()));
                     }
                 }
-            } elseif ($code === 1100) {
+            } elseif ($code === Constants::i3D_SECURE_ACTIVATED_STATE) {
          //       header("HTTP/1.0 200 OK");
                 $aMsgCds[$code] = "Success";
             } else {
