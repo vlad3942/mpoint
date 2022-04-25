@@ -297,6 +297,7 @@ try
                 // check if the transaction is partial txn
                 if ($obj_XML->callback->transaction->amount != $obj_TxnInfo->getAmount()) {
                     //check if the total captured amount is matching the txn amt i.e. partial capture case
+                    //if partial capture operation is not supported then we can skip this query
                     $totalCapturedAmt =$obj_TxnInfo->getUpdatedCapturedAmount($_OBJ_DB,$obj_TxnInfo->getID());
                     if ($iStateID === Constants::iPAYMENT_CAPTURED_STATE && ($totalCapturedAmt != $obj_TxnInfo->getAmount())) {
                         $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
@@ -635,6 +636,7 @@ try
 
             //update captured amt when psp returns captured callback
             if ($iStateID == Constants::iPAYMENT_CAPTURED_STATE) {
+                //if partial capture operation is not supported then we can skip this query
                 $totalCapturedAmt =$obj_TxnInfo->getUpdatedCapturedAmount($_OBJ_DB,$obj_TxnInfo->getID());
                 if($totalCapturedAmt != $obj_TxnInfo->getAmount()) {
                     $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);

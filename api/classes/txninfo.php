@@ -2774,6 +2774,13 @@ class TxnInfo
 		$this->_iCardID = $cardid;
 	}
 
+	/**
+	 * This function is to get the captured amount from txn table
+	 * @param RDB $_OBJ_DB
+	 * @param int $txnID
+	 * @return int
+	 * if partial capture operation is not supported then we can skip this query
+	 */
 	public function getUpdatedCapturedAmount(RDB $_OBJ_DB,int $txnID): int
 	{
 		$sql = "SELECT captured FROM LOG".sSCHEMA_POSTFIX.".Transaction_Tbl 
