@@ -497,14 +497,14 @@ final class TxnPassbook
             if ($this->_pspSupportedPartialOperation % 5 === 0 && $this->_merchantSupportedPartialOperation % 5 === 0) {
                 $this->_isPartialCancelSupported = TRUE;
             }
-        } elseif ($is_legacy === false) {
+        } elseif ($is_legacy === false && $this->_merchantSupportedPartialOperation === -1 ) {
 
             $aFeatureIds = array (
                 RouteFeatureType::ePartialCapture,
                 RouteFeatureType::ePartialRefund,
                 RouteFeatureType::ePartialCancel
             );
-
+            $this->_merchantSupportedPartialOperation = 0;
             $sql = 'SELECT rt2.featureid, rt2.enabled
                     FROM log.' . sSCHEMA_POSTFIX . 'transaction_tbl tt
                              INNER JOIN client.' . sSCHEMA_POSTFIX . 'routefeature_tbl rt2 ON tt.routeconfigid = rt2.routeconfigid
