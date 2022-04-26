@@ -1110,6 +1110,21 @@ $aHTTP_CONN_INFO[75]["paths"]["callback"] = "/mpoint/aggregator/aub/callback";
 $aHTTP_CONN_INFO[75]["paths"]["status"] = "/mpoint/aggregator/aub/status";
 $aHTTP_CONN_INFO[75]["paths"]["redirect"] = "/mpoint/aggregator/aub/redirect";
 
+
+/**
+ * Connection info for connecting to Agency Credit
+ */
+$aHTTP_CONN_INFO[76]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO[76]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO[76]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO[76]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[76]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[76]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[76]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[76]["paths"]["redeem"] = "/mpoint/agency-credit/redeem";
+$aHTTP_CONN_INFO[76]["paths"]["refund"] = "/mpoint/agency-credit/refund";
+
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
