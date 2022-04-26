@@ -195,7 +195,13 @@ class RoutingService extends General
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $body);
             $obj_HTTP->disConnect();
             $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-            return RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
+            $paymentResponse = RoutingServiceResponse::produceGetPaymentMethodResponse($obj_XML);
+            $additionalTxnData[0]['name'] = 'rule_id';
+            $additionalTxnData[0]['value'] = $paymentResponse->rule_id;
+            $additionalTxnData[0]['type'] = 'Transaction';
+            $objTxnRoute   = new PaymentRoute($_OBJ_DB, $this->_obj_TxnInfo->getSessionId());
+            $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
+            return $paymentResponse;
         }
         catch (Exception $e)
         {
@@ -313,7 +319,10 @@ class RoutingService extends General
                 $additionalTxnData[0]['type'] = 'Transaction';
                 $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
             }
-
+            $additionalTxnData[0]['name'] = 'rule_id';
+            $additionalTxnData[0]['value'] = $aObj_Route->rule_id;
+            $additionalTxnData[0]['type'] = 'Transaction';
+            $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
         }
         $firstPSP = -1;
         if (count ( $aRoutes ) > 0) {
