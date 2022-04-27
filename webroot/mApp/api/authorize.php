@@ -151,6 +151,10 @@ try
                     // Validate basic information
                     $code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
                 }
+                else
+                {
+                    $code=100;
+                }
 
 				if ($code == 100)
 				{
