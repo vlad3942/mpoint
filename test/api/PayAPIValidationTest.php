@@ -104,6 +104,7 @@ class PayAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, enabled) VALUES (10099, 1, 100, 'Test Client', false)");
 
 		$xml = $this->getPayDoc(10099, 1100);
+        $this->bIgnoreErrors = true; // In case of failure mPoint will throw the exception
 
 		$this->_httpClient->connect();
 
@@ -120,7 +121,7 @@ class PayAPIValidationTest extends baseAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, enabled) VALUES (1100, 10099, false)");
 
 		$xml = $this->getPayDoc(10099, 1100);
-
+        $this->bIgnoreErrors = true; // In case of failure mPoint will throw the exception
 		$this->_httpClient->connect();
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
