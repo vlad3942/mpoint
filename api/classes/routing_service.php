@@ -199,8 +199,7 @@ class RoutingService extends General
             $additionalTxnData[0]['name'] = 'rule_id';
             $additionalTxnData[0]['value'] = $paymentResponse->rule_id;
             $additionalTxnData[0]['type'] = 'Transaction';
-            $objTxnRoute   = new PaymentRoute($_OBJ_DB, $this->_obj_TxnInfo->getSessionId());
-            $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
+            $this->_obj_TxnInfo->setAdditionalDetails($this->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
             return $paymentResponse;
         }
         catch (Exception $e)
