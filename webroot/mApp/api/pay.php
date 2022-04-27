@@ -120,23 +120,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if (empty($obj_DOM->pay[$i]["account"]) === true || (int)$obj_DOM->pay[$i]["account"] < 1) { $obj_DOM->pay[$i]["account"] = -1; }
 
 			$obj_TxnInfo = null;
-
-			// Validate basic information
-			if(($code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]) )!== 100)
-			{
-				$aMsgCds[$code] = "Client ID / Account doesn't match";
-			}
-			else
+            // Validate basic information
+            $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
+            if($obj_ClientConfig instanceof ClientConfig === false)
+            {
+                $aMsgCds[$code] = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"])  !== 100 ? "Client ID / Account doesn't match":"";
+            }
+           	else
 			{
 				$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 			}
+
 			if(count($aMsgCds) === 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE, constants::iPAYMENT_PENDING_STATE)) === true)
 			{
 				$aMsgCds[103] = "Authorization already in progress";
 			}
 			if (count($aMsgCds) === 0)
 			{
-				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 
 				// Client successfully authenticated
  				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW']))
@@ -182,7 +182,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     }
 
                     //validate the request against active split
-                    if($iSessionType > 1){
+                    if($iSessionType > 1 && $obj_TxnInfo->getPaymentSession()->getAmount() !== (integer)$obj_DOM->pay[$i]->transaction->card->amount)
+                    {
                         // check if txn is retry in same split session
                         $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
                         if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
@@ -320,10 +321,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						// Validate foreign exchange service type id if explicitly passed in request
 						$fxServiceTypeId =  (integer)$obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
 
-						if($fxServiceTypeId > 0){
-							if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
-								$aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
-							}
+						if($fxServiceTypeId > 0)
+                        {
+                            if(array_key_exists($fxServiceTypeId,Constants::aFXServiceType) === false )
+                            {
+                                $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
+                            }
 						}
 
 						if ($fxServiceTypeId)
@@ -331,8 +334,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $obj_TxnInfo->setFXServiceTypeID($fxServiceTypeId);
                         }
 
-                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-
+                        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                        $ips = array_map('trim', $ips);
+                        $ip = $ips[0];
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
+                            CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
+                            $ip);
                         $obj_card = new Card($obj_DOM->pay[$i]->transaction->card[$j], $_OBJ_DB);
 						$walletId = NULL;
 						$iPaymentType = $obj_card->getPaymentType();
@@ -356,7 +363,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
-
                         if ($is_legacy === false)
                         {
                                 $obj_CardResultSet = General::getRouteConfiguration($repository,$_OBJ_DB, $obj_mCard, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], (int)$obj_DOM->pay [$i]["client-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"], (int)$obj_DOM->pay[$i]->transaction->card[$j]->amount["currency-id"], $obj_DOM->pay[$i]->transaction->card[$j]->amount, (int)$obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}, $obj_card->getCardName(), NULL, $walletId);
@@ -369,13 +375,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         } // Card disabled
 
                         $pspId = (int)$obj_CardResultSet['PSPID'];
-
-						$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                        $ips = array_map('trim', $ips);
-                        $ip = $ips[0];
-                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
-                                CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
-                                $ip);
 
                         if (strlen($obj_ClientConfig->getSalt() ) > 0 && $iSessionType != 2 && empty($obj_DOM->pay[$i]->transaction->{'foreign-exchange-info'}->{'sale-amount'}) === true)
                         {
@@ -551,7 +550,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
-										$data['client-config'] = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(),(integer) $obj_DOM->pay[$i]['account']);
+										$data['client-config'] = $obj_TxnInfo->getClientConfig();
 										if(($data['client-config'] instanceof ClientConfig) === TRUE )
                                         {
                                             $data['markup'] = $data['client-config']->getAccountConfig()->getMarkupLanguage();
