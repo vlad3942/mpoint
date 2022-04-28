@@ -418,7 +418,7 @@ try
                                         // Validate service type id if explicitly passed in request
                                         $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
                                         if($fxServiceTypeId > 0){
-                                            if(array_key_exists($fxServiceTypeId,Constants::aFXServiceType) === false ){
+                                            if(isset(Constants::aFXServiceType[$fxServiceTypeId]) === false ){
                                                 $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
                                             }
                                         }

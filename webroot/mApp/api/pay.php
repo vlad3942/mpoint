@@ -324,7 +324,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						if($fxServiceTypeId > 0)
                         {
-                            if(array_key_exists($fxServiceTypeId,Constants::aFXServiceType) === false )
+                            if(isset(Constants::aFXServiceType[$fxServiceTypeId]) === false )
                             {
                                 $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId ;
                             }
