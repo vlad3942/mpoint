@@ -124,7 +124,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
             if($obj_ClientConfig instanceof ClientConfig === false)
             {
-                $aMsgCds[$code] = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"])  !== 100 ? "Client ID / Account doesn't match":"";
+                $code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"])  ;
+                $aMsgCds[$code] =  $code!=100? "Client ID / Account doesn't match":"";
             }
            	else
 			{
