@@ -350,7 +350,10 @@ VALUES(1101, 14, 'paymaya acq',  true)");
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(18, $iPrimaryRoute);
+            $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001001 and type = 'Transaction' and name = 'rule_id'");
+            $this->assertTrue(pg_num_rows($sql) == 1);
         }
+
     }
 
     public function testEmptyGetRoute()
@@ -378,7 +381,11 @@ VALUES(1101, 14, 'paymaya acq',  true)");
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(-1, $iPrimaryRoute);
+            $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001001 and type = 'Transaction' and name = 'rule_id'");
+            $this->assertTrue(pg_num_rows($sql) == 0);
+
         }
+
     }
 
     public function testDefaultCountryCurrencyEmptyGetRoute()
