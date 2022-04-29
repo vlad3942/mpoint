@@ -350,8 +350,6 @@ VALUES(1101, 14, 'paymaya acq',  true)");
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(18, $iPrimaryRoute);
-            $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001001 and type = 'Transaction' and name = 'rule_id'");
-            $this->assertTrue(pg_num_rows($sql) == 1);
         }
 
     }
@@ -381,9 +379,36 @@ VALUES(1101, 14, 'paymaya acq',  true)");
             $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
             $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
             $this->assertEquals(-1, $iPrimaryRoute);
-            $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001001 and type = 'Transaction' and name = 'rule_id'");
-            $this->assertTrue(pg_num_rows($sql) == 0);
 
+        }
+
+    }
+    public function testGetRouteRuleId()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 18, '5019********3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (10, 10099, 1100, 208, 100, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled,sessionid,convertedamount) VALUES (1001003, 100, 10099, 1100, 1,  18, 5001, 100, '103-1418291', 'test.com', 5000, '127.0.0.1', TRUE,10,5000)");
+
+        $xml = $this->getPayDoc(10099, 1100, 100, 208);
+        $obj_DOM = simpledom_load_string($xml);
+
+        $iTxnID = 1001003;
+        $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $this->_OBJ_DB);
+        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->pay->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $this->_aHTTP_CONN_INFO['routing-service'], $obj_DOM->pay["client-id"], $obj_DOM->pay->transaction->card->amount["country-id"], $obj_DOM->pay->transaction->card->amount["currency-id"], $obj_DOM->pay->transaction->card->amount, $obj_DOM->pay->transaction["id"], $obj_DOM->pay->transaction->card["type-id"], 100);
+
+        if($obj_RS instanceof RoutingService)
+        {
+            $objTxnRoute = new PaymentRoute($this->_OBJ_DB, $obj_TxnInfo->getSessionId());
+            $iPrimaryRoute = $obj_RS->getAndStoreRoute($objTxnRoute);
+            $sql =  $this->queryDB("SELECT value FROM Log.additional_data_tbl WHERE externalid = 1001003 and type = 'Transaction' and name = 'rule_id'");
+            $this->assertTrue(pg_num_rows($sql) == 1);
         }
 
     }
