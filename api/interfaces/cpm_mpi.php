@@ -30,8 +30,6 @@ abstract class CPMMPI extends CPMACQUIRER
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["authenticate"]);
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
-            echo $this->sRequstBody;
-            exit;
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $this->sRequstBody);
             $obj_HTTP->disConnect();
 
