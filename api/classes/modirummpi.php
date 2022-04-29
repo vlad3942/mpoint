@@ -58,8 +58,6 @@ class ModirumMPI extends CPMMPI
         $b .= '</authenticate>';
         $b .= '</root>';
         $this->sRequstBody = $b;
-        echo "Debug in modirummpi -> ".$b;
-        Exit;
         return parent::authenticate();
     }
 }
