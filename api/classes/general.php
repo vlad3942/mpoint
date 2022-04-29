@@ -1532,7 +1532,7 @@ class General
                 $xml = $response->body;
                 break;
             case Constants::iPAYMENT_3DS_FAILURE_STATE :
-                $xml = $response->body;
+                $xml = '<status code="2016">3D Verification Failed</status>';
                 break;
             case Constants::iPAYMENT_REJECTED_STATE :
             case 504:
