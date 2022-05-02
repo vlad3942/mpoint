@@ -17,23 +17,32 @@
     </changeSet>
 
     <changeSet author="Amar Kumar" id="2022-04-25-Agency-Credit-INF-102">
+        <insert catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="id" value="76"/>
+            <column name="name" value="CEBU Travel Fund"/>
+            <column name="system_type" value="11"/>
+        </insert>
+
+        <insert catalogName="System" schemaName="System" tableName="card_tbl">
+            <column name="id" value="102"/>
+            <column name="name" value="Agency Credit"/>
+            <column name="position" value="22"/>
+            <column name="minlength" value="-1"/>
+            <column name="maxlength" value="-1"/>
+            <column name="cvclength" value="-1"/>
+            <column name="paymenttype" value="2"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="102"/>
+            <column name="pspid" value="76"/>
+        </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
             <column name="cardid" value="102"/>
             <column name="min" value="0"/>
             <column name="max" value="0"/>
             <column name="enabled" value="true"/>
-        </insert>
-
-        <insert catalogName="system" schemaName="system" tableName="PSP_Tbl">
-            <column name="id" value="76"/>
-            <column name="name" value="CEBU Travel Fund"/>
-            <column name="system_type" value="11"/>
-        </insert>
-
-        <insert catalogName="system" schemaName="system" tableName="PSPCard_Tbl">
-            <column name="cardid" value="102"/>
-            <column name="pspid" value="76"/>
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
