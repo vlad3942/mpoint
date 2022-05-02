@@ -1,0 +1,1 @@
+DELETE FROM client.fraud_config_tbl WHERE clientid = 10101 AND pmid = 22 AND providerid = 64 AND countryid = 0 AND currencyid = 0 AND typeoffraud = 1;
