@@ -169,6 +169,13 @@ class GenericPSP extends \CPMPSP
                 $node->addChild('usage', $usageCount);
                 $sortable[] = $node;
             }
+        }elseif(is_object($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) && count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) >= 1){
+            foreach ($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
+                $issuingBank = strtolower($node->issuingBank);
+                $usageCount = (int)$aStatisticalData['issuing_bank_' . $issuingBank];
+                $node->addChild('usage', $usageCount);
+                $sortable[] = $node;
+            }
         }
         usort($sortable,   'compare_usage');
         $newSortedList = "<root><active-payment-methods>";
