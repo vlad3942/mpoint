@@ -18,7 +18,7 @@
 
     <changeSet author="Amar Kumar" id="2022-04-25-Agency-Credit-INF-102">
 
-        <insert catalogName="System" schemaName="System" tableName="cardprefix_tbl">
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
             <column name="cardid" value="102"/>
             <column name="min" value="0"/>
             <column name="max" value="0"/>
