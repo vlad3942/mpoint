@@ -19,7 +19,7 @@
     <changeSet author="Amar Kumar" id="2022-04-25-Agency-Credit-INF-102">
         <insert catalogName="system" schemaName="system" tableName="psp_tbl">
             <column name="id" value="76"/>
-            <column name="name" value="CEBU Travel Fund"/>
+            <column name="name" value="Agency Credit"/>
             <column name="system_type" value="11"/>
         </insert>
 
