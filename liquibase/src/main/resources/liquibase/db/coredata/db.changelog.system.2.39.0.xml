@@ -23,7 +23,7 @@
             <column name="system_type" value="11"/>
         </insert>
 
-        <insert catalogName="System" schemaName="System" tableName="card_tbl">
+        <insert catalogName="system" schemaName="system" tableName="card_tbl">
             <column name="id" value="102"/>
             <column name="name" value="Agency Credit"/>
             <column name="position" value="22"/>
