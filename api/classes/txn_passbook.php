@@ -465,11 +465,7 @@ final class TxnPassbook
      */
     private function getSupportedPartialOperation()
     {
-
-        $clientConfig = ClientConfig::produceConfig($this->_obj_Db, $this->_clientId);
-        $is_legacy = $clientConfig->getClientServices()->isLegacyFlow();
-
-        if ($is_legacy === true && ($this->_merchantSupportedPartialOperation === -1 || $this->_pspSupportedPartialOperation === -1)) {
+        if ($this->_merchantSupportedPartialOperation === -1 || $this->_pspSupportedPartialOperation === -1) {
             $sql = 'SELECT psp.SupportedPartialOperations      as PSPSupportedPartialOperations,
                            merchant.SupportedPartialOperations as MerchantSupportedPartialOperations
                     FROM system.' . sSCHEMA_POSTFIX . 'psp_tbl psp
