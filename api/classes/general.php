@@ -1532,7 +1532,7 @@ class General
                 $xml = $response->body;
                 break;
             case Constants::iPAYMENT_3DS_FAILURE_STATE :
-                $xml = $response->body;
+                $xml = '<status code="2016">3D Verification Failed</status>';
                 break;
             case Constants::iPAYMENT_REJECTED_STATE :
             case 504:
@@ -2570,15 +2570,6 @@ class General
         if(!empty($sessionId)){
             //get current split sequence in active split session
             $currentSplit = 1;
-            $sql = "SELECT MAX(SD.sequence_no) as sequence_no FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD 
-                        INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS on SS.id = SD.split_session_id
-                        WHERE SS.sessionid = ".$sessionId." AND SS.status ='Active' AND SD.payment_status='Success'";
-            $res = $_OBJ_DB->getName($sql);
-            if (is_array($res) === true)
-            {
-                $currentSplit += (int)$res['SEQUENCE_NO'];
-            }
-            $configuration->setCurrentSplitSeq($currentSplit);
             //get successful transactions in an active split session
             $sql = "SELECT SD.transaction_id,SD.sequence_no,C.paymenttype FROM LOG".sSCHEMA_POSTFIX.".split_details_tbl SD
                         INNER JOIN LOG".sSCHEMA_POSTFIX.".split_session_tbl SS ON SS.id = SD.split_session_id
@@ -2587,11 +2578,19 @@ class General
                         WHERE SS.sessionid = ".$sessionId." AND SS.status ='Active' AND SD.payment_status='Success'";
             $aRS = $_OBJ_DB->getAllNames($sql);
             if (is_array($aRS) === true && count($aRS) > 0) {
-                foreach ($aRS as $rs) {
+                foreach ($aRS as $rs)
+                {
                     $activeSplit[] = $rs;
+                    if($maxSequence < (int)$rs['SEQUENCE_NO'])
+                    {
+                        $maxSequence = (int)$rs['SEQUENCE_NO'];
+                    }
                 }
+                $currentSplit += $maxSequence;
                 $configuration->setActiveSplit($activeSplit);
             }
+            $configuration->setCurrentSplitSeq($currentSplit);
+
         }
 
         $sql1 = ""; // for dynamic query join
