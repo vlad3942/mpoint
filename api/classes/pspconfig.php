@@ -408,7 +408,7 @@ class PSPConfig extends BasicConfig
 	}
 
     /**
-     * Produces a new instance of a client's account ids based on client id.
+     * Produces a new instance of a client's account ids based on client id and psp id.
      *
      * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
      * @param 	integer $clid 	Unique ID for the Client performing the request
@@ -424,6 +424,7 @@ class PSPConfig extends BasicConfig
                       AND submerchant.pspid = $pspid
                       AND account.enabled
                       AND submerchant.enabled";
+        //print_r($sql); exit;
 
         $aRS = $oDB->getAllNames($sql);
         $aAccounts = [];
