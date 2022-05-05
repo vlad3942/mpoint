@@ -204,7 +204,7 @@ class PSPConfig extends BasicConfig
 
 	public function toXML(?int $propertyScope=2, array $aMerchantAccountDetails = array()): string
 	{
-		$xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
+        $xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		if (count($aMerchantAccountDetails) > 0)        {
             $merchantaccount = $aMerchantAccountDetails['merchantaccount'];
@@ -363,7 +363,6 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
 				WHERE CL.id = ". $clid ." AND PSP.id = ". $pspid ." AND PSP.enabled = '1' AND Acc.id = ". $accid ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
-//		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 1)
 		{
@@ -407,6 +406,35 @@ class PSPConfig extends BasicConfig
 			return null;
 		}
 	}
+
+    /**
+     * Produces a new instance of a client's account ids based on client id.
+     *
+     * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param 	integer $clid 	Unique ID for the Client performing the request
+     * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+     * @return 	ClientAccountIds
+     */
+
+    public static function getClientAccountIds(RDB $oDB, int $clid, int $pspid){
+        $sql = "SELECT account.id
+                FROM client" . sSCHEMA_POSTFIX . ".account_tbl account
+                  INNER JOIN client" . sSCHEMA_POSTFIX . ".merchantsubaccount_tbl submerchant ON submerchant.accountid = account.id
+                WHERE account.clientid = $clid
+                      AND submerchant.pspid = $pspid
+                      AND account.enabled
+                      AND submerchant.enabled";
+
+        $aRS = $oDB->getAllNames($sql);
+        $aAccounts = [];
+        if (is_array($aRS) === true && count($aRS) > 0) {
+            foreach ($aRS as $rs) {
+                array_push($aAccounts,(int)$rs["ID"]);
+            }
+        }
+        return $aAccounts;
+    }
+
 
     /**
      * Produces a new instance of a Payment Service Provider Configuration Object For Non Legacy Flow.
