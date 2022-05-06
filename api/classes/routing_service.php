@@ -315,7 +315,7 @@ class RoutingService extends General
             }
             if(empty($aObj_Route->rule_id) === false){
                 $additionalTxnData[0]['name'] = 'rule_id';
-                $additionalTxnData[0]['value'] = (int)$aObj_Route->rule_id[0];
+                $additionalTxnData[0]['value'] = (int)$aObj_Route->rule_id;
                 $additionalTxnData[0]['type'] = 'Transaction';
                 $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
             }
