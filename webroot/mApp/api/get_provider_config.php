@@ -36,7 +36,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     if ($code === 100)
     {
             $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
-            $clientAccountId = $clientAccountIds[0];
+            $clientAccountId = (integer)$clientAccountIds[0];
             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $clientAccountId , $pspId);
             $toXML = $obj_PSPConfig->toXML();
     }
@@ -44,32 +44,32 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $xml = '<status code="' . $code . '">Invalid Client ID</status>';
+        $toXML = '<status code="' . $code . '">Invalid Client ID</status>';
     }
     elseif ($code === 3)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $xml = '<status code="' . $code . '">Unknown Client ID</status>';
+        $toXML = '<status code="' . $code . '">Unknown Client ID</status>';
     }
     elseif ($code === 4)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $xml = '<status code="' . $code . '">Client Disabled</status>';
+        $toXML = '<status code="' . $code . '">Client Disabled</status>';
     }
     else
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $xml = '<status code="' . $code . '">Undefined Client ID</status>';
+        $toXML = '<status code="' . $code . '">Undefined Client ID</status>';
     }
 }
 else
 {
     header("HTTP/1.1 401 Unauthorized");
 
-    $xml = '<status code="401">Authorization required</status>';
+    $toXML = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
