@@ -9,6 +9,7 @@ VALUES(10077, 640, 1, 'CEBU Pacific Air Automation', 'cebuair', 'C3B753w5', 'htt
 
 --Table Name : Client.Account_Tbl
 
+
 INSERT INTO Client.Account_Tbl (id, clientid, name, enabled, markup, businesstype) values (100770, 10077, 'CEBU Pacific Air Web Storefront', true, 'spa', 2);
 
 
