@@ -38,7 +38,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
             $clientAccountId = (integer)$clientAccountIds[0];
             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $clientAccountId , $pspId);
-            $toXML = $obj_PSPConfig->toXML();
+            $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML()."</client_provider_configuration>";
     }
     elseif ($code === 2)
     {
@@ -74,7 +74,7 @@ else
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root><client_provider_configuration>';
+echo '<root>';
 echo $toXML;
-echo '</client_provider_configuration></root>';
+echo '</root>';
 ?>
