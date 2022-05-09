@@ -44,32 +44,32 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status code="' . $code . '">Invalid Client ID</status>';
+        $toXML = '<status><code>'.$code.'</code><text_code>1</text_code><description>Invalid Client ID</description></status>';
     }
     elseif ($code === 3)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status code="' . $code . '">Unknown Client ID</status>';
+        $toXML = '<status><code>'.$code.'</code><text_code>2</text_code><description>Unknown Client ID</description></status>';
     }
     elseif ($code === 4)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status code="' . $code . '">Client Disabled</status>';
+        $toXML = '<status><code>'.$code.'</code><text_code>3</text_code><description>Client Disabled</description></status>';
     }
     else
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status code="' . $code . '">Undefined Client ID</status>';
+        $toXML = '<status><code>'.$code.'</code><text_code>4</text_code><description>Undefined Client ID</description></status>';
     }
 }
 else
 {
     header("HTTP/1.1 401 Unauthorized");
 
-    $toXML = '<status code="401">Authorization required</status>';
+    $toXML = '<status><code>401</code><text_code>5</text_code><description>Authorization required</description></status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
