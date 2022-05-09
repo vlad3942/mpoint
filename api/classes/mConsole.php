@@ -61,6 +61,7 @@ class mConsole extends Admin
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
     const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.payment.dashboard.x";
+    const sPERMISSION_DELETE_ROUTE_CONFIG = "mpoint.delete-route-configuration.x";
 
 	
 	public function saveClient($cc, $storecard, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
@@ -1657,7 +1658,7 @@ class mConsole extends Admin
      * @param $clientId
      * @return int|null
      */
-    public function SSOCheck($obj_mConsoleConnInfo, $clientId): ?int
+    public function SSOCheck(array $obj_mConsoleConnInfo, int $clientId, string $permissionCode = self::sPERMISSION_GET_CLIENTS): ?int
     {
         $aClientIDs = array($clientId);
         $obj_mConsoleConnInfo["path"] = $obj_mConsoleConnInfo["paths"]['single-sign-on'];
@@ -1667,7 +1668,7 @@ class mConsole extends Admin
             $obj_ConnInfo = HTTPConnInfo::produceConnInfo($obj_mConsoleConnInfo);
             return $this->singleSignOn($obj_ConnInfo,
                 $_SERVER['HTTP_X_AUTH_TOKEN'],
-                self::sPERMISSION_GET_CLIENTS,
+                $permissionCode,
                 $aClientIDs,
                 $_SERVER['HTTP_VERSION']);
         } catch (HTTPInvalidConnInfoException $e) {

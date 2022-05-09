@@ -145,11 +145,19 @@ try
 				// Set Global Defaults
 				if (empty($obj_DOM->{'authorize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'authorize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'authorize-payment'}[$i]["account"] = -1; }
 
-				// Validate basic information
-				$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
+                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
+                if($obj_ClientConfig instanceof ClientConfig === false)
+                {
+                    // Validate basic information
+                    $code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
+                }
+                else
+                {
+                    $code=100;
+                }
+
 				if ($code == 100)
 				{
-					$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
 					// Client successfully authenticated
 					if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 						&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -215,7 +223,8 @@ try
                                     array_push($paymentTypes,$iPaymentTypes);
                                 }
                                 //validate the request against active split
-                                if($iSessionType > 1){
+                                if($iSessionType > 1 && $obj_TxnInfo->getPaymentSession()->getAmount() != (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)
+                                {
                                     // check if txn is retry in same split session
                                     $checkTxnSplit = $obj_TxnInfo->getActiveSplitSession($_OBJ_DB,$obj_TxnInfo->getSessionId());
                                     if($checkTxnSplit > 0 && $checkTxnSplit == $obj_TxnInfo->getSessionId()){
@@ -409,7 +418,7 @@ try
                                         // Validate service type id if explicitly passed in request
                                         $fxServiceTypeId = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'service-type-id'};
                                         if($fxServiceTypeId > 0){
-                                            if($obj_Validator->valFXServiceType($_OBJ_DB,$fxServiceTypeId) !== 10 ){
+                                            if(isset(Constants::aFXServiceType[$fxServiceTypeId]) === false ){
                                                 $aMsgCds[57] = "Invalid service type id :".$fxServiceTypeId;
                                             }
                                         }

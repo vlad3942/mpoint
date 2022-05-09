@@ -1540,7 +1540,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                         }
                     }
                     $bIsProceedAuth = false;
-                    if(empty($aMpiRule) === false)
+                    if(empty($aMpiRule) === false && $obj_XML->{'info-3d-secure'})
                     {
                         $bIsProceedAuth = $this->applyRule([$obj_XML->{'info-3d-secure'}],$aMpiRule);
                     }

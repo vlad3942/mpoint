@@ -134,16 +134,22 @@ class Capture extends General
 		return count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) > 0;
 	}
 
-	public function updateCapturedAmount($iAmount)
-	{
-		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET	captured = ". intval($iAmount) ."
-				WHERE id = ". intval($this->_obj_TxnInfo->getID() );
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
+	public function updateCapturedAmount($iAmount):int
+    {
+        $sql = "SELECT captured
+            FROM   LOG".sSCHEMA_POSTFIX.".Transaction_Tbl
+            WHERE  id = ".$this->_obj_TxnInfo->getID() ."
+            FOR NO KEY UPDATE;
+            UPDATE LOG".sSCHEMA_POSTFIX.".Transaction_Tbl
+            SET captured = captured + ".$iAmount."
+            WHERE id = ". $this->_obj_TxnInfo->getID()." returning captured as new_captured;";
 
-		// Capture amount updated successfully
-		return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
+        $result = $this->getDBConn()->executeQuery($sql);
+	    if(is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 1){
+            $res = $this->getDBConn()->fetchName($result);
+            return (int)$res['NEW_CAPTURED'];
+        }
+        return 0;
 	}
 }
 ?>

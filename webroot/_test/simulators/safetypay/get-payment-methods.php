@@ -11,14 +11,14 @@ if (true )
 
     echo '<?xml version="1.0" encoding="UTF-8"?>
             <root>
-                <active-payment-menthods>
+                <active-payment-methods>
                     <payment-method>
                         <logoName>8224_CASH</logoName>
                         <logoURL>8224_CASH</logoURL>
                         <displayName>Efecty</displayName>
                         <issuingBank>8224</issuingBank>
                     </payment-method>
-                </active-payment-menthods>
+                </active-payment-methods>
             </root>';
 }
 else

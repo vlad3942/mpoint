@@ -297,9 +297,16 @@ try
                 // check if the transaction is partial txn
                 if ($obj_XML->callback->transaction->amount != $obj_TxnInfo->getAmount()) {
                     //check if the total captured amount is matching the txn amt i.e. partial capture case
-                    $totalCapturedAmt = $obj_XML->callback->transaction->amount + $obj_TxnInfo->getCapturedAmount();
+                    //if partial capture operation is not supported then we can skip this query
+                    $totalCapturedAmt =$obj_TxnInfo->getUpdatedCapturedAmount($_OBJ_DB,$obj_TxnInfo->getID());
                     if ($iStateID === Constants::iPAYMENT_CAPTURED_STATE && ($totalCapturedAmt != $obj_TxnInfo->getAmount())) {
-                        $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+                        $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
+                        $capturedAmt = $obj_Capture->updateCapturedAmount((integer)$obj_XML->callback->transaction->amount);
+                        if($capturedAmt == $obj_TxnInfo->getAmount()){
+                            $iStateID = Constants::iPAYMENT_CAPTURED_STATE;
+                        }else {
+                            $iStateID = Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE;
+                        }
                     } else {
                         //the sql cost for the below function is very high but for the below two cases there is no other way so have to use this but it is not recommended
                         $txnPassbookObj->UpdateAmounts();
@@ -628,9 +635,13 @@ try
             $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
 
             //update captured amt when psp returns captured callback
-            if ($iStateID == Constants::iPAYMENT_CAPTURED_STATE || $iStateID == Constants::iPAYMENT_PARTIALLY_CAPTURED_STATE) {
-                $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
-                $obj_Capture->updateCapturedAmount((integer)$obj_XML->callback->transaction->amount + $obj_TxnInfo->getCapturedAmount());
+            if ($iStateID == Constants::iPAYMENT_CAPTURED_STATE) {
+                //if partial capture operation is not supported then we can skip this query
+                $totalCapturedAmt =$obj_TxnInfo->getUpdatedCapturedAmount($_OBJ_DB,$obj_TxnInfo->getID());
+                if($totalCapturedAmt != $obj_TxnInfo->getAmount()) {
+                    $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
+                    $obj_Capture->updateCapturedAmount((integer)$obj_XML->callback->transaction->amount);
+                }
             }
 
             foreach ($aStateId as $iStateId) {
