@@ -235,4 +235,19 @@
 
     </changeSet>
 
+    <changeSet author="Amar kumar" id="2022-04-05-INF-120">
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1406001" />
+            <column name="name" value="Requested session token is invalid or expired." />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1407001" />
+            <column name="name" value="No Booking State" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
