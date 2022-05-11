@@ -38,7 +38,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
             $clientAccountId = (integer)$clientAccountIds[0];
             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $clientAccountId , $pspId);
-            $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML()."</client_provider_configuration>";
+            $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
     }
     elseif ($code === 2)
     {
