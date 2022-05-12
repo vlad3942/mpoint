@@ -1,10 +1,10 @@
 <?php
 /**
  *
- * @author Anna Lagad
+ * @author Devansh Sah
  * @copyright Cellpoint Digital
  * @link http://www.cellpointdigital.com
- * @package mConsole
+ * @package mAPP
  * @version 1.0
  */
 
@@ -26,6 +26,13 @@ require_once(sCLASS_PATH ."/crs/TransactionTypeConfig.php");
 require_once(sCLASS_PATH ."/crs/CardState.php");
 require_once(sCLASS_PATH ."/crs/FxServiceType.php");
 
+/*Sample Request
+All Fields Required
+id -> psp-id
+client_id -> Client ID
+http://mpoint.local.cellpointmobile.com/mApp/api/get_provider_config.php?id=50&client_id=10069
+*/
+
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 
@@ -38,38 +45,43 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
             $clientAccountId = (integer)$clientAccountIds[0];
             $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $clientAccountId , $pspId);
-            $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
+            if($obj_PSPConfig){
+                $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
+            } else {
+                $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
+            }
+
     }
     elseif ($code === 2)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status><code>'.$code.'</code><text_code>1</text_code><description>Invalid Client ID</description></status>';
+        $toXML = '<status><code>'.$code.'</code><description>Invalid Client ID</description></status>';
     }
     elseif ($code === 3)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status><code>'.$code.'</code><text_code>2</text_code><description>Unknown Client ID</description></status>';
+        $toXML = '<status><code>'.$code.'</code><description>Unknown Client ID</description></status>';
     }
     elseif ($code === 4)
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status><code>'.$code.'</code><text_code>3</text_code><description>Client Disabled</description></status>';
+        $toXML = '<status><code>'.$code.'</code><description>Client Disabled</description></status>';
     }
     else
     {
         header("HTTP/1.1 400 Bad Request");
 
-        $toXML = '<status><code>'.$code.'</code><text_code>4</text_code><description>Undefined Client ID</description></status>';
+        $toXML = '<status><code>'.$code.'</code><description>Undefined Client ID</description></status>';
     }
 }
 else
 {
     header("HTTP/1.1 401 Unauthorized");
 
-    $toXML = '<status><code>401</code><text_code>5</text_code><description>Authorization required</description></status>';
+    $toXML = '<status><code>401</code><description>Authorization required</description></status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
