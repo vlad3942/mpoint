@@ -10,14 +10,14 @@ if (true )
     header("Content-Type: text/xml; charset=\"UTF-8\"");
         echo '<?xml version="1.0" encoding="UTF-8"?>
             <root>
-                <active-payment-methods>
+                <active-payment-menthods>
                     <payment-method>
                         <logoName>1022_CASH</logoName>
                         <logoURL>1022_CASH</logoURL>
                         <displayName>Efecty</displayName>
                         <issuingBank>1022</issuingBank>
                     </payment-method>
-                </active-payment-methods>
+                </active-payment-menthods>
             </root>';
 }
 else

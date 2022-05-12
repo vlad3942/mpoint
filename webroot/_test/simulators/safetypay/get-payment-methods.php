@@ -11,7 +11,7 @@ if (true )
 
     echo '<?xml version="1.0" encoding="UTF-8"?>
             <root>
-                <active-payment-methods>
+                <active-payment-menthods>
                     <payment-method>
                         <logoName>8224_CASH</logoName>
                         <logoURL>8224_CASH</logoURL>
