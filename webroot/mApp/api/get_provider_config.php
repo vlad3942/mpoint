@@ -48,6 +48,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             if($obj_PSPConfig){
                 $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
             } else {
+                header("HTTP/1.1 400 Bad Request");
                 $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
             }
 
