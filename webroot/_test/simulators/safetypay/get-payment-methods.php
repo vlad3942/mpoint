@@ -18,7 +18,7 @@ if (true )
                         <displayName>Efecty</displayName>
                         <issuingBank>8224</issuingBank>
                     </payment-method>
-                </active-payment-methods>
+                </active-payment-menthods>
             </root>';
 }
 else
