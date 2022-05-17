@@ -39,6 +39,9 @@ class ModirumMPI extends CPMMPI
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
+        if ( ($this->getClientConfig()->getHPPURLObject() instanceof ClientURLConfig) === true) {
+            $b .= "<urls>". $this->getClientConfig()->getHPPURLObject()->toXML() . "</urls>";
+        }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
