@@ -33,6 +33,11 @@ class ModirumMPI extends CPMMPI
         $b .= '<root>';
         $b .= '<authenticate client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
         $b .= '<client-config>';
+
+        if ( ($this->getClientConfig()->getHPPURLObject() instanceof ClientURLConfig) === true) {
+            $b .= "<urls>". $this->getClientConfig()->getHPPURLObject()->toXML() . "</urls>";
+        }
+
         $b .= '<additional-config>';
 
         foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
