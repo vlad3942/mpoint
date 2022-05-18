@@ -222,4 +222,86 @@
         </update>
     </changeSet>
 
+    <changeSet author="Sagar Badave"
+               id="2022-05-18-CMP-6641">
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_PRIVATE_KEY"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_PRIVATE_KEY"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_PRIVATE_KEY"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_KEY_PASS"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_KEY_PASS"/>
+            <column name="pspid" value="50"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_KEY_PASS"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_PUBLIC_KEY"/>
+            <column name="pspid" value="45"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+
+        <insert catalogName="System"
+                schemaName="System"
+                tableName="psp_property_tbl">
+            <column name="name" value="PGP_PUBLIC_KEY"/>
+            <column name="pspid" value="52"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="datatype" value="3"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
