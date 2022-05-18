@@ -1808,7 +1808,7 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:restriction base="profile-email">
-							<xs:pattern value="(\w+([-+._']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
+							<xs:pattern value="((_[a-zA-Z0-9]|[a-zA-Z0-9])+(_|([-+._'][a-zA-Z0-9]+)*)){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
 						</xs:restriction>
 					</xs:simpleContent>
 				</xs:complexType>
