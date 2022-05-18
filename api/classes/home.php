@@ -921,7 +921,7 @@ class Home extends General
 		    $aTxnId = array();
 		    if($sessionId !== 0)
             {
-                $sql = "SELECT id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Where sessionid = ".$sessionId ." order by id asc ";
+                $sql = "SELECT distinct trs.id  FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl trs INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl msg ON msg.txnid=trs.id WHERE msg.stateid !=".Constants::iPAYMENT_RETRIED_USING_DR_STATE." AND trs.sessionid = ".$sessionId ." order by trs.id asc ";
                 $RSTxnId = $this->getDBConn()->query($sql);
                 while ($RS = $this->getDBConn()->fetchName($RSTxnId) ) { $aTxnId[] = (int)$RS["ID"]; }
             }
