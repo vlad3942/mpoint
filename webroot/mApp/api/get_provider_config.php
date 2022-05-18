@@ -38,7 +38,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
     $clientId = (integer)$_REQUEST['client_id'];
     $pspId = (integer)$_REQUEST['id'];
-    $accountId = (integer)$_REQUEST['acc_id'];
+    $accountId = (integer)$_REQUEST['account_id'];
     $code = Validate::valClient($_OBJ_DB, $clientId);
 
     if ($code === 100)
