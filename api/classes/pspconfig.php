@@ -407,35 +407,6 @@ class PSPConfig extends BasicConfig
 		}
 	}
 
-    /**
-     * Produces a new instance of a client's account ids based on client id and psp id.
-     *
-     * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
-     * @param 	integer $clid 	Unique ID for the Client performing the request
-     * @param 	integer $pspid 	Unique ID for the Payment Service Provider
-     * @return 	ClientAccountIds
-     */
-
-    public static function getClientAccountIds(RDB $oDB, int $clid, int $pspid){
-        $sql = "SELECT account.id
-                FROM client" . sSCHEMA_POSTFIX . ".account_tbl account
-                  INNER JOIN client" . sSCHEMA_POSTFIX . ".merchantsubaccount_tbl submerchant ON submerchant.accountid = account.id
-                WHERE account.clientid = $clid
-                      AND submerchant.pspid = $pspid
-                      AND account.enabled
-                      AND submerchant.enabled";
-        //print_r($sql); exit;
-
-        $aRS = $oDB->getAllNames($sql);
-        $aAccounts = [];
-        if (is_array($aRS) === true && count($aRS) > 0) {
-            foreach ($aRS as $rs) {
-                array_push($aAccounts,(int)$rs["ID"]);
-            }
-        }
-        return $aAccounts;
-    }
-
 
     /**
      * Produces a new instance of a Payment Service Provider Configuration Object For Non Legacy Flow.

@@ -38,13 +38,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
     $clientId = (integer)$_REQUEST['client_id'];
     $pspId = (integer)$_REQUEST['id'];
+    $accountId = (integer)$_REQUEST['acc_id'];
     $code = Validate::valClient($_OBJ_DB, $clientId);
 
     if ($code === 100)
     {
-            $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
-            $clientAccountId = (integer)$clientAccountIds[0];
-            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $clientAccountId , $pspId);
+            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
             if($obj_PSPConfig){
                 $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
             } else {
