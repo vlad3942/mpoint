@@ -269,6 +269,7 @@
 
 	<xs:complexType name="client-config">
 	<xs:all>
+		<xs:element ref="urls" minOccurs="0" maxOccurs="1" />
 		<xs:element ref="additional-config" minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
@@ -278,6 +279,22 @@
 	<xs:attribute name="pushid" type="xs:string" use="optional"/>
 	<xs:attribute name="business-type" type="xs:int" use="optional"/>
 </xs:complexType>
+	<xs:element name="urls">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:anyURI">
+								<xs:attribute name="type-id" use="required" type="xs:positiveInteger"/>
+								<xs:attribute name="id" use="required" type="xs:positiveInteger"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 		<xs:complexType name="client-info">
 		<xs:all>
