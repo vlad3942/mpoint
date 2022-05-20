@@ -260,7 +260,7 @@ class ChaseSettlement extends mPointSettlement
                                             "amount" => $amount
                                             );
                                         $stateId = Constants::iPAYMENT_REFUNDED_STATE;
-
+                                        $obj_TxnInfo->updateRefundedAmount($_OBJ_DB, $amount);
                                     }
                                     if($isTicketLevelSettlement === 'true')
                                     {

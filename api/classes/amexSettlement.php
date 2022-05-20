@@ -242,6 +242,7 @@ class AmexSettlement extends mPointSettlement
 													"amount" => $amount);
 
                                             $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
+                                            $obj_TxnInfo->updateRefundedAmount($_OBJ_DB, $amount);
                                         }
 
                                     }

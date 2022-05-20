@@ -730,7 +730,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
                                                 if ($activePaymentMenthodsResponseXML !== NULL) {
-                                                    $cardXML .= $activePaymentMenthodsResponseXML->{'active-payment-methods'}->asXML();
+                                                    $cardXML .= $activePaymentMenthodsResponseXML->{'active-payment-menthods'}->asXML();
                                                 }
                                             }
                                         }

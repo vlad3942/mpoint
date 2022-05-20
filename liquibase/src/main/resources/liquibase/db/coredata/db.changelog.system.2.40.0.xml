@@ -44,4 +44,25 @@
         </update>
     </changeSet>
 
+    <!-- Change system_type from 1 to 7 for Cellulant -->
+        <changeSet author="Ramesh Tiwari" id="2022-05-11-CMP-6726">
+            <update catalogName="system" schemaName="system" tableName="psp_tbl">
+                <column name="system_type" value="7" />
+                <where>id = 58</where>
+            </update>
+        </changeSet>
+
+    <changeSet author="Ramesh Tiwari" id="2022-05-11-CMP-6727">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-936" />
+            <column name="cardid" value="86"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-952" />
+            <column name="cardid" value="86"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
