@@ -391,7 +391,7 @@ $aHTTP_CONN_INFO[21]["paths"]["refund"] = "/mpoint/global-collect/refund";
 $aHTTP_CONN_INFO[21]["paths"]["callback"] = "/mpoint/global-collect/callback";
 $aHTTP_CONN_INFO[21]["paths"]["cancel"] = "/mpoint/global-collect/cancel";
 $aHTTP_CONN_INFO[21]["paths"]["auth-complete"] = "/mpoint/global-collect/auth-complete";
-
+$aHTTP_CONN_INFO[21]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 /**
  * Connection info for connecting to SecureTrading

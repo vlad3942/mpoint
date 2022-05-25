@@ -482,7 +482,7 @@ final class TxnPassbook
                 $this->getTransactionId()
             );
             $result = $this->getDBConn()->executeQuery($sql, $aParams);
-                    
+
             while ($RS = $this->getDBConn()->fetchName($result)) {
                 $this->_pspSupportedPartialOperation = (int)$RS['PSPSUPPORTEDPARTIALOPERATIONS'];
                 $this->_merchantSupportedPartialOperation = (int)$RS['MERCHANTSUPPORTEDPARTIALOPERATIONS'];

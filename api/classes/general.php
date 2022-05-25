@@ -1550,6 +1550,8 @@ class General
                         } else {
                             $xml = '<status code="92">Authorization failed, ' . $obj_Processor->getPSPConfig()->getName() . ' returned error: ' . $code . '</status>';
                         }
+                    } else if ($code == Constants::iPAYMENT_REJECTED_STATE) {
+                        $xml = '<status code="2010">Payment rejected by PSP</status>';
                     }
                 }
                 else {
