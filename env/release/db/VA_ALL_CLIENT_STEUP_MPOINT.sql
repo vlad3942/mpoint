@@ -11,7 +11,7 @@ INSERT INTO Client.Client_Tbl (Id, Countryid, Flowid, Name, Username, Passwd, Lo
             FALSE);
 
 --Create Storefronts
-INSERT INTO Client.Account_Tbl (Clientid, Name, Mobile, Enabled, Markup, Businesstype)
+INSERT INTO Client.Account_Tbl (id,Clientid, Name, Mobile, Enabled, Markup, Businesstype)
     VALUES (101060, 10106, 'Virgin Holidays', NULL, TRUE, 'spa', 0);
 
 --Create Keyword
@@ -94,7 +94,7 @@ INSERT INTO Client.Client_Tbl (Id, Countryid, Flowid, Name, Username, Passwd, Lo
             FALSE);
 
 --Create Storefronts
-INSERT INTO Client.Account_Tbl (Clientid, Name, Mobile, Enabled, Markup, Businesstype)
+INSERT INTO Client.Account_Tbl (id, Clientid, Name, Mobile, Enabled, Markup, Businesstype)
     VALUES (101070, 10107, 'Virgin Holidays Call Center', NULL, TRUE, 'spa', 0);
 
 --Create Keyword
