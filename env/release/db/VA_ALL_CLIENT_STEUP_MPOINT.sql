@@ -238,12 +238,13 @@ SELECT Id, 10106, 20
     WHERE Routeid IN (SELECT Id FROM Client.Route_Tbl WHERE Clientid = 10106 AND Providerid IN (62))
 
 --Account Mapping with First Data + Modirum +Mvault
+
 INSERT INTO Client.Merchantsubaccount_Tbl (Accountid, Pspid, Name, Enabled)
-    VALUES (101060, 62, '-1', TRUE);--FIRST DATA
+    VALUES (101060, 62, '-1', TRUE); --FIRST DATA
 INSERT INTO Client.Merchantsubaccount_Tbl (Accountid, Pspid, Name, Enabled)
-    VALUES (101060, 36, '-1', TRUE);--mvault
+    VALUES (101060, 36, '-1', TRUE); --mvault
 INSERT INTO Client.Merchantsubaccount_Tbl (Accountid, Pspid, Name, Enabled)
-    VALUES (101060, 47, '-1', TRUE);--Modirum
+    VALUES (101060, 47, '-1', TRUE); --Modirum
 
 INSERT INTO Client.Providerpm_Tbl (Pmid, Routeid, Enabled)
     VALUES (7, (SELECT Id FROM Client.Route_Tbl WHERE Providerid = 62 AND Clientid = 10106), TRUE);
@@ -280,7 +281,7 @@ SELECT Rc.Id
       AND Capturetype = 1;
 	  
 INSERT INTO Client.Merchantsubaccount_Tbl (Accountid, Pspid, Name, Enabled)
-    VALUES (101070, 62, '-1', TRUE);--FIRST DATA
+    VALUES (101070, 62, '-1', TRUE); --FIRST DATA
 
 INSERT INTO Client.Providerpm_Tbl (Pmid, Routeid, Enabled)
     VALUES (7, (SELECT Id FROM Client.Route_Tbl WHERE Providerid = 62 AND Clientid = 10107), TRUE);
