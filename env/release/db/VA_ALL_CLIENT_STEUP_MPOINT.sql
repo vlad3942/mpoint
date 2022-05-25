@@ -235,7 +235,7 @@ INSERT INTO Client.Mpi_Property_Tbl (Clientid, Version)
 INSERT INTO Client.Routefeature_Tbl (Routeconfigid, Clientid, Featureid)
 SELECT Id, 10106, 20
     FROM Client.Routeconfig_Tbl
-    WHERE Routeid IN (SELECT Id FROM Client.Route_Tbl WHERE Clientid = 10106 AND Providerid IN (62))
+    WHERE Routeid IN (SELECT Id FROM Client.Route_Tbl WHERE Clientid = 10106 AND Providerid IN (62));
 
 --Account Mapping with First Data + Modirum +Mvault
 
