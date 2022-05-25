@@ -27,11 +27,11 @@ INSERT INTO Client.Url_Tbl (Urltypeid, Clientid, Url, Enabled)
     VALUES (17, 10106, 'payment.webdev.vholsinternal.co.uk', FALSE);
 
 --Country-Currency Mapping
-INSERT INTO Client.Countrycurrency_Tbl (Id, Clientid, Countryid, Currencyid, Enabled)
+INSERT INTO Client.Countrycurrency_Tbl (Clientid, Countryid, Currencyid, Enabled)
     VALUES (10106, 103, 826, TRUE); --GBP
-INSERT INTO Client.Countrycurrency_Tbl (Id, Clientid, Countryid, Currencyid, Enabled)
+INSERT INTO Client.Countrycurrency_Tbl (Clientid, Countryid, Currencyid, Enabled)
     VALUES (10106, 103, 840, TRUE); --USD
-INSERT INTO Client.Countrycurrency_Tbl (Id, Clientid, Countryid, Currencyid, Enabled)
+INSERT INTO Client.Countrycurrency_Tbl (Clientid, Countryid, Currencyid, Enabled)
     VALUES (10106, 103, 978, TRUE);
 --EURO
 
@@ -108,11 +108,11 @@ INSERT INTO Client.Url_Tbl (Urltypeid, Clientid, Url, Enabled)
     VALUES (14, 10107, 'https://cpd-hpp2-prodassests.s3.eu-central-1.amazonaws.com/10106', TRUE);
 
 --Country-Currency Mapping
-INSERT INTO Client.Countrycurrency_Tbl (Id, Clientid, Countryid, Currencyid, Enabled)
+INSERT INTO Client.Countrycurrency_Tbl (Clientid, Countryid, Currencyid, Enabled)
     VALUES (10107, 103, 826, TRUE); --GBP
-INSERT INTO Client.Countrycurrency_Tbl (Id, Clientid, Countryid, Currencyid, Enabled)
+INSERT INTO Client.Countrycurrency_Tbl (Clientid, Countryid, Currencyid, Enabled)
     VALUES (10107, 103, 840, TRUE); --USD
-INSERT INTO Client.Countrycurrency_Tbl (Id, Clientid, Countryid, Currencyid, Enabled)
+INSERT INTO Client.Countrycurrency_Tbl (Clientid, Countryid, Currencyid, Enabled)
     VALUES (10107, 103, 978, TRUE);
 --EURO
 
