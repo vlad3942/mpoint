@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- CEBU-1125 -->
+    <changeSet author="Abhinav" id="2022-05-30-Paymaya-Name-Change">
+        <update catalogName="system" schemaName="system" tableName="card_tbl">
+            <column name="name" value="Maya"/>
+            <where>id = 95</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
