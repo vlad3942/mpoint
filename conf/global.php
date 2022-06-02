@@ -1110,6 +1110,21 @@ $aHTTP_CONN_INFO[75]["paths"]["callback"] = "/mpoint/aggregator/aub/callback";
 $aHTTP_CONN_INFO[75]["paths"]["status"] = "/mpoint/aggregator/aub/status";
 $aHTTP_CONN_INFO[75]["paths"]["redirect"] = "/mpoint/aggregator/aub/redirect";
 
+
+/**
+ * Connection info for connecting to MercadoPago
+ */
+$aHTTP_CONN_INFO[77]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[77]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[77]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[77]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[77]["paths"]["initialize"] = "/mpoint/aggregator/mercado-pago/initialize";
+$aHTTP_CONN_INFO[77]["paths"]["refund"] = "/mpoint/aggregator/mercado-pago/refund";
+$aHTTP_CONN_INFO[77]["paths"]["callback"] = "/mpoint/aggregator/mercado-pago/callback";
+$aHTTP_CONN_INFO[77]["paths"]["status"] = "/mpoint/aggregator/mercado-pago/status";
+$aHTTP_CONN_INFO[77]["paths"]["redirect"] = "/mpoint/aggregator/mercado-pago/redirect";
+$aHTTP_CONN_INFO[77]["paths"]["cancel"] = "/mpoint/aggregator/mercado-pago/cancel";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
