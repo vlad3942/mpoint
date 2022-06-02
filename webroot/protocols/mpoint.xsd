@@ -1808,7 +1808,7 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:restriction base="profile-email">
-							<xs:pattern value="(\w+([-+._']\w+)*){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
+							<xs:pattern value="((_[a-zA-Z0-9]|[a-zA-Z0-9])+(_|([-+._'][a-zA-Z0-9]+)*)){1,64}@([a-zA-Z0-9]+([-.]\w+)*\.\w+([-.]\w+)*[a-zA-Z0-9]){1,255}" />
 						</xs:restriction>
 					</xs:simpleContent>
 				</xs:complexType>
@@ -1948,8 +1948,8 @@
 	<xs:complexType name="airline-data-bulk-capture">
 		<xs:sequence>
 			<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
-			<xs:element name="fees" type="fee" maxOccurs="1" minOccurs="0"/>
-			<xs:element ref="billing-summary-bulk-capture"  minOccurs="0" maxOccurs="1" />
+			<xs:element name="fees" type="fee" maxOccurs="0" minOccurs="0"/>
+			<xs:element ref="billing-summary"  minOccurs="0" maxOccurs="1" />
 			<xs:element ref="trips"  minOccurs="1" maxOccurs="unbounded" />
 			<xs:element ref="profiles" minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
