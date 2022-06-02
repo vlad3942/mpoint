@@ -65,4 +65,15 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Devansh Sah" id="2022-06-02-CPMRM-17013">
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="client_property_tbl">
+            <column name="name" value="MerchantCategoryCode"/>
+            <column name="category" value="2"/>
+            <column name="ismandatory" value="false"/>
+            <column name="datatype" value="3"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
