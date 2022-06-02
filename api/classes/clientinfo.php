@@ -124,7 +124,7 @@ class ClientInfo
 		$this->_sPlatform = trim($pf);
 		$this->_fVersion = (float) $ver;
 		$this->_obj_CountryConfig = $oCC;
-		$this->_sMobile = (float) $mob;
+		$this->_sMobile = (int) $mob;
 		$this->_sEMail = trim($email);
 		$this->_sDeviceID = trim($dvc);
 		$this->_sIP = trim($ip);
@@ -173,7 +173,7 @@ class ClientInfo
 	/**
 	 * Returns the Customer's Mobile Number
 	 *
-	 * @return 	float
+	 * @return 	int
 	 */
 	public function getMobile() { return $this->_sMobile; }
 	/**
@@ -383,7 +383,7 @@ class ClientInfo
         $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
         $httpXForwardedForIp = $httpXForwardedForIps[0];
 
-        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (float) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId, $oXML["locale"], (string) $oXML->{"customer-ref"});
+        return new ClientInfo($oXML["app-id"], $oXML["platform"], $oXML["version"], $oCC, (int) $oXML->mobile, (string) $oXML->email, (string) $oXML->{'device-id'}, $oXML["language"], $httpXForwardedForIp, $oXML["profileid"], $oXML["sdk-version"], $oXML["app-version"], $profileTypeId, $oXML["locale"], (string) $oXML->{"customer-ref"});
 	}
 }
 ?>

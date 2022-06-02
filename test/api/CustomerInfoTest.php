@@ -52,7 +52,7 @@ class CustomerInfoTest extends baseAPITest
             if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
                 $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
             }
-            if (floatval($obj_TxnInfo->getMobile()) > 0) {
+            if ((int)$obj_TxnInfo->getMobile() > 0) {
                 $obj_Customer->mobile = $obj_TxnInfo->getMobile();
                 $obj_Customer->mobile["country-id"] = intval($obj_CountryConfig->getID());
                 $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
@@ -91,7 +91,7 @@ class CustomerInfoTest extends baseAPITest
             if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
                 $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
             }
-            if (floatval($obj_TxnInfo->getMobile()) > 0) {
+            if ((int)$obj_TxnInfo->getMobile() > 0) {
                 $obj_Customer->mobile = $obj_TxnInfo->getMobile();
                 $obj_Customer->mobile["country-id"] = intval($obj_CountryConfig->getID());
                 $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
@@ -128,7 +128,7 @@ class CustomerInfoTest extends baseAPITest
             if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
                 $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
             }
-            if (floatval($obj_TxnInfo->getMobile()) > 0) {
+            if ((int)$obj_TxnInfo->getMobile() > 0) {
                 $obj_Customer->mobile = $obj_TxnInfo->getMobile();
                 $obj_Customer->mobile["country-id"] = intval($obj_CountryConfig->getID());
                 $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
