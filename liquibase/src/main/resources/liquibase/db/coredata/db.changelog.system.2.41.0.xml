@@ -69,25 +69,25 @@
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="(SELECT id FROM system.pricepoint_tbl WHERE currencyid = 32)"/>
+            <column name="pricepointid" value="-32"/>
             <column name="cardid" value="103"/>
             <column name="enabled" value="true"/>
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="(SELECT id FROM system.pricepoint_tbl WHERE currencyid = 986)"/>
+            <column name="pricepointid" value="-986"/>
             <column name="cardid" value="103"/>
             <column name="enabled" value="true"/>
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="(SELECT id FROM system.pricepoint_tbl WHERE currencyid = 170)"/>
+            <column name="pricepointid" value="-170"/>
             <column name="cardid" value="103"/>
             <column name="enabled" value="true"/>
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
-            <column name="pricepointid" value="(SELECT id FROM system.pricepoint_tbl WHERE currencyid = 484)"/>
+            <column name="pricepointid" value="-484"/>
             <column name="cardid" value="103"/>
             <column name="enabled" value="true"/>
         </insert>
