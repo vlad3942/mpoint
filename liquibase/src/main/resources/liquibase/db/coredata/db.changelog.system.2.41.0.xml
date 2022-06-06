@@ -93,5 +93,41 @@
         </insert>
 
     </changeSet>
+    <changeSet author="Ramesh Tiwari"
+               id="2022-06-03-CPMRM-6902">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="UYU" />
+            <column name="currencyid" value="858" />
+            <column name="enabled" value="true"/>
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="CLP" />
+            <column name="currencyid" value="152" />
+            <column name="enabled" value="true"/>
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="PEN" />
+            <column name="currencyid" value="604" />
+            <column name="enabled" value="true"/>
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-858"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-604"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
