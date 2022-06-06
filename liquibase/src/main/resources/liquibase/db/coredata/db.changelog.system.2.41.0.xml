@@ -6,7 +6,11 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <!-- CEBU-1125 -->
-    <changeSet author="Abhinav" id="2022-05-30-Paymaya-Name-Change">
+    <changeSet author="Abhinav" id="2022-06-06-Paymaya-Name-Change">
+        <update catalogName="system" schemaName="system" tableName="psp_tbl">
+            <column name="name" value="Maya"/>
+            <where>id = 68</where>
+        </update>
         <update catalogName="system" schemaName="system" tableName="card_tbl">
             <column name="name" value="Maya"/>
             <where>id = 95</where>
