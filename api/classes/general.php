@@ -669,7 +669,7 @@ class General
 
         // Update Parent Transaction Route Config ID
         $data['psp-id'] = (int)$obj_PSPConfig->getID();
-        $obj_TxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
+        $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $this->getDBConn(),$obj_TxnInfo,$data);
         $obj_TxnInfo->setRouteConfigID($iSecondaryRoute);
         $this->logTransaction($obj_TxnInfo);
 
