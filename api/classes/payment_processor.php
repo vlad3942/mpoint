@@ -77,7 +77,7 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$obj_ClientInfo)
+    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$obj_ClientInfo=null)
     {
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo,$obj_ClientInfo);
     }
