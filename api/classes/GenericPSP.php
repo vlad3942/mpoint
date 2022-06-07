@@ -162,8 +162,16 @@ class GenericPSP extends \CPMPSP
         $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
         $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
         $sortable = array();
-        if(is_object($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) && count($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'}) >= 1){
-            foreach ($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
+        $activePaymentMethodTagName = "";
+        foreach ($activePaymentMethods->children() as $obj_Field)
+        {
+            if($obj_Field->getName() =="active-payment-menthods" || $obj_Field->getName()=="active-payment-methods"){
+                $activePaymentMethodTagName = $obj_Field->getName();
+                break;
+            }
+        }
+        if(is_object($activePaymentMethods->{$activePaymentMethodTagName}->{'payment-method'}) && count($activePaymentMethods->{$activePaymentMethodTagName}->{'payment-method'}) >= 1){
+            foreach ($activePaymentMethods->{$activePaymentMethodTagName}->{'payment-method'} as $node) {
                 $issuingBank = strtolower($node->issuingBank);
                 $usageCount = (int)$aStatisticalData['issuing_bank_' . $issuingBank];
                 $node->addChild('usage', $usageCount);
@@ -171,13 +179,13 @@ class GenericPSP extends \CPMPSP
             }
         }
         usort($sortable,   'compare_usage');
-        $newSortedList = "<root><active-payment-menthods>";
+        $newSortedList = "<root><".$activePaymentMethodTagName.">";
         foreach ($sortable as $node)
         {
             unset($node->usage);
             $newSortedList .= $node->asXML();
         }
-        $newSortedList .= "</active-payment-menthods></root>";
+        $newSortedList .= "</".$activePaymentMethodTagName."></root>";
         $sxml = simplexml_load_string($newSortedList);
         return $sxml;
     }
