@@ -48,7 +48,7 @@ class PaymentProcessor
         }
     }
 
-    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public function __construct(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$obj_ClientInfo=null)
     {
         $this->_setConnInfo($aConnInfo, $iPSPID);
 
@@ -56,9 +56,9 @@ class PaymentProcessor
 
         try {
             if (empty($this->aConnInfo) === true) {
-                $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
+                $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig,$obj_ClientInfo);
             } else if (empty($this->aConnInfo) === false) {
-                $this->_objPSP = new \api\classes\GenericPSP($oDB, $oTxt, $oTI, $this->aConnInfo, $this->_objPSPConfig, null, $iPSPID);
+                $this->_objPSP = new \api\classes\GenericPSP($oDB, $oTxt, $oTI, $this->aConnInfo, $this->_objPSPConfig, $obj_ClientInfo, $iPSPID);
             } else {
                 throw new PaymentProcessorException("Could not construct PSP object for the given PSPID ".$iPSPID );
             }
@@ -77,9 +77,9 @@ class PaymentProcessor
     public function getPSPConfig() { return $this->_objPSPConfig; }
     public function getPSPInfo()  { return $this->_objPSP; }
 
-    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public static function produceConfig(RDB $oDB, api\classes\core\TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo,$obj_ClientInfo)
     {
-        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
+        return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo,$obj_ClientInfo);
     }
 
     public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL, $storeCard = FALSE, $authToken = NULL, $cardName='')
