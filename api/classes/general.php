@@ -665,8 +665,8 @@ class General
         // Update Associated Transaction ID
 	    $data = array();
         $data['psp-id'] = $obj_PSPConfig->getID();
-        $obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
-        $this->logTransaction($obj_AssociatedTxnInfo);
+        $obj_TxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo,$data);
+        $this->logTransaction($obj_TxnInfo);
 
 
         // Update Parent Transaction Route Config ID
