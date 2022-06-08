@@ -162,14 +162,7 @@ class GenericPSP extends \CPMPSP
         $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
         $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
         $sortable = array();
-        $activePaymentMethodTagName = "";
-        foreach ($activePaymentMethods->children() as $obj_Field)
-        {
-            if($obj_Field->getName() =="active-payment-menthods" || $obj_Field->getName()=="active-payment-methods"){
-                $activePaymentMethodTagName = $obj_Field->getName();
-                break;
-            }
-        }
+        $activePaymentMethodTagName = $activePaymentMethods->children()->getName();
         if(is_object($activePaymentMethods->{$activePaymentMethodTagName}->{'payment-method'}) && count($activePaymentMethods->{$activePaymentMethodTagName}->{'payment-method'}) >= 1){
             foreach ($activePaymentMethods->{$activePaymentMethodTagName}->{'payment-method'} as $node) {
                 $issuingBank = strtolower($node->issuingBank);

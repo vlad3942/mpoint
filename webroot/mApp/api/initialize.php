@@ -730,14 +730,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$obj_ClientInfo);
                                             if ($obj_Processor !== FALSE) {
                                                 $activePaymentMethodsResponseXML = $obj_Processor->getPaymentMethods();
-                                                $activePaymentMethodTagName = "";
+                                                $activePaymentMethodTagName = $activePaymentMethodsResponseXML->children()->getName();
                                                 if ($activePaymentMethodsResponseXML !== NULL) {
-                                                    foreach ($activePaymentMethodsResponseXML->children() as $obj_Field) {
-                                                        if ($obj_Field->getName() == "active-payment-menthods" || $obj_Field->getName() == "active-payment-methods") {
-                                                            $activePaymentMethodTagName = $obj_Field->getName();
-                                                            break;
-                                                        }
-                                                    }
                                                     $cardXML .= $activePaymentMethodsResponseXML->{$activePaymentMethodTagName}->asXML();
                                                 }
                                             }
