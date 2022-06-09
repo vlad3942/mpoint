@@ -37,7 +37,7 @@ class Amex extends CPMACQUIRER
     {
         //To allow one partial capture and one partial refund in same batch, we have removed if condition - VA Requirement.
         //To allow multiple partial capture and refund (design discussion is required) - VA Requirement.
-        if($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUND_INITIATED_STATE) === false)
+        if(($this->getTxnInfo()->getLatestPaymentState($this->getDBConn(), Constants::iPAYMENT_REFUND_INITIATED_STATE)) != Constants::iPAYMENT_REFUND_INITIATED_STATE )
         {
 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, $iAmount);
         } else {
