@@ -13,7 +13,7 @@
                 tableName="psp_tbl">
             <column name="id" value="78"/>
             <column name="name" value="Reach"/>
-            <column name="system_type" value="1"/>
+            <column name="system_type" value="7"/>
         </insert>
 
         <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
@@ -50,6 +50,15 @@
             <column name="pspid" value="78"/>
             <column name="name" value="USD" />
             <column name="currencyid" value="840" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
+            <column name="pspid" value="78"/>
+            <column name="name" value="REACH_HMAC_SECRET" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="true" />
+            <column name="category" value="8" />
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
