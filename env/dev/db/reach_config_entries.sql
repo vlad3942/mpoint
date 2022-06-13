@@ -11,7 +11,7 @@ INSERT INTO client.routeconfig_tbl (id,routeid,"name",capturetype,mid,username,"
 (614,131,'Reach_AE_VISA_MASTERCARD',2,'f30aab7f-7b56-4560-84c4-b9f3804e903a','cellpoint','3BfNgyHmrXfbixW',true,false);
 
 
-INSERT INTO client.routecountry_tbl (id,routeconfigid,countryid,enabled VALUES
+INSERT INTO client.routecountry_tbl (id,routeconfigid,countryid,enabled) VALUES
 (783,614,200,true);
 
 
@@ -25,12 +25,17 @@ INSERT INTO client.routefeature_tbl (id,clientid,routeconfigid,featureid,enabled
 (233,10077,614,9,true);
 
 
-INSERT INTO client.routepm_tbl (id,routeconfigid,pmid,enabled) VALUES
-(1,614,1,true),
-(2,614,7,true),
-(3,614,8,true);
-(3,614,3,true);
-(3,614,22,true);
+INSERT INTO client.routepm_tbl (routeconfigid,pmid,enabled) VALUES
+(614,1,true);
+INSERT INTO client.routepm_tbl (routeconfigid,pmid,enabled) VALUES
+(614,7,true);
+INSERT INTO client.routepm_tbl (routeconfigid,pmid,enabled) VALUES
+(614,8,true);
+INSERT INTO client.routepm_tbl (routeconfigid,pmid,enabled) VALUES
+(614,3,true);
+INSERT INTO client.routepm_tbl (routeconfigid,pmid,enabled) VALUES
+(614,22,true);
+
 
 INSERT INTO client.cardaccess_tbl
 (clientid, cardid, enabled, pspid, countryid, stateid, "position", preferred, psp_type, installment, capture_method, capture_type, walletid, dccenabled)

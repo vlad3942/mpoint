@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Bharat Bisht"
-               id="2022-05-23-CPMRM-16891">
+               id="2022-06-10-CPMRM-16891-1">
 
         <insert catalogName="system"
                 schemaName="system"
