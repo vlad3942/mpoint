@@ -257,6 +257,7 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
         $SQL_TxnTbl =  $this->queryDB("SELECT Txn.* FROM Log.Transaction_Tbl Txn WHERE Txn.id = 1001002");
         $this->assertTrue(is_resource($SQL_TxnTbl));
         $res_TxnTbl = pg_fetch_all($SQL_TxnTbl);
+
         // Assertion for expected Route config ID
         $this->assertEquals(17, $res_TxnTbl[0]['routeconfigid'],'Route Config Id not matched' );
         $this->assertEquals(40, $res_TxnTbl[0]['pspid'],'PSP Id not matched' );
