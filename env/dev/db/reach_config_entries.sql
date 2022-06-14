@@ -6,7 +6,7 @@ VALUES (<client-id>, 78, 'Reach', true, '<username>', '<password>', 0);
 INSERT INTO client.route_tbl (clientid, providerid) VALUES(<client-id>, 78);
 
 /*
-By default below entries will be done by MO (vision portal) only and but will be useful if you want to do the entries manually/
+By default below entries will be done by MO (vision portal) only and but will be useful if you want to do the entries manually
 
 INSERT INTO client.routeconfig_tbl(routeid, name, capturetype, mid, username, password, enabled) SELECT id, 'Reach', 2, '<MID>', '<username>', '<password>', enabled FROM client.route_tbl WHERE clientid = <client-id> AND providerid = 78;
 
