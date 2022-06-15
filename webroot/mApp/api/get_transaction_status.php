@@ -45,15 +45,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT );
         $iClientId = (integer)$obj_DOM->{'get-transaction-status'}->{"client-id"};
         $mode = (integer)$obj_DOM->{'get-transaction-status'}->{'mode'};
+        $isSecure = false;
+        if($obj_DOM->{'get-transaction-status'}->{'secure'})
+        {
+            $isSecure = General::xml2bool($obj_DOM->{'get-transaction-status'}->{'secure'});
+        }
 
         if($obj_DOM->{'get-transaction-status'}->{"session_id"})
         {
-            $xml .= $obj_mPoint->getTxnStatus(0,(int)$iClientId,$mode,(int)$obj_DOM->{'get-transaction-status'}->{"session_id"});
+            $xml .= $obj_mPoint->getTxnStatus(0,(int)$iClientId,$mode,(int)$obj_DOM->{'get-transaction-status'}->{"session_id"},$isSecure);
         }
         $aTransactionIDs = $obj_DOM->{'get-transaction-status'}->transactions->{'transaction-id'};
         for ($i=0; $i<count($aTransactionIDs); $i++)
         {
-            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,$mode);
+            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,$mode,0,$isSecure);
         }
     }
     elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
