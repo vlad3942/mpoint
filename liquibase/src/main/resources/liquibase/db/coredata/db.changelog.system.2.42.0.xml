@@ -5,8 +5,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet author="Bharat Bisht"
-               id="2022-05-23-CPMRM-16891">
+    <changeSet author="Bharat Bisht" id="2022-06-15-CPMRM-16891-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck  expectedResult="78">SELECT id FROM system.psp_tbl WHERE name = 'Reach'</sqlCheck>
+            </not>
+        </preConditions>
 
         <insert catalogName="system"
                 schemaName="system"
@@ -15,7 +19,9 @@
             <column name="name" value="Reach"/>
             <column name="system_type" value="7"/>
         </insert>
+    </changeSet>
 
+    <changeSet author="Bharat Bisht" id="2022-05-23-CPMRM-16891" runOnChange="true">
         <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
             <column name="cardid" value="7" />
             <column name="pspid" value="78"/>
@@ -55,23 +61,11 @@
 
         <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
             <column name="pspid" value="78"/>
-            <column name="name" value="REACH_HMAC_SECRET" />
+            <column name="name" value="HMAC_SECRET" />
             <column name="datatype" value="3" />
             <column name="ismandatory" value="true" />
             <column name="category" value="8" />
             <column name="enabled" value="true"/>
         </insert>
-    </changeSet>
-
-    <changeSet author="Bharat Bisht"
-               id="2022-06-15-CPMRM-16891">
-
-        <update catalogName="system"
-                schemaName="system"
-                tableName="psp_property_tbl">
-
-            <column name="name" value="HMAC_SECRET" />
-            <where>(pspid = '78' and name = 'REACH_HMAC_SECRET')</where>
-        </update>
     </changeSet>
 </databaseChangeLog>
