@@ -1835,10 +1835,17 @@ class Home extends General
             $obj_CustomerInfo->setOperator($txnInfo->getOperator());
             $obj_CustomerInfo->setLanguage($txnInfo->getLanguage());
         }
-        else{
+        else
+        {
             $obj_CustomerInfo = new CustomerInfo(-1,null, $txnInfo->getMobile(),$txnInfo->getEMail(),'','',$txnInfo->getLanguage() );
             $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
             $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+            if($isSecure === true)
+            {
+                $obj_CustomerInfo->setDeviceId("*******");
+                $obj_CustomerInfo->setEMail("*******");
+                $obj_CustomerInfo->setMobile("*******");
+            }
         }
 
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);

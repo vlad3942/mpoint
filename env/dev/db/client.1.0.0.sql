@@ -7,6 +7,7 @@ INSERT INTO client.client_tbl
 VALUES(10077, 640, 1, 'CEBU Pacific Air Automation', 'cebuair', 'C3B753w5', 'https://hpp-uat-02.cellpointmobile.net/css/swag/img/cebu.png', 'https://devcpmassets.s3-ap-southeast-1.amazonaws.com', 'https://hpp2.sit-01.cellpoint.dev/views/redirect_response.php', 'https://hpp2.sit-01.cellpoint.dev/views/redirect_response.php', 'https://hpp2.sit-01.cellpoint.dev/views/redirect_response.php', 2147483600, 'gb', false, false, 'mPoint', NULL, true, 1, true, 0, NULL, false, -1, 1, 0, 4, 'https://cebu.dev:8989/booking-confirmation?decline', 'az1sx2dc3fv', NULL, 0, 0, 0, 0, true);
 
 
+
 --Table Name : Client.Account_Tbl
 
 
