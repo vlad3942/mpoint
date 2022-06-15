@@ -30,6 +30,7 @@ require_once(sCLASS_PATH ."/crs/FxServiceType.php");
 All Fields Required
 id -> psp-id
 client_id -> Client ID
+account_id -> Client's account id (optional)
 http://mpoint.local.cellpointmobile.com/mApp/api/get_provider_config.php?id=50&client_id=10069
 */
 
@@ -43,13 +44,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
     if ($code === 100)
     {
-            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
-            if($obj_PSPConfig){
-                $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
-            } else {
-                header("HTTP/1.1 400 Bad Request");
-                $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
-            }
+        if(!$accountId){
+            $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
+            $accountId = $clientAccountIds[0];
+        }
+        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
+        if($obj_PSPConfig){
+            $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
+        } else {
+            header("HTTP/1.1 400 Bad Request");
+            $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
+        }
 
     }
     elseif ($code === 2)
