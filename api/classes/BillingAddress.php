@@ -162,7 +162,7 @@ class BillingAddress implements JsonSerializable, XMLSerializable
     {
         if($isSecure === true)
         {
-            $this->first_name = $this->last_name = $this->street = $this->city = $this->state = $this->country = $this->postal_code = $this->alpha2code = $this->mobile = $this->email = $this->billing_idc = "*****";
+            $this->first_name = $this->last_name = $this->street = $this->street2 = $this->city = $this->state = $this->country = $this->postal_code = $this->alpha2code = $this->mobile = $this->email = $this->billing_idc = "*****";
         }
         else
         {
@@ -177,6 +177,10 @@ class BillingAddress implements JsonSerializable, XMLSerializable
             if(empty($address['street']) === FALSE)
             {
                 $this->street = $address['street'];
+            }
+            if(empty($address['street2']) === FALSE)
+            {
+                $this->street2 = $address['street2'];
             }
             if(empty($address['city']) === FALSE)
             {
