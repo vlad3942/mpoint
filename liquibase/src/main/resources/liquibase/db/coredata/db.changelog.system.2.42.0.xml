@@ -8,7 +8,7 @@
     <changeSet author="Bharat Bisht" id="2022-06-15-CPMRM-16891-1">
         <preConditions onFail="MARK_RAN">
             <not>
-                <sqlCheck  expectedResult="78">SELECT id FROM system.psp_tbl WHERE name = 'Reach'</sqlCheck>
+                <sqlCheck expectedResult="1">SELECT count(1) FROM system.psp_tbl WHERE name = 'Reach'</sqlCheck>
             </not>
         </preConditions>
 
