@@ -58,7 +58,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $aTransactionIDs = $obj_DOM->{'get-transaction-status'}->transactions->{'transaction-id'};
         for ($i=0; $i<count($aTransactionIDs); $i++)
         {
-            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,$mode,$isSecure);
+            $xml .= $obj_mPoint->getTxnStatus((int)$aTransactionIDs[$i],(int)$iClientId,$mode,0,$isSecure);
         }
     }
     elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
