@@ -17,4 +17,19 @@
         </update>
     </changeSet>
 
+    <changeSet author="Amar kumar" id="2022-05-13-INF-120">
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1408001" />
+            <column name="name" value="Your Agency Payment is not applicable. Please select another payment method to complete your booking." />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409001" />
+            <column name="name" value="Your Agency Payment Balance is zero (0). Please select another payment method to complete your booking." />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
