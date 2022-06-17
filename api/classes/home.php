@@ -912,7 +912,7 @@ class Home extends General
 	}
 
 
-    public function getTxnStatus($txnId,$clientid,$mode,$sessionId=0)
+    public function getTxnStatus($txnId,$clientid,$mode,$sessionId=0,$isSecure=false)
     {
 		try
         {
@@ -978,7 +978,7 @@ class Home extends General
                     if ($mode == 2) {
 
 
-                        array_push($aTxnData, $this->constructTransactionInfo($obj_TxnInfo));
+                        array_push($aTxnData, $this->constructTransactionInfo($obj_TxnInfo,0,null,-1,null,$isSecure));
                         if ($index == $txnCnt - 1) {
 
                                 $status = $obj_TxnInfo->getLatestPaymentState($this->getDBConn());
@@ -1032,6 +1032,19 @@ class Home extends General
                          $isAutoRedirect = $objClientConf->getAdditionalProperties(Constants::iInternalProperty,"isAutoRedirect");
                          $cardMask = $obj_TxnInfo->getCardMask();
                          $cardExpiry = $obj_TxnInfo->getCardExpiry();
+                         $custmobileNo = $obj_TxnInfo->getMobile();
+                         $custEmail = $obj_TxnInfo->getEMail();
+                         $deviceId = $obj_TxnInfo->getDeviceID();
+                         $custRef = $obj_TxnInfo->getCustomerRef();
+                         if($isSecure === true)
+                         {
+                             $cardMask = "*************";
+                             $cardExpiry = "**/**";
+                             $custmobileNo = "*****";
+                             $custEmail = "*****";
+                             $deviceId = "*****";
+                             $custRef = "*****";
+                         }
                          $acceptUrl = $obj_TxnInfo->getAcceptURL();
                          $cancelUrl = $obj_TxnInfo->getCancelURL();
                          $cssUrl = $obj_TxnInfo->getCSSURL();
@@ -1072,24 +1085,27 @@ class Home extends General
                         $xml .= '<client-info language="' . $obj_TxnInfo->getLanguage() . '" platform="' . $obj_TxnInfo->getMarkupLanguage() . '"';
                         if ($obj_TxnInfo->getProfileID() !== '') { $xml .= ' profileid="'.$obj_TxnInfo->getProfileID().'"'; }
                         $xml .= '>';
-                        $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $obj_TxnInfo->getMobile() . '</mobile>';
-                        $xml .= '<email>' . $obj_TxnInfo->getEMail() . '</email>';
-                        $xml .= '<customer-ref>' . $obj_TxnInfo->getCustomerRef() . '</customer-ref>';
-                        $xml .= '<device-id>' . $obj_TxnInfo->getDeviceID() . '</device-id>';
+                        $xml .= '<mobile operator-id="' . (int)$obj_TxnInfo->getOperator() . '" country-id="' . (int)$obj_TxnInfo->getOperator()/100 . '">' . $custmobileNo . '</mobile>';
+                        $xml .= '<email>' . $custEmail . '</email>';
+                        $xml .= '<customer-ref>' . $custRef . '</customer-ref>';
+                        $xml .= '<device-id>' . $deviceId . '</device-id>';
                         $xml .= '</client-info>';
                         $xml .= $sTxnAdditionalDataXml;
                         $aShippingAddress = $obj_TxnInfo->getBillingAddr();
                         if (empty($aShippingAddress) === false)
                         {
                             $obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['country']);
+
+                            $objBillingAddr = new BillingAddress($aShippingAddress,$isSecure);
+
                             $xml .= '<address>';
-                            $xml .= '<first-name>' . $aShippingAddress['first_name'] . '</first-name>';
-                            $xml .= '<last-name>' . $aShippingAddress['last_name'] . '</last-name>';
-                            $xml .= '<street>' . $aShippingAddress['street'] . '</street>';
-                            $xml .= '<street2>' . $aShippingAddress['street2'] . '</street2>';
-                            $xml .= '<postal-code>' . $aShippingAddress['zip'] . '</postal-code>';
-                            $xml .= '<city>' . $aShippingAddress['city'] . '</city>';
-                            $xml .= '<state>' . $aShippingAddress['state'] . '</state>';
+                            $xml .= '<first-name>' . $objBillingAddr->getFirstName() . '</first-name>';
+                            $xml .= '<last-name>' . $objBillingAddr->getLastName() . '</last-name>';
+                            $xml .= '<street>' . $objBillingAddr->getStreet() . '</street>';
+                            $xml .= '<street2>' . $objBillingAddr->getStreet2() . '</street2>';
+                            $xml .= '<postal-code>' . $objBillingAddr->getPostalCode() . '</postal-code>';
+                            $xml .= '<city>' . $objBillingAddr->getCity() . '</city>';
+                            $xml .= '<state>' . $objBillingAddr->getState() . '</state>';
                             if (($obj_CountryConfig instanceof CountryConfig) === true)
                             {
                                 $xml .= '<country>';
@@ -1102,9 +1118,9 @@ class Home extends General
                             if (empty($aShippingAddress['mobile']) === false)
                             {
                                 $obj_MobileCountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer)$aShippingAddress['mobile_country_id']);
-                                $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $aShippingAddress['mobile'] . '</mobile>';
+                                $xml .= '<mobile idc="' . $obj_MobileCountryConfig->getCountryCode() .'">' . $objBillingAddr->getMobile() . '</mobile>';
                             }
-                            if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $aShippingAddress['email'] . '</email>'; }
+                            if (empty($aShippingAddress['email']) === false){ $xml .= '<email>' . $objBillingAddr->getEmail() . '</email>'; }
                             $xml .= '</address>';
                         }
 
@@ -1750,7 +1766,7 @@ class Home extends General
      * @return \TransactionData
      * @throws \Exception
      */
-    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,bool $isSecure=false)
     {
         $obj_CustomerInfo = NULL;
         $obj_PSPInfo = NULL;
@@ -1775,11 +1791,18 @@ class Home extends General
             $sid = $txnInfo->getLatestPaymentState($this->getDBConn());
         }
         $objPaymentMethod = $txnInfo->getPaymentMethod($this->getDBConn());
+        $cardMask = $txnInfo->getCardMask();
+        $expiry = $txnInfo->getCardExpiry();
+        if($isSecure === true)
+        {
+            $cardMask = "*************";
+            $expiry = "**/**";
+        }
         $aCardInfo = [
             'ID' => $txnInfo->getCardID(),
             'NAME' => $objPaymentMethod->CardName,
-            'MASKEDCARDNUMBER' => $txnInfo->getCardMask(),
-            'EXPIRY' => $txnInfo->getCardExpiry()
+            'MASKEDCARDNUMBER' => $cardMask,
+            'EXPIRY' => $expiry
         ];
         $obj_CardInfo = new Card($aCardInfo);
 
@@ -1796,16 +1819,33 @@ class Home extends General
 
         if (($txnInfo->getAccountID() > 0) === TRUE) {
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $txnInfo->getAccountID());
-            $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
-            $obj_CustomerInfo->setEMail($txnInfo->getEMail());
-            $obj_CustomerInfo->setMobile($txnInfo->getMobile());
+            if($isSecure === false)
+            {
+                $obj_CustomerInfo->setDeviceId("*******");
+                $obj_CustomerInfo->setEMail("*******");
+                $obj_CustomerInfo->setMobile("*******");
+
+            }
+            else
+            {
+                $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
+                $obj_CustomerInfo->setEMail($txnInfo->getEMail());
+                $obj_CustomerInfo->setMobile($txnInfo->getMobile());
+            }
             $obj_CustomerInfo->setOperator($txnInfo->getOperator());
             $obj_CustomerInfo->setLanguage($txnInfo->getLanguage());
         }
-        else{
+        else
+        {
             $obj_CustomerInfo = new CustomerInfo(-1,null, $txnInfo->getMobile(),$txnInfo->getEMail(),'','',$txnInfo->getLanguage() );
             $obj_CustomerInfo->setDeviceId($txnInfo->getDeviceID());
             $obj_CustomerInfo->setOperator($txnInfo->getOperator());
+            if($isSecure === true)
+            {
+                $obj_CustomerInfo->setDeviceId("*******");
+                $obj_CustomerInfo->setEMail("*******");
+                $obj_CustomerInfo->setMobile("*******");
+            }
         }
 
         $transactionData = new TransactionData($txnInfo->getID(), $txnInfo->getOrderID(), $obj_getPaymentMethod->PaymentMethod, $obj_getPaymentMethod->PaymentType,$amount,$obj_StateInfo,$obj_PSPInfo,$obj_CardInfo,$obj_CustomerInfo);
@@ -1919,7 +1959,7 @@ class Home extends General
             $abillingaddress['country'] = $obj_CountryConfig->getNumericCode();
             // get country alpha2code code
             $abillingaddress['alpha2code'] = $obj_CountryConfig->getAlpha2code();
-            $objBillingAddr = new BillingAddress($abillingaddress);
+            $objBillingAddr = new BillingAddress($abillingaddress,$isSecure);
             $transactionData->setBillingAddress($objBillingAddr);
         }
 
@@ -1946,7 +1986,7 @@ class Home extends General
      * @return \CallbackMessageRequestTest
      * @throws \Exception
      */
-    public function constructSessionInfo(TxnInfo $txnInfo, array $aTransactionData, int $status=null, $sub_code = null)
+    public function constructSessionInfo(TxnInfo $txnInfo, array $aTransactionData, int $status=null, $sub_code = null,$isSecure=false)
     {
         $sale_amount = new Amount($txnInfo->getPaymentSession()->getAmount(), $txnInfo->getPaymentSession()->getCurrencyConfig()->getID(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getDecimals(),$txnInfo->getPaymentSession()->getCurrencyConfig()->getCode(), NULL);
 
