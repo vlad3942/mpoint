@@ -668,6 +668,8 @@ class General
         $this->logTransaction($obj_AssociatedTxnInfo);
 
         // Update Parent Transaction Route Config ID
+        $data['psp-id'] = $obj_PSPConfig->getID();
+        $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $this->getDBConn(),$obj_TxnInfo,$data);
         $obj_TxnInfo->setRouteConfigID($iSecondaryRoute);
         $this->logTransaction($obj_TxnInfo);
 
