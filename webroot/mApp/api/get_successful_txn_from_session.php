@@ -42,6 +42,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
         $sessionid = (int)$obj_DOM->{'get-successful-txn-from-session'}->{'session-id'};
         $clientid = (int)$obj_DOM->{'get-successful-txn-from-session'}->{'client-id'};
+        $isSecure = false ;
+        if($obj_DOM->{'get-successful-txn-from-session'}->{'secure'})
+        {
+            $isSecure = General::xml2bool($obj_DOM->{'get-successful-txn-from-session'}->{'secure'});
+        }
 
         $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
 
@@ -51,13 +56,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
         foreach ($aTxnId as $txnId) {
             $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
-            array_push($aTxnData, $obj_mPoint->constructTransactionInfo($obj_TxnInfo));
+            array_push($aTxnData, $obj_mPoint->constructTransactionInfo($obj_TxnInfo,0,null,-1,null,$isSecure));
         }
 
         $session = PaymentSession::Get($_OBJ_DB, $sessionid);
         $status = $session->getStateId();
         $sub_code = null;
-        $response = $obj_mPoint->constructSessionInfo($obj_TxnInfo, $aTxnData, $status, $sub_code);
+        $response = $obj_mPoint->constructSessionInfo($obj_TxnInfo, $aTxnData, $status, $sub_code,$isSecure);
         $xml = xml_encode($response);
     } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
         header("HTTP/1.1 415 Unsupported Media Type");

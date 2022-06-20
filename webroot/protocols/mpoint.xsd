@@ -1144,6 +1144,7 @@
 					<xs:sequence>
 						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="1"/>
 						<xs:element type="xs:integer" name="mode" minOccurs="0" maxOccurs="1"/>
+						<xs:element type="xs:boolean" name="secure" minOccurs="0" maxOccurs="1"/>
 						<xs:choice minOccurs="1" maxOccurs="1">
 							<xs:element type="xs:integer" name="session_id"/>
 							<xs:element name="transactions">
@@ -1302,6 +1303,7 @@
 					<xs:sequence>
 						<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
 						<xs:element name="session-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+						<xs:element name="secure" type="xs:boolean" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
