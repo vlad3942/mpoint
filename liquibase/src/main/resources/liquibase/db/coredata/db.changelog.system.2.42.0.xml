@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Bharat Bisht" id="2022-06-15-CPMRM-16891-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(1) FROM system.psp_tbl WHERE name = 'Reach'</sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="78"/>
+            <column name="name" value="Reach"/>
+            <column name="system_type" value="7"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-05-23-CPMRM-16891" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="7" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="8" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="1" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="3" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="22" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="78"/>
+            <column name="name" value="USD" />
+            <column name="currencyid" value="840" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-21-CPMRM-16891" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
+            <column name="pspid" value="78"/>
+            <column name="name" value="HMAC_SECRET" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="true" />
+            <column name="category" value="8" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
