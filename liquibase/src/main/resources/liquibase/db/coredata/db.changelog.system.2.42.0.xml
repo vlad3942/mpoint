@@ -58,8 +58,10 @@
             <column name="currencyid" value="840" />
             <column name="enabled" value="true"/>
         </insert>
+    </changeSet>
 
-        <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
+    <changeSet author="Bharat Bisht" id="2022-06-21-CPMRM-16891" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
             <column name="pspid" value="78"/>
             <column name="name" value="HMAC_SECRET" />
             <column name="datatype" value="3" />

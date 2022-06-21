@@ -20,7 +20,7 @@ INSERT INTO client.routefeature_tbl (clientid,routeconfigid,featureid,enabled) V
 INSERT INTO client.routepm_tbl (routeconfigid,pmid,enabled) VALUES
 ((SELECT id FROM client.routeconfig_tbl WHERE name = '<name>' and mid = '<mid>' ),<card-id>,true);
 
-INSERT INTO client.psp_property_tbl
+INSERT INTO client.route_property_tbl
 (clientid, propertyid, value, enabled)
-VALUES(<client-id>, (SELECT id FROM system.psp_property_tbl WHERE pspid = 78 and name = 'HMAC_SECRET'), '<HMAC-SECRET>', true);
+VALUES(<client-id>, (SELECT id FROM system.route_property_tbl WHERE pspid = 78 and name = 'HMAC_SECRET'), '<HMAC-SECRET>', true);
 */
