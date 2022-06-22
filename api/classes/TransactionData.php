@@ -465,7 +465,7 @@ class TransactionData implements JsonSerializable, XMLSerializable
     /**
      * @param int $txn_type_id
      */
-    public function setTxnTypeID(int $txn_type_id) : int
+    public function setTxnTypeID(int $txn_type_id) : void
     {
         $this->txn_type_id = $txn_type_id;
     }
