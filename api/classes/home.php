@@ -1762,11 +1762,13 @@ class Home extends General
      * @param int|null $sid
      * @param int      $amt
      * @param int $sub_code_id
+     * @param string|null $provider_status_code
+     * @param string|null $provider_message
      *
      * @return \TransactionData
      * @throws \Exception
      */
-    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,bool $isSecure=false)
+    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,bool $isSecure=false,?string $provider_message=NULL, ?string $provider_status_code=NULL)
     {
         $obj_CustomerInfo = NULL;
         $obj_PSPInfo = NULL;
@@ -1810,7 +1812,7 @@ class Home extends General
         if($sub_code_id > 0){
             $sub_code= $sub_code_id;
         }
-        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid),$provider_message,$provider_status_code);
 
         if ($txnInfo->getClientConfig()->sendPSPID() === TRUE) {
             $pspId = $txnInfo->getPSPID();
@@ -2017,14 +2019,16 @@ class Home extends General
      * @param int|null $sid
      * @param int      $amt
      * @param int $sub_code_id
+     * @param string|null $provider_message
+     * @param string|null $provider_status_code
      *
      * @return \TransactionData
      * @throws \Exception
      */
-    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,?string $provider_message=null,?string $provider_status_code=null)
     {
         try {
-            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig);
+            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig,false,$provider_message,$provider_status_code);
             $obj_OrderInfo = OrderInfo::produceConfigurations($this->getDBConn(), $txnInfo->getID());
 
             if (empty($obj_OrderInfo) === false) {
