@@ -574,7 +574,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$aDCCPmid);
                             }
 
-                            if($sessionType > 1)
+                            if($sessionType > 1 && $obj_TxnInfo->getClientConfig()->getClientServices()->isSplitPayment() === true)
                             {
                                 try {
                                     $splitPaymentConfig = Configuration::ProduceConfig($_OBJ_DB,$clientId,array_unique($paymentTypes),$sessionId);
