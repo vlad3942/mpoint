@@ -663,7 +663,7 @@ try
 
             if ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE)) === false)
             {
-                $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID,$provider_message,$provider_status_code);
+                $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $fee,null,$iSubCodeID,$provider_message,$provider_status_code);
                 trigger_error("Voucher Redeem Fraud condition pass: Txn-Id " . $obj_TxnInfo->getID() . " State updated: " .$iStateID);
 
                 $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
