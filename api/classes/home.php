@@ -1887,6 +1887,7 @@ class Home extends General
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
+        $transactionData->setTxnTypeID($txnInfo->getTypeID());
 
         if (!is_null($obj_PSPConfig)) {
             $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
