@@ -1901,8 +1901,12 @@ class Home extends General
         $transactionData->setDateTime($dateTime->format('c'));
         $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
         if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
-            $dateTime->setTimezone(new DateTimeZone($timeZone));
-            $transactionData->setLocalDateTime($dateTime->format('c'));
+            try {
+                $dateTime->setTimezone(new DateTimeZone($timeZone));
+                $transactionData->setLocalDateTime($dateTime->format('c'));
+            } catch (Exception $e) {
+                trigger_error($e->getMessage());
+            }
         }
         $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
 
