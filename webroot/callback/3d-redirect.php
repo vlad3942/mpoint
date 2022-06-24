@@ -111,7 +111,7 @@ try
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_3DS_SUCCESS_STATE, Constants::iPAYMENT_3DS_FAILURE_STATE)) === true) {
         $iStateID = Constants::iPAYMENT_3DS_DUPLICATE_STATE;
-        $xml .= '<status code="' .$iStateID. '">Request already processed</status>';
+        $xml .= '<status code="' .$iStateID. '" sub-code="'.$iSubCodeID.'">Request already processed</status>';
     } else {
         //Log the incoming status code.
         $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
@@ -233,22 +233,9 @@ try
                     $card_obj->card->card_name = $cardName;
                 }
 
-                $response = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
-                $code = $response->code;
-                if ($code == "100")
-                {
-                    $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
-                }
-                else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-                else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
-                else
-                {
-                    $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                    header("HTTP/1.1 502 Bad Gateway");
-
-                    $xml .= '<status code="92">Authorization failed, '.$obj_PSPConfig->getName().' returned error: '. $code .'</status>';
-                }
+                $response   = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card, $obj_ClientInfo);
+                $is_legacy  = $obj_TxnInfo->getClientConfig()->getClientServices()->isLegacyFlow();
+                $xml       .= $obj_mPoint->processAuthResponse($obj_TxnInfo,$obj_PaymentProcessor,$aHTTP_CONN_INFO,$card_obj->card, $response,$is_legacy);
             }
             else
             {
@@ -263,7 +250,7 @@ try
 
                 $obj_mPoint->updateSessionState($iStateID,$obj_TxnInfo->getPSPID(),$obj_TxnInfo->getAmount(),"",0,null,"",$obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB),0,null,$iSubCodeID);
 
-                $xml .= '<status code="'.$iStateID.'">3D verification status : '.$obj_XML->{'threed-redirect'}->status.'</status>';
+                $xml .= '<status code="'.$iStateID.'"  sub-code="'.Constants::iAUTHENTICATION_DECLINED_SUB_CODE.'">3D verification status : '.$obj_XML->{'threed-redirect'}->status.'</status>';
             }
         }
         else
@@ -275,7 +262,7 @@ try
 
             $status = $obj_XML->{'threed-redirect'}->{'status'};
             if (strlen($status) >0 == false){ $status .= 'Transaction Declined'; };
-            $xml .= '<status code="2010">'.$status.'</status>';
+            $xml .= '<status code="2010" sub-code="'.Constants::iAUTHENTICATION_DECLINED_SUB_CODE.'">'.$status.'</status>';
         }
     }
 }

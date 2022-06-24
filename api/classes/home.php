@@ -1054,7 +1054,7 @@ class Home extends General
                          {
                              $xml .= $obj_TxnInfo->getPaymentSessionXML();
                          }
-                         $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '">';
+                         $xml .= '<transaction id="' . $txnid . '" mpoint-id="' . $txnid . '" order-no="' . $obj_TxnInfo->getOrderID() . '" accoutid="' . $objClientConf->getAccountConfig()->getID() . '" clientid="' . $objClientConf->getID(). '" language="' . $obj_TxnInfo->getLanguage(). '"  card-id="' . $obj_TxnInfo->getCardID() . '" psp-id="' . $obj_TxnInfo->getPSPID() . '" payment-method-id="' . $objPaymentMethod->PaymentType . '"   session-id="' . $obj_TxnInfo->getSessionId(). '" session-type="' . $sessionType . '" extid="' . $obj_TxnInfo->getExternalID() . '" approval-code="' . $obj_TxnInfo->getApprovalCode() . '" walletid="' . $obj_TxnInfo->getWalletID(). '" txn-type-id="' . $obj_TxnInfo->getTypeID(). '">';
                          $xml .= '<amount country-id="' . $objCountryConf->getID() . '" currency="' . $objCurrConf->getID() . '" symbol="' . utf8_encode($objCurrConf->getSymbol()) . '" format="' . $objCountryConf->getPriceFormat() . '" pending = "' . $pendingAmount . '"  currency-code = "' . $objCurrConf->getCode() . '" decimals = "' . $objCurrConf->getDecimals() . '" conversationRate = "' . $obj_TxnInfo->getConversationRate() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
                          if($obj_TxnInfo->getConversationRate() !=1 )
                          {
@@ -1762,11 +1762,13 @@ class Home extends General
      * @param int|null $sid
      * @param int      $amt
      * @param int $sub_code_id
+     * @param string|null $provider_status_code
+     * @param string|null $provider_message
      *
      * @return \TransactionData
      * @throws \Exception
      */
-    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,bool $isSecure=false)
+    public function constructTransactionInfo(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,bool $isSecure=false,?string $provider_message=NULL, ?string $provider_status_code=NULL)
     {
         $obj_CustomerInfo = NULL;
         $obj_PSPInfo = NULL;
@@ -1810,7 +1812,7 @@ class Home extends General
         if($sub_code_id > 0){
             $sub_code= $sub_code_id;
         }
-        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid) );
+        $obj_StateInfo = new StateInfo($status, $sub_code, $this->getStatusMessage($sid),$provider_message,$provider_status_code);
 
         if ($txnInfo->getClientConfig()->sendPSPID() === TRUE) {
             $pspId = $txnInfo->getPSPID();
@@ -1885,6 +1887,7 @@ class Home extends General
         $transactionData->setProductType($txnInfo->getProductType());
         $transactionData->setApprovalCode((string)$txnInfo->getApprovalCode());
         $transactionData->setWalletId($txnInfo->getWalletID());
+        $transactionData->setTxnTypeID($txnInfo->getTypeID());
 
         if (!is_null($obj_PSPConfig)) {
             $transactionData->setShortCode($obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE'));
@@ -2017,14 +2020,16 @@ class Home extends General
      * @param int|null $sid
      * @param int      $amt
      * @param int $sub_code_id
+     * @param string|null $provider_message
+     * @param string|null $provider_status_code
      *
      * @return \TransactionData
      * @throws \Exception
      */
-    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null)
+    public function constructTransactionInfoWithOrderData(TxnInfo $txnInfo, int $sub_code_id=0,$sid = NULL, $amt = -1, $obj_PSPConfig=null,?string $provider_message=null,?string $provider_status_code=null)
     {
         try {
-            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig);
+            $aTransactionData = $this->constructTransactionInfo( $txnInfo, $sub_code_id,$sid, $amt, $obj_PSPConfig,false,$provider_message,$provider_status_code);
             $obj_OrderInfo = OrderInfo::produceConfigurations($this->getDBConn(), $txnInfo->getID());
 
             if (empty($obj_OrderInfo) === false) {

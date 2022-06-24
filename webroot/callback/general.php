@@ -133,6 +133,8 @@ try
     $isTxnRollInitiated = false;
     $iStateID = (integer) $obj_XML->callback->status["code"];
 	$iSubCodeID = (integer) $obj_XML->callback->status["sub-code"];
+    $provider_message = (string) $obj_XML->callback->status["provider-message"];
+    $provider_status_code = (string) $obj_XML->callback->status["provider-status-code"];
 
     // In case of the primary PSP is down, and secondary route is configured for this client, authorize via alternate route
     $drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'DR_SERVICE');
@@ -646,22 +648,22 @@ try
 
             foreach ($aStateId as $iStateId) {
                 if ($iStateId == Constants::iPAYMENT_ACCEPTED_STATE) {
-                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate,"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 } else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE) {
                     $count = $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iCB_ACCEPTED_TIME_OUT_STATE);
                     //Check whether a notification has already been sent to retail system with status 20109
                     // Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
                     if ($count == 0) {
-                        $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                        $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate,"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                     }
                 } else {
-                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                    $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"],"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 }
             }
 
             if ($iStateID === Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPOST_FRAUD_CHECK_REJECTED_STATE)) === false)
             {
-                $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                $obj_mPoint->updateSessionState($iStateID, (string)$obj_XML->callback->transaction['external-id'], (int)$obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, (int)$obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData, $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $fee,null,$iSubCodeID,$provider_message,$provider_status_code);
                 trigger_error("Voucher Redeem Fraud condition pass: Txn-Id " . $obj_TxnInfo->getID() . " State updated: " .$iStateID);
 
                 $obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
@@ -784,9 +786,9 @@ try
                 if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
                 {
                     if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true) {
-                        $obj_mPoint->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                        $obj_mPoint->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"],"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                     } else if($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CANCELLED_STATE) === true) {
-                        $obj_mPoint->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
+                        $obj_mPoint->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"],"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB));
                     }
                 }
             }
@@ -818,12 +820,12 @@ try
 
                 if ($code == 1000) {
                     $stateId = Constants::iPAYMENT_CAPTURED_STATE;
-                    $obj_mPoint->notifyClient($stateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                    $obj_mPoint->notifyClient($stateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"],"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
 
                 } else {
                     $stateId = Constants::iPAYMENT_CAPTURE_FAILED_STATE;
                     $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURE_FAILED_STATE, "Payment Declined (2010)");
-                    $obj_mPoint->notifyClient($stateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"]), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
+                    $obj_mPoint->notifyClient($stateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "cardnomask" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "cardid" => (int)$obj_XML->callback->transaction->card["type-id"],"provider_message"=>$provider_message,"provider_status_code"=>$provider_status_code), $obj_TxnInfo->getClientConfig()->getSurePayConfig($_OBJ_DB), $iSubCodeID);
                 }
 
             }
