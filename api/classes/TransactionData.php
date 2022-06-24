@@ -118,6 +118,7 @@ class TransactionData implements JsonSerializable, XMLSerializable
      */
     private OrderData $order_data;
 
+    private int $txn_type_id;
 
     /**
      * TransactionData constructor.
@@ -461,4 +462,11 @@ class TransactionData implements JsonSerializable, XMLSerializable
         $this->order_data = $orderData;
     }
 
+    /**
+     * @param int $txn_type_id
+     */
+    public function setTxnTypeID(int $txn_type_id) : void
+    {
+        $this->txn_type_id = $txn_type_id;
+    }
 }
