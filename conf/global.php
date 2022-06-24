@@ -1120,10 +1120,8 @@ $aHTTP_CONN_INFO[77]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO[77]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO[77]["paths"]["initialize"] = "/mpoint/aggregator/mercado-pago/initialize";
 $aHTTP_CONN_INFO[77]["paths"]["refund"] = "/mpoint/aggregator/mercado-pago/refund";
-$aHTTP_CONN_INFO[77]["paths"]["callback"] = "/mpoint/aggregator/mercado-pago/callback";
 $aHTTP_CONN_INFO[77]["paths"]["status"] = "/mpoint/aggregator/mercado-pago/status";
 $aHTTP_CONN_INFO[77]["paths"]["redirect"] = "/mpoint/aggregator/mercado-pago/redirect";
-$aHTTP_CONN_INFO[77]["paths"]["cancel"] = "/mpoint/aggregator/mercado-pago/cancel";
 
 /**
  * GoMobile Connection Info.
