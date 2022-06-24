@@ -76,6 +76,10 @@
             <column name="name" value="Insufficient Balance"/>
             <where>id = 1408001</where>
         </update>
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1407001</where>
+        </update>
         <delete  catalogName="log" schemaName="log" tableName="state_tbl">
             <where>name = 'Your Agency Payment Balance is zero (0). Please select another payment method to complete your booking.' and id = 1409001</where>
         </delete>
@@ -114,12 +118,6 @@
             <column name="id" value="1407" />
             <column name="name" value="Voucher/ Credit not setup" />
             <column name="module" value="''" />
-            <column name="enabled" value="true" />
-        </insert>
-        <insert catalogName="log" schemaName="log" tableName="state_tbl">
-            <column name="id" value="1407001" />
-            <column name="name" value="Voucher/ Credit not setup" />
-            <column name="module" value="sub-code" />
             <column name="enabled" value="true" />
         </insert>
         <insert catalogName="log" schemaName="log" tableName="state_tbl">
