@@ -140,12 +140,6 @@
             <column name="enabled" value="true" />
         </insert>
         <insert catalogName="log" schemaName="log" tableName="state_tbl">
-            <column name="id" value="1409" />
-            <column name="name" value="Voucher/ Credit No Booking State" />
-            <column name="module" value="''" />
-            <column name="enabled" value="true" />
-        </insert>
-        <insert catalogName="log" schemaName="log" tableName="state_tbl">
             <column name="id" value="1409001" />
             <column name="name" value="Voucher/ Credit No Booking State" />
             <column name="module" value="sub-code" />
