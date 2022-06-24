@@ -111,7 +111,7 @@ try
     $propertyValue = $obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_3DS_SUCCESS_STATE, Constants::iPAYMENT_3DS_FAILURE_STATE)) === true) {
         $iStateID = Constants::iPAYMENT_3DS_DUPLICATE_STATE;
-        $xml .= '<status code="' .$iStateID. '">Request already processed</status>';
+        $xml .= '<status code="' .$iStateID. '" sub-code="'.$iSubCodeID.'">Request already processed</status>';
     } else {
         //Log the incoming status code.
         $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
