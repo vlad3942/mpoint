@@ -1131,7 +1131,7 @@ try
                                                                             try {
                                                                                 $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                                 $response = NULL;
-                                                                                if (($is_legacy === true && $obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') || $obj_Processor->getPSPConfig()->isRouteFeatureEnabled(RouteFeatureType::eMPI) === true)
+                                                                                if (($is_legacy === true && $obj_Processor->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION") === 'mpi') || ($obj_Processor->getPSPConfig()->isRouteFeatureEnabled(RouteFeatureType::eMPI) === true && $obj_ClientConfig->getClientServices()->isMpi()))
                                                                                 {
                                                                                     $request = str_replace("authorize-payment", "authenticate", file_get_contents("php://input"));
                                                                                     $response = $obj_Processor->authenticate($request,$obj_Elem,$obj_ClientInfo);
