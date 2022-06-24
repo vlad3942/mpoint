@@ -28,6 +28,9 @@ if(empty($obj_DOM->client_info->client_id) === false && empty($obj_DOM->transact
     } else {
         $xml .= '<kpi_used>false</kpi_used>';
     }
+    if($obj_DOM->transaction->id == '1001003') {
+        $xml .= '<rule_id>5</rule_id>';
+    }
     $xml .= '</payment_route_search_response>';
 
     echo $xml;
