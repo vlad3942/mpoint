@@ -529,6 +529,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             // Call routing service to get eligible payment methods if the client is configured to use it.
                             $obj_PaymentMethods = null;
                             $obj_FailedPaymentMethod = null;
+                            $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
+
                             if ($is_legacy === false)
                             {
                                 if (empty($sessionId) === false)
@@ -536,7 +538,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $obj_FailedPaymentMethod = FailedPaymentMethodConfig::produceFailedTxnInfoFromSession($_OBJ_DB, $sessionId, $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                                 }
                                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR'], $profileTypeId);
                                 $obj_RS = new RoutingService($obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $obj_DOM->{'initialize-payment'}[$i]["client-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"], $obj_DOM->{'initialize-payment'}[$i]->transaction->amount, null, null, null, $obj_FailedPaymentMethod,NULL,(string)$obj_DOM->{'initialize-payment'}[$i]->{'payment-group-code'});
                                 $obj_PaymentMethodResponse = null;
                                 if ($obj_RS instanceof RoutingService) {
@@ -574,7 +575,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $presentmentCurrencies = $repository->getAddonConfiguration(AddonServiceType::produceAddonServiceTypebyId(AddonServiceTypeIndex::ePCC),$aDCCPmid);
                             }
 
-                            if($sessionType > 1)
+                            if($sessionType > 1 && $obj_TxnInfo->getClientConfig()->getClientServices()->isSplitPayment() === true)
                             {
                                 try {
                                     $splitPaymentConfig = Configuration::ProduceConfig($_OBJ_DB,$clientId,array_unique($paymentTypes),$sessionId);
@@ -726,11 +727,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $obj_CardResultSet = General::getRouteConfiguration($repository,$_OBJ_DB,$obj_mPoint,$obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), (int)$obj_XML->item[$j]["type-id"], NULL,(string)$obj_XML->item[$j]->name,(int)$obj_XML->item[$j]["walletid"]);
                                                 $pspId = (int)$obj_CardResultSet['PSPID'];
                                             }
-                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO);
+                                            $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $pspId, $aHTTP_CONN_INFO,$obj_ClientInfo);
                                             if ($obj_Processor !== FALSE) {
-                                                $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
-                                                if ($activePaymentMenthodsResponseXML !== NULL) {
-                                                    $cardXML .= $activePaymentMenthodsResponseXML->{'active-payment-menthods'}->asXML();
+                                                $activePaymentMethodsResponseXML = $obj_Processor->getPaymentMethods();
+                                                $activePaymentMethodTagName = $activePaymentMethodsResponseXML->children()->getName();
+                                                if ($activePaymentMethodsResponseXML !== NULL) {
+                                                    $cardXML .= $activePaymentMethodsResponseXML->{$activePaymentMethodTagName}->asXML();
                                                 }
                                             }
                                         }

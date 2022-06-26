@@ -260,6 +260,7 @@ class AuthorizeAPIAlternateRoutingTest extends AuthorizeAPITest
 
         // Assertion for expected Route config ID
         $this->assertEquals(17, $res_TxnTbl[0]['routeconfigid'],'Route Config Id not matched' );
+        $this->assertEquals(40, $res_TxnTbl[0]['pspid'],'PSP Id not matched' );
 
         // Check Transaction Against Session
         $SQL_TxnSessionTbl =  $this->queryDB("SELECT Txn.* FROM Log.Transaction_Tbl Txn WHERE Txn.sessionid = 1");

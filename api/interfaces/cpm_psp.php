@@ -1420,6 +1420,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }
             $b .= $this->_constTxnXML();
+            $b .= $this->getClientInfo()->toXML();
             $b .= '</get-payment-method>';
             $b .= '</root>';
             $obj_XML = null;

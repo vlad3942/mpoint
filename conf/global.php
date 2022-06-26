@@ -1124,6 +1124,21 @@ $aHTTP_CONN_INFO[77]["paths"]["status"] = "/mpoint/aggregator/mercado-pago/statu
 $aHTTP_CONN_INFO[77]["paths"]["redirect"] = "/mpoint/aggregator/mercado-pago/redirect";
 
 /**
+ * Connection info for connecting to Reach
+ */
+$aHTTP_CONN_INFO[78]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[78]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[78]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[78]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[78]["paths"]["initialize"] = "/mpoint/aggregator/reach/initialize";
+$aHTTP_CONN_INFO[78]["paths"]["refund"] = "/mpoint/aggregator/reach/refund";
+$aHTTP_CONN_INFO[78]["paths"]["callback"] = "/mpoint/aggregator/reach/callback";
+$aHTTP_CONN_INFO[78]["paths"]["capture"] = "/mpoint/aggregator/reach/capture";
+$aHTTP_CONN_INFO[78]["paths"]["cancel"] = "/mpoint/aggregator/reach/cancel";
+$aHTTP_CONN_INFO[78]["paths"]["auth"] = "/mpoint/aggregator/reach/authorize-payment";
+$aHTTP_CONN_INFO[78]["paths"]["status"] = "/mpoint/aggregator/reach/status";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
