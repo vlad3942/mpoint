@@ -96,7 +96,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $cardId, NULL, NULL, NULL,
             NULL);
         //print_r($route_config); exit;
-        $pspId = '40';
+        $pspId = (int)$route_config['PSPID'];
         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspId);
         $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
     }
