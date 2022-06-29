@@ -1908,7 +1908,9 @@ class Home extends General
                 array_push($additionalData, new AdditionalData($name, $value));
             }
         }
-        $transactionData->setAdditionalData($additionalData);
+        if($isSecure === false) {
+            $transactionData->setAdditionalData($additionalData);
+        }
 
         $transactionId = $txnInfo->getID();
         $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);
