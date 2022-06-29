@@ -42,66 +42,59 @@ $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 $_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true) {
-    if($_SERVER['REQUEST_METHOD'] == "GET"){
-        if($_REQUEST['client_id'] && $_REQUEST['id']){
-            $clientId = (integer)$_REQUEST['client_id'];
-            $pspId = (integer)$_REQUEST['id'];
-            $accountId = (integer)$_REQUEST['account_id'];
-            $code = Validate::valClient($_OBJ_DB, $clientId);
-            if ($code === 100) {
-                if(!$accountId){
-                    $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
-                    $accountId = $clientAccountIds[0];
-                }
-                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
-                if($obj_PSPConfig){
-                    $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
+    $clientId = ($_SERVER['REQUEST_METHOD'] == "POST") ? (integer)$obj_DOM->client_provider_configuration->clientid : (integer)$_REQUEST['client_id'];
+    $code = Validate::valClient($_OBJ_DB, $clientId);
+    if ($code === 100) {
+        if($_SERVER['REQUEST_METHOD'] == "POST"){
+            if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'client_provider_configuration'}) > 0) {
+                $transactionId = (integer)$obj_DOM->client_provider_configuration->transaction->{'id'};
+                $cardId = (integer)$obj_DOM->client_provider_configuration->transaction->{'cardid'};
+                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->client_provider_configuration->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->client_provider_configuration->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
+                $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+                $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+                $obj_card = new Card(['ID' => $cardId], $_OBJ_DB);
+
+                $obj_RouteConfiguration = General::getRouteConfiguration($repository, $_OBJ_DB, $obj_mPoint, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $cardId, NULL, $obj_card->getCardName(), NULL, NULL);
+                if($obj_RouteConfiguration){
+                    $pspId = (int)$obj_RouteConfiguration['PSPID'];
+                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId);
+                    $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
                 } else {
-                    header("HTTP/1.1 400 Bad Request");
-                    $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
+                    $toXML = "<status><code>24</code><description>The selected payment card is not available</description></status>";
                 }
             } else {
+                header("HTTP/1.1 415 Unsupported Media Type");
+                $toXML = '<status><code>415</code><description>Invalid XML Document</description></status>';
+            }
+        } else {
+            $pspId = (integer)$_REQUEST['id'];
+            $accountId = (integer)$_REQUEST['account_id'];
+            if(!$accountId){
+                $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
+                $accountId = $clientAccountIds[0];
+            }
+            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
+            if($obj_PSPConfig){
+                $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
+            } else {
                 header("HTTP/1.1 400 Bad Request");
-                if ($code === 2) {
-                    $description = "Invalid Client ID";
-                } elseif ($code === 3) {
-                    $description = "Unknown Client ID";
-                } elseif ($code === 4) {
-                    $description = "Client Disabled";
-                } else {
-                    $description = "Undefined Client ID";
-                }
-                $toXML = '<status><code>' . $code . '</code><description>' . $description . '</description></status>';
+                $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
             }
         }
     } else {
-        $clientId = (integer)$obj_DOM->client_provider_configuration->clientid;
-        $transactionId = (integer)$obj_DOM->client_provider_configuration->transaction->{'id'};
-        $cardId = (integer)$obj_DOM->client_provider_configuration->transaction->{'cardid'};
-
-        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->client_provider_configuration->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->client_provider_configuration->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-        $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-        $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
-        $accountId = $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID();
-        $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-        $obj_card = new Card(['ID' => $cardId], $_OBJ_DB);
-
-        $route_config = General::getRouteConfiguration(
-            $repository,
-            $_OBJ_DB,
-            $obj_mPoint,
-            $obj_TxnInfo,
-            $obj_ClientInfo,
-            $aHTTP_CONN_INFO['routing-service'], $clientId,
-            $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(),
-            $cardId, NULL, $obj_card->getCardName(), NULL,
-            NULL);
-        //print_r($route_config); exit;
-        $pspId = (int)$route_config['PSPID'];
-        $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId );
-        $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
+        header("HTTP/1.1 400 Bad Request");
+        if ($code === 2) {
+            $description = "Invalid Client ID";
+        } elseif ($code === 3) {
+            $description = "Unknown Client ID";
+        } elseif ($code === 4) {
+            $description = "Client Disabled";
+        } else {
+            $description = "Undefined Client ID";
+        }
+        $toXML = '<status><code>' . $code . '</code><description>' . $description . '</description></status>';
     }
-
 } else {
     header("HTTP/1.1 401 Unauthorized");
     $toXML = '<status><code>401</code><description>Authorization required</description></status>';
