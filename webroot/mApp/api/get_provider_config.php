@@ -50,18 +50,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 $transactionId = (integer)$obj_DOM->client_provider_configuration->transaction->{'id'};
                 $cardId = (integer)$obj_DOM->client_provider_configuration->transaction->{'cardid'};
                 $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->client_provider_configuration->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->client_provider_configuration->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-                $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-                $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
-                $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-                $obj_card = new Card(['ID' => $cardId], $_OBJ_DB);
 
-                $obj_RouteConfiguration = General::getRouteConfiguration($repository, $_OBJ_DB, $obj_mPoint, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $cardId, NULL, $obj_card->getCardName(), NULL, NULL);
-                if($obj_RouteConfiguration){
-                    $pspId = (int)$obj_RouteConfiguration['PSPID'];
-                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId);
-                    $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
+                try{ $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
+                } catch (TxnInfoException $e) { $obj_TxnInfo = null; }
+
+                if(!$obj_TxnInfo) {
+                    $toXML = "<status><code>404</code><description>Transaction with ID: ".$transactionId." not found.</description></status>";
                 } else {
-                    $toXML = "<status><code>24</code><description>The selected payment card is not available</description></status>";
+                    $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+                    $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+                    $obj_card = new Card(['ID' => $cardId], $_OBJ_DB);
+                    $obj_RouteConfiguration = General::getRouteConfiguration($repository, $_OBJ_DB, $obj_mPoint, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $cardId, NULL, $obj_card->getCardName(), NULL, NULL);
+                    if($obj_RouteConfiguration){
+                        $pspId = (int)$obj_RouteConfiguration['PSPID'];
+                        $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId);
+                        $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
+                    }  else {
+                        $toXML = "<status><code>24</code><description>The selected payment card is not available</description></status>";
+                    }
                 }
             } else {
                 header("HTTP/1.1 415 Unsupported Media Type");
