@@ -1003,7 +1003,7 @@ class Home extends General
 
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
-                        if($aTxnAdditionalData !== null)
+                        if($aTxnAdditionalData !== null && $isSecure === false)
                         {
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
