@@ -26,6 +26,7 @@ require_once(sCLASS_PATH ."/crs/TransactionTypeConfig.php");
 require_once(sCLASS_PATH ."/crs/CardState.php");
 require_once(sCLASS_PATH ."/crs/FxServiceType.php");
 require_once(sCLASS_PATH ."/clientinfo.php");
+require_once(sCLASS_PATH ."/core/card.php");
 
 
 
@@ -82,8 +83,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
         $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
         $accountId = $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID();
-        $pspId = $obj_TxnInfo->getPSPID();
         $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+        $obj_card = new Card(['ID' => $cardId], $_OBJ_DB);
 
         $route_config = General::getRouteConfiguration(
             $repository,
@@ -93,11 +94,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             $obj_ClientInfo,
             $aHTTP_CONN_INFO['routing-service'], $clientId,
             $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(),
-            $cardId, NULL, NULL, NULL,
+            $cardId, NULL, $obj_card->getCardName(), NULL,
             NULL);
         //print_r($route_config); exit;
         $pspId = (int)$route_config['PSPID'];
-        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $pspId);
+        $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId );
         $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
     }
 
