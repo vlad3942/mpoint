@@ -508,13 +508,13 @@ try
                                             if (0 && $obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$authToken) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
                                         //made hmac mandatory for dcc
-                                        else if (General::xml2bool($obj_Elem["dcc"]) === true && $iSessionType != 2)
+                                        else if (General::xml2bool($obj_Elem["dcc"]) === true)
                                         {
-											$iForeignExchangeId = $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'};
+											$iForeignExchangeId = (int) $obj_DOM->{'authorize-payment'}[$i]->transaction->{'foreign-exchange-info'}->{'id'};
 											if(empty($iForeignExchangeId) === true){
 												$iForeignExchangeId = $obj_TxnInfo->getExternalRef(Constants::iForeignExchange, $obj_TxnInfo->getPSPID());
 											}
-											if (0 && $obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo, $iForeignExchangeId) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+											if ($obj_Validator->valDccHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]),$obj_TransacionCountryConfig,$obj_TxnInfo, $iForeignExchangeId) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
                                         }
                                         $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 
