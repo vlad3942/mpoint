@@ -964,14 +964,7 @@ final class TxnPassbook
         $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
         if ($result === false || (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0))
         {
-            $debugSql = "";
-            $debugSql = preg_replace_callback(
-                '/\$(\d+)\b/',
-                function($match) use ($aParams) {
-                    $key=($match[1]-1); return ( is_null($aParams[$key])?'NULL':pg_escape_literal($aParams[$key]) );
-                },
-                $sqlQuery);
-            throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId . " SQL: " . $debugSql, E_USER_ERROR);
+            throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
             return FALSE;
         }
         
