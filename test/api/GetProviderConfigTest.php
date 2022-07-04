@@ -8,7 +8,7 @@
  * Package: mPoint Test Suite
  * File Name:ClientRouteConfigurationsTest.php
  */
-
+use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sAPI_CLASS_PATH . 'simpledom.php';
@@ -17,6 +17,9 @@ require_once __DIR__ . '/../../api/classes/crs/ClientRouteConfigurations.php';
 require_once __DIR__ . '/../../api/classes/crs/ClientRouteCountry.php';
 require_once __DIR__ . '/../../api/classes/crs/ClientRouteCurrency.php';
 require_once(sCLASS_PATH ."/core/AdditionalProperties.php");
+require_once(sCLASS_PATH ."/clientinfo.php");
+require_once(sCLASS_PATH ."/core/card.php");
+
 
 class GetProviderConfigTest extends baseAPITest
 {
@@ -104,19 +107,69 @@ class GetProviderConfigTest extends baseAPITest
 
     }
 
-    public function testEmptyGetProviderConfig()
-    {
 
-        $obj_PSPConfig = PSPConfig::produceConfig($this->_OBJ_DB,10018,1100,45);
-        if ($obj_PSPConfig instanceof PSPConfig)
-        {
-            $xml = $obj_PSPConfig->toXML();
-        }
-        $this->assertNull($obj_PSPConfig);
+    public function testGetRouteConfiguration()
+    {
+        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (10099, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10099, 4, 'http://mpoint.local.cellpointmobile.com/')");
+
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 10099)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 10099, 'CPM', TRUE)");
+
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 10099, 40, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 10099, 62, '4216310')");
+
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 40, '-1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 62, '-1')");
+
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, 40, true, 1)");
+        $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (10099, 8, 62, true, 1)");
+
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 200, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (10099, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 16, 40, '501910******3742', '06/24', TRUE, 10099, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+
+        # Set Is Legacy Code
+        $this->queryDB("INSERT INTO client.services_tbl (clientid, legacy_flow_enabled) VALUES(10099, false);");
+
+        # Route Related SQL
+        $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10001, 10099, 40)");
+        $this->queryDB("INSERT INTO client.route_tbl(id, clientid, providerid) VALUES (10002, 10099, 62)");
+
+        $this->queryDB("INSERT INTO client.routeconfig_tbl( id, routeid, name, capturetype, mid, username, password, enabled) VALUES (17, 10001, '2c2p-alc_Master_VISA', 2, 'CebuPacific', 'CELLPM', 'HC1XBPV0O4WLKZMG', 'true')");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (17)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (17)");
+
+        $this->queryDB("INSERT INTO client.routeconfig_tbl( id, routeid, name, capturetype, mid, username, password, enabled) VALUES (18, 10002, 'Firstdata', 2, 'first-data', 'user', 'password', 'true')");
+        $this->queryDB("INSERT INTO client.routecountry_tbl (routeconfigid) VALUES (18)");
+        $this->queryDB("INSERT INTO client.routecurrency_tbl (routeconfigid) VALUES (18)");
+
+        # Transaction Related Entry
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 10099, 1100, 840, 200, 4001, '103-1418291', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, euaid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid,convertedamount,convertedcurrencyid) VALUES (1001002, 100, 10099, 1100, 1, 5001, 200, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, 840, 1,5000,840)");
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><root><client_provider_configuration><clientid>10099</clientid><transaction><id>1001002</id><cardid>7</cardid></transaction><client-info language="en" sdk-version="2.0.0" version="2.0.0" platform="HTML5"><mobile operator-id="64000" country-id="640">9898989898</mobile><email>demo@cellpointDigital.com</email><customer-ref>demo@cellpointDigital.com</customer-ref></client-info></client_provider_configuration></root>';
+        $obj_DOM = simpledom_load_string($xml);
+        $_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+
+        $transactionId = (integer)$obj_DOM->client_provider_configuration->transaction->{'id'};
+        $cardId = (integer)$obj_DOM->client_provider_configuration->transaction->{'cardid'};
+        $clientId = (integer)$obj_DOM->client_provider_configuration->clientid;
+        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->client_provider_configuration->{'client-info'}, CountryConfig::produceConfig($this->_OBJ_DB, (integer) $obj_DOM->client_provider_configuration->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $this->_OBJ_DB);
+
+        $repository = new ReadOnlyConfigRepository($this->_OBJ_DB,$obj_TxnInfo);
+        $obj_mPoint = new General($this->_OBJ_DB, $_OBJ_TXT);
+        $obj_card = new Card(['ID' => $cardId], $this->_OBJ_DB);
+        $obj_RouteConfiguration = General::getRouteConfiguration($repository, $this->_OBJ_DB, $obj_mPoint, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $cardId, NULL, $obj_card->getCardName(), NULL, NULL);
+        $this->assertIsArray($obj_RouteConfiguration);
+        $this->assertEquals(62, $obj_RouteConfiguration['pspid']);
     }
 
 
-    public function tearDown() : void
+
+        public function tearDown() : void
     {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();
