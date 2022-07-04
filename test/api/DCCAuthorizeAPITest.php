@@ -32,7 +32,7 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
             "12345",
             "4","840","5000"
         );
-        $xml = $this->getAuthDoc(10018, 1100, 1001012,20000, 'profilePass', 0,null,208,'4874b565db376dffc0801d91e2bdb5b9d2a3f610917753204cd15a30357e42984cabceb6055495a6f95a7f761270dc9e9c9a04fd45d2a4992f36f3f8799a77f5',8,$aDccParams);
+        $xml = $this->getAuthDoc(10018, 1100, 1001012,20000, 'profilePass', 0,null,208,'577725b1ad94d2f74669ad421290dfc695994adf5744b4271d2afeffa7672ed2da0838a84a987435237be2306e70befd6a35d970db6557b237862e8a6ba25824',8,$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -117,7 +117,7 @@ class DCCAuthorizeAPITest extends AuthorizeAPITest
             "12345",
             "4","840","7500"
         );
-        $xml = $this->getAuthDoc(10018, 1100, 1001012,30000, 'profilePass', 0,null,208,'0ab2d5ea5a19a456ad19358ce7640472c567d302ce717b0c00c68c60c00cec31b75dcc257892351515367e2107f4dec5b9fdf97ef3a4acac2892c18b1501fad9',8,$aDccParams);
+        $xml = $this->getAuthDoc(10018, 1100, 1001012,30000, 'profilePass', 0,null,208,'09050cc00964134ccb69da35dcca8983b5324c0f9eaae6d1dc2188c33d454fcbbcb76c0fa1a8d0e632df12c7e23279bf84f3966fe0af7c76c097337ede97c8a7',8,$aDccParams);
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
