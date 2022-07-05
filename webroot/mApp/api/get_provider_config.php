@@ -87,8 +87,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 }
                 if (count($obj_DOM->{'client_provider_configuration'}->{'pspid'}) > 0) {
                     $pspId = (integer)$obj_DOM->client_provider_configuration->pspid;
-                    $accountId = (integer)$obj_DOM->client_provider_configuration->
-                    ;
+                    $accountId = (integer)$obj_DOM->client_provider_configuration->accountid;
                     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
                     if (isset($obj_PSPConfig)) {
                         $toXML = "<client_provider_configuration>" . $obj_PSPConfig->toXML(Constants::iPrivateProperty) . "</client_provider_configuration>";
