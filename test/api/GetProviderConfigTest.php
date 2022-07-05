@@ -22,29 +22,23 @@ require_once(sCLASS_PATH ."/core/card.php");
 require_once(sCLASS_PATH ."/credit_card.php");
 
 
-class GetProviderConfigTest extends baseAPITest
-{
+class GetProviderConfigTest extends baseAPITest{
     private $_OBJ_DB;
     protected $_aMPOINT_CONN_INFO;
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->constHTTPClient();
     }
 
 
-    public function setUp() : void
-    {
+    public function setUp() : void {
         parent::setUp(TRUE);
         $this->bIgnoreErrors = true;
         $this->_OBJ_DB = RDB::produceDatabase($this->mPointDBInfo);
-        $this->_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-
     }
 
-    public function constHTTPClient()
-    {
+    public function constHTTPClient(){
         global $aMPOINT_CONN_INFO;
         $aMPOINT_CONN_INFO['path'] = "/mApp/api/get_provider_config.php";
         $aMPOINT_CONN_INFO["contenttype"] = "text/xml";
@@ -171,8 +165,8 @@ class GetProviderConfigTest extends baseAPITest
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
-        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>24</code><description>The selected payment card is not available</description></status>', $sReplyBody);
+        $this->assertEquals(400, $iStatus);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>24</code><text_code>24</text_code><description>The selected payment card is not available</description></status>', $sReplyBody);
 
     }
 
@@ -223,8 +217,8 @@ class GetProviderConfigTest extends baseAPITest
         $this->_httpClient->connect();
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        $this->assertEquals(200, $iStatus);
-        $this->assertStringContainsString('<status><code>404</code><description>Transaction with ID: 1001001 not found.</description></status>', $sReplyBody);
+        $this->assertEquals(400, $iStatus);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>404</code><text_code>404</text_code><description>Transaction with ID:1001001 not found.</description></status>', $sReplyBody);
     }
 
     public function testSuccessfullPspConfignNode(){
@@ -320,11 +314,10 @@ class GetProviderConfigTest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(400, $iStatus);
-        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>99</code><description>Invalid PSP</description></status>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>99</code><text_code>99</text_code><description>Invalid PSP</description></status>', $sReplyBody);
     }
 
-    public function tearDown() : void
-    {
+    public function tearDown() : void {
         $this->_OBJ_DB->disConnect();
         parent::tearDown();
     }
