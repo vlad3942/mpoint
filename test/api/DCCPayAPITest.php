@@ -63,7 +63,7 @@ class DCCPayAPITest extends PayAPITest
             "12345",
             "4","840","2500"
         );
-        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,10000,'f969214287fd1f0555c0643684ccbe173cd9831400586481babf7c843c87e555f35165a63b5e69a10e6445e983fbc42f032159fe8a48699eca125d08aefab9c0',$aDccParams);
+        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,10000,'577725b1ad94d2f74669ad421290dfc695994adf5744b4271d2afeffa7672ed2da0838a84a987435237be2306e70befd6a35d970db6557b237862e8a6ba25824',$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -97,7 +97,7 @@ class DCCPayAPITest extends PayAPITest
             "12345",
             "4","840","7500"
         );
-        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,30000,'0ab2d5ea5a19a456ad19358ce7640472c567d302ce717b0c00c68c60c00cec31b75dcc257892351515367e2107f4dec5b9fdf97ef3a4acac2892c18b1501fad9',$aDccParams);
+        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,30000,'09050cc00964134ccb69da35dcca8983b5324c0f9eaae6d1dc2188c33d454fcbbcb76c0fa1a8d0e632df12c7e23279bf84f3966fe0af7c76c097337ede97c8a7',$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
