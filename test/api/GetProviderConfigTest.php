@@ -218,7 +218,7 @@ class GetProviderConfigTest extends baseAPITest{
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
         $this->assertEquals(400, $iStatus);
-        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>404</code><text_code>404</text_code><description>Transaction with ID:1001001 not found.</description></status>', $sReplyBody);
+        $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?><status><code>400</code><text_code>400</text_code><description>Transaction with ID:1001001 not found.</description></status>', $sReplyBody);
     }
 
     public function testSuccessfullPspConfignNode(){
