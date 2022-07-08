@@ -951,14 +951,15 @@ final class TxnPassbook
     public function updateInProgressOperations($amount, $state, $status)
     {
         $amount  = (int)$amount;
-        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE clientid = $5 and transactionid = $2 and amount = $3 and performedopt = $4;';
+        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE clientid = $5 and transactionid = $2 and amount = $3 and performedopt = $4 and status = $5;';
 
         $aParams = array(
             $status,
             $this->getTransactionId(),
             $amount,
             $state,
-            $this->getClientId()
+            $this->getClientId(),
+            Constants::sPassbookStatusInProgress
         );
     
         $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
