@@ -313,6 +313,12 @@ class RoutingService extends General
                 $additionalTxnData[0]['type'] = 'Transaction';
                 $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
             }
+            if(empty($aObj_Route->rule_id) === false){
+                $additionalTxnData[0]['name'] = 'rule_id';
+                $additionalTxnData[0]['value'] = (int)$aObj_Route->rule_id;
+                $additionalTxnData[0]['type'] = 'Transaction';
+                $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
+            }
 
         }
         $firstPSP = -1;

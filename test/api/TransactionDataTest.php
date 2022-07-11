@@ -199,4 +199,11 @@ class TransactionDataTest extends baseAPITest
         $this->assertStringContainsString('"cancel_url":"\/\/cancel_url"}', json_encode($this->transactionData));
         $this->assertStringContainsString('<cancel_url>//cancel_url</cancel_url>', xml_encode($this->transactionData));
     }
+
+    public function testSetTxnTypeID()
+    {
+        $this->transactionData->setTxnTypeID(1);
+        $this->assertStringContainsString('"txn_type_id":1}', json_encode($this->transactionData));
+        $this->assertStringContainsString('<txn_type_id>1', xml_encode($this->transactionData));
+    }
 }

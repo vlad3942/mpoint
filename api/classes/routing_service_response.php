@@ -70,6 +70,7 @@ class RoutingServiceResponse
                 $aObjRoute->routes->route[$i]->preference = (int)$aObj_XML->routes->route[$i]->preference;
             }
             $aObjRoute->kpi_used = General::xml2bool($aObj_XML->kpi_used);
+            $aObjRoute->rule_id = $aObj_XML->rule_id;
             return new RoutingServiceResponse($aObjRoute);
         }
         return null;

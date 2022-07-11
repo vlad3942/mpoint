@@ -1310,8 +1310,10 @@
 			<xs:element name="client_provider_configuration">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="clientid" type="xs:positiveInteger" />
-						<xs:element name="transaction">
+						<xs:element name="clientid" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="accountid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="pspid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="transaction" minOccurs="0" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="id" type="xs:positiveInteger" />
@@ -1319,7 +1321,7 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

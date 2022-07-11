@@ -7,6 +7,7 @@
  * @package mAPP
  * @version 1.0
  */
+use api\classes\merchantservices\MerchantOnboardingException;
 use api\classes\merchantservices\Repositories\ReadOnlyConfigRepository;
 // Require Global Include File
 require_once("../../inc/include.php");
@@ -31,79 +32,91 @@ require_once(sCLASS_PATH ."/core/card.php");
 
 
 /*Sample Request
-All Fields Required
-id -> psp-id
-client_id -> Client ID
-account_id -> Client's account id (optional)
-http://mpoint.local.cellpointmobile.com/mApp/api/get_provider_config.php?id=50&client_id=10069
+http://mpoint.local.cellpointmobile.com/mApp/api/get_provider_config.php
+Request For GetBalance
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<client_provider_configuration>
+    <clientid>10069</clientid>
+        <transaction>
+            <id>895623</id>
+            <cardid>7</cardid>
+        </transaction>
+        <client-info platform="iOS" version="1.00" language="da">
+            <mobile country-id="100" operator-id="10000">28882861</mobile>
+            <email>jona@oismail.com</email>
+            <customer-ref>jona@oismail.com</customer-ref>
+        </client-info>
+</client_provider_configuration>
+</root>
+Request For PSPConfig Node
+<root>
+<client_provider_configuration>
+    <clientid>10069</clientid>
+    <accountid>100690</accountid>
+    <pspid>50</pspid>
+</client_provider_configuration>
+</root>
 */
 
 $obj_DOM = simpledom_load_string(file_get_contents('php://input'));
 $_OBJ_TXT = new api\classes\core\TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true) {
-    $clientId = ($_SERVER['REQUEST_METHOD'] == "POST") ? (integer)$obj_DOM->client_provider_configuration->clientid : (integer)$_REQUEST['client_id'];
-    $code = Validate::valClient($_OBJ_DB, $clientId);
-    if ($code === 100) {
-        if($_SERVER['REQUEST_METHOD'] == "POST"){
-            if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'client_provider_configuration'}) > 0) {
-                $transactionId = (integer)$obj_DOM->client_provider_configuration->transaction->{'id'};
-                $cardId = (integer)$obj_DOM->client_provider_configuration->transaction->{'cardid'};
-                $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->client_provider_configuration->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->client_provider_configuration->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
-
-                try{ $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-                } catch (TxnInfoException $e) { $obj_TxnInfo = null; }
-
-                if(!$obj_TxnInfo) {
-                    $toXML = "<status><code>404</code><description>Transaction with ID: ".$transactionId." not found.</description></status>";
-                } else {
-                    $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
+    try {
+        if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'client_provider_configuration'}) > 0) {
+            $clientId = (integer)$obj_DOM->client_provider_configuration->clientid;
+            $code = Validate::valClient($_OBJ_DB, $clientId);
+            if ($code === 100) {
+                if (count($obj_DOM->{'client_provider_configuration'}->{'transaction'}) > 0) {
+                    $transactionId = (integer)$obj_DOM->client_provider_configuration->transaction->{'id'};
+                    $cardId = (integer)$obj_DOM->client_provider_configuration->transaction->{'cardid'};
+                    $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->client_provider_configuration->{'client-info'}, CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->client_provider_configuration->{'client-info'}->mobile["country-id"]), $_SERVER['HTTP_X_FORWARDED_FOR']);
+                    try { $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB); } catch (TxnInfoException $e) { $obj_TxnInfo = null; }
+                    if (!$obj_TxnInfo) {
+                        throw new MerchantOnboardingException(400, 'Transaction with ID:'.$transactionId.' not found.', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
+                    }
+                    $repository = new ReadOnlyConfigRepository($_OBJ_DB, $obj_TxnInfo);
                     $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
                     $obj_card = new Card(['ID' => $cardId], $_OBJ_DB);
                     $obj_RouteConfiguration = General::getRouteConfiguration($repository, $_OBJ_DB, $obj_mPoint, $obj_TxnInfo, $obj_ClientInfo, $aHTTP_CONN_INFO['routing-service'], $clientId, $obj_TxnInfo->getCountryConfig()->getID(), $obj_TxnInfo->getCurrencyConfig()->getID(), $obj_TxnInfo->getAmount(), $cardId, NULL, $obj_card->getCardName(), NULL, NULL);
-                    if($obj_RouteConfiguration){
-                        $pspId = (int)$obj_RouteConfiguration['PSPID'];
-                        $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId);
-                        $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty).$obj_PSPConfig->toRouteConfigXML()."</client_provider_configuration>";
-                    }  else {
-                        $toXML = "<status><code>24</code><description>The selected payment card is not available</description></status>";
+                    if (empty($obj_RouteConfiguration)) {
+                        throw new MerchantOnboardingException(24, 'The selected payment card is not available', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
                     }
+                    $pspId = (int)$obj_RouteConfiguration['PSPID'];
+                    $obj_PSPConfig = General::producePSPConfigObject($_OBJ_DB, $obj_TxnInfo, $pspId);
+                    $toXML = "<client_provider_configuration>" . $obj_PSPConfig->toXML(Constants::iPrivateProperty) . $obj_PSPConfig->toRouteConfigXML() . "</client_provider_configuration>";
+                }
+                if (count($obj_DOM->{'client_provider_configuration'}->{'pspid'}) > 0) {
+                    $pspId = (integer)$obj_DOM->client_provider_configuration->pspid;
+                    $accountId = (integer)$obj_DOM->client_provider_configuration->accountid;
+                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
+                    if (!isset($obj_PSPConfig)) {
+                        throw new MerchantOnboardingException(99, 'Invalid PSP', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
+                    }
+                    $toXML = "<client_provider_configuration>" . $obj_PSPConfig->toXML(Constants::iPrivateProperty) . "</client_provider_configuration>";
                 }
             } else {
-                header("HTTP/1.1 415 Unsupported Media Type");
-                $toXML = '<status><code>415</code><description>Invalid XML Document</description></status>';
+                throw new MerchantOnboardingException($code, 'Invalid Client Id', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
             }
+        } elseif(($obj_DOM instanceof SimpleDOMElement) === false) {
+            throw new MerchantOnboardingException(MerchantOnboardingException::UNSUPPORTED_MEDIA_TYPE, 'Invalid XML Document', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
+        } elseif(count($obj_DOM->{'client_provider_configuration'}) == 0){
+            throw new MerchantOnboardingException(MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE, 'Invalid XML Document', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         } else {
-            $pspId = (integer)$_REQUEST['id'];
-            $accountId = (integer)$_REQUEST['account_id'];
-            if(!$accountId){
-                $clientAccountIds = PSPConfig::getClientAccountIds($_OBJ_DB, $clientId, $pspId);
-                $accountId = $clientAccountIds[0];
-            }
-            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientId, $accountId, $pspId);
-            if($obj_PSPConfig){
-                $toXML = "<client_provider_configuration>".$obj_PSPConfig->toXML(Constants::iPrivateProperty)."</client_provider_configuration>";
-            } else {
-                header("HTTP/1.1 400 Bad Request");
-                $toXML = "<status><code>99</code><description>Invalid PSP</description></status>";
-            }
+            throw new MerchantOnboardingException(MerchantOnboardingException::UNSUPPORTED_MEDIA_TYPE, 'Invalid XML Document', MerchantOnboardingException::BAD_REQUEST_HTTP_STATUS_CODE);
         }
-    } else {
-        header("HTTP/1.1 400 Bad Request");
-        if ($code === 2) {
-            $description = "Invalid Client ID";
-        } elseif ($code === 3) {
-            $description = "Unknown Client ID";
-        } elseif ($code === 4) {
-            $description = "Client Disabled";
-        } else {
-            $description = "Undefined Client ID";
-        }
-        $toXML = '<status><code>' . $code . '</code><description>' . $description . '</description></status>';
+    } catch (MerchantOnboardingException $e){
+        header($e->getHTTPHeader());
+        $toXML = $e->statusNode();
+    }
+    catch (Exception $e) {
+        header("HTTP/1.1 500 Internal Server Error");
+        $toXML = '<status code="500">'. $e->getMessage() .'</status>';
     }
 } else {
     header("HTTP/1.1 401 Unauthorized");
-    $toXML = '<status><code>401</code><description>Authorization required</description></status>';
+    $toXML = '<status><code>401</code><text_code>401</text_code><description>Authorization required</description></status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';

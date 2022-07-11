@@ -398,6 +398,8 @@ abstract class Callback extends EndUserAccount
 		$cardno = 0;
 		$fee = 0;
 		$cardId = 0;
+        $provider_message =null;
+        $provider_status_code=null;
 
 		if(isset($vars["transact"]) === TRUE ){
 			$pspId = $vars["transact"];
@@ -440,8 +442,16 @@ abstract class Callback extends EndUserAccount
 		{
 			$cardId = (int)$vars["card-id"];
 		}
+        if(isset($vars["provider_message"]) === TRUE )
+        {
+            $provider_message = (string)$vars["provider_message"];
+        }
+        if(isset($vars["provider_status_code"]) === TRUE )
+        {
+            $provider_status_code = (string)$vars["provider_status_code"];
+        }
 
-		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id);
+		$this->notifyToClient($sid, $pspId, $amount, $cardno, $cardId, $exp, $sAdditionalData, $obj_SurePay, $fee,$sub_code_id,$provider_message,$provider_status_code);
 	}
 
 	/**
@@ -471,13 +481,15 @@ abstract class Callback extends EndUserAccount
 	 * @param string              $sAdditionalData
 	 * @param \SurePayConfig|null $obj_SurePay
 	 * @param integer             $fee    The amount the customer will pay in fee�s for the Transaction. Default value 0
-     * @param integer             $sub_code_id Granular status code
-	 *
+     * @param integer             $sub_code_id             Granular status code
+	 * @param string|null         $provider_message        Description of status code returned by payment provider system
+     * @param string|null         $provider_status_code    Status code of returned by payment provider system
+     *
 	 * @throws \Exception
 	 * @see    Callback::send()
 	 * @see    Callback::getVariables()
 	 */
-	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id): void
+	public function notifyToClient(int $sid, string $pspid, int $amt, string $cardno="", int $cardid=0, $exp=null, string $sAdditionalData="", ?SurePayConfig $obj_SurePay=null, int $fee=0,int $sub_code_id,?string $provider_message=null,?string $provider_status_code=null): void
 	{
         $isMessagePublished = false;
 	    if (empty($this->_obj_TxnInfo->getCardMask())) {
@@ -633,7 +645,7 @@ abstract class Callback extends EndUserAccount
                 }
                 $sBody .= "&pos=" .$this->_obj_TxnInfo->getCountryConfig()->getID();
                 $sBody .= "&ip_address=" .$this->_obj_TxnInfo->getIP();
-                $callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
+                $callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE,$provider_message,$provider_status_code);
 				if ($sBody !== "") {
                     // Publish message before callback
                     if ($callbackMessageRequest !== NULL) {
@@ -653,7 +665,7 @@ abstract class Callback extends EndUserAccount
 			}
 		}
 
-		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt);
+		$callbackMessageRequest = $this->constructMessage($sid, $sub_code_id,$amt,FALSE,$provider_message,$provider_status_code);
 		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
             $filter = ['status_code' => (string)$sid,'txn_type_id'=> (string)$this->_obj_TxnInfo->getTypeID()];
             if($sid === Constants::iPAYMENT_ACCEPTED_STATE || $sid === Constants::iPAYMENT_REJECTED_STATE) {
@@ -995,7 +1007,7 @@ abstract class Callback extends EndUserAccount
         $this->performCallback($body,$obj_SurePay, $attempt);
     }
 
-    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null, int $sub_code_id=0 )
+    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig $obj_SurePay=null, $fee=0, $state=null, int $sub_code_id=0,?string $provider_message=null,?string $provider_status_code=null )
     {
 		$sessionObj = $this->getTxnInfo()->getPaymentSession();
         $repository = new ReadOnlyConfigRepository($this->getDBConn(),$this->_obj_TxnInfo);
@@ -1186,7 +1198,7 @@ abstract class Callback extends EndUserAccount
 					}
 
 					$sBody .= '&' . http_build_query($aTransactionData);
-                    $callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
+                    $callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE,$provider_message,$provider_status_code);
 
 					if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED) {
 						$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
@@ -1208,7 +1220,7 @@ abstract class Callback extends EndUserAccount
 		}
 
 		// Publish message if not already
-		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE);
+		$callbackMessageRequest = $this->constructMessage($sid,$sub_code_id, NULL, TRUE,$provider_message,$provider_status_code);
 		if ($callbackMessageRequest !== NULL && $isMessagePublished !== true) {
 		    $jsonBody = json_encode($callbackMessageRequest, JSON_THROW_ON_ERROR);
             $this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $jsonBody);
@@ -1256,9 +1268,11 @@ abstract class Callback extends EndUserAccount
 	 * @param      $sid
 	 * @param null $amt
 	 * @param int $sub_code_id
+     * @param string|null $provider_message
+     * @param string|null $provider_status_code
 	 * @return \CallbackMessageRequest|null
 	 */
-	private function constructMessage($sid = NULL, int $sub_code_id=0,$amt = NULL, $isSessionCallback = FALSE)
+	private function constructMessage($sid = NULL, int $sub_code_id=0,$amt = NULL, $isSessionCallback = FALSE, ?string $provider_message=NULL, ?string $provider_status_code=NULL)
     {
     	$isIgnoreRequest = TRUE;
 		$aTransactionData = [];
@@ -1286,7 +1300,7 @@ abstract class Callback extends EndUserAccount
 				}
 				foreach ($aTransaction as $transactionId) {
 					$obj_TransactionData = TxnInfo::produceInfo($transactionId, $this->getDBConn());
-					array_push($aTransactionData, $this->constructTransactionInfoWithOrderData($obj_TransactionData,$sub_code_id, null, -1, $this->_obj_PSPConfig ));
+					array_push($aTransactionData, $this->constructTransactionInfoWithOrderData($obj_TransactionData,$sub_code_id, null, -1, $this->_obj_PSPConfig,$provider_message,$provider_status_code));
 				}
 			}
 		}
@@ -1294,7 +1308,7 @@ abstract class Callback extends EndUserAccount
 		elseif($isSessionCallback === FALSE && ($sid === Constants::iPAYMENT_PENDING_STATE || strpos($sid, '2') === 0)) {
 			//Create a TxnInfo object to refresh newly added data in database
 			$obj_TransactionTxn = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
-			$obj_TransactionData = $this->constructTransactionInfoWithOrderData($obj_TransactionTxn,$sub_code_id, $sid, $amt, $this->_obj_PSPConfig);
+			$obj_TransactionData = $this->constructTransactionInfoWithOrderData($obj_TransactionTxn,$sub_code_id, $sid, $amt, $this->_obj_PSPConfig,$provider_message,$provider_status_code);
 			$aTransactionData = [$obj_TransactionData];
 			$isIgnoreRequest = FALSE;
 		}
