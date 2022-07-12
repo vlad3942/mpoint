@@ -77,7 +77,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 		$account=$obj_DOM->void[$i]["account"];
 		$orderno=$obj_DOM->void[$i]->transaction["order-no"];
 		$transactionID=$obj_DOM->void[$i]->transaction["id"];
-		$amount=$obj_DOM->void[$i]->transaction->amount;
+		$amount=(int)$obj_DOM->void[$i]->transaction->amount;
 		$country=$obj_DOM->void[$i]->transaction->amount["country-id"];
 		$orderref=(isset($obj_DOM->void[$i]->transaction["order-ref"]) === true) ? (string)$obj_DOM->void[$i]->transaction["order-ref"]:'';
 			

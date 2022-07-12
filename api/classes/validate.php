@@ -349,7 +349,7 @@ class Validate extends ValidateBase
 	public function valPrice($max, $prc)
 	{
 	    // Validate the total Amount the customer will be paying
-		if (empty($prc) === true) { $code = 1; }	// Amount is undefined
+		if (empty($prc) === true || !is_numeric($prc)) { $code = 1; }	// Amount is undefined
 		elseif (floatval($prc) < 1) { $code = 2; }	// Amount is too small
 		elseif (floatval($prc) > floatval($max) ) { $code = 3; }	// Amount is too great
 		else { $code = 10; }
