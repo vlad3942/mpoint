@@ -22,12 +22,12 @@ INSERT INTO client.routefeature_tbl (routeconfigid,clientid,featureid) select id
 
 ----MPI Rule----
 INSERT INTO client.psp_property_tbl(clientid, propertyid, value, enabled)
-VALUES(10077, 93, 'isProceedAuth::=<status>=="2"OR<status>=="5"OR<status>=="6"
+VALUES(10077,(select id from "system".psp_property_tbl ppt where pspid = 63 and "name"='mpi_rule') , 'isProceedAuth::=<status>=="2"OR<status>=="5"OR<status>=="6"
 status::=(additional-data.param[@name=''status''])', true);
 
 ----Post Fraud Rule----
 INSERT INTO client.psp_property_tbl
 (clientid, propertyid, value, enabled)
-VALUES(10077, 115, 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"OR<tempRule>
+VALUES(10077,(select id from "system".psp_property_tbl ppt where pspid = 63 and "name"='post_fraud_rule'), 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"OR<tempRule>
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])
 tempRule::=(transaction.@type)=="5"OR(transaction.@type)=="3"])', true);
