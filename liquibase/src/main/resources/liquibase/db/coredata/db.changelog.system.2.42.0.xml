@@ -171,4 +171,15 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Abhinav Shaha" id="2022-07-01-CPMRM-16699" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
+            <column name="pspid" value="63"/>
+            <column name="name" value="post_fraud_rule" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="false"/>
+            <column name="category" value="7" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
