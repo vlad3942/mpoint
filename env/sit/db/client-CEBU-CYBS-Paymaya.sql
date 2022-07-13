@@ -31,3 +31,16 @@ INSERT INTO client.psp_property_tbl
 VALUES(10077,(select id from "system".psp_property_tbl ppt where pspid = 63 and "name"='post_fraud_rule'), 'isPostFraudAttemp::=<status>=="1"OR<status>=="4"OR<tempRule>
 status::=(card.info-3d-secure.additional-data.param[@name=''status''])
 tempRule::=(transaction.@type)=="5"OR(transaction.@type)=="3"])', true);
+
+---- providerpm queries ----
+INSERT INTO client.providerpm_tbl (pmid, routeid, enabled) VALUES(7,(select id from client.route_tbl rt where providerid = 63 and clientid = 10077), true);
+INSERT INTO client.providerpm_tbl (pmid, routeid, enabled) VALUES(8,(select id from client.route_tbl rt where providerid = 63 and clientid = 10077), true);
+INSERT INTO client.providerpm_tbl (pmid, routeid, enabled) VALUES(5,(select id from client.route_tbl rt where providerid = 63 and clientid = 10077), true);
+
+---- routepm queries ----
+INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_PHP'), 5, true);
+INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_Others'), 5, true);
+INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_PHP'), 7, true);
+INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_Others'), 7, true);
+INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_PHP'), 8, true);
+INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_Others'), 8, true);
