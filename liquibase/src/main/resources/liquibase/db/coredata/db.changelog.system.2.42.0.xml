@@ -71,6 +71,106 @@
         </insert>
     </changeSet>
 
+    <changeSet author="Amar Kumar" id="2022-06-21-INF-102">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1408001</where>
+        </update>
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1407001</where>
+        </update>
+        <delete  catalogName="log" schemaName="log" tableName="state_tbl">
+            <where>name = 'Your Agency Payment Balance is zero (0). Please select another payment method to complete your booking.' and id = 1409001</where>
+        </delete>
+    </changeSet>
+
+    <changeSet author="Amar kumar" id="2022-06-24-INF-120">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Voucher/ Credit Account Closed"/>
+            <where>id = 1406001</where>
+        </update>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409" />
+            <column name="name" value="No booking state" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1408" />
+            <column name="name" value="Voucher/ Credit Insufficient Balance" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1400" />
+            <column name="name" value="Voucher/ Credit Success" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1400001" />
+            <column name="name" value="Voucher/ Credit Success" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1407" />
+            <column name="name" value="Voucher/ Credit not setup" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1406" />
+            <column name="name" value="Voucher/ Credit Account Closed" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1402" />
+            <column name="name" value="Voucher/ Credit Zero Balance" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1402001" />
+            <column name="name" value="Voucher/ Credit Zero Balance" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409001" />
+            <column name="name" value="Voucher/ Credit No Booking State" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1500" />
+            <column name="name" value="Voucher/ Credit Currency convertion Error" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1500001" />
+            <column name="name" value="Voucher/ Credit Currency convertion Error" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1501" />
+            <column name="name" value="Voucher/ Credit Invalid Token Error" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1501001" />
+            <column name="name" value="Voucher/ Credit Invalid Token Error" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
     <changeSet author="Abhinav Shaha" id="2022-07-01-CPMRM-16699" runOnChange="true">
         <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
             <column name="pspid" value="63"/>
