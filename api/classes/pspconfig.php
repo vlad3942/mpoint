@@ -204,7 +204,7 @@ class PSPConfig extends BasicConfig
 
 	public function toXML(?int $propertyScope=2, array $aMerchantAccountDetails = array()): string
 	{
-		$xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
+        $xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		if (count($aMerchantAccountDetails) > 0)        {
             $merchantaccount = $aMerchantAccountDetails['merchantaccount'];
@@ -363,7 +363,6 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
 				WHERE CL.id = ". $clid ." AND PSP.id = ". $pspid ." AND PSP.enabled = '1' AND Acc.id = ". $accid ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
-//		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 1)
 		{
