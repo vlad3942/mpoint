@@ -75,7 +75,7 @@ $obj_mPoint = new Admin($_OBJ_DB, $_OBJ_TXT);
 if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) == 100)
 {
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']);
-    if($obj_ClientConfig->hasAccess($_SERVER['HTTP_X_FORWARDED_FOR']) === true) {
+    if($obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true) {
         $isConsolidate = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'cumulativesettlement'), FILTER_VALIDATE_BOOLEAN);
         $isCancelPriority = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'preferredvoidoperation'), FILTER_VALIDATE_BOOLEAN);
         $isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);

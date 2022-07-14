@@ -118,7 +118,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-					&& $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_FORWARDED_FOR']) === true)
+					&& $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true)
 				{
 				    $httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                     $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
