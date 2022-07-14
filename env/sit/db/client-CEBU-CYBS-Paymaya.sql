@@ -46,4 +46,4 @@ INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id 
 INSERT INTO client.routepm_tbl (routeconfigid, pmid, enabled) VALUES((select id from client.routeconfig_tbl rt where name='CYBS_Others'), 8, true);
 
 ---- JCB Pre-Auth query ----
-INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud, enabled) VALUES(10077, 5, 65, 640, 0, 1, true);
+INSERT INTO client.fraud_config_tbl (clientid, pmid, providerid, countryid, currencyid, typeoffraud, enabled) VALUES(10077, 5, 65, 0, 0, 1, true);
