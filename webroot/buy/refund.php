@@ -103,7 +103,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		if (count($aMsgCds) == 0)
 		{
 			$iUserID = -1;
-			if (strtolower($obj_ClientConfig->getUsername() ) == strtolower($_REQUEST['username']) && $obj_ClientConfig->getPassword() == $_REQUEST['password'])
+			if (strtolower($obj_ClientConfig->getUsername() ) == strtolower($_REQUEST['username']) && $obj_ClientConfig->getPassword() == $_REQUEST['password'] && $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true)
 			{
 				try
 				{
