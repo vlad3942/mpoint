@@ -1003,7 +1003,7 @@ class Home extends General
 
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
-                        if($aTxnAdditionalData !== null)
+                        if($aTxnAdditionalData !== null && $isSecure === false)
                         {
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
@@ -1915,7 +1915,9 @@ class Home extends General
                 array_push($additionalData, new AdditionalData($name, $value));
             }
         }
-        $transactionData->setAdditionalData($additionalData);
+        if($isSecure === false) {
+            $transactionData->setAdditionalData($additionalData);
+        }
 
         $transactionId = $txnInfo->getID();
         $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);

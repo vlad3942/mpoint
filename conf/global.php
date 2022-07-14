@@ -1124,6 +1124,19 @@ $aHTTP_CONN_INFO[77]["paths"]["status"] = "/mpoint/aggregator/mercado-pago/statu
 $aHTTP_CONN_INFO[77]["paths"]["redirect"] = "/mpoint/aggregator/mercado-pago/redirect";
 $aHTTP_CONN_INFO[77]["paths"]["callback"] = "/mpoint/aggregator/mercado-pago/callback";
 
+/*
+ * Connection info for connecting to Agency Credit
+ */
+$aHTTP_CONN_INFO[76]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO[76]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO[76]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO[76]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[76]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[76]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[76]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[76]["paths"]["redeem"] = "/mpoint/agency-credit/redeem";
+$aHTTP_CONN_INFO[76]["paths"]["refund"] = "/mpoint/agency-credit/refund";
+
 /**
  * Connection info for connecting to Reach
  */

@@ -349,7 +349,7 @@ class Validate extends ValidateBase
 	public function valPrice($max, $prc)
 	{
 	    // Validate the total Amount the customer will be paying
-		if (empty($prc) === true) { $code = 1; }	// Amount is undefined
+		if (empty($prc) === true || !is_numeric($prc)) { $code = 1; }	// Amount is undefined
 		elseif (floatval($prc) < 1) { $code = 2; }	// Amount is too small
 		elseif (floatval($prc) > floatval($max) ) { $code = 3; }	// Amount is too great
 		else { $code = 10; }
@@ -1273,7 +1273,7 @@ class Validate extends ValidateBase
      * @param	integer $cfxId                  The Foreign Exchange Unique reference
      * @return 	integer
      */
-    public function valDccHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $amount, $countryid,CountryConfig $obj_CountryConfig ,TxnInfo $txnInfo, $cfxId)
+    public function valDccHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $amount, $countryid,CountryConfig $obj_CountryConfig ,TxnInfo $txnInfo, $cfxId,$initAmount,$conversionRate)
     {
         $code = 1;
         $mobile = $obj_ClientInfo->getMobile() > 0 ? $obj_ClientInfo->getMobile() : "";
@@ -1285,8 +1285,8 @@ class Validate extends ValidateBase
             $countryISOCode = $obj_CountryConfig->getNumericCode();
         }
 
-        $chk = hash('sha512',$obj_ClientConfig->getID() . trim($txnInfo->getOrderID()) . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt().(string) $txnInfo->getInitializedAmount() . $txnInfo->getInitializedCurrencyConfig()->getID().$cfxId);
-        $chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . trim($txnInfo->getOrderID())     . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt().(string) $txnInfo->getInitializedAmount() . $txnInfo->getInitializedCurrencyConfig()->getID().$cfxId);
+        $chk = hash('sha512',$obj_ClientConfig->getID() . trim($txnInfo->getOrderID()) . $amount . $countryid . $mobile . $country_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt().$initAmount . $txnInfo->getInitializedCurrencyConfig()->getID().$conversionRate.$cfxId);
+        $chkWithCountryISOCode = hash('sha512',$obj_ClientConfig->getID() . trim($txnInfo->getOrderID())     . $amount . $countryISOCode . $mobile . $countryISO_id . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt().$initAmount . $txnInfo->getInitializedCurrencyConfig()->getID().$conversionRate.$cfxId);
 
         if (strtolower($mac) === strtolower($chk) || strtolower($mac) === strtolower($chkWithCountryISOCode))
         {

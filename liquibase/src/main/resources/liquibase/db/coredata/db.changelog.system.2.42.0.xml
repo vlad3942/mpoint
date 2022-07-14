@@ -99,7 +99,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-3" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-3">
         <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
             <column name="cardid" value="103" />
             <column name="pspid" value="77"/>
@@ -107,7 +107,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-4" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-4">
         <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
             <column name="cardid" value="103"/>
             <column name="min" value="0" />
@@ -116,7 +116,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-5" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-5">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="ARS" />
@@ -125,7 +125,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-6" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-6">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="BRL" />
@@ -134,7 +134,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-7" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-7">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="COP" />
@@ -143,7 +143,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-8" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-8">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="MXN" />
@@ -152,7 +152,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-9" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-9">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="UYU" />
@@ -161,7 +161,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-10" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-10">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="CLP" />
@@ -170,7 +170,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-11" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-11">
         <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="PEN" />
@@ -179,7 +179,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-12" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-12">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-32"/>
             <column name="cardid" value="103"/>
@@ -187,7 +187,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-13" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-13">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-986"/>
             <column name="cardid" value="103"/>
@@ -195,7 +195,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-14" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-14">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-170"/>
             <column name="cardid" value="103"/>
@@ -203,7 +203,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-15" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-15">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-484"/>
             <column name="cardid" value="103"/>
@@ -211,7 +211,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-16" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-16">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-858"/>
             <column name="cardid" value="103"/>
@@ -219,7 +219,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-17" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-17">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-152"/>
             <column name="cardid" value="103"/>
@@ -227,7 +227,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-18" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-18">
         <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
             <column name="pricepointid" value="-604"/>
             <column name="cardid" value="103"/>
@@ -235,7 +235,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-19" runOnChange="true">
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-19">
         <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="INSTALLMENTS"/>
@@ -245,7 +245,8 @@
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-20" runOnChange="true">
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-20">
         <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="EXCLUDED_PAYMENT_METHODS"/>
@@ -255,7 +256,8 @@
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
-    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-21" runOnChange="true">
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-21">
         <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
             <column name="pspid" value="77"/>
             <column name="name" value="EXCLUDED_PAYMENT_TYPES"/>
@@ -265,4 +267,116 @@
             <column name="enabled" value="true"/>
         </insert>
     </changeSet>
+
+    <changeSet author="Amar Kumar" id="2022-06-21-INF-102">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1408001</where>
+        </update>
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1407001</where>
+        </update>
+        <delete  catalogName="log" schemaName="log" tableName="state_tbl">
+            <where>name = 'Your Agency Payment Balance is zero (0). Please select another payment method to complete your booking.' and id = 1409001</where>
+        </delete>
+    </changeSet>
+
+    <changeSet author="Amar kumar" id="2022-06-24-INF-120">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Voucher/ Credit Account Closed"/>
+            <where>id = 1406001</where>
+        </update>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409" />
+            <column name="name" value="No booking state" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1408" />
+            <column name="name" value="Voucher/ Credit Insufficient Balance" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1400" />
+            <column name="name" value="Voucher/ Credit Success" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1400001" />
+            <column name="name" value="Voucher/ Credit Success" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1407" />
+            <column name="name" value="Voucher/ Credit not setup" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1406" />
+            <column name="name" value="Voucher/ Credit Account Closed" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1402" />
+            <column name="name" value="Voucher/ Credit Zero Balance" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1402001" />
+            <column name="name" value="Voucher/ Credit Zero Balance" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409001" />
+            <column name="name" value="Voucher/ Credit No Booking State" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1500" />
+            <column name="name" value="Voucher/ Credit Currency convertion Error" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1500001" />
+            <column name="name" value="Voucher/ Credit Currency convertion Error" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1501" />
+            <column name="name" value="Voucher/ Credit Invalid Token Error" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1501001" />
+            <column name="name" value="Voucher/ Credit Invalid Token Error" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
+    <changeSet author="Abhinav Shaha" id="2022-07-01-CPMRM-16699" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
+            <column name="pspid" value="63"/>
+            <column name="name" value="post_fraud_rule" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="false"/>
+            <column name="category" value="7" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

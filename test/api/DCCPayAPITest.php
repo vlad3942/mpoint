@@ -29,7 +29,7 @@ class DCCPayAPITest extends PayAPITest
             "12345",
             "4","840","5000"
         );
-        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,20000,'4874b565db376dffc0801d91e2bdb5b9d2a3f610917753204cd15a30357e42984cabceb6055495a6f95a7f761270dc9e9c9a04fd45d2a4992f36f3f8799a77f5',$aDccParams);
+        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,20000,'5d2b90f39296af7f4ad201a84fb8f37628eb71549e6f4a551ca94c37e3cbc76a2b5f3d4eb830ba1f6f5b465b94b513d98f8da122a8d38d7bd36b8f5daa843f9a',$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -63,7 +63,7 @@ class DCCPayAPITest extends PayAPITest
             "12345",
             "4","840","2500"
         );
-        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,10000,'f969214287fd1f0555c0643684ccbe173cd9831400586481babf7c843c87e555f35165a63b5e69a10e6445e983fbc42f032159fe8a48699eca125d08aefab9c0',$aDccParams);
+        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,10000,'1b030d2dda37e23166fe69d0cf3d44b91b4a6f61c06e3a8aac12e24f6056661a1e01a196b0592b70f0fbf946e11cf63f658b617ed44ea9e0529303ab8aea9f3b',$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
@@ -97,7 +97,7 @@ class DCCPayAPITest extends PayAPITest
             "12345",
             "4","840","7500"
         );
-        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,30000,'0ab2d5ea5a19a456ad19358ce7640472c567d302ce717b0c00c68c60c00cec31b75dcc257892351515367e2107f4dec5b9fdf97ef3a4acac2892c18b1501fad9',$aDccParams);
+        $xml = $this->getPayDoc(10018, 1100, 1001011,8, false, 100,208,30000,'c5be8922ecdb0d991454b690fbcc5f6f9b7e0ed9a08cb5c59934c0b1aee08073bf4a3aed92eef753d2451ba3c62a49d457e1796df86646cb920594c64d8ed0ba',$aDccParams);
         $this->_httpClient->connect();
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);

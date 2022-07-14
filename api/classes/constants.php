@@ -1210,6 +1210,12 @@ abstract class Constants
      *
      */
      const iNMI_CREDOMATIC = 74;
+      /**
+      * Unique PSP ID for transaction's made using AV NMI
+      *
+      */
+      const iAGENCY_CREDIT = 76;
+
 
 
     /**
@@ -1697,8 +1703,12 @@ abstract class Constants
 	 *
 	 */
 	const iUNIONPAY_CARD = 101;
-	
-	
+	/**
+    	 * Unique Card ID for transaction's made using UNIONPAY_CARD
+    	 *
+    	 */
+    const iAGENCY_CREDIT_CARD = 102;
+
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
