@@ -118,7 +118,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
+					&& $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_FORWARDED_FOR']) === true)
 				{
 				    $httpXForwardedForIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                     $httpXForwardedForIps = array_map('trim', $httpXForwardedForIps);
@@ -432,10 +432,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->hmac;
                                 $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
                             }
-                                $additionalTxnDataIndex++;
-                                $additionalTxnData[$additionalTxnDataIndex]['name'] = "ip";
-                                $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$_SERVER['REMOTE_ADDR'];
-                                $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
 							$aSessionAdditionalData = [];
                             if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
