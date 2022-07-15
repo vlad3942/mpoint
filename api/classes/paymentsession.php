@@ -337,9 +337,13 @@ final class PaymentSession
         return $this->_obj_CurrencyConfig;
     }
 
-    public function toXML(){
+    public function toXML($sendAmt=true){
         $xml = "<session id='".$this->getId()."' type='".$this->getSessionType()."' total-amount='".$this->_amount."'>";
-        $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCurrencyConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
+        $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCurrencyConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">';
+        if($sendAmt === true){
+            $xml .=  $this->getPendingAmount() ;
+        }
+        $xml .= "</amount>";
         $xml .= '<status>'. $this->getStateId() .'</status>';
         $xml .= "</session>";
         return $xml;
