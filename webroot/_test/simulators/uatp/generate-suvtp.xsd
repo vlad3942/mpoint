@@ -20,6 +20,28 @@
 									<xs:attribute type="xs:byte" name="type"/>
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="session">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="amount">
+											<xs:complexType>
+												<xs:attribute name="alpha2code" type="xs:string" use="required" />
+												<xs:attribute name="alpha3code" type="xs:string" use="required" />
+												<xs:attribute name="code" type="xs:string" use="required" />
+												<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
+												<xs:attribute name="currency" type="xs:string" use="required" />
+												<xs:attribute name="currency-id" type="xs:positiveInteger" use="required" />
+												<xs:attribute name="format" type="xs:string" use="required" />
+												<xs:attribute name="symbol" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="status" type="xs:unsignedShort" />
+									</xs:sequence>
+									<xs:attribute name="id" type="xs:unsignedShort" use="required" />
+									<xs:attribute name="total-amount" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="type" type="xs:unsignedByte" use="required" />
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="transaction" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:all>
