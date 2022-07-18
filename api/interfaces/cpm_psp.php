@@ -50,6 +50,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }
 
+            $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
             $b .= '<transactions>';
             $b .= $this->_constTxnXML($iAmount);
             $b .= '</transactions>';
@@ -147,6 +148,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }
 
+            $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
 			$b .= '</transactions>';
@@ -239,6 +241,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $this->getPSPConfig()->toRouteConfigXML();
         }
 
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
 		$b .= '</transactions>';
@@ -309,6 +312,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $this->getPSPConfig()->toRouteConfigXML();
         }
 
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
 		$b .= '<transactions>';
 		if($amount <= 0) {
             $amount = $this->getTxnInfo()->getAmount();
@@ -414,6 +418,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $this->getPSPConfig()->toRouteConfigXML();
         }
 
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -488,6 +493,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
 
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
         $b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 		if ($authToken !== null) { $b .= '<auth-token>'.$authToken.'</auth-token>'; }
@@ -637,6 +643,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
 
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;
         $b .= $this->_constOrderDetails($this->getTxnInfo()) ;
@@ -750,6 +757,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
 
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
         $b .= $this->_constTxnXML();
         $b .= $this->_constNewCardAuthorizationRequest($obj_Card);
         $b .= '</tokenize>';
@@ -835,6 +843,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			$b .= $this->getPSPConfig()->toRouteConfigXML();
 		}
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
 		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'" id="'. $this->getTxnInfo()->getID() .'">';
 		$b .= '<amount country-id="'. $this->getTxnInfo()->getCountryConfig()->getID() .'" decimals="'. $this->getTxnInfo()->getCurrencyConfig()->getDecimals() .'" currency-id="'. $this->getTxnInfo()->getCurrencyConfig()->getID() .'" currency="'. $this->getTxnInfo()->getCurrencyConfig()->getCode() .'">'. $iAmount .'</amount>';
 		$b .= '<additional-data>';
@@ -896,6 +905,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$xml .= '<root>';
 		$xml .= '<callback>';
 		$xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+        $xml .= $obj_TxnInfo->getPaymentSession()->toXML(false);
 		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
 		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '" currency="'.$obj_TxnInfo->getCountryConfig()->getCurrency().'">'. $obj_TxnInfo->getAmount(). '</amount>';
 		$xml .= '		<card type-id="'.$iCardid.'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
@@ -1005,7 +1015,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= $obj_PSPConfig->toRouteConfigXML();
         }
 
+
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
+        $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</get-payment-data>';
 		$b .= '</root>';
@@ -1419,6 +1431,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             {
                 $b .= $this->getPSPConfig()->toRouteConfigXML();
             }
+            $b .= $this->getTxnInfo()->getPaymentSession()->toXML(false);
             $b .= $this->_constTxnXML();
             $b .= '</get-payment-method>';
             $b .= '</root>';
