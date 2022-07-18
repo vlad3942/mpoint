@@ -99,7 +99,7 @@ try {
                     $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientId, $accoutntId);
                     // Client successfully authenticated
                     if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-                        && $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true) {
+                        && $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true) {
 
                         try
                         {

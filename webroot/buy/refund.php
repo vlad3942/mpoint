@@ -80,10 +80,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	$isMutualExclusive = filter_var($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'ismutualexclusive'), FILTER_VALIDATE_BOOLEAN);
 
 	// Set Client Defaults
-	
+
 	/* ========== Input Validation Start ========== */
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-	
+
 	// Validate input
 	if ($obj_Validator->valUsername($_REQUEST['username']) != 10) { $aMsgCds[$obj_Validator->valUsername($_REQUEST['username']) + 20] = $_REQUEST['username']; }
 	if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[$obj_Validator->valPassword($_REQUEST['password']) + 30] = $_REQUEST['password']; }
@@ -94,17 +94,17 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (count($aMsgCds) == 0)
 	{
 		$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpointid'], $_OBJ_DB);
-		
+
 		/* ========== Input Validation Start ========== */
 		if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 		/* ========== Input Validation End ========== */
-		
+
 		// Success: Input Valid
 		if (count($aMsgCds) == 0)
 		{
 			$iUserID = -1;
-			if (strtolower($obj_ClientConfig->getUsername() ) == strtolower($_REQUEST['username']) && $obj_ClientConfig->getPassword() == $_REQUEST['password'])
-			{	
+			if (strtolower($obj_ClientConfig->getUsername() ) == strtolower($_REQUEST['username']) && $obj_ClientConfig->getPassword() == $_REQUEST['password'] && $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true)
+			{
 				try
 				{
                     if($obj_TxnInfo->getPSPID() <= 0 )
@@ -151,7 +151,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					if (in_array($code, [Constants::iTRANSACTION_CREATED, Constants::iINPUT_VALID_STATE]))
 					{
 						header("HTTP/1.0 200 OK");
-						
+
 						$aMsgCds[$code] = "Success";
 						// Perform callback to Client
 						if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
@@ -183,21 +183,21 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					else
 					{
 						header("HTTP/1.0 502 Bad Gateway");
-						
+
 						$aMsgCds[999] = "Declined";
-					}						
+					}
 				}
 				catch (HTTPException $e)
 				{
 					header("HTTP/1.0 502 Bad Gateway");
-					
+
 					$aMsgCds[998] = "Error while communicating with PSP";
 				}
 				// Internal Error
 				catch (mPointException $e)
 				{
 					header("HTTP/1.0 500 Internal Error");
-					
+
 					$aMsgCds[$e->getCode()] = $e->getMessage();
 				}
 			}
@@ -237,7 +237,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	else
 	{
 		header("HTTP/1.0 400 Bad Request");
-		// Log Errors		
+		// Log Errors
 		foreach ($aMsgCds as $state => $debug)
 		{
 			/*
