@@ -2112,8 +2112,7 @@ class TxnInfo
 				}
 				$InsertValuesArr[] = "('" . $name . "', '" . $aAdditionalDataObj["value"] . "', '".$aAdditionalDataObj["type"]."', '".$ExternalID."')";
 			}
-
-			if(empty($InsertValues) === false) {
+			if(empty($InsertValuesArr) === false) {
 				try {
 					$InsertValues = implode(',', $InsertValuesArr);
 					$sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid) VALUES ";
