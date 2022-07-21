@@ -945,7 +945,7 @@ class TxnInfo
 		if($this->getAmount() != $this->getInitializedAmount())
 		{
 			$iForeignExchangeId = $this->getExternalRef(Constants::iForeignExchange, $this->getPSPID());
-			$hashString .= $this->getInitializedAmount() . $this->getInitializedCurrencyConfig()->getID().$iForeignExchangeId;
+			$hashString .= $this->getInitializedAmount() . $this->getInitializedCurrencyConfig()->getID().$this->getConversationRate().$iForeignExchangeId;
 		}
 		return hash('sha512', $hashString);
 	}
