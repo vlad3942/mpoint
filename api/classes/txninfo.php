@@ -2113,8 +2113,8 @@ class TxnInfo
 				$InsertValuesArr[] = "('" . $name . "', '" . $aAdditionalDataObj["value"] . "', '".$aAdditionalDataObj["type"]."', '".$ExternalID."')";
 			}
 			if(empty($InsertValuesArr) === false) {
+				$InsertValues = implode(',', $InsertValuesArr);
 				try {
-					$InsertValues = implode(',', $InsertValuesArr);
 					$sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid) VALUES ";
 					$sql .= $InsertValues." RETURNING id";
 					// Error: Unable to insert a new Additional Data record in the Additional Data Table
