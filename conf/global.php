@@ -1153,6 +1153,18 @@ $aHTTP_CONN_INFO[78]["paths"]["auth"] = "/mpoint/aggregator/reach/authorize-paym
 $aHTTP_CONN_INFO[78]["paths"]["status"] = "/mpoint/aggregator/reach/status";
 
 /**
+ * Connection info for connecting to Vyne
+ */
+$aHTTP_CONN_INFO[79]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[79]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[79]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[79]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[79]["paths"]["initialize"] = "/mpoint/aggregator/vyne/initialize";
+$aHTTP_CONN_INFO[79]["paths"]["refund"] = "/mpoint/aggregator/vyne/void";
+$aHTTP_CONN_INFO[79]["paths"]["callback"] = "/mpoint/aggregator/vyne/callback";
+$aHTTP_CONN_INFO[79]["paths"]["status"] = "/mpoint/aggregator/vyne/status";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
