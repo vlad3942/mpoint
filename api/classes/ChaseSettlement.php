@@ -231,8 +231,8 @@ class ChaseSettlement extends mPointSettlement
                                     } else {
                                         $passbookStatus = Constants::sPassbookStatusError;
                                     }
-
-                                    if ($passbookState !== 0) {
+                                    /*In case of Capture Success completeCapture will take care of updateing passbook entry to done*/
+                                    if ($passbookState !== 0 && !($isSuccess === TRUE && $recordType == "CAPTURE")) {
                                         $txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
                                     }
                                 }
