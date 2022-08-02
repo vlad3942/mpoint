@@ -1003,7 +1003,7 @@ class Home extends General
 
                         $sTxnAdditionalDataXml = "";
                         $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
-                        if($aTxnAdditionalData !== null)
+                        if($aTxnAdditionalData !== null && $isSecure === false)
                         {
                             $sTxnAdditionalDataXml ="<additional-data>";
                             foreach ($aTxnAdditionalData as $key => $value)
@@ -1901,8 +1901,12 @@ class Home extends General
         $transactionData->setDateTime($dateTime->format('c'));
         $timeZone = $txnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
         if ($timeZone !== NULL && $timeZone !== '' && $timeZone !== FALSE) {
-            $dateTime->setTimezone(new DateTimeZone($timeZone));
-            $transactionData->setLocalDateTime($dateTime->format('c'));
+            try {
+                $dateTime->setTimezone(new DateTimeZone($timeZone));
+                $transactionData->setLocalDateTime($dateTime->format('c'));
+            } catch (Exception $e) {
+                trigger_error($e->getMessage());
+            }
         }
         $transactionData->setIssuingBank($txnInfo->getIssuingBankName());
 
@@ -1911,7 +1915,9 @@ class Home extends General
                 array_push($additionalData, new AdditionalData($name, $value));
             }
         }
-        $transactionData->setAdditionalData($additionalData);
+        if($isSecure === false) {
+            $transactionData->setAdditionalData($additionalData);
+        }
 
         $transactionId = $txnInfo->getID();
         $aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);

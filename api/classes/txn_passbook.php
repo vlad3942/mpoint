@@ -951,27 +951,22 @@ final class TxnPassbook
     public function updateInProgressOperations($amount, $state, $status)
     {
         $amount  = (int)$amount;
-        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE clientid = $5 and transactionid = $2 and amount = $3 and performedopt = $4;';
+        $sqlQuery = 'UPDATE log.' . sSCHEMA_POSTFIX . 'TxnPassbook_tbl SET status = $1 WHERE clientid = $5 and transactionid = $2 and amount = $3 and performedopt = $4 and status in ($6,$7);';
 
         $aParams = array(
             $status,
             $this->getTransactionId(),
             $amount,
             $state,
-            $this->getClientId()
+            $this->getClientId(),
+            Constants::sPassbookStatusInProgress,
+            Constants::sPassbookStatusPending
         );
     
         $result = $this->getDBConn()->executeQuery($sqlQuery, $aParams);
         if ($result === false || (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) == 0))
         {
-            $debugSql = "";
-            $debugSql = preg_replace_callback(
-                '/\$(\d+)\b/',
-                function($match) use ($aParams) {
-                    $key=($match[1]-1); return ( is_null($aParams[$key])?'NULL':pg_escape_literal($aParams[$key]) );
-                },
-                $sqlQuery);
-            throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId . " SQL: " . $debugSql, E_USER_ERROR);
+            throw new Exception('Fail to update passbook entries for transaction id :' . $this->_transactionId, E_USER_ERROR);
             return FALSE;
         }
         

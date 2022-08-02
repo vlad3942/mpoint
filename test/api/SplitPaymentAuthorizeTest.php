@@ -325,7 +325,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             "12345",
             "4","208","95"
         );
-        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,$aDccParams,840,'2dba6ae4be12fd89aa81a875db15fe445f2a0513bdd7a8cf6887e2db409f688490177d70793037df0d6fb51f8754680419a195c127455707b8de7fa42e776409');
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,$aDccParams,840,'b0c4c25bd74ecaf52455785d8b393f6b4428e886c128753337d9fe949fa7783aec05d2f21c07026a18cde4c459bb541490c4e476048a834212b82d8cf317d7dc');
 
         $this->_httpClient->connect();
 
@@ -527,7 +527,7 @@ class SplitPaymentAuthorizeTest extends baseAPITest
             "12345",
             "4","208","95"
         );
-        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,$aDccParams,840,'df71f2bfd28803159cec82017c01a6c023174e81b8db85c0c4c8a5ad0df98c31f5a8455a19dfe1aa90b4881eeaf0693d7242a6346621cedf3acdae7acd20a1ab',false);
+        $xml = $this->getAuthDoc(10099, 1100, 1001001, 100,$aDccParams,840,'b0c4c25bd74ecaf52455785d8b393f6b4428e886c128753337d9fe949fa7783aec05d2f21c07026a18cde4c459bb541490c4e476048a834212b82d8cf317d7dc',false);
 
 
         $this->_httpClient->connect();

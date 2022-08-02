@@ -113,7 +113,7 @@ class AmexSettlement extends mPointSettlement
 
             foreach ($files as $file)
             {
-                $sql = "SELECT id, record_type
+                $sql = "SELECT id, record_type, description
                         FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                         WHERE client_id = $this->_iClientId 
                         AND psp_id = '$this->_iPspId'                
@@ -146,6 +146,22 @@ class AmexSettlement extends mPointSettlement
                         }
                         else
                         {
+                            $fileDescription = $res["DESCRIPTION"];
+                            $fileDescription = explode(',', $fileDescription );
+                            $isFileRejected = '';
+                            foreach ($fileDescription as $description) {
+                                if (trim($description) === "") {
+                                    continue;
+                                }
+                                $description = explode('-', $description);
+                                $recordId = $description[1];
+                                if (count($file["records"][$recordId]["error"]) > 0) {
+                                    foreach ($file["records"][$recordId]["error"] as $error) {
+                                        $isFileRejected .= $error . ':';
+                                    }
+                                }
+                            }
+
                             $sql = "SELECT *
                                   FROM log" . sSCHEMA_POSTFIX . ".settlement_record_tbl
                                   WHERE settlementid = $fileId";
@@ -172,23 +188,28 @@ class AmexSettlement extends mPointSettlement
                                         $description =explode('-', $description );
                                         $recordId = $description[1];
                                         $response = "";
-                                        if(count($file["records"][$recordId]["warning"] ) > 0)
-                                        {
-                                            $isDescriptionUpdated = true;
-                                            foreach ($file["records"][$recordId]["warning"] as $warning)
-                                            {
-                                                $response .= $warning . ":";
+                                        if(isset($file["records"][$recordId]) === true) {
+                                            if (count($file["records"][$recordId]["warning"]) > 0) {
+                                                $isDescriptionUpdated = true;
+                                                foreach ($file["records"][$recordId]["warning"] as $warning) {
+                                                    $response .= $warning . ":";
+                                                }
+                                            }
+
+                                            if (count($file["records"][$recordId]["error"]) > 0) {
+                                                $isDescriptionUpdated = true;
+                                                foreach ($file["records"][$recordId]["error"] as $error) {
+                                                    $response .= $error . ":";
+                                                    $isSuccess = false;
+                                                }
                                             }
                                         }
 
-                                        if(count($file["records"][$recordId]["error"] ) > 0)
+                                        if($isFileRejected !== '')
                                         {
                                             $isDescriptionUpdated = true;
-                                            foreach ($file["records"][$recordId]["error"] as $error)
-                                            {
-                                                $response .= $error . ":";
-                                                $isSuccess = false;
-                                            }
+                                            $response .= $isFileRejected;
+                                            $isSuccess = false;
                                         }
                                         foreach ($description as $desc)
                                         {
@@ -216,9 +237,10 @@ class AmexSettlement extends mPointSettlement
 											$passbookStatus = Constants::sPassbookStatusError;
 										}
 
-										if ($passbookState !== 0) {
-											$txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
-										}
+                                        /*In case of Capture Success completeCapture will take care of updateing passbook entry to done*/
+                                        if ($passbookState !== 0 && !($isSuccess === TRUE && $recordType == "CAPTURE")) {
+                                            $txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
+                                        }
                                     }
 
                                     if($isSuccess === true)
@@ -244,7 +266,29 @@ class AmexSettlement extends mPointSettlement
                                             $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
                                             $obj_TxnInfo->updateRefundedAmount($_OBJ_DB, $amount);
                                         }
+                                    }
+                                    else
+                                    {
+                                        $obj_TxnInfo = TxnInfo::produceInfo($txnId, $_OBJ_DB);
+                                        $obj_PSP = new Amex($_OBJ_DB, $this->_objTXT, $obj_TxnInfo, $this->_objConnectionInfo);
+                                        $args = [];
+                                        if($recordType == "CAPTURE")
+                                        {
+                                            $obj_PSP->newMessage($txnId, Constants::iPAYMENT_CAPTURE_FAILED_STATE, null );
+                                            $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                "amount" => $amount,
+                                                "fee" => $obj_TxnInfo->getFee() );
 
+                                            $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURE_FAILED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
+                                        }
+                                        else
+                                        {
+                                            $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUND_FAILED_STATE, null );
+                                            $args = array("transact" => $obj_TxnInfo->getExternalID(),
+                                                "amount" => $amount);
+
+                                            $obj_PSP->notifyClient(Constants::iPAYMENT_REFUND_FAILED_STATE, $args, $this->_objClientConfig->getSurePayConfig($_OBJ_DB));
+                                        }
                                     }
 
                                     if($isDescriptionUpdated === true)
